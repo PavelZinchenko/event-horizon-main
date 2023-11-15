@@ -103,12 +103,13 @@ namespace GameDatabase.Extensions
 
         public static IEnumerable<ShipBuild> CommonShips(this IEnumerable<ShipBuild> builds)
         {
-            return builds.Where(item => item.Ship.ShipRarity == ShipRarity.Normal);
+            return builds.Where(item => item.Ship.ShipType == ShipType.Common && item.Ship.ShipRarity == ShipRarity.Normal);
         }
 
         public static IEnumerable<ShipBuild> CommonAndRareShips(this IEnumerable<ShipBuild> builds)
         {
-            return builds.Where(item => item.Ship.ShipRarity == ShipRarity.Normal || item.Ship.ShipRarity == ShipRarity.Rare);
+            return builds.Where(item => item.Ship.ShipType == ShipType.Common && 
+                (item.Ship.ShipRarity == ShipRarity.Normal || item.Ship.ShipRarity == ShipRarity.Rare));
         }
 
         public static IEnumerable<ShipBuild> HiddenShips(this IEnumerable<ShipBuild> builds)
