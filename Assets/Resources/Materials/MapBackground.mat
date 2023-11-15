@@ -27,8 +27,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _DecalTex:
         m_Texture: {fileID: 2800000, guid: 9e4a244b0ce0d344f9b834b4dd59082a, type: 3}
-        m_Scale: {x: 12.010914, y: 12.010914}
-        m_Offset: {x: -0.9010315, y: -0.57837534}
+        m_Scale: {x: 8.103283, y: 8.103283}
+        m_Offset: {x: -0.00055110455, y: -0.3676132}
     - _Detail:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -51,8 +51,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 9399c5eac7b26be489a259f4dd49550b, type: 3}
-        m_Scale: {x: 3.0027285, y: 3.0027285}
-        m_Offset: {x: -0.22525787, y: -0.64459383}
+        m_Scale: {x: 2.0258207, y: 2.0258207}
+        m_Offset: {x: -0.25013778, y: -0.0919033}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}

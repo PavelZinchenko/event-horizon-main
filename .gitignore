@@ -13,6 +13,8 @@
 /Assets/ExternalDependencyManager/
 /Assets/com.rlabrecque.steamworks.net/
 /Assets/Scripts/Steamworks.NET/
+/Assets/Editor/Steamworks.NET/
+
 
 **/bin/Debug/
 **/bin/Release/
@@ -27,6 +29,7 @@ thumbs.db.meta
 
 license.keystore
 steam_appid.txt
+.vsconfig
 
 # Visual Studio cache directory
 .vs/
