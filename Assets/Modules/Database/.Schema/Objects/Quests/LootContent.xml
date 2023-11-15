@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="LootContent" type="struct" switch="Type" >
+    <member name="Type" type="enum" typeid="LootItemType" />
+    <member name="ItemId" type="object" typeid="QuestItem" case="QuestItem" alias="QuestItem" options="notnull" />
+    <member name="ItemId" type="object" typeid="Ship" case="EmptyShip" alias="Ship" options="notnull" />
+    <member name="ItemId" type="object" typeid="ShipBuild" case="Ship" alias="ShipBuild" options="notnull" />
+    <member name="ItemId" type="object" typeid="Component" case="Component" alias="Component" options="notnull" />
+    <member name="ItemId" type="object" typeid="Technology" case="Blueprint" alias="Blueprint" options="notnull" />
+    <member name="MinAmount" type="int" case="Money,Fuel,Stars,RandomComponents,
+    RandomItems,QuestItem,Component,ResearchPoints" minvalue="0" maxvalue="999999999" />
+    <member name="MaxAmount" type="int" case="Money,Fuel,Stars,RandomComponents,
+    RandomItems,QuestItem,Component,ResearchPoints" minvalue="0" maxvalue="999999999" />
+    <member name="ValueRatio" type="float" case="SomeMoney,RandomComponents" minvalue="0.001" maxvalue="1000" />
+    <member name="Factions" type="struct" typeid="FactionFilter" case="RandomComponents,ResearchPoints" />
+    <member name="Items" type="struct_list" typeid="LootItem" case="RandomItems,AllItems,ItemsWithChance" />
+</data>

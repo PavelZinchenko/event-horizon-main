@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="TechType">
+    <item name="Component" />
+    <item name="Ship" />
+    <item name="Satellite" />
+</data>

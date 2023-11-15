@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="BulletTriggerCondition">
+    <item name="Undefined" />
+    <item name="Created" />
+    <item name="Destroyed" />
+    <item name="Hit" />
+    <item name="Disarmed" />
+    <item name="Expired" />
+    <item name="Detonated" />
+    <item name="OutOfAmmo" />
+</data>

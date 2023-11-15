@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ComponentRestrictions" type="struct">
+    <member name="ShipSizes" type="enum_flags" typeid="SizeClass" />
+    <member name="NotForOrganicShips" type="bool" />
+    <member name="NotForMechanicShips" type="bool" />
+    <member name="UniqueComponentTag" type="string" />
+</data>

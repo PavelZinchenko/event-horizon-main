@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="WeaponClass">
+    <item name="Common" />
+    <item name="Manageable" />
+    <item name="Continuous" />
+    <item name="MashineGun" />
+    <item name="MultiShot" />
+    <item name="RequiredCharging" />
+</data>

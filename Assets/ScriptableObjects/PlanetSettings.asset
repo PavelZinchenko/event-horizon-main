@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b60c0479012f8841807c0ead946a029, type: 3}
+  m_Name: PlanetSettings
+  m_EditorClassIdentifier: 
+  _asteroidBelt: {fileID: 21300000, guid: 57c04174c3d4a0d49aae2bae28ef1dbc, type: 3}
+  _infectedPlanet: {fileID: 21300000, guid: 39e556d2b343ddf4789401e72cf85b75, type: 3}
+  _gasPlanets:
+  - {fileID: 21300000, guid: 516ce6130fe76374c8547efb95507da8, type: 3}
+  - {fileID: 21300000, guid: 266b5b496cdfa824aab7fb5752de0b90, type: 3}
+  _barrenPlanets:
+  - {fileID: 21300000, guid: 3fa06e631e9250f49b5238ee802cd7bb, type: 3}
+  - {fileID: 21300000, guid: cb75aa236d8375344954d7586aa24c77, type: 3}
+  _terranPlanets:
+  - {fileID: 21300000, guid: a1c68e3a68fb40748a6497a6653d7969, type: 3}
+  - {fileID: 21300000, guid: 9f94a8a9a0be7114dbb2cc68ece61c72, type: 3}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="Availability">
+    <item name="None">0</item>
+    <item name="Common">1</item>
+    <item name="Rare">2</item>
+    <item name="Special">3</item>
+    <item name="Hidden">4</item>
+    <item name="LootOnly">5</item>
+</data>

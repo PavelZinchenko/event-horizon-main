@@ -1,0 +1,14 @@
+{
+  "ItemType": 26,
+  "Id": 6,
+  "Elements": [
+    {
+      "Type": 3,
+      "Image": "CloudWhite",
+      "Size": 1.0,
+      "GrowthRate": 0.5,
+      "TurnRate": 30.0,
+      "Lifetime": 1.0
+    }
+  ]
+}

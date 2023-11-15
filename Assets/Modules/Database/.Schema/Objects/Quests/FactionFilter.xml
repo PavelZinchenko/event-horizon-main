@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="FactionFilter" type="struct" alias="RequiredFactions" >
+    <member name="Type" type="enum" typeid="FactionFilterType" />
+    <member name="List" type="object_list" typeid="Faction" />
+</data>

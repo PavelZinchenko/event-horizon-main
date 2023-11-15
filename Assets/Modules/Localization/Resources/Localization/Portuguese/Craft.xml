@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+<string name="CraftRequirements">Requisitos:</string>
+<string name="CraftLevel">Nível da oficina:</string>
+<string name="CraftResources">Recursos:</string>
+<string name="CraftPrice">Créditos:</string>
+<string name="CraftInProgress">Em construção...</string>
+<string name="RareResourceLabel">Recursos raros</string>
+<string name="RareResource">Ingredientes de construção</string>
+<string name="StarCurrency">Estrelas</string>
+<string name="CraftQueue">Produção</string>
+<string name="CraftCompleted">Completo</string>
+<string name="CraftInQueue">À espera</string>
+<string name="EmptyBuildQueue">A fila de construção está vazia</string>
+<string name="Blueprint">Plano: $1</string>
+
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="DroneBay" type="object" typeid="DroneBay" options="legacy" >
+    <member name="EnergyConsumption" type="float" minvalue="0" maxvalue="999999999" />
+    <member name="PassiveEnergyConsumption" type="float" minvalue="0" maxvalue="999999999" />
+    <member name="Range" type="float" minvalue="1" maxvalue="1000" />
+    <member name="DamageMultiplier" type="float" minvalue="0.01" maxvalue="1000" />
+    <member name="DefenseMultiplier" type="float" minvalue="0.01" maxvalue="1000" />
+    <member name="SpeedMultiplier" type="float" minvalue="0.01" maxvalue="1000" />
+    <member name="BuildExtraCycles" type="int" minvalue="0" maxvalue="100" />
+    <member name="ImprovedAi" type="bool" />
+    <member name="Capacity" type="int" minvalue="1" maxvalue="1000" />
+    <member name="ActivationType" type="enum" typeid="ActivationType" />
+    <member name="LaunchSound" type="audioclip" />
+    <member name="LaunchEffectPrefab" type="prefab" typeid="Effect" />
+    <member name="ControlButtonIcon" type="image" typeid="ActionButton" />
+</data>

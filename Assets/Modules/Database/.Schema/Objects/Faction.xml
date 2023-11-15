@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Faction" type="object" typeid="Faction" >
+    <member name="Name" type="string" />
+    <member name="Color" type="color" />
+
+    <member name="NoTerritories" type="bool" />
+    <member name="HomeStarDistance" type="int" minvalue="0" maxvalue="5000" />
+
+    <member name="NoWanderingShips" type="bool" />
+    <member name="WanderingShipsDistance" type="int" minvalue="0" maxvalue="5000" />
+
+    <member name="HideFromMerchants" type="bool" />
+    <member name="HideResearchTree" type="bool" />
+    <member name="NoMissions" type="bool" />
+
+    <member name="Hidden" type="bool" options="obsolete" />
+    <member name="Hostile" type="bool" options="obsolete" />
+</data>

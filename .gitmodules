@@ -1,0 +1,9 @@
+[submodule "Assets/Modules/Database/.CodeGenerator"]
+	path = Assets/Modules/Database/.CodeGenerator
+	url = https://github.com/PavelZinchenko/DatabaseCodeGenerator
+[submodule "Assets/Modules/Database/.Editor"]
+	path = Assets/Modules/Database/.Editor
+	url = https://github.com/PavelZinchenko/EventHorizon-Editor
+[submodule "Assets/ModulesPrivate"]
+	path = Assets/ModulesPrivate
+	url = https://github.com/PavelZinchenko/event-horizon-private-stuff

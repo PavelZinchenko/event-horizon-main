@@ -1,0 +1,16 @@
+{
+    "name": "ServicesFacade",
+    "rootNamespace": "Services",
+    "references": [
+        "GUID:c591248a51153554ebb2741f0459e4ef"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

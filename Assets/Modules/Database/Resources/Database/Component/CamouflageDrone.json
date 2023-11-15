@@ -1,0 +1,29 @@
+{
+  "ItemType": 1,
+  "Id": 267,
+  "Name": "$DroneCamouflage",
+  "DisplayCategory": 2,
+  "Availability": 2,
+  "ComponentStatsId": 3,
+  "Faction": 18,
+  "Level": 100,
+  "Icon": "camouflage",
+  "Color": "#C7FFC3",
+  "Layout": "111101111",
+  "CellType": "2",
+  "DeviceId": 27,
+  "Restrictions": {
+    "ShipSizes": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "UniqueComponentTag": "camouflage"
+  },
+  "PossibleModifications": [
+    2,
+    1,
+    6
+  ]
+}

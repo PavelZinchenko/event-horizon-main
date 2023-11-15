@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="DatabaseSettings" type="settings" typeid="DatabaseSettings" >
+    <member name="DatabaseVersion" type="int" minvalue="1" />
+    <member name="ModName" type="string" />
+    <member name="ModId" type="string" />
+    <member name="ModVersion" type="int" />
+    <member name="UnloadOriginalDatabase" type="bool" />
+</data>

@@ -1,0 +1,19 @@
+{
+    "name": "GameSession",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1d8ea6765031c7c468cb9f8ff07a587d",
+        "GUID:5ec85193e19bb604b8aac4306e4b5345",
+        "GUID:ca6923f9a8aedcb41a67992501d9bf48",
+        "GUID:c591248a51153554ebb2741f0459e4ef"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

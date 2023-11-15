@@ -1,0 +1,1 @@
+start .Editor\Analyzer\bin\Release\net6.0-windows\Analyzer.exe Resources\Database

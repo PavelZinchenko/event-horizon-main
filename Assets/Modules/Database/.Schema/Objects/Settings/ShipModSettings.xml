@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ShipModSettings" type="settings" typeid="ShipModSettings">
+    <member name="RemoveWeaponSlotMod" type="bool" />
+    <member name="HeatDefenseValue" type="float" minvalue="0" maxvalue="1" default="0.5" />
+    <member name="KineticDefenseValue" type="float" minvalue="0" maxvalue="1" default="0.5" />
+    <member name="EnergyDefenseValue" type="float" minvalue="0" maxvalue="1" default="0.5" />
+    <member name="RegenerationValue" type="float" minvalue="0" maxvalue="1" default="0.01" />
+    <member name="RegenerationArmor" type="float" minvalue="0" maxvalue="1"  default="0.85" />
+    <member name="WeightReduction" type="float" minvalue="0" maxvalue="1" default="0.8" />
+    <member name="AttackReduction" type="float" minvalue="0" maxvalue="1" default="0.2" />
+</data>

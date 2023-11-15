@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="AmmunitionObsolete" type="object" typeid="AmmunitionObsolete" options="legacy" >
+    <member name="AmmunitionClass" type="enum" typeid="AmmunitionClassObsolete" />
+    <member name="DamageType" type="enum" typeid="DamageType" />
+    <member name="Impulse" type="float" minvalue="0" maxvalue="10" />
+    <member name="Recoil" type="float" minvalue="0" maxvalue="10" />
+    <member name="Size" type="float" minvalue="0" maxvalue="1000" />
+    <member name="InitialPosition" type="vector" />
+    <member name="AreaOfEffect" type="float" minvalue="0" maxvalue="1000" />
+    <member name="Damage" type="float" minvalue="0" maxvalue="999999999" />
+    <member name="Range" type="float" minvalue="0" maxvalue="1000" />
+    <member name="Velocity" type="float" minvalue="0" maxvalue="1000" />
+    <member name="LifeTime" type="float" minvalue="0" maxvalue="999999999" />
+    <member name="HitPoints" type="int" minvalue="0" maxvalue="999999999" />
+    <member name="IgnoresShipVelocity" type="bool" />
+    <member name="EnergyCost" type="float" minvalue="0" maxvalue="999999999" />
+    <member name="CoupledAmmunitionId" type="object" typeid="AmmunitionObsolete" alias="CoupledAmmunition" />
+    <member name="Color" type="color" />
+    <member name="FireSound" type="audioclip" />
+    <member name="HitSound" type="audioclip" />
+    <member name="HitEffectPrefab" type="prefab" typeid="Effect" />
+    <member name="BulletPrefab" type="prefab" typeid="Bullet" />
+</data>

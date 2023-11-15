@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="CraftLevel">Fabrik Level:</string>
+    <string name="CraftPrice">Credits:</string>
+    <string name="CraftCommonItem">einen Gegenstand mit normaler Qualität herstellen</string>
+    <string name="CraftImprovedItem">einen Gegenstand mit verbesserter Qualität herstellen</string>
+    <string name="CraftSuperiorItem">einen Gegenstand mit überragender Qualität herstellen</string>
+    <string name="CraftNotAvailable">nicht für diesen Gegenstand verfügbar</string>
+    <string name="CraftItem">Herstellen</string>
+    <string name="RareResourceLabel">Seltene Ressourcen</string>
+    <string name="RareResource">Herstellungs Materialien</string>
+    <string name="CraftQueue">Produktion</string>
+    <string name="CraftCompleted">Abgeschlossen</string>
+    <string name="CraftInQueue">Warten</string>
+    <string name="EmptyBuildQueue">Momentan wird nichts gebaut</string>
+    <string name="Blueprint">Blueprint: $1</string>
+    <string name="Shipyard">Werft</string>
+</resources>

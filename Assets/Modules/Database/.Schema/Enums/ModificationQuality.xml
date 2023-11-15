@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="ModificationQuality">
+    <item name="N3">0</item>
+    <item name="N2">1</item>
+    <item name="N1">2</item>
+    <item name="P1">3</item>
+    <item name="P2">4</item>
+    <item name="P3">5</item>
+</data>

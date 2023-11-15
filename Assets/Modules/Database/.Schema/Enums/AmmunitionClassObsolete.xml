@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="AmmunitionClassObsolete">
+    <item name="Common" />
+    <item name="Acid" />
+    <item name="Aura" />
+    <item name="Carrier" />
+    <item name="Bomb" />
+    <item name="DamageOverTime" />
+    <item name="DroneControl" />
+    <item name="Emp" />
+    <item name="EmpMissile" />
+    <item name="EnergyBeam" />
+    <item name="EnergySiphon" />
+    <item name="Explosion" />
+    <item name="Fireworks" />
+    <item name="FragBomb" />
+    <item name="Fragment" />
+    <item name="HomingImmobilizer" />
+    <item name="HomingTorpedo" />
+    <item name="Immobilizer" />
+    <item name="LaserBeam" />
+    <item name="Rocket" />
+    <item name="Singularity" />
+    <item name="TractorBeam" />
+    <item name="VampiricRay" />
+    <item name="SmallVampiricRay" />
+    <item name="RepairRay" />
+    <item name="PlasmaWeb" />
+    <item name="UnguidedRocket" />
+    <item name="IonBeam" />
+    <item name="AcidRocket" />
+    <item name="BlackHole" />
+    <item name="ClusterMissile" />
+    <item name="HomingCarrier" />
+</data>

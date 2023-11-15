@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Fleet" type="object" typeid="Fleet" >
+    <member name="Factions" type="struct" typeid="FactionFilter" />
+    <member name="LevelBonus" type="int" minvalue="-10000" maxvalue="10000" />
+    <member name="NoRandomShips" type="bool" />
+    <member name="CombatTimeLimit" type="int" minvalue="0" maxvalue="999" />
+    <member name="LootCondition" type="enum" typeid="RewardCondition" />
+    <member name="ExpCondition" type="enum" typeid="RewardCondition" />
+    <member name="SpecificShips" type="object_list" typeid="ShipBuild" />
+    <member name="NoShipChanging" type="bool" />
+</data>

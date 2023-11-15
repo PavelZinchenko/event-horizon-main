@@ -1,0 +1,30 @@
+{
+  "ItemType": 6,
+  "Id": 91,
+  "ShipType": 1,
+  "SizeClass": -1,
+  "Name": "Drone",
+  "Faction": 5,
+  "IconImage": "drone8",
+  "IconScale": 0.5,
+  "ModelImage": "drone8",
+  "ModelScale": 0.7,
+  "EngineColor": "#40FFB7B7",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.8
+      },
+      "Size": 0.1
+    }
+  ],
+  "Layout": "040242515",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 1.0
+      },
+      "WeaponClass": "L"
+    }
+  ]
+}

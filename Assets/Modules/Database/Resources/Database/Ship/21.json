@@ -1,0 +1,29 @@
+{
+  "ItemType": 6,
+  "Id": 86,
+  "ShipType": 1,
+  "SizeClass": -1,
+  "Name": "Drone",
+  "Faction": 2,
+  "IconImage": "drone2",
+  "IconScale": 0.5,
+  "ModelImage": "drone2",
+  "ModelScale": 0.4,
+  "EngineColor": "#40FFBABA",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.9
+      },
+      "Size": 0.1
+    }
+  ],
+  "Layout": "040121050",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.8
+      }
+    }
+  ]
+}

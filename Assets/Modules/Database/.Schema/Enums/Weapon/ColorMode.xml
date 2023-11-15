@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="ColorMode">
+    <item name="TakeFromOwner" />
+    <item name="UseMyOwn" />
+    <item name="Blend" />
+    <item name="Multiply" />
+</data>

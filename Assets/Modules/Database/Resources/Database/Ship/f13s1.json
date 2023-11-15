@@ -1,0 +1,40 @@
+{
+  "ItemType": 6,
+  "Id": 105,
+  "SizeClass": 1,
+  "Name": "$f13_Destroyer",
+  "Faction": 13,
+  "IconImage": "f13s1",
+  "IconScale": 0.6,
+  "ModelImage": "f13s1",
+  "ModelScale": 1.2,
+  "EngineColor": "#80FF8D00",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.9
+      },
+      "Size": 0.2
+    }
+  ],
+  "Layout": "000404000000414000001424100001424100002424200022222220012222210115525511005515500",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 1.0,
+        "y": -0.15
+      },
+      "WeaponClass": "C"
+    },
+    {
+      "Position": {
+        "x": 1.0,
+        "y": 0.15
+      },
+      "WeaponClass": "M"
+    }
+  ],
+  "Features": {
+    "EnergyResistance": 1.0
+  }
+}

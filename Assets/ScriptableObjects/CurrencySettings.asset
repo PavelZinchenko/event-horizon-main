@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad0476b0be70c2f4a8fed1515b34140e, type: 3}
+  m_Name: CurrencySettings
+  m_EditorClassIdentifier: 
+  _creditsIcon: {fileID: 21300000, guid: a0382be9190013a42a60e47b1d142025, type: 3}
+  _creditsColor: {r: 0, g: 1, b: 0, a: 1}
+  _starsIcon: {fileID: 21300000, guid: f2447ab7c97338a40b9de0b9a8848bc3, type: 3}
+  _starsColor: {r: 1, g: 0.9411765, b: 0.627451, a: 1}
+  _tokensIcon: {fileID: 21300000, guid: 7212997c1387c7d42a2773477021f896, type: 3}
+  _tokensColor: {r: 0.5019608, g: 0.5019608, b: 1, a: 1}
+  _snowflakesIcon: {fileID: 21300000, guid: 31ffc3ad39fbffd43b557120b0eb3b11, type: 3}
+  _snowflakesColor: {r: 0.7529412, g: 1, b: 1, a: 1}
+  _moneyIcon: {fileID: 21300000, guid: 7dd8ea90c95e54c42a5e9f401d4f85cb, type: 3}
+  _moneyColor: {r: 1, g: 0.9411765, b: 0.627451, a: 1}

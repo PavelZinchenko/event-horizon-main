@@ -1,0 +1,32 @@
+{
+  "ItemType": 6,
+  "Id": 119,
+  "ShipRarity": 1,
+  "SizeClass": 2,
+  "Name": "$fn_Corn",
+  "IconImage": "fns10",
+  "IconScale": 0.8,
+  "ModelImage": "fns10",
+  "ModelScale": 1.6,
+  "EngineColor": "#40FFA4D6",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.95
+      },
+      "Size": 0.3
+    }
+  ],
+  "Layout": "0000004400000000000044000000000000440000000000014410000000001144110000000011441100000000122221000000001222210000000012222100000000122221000000055222255000000550550550000005505505500000000055000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 1.0
+      },
+      "WeaponClass": "T"
+    }
+  ],
+  "Features": {
+    "Regeneration": true
+  }
+}

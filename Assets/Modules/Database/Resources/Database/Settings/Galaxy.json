@@ -1,0 +1,10 @@
+{
+  "ItemType": 101,
+  "AbandonedStarbaseFaction": 9,
+  "StartingShipBuilds": [
+    39,
+    45,
+    51
+  ],
+  "DefaultStarbaseBuild": 192
+}

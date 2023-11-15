@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ShipSettings" type="settings" typeid="ShipSettings">
+    <member name="DefaultWeightPerCell" type="float" minvalue="1" maxvalue="1000000" />
+    <member name="MinimumWeightPerCell" type="float" minvalue="1" maxvalue="1000000" />
+    <member name="BaseArmorPoints" type="float" minvalue="0" maxvalue="1000000" />
+    <member name="ArmorPointsPerCell" type="float" minvalue="0" maxvalue="1000000" />
+    <member name="ArmorRepairCooldown" type="float" minvalue="0" maxvalue="60" />
+    <member name="BaseEnergyPoints" type="float" minvalue="0" maxvalue="1000000" />
+    <member name="BaseEnergyRechargeRate" type="float" minvalue="0" maxvalue="1000000" />
+    <member name="EnergyRechargeCooldown" type="float" minvalue="0" maxvalue="60" />
+    <member name="BaseShieldRechargeRate" type="float" minvalue="0" maxvalue="1000000" />
+    <member name="ShieldRechargeCooldown" type="float" minvalue="0" maxvalue="60" />
+    <member name="BaseDroneReconstructionSpeed" type="float" minvalue="0" maxvalue="100" />
+    <member name="MaxVelocity" type="float" minvalue="5" maxvalue="30" />
+    <member name="MaxTurnRate" type="float" minvalue="5" maxvalue="30" />
+</data>

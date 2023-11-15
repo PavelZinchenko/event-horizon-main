@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Ammunition" type="object" typeid="Ammunition" >
+    <member name="Body" type="struct" typeid="BulletBody" />
+    <member name="Triggers" type="struct_list" typeid="BulletTrigger" />
+    <member name="ImpactType" type="enum" typeid="BulletImpactType" />
+    <member name="Effects" type="struct_list" typeid="ImpactEffect" />
+</data>

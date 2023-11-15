@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Ship" type="object" typeid="Ship" >
+    <member name="ShipType" type="enum" typeid="ShipType" />
+    <member name="ShipRarity" type="enum" typeid="ShipRarity" />
+    <member name="SizeClass" type="enum" typeid="SizeClass" />
+    <member name="Name" type="string" />
+    <member name="Faction" type="object" typeid="Faction" />
+    <member name="IconImage" type="image" typeid="ShipIcon" />
+    <member name="IconScale" type="float" minvalue="0.1" maxvalue="100" />
+    <member name="ModelImage" type="image" typeid="Ship" />
+    <member name="ModelScale" type="float" minvalue="0.1" maxvalue="100" />
+    <member name="EngineColor" type="color" />
+    <member name="Engines" type="struct_list" typeid="Engine" />
+    <member name="Layout" type="layout" />
+    <member name="Barrels" type="struct_list" typeid="Barrel" />
+    <member name="Features" type="struct" typeid="ShipFeatures" />
+    <!-- obsolete -->
+    <member name="EnginePosition" type="vector" options="obsolete" />
+    <member name="EngineSize" type="float" options="obsolete" />
+    <member name="ShipCategory" type="int" options="obsolete" />
+    <member name="EnergyResistance" type="float" options="obsolete" />
+    <member name="KineticResistance" type="float" options="obsolete" />
+    <member name="HeatResistance" type="float" options="obsolete" />
+    <member name="Regeneration" type="bool" options="obsolete" />
+    <member name="BuiltinDevices" type="object_list" typeid="Device" options="obsolete" />
+    <member name="BaseWeightModifier" type="float" options="obsolete" />
+</data>

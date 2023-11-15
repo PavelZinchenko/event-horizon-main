@@ -1,0 +1,27 @@
+{
+  "ItemType": 6,
+  "Id": 137,
+  "Name": "$ship_9",
+  "Faction": 18,
+  "IconImage": "ship9",
+  "IconScale": 1.0,
+  "ModelImage": "ship9",
+  "ModelScale": 1.0,
+  "EngineColor": "#40FF0E00",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.55
+      },
+      "Size": 0.2
+    }
+  ],
+  "Layout": "0004400000044000000440000022220001222210115225111050050100000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.85
+      }
+    }
+  ]
+}

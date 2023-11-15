@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="CellType">
+    <item name="Empty">'0'</item>
+    <item name="Weapon">'4'</item>
+    <item name="Outer">'1'</item>
+    <item name="Inner">'2'</item>
+    <item name="InnerOuter">'3'</item>
+    <item name="Engine">'5'</item>
+    <item name="Custom">'*'</item>
+</data>

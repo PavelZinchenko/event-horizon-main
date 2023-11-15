@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="MissionList">Görev listesi</string>
+    <string name="ResetText">Sıfırlanacak:</string>
+    <string name="ProgressLabel">İlerleme:</string>
+    <string name="RewardLabel">Ödül:</string>
+    <string name="ClaimReward">Ödülünüzü alın!</string>
+    <string name="CompleteOtherQuest">Diğer $1 görevi tamamla</string>
+    <string name="DestroyShipsQuest">$1 düşman gemisini yok edin</string>
+    <string name="ExplorationQuest">Keşif görevlerinde $1 nesneyi araştırın</string>
+    <string name="LevelUpShipQuest">Gemilerinizden birinin seviyesini $1 kez yükseltin</string>
+    <string name="ReachLevelQuest">$1. seviyeye ulaş</string>
+    <string name="SurvivalQuest">İlk kez bir hayatta kalma görevini tamamlayın</string>
+    <string name="ArenaQuest">Bir arena maçı kazan</string>
+    <string name="DisinfectionQuest">$1 enfekte uzay istasyonu yok et</string>
+</resources>

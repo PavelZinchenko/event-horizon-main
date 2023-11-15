@@ -1,0 +1,32 @@
+{
+  "ItemType": 6,
+  "Id": 36,
+  "SizeClass": 1,
+  "Name": "$f4_Destroyer",
+  "Faction": 4,
+  "IconImage": "f4s2",
+  "IconScale": 0.7,
+  "ModelImage": "f4s2",
+  "ModelScale": 1.4,
+  "EngineColor": "#40B4FFB4",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.85
+      },
+      "Size": 0.2
+    }
+  ],
+  "Layout": "001000100001000100104444401112444211032222230003222300000222000000555000000151000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.5
+      },
+      "WeaponClass": "LS"
+    }
+  ],
+  "Features": {
+    "Regeneration": true
+  }
+}

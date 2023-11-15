@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="ItemType">
+    <item name="Undefined">0</item>
+    <item name="Component">1</item>
+    <item name="Device">2</item>
+    <item name="Weapon">3</item>
+    <item name="AmmunitionObsolete">4</item>
+    <item name="DroneBay">5</item>
+    <item name="Ship">6</item>
+    <item name="Satellite">7</item>
+    <item name="ShipBuild">8</item>
+    <item name="SatelliteBuild">9</item>
+    <item name="Technology">10</item>
+    <item name="ComponentStats">11</item>
+    <item name="ComponentMod">12</item>
+    <item name="Skill">13</item>
+    <item name="Faction">14</item>
+    <item name="Quest">15</item>
+    <item name="Loot">16</item>
+    <item name="Fleet">18</item>
+    <item name="Character">19</item>
+    <item name="QuestItem">20</item>
+    <item name="Ammunition">25</item>
+    <item name="VisualEffect">26</item>
+    <item name="BulletPrefab">27</item>
+
+    <item name="ShipSettings">100</item>
+    <item name="GalaxySettings">101</item>
+    <item name="DatabaseSettings">102</item>
+    <item name="ExplorationSettings">103</item>
+    <item name="FrontierSettings">104</item>
+    <item name="ShipModSettings">105</item>
+    <item name="SpecialEventSettings">106</item>
+    <item name="SkillSettings">107</item>
+</data>

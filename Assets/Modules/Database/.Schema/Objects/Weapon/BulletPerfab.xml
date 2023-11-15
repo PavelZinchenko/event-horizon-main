@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="BulletPrefab" type="object" typeid="BulletPrefab" >
+    <member name="Shape" type="enum" typeid="BulletShape" />
+    <member name="Image" type="image" typeid="Ammunition" />
+    <member name="Size" type="float" minvalue="0.01" maxvalue="100" />
+    <member name="Margins" type="float" minvalue="0" maxvalue="1" />    
+    <member name="Deformation" type="float" minvalue="-100" maxvalue="100" />    
+    <member name="MainColor" type="color" />
+    <member name="MainColorMode" type="enum" typeid="ColorMode" />
+    <member name="SecondColor" type="color" />
+    <member name="SecondColorMode" type="enum" typeid="ColorMode" />
+</data>

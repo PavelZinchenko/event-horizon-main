@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Character" type="object" typeid="Character" >
+    <member name="Name" type="string" />
+    <member name="AvatarIcon" type="image" typeid="AvatarIcon" />
+    <member name="Faction" type="object" typeid="Faction" />
+    <member name="Inventory" type="object" typeid="Loot" />
+    <member name="Fleet" type="object" typeid="Fleet" />
+    <member name="Relations" type="int" minvalue="-100" maxvalue="100" />
+    <member name="IsUnique" type="bool" />
+</data>

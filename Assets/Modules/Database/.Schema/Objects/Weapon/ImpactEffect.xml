@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ImpactEffect" type="struct" >
+    <member name="Type" type="enum" typeid="ImpactEffectType" />
+    <member name="DamageType" type="enum" typeid="DamageType" />
+    <member name="Power" type="float" minvalue="0" maxvalue="999999999"/>
+    <member name="Factor" type="float" minvalue="0" maxvalue="1" />
+</data>

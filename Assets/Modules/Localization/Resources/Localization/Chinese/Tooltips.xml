@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="CombatStarbaseTooltip">此处显示的是空间站的血量、护盾以及能量等信息</string>
+    <string name="CombatEnemyShipTooltip">目标敌人的血量、护盾以及能量等信息</string>
+    <string name="CombatEnemiesLeftTooltip">本关卡中敌人剩余的数量。</string>
+    <string name="CombatPlayerLivesTooltip">此处展示的是玩家飞船剩余的生命次数。</string>
+    
+    <string name="StarsTooltip">游戏中的货币，用于购买稀有物品和特殊交易。</string>
+    <string name="CreditsTooltip">游戏中的流通货币，用于购买商品、升级零件和雇佣员工</string>
+    <string name="InAppStoreTooltip">利用星币购买稀有物品</string>
+    <string name="AdButttonTooltip">观看视频广告免费领取星币</string>
+    <string name="CaptainsButtonTooltip">配置雇佣兵和搭配相应的飞船</string>
+    <string name="ConstructorButtonTooltip">组装战舰的武器和组件</string>
+    <string name="FightButtonTooltip">准备防御下一波攻击</string>
+    <string name="SkillsButtonTooltip">技能点分配和升级</string>
+    <string name="StarmapButtonTooltip">进入星图</string>
+    <string name="CurrentLevelTooltip">当前关卡</string>
+    <string name="SkillPointsTooltip">剩余未使用的技能点数</string>
+    <string name="SettingsButtonTooltip">设置菜单</string>
+
+    <string name="MercenaryShipTooltip">我们是雇佣兵
+我们为钱而战</string>
+    <string name="MerchantShipTooltip">我是一个商人
+你可以在这里买卖物品</string>
+    <string name="SmugglerShipTooltip">我是走私商人
+我可以搞到这个区域里最好的东西</string>
+    <string name="EngineerShipTooltip">我是一个工程师
+我能为你的船制造高品质的组件</string>
+    <string name="ScavengerShipTooltip">我们为你的飞船提供最好的保养服务</string>
+</resources>

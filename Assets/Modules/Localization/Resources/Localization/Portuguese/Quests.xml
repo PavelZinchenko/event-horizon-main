@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+<string name="PIRATES_Agressive">Estamos a ser atacados.</string>
+<string name="PIRATES_Passive">Há naves inimigas próximas.</string>
+<string name="PIRATES_ACTION_Attack">Lutar</string>
+<string name="PIRATES_ACTION_Retreat">Retirar</string>
+<string name="PIRATES_ACTION_Ignore">Ignorar</string>
+<string name="MessageCombatReward">Apanhámos os seguinte itens após a batalha.</string>
+<string name="ACTION_Continue">Continuar</string>
+<string name="OUTOFFUEL_Message">Ficámos sem combustível e não podemos seguir viagem.</string>
+<string name="OUTOFFUEL_ACTION_Jump">Pedir ajuda (a nave volta a casa)</string>
+<string name="OUTOFFUEL_Filled">Recebemos algum combustível.</string>
+<string name="TUTORIAL_NAME">Tutorial</string>
+<string name="TUTORIAL_DESCRIPTION">Se estás a jogar pela primeira vez, recomendamos que comeces pelo tutorial.</string>
+<string name="TUTORIAL_Start">Saudações Comandante. Foi-te atribuída uma missão de exploração do espaço profundo, mas primeiro tens de aprender o básico do jogo.</string>
+<string name="TUTORIAL_Info1">A tua nave, Event Horizon, está equipada com um motor de hyperdrive, que lhe permite viajar entre as estrelas.</string>
+<string name="TUTORIAL_Training">Também pode levar várias naves de combate no hangar, caso encontres um inimigo. Queres experimentá-las em acção?</string>
+<string name="TUTORIAL_End">E é tudo! Desejo-te boa sorte.</string>
+<string name="TUTORIAL_ACTION_Training">Iniciar treino</string>
+<string name="TUTORIAL_ACTION_Skip">Passar treino</string>
+<string name="MERCHANT_Message">Descobrimos uma pequena caravana de naves mercantes. Talvez tenham alguma coisa útil para vender.</string>
+<string name="MERCHANT_ACTION_Trade">Negociar</string>
+<string name="MERCHANT_ACTION_Attack">Atacar naves mercantes</string>
+<string name="MERCHANT_ACTION_Ignore">Ignorar</string>
+<string name="SOS_Message">Detectámos um sinal farol.</string>
+<string name="SOS_ACTION_Respond">Vai para a localização do farol\n($1 combustível necessário)</string>
+<string name="SOS_ACTION_Ignore">Ignorar</string>
+<string name="SOS_DEADSHIP_Message">Descobrimos uma nave muito danificada. Parece abandonada.</string>
+<string name="SOS_DEADSHIP_Salvaged">Descobrimos algo útil.</string>
+<string name="SOS_DEADSHIP_ACTION_Repair">Tentamos repará-la\n($1 ${1|crédito necessário|créditos necessários})</string>
+<string name="SOS_DEADSHIP_ACTION_Salvage">Procura itens úteis</string>
+<string name="SOS_OUTOFFUEL_Message">Saudações! Ficamos sem combustível e não podemos sair deste sistema. Podem ajudar-nos?</string>
+<string name="SOS_OUTOFFUEL_Reward">Muito obrigado! Aceita esta lembrança como agradecimento.</string>
+<string name="SOS_OUTOFFUEL_ACTION_Give">Dar $1 ${1|unidade|unidade} de combustível</string>
+<string name="SOS_OUTOFFUEL_ACTION_Attack">Atacar</string>
+<string name="SOS_OUTOFFUEL_ACTION_Decline">Recusar</string>
+<string name="SOS_TRAP_Message">Chegámos ao destino e fomos imediatamente atacados. Parece que este sinal era uma armadilha.</string>
+<string name="SOS_EMPTY_Message">Chegámos ao destino, mas não encontramos nada interessante.</string>
+
+</resources>

@@ -1,0 +1,34 @@
+{
+  "ItemType": 6,
+  "Id": 35,
+  "ShipRarity": 1,
+  "Name": "$f4_Scout2",
+  "Faction": 4,
+  "IconImage": "f4s1_2",
+  "IconScale": 0.5,
+  "ModelImage": "f4s1_2",
+  "ModelScale": 1.0,
+  "EngineColor": "#40B4B4FF",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.85
+      },
+      "Size": 0.1
+    }
+  ],
+  "Layout": "0100010014441001141100322230032223000222000052500",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.8
+      },
+      "Offset": 0.1,
+      "AutoAimingArc": 80.0,
+      "WeaponClass": "L"
+    }
+  ],
+  "Features": {
+    "Regeneration": true
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "ItemType": 6,
+  "Id": 18,
+  "ShipRarity": 1,
+  "Name": "$f1_Scout2",
+  "Faction": 1,
+  "IconImage": "f1s1_2",
+  "IconScale": 0.5,
+  "ModelImage": "f1s1_2",
+  "ModelScale": 1.0,
+  "EngineColor": "#40FFF096",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.8
+      },
+      "Size": 0.15
+    }
+  ],
+  "Layout": "000040000000040000000141000000343000003222300032222230032555230000555000000000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 1.0
+      },
+      "WeaponClass": "C"
+    }
+  ],
+  "Features": {
+    "ShipWeightBonus": -0.3,
+    "EquipmentWeightBonus": -0.3
+  }
+}

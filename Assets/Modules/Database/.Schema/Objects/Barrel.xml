@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Barrel" type="struct" >
+    <member name="Position" type="vector" />
+    <member name="Rotation" type="float" minvalue="-360" maxvalue="360" />
+    <member name="Offset" type="float" minvalue="0" maxvalue="1" />
+    <member name="PlatformType" type="int" options="obsolete"/>
+    <member name="AutoAimingArc" type="float" minvalue="0" maxvalue="360" />
+    <member name="RotationSpeed" type="float" minvalue="0" maxvalue="1000" />
+    <member name="WeaponClass" type="string" />
+    <member name="Image" type="image" typeid="Satellite" />
+    <member name="Size" type="float" minvalue="0" maxvalue="100" />
+</data>

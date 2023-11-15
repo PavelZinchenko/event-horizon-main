@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="NodeType">
+    <item name="Undefined">0</item>
+    <item name="ComingSoon">1</item>
+    
+    <item name="ShowDialog">10</item>
+    <item name="OpenShipyard">11</item>
+    
+    <item name="Switch">15</item>
+    <item name="Random">16</item>
+    <item name="Condition">17</item>
+    
+    <item name="AttackFleet">20</item>
+    <item name="AttackOccupants">21</item>
+    
+    <item name="DestroyOccupants">25</item>
+    <item name="SuppressOccupants">26</item>
+    
+    <item name="Retreat">30</item>
+
+    <item name="ReceiveItem">35</item>
+    <item name="RemoveItem">36</item>
+    <item name="Trade">37</item>
+
+    <item name="CompleteQuest">40</item>
+    <item name="FailQuest">41</item>
+    <item name="CancelQuest">42</item>
+    <item name="StartQuest">43</item>
+
+    <item name="SetCharacterRelations">50</item>
+    <item name="SetFactionRelations">51</item>
+    <item name="ChangeCharacterRelations">55</item>
+    <item name="ChangeFactionRelations">56</item>
+
+    <item name="CaptureStarBase">60</item>
+    <item name="LiberateStarBase">61</item>
+    <item name="ChangeFaction">62</item>
+</data>

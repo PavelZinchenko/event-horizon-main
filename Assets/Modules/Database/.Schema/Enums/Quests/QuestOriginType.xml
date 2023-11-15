@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="QuestOriginType">
+    <item name="CurrentStar" />
+    <item name="CurrentFactionBase" />
+    <item name="RandomFactionBase" />
+    <item name="HomeStar" />
+    <item name="RandomStar" />
+</data>

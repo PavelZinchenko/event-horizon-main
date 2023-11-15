@@ -1,0 +1,11 @@
+{
+  "ItemType": 14,
+  "Id": 15,
+  "Name": "$Faction15",
+  "Color": "#404040",
+  "NoTerritories": true,
+  "NoWanderingShips": true,
+  "WanderingShipsDistance": 100,
+  "HideFromMerchants": true,
+  "HideResearchTree": true
+}

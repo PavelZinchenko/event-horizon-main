@@ -1,0 +1,10 @@
+{
+  "ItemType": 105,
+  "HeatDefenseValue": 0.5,
+  "KineticDefenseValue": 0.5,
+  "EnergyDefenseValue": 0.5,
+  "RegenerationValue": 0.01,
+  "RegenerationArmor": 0.85,
+  "WeightReduction": 0.8,
+  "AttackReduction": 0.2
+}

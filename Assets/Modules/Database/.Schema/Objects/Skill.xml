@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Skill" type="object" typeid="Skill" >
+    <member name="Name" type="string" />
+    <member name="Icon" type="image" typeid="SkillIcon" />
+    <member name="Description" type="string" />
+    <member name="BaseRequirement" type="float" minvalue="0" maxvalue="100" />
+    <member name="RequirementPerLevel" type="float" minvalue="0" maxvalue="100" />
+    <member name="BasePrice" type="float" minvalue="0" maxvalue="100" />
+    <member name="PricePerLevel" type="float" minvalue="0" maxvalue="100" />
+    <member name="MaxLevel" type="int" minvalue="1" maxvalue="1000" />
+</data>

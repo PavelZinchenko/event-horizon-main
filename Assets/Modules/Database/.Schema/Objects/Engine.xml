@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Engine" type="struct" >
+    <member name="Position" type="vector" />
+    <member name="Size" type="float" minvalue="0" maxvalue="1" />
+</data>

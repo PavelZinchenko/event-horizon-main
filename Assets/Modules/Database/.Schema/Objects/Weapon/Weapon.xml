@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Weapon" type="object" typeid="Weapon" options="legacy" >
+    <member name="WeaponClass" type="enum" typeid="WeaponClass" />
+    <member name="FireRate" type="float" minvalue="0" maxvalue="100" />
+    <member name="Spread" type="float" minvalue="0" maxvalue="360" />
+    <member name="Magazine" type="int" minvalue="0" maxvalue="999999999" />
+    <member name="ActivationType" type="enum" typeid="ActivationType" />
+    <member name="ShotSound" type="audioclip" />
+    <member name="ChargeSound" type="audioclip" />
+    <member name="ShotEffectPrefab" type="prefab" typeid="Effect" />
+    <member name="VisualEffect" type="object" typeid="VisualEffect" />
+    <member name="EffectSize" type="float" minvalue="0" maxvalue="100" />
+    <member name="ControlButtonIcon" type="image" typeid="ActionButton" />
+</data>

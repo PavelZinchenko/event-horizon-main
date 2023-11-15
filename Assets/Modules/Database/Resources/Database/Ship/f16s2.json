@@ -1,0 +1,38 @@
+{
+  "ItemType": 6,
+  "Id": 121,
+  "SizeClass": 1,
+  "Name": "$f16_Destroyer",
+  "Faction": 16,
+  "IconImage": "amoeba",
+  "IconScale": 1.0,
+  "ModelImage": "amoeba",
+  "ModelScale": 1.5,
+  "EngineColor": "#40B5FF00",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.8
+      },
+      "Size": 0.5
+    }
+  ],
+  "Layout": "0003443000003444430000322223000032222300003222230000322223000032222300000333300000055550000005555000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.9
+      },
+      "AutoAimingArc": 80.0,
+      "WeaponClass": "T"
+    }
+  ],
+  "Features": {
+    "KineticResistance": 5.0,
+    "ShipWeightBonus": -0.5,
+    "Regeneration": true,
+    "BuiltinDevices": [
+      18
+    ]
+  }
+}

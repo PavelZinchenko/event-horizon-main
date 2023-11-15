@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="UpgradedFrom_1_x">Porque el juego ha cambiado mucho, he tenido que borrar algo de tu progreso:
+
+*Todas tus naves - Recibirás 10 estrellas por cada nave como compensación (400 por Falcón). Los módulos fueron movidos al inventario.
+
+*Todas tus habilidades - Tus estrellas usadas en comprar habilidades fueron devueltas.
+
+*Todos los niveles.</string>
+</resources>

@@ -1,0 +1,34 @@
+{
+  "ItemType": 6,
+  "Id": 136,
+  "Name": "$ship_8",
+  "Faction": 17,
+  "IconImage": "ship8",
+  "IconScale": 1.0,
+  "ModelImage": "ship8",
+  "ModelScale": 1.2,
+  "EngineColor": "#40FF00CB",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.5
+      },
+      "Size": 0.2
+    }
+  ],
+  "Layout": "000000000000000000000040000002444200022252220112555211000050000000000000000000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.6
+      },
+      "WeaponClass": "L"
+    }
+  ],
+  "Features": {
+    "ShipWeightBonus": -0.5,
+    "EquipmentWeightBonus": -0.5,
+    "VelocityBonus": 1.0,
+    "TurnRateBonus": 1.0
+  }
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="SkillSettings" type="settings" typeid="SkillSettings">
+    <member name="BeatAllEnemiesFactionList" type="object_list" typeid="Faction" />
+    <member name="DisableExceedTheLimits" type="bool" />
+    <member name="FuelTankCapacity" type="int" minvalue="0" maxvalue="100" default="50" />
+    <member name="MapFlightRange" type="int" minvalue="0" maxvalue="100" default="6" />
+    <member name="MapFlightSpeed" type="int" minvalue="0" maxvalue="100" default="40" />
+    <member name="AttackBonus" type="int" minvalue="0" maxvalue="100" default="10" />
+    <member name="DefenseBonus" type="int" minvalue="0" maxvalue="100" default="10" />
+    <member name="ExperienceBonus" type="int" minvalue="0" maxvalue="100" default="10" />
+    <member name="ExplorationLootBonus" type="int" minvalue="0" maxvalue="100" default="10" />
+    <member name="HeatDefenseBonus" type="int" minvalue="0" maxvalue="100" default="10" />
+    <member name="KineticDefenseBonus" type="int" minvalue="0" maxvalue="100" default="10" />
+    <member name="EnergyDefenseBonus" type="int" minvalue="0" maxvalue="100" default="10" />
+    <member name="MerchantPriceReduction" type="int" minvalue="0" maxvalue="100" default="5" />
+    <member name="CraftPriceReduction" type="int" minvalue="0" maxvalue="100" default="5" />
+    <member name="CraftLevelReduction" type="int" minvalue="0" maxvalue="100" default="5" />
+    <member name="ShieldStrengthBonus" type="int" minvalue="0" maxvalue="100" default="10" />
+    <member name="ShieldRechargeBonus" type="int" minvalue="0" maxvalue="100" default="10" />
+    <member name="IncreasedLevelLimit" type="int" minvalue="100" maxvalue="1000" default="200" />
+</data>

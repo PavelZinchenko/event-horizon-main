@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="BulletImpactType">
+    <item name="HitFirstTarget" />
+    <item name="HitAllTargets" />
+    <item name="DamageOverTime" />
+</data>

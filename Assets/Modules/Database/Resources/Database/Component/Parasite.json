@@ -1,0 +1,31 @@
+{
+  "ItemType": 1,
+  "Id": 269,
+  "Name": "$Parasite",
+  "DisplayCategory": 1,
+  "Availability": 5,
+  "ComponentStatsId": 1,
+  "Faction": 12,
+  "Level": 150,
+  "Icon": "biogun",
+  "Color": "#C0FFC0",
+  "Layout": "010111111",
+  "CellType": "4",
+  "WeaponId": 110,
+  "AmmunitionId": 122,
+  "WeaponSlotType": "S",
+  "Restrictions": {
+    "NotForMechanicShips": true
+  },
+  "PossibleModifications": [
+    14,
+    13,
+    8,
+    21,
+    6,
+    16,
+    5,
+    2,
+    1
+  ]
+}

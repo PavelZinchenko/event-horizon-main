@@ -1,0 +1,1 @@
+start .Editor\GameDatabase\bin\Release\GameDatabase.exe Resources\Database

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="QuestItem" type="object" typeid="QuestItem">
+    <member name="Name" type="string" />
+    <member name="Description" type="string" />
+    <member name="Icon" type="image" typeid="ArtifactIcon" />
+    <member name="Color" type="color" />
+    <member name="Price" type="int" minvalue="0" maxvalue="999999999" />
+</data>

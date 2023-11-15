@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="SatelliteBuild" type="object" typeid="SatelliteBuild" >
+    <member name="SatelliteId" type="object" typeid="Satellite" alias="Satellite" options="notnull" />
+    <member name="NotAvailableInGame" type="bool" />
+    <member name="DifficultyClass" type="enum" typeid="DifficultyClass" />
+    <member name="Components" type="struct_list" typeid="InstalledComponent" />
+</data>

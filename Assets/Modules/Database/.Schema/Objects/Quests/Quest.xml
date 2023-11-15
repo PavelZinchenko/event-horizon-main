@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Quest" type="object" typeid="Quest" alias="QuestModel">
+    <member name="Name" type="string" />
+    <member name="QuestType" type="enum" typeid="QuestType" />
+    <member name="StartCondition" type="enum" typeid="StartCondition" />
+    <member name="Weight" type="float" minvalue="0" maxvalue="1000" />
+    <member name="Origin" type="struct" typeid="QuestOrigin" />
+    <member name="Requirement" type="struct" typeid="Requirement" />
+    <member name="Level" type="int" minvalue="0" maxvalue="1000" />
+    <member name="Nodes" type="struct_list" typeid="Node" />
+</data>

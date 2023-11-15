@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="ComponentCategory">
+    <item name="Undefined" />
+    <item name="Weapon" />
+    <item name="Defense" />
+    <item name="Energy" />
+    <item name="Engine" />
+    <item name="Drones" />
+    <item name="Special" />
+</data>

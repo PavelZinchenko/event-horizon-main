@@ -1,0 +1,18 @@
+{
+    "name": "ResourceLocator",
+    "rootNamespace": "",
+    "references": [
+        "GUID:c591248a51153554ebb2741f0459e4ef",
+        "GUID:5ec85193e19bb604b8aac4306e4b5345",
+        "GUID:1d8ea6765031c7c468cb9f8ff07a587d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ComponentStats" type="object" typeid="ComponentStats" >
+    <member name="Type" type="enum" typeid="ComponentStatsType" />
+    
+    <member name="ArmorPoints" type="float" minvalue="-1000000" maxvalue="1000000" />
+    <member name="ArmorRepairRate" type="float" minvalue="-1000000" maxvalue="1000000" />
+    <member name="ArmorRepairCooldownModifier" type="float" minvalue="-1" maxvalue="1" />
+
+    <member name="EnergyPoints" type="float" minvalue="-1000000" maxvalue="1000000" />
+    <member name="EnergyRechargeRate" type="float" minvalue="-1000000" maxvalue="1000000" />
+    <member name="EnergyRechargeCooldownModifier" type="float" minvalue="-5" maxvalue="5" />
+    
+    <member name="ShieldPoints" type="float" minvalue="-1000000" maxvalue="1000000" />
+    <member name="ShieldRechargeRate" type="float" minvalue="-1000000" maxvalue="1000000" />
+    <member name="ShieldRechargeCooldownModifier" type="float" minvalue="-5" maxvalue="5" />
+
+    <member name="Weight" type="float" minvalue="-1000000" maxvalue="1000000" />
+
+    <member name="RammingDamage" type="float" minvalue="-1000000" maxvalue="1000000" />
+    <member name="EnergyAbsorption" type="float" minvalue="-1000000" maxvalue="1000000" />
+
+    <member name="KineticResistance" type="float" minvalue="-1000000" maxvalue="1000000" />
+    <member name="EnergyResistance" type="float" minvalue="-1000000" maxvalue="1000000" />
+    <member name="ThermalResistance" type="float" minvalue="-1000000" maxvalue="1000000" />
+
+    <member name="EnginePower" type="float" minvalue="0" maxvalue="2000" />
+    <member name="TurnRate" type="float" minvalue="0" maxvalue="2000" />
+
+    <member name="Autopilot" type="bool" />
+
+    <member name="DroneRangeModifier" type="float" minvalue="-50" maxvalue="50" />
+    <member name="DroneDamageModifier" type="float" minvalue="-50" maxvalue="50" />
+    <member name="DroneDefenseModifier" type="float" minvalue="-50" maxvalue="50" />
+    <member name="DroneSpeedModifier" type="float" minvalue="-50" maxvalue="50" />
+    <member name="DronesBuiltPerSecond" type="float" minvalue="0" maxvalue="100" />
+    <member name="DroneBuildTimeModifier" type="float" minvalue="0" maxvalue="100" />
+
+    <member name="WeaponFireRateModifier" type="float" minvalue="-100" maxvalue="100" />
+    <member name="WeaponDamageModifier" type="float" minvalue="-100" maxvalue="100" />
+    <member name="WeaponRangeModifier" type="float" minvalue="-100" maxvalue="100" />
+    <member name="WeaponEnergyCostModifier" type="float" minvalue="-100" maxvalue="100" />
+
+    <member name="AlterWeaponPlatform" type="int" options="obsolete"/>
+    <member name="AutoAimingArc" type="float" minvalue="0" maxvalue="360"/>
+    <member name="TurretTurnSpeed" type="float" minvalue="-1000" maxvalue="1000" />
+</data>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="MissionList">Список миссий</string>
+    <string name="ResetText">Обновится через</string>
+    <string name="ProgressLabel">Прогресс:</string>
+    <string name="RewardLabel">Награда:</string>
+    <string name="ClaimReward">Получите вашу награду!</string>
+    <string name="CompleteOtherQuest">Завершить $1 ${1|другую миссию|других миссии|других миссий}</string>
+    <string name="DestroyShipsQuest">Уничтожить $1 ${1|вражеский корабль|вражеских корабля|вражеских кораблей}</string>
+    <string name="ExplorationQuest">Исследовать $1 ${1|объект|объекта|объектов} в исследовательских миссиях</string>
+    <string name="LevelUpShipQuest">Повысить уровень корабля $1 ${1|раз|раза|раз}</string>
+    <string name="ReachLevelQuest">Достичь уровня $1</string>
+    <string name="SurvivalQuest">Пройти миссию выживания в первый раз</string>
+    <string name="ArenaQuest">Победить на арене</string>
+    <string name="DisinfectionQuest">Уничтожить $1 ${1|зараженную станцию|зараженные станции|зараженных станций}</string>
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Node" type="struct" switch="Type" >
+    <member name="Id" type="int" minvalue="1" maxvalue="999999" />
+    <member name="Type" type="enum" typeid="NodeType" />
+    <member name="RequiredView" type="enum" typeid="RequiredViewMode" case="ShowDialog" />
+    <member name="Message" type="string" case="ShowDialog,Switch,Condition,Random" />
+    <member name="DefaultTransition" type="int" case="Switch,Random" minvalue="0" maxvalue="999999" />
+    <member name="DefaultTransition" type="int" case="Retreat DestroyOccupants SuppressOccupants ReceiveItem RemoveItem Trade StartQuest 
+    ChangeFactionRelations SetFactionRelations ChangeCharacterRelations SetCharacterRelations OpenShipyard 
+    ChangeFaction CaptureStarBase LiberateStarBase" minvalue="1" maxvalue="1000" alias="Transition" />
+    <member name="DefaultTransition" type="int" case="AttackFleet,AttackOccupants" alias="VictoryTransition" minvalue="1" maxvalue="999999" />
+    <member name="FailureTransition" type="int" case="AttackFleet,AttackOccupants" minvalue="1" maxvalue="999999" />
+    <member name="Enemy" type="object" typeid="Fleet" case="ShowDialog,AttackFleet" />
+    <member name="Loot" type="object" typeid="Loot" case="ShowDialog,ReceiveItem,RemoveItem,Trade,AttackFleet" />
+    <member name="Quest" type="object" typeid="Quest" case="StartQuest" />
+    <member name="Character" type="object" typeid="Character" case="ShowDialog,ChangeCharacterRelations,SetCharacterRelations" />
+    <member name="Faction" type="object" typeid="Faction" case="OpenShipyard,ChangeFaction" />
+    <member name="Value" type="int" case="ChangeCharacterRelations,ChangeFactionRelations,SetCharacterRelations,SetFactionRelations" minvalue="-100" maxvalue="100" />
+    <member name="Value" type="int" case="OpenShipyard" minvalue="0" maxvalue="10000" alias="Level" />
+    <member name="Actions" type="struct_list" typeid="NodeAction" case="ShowDialog" />
+    <member name="Transitions" type="struct_list" typeid="NodeTransition" case="Switch,Random,Condition" />
+</data>

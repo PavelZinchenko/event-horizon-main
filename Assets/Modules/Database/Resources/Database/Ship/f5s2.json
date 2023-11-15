@@ -1,0 +1,31 @@
+{
+  "ItemType": 6,
+  "Id": 41,
+  "SizeClass": 1,
+  "Name": "$f5_Destroyer",
+  "Faction": 5,
+  "IconImage": "f5s2",
+  "IconScale": 0.6,
+  "ModelImage": "f5s2",
+  "ModelScale": 1.4,
+  "EngineColor": "#40FFCC6F",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.8
+      },
+      "Size": 0.2
+    }
+  ],
+  "Layout": "000111000001222100022000220022040220033040330033000330011222110005515500000505000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.1
+      },
+      "Offset": 0.5,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
+    }
+  ]
+}

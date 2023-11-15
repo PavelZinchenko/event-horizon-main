@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="BulletEffectType">
+    <item name="None" />
+    <item name="PlaySfx" />
+    <item name="SpawnBullet" />
+    <item name="Detonate" />
+    <item name="SpawnStaticSfx" />
+    <item name="GravityField" />
+</data>

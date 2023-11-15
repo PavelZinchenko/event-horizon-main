@@ -1,0 +1,26 @@
+{
+  "ItemType": 1,
+  "Id": 193,
+  "Name": "$PirateCannon",
+  "DisplayCategory": 1,
+  "Availability": 5,
+  "ComponentStatsId": 1,
+  "Faction": 18,
+  "Level": 100,
+  "Icon": "cannon",
+  "Color": "#FFFFE0",
+  "Layout": "010010111",
+  "CellType": "4",
+  "WeaponId": 106,
+  "AmmunitionId": 116,
+  "WeaponSlotType": "C",
+  "PossibleModifications": [
+    6,
+    5,
+    16,
+    2,
+    7,
+    1,
+    14
+  ]
+}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="GalaxySettings" type="settings" typeid="GalaxySettings" >
+    <member name="AbandonedStarbaseFaction" type="object" typeid="Faction" />
+    <member name="StartingShipBuilds" type="object_list" typeid="ShipBuild" />
+    <member name="DefaultStarbaseBuild" type="object" typeid="ShipBuild" />
+</data>

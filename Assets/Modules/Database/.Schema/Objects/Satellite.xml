@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Satellite" type="object" typeid="Satellite" >
+    <member name="Name" type="string" />
+    <member name="ModelImage" type="image" typeid="Satellite" />
+    <member name="ModelScale" type="float" minvalue="0.1" maxvalue="100" />
+    <member name="SizeClass" type="enum" typeid="SizeClass" />
+    <member name="Layout" type="layout" />
+    <member name="Barrels" type="struct_list" typeid="Barrel" />
+</data>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="LootItemType">
+    <item name="None">0</item>
+    <item name="SomeMoney">1</item>
+    <item name="Fuel">2</item>
+    <item name="Money">3</item>
+    <item name="Stars">4</item>
+    
+    <item name="StarMap">5</item>
+    <item name="RandomComponents">10</item>
+    
+    <item name="RandomItems">20</item>
+    <item name="AllItems">21</item>
+    <item name="ItemsWithChance">22</item>
+
+    <item name="QuestItem">25</item>
+
+    <item name="Ship">30</item>
+    <item name="EmptyShip">31</item>
+
+    <item name="Component">35</item>
+
+    <item name="Blueprint">40</item>
+    <item name="ResearchPoints">41</item>
+</data>

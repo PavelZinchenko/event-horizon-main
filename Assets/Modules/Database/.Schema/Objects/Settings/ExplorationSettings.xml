@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ExplorationSettings" type="settings" typeid="ExplorationSettings" >
+    <member name="OutpostShip" type="object" typeid="Ship" />
+    <member name="TurretShip" type="object" typeid="Ship" />
+    <member name="InfectedPlanetFaction" type="object" typeid="Faction" />
+    <member name="HiveShipBuild" type="object" typeid="ShipBuild" />
+</data>

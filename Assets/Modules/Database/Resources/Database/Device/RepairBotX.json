@@ -1,0 +1,17 @@
+{
+  "ItemType": 2,
+  "Id": 30,
+  "DeviceClass": 7,
+  "EnergyConsumption": 10.0,
+  "PassiveEnergyConsumption": 5.0,
+  "Power": 20.0,
+  "Range": 1.5,
+  "Size": 1.0,
+  "Cooldown": 20.0,
+  "ActivationType": 1,
+  "Color": "#C07FDBDB",
+  "Sound": "*flux_01",
+  "EffectPrefab": "Laser2",
+  "ObjectPrefab": "RepairBot",
+  "ControlButtonIcon": "controls_repair"
+}

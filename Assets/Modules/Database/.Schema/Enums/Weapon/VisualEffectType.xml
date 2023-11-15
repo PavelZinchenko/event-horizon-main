@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="VisualEffectType">
+    <item name="Flash" />
+    <item name="FlashAdditive" />
+    <item name="Shockwave" />
+    <item name="Smoke" />
+    <item name="SmokeAdditive" />
+    <item name="Shake" />
+</data>

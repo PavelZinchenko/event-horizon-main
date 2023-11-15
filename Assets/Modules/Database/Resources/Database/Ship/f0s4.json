@@ -1,0 +1,48 @@
+{
+  "ItemType": 6,
+  "Id": 16,
+  "SizeClass": 3,
+  "Name": "$f0_Destroyer2",
+  "Faction": 7,
+  "IconImage": "f0s4",
+  "IconScale": 1.0,
+  "ModelImage": "f0s4",
+  "ModelScale": 1.8,
+  "EngineColor": "#40FFFF80",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.85
+      },
+      "Size": 0.3
+    }
+  ],
+  "Layout": "004000000400004000000400004044440400001044440100011044440110110222222011110222222011110222222011111222222111001225522100000055550000000005500000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 1.0,
+        "y": -0.5
+      },
+      "Rotation": -3.0,
+      "WeaponClass": "L"
+    },
+    {
+      "Position": {
+        "x": 1.0,
+        "y": 0.5
+      },
+      "Rotation": 3.0,
+      "WeaponClass": "L"
+    },
+    {
+      "Position": {
+        "x": 0.8
+      },
+      "WeaponClass": "S"
+    }
+  ],
+  "Features": {
+    "ArmorBonus": 0.5
+  }
+}
