@@ -79,7 +79,7 @@ namespace Services.Messenger
             _session = session;
 
             _database = database;
-            _database.DatabaseLoaded -= OnDatabaseLoaded;
+            _database.DatabaseLoaded += OnDatabaseLoaded;
 
             _sessionCreatedSignal = sessionCreatedSignal;
             _sessionCreatedSignal.Event += OnSessionCreated;
