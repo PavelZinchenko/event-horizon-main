@@ -36,7 +36,6 @@ namespace Model
 
 				var boss = database.ShipBuildList.
 					Flagships().
-					CommonAndRareShips().
 					LimitByFactionOrStarLevel(faction, distance).
 					WithDifficultyClass(DifficultyClass.Class1, bossClass).
 					RandomElement(random);
@@ -44,7 +43,6 @@ namespace Model
 				if (boss == null)
 					boss = database.ShipBuildList.
 					Flagships().
-					CommonAndRareShips().
 					WithDifficultyClass(DifficultyClass.Class1, bossClass).
 					RandomElement(random);
 
@@ -63,7 +61,6 @@ namespace Model
 		        var bossClass = distance < 50 ? DifficultyClass.Default : distance < 150 ? DifficultyClass.Class1 : DifficultyClass.Class2;
 				var boss = database.ShipBuildList.
 					Flagships().
-					CommonAndRareShips().
 					LimitByFactionOrStarLevel(faction, distance).
 					WithDifficultyClass(bossClass, bossClass).
 					RandomElements(1, random);
@@ -98,7 +95,6 @@ namespace Model
 
 				var bosses = database.ShipBuildList.
 					Flagships().
-					CommonAndRareShips().
 					BelongToFaction(region.Faction).
 					WithDifficultyClass(DifficultyClass.Class1, bossClass).
 					RandomElements(numberOfBosses, random);
