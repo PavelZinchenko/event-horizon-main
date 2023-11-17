@@ -5,12 +5,10 @@ namespace Maths
 {
 	public struct Experience
 	{
-		public Experience(long value, bool limitMaxLevel = true)
+		public Experience(long value)
 		{
 		    if (value < 0)
 		        value = 0;
-		    else if (limitMaxLevel && value > MaxExperience)
-		        value = MaxExperience;
 
 			_value = value;
 		}
@@ -78,11 +76,7 @@ namespace Maths
 
 		private readonly ObscuredLong _value;
 
-		public const int MaxRank = 300;
-        public const long MaxExperience = 100L * MaxRank * MaxRank * MaxRank;
 	    public const int MaxPlayerRank = 100;
-	    public const int MaxPlayerRank2 = 200;
 	    public const long MaxPlayerExperience = 100L * MaxPlayerRank * MaxPlayerRank * MaxPlayerRank;
-	    public const long MaxPlayerExperience2 = 100L * MaxPlayerRank2 * MaxPlayerRank2 * MaxPlayerRank2;
     }
 }

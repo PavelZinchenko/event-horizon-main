@@ -5,10 +5,10 @@ namespace Maths
 {
 	public static class Distance
 	{
-		public static int ToShipLevel(int distance)
+		public static int ToShipLevel(int distance, int maxLevel)
 		{
 			var level = 3*distance/5 - 5;
-			return UnityEngine.Mathf.Clamp(level, 0, Experience.MaxRank);
+			return UnityEngine.Mathf.Clamp(level, 0, maxLevel);
 		}
 
 		public static int ToShipSize(int distance)

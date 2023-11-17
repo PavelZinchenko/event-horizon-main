@@ -28,7 +28,7 @@ namespace Game.Exploration
             var componentLevel = Maths.Distance.ComponentLevel(_level);
 
             var ship = new CommonShip(new ShipModel(_database.ExplorationSettings.OutpostShip), GetComponents(random));
-            ship.Experience = Maths.Experience.FromLevel(Maths.Distance.ToShipLevel(_level));
+            ship.Experience = Maths.Experience.FromLevel(Maths.Distance.ToShipLevel(_level, _database.GalaxySettings.MaxEnemyShipsLevel));
             ship.ColorScheme.Type = ShipColorScheme.SchemeType.Hsv;
             ship.ColorScheme.Hue = random.NextFloat();
 

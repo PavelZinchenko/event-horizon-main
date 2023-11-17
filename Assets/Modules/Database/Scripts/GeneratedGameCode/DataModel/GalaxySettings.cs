@@ -27,6 +27,7 @@ namespace GameDatabase.DataModel
 			AbandonedStarbaseFaction = loader.GetFaction(new ItemId<Faction>(serializable.AbandonedStarbaseFaction));
 			StartingShipBuilds = new ImmutableCollection<ShipBuild>(serializable.StartingShipBuilds?.Select(item => loader.GetShipBuild(new ItemId<ShipBuild>(item), true)));
 			DefaultStarbaseBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.DefaultStarbaseBuild));
+			MaxEnemyShipsLevel = UnityEngine.Mathf.Clamp(serializable.MaxEnemyShipsLevel, 100, 500);
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -34,6 +35,7 @@ namespace GameDatabase.DataModel
 		public Faction AbandonedStarbaseFaction { get; private set; }
 		public ImmutableCollection<ShipBuild> StartingShipBuilds { get; private set; }
 		public ShipBuild DefaultStarbaseBuild { get; private set; }
+		public int MaxEnemyShipsLevel { get; private set; }
 
 		public static GalaxySettings DefaultValue { get; private set; }
 	}

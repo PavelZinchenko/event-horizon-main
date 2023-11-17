@@ -78,8 +78,8 @@ namespace Combat.Manager
             //    objectFactory.CreatePlanet(_config.PlanetPrefab, _config.AtmospherePrefab, Position.Random(random), Random.Range(0, 360), Vector2.zero, Random.Range(16, 25));
             //}
 
-            var level = Maths.Distance.ToShipLevel(_motherShip.CurrentStar.Level);
-            var powerMultiplier = Experience.LevelToPowerMultiplier(Distance.ToShipLevel(level));
+            var level = Maths.Distance.ToShipLevel(_motherShip.CurrentStar.Level, _database.GalaxySettings.MaxEnemyShipsLevel);
+            var powerMultiplier = Experience.LevelToPowerMultiplier(level);
 
             if (_combatModel.Rules.AsteroidsEnabled)
             {
