@@ -49,6 +49,8 @@ namespace GameModel
 		public int OwnerId { get; private set; }
 		public int Size { get; private set; }
 
+		public int PlayerReputation => _session.Quests.GetFactionRelations(HomeStar);
+
 	    public bool IsPirateBase => _faction == Faction.Neutral;
 
         public int Relations
@@ -76,6 +78,8 @@ namespace GameModel
                 _baseCapturedTrigger.Fire(this);
 			}
 		}
+
+		public bool IsVisited => IsCaptured || _session.StarMap.IsVisited(HomeStar);
 
 		public float BaseDefensePower 
 		{

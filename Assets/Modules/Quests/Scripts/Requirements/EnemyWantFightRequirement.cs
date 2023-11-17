@@ -1,21 +1,20 @@
-﻿using GameServices.Player;
-using Services.Localization;
+﻿using Services.Localization;
 
 namespace Domain.Quests
 {
     public class EnemiesWantFightRequirements : IRequirements
     {
-        public EnemiesWantFightRequirements(MotherShip motherShip)
+        public EnemiesWantFightRequirements(IPlayerDataProvider playerData)
         {
-            _motherShip = motherShip;
+            _playerData = playerData;
         }
 
-        public bool IsMet { get { return _motherShip.CurrentStar.Occupant.CanBeAggressive; } }
+        public bool IsMet => !_playerData.CurrentStar.IsSecured;
         public bool CanStart(int starId, int seed) { return IsMet; }
 
         public string GetDescription(ILocalization localization) { return string.Empty; }
         public int BeaconPosition { get { return -1; } }
 
-        private readonly MotherShip _motherShip;
+        private readonly IPlayerDataProvider _playerData;
     }
 }

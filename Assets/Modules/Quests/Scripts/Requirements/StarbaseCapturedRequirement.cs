@@ -1,24 +1,21 @@
 ﻿using Services.Localization;
-using Session;
 
 namespace Domain.Quests
 {
     public class StarbaseCaprturedRequirement : IRequirements
     {
-        public StarbaseCaprturedRequirement(int starId, GameModel.RegionMap regionMap, ISessionData session)
+        public StarbaseCaprturedRequirement(int starId, IStarMapDataProvider starMapData)
         {
             _starId = starId;
-            _session = session;
-            _regionMap = regionMap;
+            _starMapData = starMapData;
         }
 
         public bool IsMet
         {
             get
             {
-                var starId = _starId > 0 ? _starId : _session.StarMap.PlayerPosition;
-                var region = _regionMap.GetStarRegion(starId);
-                return region != GameModel.Region.Empty && region.IsCaptured;
+                var star = _starId > 0 ? _starMapData.GetStarData(_starId) : _starMapData.CurrentStar;
+                return star.Region.IsCaptured;
             }
         }
 
@@ -36,7 +33,6 @@ namespace Domain.Quests
         public int BeaconPosition { get { return -1; } }
 
         private readonly int _starId;
-        private readonly ISessionData _session;
-        private readonly GameModel.RegionMap _regionMap;
+        private readonly IStarMapDataProvider _starMapData;
     }
 }

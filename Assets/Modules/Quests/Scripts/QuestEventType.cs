@@ -1,5 +1,4 @@
-﻿using Combat.Domain;
-using Utils;
+﻿using Utils;
 
 namespace Domain.Quests
 {
@@ -97,13 +96,13 @@ namespace Domain.Quests
 
     public class CombatEventData : IQuestEventData
     {
-        public CombatEventData(ICombatModel combatModel)
+        public CombatEventData(bool isVictory)
         {
-            CombatModel = combatModel;
+            IsVictory = isVictory;
         }
 
-        public QuestEventType Type { get { return QuestEventType.CombatCompleted; } }
-        public readonly ICombatModel CombatModel;
+        public QuestEventType Type => QuestEventType.CombatCompleted;
+        public readonly bool IsVictory;
     }
 
     public static class QuestEventFactory

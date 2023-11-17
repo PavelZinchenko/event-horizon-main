@@ -24,14 +24,14 @@ namespace Combat.Domain
             return !combatModel.EnemyFleet.IsAnyShipAlive() || !combatModel.PlayerFleet.IsAnyShipAlive();
         }
 
-        public static UnitSide GetWinner(this ICombatModel combatModel)
+        public static bool IsVictory(this ICombatModel combatModel)
         {
             if (!combatModel.PlayerFleet.IsAnyShipAlive())
-                return UnitSide.Enemy;
+                return false;
             if (combatModel.EnemyFleet.IsAnyShipAlive())
-                return UnitSide.Enemy;
+                return false;
 
-            return UnitSide.Player;
+            return true;
         }
 
         public static bool IsLootAllowed(this ICombatModel combatModel)
@@ -41,7 +41,7 @@ namespace Combat.Domain
                 case RewardCondition.Always:
                     return true;
                 case RewardCondition.Default:
-                    return combatModel.GetWinner() == UnitSide.Player;
+                    return combatModel.IsVictory();
                 case RewardCondition.Never:
                 default:
                     return false;
@@ -55,7 +55,7 @@ namespace Combat.Domain
                 case RewardCondition.Always:
                     return true;
                 case RewardCondition.Default:
-                    return combatModel.GetWinner() == UnitSide.Player;
+                    return combatModel.IsVictory();
                 case RewardCondition.Never:
                 default:
                     return false;

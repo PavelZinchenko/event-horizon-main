@@ -1,8 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Combat.Component.Unit.Classification;
-using Combat.Domain;
-using Economy.Products;
 using GameDatabase.Enums;
 using GameServices.Quests;
 using Services.Localization;
@@ -11,11 +7,11 @@ namespace Domain.Quests
 {
     public class BattleNode : INode
     {
-        public BattleNode(int id, ICombatModelBuilder builder, ILoot specialLoot)
+        public BattleNode(int id, QuestEnemyData enemyData, ILoot specialLoot)
         {
             _id = id;
             _specialLoot = specialLoot;
-            _combatModelBuilder = builder;
+            _enemyData = enemyData;
         }
 
         public int Id { get { return _id; } }
@@ -32,7 +28,7 @@ namespace Domain.Quests
 
         public bool TryGetBeacons(ICollection<int> beacons) { return false; }
 
-        public void Initialize() { _combatModel = null; }
+        public void Initialize() { _started = false; }
 
         public INode VictoryNode { get; set; }
         public INode DefeatNode { get; set; }
@@ -40,14 +36,12 @@ namespace Domain.Quests
         public bool TryProcessEvent(IQuestEventData eventData, out INode target)
         {
             target = this;
-            if (eventData.Type != QuestEventType.CombatCompleted)
+            if (eventData.Type != QuestEventType.CombatCompleted || !_started)
                 return false;
 
             var data = (CombatEventData)eventData;
-            if (data.CombatModel != _combatModel)
-                return false;
 
-            target = data.CombatModel.GetWinner() == UnitSide.Player ? VictoryNode : DefeatNode;
+            target = data.IsVictory ? VictoryNode : DefeatNode;
             return true;
         }
 
@@ -57,18 +51,17 @@ namespace Domain.Quests
             return false;
         }
 
-        public bool ActionRequired { get { return _combatModel == null; } }
+        public bool ActionRequired => !_started;
         public bool TryInvokeAction(IQuestActionProcessor processor)
         {
-            var loot = _specialLoot != null ? _specialLoot.Items.Select(item => (IProduct)new Product(item.Type, item.Quantity)) : null;
-            _combatModel = _combatModelBuilder.Build(loot);
-            processor.StartCombat(_combatModel);
+            _started = true;
+            processor.StartCombat(_enemyData, _specialLoot);
             return true;
         }
 
-        private ICombatModel _combatModel;
+        private bool _started;
         private readonly int _id;
+        private readonly QuestEnemyData _enemyData;
         private readonly ILoot _specialLoot;
-        private readonly ICombatModelBuilder _combatModelBuilder;
     }
 }

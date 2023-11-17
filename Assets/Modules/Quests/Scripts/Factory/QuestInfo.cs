@@ -2,9 +2,9 @@
 
 namespace Domain.Quests
 {
-    public class QuestContext
+    public class QuestInfo
     {
-        public QuestContext(QuestModel questModel, Galaxy.Star star, int seed)
+        public QuestInfo(QuestModel questModel, IStarDataProvider star, int seed)
         {
             QuestId = questModel.Id.Value;
             StarId = star.Id;
@@ -13,7 +13,7 @@ namespace Domain.Quests
             Seed = seed;
         }
 
-        public QuestContext(int seed)
+        public QuestInfo(int seed)
         {
             StarId = 0;
             Seed = seed;

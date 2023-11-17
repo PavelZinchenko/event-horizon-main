@@ -1,13 +1,12 @@
-﻿using GameServices.Player;
-using Services.Localization;
+﻿using Services.Localization;
 
 namespace Domain.Quests
 {
     public class CurrentStarRequirements : IRequirements
     {
-        public CurrentStarRequirements(int minDistance, int maxDistance, MotherShip motherShip)
+        public CurrentStarRequirements(int minDistance, int maxDistance, IPlayerDataProvider playerData)
         {
-            _motherShip = motherShip;
+            _playerData = playerData;
 
             _minDistance = minDistance;
             _maxDistance = maxDistance;
@@ -17,10 +16,10 @@ namespace Domain.Quests
         {
             get
             {
-                var star = _motherShip.CurrentStar;
+                var star = _playerData.CurrentStar;
                 var level = star.Level;
                 if (level < _minDistance || level > _maxDistance) return false;
-                return !star.Occupant.IsAggressive;
+                return star.IsSecured;
             }
         }
 
@@ -39,6 +38,6 @@ namespace Domain.Quests
 
         private readonly int _minDistance;
         private readonly int _maxDistance;
-        private readonly MotherShip _motherShip;
+        private readonly IPlayerDataProvider _playerData;
     }
 }

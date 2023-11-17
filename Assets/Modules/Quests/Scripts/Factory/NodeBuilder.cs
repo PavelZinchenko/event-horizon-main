@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Galaxy;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
@@ -9,10 +8,10 @@ namespace Domain.Quests
 {
     public class NodeBuilder : INodeFactory<INode>
     {
-        public NodeBuilder(QuestModel data, QuestContext context, IEnemyCache enemyCache, IRequirementCache requirementCache, ILootCache lootCache, StarData starData)
+        public NodeBuilder(QuestModel data, QuestInfo context, IEnemyCache enemyCache, IRequirementCache requirementCache, ILootCache lootCache, IStarMapDataProvider starMapData)
         {
             _context = context;
-            _starData = starData;
+            _starMapData = starMapData;
             _enemyCache = enemyCache;
             _requirementCache = requirementCache;
             _lootCache = lootCache;
@@ -61,10 +60,10 @@ namespace Domain.Quests
         {
             var characterName = content.Character?.Name;
             var characterAvatar = content.Character?.AvatarIcon ?? SpriteId.Empty;
-            var enemy = _enemyCache.Get(content.Enemy, _context);
+            var enemyData = _enemyCache.Get(content.Enemy, _context);
             var items = _lootCache.Get(content.Loot, _context);
 
-            var node = new TextNode(content.Id, content.Message, characterName, characterAvatar, enemy?.EnemyFleet, items, content.RequiredView);
+            var node = new TextNode(content.Id, content.Message, characterName, characterAvatar, enemyData, items, content.RequiredView);
             _nodes.Add(node.Id, node);
 
             foreach (var action in content.Actions)
@@ -200,7 +199,7 @@ namespace Domain.Quests
 
         public INode Create(Node_ChangeFactionRelations content)
         {
-            var starId = _starData.GetRegion(_context.StarId).HomeStar;
+            var starId = _starMapData.GetStarData(_context.StarId).Region.HomeStarId;
             var node = new FactionRelationsNode(content.Id, starId, content.Value, true);
             _nodes.Add(node.Id, node);
             node.TargetNode = CreateNode(content.Transition);
@@ -209,7 +208,7 @@ namespace Domain.Quests
 
         public INode Create(Node_CaptureStarBase content)
         {
-            var starId = _starData.GetRegion(_context.StarId).HomeStar;
+            var starId = _starMapData.GetStarData(_context.StarId).Region.HomeStarId;
             var node = new CaptureStarBaseNode(content.Id, starId, true);
             _nodes.Add(node.Id, node);
             node.TargetNode = CreateNode(content.Transition);
@@ -218,7 +217,7 @@ namespace Domain.Quests
 
         public INode Create(Node_LiberateStarBase content)
         {
-            var starId = _starData.GetRegion(_context.StarId).HomeStar;
+            var starId = _starMapData.GetStarData(_context.StarId).Region.HomeStarId;
             var node = new CaptureStarBaseNode(content.Id, starId, false);
             _nodes.Add(node.Id, node);
             node.TargetNode = CreateNode(content.Transition);
@@ -227,7 +226,7 @@ namespace Domain.Quests
 
         public INode Create(Node_ChangeFaction content)
         {
-            var starId = _starData.GetRegion(_context.StarId).HomeStar;
+            var starId = _starMapData.GetStarData(_context.StarId).Region.HomeStarId;
             var node = new ChangeFactionNode(content.Id, starId, content.Faction);
             _nodes.Add(node.Id, node);
             node.TargetNode = CreateNode(content.Transition);
@@ -236,7 +235,7 @@ namespace Domain.Quests
 
         public INode Create(Node_SetFactionRelations content)
         {
-            var starId = _starData.GetRegion(_context.StarId).HomeStar;
+            var starId = _starMapData.GetStarData(_context.StarId).Region.HomeStarId;
             var node = new FactionRelationsNode(content.Id, starId, content.Value, false);
             _nodes.Add(node.Id, node);
             node.TargetNode = CreateNode(content.Transition);
@@ -261,8 +260,9 @@ namespace Domain.Quests
 
         public INode Create(Node_OpenShipyard content)
         {
-            var faction = content.Faction != Faction.Undefined ? content.Faction : _starData.GetRegion(_context.StarId).Faction;
-            var level = content.Level > 0 ? content.Level : _starData.GetLevel(_context.StarId);
+            var starData = _starMapData.GetStarData(_context.StarId);
+            var faction = content.Faction != Faction.Undefined ? content.Faction : starData.Region.Faction;
+            var level = content.Level > 0 ? content.Level : starData.Level;
 
             var node = new ShipyardNode(content.Id, faction, level);
             _nodes.Add(node.Id, node);
@@ -281,17 +281,17 @@ namespace Domain.Quests
 
         public INode Create(Node_AttackOccupants content)
         {
-            var node = new BattleNode(content.Id, _starData.GetOccupant(_context.StarId).CreateCombatModelBuilder(), null);
+            var node = new AttackOccupantsNode(content.Id, _context.StarId);
             _nodes.Add(node.Id, node);
             node.VictoryNode = CreateNode(content.VictoryTransition);
             node.DefeatNode = CreateNode(content.FailureTransition);
             return node;
         }
 
-        private readonly QuestContext _context;
+        private readonly QuestInfo _context;
         private readonly Dictionary<NodeId, INode> _nodes;
         private readonly Dictionary<NodeId, Node> _nodesData;
-        private readonly StarData _starData;
+        private readonly IStarMapDataProvider _starMapData;
         private readonly IEnemyCache _enemyCache;
         private readonly ILootCache _lootCache;
         private readonly IRequirementCache _requirementCache;

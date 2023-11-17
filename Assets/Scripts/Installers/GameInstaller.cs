@@ -84,7 +84,7 @@ namespace Installers
 
             Container.BindAllInterfaces<Technologies>().To<Technologies>().AsSingle();
             Container.Bind<Skills>().AsSingle();
-
+            Container.Bind<InventoryFactory>().AsSingle();
             Container.Bind<Planet.Factory>().AsCached();
 
             Container.BindAllInterfaces<SignalsTranslator>().To<SignalsTranslator>().AsSingle().NonLazy();
@@ -112,19 +112,27 @@ namespace Installers
 
         private void BindQuestManager()
         {
+            Container.BindAllInterfaces<QuestBuilderContext>().To<QuestBuilderContext>().AsSingle();
+            Container.BindAllInterfaces<QuestDataProvider>().To<QuestDataProvider>().AsSingle();
+            Container.BindAllInterfaces<StarMapDataProvider>().To<StarMapDataProvider>().AsSingle();
+            Container.BindAllInterfaces<TimeDataProvider>().To<TimeDataProvider>().AsSingle();
+            Container.BindAllInterfaces<CharacterDataProvider>().To<CharacterDataProvider>().AsSingle();
+            Container.BindAllInterfaces<InventoryDataProvider>().To<InventoryDataProvider>().AsSingle();
+            Container.BindAllInterfaces<LootItemFactory>().To<LootItemFactory>().AsSingle();
+
+            Container.Bind<QuestCombatModelFacctory>().AsSingle();
+            Container.Bind<QuestFactory>().AsSingle();
+            Container.Bind<RequirementsFactory>().AsSingle();
+
             Container.BindAllInterfaces<QuestManager>().To<QuestManager>().AsSingle();
+
             Container.BindSignal<QuestListChangedSignal>();
             Container.BindTrigger<QuestListChangedSignal.Trigger>();
             Container.BindSignal<QuestActionRequiredSignal>();
             Container.BindTrigger<QuestActionRequiredSignal.Trigger>();
             Container.BindSignal<QuestEventSignal>();
             Container.BindTrigger<QuestEventSignal.Trigger>();
-            Container.Bind<QuestFactory>().AsSingle();
-            Container.Bind<FleetFactory>().AsSingle();
-            Container.Bind<RequirementsFactory>().AsSingle();
 
-            Container.Bind<InventoryFactory>();
-            Container.BindFactory<GameDatabase.DataModel.LootModel, QuestContext, Loot, Loot.Factory>();
             //Container.Bind<CharacterFactory>();
             //Container.Bind<ConditionFactory>();
             //Container.Bind<QuestBuilderFactory>();

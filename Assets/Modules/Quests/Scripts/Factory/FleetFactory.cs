@@ -1,79 +1,67 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Combat.Domain;
-using Galaxy;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Extensions;
-using GameServices.Player;
-using Zenject;
 
 namespace Domain.Quests
 {
+    public struct QuestEnemyData
+    {
+        public IEnumerable<ShipBuild> EnemyFleet;
+        public RewardCondition LootCondition;
+        public RewardCondition ExpCondition;
+        public bool NoRetreats;
+        public int TimeLimit;
+        public int Level;
+        public int Seed;
+    }
+
     public class FleetFactory
     {
-        [Inject] private readonly IDatabase _database;
-        [Inject] private readonly StarData _starData;
-        [Inject] private readonly PlayerFleet _playerFleet;
-        [Inject] private readonly CombatModelBuilder.Factory _combatModelBuilderFactory;
+        private readonly IDatabase _database;
 
-        public CombatModelBuilder CreateCombatModelBuilder(Fleet enemy, QuestContext context)
+        public FleetFactory(IDatabase database)
         {
-            var enemyFleet = CreateFleet(enemy, context);
-            var rules = CreateCombatRules(enemy, context);
-
-            var builder = _combatModelBuilderFactory.Create();
-            builder.PlayerFleet = Model.Factories.Fleet.Player(_playerFleet, _database);
-            builder.EnemyFleet = enemyFleet;
-            builder.Rules = rules;
-
-            return builder;
+            _database = database;
         }
 
-        public Model.Military.IFleet CreateFleet(Fleet enemy, QuestContext context)
+        public QuestEnemyData CreateCombatPlan(Fleet enemy, QuestInfo questInfo)
         {
-            var random = new Random(context.Seed);
-            var level = Math.Max(0, context.Level + enemy.LevelBonus);
-            var factionFilter = new FactionFilter(enemy.Factions, level, context.Faction);
+            var level = Math.Max(0, questInfo.Level + enemy.LevelBonus);
 
-            var numberOfShips = enemy.NoRandomShips ? 0 : Maths.Distance.FleetSize(level, random);
+            return new QuestEnemyData
+            {
+                EnemyFleet = CreateFleet(enemy, questInfo, level),
+                LootCondition = enemy.LootCondition,
+                ExpCondition = enemy.ExpCondition,
+                NoRetreats = enemy.NoShipChanging,
+                TimeLimit = enemy.CombatTimeLimit,
+                Level = level,
+                Seed = questInfo.Seed
+            };
+        }
+
+        private IEnumerable<ShipBuild> CreateFleet(Fleet enemy, QuestInfo questInfo, int level)
+        {
+            var random = new Random(questInfo.Seed);
+            var factionFilter = new FactionFilter(enemy.Factions, level, questInfo.Faction);
+
+            var numberOfShips = enemy.NoRandomShips ? 0 : FleetSize(level, random);
+
             var ships = _database.ShipBuildList.ValidForEnemy().CommonShips().Where(item => factionFilter.IsSuitableForFleet(item.Ship.Faction)).
                 LimitSizeByStarLevel(level).LimitClassByStarLevel(level).RandomElements(numberOfShips, random).Concat(enemy.SpecificShips);
 
-            return new Model.Military.QuestFleet(_database, ships.ToList().Shuffle(random), level, random.Next());
+            return ships.ToList().Shuffle(random);
         }
 
-        public Model.Military.CombatRules CreateCombatRules(Fleet enemy, QuestContext context)
+        // TODO: move to database
+        private static int FleetSize(int distance, System.Random random)
         {
-            var distance = context.Level;
-
-            var rules = CreateDefault(distance);
-            if (enemy.CombatTimeLimit > 0) rules.TimeLimit = enemy.CombatTimeLimit;
-
-            rules.LootCondition = enemy.LootCondition;
-            rules.ExpCondition = enemy.ExpCondition;
-            rules.NoRetreats = enemy.NoShipChanging;
-
-            return rules;
-        }
-
-        private Model.Military.CombatRules CreateDefault(int level)
-        {
-            return new Model.Military.CombatRules
-            {
-                RewardType = Model.Military.RewardType.Default,
-                LootCondition = RewardCondition.Default,
-                ExpCondition = RewardCondition.Default,
-                TimeLimit = Maths.Distance.CombatTime(level),
-                TimeoutBehaviour = Model.Military.TimeoutBehaviour.NextEnemy,
-                CanSelectShips = true,
-                CanCallEnemies = true,
-                AsteroidsEnabled = true,
-                PlanetEnabled = true,
-                InitialEnemies = 1,
-                MaxEnemies = 3
-            };
+            var max = 3 + random.Next(100) * random.Next(100) / 2000;
+            return 1 + System.Math.Min(max, distance / 3);
         }
     }
 }

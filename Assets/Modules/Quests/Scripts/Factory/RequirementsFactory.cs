@@ -1,28 +1,20 @@
-﻿using GameDatabase.DataModel;
-using GameModel;
-using GameServices.Player;
-using Services.InternetTime;
-using Session;
-using Zenject;
+﻿using GameDatabase;
+using GameDatabase.DataModel;
 
 namespace Domain.Quests
 {
     public class RequirementsFactory
     {
-        [Inject]
-        public RequirementsFactory(MotherShip motherShip, Loot.Factory lootFactory, ISessionData session, RegionMap regionMap, GameTime gameTime)
+        public RequirementsFactory(IQuestBuilderContext context)
         {
-            _session = session;
-            _regionMap = regionMap;
-            _motherShip = motherShip;
-            _gameTime = gameTime;
-            _lootCache = new LootCache(lootFactory);
+            _context = context;
+            _lootCache = new LootCache(context.LootItemFactory, context.Database);
         }
 
         // TODO: move to another place
-        public QuestGiver CreateQuestGiver(GameDatabase.DataModel.QuestOrigin data)
+        public QuestGiver CreateQuestGiver(QuestOrigin data)
         {
-            return new QuestGiver(data, _regionMap, _session);
+            return new QuestGiver(data, _context.StarMapDataProvider);
         }
 
         public IQuestRequirements CreateForQuest(Requirement requirement, int seed)
@@ -30,38 +22,37 @@ namespace Domain.Quests
             if (requirement == null)
                 return EmptyRequirements.Instance;
 
-            var builder = new RequirementsBuilder(new QuestContext(seed), _lootCache, _motherShip, _regionMap, _session, _gameTime);
+            var builder = new RequirementsBuilder(new QuestInfo(seed), _lootCache, _context);
             return requirement.Create(builder);
         }
 
-        public INodeRequirements CreateForNode(Requirement requirement, QuestContext context)
+        public INodeRequirements CreateForNode(Requirement requirement, QuestInfo context)
         {
             if (requirement == null)
                 return EmptyRequirements.Instance;
 
-            var builder = new RequirementsBuilder(context, _lootCache, _motherShip, _regionMap, _session, _gameTime);
+            var builder = new RequirementsBuilder(context, _lootCache, _context);
             return requirement.Create(builder);
         }
 
         private readonly ILootCache _lootCache;
-        private readonly ISessionData _session;
-        private readonly RegionMap _regionMap;
-        private readonly MotherShip _motherShip;
-        private readonly GameTime _gameTime;
+        private readonly IQuestBuilderContext _context;
 
         private class LootCache : ILootCache
         {
-            public LootCache(Loot.Factory lootFactory)
+            public LootCache(ILootItemFactory lootItemFactory, IDatabase database)
             {
-                _lootFactory = lootFactory;
+                _lootItemFactory = lootItemFactory;
+                _database = database;
             }
 
-            public ILoot Get(LootModel model, QuestContext context)
+            public ILoot Get(LootModel model, QuestInfo context)
             {
-                return _lootFactory.Create(model, context);
+                return new Loot(model, context, _lootItemFactory, _database);
             }
 
-            private readonly Loot.Factory _lootFactory;
+            private readonly IDatabase _database;
+            private readonly ILootItemFactory _lootItemFactory;
         }
     }
 }

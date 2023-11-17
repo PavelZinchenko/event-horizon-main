@@ -31,6 +31,7 @@ namespace GameStateMachine.States
             MotherShip motherShip,
             PlayerResources playerResources,
 			StarData starData,
+            QuestCombatModelFacctory questCombatModelFacctory,
             InventoryFactory inventoryFactory,
             SupplyShip supplyShip,
             RetreatSignal retreatSignal,
@@ -60,7 +61,8 @@ namespace GameStateMachine.States
             _inventoryFactory = inventoryFactory;
             _guiManager = guiManager;
             _supplyShip = supplyShip;
-			_retreatSignal = retreatSignal;
+            _questCombatModelFacctory = questCombatModelFacctory;
+            _retreatSignal = retreatSignal;
 			_retreatSignal.Event += OnRetreat;
             _startTravelSignal = startTravelSignal;
             _startTravelSignal.Event += OnStartTravel;
@@ -314,9 +316,16 @@ namespace GameStateMachine.States
             _starData.GetOccupant(starId).Suppress(destroy);
         }
 
-        public void StartCombat(ICombatModel model)
+        public void StartCombat(QuestEnemyData enemyData, ILoot specialLoot)
         {
-            StateMachine.LoadAdditionalState(StateFactory.CreateCombatState(model, value => _questEventTrigger.Fire(new CombatEventData(value))));
+            var model = _questCombatModelFacctory.CreateCombatModel(enemyData, specialLoot);
+            StateMachine.LoadAdditionalState(StateFactory.CreateCombatState(model, value => _questEventTrigger.Fire(new CombatEventData(value.IsVictory()))));
+        }
+
+        public void AttackOccupants(int starId)
+        {
+            var model = _starData.GetOccupant(starId).CreateCombatModelBuilder().Build();
+            StateMachine.LoadAdditionalState(StateFactory.CreateCombatState(model, value => _questEventTrigger.Fire(new CombatEventData(value.IsVictory()))));
         }
 
         public void StartTrading(ILoot merchantItems)
@@ -352,6 +361,7 @@ namespace GameStateMachine.States
         private readonly PlayerResources _playerResources;
         private readonly InventoryFactory _inventoryFactory;
         private readonly IGuiManager _guiManager;
+        private readonly QuestCombatModelFacctory _questCombatModelFacctory;
         private readonly RetreatSignal _retreatSignal;
         private readonly StartTravelSignal _startTravelSignal;
         private readonly StartBattleSignal _startBattleSignal;

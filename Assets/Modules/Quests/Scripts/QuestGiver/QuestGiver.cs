@@ -1,18 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using GameDatabase.Enums;
-using GameModel;
-using Session;
 
 namespace Domain.Quests
 {
     public class QuestGiver
     {
-        public QuestGiver(GameDatabase.DataModel.QuestOrigin data, RegionMap regionMap, ISessionData session)
+        public QuestGiver(GameDatabase.DataModel.QuestOrigin data, IStarMapDataProvider starMapDataProvider)
         {
             _data = data;
-            _regionMap = regionMap;
-            _session = session;
+            _starMapDataProvider = starMapDataProvider;
             _factionFilter = new FactionFilter(data.Factions, 0);
         }
 
@@ -25,7 +21,7 @@ namespace Domain.Quests
                 case QuestOriginType.HomeStar:
                     return 0;
                 case QuestOriginType.CurrentFactionBase:
-                    return _regionMap.GetStarRegion(currentStarId).HomeStar;
+                    return _starMapDataProvider.GetStarData(currentStarId).Region.HomeStarId;
                 case QuestOriginType.RandomStar:
                     return GetRandomStar(currentStarId, seed);
                 case QuestOriginType.RandomFactionBase:
@@ -47,24 +43,27 @@ namespace Domain.Quests
 
         private int GetRandomFactionBase(int center, int seed)
         {
+            if (_adjacentRegions == null)
+            {
+                var minDistance = _data.MinDistance;
+                var maxDistance = _data.MaxDistance > minDistance ? _data.MaxDistance : minDistance;
+                _adjacentRegions = new(_starMapDataProvider.GetRegionsNearby(center, minDistance, maxDistance));
+            }
+
             var random = new System.Random(seed);
-
-            var minDistance = _data.MinDistance;
-            var maxDistance = _data.MaxDistance > minDistance ? _data.MaxDistance : minDistance;
-
             var minRelations = _data.MinRelations;
             var maxRelations = _data.MaxRelations > minRelations ? _data.MaxRelations : minRelations;
 
-            _regionMap.GetAdjacentRegions(center, minDistance, maxDistance, _adjacentRegions);
             var index = random.Next(_adjacentRegions.Count);
 
             var count = _adjacentRegions.Count;
             for (var i = 0; i < count; ++i)
             {
                 var region = _adjacentRegions[index + i < count ? index + i : index + i - count];
-                if (region.Id == Region.PlayerHomeRegionId) continue;
+
+                if (region.IsHome) continue;
                 if (!_factionFilter.IsSuitableForBase(region.Faction)) continue;
-                if (!_session.StarMap.IsVisited(region.HomeStar)) continue;
+                if (!region.IsVisited) continue;
 
                 if (minRelations != 0 || maxRelations != 0)
                 {
@@ -72,17 +71,15 @@ namespace Domain.Quests
                     if (relations < minRelations || relations > maxRelations) continue;
                 }
 
-                var starId = region.HomeStar;
-                return starId;
+                return region.HomeStarId;
             }
 
             return -1;
         }
 
-        private readonly List<Region> _adjacentRegions = new List<Region>();
+        private List<IRegionDataProvider> _adjacentRegions;
+        private readonly IStarMapDataProvider _starMapDataProvider;
         private readonly FactionFilter _factionFilter;
         private readonly GameDatabase.DataModel.QuestOrigin _data;
-        private readonly RegionMap _regionMap;
-        private readonly ISessionData _session;
     }
 }

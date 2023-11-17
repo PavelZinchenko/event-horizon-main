@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
-using Combat.Domain;
-using Domain.Quests;
 using GameDatabase.DataModel;
 
-namespace GameServices.Quests
+namespace Domain.Quests
 {
     public interface IQuestActionProcessor
     {
         void ShowUiDialog(IUserInteraction userInteraction);
-        void StartCombat(ICombatModel model);
+        void StartCombat(QuestEnemyData enemyData, ILoot specialLoot);
+        void AttackOccupants(int starId);
         void SuppressOccupant(int starId, bool destroy);
         void StartTrading(ILoot merchantItems);
         void Retreat();
@@ -18,15 +16,5 @@ namespace GameServices.Quests
         void OpenShipyard(Faction faction, int level);
         void CaptureStarBase(int starId, bool capture);
         void ChangeFaction(int starId, Faction faction);
-    }
-
-    public interface IQuestManager
-    {
-        bool ActionRequired { get; }
-        void InvokeAction(IQuestActionProcessor processor);
-        IEnumerable<IQuest> Quests { get; }
-        bool IsQuestObjective(int starId);
-        void AbandonQuest(IQuest quest);
-        void StartQuest(QuestModel questModel);
     }
 }

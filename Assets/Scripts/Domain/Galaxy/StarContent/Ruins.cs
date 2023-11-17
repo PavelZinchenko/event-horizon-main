@@ -52,7 +52,7 @@ namespace Galaxy.StarContent
 
         private void OnCombatCompleted(int starId, ICombatModel result)
         {
-            if (result.GetWinner() != UnitSide.Player)
+            if (!result.IsVictory())
                 return;
 
             _session.Bosses.SetCompleted(starId);

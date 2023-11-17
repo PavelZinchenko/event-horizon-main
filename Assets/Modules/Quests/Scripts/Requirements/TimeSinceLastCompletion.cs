@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Text;
-using Model.Regulations;
-using Services.InternetTime;
+using GameDatabase.Model;
+using GameDatabase.DataModel;
 using Services.Localization;
-using Session;
 
 namespace Domain.Quests
 {
     public class TimeSinceLastCompletion : IRequirements
     {
-        public TimeSinceLastCompletion(int questId, ISessionData session, long totalTicks, GameTime gameTime)
+        public TimeSinceLastCompletion(int questId, IQuestDataProvider questData, ITimeDataProvider timeData, long totalTicks)
         {
             _questId = questId;
             _totalTicks = totalTicks;
-            _session = session;
-            _gameTime = gameTime;
+            _questData = questData;
+            _timeData = timeData;
         }
 
         public bool IsMet => ElapsedTime >= _totalTicks;
@@ -46,11 +44,11 @@ namespace Domain.Quests
             return text;
         }
 
-        private long ElapsedTime => _gameTime.TotalPlayTime - _session.Quests.LastCompletionTime(_questId);
+        private long ElapsedTime => _timeData.TotalPlayTime - _questData.LastCompletionTime(_questId);
 
         private readonly long _totalTicks;
         private readonly int _questId;
-        private readonly GameTime _gameTime;
-        private readonly ISessionData _session;
+        private readonly IQuestDataProvider _questData;
+        private readonly ITimeDataProvider _timeData;
     }
 }

@@ -1,13 +1,12 @@
 ﻿using GameDatabase.DataModel;
 using Services.Localization;
-using Session;
 using UnityEngine.Assertions;
 
 namespace Domain.Quests
 {
     public class CharacterRelationsRequirement : IRequirements
     {
-        public CharacterRelationsRequirement(Character character, int minValue, int maxValue, ISessionData session)
+        public CharacterRelationsRequirement(Character character, int minValue, int maxValue, ICharacterDataProvider relationshipData)
         {
             if (minValue > maxValue)
             {
@@ -20,14 +19,14 @@ namespace Domain.Quests
             _minValue = minValue;
             _maxValue = maxValue;
             _character = character;
-            _session = session;
+            _relationshipData = relationshipData;
         }
 
         public bool IsMet
         {
             get
             {
-                var value = _session.Quests.GetCharacterRelations(_character.Id.Value);
+                var value = _relationshipData.GetCharacterAttitude(_character.Id);
                 return value >= _minValue && value <= _maxValue;
             }
         }
@@ -37,7 +36,7 @@ namespace Domain.Quests
         public string GetDescription(ILocalization localization)
         {
 #if UNITY_EDITOR
-            return "CHARACTER RELATIONS " + _character.Id + " " + _session.Quests.GetCharacterRelations(_character.Id.Value) + " -> [" + _minValue + "," + _maxValue + "]";
+            return "CHARACTER RELATIONS " + _character.Id + " " + _relationshipData.GetCharacterAttitude(_character.Id) + " -> [" + _minValue + "," + _maxValue + "]";
 #else
             return string.Empty;
 #endif
@@ -48,6 +47,6 @@ namespace Domain.Quests
         private readonly int _minValue;
         private readonly int _maxValue;
         private readonly Character _character;
-        private readonly ISessionData _session;
+        private readonly ICharacterDataProvider _relationshipData;
     }
 }

@@ -1,19 +1,17 @@
 ﻿using System;
-using Services.InternetTime;
 using Services.Localization;
-using Session;
 
 namespace Domain.Quests
 {
     public class TimeSinceQuestStart : IRequirements
     {
-        public TimeSinceQuestStart(int questId, int starId, ISessionData session, long totalTicks, GameTime gameTime)
+        public TimeSinceQuestStart(int questId, int starId, IQuestDataProvider questData, ITimeDataProvider timeData, long totalTicks)
         {
             _questId = questId;
             _starId = starId;
             _totalTicks = totalTicks;
-            _session = session;
-            _gameTime = gameTime;
+            _questData = questData;
+            _timeData = timeData;
         }
 
         public bool IsMet => ElapsedTime >= _totalTicks;
@@ -28,12 +26,12 @@ namespace Domain.Quests
 
         public int BeaconPosition => -1;
 
-        private long ElapsedTime => _gameTime.TotalPlayTime - _session.Quests.QuestStartTime(_questId, _starId);
+        private long ElapsedTime => _timeData.TotalPlayTime - _questData.QuestStartTime(_questId, _starId);
 
         private readonly long _totalTicks;
-        private readonly int _questId;
         private readonly int _starId;
-        private readonly GameTime _gameTime;
-        private readonly ISessionData _session;
+        private readonly int _questId;
+        private readonly IQuestDataProvider _questData;
+        private readonly ITimeDataProvider _timeData;
     }
 }

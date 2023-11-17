@@ -66,7 +66,7 @@ namespace GameServices.Multiplayer
         {
             if (opponent.Id <= 0) return Observable.Return(true);
 
-            var value = combatModel.GetWinner() == UnitSide.Player ? 1 : -1;
+            var value = combatModel.IsVictory() ? 1 : -1;
             var request = Security.RequestFactory.CreateUpdateStatsRequest(_account.Id, opponent.Id, value);
             return request.Select(TryUpdateRating).Catch((WWWErrorException ex) =>
             {

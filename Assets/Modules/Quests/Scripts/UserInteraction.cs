@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using GameDatabase.Enums;
 using GameDatabase.Model;
-using Model.Military;
 
 namespace Domain.Quests
 {
@@ -19,7 +18,7 @@ namespace Domain.Quests
         SpriteId CharacterAvatar { get; set; }
         RequiredViewMode RequiredView { get; }
         IEnumerable<UserAction> Actions { get; }
-        IFleet Enemies { get; }
+        QuestEnemyData EnemyData { get; }
         ILoot Loot { get; }
     }
 
@@ -55,6 +54,6 @@ namespace Domain.Quests
         public RequiredViewMode RequiredView { get; set; }
         public IEnumerable<UserAction> Actions { get; set; }
         public ILoot Loot { get; set; }
-        public IFleet Enemies { get; set; }
+        public QuestEnemyData EnemyData { get; set; }
     }
 }

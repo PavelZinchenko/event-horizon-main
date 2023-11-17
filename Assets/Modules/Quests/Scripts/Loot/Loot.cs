@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Constructor;
-using Constructor.Ships;
-using Economy;
 using Economy.ItemType;
 using GameDatabase;
 using GameDatabase.DataModel;
@@ -54,14 +51,13 @@ namespace Domain.Quests
 
     public class Loot : ILoot, ILootContentFactory<IEnumerable<LootItem>>
     {
-        public Loot(LootModel loot, QuestContext context, ItemTypeFactory itemTypeFactory, GameServices.Database.ITechnologies technologies, IDatabase database)
+        public Loot(LootModel loot, QuestInfo questInfo, ILootItemFactory lootItemFactory, IDatabase database)
         {
-            _itemTypeFactory = itemTypeFactory;
+            _lootItemFactory = lootItemFactory;
             _database = database;
             _loot = loot;
-            _context = context;
-            _technologies = technologies;
-            _random = new Random(context.Seed);
+            _questInfo = questInfo;
+            _random = new Random(questInfo.Seed);
         }
 
         public bool CanBeRemoved
@@ -106,50 +102,50 @@ namespace Domain.Quests
 
         public IEnumerable<LootItem> Create(LootContent_SomeMoney content)
         {
-            var amount = (int)(Maths.Distance.Credits((int)(_context.Level * content.ValueRatio)));
-            amount = 9 * amount / 10 + _random.Next(1 + amount / 5);
-            yield return new LootItem(_itemTypeFactory.CreateCurrencyItem(Currency.Credits), amount);
+            var level = UnityEngine.Mathf.Max((int)(_questInfo.Level * content.ValueRatio), 1);
+            yield return _lootItemFactory.CreateRandomMoney(level, _random);
         }
 
         public IEnumerable<LootItem> Create(LootContent_Fuel content)
         {
             var amount = _random.Range(content.MinAmount, content.MaxAmount);
-            yield return new LootItem(_itemTypeFactory.CreateFuelItem(), amount);
+            yield return _lootItemFactory.CreateFuel(amount);
         }
 
         public IEnumerable<LootItem> Create(LootContent_Money content)
         {
             var amount = _random.Range(content.MinAmount, content.MaxAmount);
-            yield return new LootItem(_itemTypeFactory.CreateCurrencyItem(Currency.Credits), amount);
+            yield return _lootItemFactory.CreateMoney(amount);
         }
 
         public IEnumerable<LootItem> Create(LootContent_Stars content)
         {
             var amount = _random.Range(content.MinAmount, content.MaxAmount);
-            yield return new LootItem(Price.Premium(amount).GetProduct(_itemTypeFactory).Type, amount);
+            yield return _lootItemFactory.CreateStars(amount);
         }
 
         public IEnumerable<LootItem> Create(LootContent_StarMap content)
         {
-            yield return new LootItem(_itemTypeFactory.CreateStarMapItem(_context.StarId));
+            yield return _lootItemFactory.CreateStarMap(_questInfo.StarId);
         }
 
         public IEnumerable<LootItem> Create(LootContent_RandomComponents content)
         {
-            var level = Math.Max(0, (int)(_context.Level * content.ValueRatio));
+            var level = Math.Max(0, (int)(_questInfo.Level * content.ValueRatio));
             var amount = _random.Range(content.MinAmount, content.MaxAmount);
-            var factionFilter = new FactionFilter(content.Factions, level, _context.Faction);
-            var all = _database.ComponentList.Common().LevelLessOrEqual(level * 3 / 2).Where(item => factionFilter.IsSuitableForLoot(item.Faction));
-            var components = ComponentInfo.CreateRandom(all, amount, level, _random);
-            return components.Select(item => new LootItem(_itemTypeFactory.CreateComponentItem(item)));
+            var factionFilter = new FactionFilter(content.Factions, level, _questInfo.Faction);
+            var components = _database.ComponentList.Common().LevelLessOrEqual(level * 3 / 2).Where(item => factionFilter.IsSuitableForLoot(item.Faction));
+            return _lootItemFactory.CreateRandomComponents(components, amount, level, _random);
         }
 
         public IEnumerable<LootItem> Create(LootContent_ResearchPoints content)
         {
             var amount = _random.Range(content.MinAmount, content.MaxAmount);
-            var factionFilter = new FactionFilter(content.Factions, _context.Level, _context.Faction);
+            var factionFilter = new FactionFilter(content.Factions, _questInfo.Level, _questInfo.Faction);
             var faction = _database.FactionList.Where(factionFilter.IsSuitableForResearch).RandomElement(_random);
-            return faction != null ? Enumerable.Repeat(new LootItem(_itemTypeFactory.CreateResearchItem(faction), amount), 1) : Enumerable.Empty<LootItem>();
+
+            if (faction != null)
+                yield return _lootItemFactory.CreateResearchPoints(faction, amount);
         }
 
         public IEnumerable<LootItem> Create(LootContent_RandomItems content)
@@ -205,40 +201,37 @@ namespace Domain.Quests
         public IEnumerable<LootItem> Create(LootContent_QuestItem content)
         {
             var amount = _random.Range(content.MinAmount, content.MaxAmount);
-            yield return new LootItem(_itemTypeFactory.CreateArtifactItem(content.QuestItem), amount);
+            yield return _lootItemFactory.CreateQuestItem(content.QuestItem, amount);
         }
 
         public IEnumerable<LootItem> Create(LootContent_Ship content)
         {
-            yield return new LootItem(_itemTypeFactory.CreateQuestShipItem(new CommonShip(content.ShipBuild)));
+            yield return _lootItemFactory.CreateShip(content.ShipBuild);
         }
 
         public IEnumerable<LootItem> Create(LootContent_EmptyShip content)
         {
-            yield return new LootItem(_itemTypeFactory.CreateQuestShipItem(new CommonShip(content.Ship, Enumerable.Empty<IntegratedComponent>())));
+            yield return _lootItemFactory.CreateShip(content.Ship);
         }
 
         public IEnumerable<LootItem> Create(LootContent_Component content)
         {
             var amount = _random.Range(content.MinAmount, content.MaxAmount);
-            yield return new LootItem(_itemTypeFactory.CreateComponentItem(new ComponentInfo(content.Component)), amount);
+            yield return _lootItemFactory.CreateComponent(content.Component, amount);
         }
 
         public IEnumerable<LootItem> Create(LootContent_Blueprint content)
         {
-            yield return new LootItem(_itemTypeFactory.CreateBlueprintItem(_technologies.Get(content.Blueprint.Id)));
+            yield return _lootItemFactory.CreateBlueprint(content.Blueprint);
         }
 
         #endregion
 
         private List<LootItem> _items;
         private readonly Random _random;
-        private readonly QuestContext _context;
+        private readonly QuestInfo _questInfo;
         private readonly LootModel _loot;
-        private readonly GameServices.Database.ITechnologies _technologies;
         private readonly IDatabase _database;
-        private readonly ItemTypeFactory _itemTypeFactory;
-
-        public class Factory : Factory<LootModel, QuestContext, Loot> { }
+        private readonly ILootItemFactory _lootItemFactory;
     }
 }

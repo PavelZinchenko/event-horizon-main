@@ -1,12 +1,7 @@
 ﻿using System;
-using Galaxy;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
-using GameServices.Player;
-using Services.InternetTime;
-using Session;
-using Session.Content;
 using Zenject;
 
 namespace Domain.Quests
@@ -14,30 +9,24 @@ namespace Domain.Quests
     public class QuestFactory
     {
         [Inject] private readonly IDatabase _database;
-        [Inject] private readonly MotherShip _motherShip;
-        [Inject] private readonly ISessionData _session;
-        [Inject] private readonly StarData _starData;
-        [Inject] private readonly GameModel.RegionMap _regionMap;
-        [Inject] private readonly FleetFactory _fleetFactory;
-        [Inject] private readonly Loot.Factory _lootFactory;
-        [Inject] private readonly GameTime _gameTime;
+        [Inject] private readonly IQuestBuilderContext _questBuilderContext;
 
-        public Quest Create(QuestData.QuestProgress progress)
+        public Quest Create(int questId, int starId, int activeNode, int seed)
         {
-            var data = _database.GetQuest(new ItemId<QuestModel>(progress.QuestId));
+            var data = _database.GetQuest(ItemId<QuestModel>.Create(questId));
             if (data == null)
             {
-                UnityEngine.Debug.LogException(new ArgumentException("QuestFactory: quest not found - " + progress.QuestId));
+                UnityEngine.Debug.LogException(new ArgumentException("QuestFactory: quest not found - " + questId));
                 return null;
             }
 
-            var builder = new QuestBuilder(data, progress.StarId, progress.Seed, _starData, _regionMap, _motherShip, _session, _lootFactory, _fleetFactory, _gameTime);
-            return builder.Build(progress.ActiveNode);
+            var builder = new QuestBuilder(data, starId, seed, _questBuilderContext);
+            return builder.Build(activeNode);
         }
 
         public Quest Create(QuestModel data, int starId, int seed)
         {
-            var builder = new QuestBuilder(data, starId, seed, _starData, _regionMap, _motherShip, _session, _lootFactory, _fleetFactory, _gameTime);
+            var builder = new QuestBuilder(data, starId, seed, _questBuilderContext);
             return builder.Build();
         }
     }

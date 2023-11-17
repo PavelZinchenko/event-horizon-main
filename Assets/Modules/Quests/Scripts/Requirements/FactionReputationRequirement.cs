@@ -1,12 +1,11 @@
 ﻿using Services.Localization;
-using Session;
 using UnityEngine.Assertions;
 
 namespace Domain.Quests
 {
     public class FactionReputationRequirement : IRequirements
     {
-        public FactionReputationRequirement(int starId, int minValue, int maxValue, ISessionData session)
+        public FactionReputationRequirement(int starId, int minValue, int maxValue, IStarMapDataProvider starMapData)
         {
             if (minValue > maxValue)
             {
@@ -19,15 +18,15 @@ namespace Domain.Quests
             _minValue = minValue;
             _maxValue = maxValue;
             _starId = starId;
-            _session = session;
+            _starMapData = starMapData;
         }
 
         public bool IsMet
         {
             get
             {
-                var starId = _starId > 0 ? _starId : _session.StarMap.PlayerPosition;
-                var value = _session.Quests.GetFactionRelations(starId);
+                var star = _starId > 0 ? _starMapData.GetStarData(_starId) : _starMapData.CurrentStar;
+                var value = star.Region.Relations;
                 return value >= _minValue && value <= _maxValue;
             }
         }
@@ -48,6 +47,6 @@ namespace Domain.Quests
         private readonly int _minValue;
         private readonly int _maxValue;
         private readonly int _starId;
-        private readonly ISessionData _session;
+        private readonly IStarMapDataProvider _starMapData;
     }
 }

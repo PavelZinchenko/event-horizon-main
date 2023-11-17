@@ -1,7 +1,6 @@
 ﻿using System;
 using GameDatabase.DataModel;
 using Services.Localization;
-using Session;
 
 namespace Domain.Quests
 {
@@ -13,11 +12,11 @@ namespace Domain.Quests
             Completed,
         }
 
-        public QuestRequirement(QuestModel quest, RequiredStatus status, ISessionData session)
+        public QuestRequirement(QuestModel quest, RequiredStatus status, IQuestDataProvider questData)
         {
             _quest = quest;
             _status = status;
-            _session = session;
+            _questData = questData;
         }
 
         public bool IsMet
@@ -27,9 +26,9 @@ namespace Domain.Quests
                 switch (_status)
                 {
                     case RequiredStatus.Active:
-                        return _session.Quests.IsQuestActive(_quest.Id.Value);
+                        return _questData.IsActive(_quest.Id.Value);
                     case RequiredStatus.Completed:
-                        return _session.Quests.HasBeenCompleted(_quest.Id.Value);
+                        return _questData.HasBeenCompleted(_quest.Id.Value);
                     default:
                         throw new ArgumentException();
                 }
@@ -51,6 +50,6 @@ namespace Domain.Quests
 
         private readonly QuestModel _quest;
         private readonly RequiredStatus _status;
-        private readonly ISessionData _session;
+        private readonly IQuestDataProvider _questData;
     }
 }

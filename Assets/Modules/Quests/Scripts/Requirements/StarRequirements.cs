@@ -1,13 +1,12 @@
-﻿using GameServices.Player;
-using Services.Localization;
+﻿using Services.Localization;
 
 namespace Domain.Quests
 {
     public class StarRequirements : IRequirements
     {
-        public StarRequirements(int starId, MotherShip motherShip)
+        public StarRequirements(int starId, IPlayerDataProvider playerData)
         {
-            _motherShip = motherShip;
+            _playerData = playerData;
             _starId = starId;
         }
 
@@ -15,7 +14,7 @@ namespace Domain.Quests
         {
             get
             {
-                return _motherShip.Position == _starId && !_motherShip.CurrentStar.Occupant.IsAggressive;
+                return _playerData.CurrentStar.Id == _starId && _playerData.CurrentStar.IsSecured;
             }
         }
 
@@ -29,6 +28,6 @@ namespace Domain.Quests
         public int BeaconPosition { get { return _starId; } }
 
         private readonly int _starId;
-        private readonly MotherShip _motherShip;
+        private readonly IPlayerDataProvider _playerData;
     }
 }

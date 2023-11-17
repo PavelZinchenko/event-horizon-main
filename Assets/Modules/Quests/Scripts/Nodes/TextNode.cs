@@ -9,13 +9,13 @@ namespace Domain.Quests
 {
     public class TextNode : INode
     {
-        public TextNode(int id, string message, string characterName, SpriteId characterAvatar, Model.Military.IFleet enemy, ILoot loot, RequiredViewMode requiredView)
+        public TextNode(int id, string message, string characterName, SpriteId characterAvatar, QuestEnemyData enemyData, ILoot loot, RequiredViewMode requiredView)
         {
             _id = id;
             _message = message;
             _characterName = characterName;
             _characterAvatar = characterAvatar;
-            _enemy = enemy;
+            _enemyData = enemyData;
             _loot = loot;
             _requiredView = requiredView;
         }
@@ -119,7 +119,7 @@ namespace Domain.Quests
                 CharacterName = _characterName,
                 CharacterAvatar = _characterAvatar,
                 RequiredView = _requiredView,
-                Enemies = _enemy ?? Model.Factories.Fleet.Empty,
+                EnemyData = _enemyData,
                 Loot = _loot ?? EmptyLoot.Instance,
             };
 
@@ -131,7 +131,7 @@ namespace Domain.Quests
         private readonly RequiredViewMode _requiredView;
         private readonly string _message;
         private readonly string _characterName;
-        private readonly Model.Military.IFleet _enemy;
+        private readonly QuestEnemyData _enemyData;
         private readonly ILoot _loot;
         private readonly SpriteId _characterAvatar;
         private readonly List<Transition> _transitionList = new List<Transition>();

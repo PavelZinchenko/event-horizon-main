@@ -1,29 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameDatabase.DataModel;
-using GameServices.Player;
-using GameModel;
-using Services.InternetTime;
-using Session;
 
 namespace Domain.Quests
 {
     public class RequirementsBuilder : IRequirementFactory<IRequirements>
     {
         public RequirementsBuilder(
-            QuestContext context, 
-            ILootCache lootCache, 
-            MotherShip motherShip,
-            RegionMap regionMap, 
-            ISessionData session, 
-            GameTime gameTime)
+            QuestInfo questInfo, 
+            ILootCache lootCache,
+            IQuestBuilderContext context)
         {
-            _motherShip = motherShip;
-            _regionMap = regionMap;
-            _context = context;
+            _questInfo = questInfo;
             _lootCache = lootCache;
-            _session = session;
-            _gameTime = gameTime;
+            _context = context;
         }
 
         public IRequirements Build(Requirement requirement)
@@ -56,82 +46,82 @@ namespace Domain.Quests
             var minDistance = UnityEngine.Mathf.Clamp(content.MinValue, 0, 1000);
             var maxDistance = content.MaxValue >= minDistance ? content.MaxValue : int.MaxValue;
 
-            return new CurrentStarRequirements(minDistance, maxDistance, _motherShip);
+            return new CurrentStarRequirements(minDistance, maxDistance, _context.PlayerDataProvider);
         }
 
         public IRequirements Create(Requirement_RandomStarSystem content)
         {
-            var random = new System.Random(_context.Seed);
+            var random = new System.Random(_questInfo.Seed);
             var minDistance = UnityEngine.Mathf.Clamp(content.MinValue, 1, 1000);
             var maxDistance = UnityEngine.Mathf.Clamp(content.MaxValue, minDistance, 1000);
             var distance = maxDistance > minDistance ? minDistance + random.Next(maxDistance - minDistance + 1) : minDistance;
-            var starId = StarLayout.GetAdjacentStars(_context.StarId, distance).RandomElement(random);
-            return new StarRequirements(starId, _motherShip);
+            var starId = _context.StarMapDataProvider.RandomStarAtDistance(_questInfo.StarId, distance, random);
+            return new StarRequirements(starId, _context.PlayerDataProvider);
         }
 
         public IRequirements Create(Requirement_AggressiveOccupants content)
         {
-            return new EnemiesWantFightRequirements(_motherShip);
+            return new EnemiesWantFightRequirements(_context.PlayerDataProvider);
         }
 
         public IRequirements Create(Requirement_QuestCompleted content)
         {
-            return new QuestRequirement(content.Quest, QuestRequirement.RequiredStatus.Completed, _session);
+            return new QuestRequirement(content.Quest, QuestRequirement.RequiredStatus.Completed, _context.QuestDataProvider);
         }
 
         public IRequirements Create(Requirement_QuestActive content)
         {
-            return new QuestRequirement(content.Quest, QuestRequirement.RequiredStatus.Active, _session);
+            return new QuestRequirement(content.Quest, QuestRequirement.RequiredStatus.Active, _context.QuestDataProvider);
         }
 
         public IRequirements Create(Requirement_CharacterRelations content)
         {
-            return new CharacterRelationsRequirement(content.Character, content.MinValue, content.MaxValue, _session);
+            return new CharacterRelationsRequirement(content.Character, content.MinValue, content.MaxValue, _context.CharacterDataProvider);
         }
 
         public IRequirements Create(Requirement_FactionRelations content)
         {
-            return new FactionReputationRequirement(_context.StarId, content.MinValue, content.MaxValue, _session);
+            return new FactionReputationRequirement(_questInfo.StarId, content.MinValue, content.MaxValue, _context.StarMapDataProvider);
         }
 
         public IRequirements Create(Requirement_StarbaseCaptured content)
         {
-            return new StarbaseCaprturedRequirement(_context.StarId, _regionMap, _session);
+            return new StarbaseCaprturedRequirement(_questInfo.StarId, _context.StarMapDataProvider);
         }
 
         public IRequirements Create(Requirement_Faction content)
         {
-            return new FactionRequirements(content.Faction, _motherShip);
+            return new FactionRequirements(content.Faction, _context.PlayerDataProvider);
         }
 
         public IRequirements Create(Requirement_HaveQuestItem content)
         {
-            return new ArtifactRequirement(content.QuestItem, content.Amount, _session);
+            return new ArtifactRequirement(content.QuestItem, content.Amount, _context.InventoryDataProvider);
         }
 
         public IRequirements Create(Requirement_HaveItem content)
         {
-            return new ItemsRequirements(_lootCache.Get(new LootModel(content.Loot), _context));
+            return new ItemsRequirements(_lootCache.Get(new LootModel(content.Loot), _questInfo));
         }
 
         public IRequirements Create(Requirement_HaveItemById content)
         {
-            return new ItemsRequirements(_lootCache.Get(content.Loot, _context));
+            return new ItemsRequirements(_lootCache.Get(content.Loot, _questInfo));
         }
 
         public IRequirements Create(Requirement_TimeSinceQuestStart content)
         {
-            return new TimeSinceQuestStart(_context.QuestId, _context.StarId, _session, TimeSpan.TicksPerMinute * (content.Hours*60 + content.Minutes), _gameTime);
+            return new TimeSinceQuestStart(_questInfo.QuestId, _questInfo.StarId, _context.QuestDataProvider, _context.TimeDataProvider, TimeSpan.TicksPerMinute * (content.Hours*60 + content.Minutes));
         }
 
         public IRequirements Create(Requirement_TimeSinceLastCompletion content)
         {
-            return new TimeSinceLastCompletion(_context.QuestId, _session, TimeSpan.TicksPerMinute * (content.Hours * 60 + content.Minutes), _gameTime);
+            return new TimeSinceLastCompletion(_questInfo.QuestId, _context.QuestDataProvider, _context.TimeDataProvider, TimeSpan.TicksPerMinute * (content.Hours * 60 + content.Minutes));
         }
 
         public IRequirements Create(Requirement_ComeToOrigin content)
         {
-            return new StarRequirements(_context.StarId, _motherShip);
+            return new StarRequirements(_questInfo.StarId, _context.PlayerDataProvider);
         }
 
         private IRequirements Boolean(IEnumerable<Requirement> requirements, BooleanRequirements.Operation operation)
@@ -146,11 +136,8 @@ namespace Domain.Quests
             return result;
         }
 
-        private readonly QuestContext _context;
+        private readonly QuestInfo _questInfo;
         private readonly ILootCache _lootCache;
-        private readonly MotherShip _motherShip;
-        private readonly RegionMap _regionMap;
-        private readonly ISessionData _session;
-        private readonly GameTime _gameTime;
+        private readonly IQuestBuilderContext _context;
     }
 }

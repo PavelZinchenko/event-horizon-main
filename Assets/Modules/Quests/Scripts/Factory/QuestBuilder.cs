@@ -1,9 +1,5 @@
 ﻿using System;
-using Galaxy;
 using GameDatabase.DataModel;
-using GameServices.Player;
-using Services.InternetTime;
-using Session;
 
 namespace Domain.Quests
 {
@@ -13,30 +9,21 @@ namespace Domain.Quests
             QuestModel model, 
             int starId, 
             int seed, 
-            StarData starData,
-            GameModel.RegionMap regionMap,
-            MotherShip motherShip,
-            ISessionData session,
-            Loot.Factory lootFactory, 
-            FleetFactory fleetFactory,
-            GameTime gameTime)
+            IQuestBuilderContext context)
         {
             _model = model;
             _starId = starId;
             _seed = seed;
-            _starData = starData;
-            _regionMap = regionMap;
-            _motherShip = motherShip;
-            _session = session;
-            _lootCache = new LootCache(lootFactory);
-            _enemyCache = new EnemyCache(fleetFactory);
-            _requirementCache = new RequirementCache(_motherShip, regionMap, _session, _lootCache, gameTime);
-            _context = new QuestContext(_model, new Galaxy.Star(starId, starData), seed);
+            _context = context;
+            _lootCache = new LootCache(context.LootItemFactory, context.Database);
+            _enemyCache = new EnemyCache(context.Database);
+            _requirementCache = new RequirementCache(_context, _lootCache);
+            _parameters = new QuestInfo(_model, _context.StarMapDataProvider.GetStarData(_starId), seed);
         }
 
         public Quest Build(int activeNodeId = 0)
         {
-            var nodeBuilder = new NodeBuilder(_model, _context, _enemyCache, _requirementCache, _lootCache, _starData);
+            var nodeBuilder = new NodeBuilder(_model, _parameters, _enemyCache, _requirementCache, _lootCache, _context.StarMapDataProvider);
             var nodes = nodeBuilder.Build();
 
             if (nodes.Count == 0)
@@ -55,13 +42,10 @@ namespace Domain.Quests
         }
 
         private readonly QuestModel _model;
-        private readonly QuestContext _context;
+        private readonly QuestInfo _parameters;
         private readonly int _starId;
         private readonly int _seed;
-        private readonly StarData _starData;
-        private readonly GameModel.RegionMap _regionMap;
-        private readonly MotherShip _motherShip;
-        private readonly ISessionData _session;
+        private readonly IQuestBuilderContext _context;
         private readonly LootCache _lootCache;
         private readonly EnemyCache _enemyCache;
         private readonly RequirementCache _requirementCache;

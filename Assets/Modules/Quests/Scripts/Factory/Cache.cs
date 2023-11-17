@@ -1,38 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using Combat.Domain;
+using GameDatabase;
 using GameDatabase.DataModel;
-using GameServices.Player;
-using Services.InternetTime;
-using Session;
 using UnityEngine.Assertions;
 
 namespace Domain.Quests
 {
     public interface IRequirementCache
     {
-        INodeRequirements Get(Requirement requirement, QuestContext context);
+        INodeRequirements Get(Requirement requirement, QuestInfo context);
     }
 
     public interface IEnemyCache
     {
-        ICombatModelBuilder Get(Fleet enemy, QuestContext context);
+        QuestEnemyData Get(Fleet enemy, QuestInfo questInfo);
     }
 
     public interface ILootCache
     {
-        ILoot Get(LootModel model, QuestContext context);
+        ILoot Get(LootModel model, QuestInfo questInfo);
     }
 
     public struct Key<T> : IEquatable<Key<T>>
         where T : class
     {
-        public Key(QuestContext context, T item)
+        public Key(QuestInfo questInfo, T item)
         {
             Assert.IsNotNull(item);
 
-            StarId = context.StarId;
-            Seed = context.Seed;
+            StarId = questInfo.StarId;
+            Seed = questInfo.Seed;
             Item = item;
         }
 
@@ -65,25 +62,22 @@ namespace Domain.Quests
 
     public class RequirementCache : IRequirementCache
     {
-        public RequirementCache(MotherShip motherShip, GameModel.RegionMap regionMap, ISessionData session, ILootCache lootCache, GameTime gameTime)
+        public RequirementCache(IQuestBuilderContext context, ILootCache lootCache)
         {
-            _motherShip = motherShip;
-            _regionMap = regionMap;
             _lootCache = lootCache;
-            _session = session;
-            _gameTime = gameTime;
+            _context = context;
         }
 
-        public INodeRequirements Get(Requirement requirement, QuestContext context)
+        public INodeRequirements Get(Requirement requirement, QuestInfo questInfo)
         {
             if (requirement == null) return null;
 
-            var key = new Key<Requirement>(context, requirement);
+            var key = new Key<Requirement>(questInfo, requirement);
 
             INodeRequirements value;
             if (!_cache.TryGetValue(key, out value))
             {
-                var builder = new RequirementsBuilder(context, _lootCache, _motherShip, _regionMap, _session, _gameTime);
+                var builder = new RequirementsBuilder(questInfo, _lootCache, _context);
                 value = builder.Build(requirement);
                 _cache.Add(key, value);
             }
@@ -91,65 +85,64 @@ namespace Domain.Quests
             return value;
         }
 
+        private readonly IQuestBuilderContext _context;
         private readonly Dictionary<Key<Requirement>, INodeRequirements> _cache = new Dictionary<Key<Requirement>, INodeRequirements>();
-        private readonly MotherShip _motherShip;
-        private readonly GameModel.RegionMap _regionMap;
         private readonly ILootCache _lootCache;
-        private readonly ISessionData _session;
-        private readonly GameTime _gameTime;
     }
 
     public class EnemyCache : IEnemyCache
     {
-        public EnemyCache(FleetFactory factory)
+        public EnemyCache(IDatabase database)
         {
-            _factory = factory;
+            _factory = new FleetFactory(database);
         }
 
-        public ICombatModelBuilder Get(Fleet enemy, QuestContext context)
+        public QuestEnemyData Get(Fleet enemy, QuestInfo questInfo)
         {
-            if (enemy == null) return null;
+            if (enemy == null) return new();
 
-            var key = new Key<Fleet>(context, enemy);
+            var key = new Key<Fleet>(questInfo, enemy);
 
-            ICombatModelBuilder value;
+            QuestEnemyData value;
             if (!_cache.TryGetValue(key, out value))
             {
-                value = _factory.CreateCombatModelBuilder(enemy, context);
+                value = _factory.CreateCombatPlan(enemy, questInfo);
                 _cache.Add(key, value);
             }
 
             return value;
         }
 
-        private readonly Dictionary<Key<Fleet>, ICombatModelBuilder> _cache = new Dictionary<Key<Fleet>, ICombatModelBuilder>();
+        private readonly Dictionary<Key<Fleet>, QuestEnemyData> _cache = new();
         private readonly FleetFactory _factory;
     }
 
     public class LootCache : ILootCache
     {
-        public LootCache(Loot.Factory factory)
+        public LootCache(ILootItemFactory lootItemFactory, IDatabase database)
         {
-            _factory = factory;
+            _lootItemFactory = lootItemFactory;
+            _database = database;
         }
 
-        public ILoot Get(LootModel loot, QuestContext context)
+        public ILoot Get(LootModel loot, QuestInfo questInfo)
         {
             if (loot == null) return null;
 
-            var key = new Key<LootModel>(context, loot);
+            var key = new Key<LootModel>(questInfo, loot);
 
             ILoot value;
             if (!_cache.TryGetValue(key, out value))
             {
-                value = _factory.Create(loot, context);
+                value = new Loot(loot, questInfo, _lootItemFactory, _database);
                 _cache.Add(key, value);
             }
 
             return value;
         }
 
+        private readonly IDatabase _database;
+        private readonly ILootItemFactory _lootItemFactory;
         private readonly Dictionary<Key<LootModel>, ILoot> _cache = new Dictionary<Key<LootModel>, ILoot>();
-        private readonly Loot.Factory _factory;
     }
 }

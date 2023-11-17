@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using Services.Localization;
-using Session.Content;
 
 namespace Domain.Quests
 {
@@ -29,7 +28,7 @@ namespace Domain.Quests
             return type == QuestType.Common || type == QuestType.Singleton || type == QuestType.Temporary;
         }
 
-        public static bool IsOnCooldown(this QuestModel model, QuestData questData, long currentTime, System.Random random)
+        public static bool IsOnCooldown(this QuestModel model, IQuestDataProvider questData, long currentTime, System.Random random)
         {
             if (model.StartCondition == StartCondition.Daily)
             {
@@ -57,7 +56,7 @@ namespace Domain.Quests
             return false;
         }
 
-        public static bool CanBeStarted(this QuestModel model, QuestData questData, int starId)
+        public static bool CanBeStarted(this QuestModel model, IQuestDataProvider questData, int starId)
         {
             switch (model.QuestType)
             {
@@ -65,9 +64,9 @@ namespace Domain.Quests
                     return true;
                 case QuestType.Common:
                 case QuestType.Urgent:
-                    return !questData.IsQuestActive(model.Id.Value, starId);
+                    return !questData.IsActive(model.Id.Value, starId);
                 case QuestType.Singleton:
-                    return !questData.IsQuestActive(model.Id.Value);
+                    return !questData.IsActive(model.Id.Value);
                 case QuestType.Storyline:
                     return !questData.IsActiveOrCompleted(model.Id.Value);
                 default:

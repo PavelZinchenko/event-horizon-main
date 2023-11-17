@@ -1,20 +1,19 @@
 ﻿using GameDatabase.DataModel;
 using Services.Localization;
-using Session;
 
 namespace Domain.Quests
 {
     public class ArtifactRequirement : IRequirements
     {
-        public ArtifactRequirement(QuestItem questItem, int amount, ISessionData session)
+        public ArtifactRequirement(QuestItem questItem, int amount, IInventoryDataProvider inventoryData)
         {
             _questItem = questItem;
             _amount = amount;
-            _session = session;
+            _inventoryData = inventoryData;
         }
 
-        public bool IsMet { get { return _session.Resources.Resources.GetQuantity(_questItem.Id.Value) >= _amount; } }
-        public bool CanStart(int starId, int seed) { return IsMet; }
+        public bool IsMet => _inventoryData.GetQuantity(_questItem.Id) >= _amount;
+        public bool CanStart(int starId, int seed) => IsMet;
 
         public string GetDescription(ILocalization localization)
         {
@@ -27,6 +26,6 @@ namespace Domain.Quests
 
         private readonly int _amount;
         private readonly QuestItem _questItem;
-        private readonly ISessionData _session;
+        private readonly IInventoryDataProvider _inventoryData;
     }
 }
