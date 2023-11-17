@@ -288,6 +288,18 @@ namespace Domain.Quests
             return node;
         }
 
+        public INode Create(Node_OpenWorkshop content)
+        {
+            var starData = _starMapData.GetStarData(_context.StarId);
+            var faction = content.Faction != Faction.Undefined ? content.Faction : starData.Region.Faction;
+            var level = content.Level > 0 ? content.Level : starData.Level;
+
+            var node = new WorkshopNode(content.Id, faction, level);
+            _nodes.Add(node.Id, node);
+            node.TargetNode = CreateNode(content.Transition);
+            return node;
+        }
+
         private readonly QuestInfo _context;
         private readonly Dictionary<NodeId, INode> _nodes;
         private readonly Dictionary<NodeId, Node> _nodesData;

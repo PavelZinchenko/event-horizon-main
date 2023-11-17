@@ -220,12 +220,12 @@ namespace GameStateMachine.States
             StateMachine.LoadAdditionalState(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.MarketDialog, new WindowArgs(marketInventory, playerInventory)));
         }
 
-        private void OnOpenWorkshop()
+        private void OnOpenWorkshop(Faction faction, int level)
         {
             if (!IsActive)
                 throw new BadGameStateException();
 
-            StateMachine.LoadAdditionalState(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.WorkshopDialog, new WindowArgs()));
+            StateMachine.LoadAdditionalState(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.WorkshopDialog, new WindowArgs(faction, level)));
         }
 
         private void OnOpenShipyard(Faction faction, int level)
@@ -299,6 +299,11 @@ namespace GameStateMachine.States
         public void OpenShipyard(Faction faction, int level)
         {
             OnOpenShipyard(faction, level);
+        }
+
+        public void OpenWorkshop(Faction faction, int level)
+        {
+            OnOpenWorkshop(faction, level);
         }
 
         public void CaptureStarBase(int starId, bool capture)
@@ -415,7 +420,7 @@ namespace GameStateMachine.States
         public class Trigger : TriggerBase { }
     }
 
-    public class OpenWorkshopSignal : SmartWeakSignal
+    public class OpenWorkshopSignal : SmartWeakSignal<Faction, int>
     {
         public class Trigger : TriggerBase { }
     }

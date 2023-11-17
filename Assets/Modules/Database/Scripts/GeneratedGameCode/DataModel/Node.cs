@@ -29,6 +29,8 @@ namespace GameDatabase.DataModel
 					return new Node_ShowDialog(serializable, loader);
 				case NodeType.OpenShipyard:
 					return new Node_OpenShipyard(serializable, loader);
+				case NodeType.OpenWorkshop:
+					return new Node_OpenWorkshop(serializable, loader);
 				case NodeType.Switch:
 					return new Node_Switch(serializable, loader);
 				case NodeType.Random:
@@ -100,6 +102,7 @@ namespace GameDatabase.DataModel
 	    T Create(Node_ComingSoon content);
 	    T Create(Node_ShowDialog content);
 	    T Create(Node_OpenShipyard content);
+	    T Create(Node_OpenWorkshop content);
 	    T Create(Node_Switch content);
 	    T Create(Node_Random content);
 	    T Create(Node_Condition content);
@@ -192,6 +195,29 @@ namespace GameDatabase.DataModel
 		partial void OnDataDeserialized(NodeSerializable serializable, Database.Loader loader);
 
   		public Node_OpenShipyard(NodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Faction = loader.GetFaction(new ItemId<Faction>(serializable.Faction));
+			Level = UnityEngine.Mathf.Clamp(serializable.Value, 0, 10000);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(INodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public int Transition { get; private set; }
+		public Faction Faction { get; private set; }
+		public int Level { get; private set; }
+    }
+    public partial class Node_OpenWorkshop : Node
+    {
+		partial void OnDataDeserialized(NodeSerializable serializable, Database.Loader loader);
+
+  		public Node_OpenWorkshop(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);

@@ -14,6 +14,7 @@ namespace Domain.Quests
         void SetFactionRelations(int starId, int value, bool additive);
         void StartQuest(QuestModel quest);
         void OpenShipyard(Faction faction, int level);
+        void OpenWorkshop(Faction faction, int level);
         void CaptureStarBase(int starId, bool capture);
         void ChangeFaction(int starId, Faction faction);
     }

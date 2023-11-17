@@ -14,6 +14,7 @@ namespace GameDatabase.Enums
 		ComingSoon = 1,
 		ShowDialog = 10,
 		OpenShipyard = 11,
+		OpenWorkshop = 12,
 		Switch = 15,
 		Random = 16,
 		Condition = 17,

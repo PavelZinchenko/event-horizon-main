@@ -5,6 +5,7 @@
     
     <item name="ShowDialog">10</item>
     <item name="OpenShipyard">11</item>
+    <item name="OpenWorkshop">12</item>
     
     <item name="Switch">15</item>
     <item name="Random">16</item>

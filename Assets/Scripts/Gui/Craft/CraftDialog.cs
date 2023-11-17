@@ -4,6 +4,7 @@ using System.Linq;
 using DataModel.Technology;
 using Economy.ItemType;
 using Economy.Products;
+using Services.Gui;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
@@ -74,25 +75,35 @@ namespace Gui.Craft
             UpdateTechPanel();
         }
 
-        public void InitializeWindow()
+        public void InitializeWindow(WindowArgs args)
         {
-            var star = _motherShip.CurrentStar;
-            _faction = star.Region.Faction;
+            if (args.Count >= 2)
+            {
+                _faction = args.Get<Faction>(0);
+                _level = args.Get<int>(1);
+            }
+            else
+            {
+                var star = _motherShip.CurrentStar;
+                _faction = star.Region.Faction;
+                _level = Mathf.Max(5, star.Level);
+            }
+
+
             var color =  _faction.Color;
             _factionText.text = _localization.GetString(_faction.Name);
             _factionIcon.color = _faction.Color;
 
             _techsIcon.color = color;
-            _level = Mathf.Max(5, star.Level);
             _levelText.text = _level.ToString();
 
-#if UNITY_EDITOR
-            if (true)
-            {
-                _technologyList.transform.InitializeElements<ViewModel.CraftListItem, ITechnology>(_technologies.All, UpdateTechnology, _gameObjectFactory);
-            }
-            else
-#endif
+//#if UNITY_EDITOR
+//            if (true)
+//            {
+//                _technologyList.transform.InitializeElements<ViewModel.CraftListItem, ITechnology>(_technologies.All, UpdateTechnology, _gameObjectFactory);
+//            }
+//            else
+//#endif
             _technologyList.transform.InitializeElements<ViewModel.CraftListItem, ITechnology>(_technologies.All.ForWorkshop(_faction).
                 Where(_research.IsTechResearched), UpdateTechnology, _gameObjectFactory);
 
@@ -122,9 +133,9 @@ namespace Gui.Craft
                 return;
             }
 
-            _commonCraftPanel.Initialize(_selectedTech);
-            _improvedCraftPanel.Initialize(_selectedTech);
-            _superiorCraftPanel.Initialize(_selectedTech);
+            _commonCraftPanel.Initialize(_selectedTech, _level);
+            _improvedCraftPanel.Initialize(_selectedTech, _level);
+            _superiorCraftPanel.Initialize(_selectedTech, _level);
         }
 
         private void UpdateResources()

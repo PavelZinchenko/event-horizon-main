@@ -1,8 +1,6 @@
 ﻿using System;
 using DataModel.Technology;
 using Economy.Products;
-using GameDatabase;
-using GameServices.Gui;
 using GameServices.Player;
 using GameServices.Random;
 using GameServices.Research;
@@ -20,7 +18,6 @@ namespace Gui.Craft
         [Inject] private readonly PlayerSkills _playerSkills;
         [Inject] private readonly Research _research;
         [Inject] private readonly IRandom _random;
-        [Inject] private readonly GuiHelper _helper;
 
         [SerializeField] private ItemCreatedEvent _itemCreatedEvent = new ItemCreatedEvent();
 
@@ -36,7 +33,7 @@ namespace Gui.Craft
         [Serializable]
         public class ItemCreatedEvent : UnityEvent<IProduct> {}
 
-        public void Initialize(ITechnology tech)
+        public void Initialize(ITechnology tech, int level)
         {
             if (_itemQuality != CraftItemQuality.Common && tech is SatelliteTechnology)
             {
@@ -45,11 +42,9 @@ namespace Gui.Craft
                 return;
             }
 
+            WorkshopLevel = level;
             _technology = tech;
 
-            var currentStar = _motherShip.CurrentStar;
-            var faction = tech.Faction;
-            var level = Mathf.Max(5, currentStar.Level);
             var price = tech.GetCraftPrice(_itemQuality)*_playerSkills.CraftingPriceScale;
 
             var requiredLevel = RequiredLevel;
@@ -104,7 +99,7 @@ namespace Gui.Craft
             return true;
         }
 
-        private int WorkshopLevel { get { return Mathf.Max(5, _motherShip.CurrentStar.Level); } }
+        private int WorkshopLevel { get; set; }
         private int RequiredLevel { get { return Math.Max(0, _itemQuality.GetWorkshopLevel(_technology.GetWorkshopLevel()) + _playerSkills.CraftingLevelModifier); } }
 
         private ITechnology _technology;
