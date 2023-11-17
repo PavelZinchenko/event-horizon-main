@@ -123,7 +123,7 @@ namespace Gui.ShipService
             _modificationsPanel.gameObject.SetActive(false);
             _modificationsRightPanel.SetActive(false);
             ShowLayout(false);
-            _paintingPanel.Initialize(_ship);
+            _paintingPanel.Initialize(_ship, _faction);
         }
 
         public void OnShipSelected(IShip ship)
@@ -163,11 +163,11 @@ namespace Gui.ShipService
 
             _creditsText.text = _playerResources.Money.ToString();
             _starsText.text = _playerResources.Stars.ToString();
-            _techText.text = _research.GetAvailablePoints(_motherShip.CurrentStar.Region.Faction).ToString();
+            _techText.text = _research.GetAvailablePoints(_faction).ToString();
         }
 
         private IShip _ship;
         private Faction _faction;
-        private int _level;
+        private ObscuredInt _level;
     }
 }

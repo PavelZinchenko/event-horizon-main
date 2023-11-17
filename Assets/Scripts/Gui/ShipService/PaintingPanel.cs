@@ -1,5 +1,5 @@
 ﻿using Constructor.Ships;
-using GameServices.Player;
+using GameDatabase.DataModel;
 using GameServices.Research;
 using Services.Audio;
 using Services.Localization;
@@ -22,20 +22,19 @@ namespace Gui.ShipService
         [SerializeField] private Text _nameText;
         [SerializeField] private Text _levelText;
 
-        [Inject] private readonly MotherShip _motherShip;
         [Inject] private readonly Research _research;
-        [Inject] private readonly PlayerResources _playerResources;
         [Inject] private readonly IResourceLocator _resourceLocator;
         [Inject] private readonly ISoundPlayer _soundPlayer;
         [Inject] private readonly ILocalization _localization;
 
-        public void Initialize(IShip ship)
+        public void Initialize(IShip ship, Faction faction)
         {
             _ship = ship;
+            _faction = faction;
             _shipIcon.sprite = _resourceLocator.GetSprite(_ship.Model.ModelImage);
             _nameText.text = _localization.GetString(_ship.Name);
             _levelText.text = _ship.Experience.Level.ToString();
-            _techIcon.color = _motherShip.CurrentStar.Region.Faction.Color;
+            _techIcon.color = _faction.Color;
 
             _color = new Color(ship.ColorScheme.Hue, ship.ColorScheme.Saturation, 0);
             _colorSlider.value = _color.r;
@@ -77,22 +76,21 @@ namespace Gui.ShipService
         {
             get
             {
-                var faction = _motherShip.CurrentStar.Region.Faction;
-                return _research.GetAvailablePoints(faction) > 0;
+                return _research.GetAvailablePoints(_faction) > 0;
             }
         }
 
         private bool TryTakeMoney()
         {
-            var faction = _motherShip.CurrentStar.Region.Faction;
-            if (_research.GetAvailablePoints(faction) < 1)
+            if (_research.GetAvailablePoints(_faction) < 1)
                 return false;
 
-            _research.AddResearchPoints(faction, -1);
+            _research.AddResearchPoints(_faction, -1);
             return true;
         }
 
         private Color _color;
         private IShip _ship;
+        private Faction _faction;
     }
 }
