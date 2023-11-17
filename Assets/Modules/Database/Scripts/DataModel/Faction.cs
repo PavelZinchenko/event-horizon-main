@@ -25,6 +25,13 @@ namespace GameDatabase.DataModel
             {
                 NoMissions = true;
             }
+
+            WanderingShipsRange = new Range(
+                WanderingShipsDistance != 0 ? WanderingShipsDistance : int.MinValue,
+                WanderingShipsDistanceMax != 0 ? WanderingShipsDistanceMax : int.MaxValue);
+            HomeStarRange = new Range(
+                HomeStarDistance != 0 ? HomeStarDistance : int.MinValue,
+                HomeStarDistanceMax != 0 ? HomeStarDistanceMax : int.MaxValue);
         }
 
         private Faction(int id, UnityEngine.Color color, string name)
@@ -34,7 +41,32 @@ namespace GameDatabase.DataModel
             Name = name;
         }
 
+        public Range HomeStarRange { get; private set; }
+        public Range WanderingShipsRange { get; private set; }
+
         public static readonly Faction Neutral;
         public static readonly Faction Undefined;
+    }
+
+    public struct Range
+    {
+        public Range(int min, int max)
+        {
+            if (min < max)
+            {
+                Min = min;
+                Max = max;
+            }
+            else
+            {
+                Min = max;
+                Max = min;
+            }
+        }
+
+        public bool Contains(int value) => value >= Min && value <= Max;
+
+        public readonly int Min;
+        public readonly int Max;
     }
 }

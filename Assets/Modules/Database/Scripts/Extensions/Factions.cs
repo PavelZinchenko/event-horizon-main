@@ -23,7 +23,7 @@ namespace GameDatabase.Extensions
 
         public static IEnumerable<Faction> WithStarbases(this IEnumerable<Faction> factions, int distance = 0)
         {
-            return factions.Where(item => !item.NoTerritories && item.HomeStarDistance <= distance);
+            return factions.Where(item => !item.NoTerritories && item.HomeStarRange.Contains(distance));
         }
     }
 }

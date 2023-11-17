@@ -80,7 +80,7 @@ namespace GameDatabase.Extensions
 
         public static IEnumerable<ShipBuild> LimitFactionByStarLevel(this IEnumerable<ShipBuild> ships, int distance)
         {
-            return ships.Where(item => !item.Ship.Faction.NoWanderingShips && item.Ship.Faction.WanderingShipsDistance <= distance);
+            return ships.Where(item => !item.Ship.Faction.NoWanderingShips && item.Ship.Faction.WanderingShipsRange.Contains(distance));
         }
 
         public static IEnumerable<ShipBuild> LimitByFactionOrStarLevel(this IEnumerable<ShipBuild> ships, Faction faction, int distance)

@@ -258,7 +258,7 @@ namespace Game.Exploration
             if (shipFaction == Faction.Neutral || shipFaction == Faction.Undefined)
                 return true;
             if (_planet.Faction == Faction.Neutral)
-                return !shipFaction.NoWanderingShips && shipFaction.WanderingShipsDistance <= _planet.Level;
+                return !shipFaction.NoWanderingShips && shipFaction.WanderingShipsRange.Contains(_planet.Level);
 
             return _planet.Faction == shipFaction;
         }

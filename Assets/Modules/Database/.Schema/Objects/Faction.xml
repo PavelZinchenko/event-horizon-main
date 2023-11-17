@@ -5,9 +5,11 @@
 
     <member name="NoTerritories" type="bool" />
     <member name="HomeStarDistance" type="int" minvalue="0" maxvalue="5000" />
+    <member name="HomeStarDistanceMax" type="int" minvalue="0" maxvalue="5000" />
 
     <member name="NoWanderingShips" type="bool" />
     <member name="WanderingShipsDistance" type="int" minvalue="0" maxvalue="5000" />
+    <member name="WanderingShipsDistanceMax" type="int" minvalue="0" maxvalue="5000" />
 
     <member name="HideFromMerchants" type="bool" />
     <member name="HideResearchTree" type="bool" />

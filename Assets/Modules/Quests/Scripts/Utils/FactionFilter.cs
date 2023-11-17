@@ -28,7 +28,7 @@ namespace Domain.Quests
         public bool IsSuitableForFleet(Faction faction)
         {
             if (_type == FactionFilterType.AllAvailable)
-                return !faction.NoWanderingShips && faction.WanderingShipsDistance <= _starLevel;
+                return !faction.NoWanderingShips && faction.WanderingShipsRange.Contains(_starLevel);
 
             return IsSuitable(faction, _starFaction);
         }
@@ -52,7 +52,7 @@ namespace Domain.Quests
         public bool IsSuitableForBase(Faction faction)
         {
             if (_type == FactionFilterType.AllAvailable)
-                return !faction.NoTerritories && faction.HomeStarDistance <= _starLevel;
+                return !faction.NoTerritories && faction.HomeStarRange.Contains(_starLevel);
 
             return IsSuitable(faction, _starFaction);
         }
