@@ -101,6 +101,11 @@ namespace GameServices.Research
 	        return _technologies.All.OfFaction(faction).Where(item => !_researchedTech.Contains(item) && IsAvailabe(item, false));
 	    }
 
+		public bool AnyResearchPointsObtained(Faction faction)
+        {
+			return _session.Research.GetResearchPoints(faction) > 0;
+        }
+
 	    protected override void OnSessionDataLoaded()
 	    {
             _researchedTech.Clear();

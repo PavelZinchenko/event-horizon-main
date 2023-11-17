@@ -34,11 +34,8 @@ namespace ViewModel
         public void SetFaction(Faction faction)
 		{
 			_faction = faction;
-#if UNITY_EDITOR
-			var unlocked = true;
-#else
-			var unlocked = _starMapManager.IsFactionUnlocked(faction);
-#endif
+			var unlocked = _starMapManager.IsFactionDiscovered(faction) || _research.AnyResearchPointsObtained(faction);
+
 			var color = faction.Color;
 			Icon.color = color;
 			Background.color = new Color(color.R, color.G, color.B, 0.5f);

@@ -38,7 +38,7 @@ namespace Domain.Player
             _newStarSecuredSignal.Event += OnNewStarSecured;
         }
 
-        public bool IsFactionUnlocked(Faction faction)
+        public bool IsFactionDiscovered(Faction faction)
         {
             return faction == Faction.Neutral || _factions.Contains(faction);
         }

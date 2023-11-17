@@ -32,7 +32,7 @@ namespace Gui.Ehopedia
 
         private void UpdateFaction(FactionListItem item, Faction faction)
         {
-            item.Initialize(faction, _starMapManager.IsFactionUnlocked(faction) || true, _localization);
+            item.Initialize(faction, true, _localization);
         }
 
         public void OnFactionSelected(FactionListItem item)
