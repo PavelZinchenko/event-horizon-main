@@ -38,13 +38,11 @@ namespace GameDatabase.Storage
                     fileInfo.Extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) || 
                     fileInfo.Extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase))
                 {
-                    var binaryData = File.ReadAllBytes(file);
-                    loader.LoadImage(fileInfo.Name, binaryData);
+                    loader.LoadImage(fileInfo.Name, new LazyImageFileLoader(file));
                 }
                 else if (fileInfo.Extension.Equals(".wav", StringComparison.OrdinalIgnoreCase))
                 {
-                    var audioData = File.ReadAllBytes(file);
-                    loader.LoadAudioClip(Path.GetFileNameWithoutExtension(file), audioData);
+                    loader.LoadAudioClip(Path.GetFileNameWithoutExtension(file), new LazyAudioFileLoader(file));
                 }
                 else if (fileInfo.Extension.Equals(".xml", StringComparison.OrdinalIgnoreCase))
                 {
@@ -87,5 +85,75 @@ namespace GameDatabase.Storage
         }
 
         private readonly string _path;
+    }
+
+    public class LazyImageFileLoader : Model.IImageData
+    {
+        private readonly string _filename;
+        private Model.ImageData _imageData;
+
+        public Sprite Sprite
+        {
+            get
+            {
+                if (_imageData == null)
+                {
+                    Debug.Log($"Loading image: {_filename}");
+
+                    try 
+                    {
+                        var rawData = File.ReadAllBytes(_filename);
+                        _imageData = new(rawData);
+                    }
+                    catch (Exception e) 
+                    {
+                        Debug.LogException(e);
+                        _imageData = Model.ImageData.Empty;
+                    }
+                }
+
+                return _imageData.Sprite;
+            }
+        }
+
+        public LazyImageFileLoader(string fliename)
+        {
+            _filename = fliename;
+        }
+    }
+
+    public class LazyAudioFileLoader : Model.IAudioClipData
+    {
+        private readonly string _filename;
+        private Model.AudioClipData _audioClipData;
+
+        public AudioClip AudioClip
+        {
+            get
+            {
+                if (_audioClipData == null)
+                {
+                    Debug.Log($"Loading audio clip: {_filename}");
+
+                    try
+                    {
+                        var rawData = File.ReadAllBytes(_filename);
+                        _audioClipData = new(rawData);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                        _audioClipData = Model.AudioClipData.Empty;
+                    }
+                }
+
+                return _audioClipData.AudioClip;
+            }
+        }
+
+        public LazyAudioFileLoader(string fliename)
+        {
+            _filename = fliename;
+        }
     }
 }

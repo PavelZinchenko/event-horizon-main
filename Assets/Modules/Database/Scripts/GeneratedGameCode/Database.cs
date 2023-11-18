@@ -71,8 +71,8 @@ namespace GameDatabase
 		VisualEffect GetVisualEffect(ItemId<VisualEffect> id);
 		Weapon GetWeapon(ItemId<Weapon> id);
 
-        ImageData GetImage(string name);
-        AudioClipData GetAudioClip(string name);
+        IImageData GetImage(string name);
+        IAudioClipData GetAudioClip(string name);
         string GetLocalization(string language);
 	}
 
@@ -133,8 +133,8 @@ namespace GameDatabase
 		public VisualEffect GetVisualEffect(ItemId<VisualEffect> id) { return (_visualEffectMap.TryGetValue(id.Value, out var item)) ? item : VisualEffect.DefaultValue; }
 		public Weapon GetWeapon(ItemId<Weapon> id) { return (_weaponMap.TryGetValue(id.Value, out var item)) ? item : Weapon.DefaultValue; }
 
-        public ImageData GetImage(string name) { return _images.TryGetValue(name, out var image) ? image : ImageData.Empty; }
-        public AudioClipData GetAudioClip(string name) { return _audioClips.TryGetValue(name, out var audioClip) ? audioClip : AudioClipData.Empty; }
+        public IImageData GetImage(string name) { return _images.TryGetValue(name, out var image) ? image : ImageData.Empty; }
+        public IAudioClipData GetAudioClip(string name) { return _audioClips.TryGetValue(name, out var audioClip) ? audioClip : AudioClipData.Empty; }
         public string GetLocalization(string language) { return _localizations.TryGetValue(language, out var data) ? data : null; }
 
         private void Clear()
@@ -176,32 +176,32 @@ namespace GameDatabase
 			_localizations.Clear();
         }
 
-		private readonly Dictionary<int, AmmunitionObsolete> _ammunitionObsoleteMap = new Dictionary<int, AmmunitionObsolete>();
-		private readonly Dictionary<int, Component> _componentMap = new Dictionary<int, Component>();
-		private readonly Dictionary<int, ComponentMod> _componentModMap = new Dictionary<int, ComponentMod>();
-		private readonly Dictionary<int, ComponentStats> _componentStatsMap = new Dictionary<int, ComponentStats>();
-		private readonly Dictionary<int, Device> _deviceMap = new Dictionary<int, Device>();
-		private readonly Dictionary<int, DroneBay> _droneBayMap = new Dictionary<int, DroneBay>();
-		private readonly Dictionary<int, Faction> _factionMap = new Dictionary<int, Faction>();
-		private readonly Dictionary<int, Satellite> _satelliteMap = new Dictionary<int, Satellite>();
-		private readonly Dictionary<int, SatelliteBuild> _satelliteBuildMap = new Dictionary<int, SatelliteBuild>();
-		private readonly Dictionary<int, Ship> _shipMap = new Dictionary<int, Ship>();
-		private readonly Dictionary<int, ShipBuild> _shipBuildMap = new Dictionary<int, ShipBuild>();
-		private readonly Dictionary<int, Skill> _skillMap = new Dictionary<int, Skill>();
-		private readonly Dictionary<int, Technology> _technologyMap = new Dictionary<int, Technology>();
-		private readonly Dictionary<int, Character> _characterMap = new Dictionary<int, Character>();
-		private readonly Dictionary<int, Fleet> _fleetMap = new Dictionary<int, Fleet>();
-		private readonly Dictionary<int, LootModel> _lootMap = new Dictionary<int, LootModel>();
-		private readonly Dictionary<int, QuestModel> _questMap = new Dictionary<int, QuestModel>();
-		private readonly Dictionary<int, QuestItem> _questItemMap = new Dictionary<int, QuestItem>();
-		private readonly Dictionary<int, Ammunition> _ammunitionMap = new Dictionary<int, Ammunition>();
-		private readonly Dictionary<int, BulletPrefab> _bulletPrefabMap = new Dictionary<int, BulletPrefab>();
-		private readonly Dictionary<int, VisualEffect> _visualEffectMap = new Dictionary<int, VisualEffect>();
-		private readonly Dictionary<int, Weapon> _weaponMap = new Dictionary<int, Weapon>();
+		private readonly Dictionary<int, AmmunitionObsolete> _ammunitionObsoleteMap = new();
+		private readonly Dictionary<int, Component> _componentMap = new();
+		private readonly Dictionary<int, ComponentMod> _componentModMap = new();
+		private readonly Dictionary<int, ComponentStats> _componentStatsMap = new();
+		private readonly Dictionary<int, Device> _deviceMap = new();
+		private readonly Dictionary<int, DroneBay> _droneBayMap = new();
+		private readonly Dictionary<int, Faction> _factionMap = new();
+		private readonly Dictionary<int, Satellite> _satelliteMap = new();
+		private readonly Dictionary<int, SatelliteBuild> _satelliteBuildMap = new();
+		private readonly Dictionary<int, Ship> _shipMap = new();
+		private readonly Dictionary<int, ShipBuild> _shipBuildMap = new();
+		private readonly Dictionary<int, Skill> _skillMap = new();
+		private readonly Dictionary<int, Technology> _technologyMap = new();
+		private readonly Dictionary<int, Character> _characterMap = new();
+		private readonly Dictionary<int, Fleet> _fleetMap = new();
+		private readonly Dictionary<int, LootModel> _lootMap = new();
+		private readonly Dictionary<int, QuestModel> _questMap = new();
+		private readonly Dictionary<int, QuestItem> _questItemMap = new();
+		private readonly Dictionary<int, Ammunition> _ammunitionMap = new();
+		private readonly Dictionary<int, BulletPrefab> _bulletPrefabMap = new();
+		private readonly Dictionary<int, VisualEffect> _visualEffectMap = new();
+		private readonly Dictionary<int, Weapon> _weaponMap = new();
 	
-        private readonly Dictionary<string, ImageData> _images = new Dictionary<string, ImageData>(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, AudioClipData> _audioClips = new Dictionary<string, AudioClipData>(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, string> _localizations = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IImageData> _images = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IAudioClipData> _audioClips = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string> _localizations = new(StringComparer.OrdinalIgnoreCase);
 
 		public class Loader
         {

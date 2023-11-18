@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Ionic.Zlib;
+using UnityEngine;
 
 namespace GameDatabase.Storage
 {
@@ -57,7 +58,7 @@ namespace GameDatabase.Storage
                 {
                     var key = Utils.Serialization.DeserializeString(_content, ref index);
                     var image = Utils.Serialization.DeserializeByteArray(_content, ref index);
-                    loader.LoadImage(key, image);
+                    loader.LoadImage(key, new LazyImageDataLoader(image));
                 }
                 else if (type == 3) // localization
                 {
@@ -69,7 +70,7 @@ namespace GameDatabase.Storage
                 {
                     var key = Utils.Serialization.DeserializeString(_content, ref index);
                     var audioClip = Utils.Serialization.DeserializeByteArray(_content, ref index);
-                    loader.LoadAudioClip(key, audioClip);
+                    loader.LoadAudioClip(key, new LazyAudioDataLoader(audioClip));
                 }
             }
 
@@ -79,5 +80,55 @@ namespace GameDatabase.Storage
 
         private readonly byte[] _content;
         private readonly int _startIndex;
+    }
+
+    public class LazyImageDataLoader : Model.IImageData
+    {
+        private byte[] _rawData;
+        private Model.ImageData _imageData;
+
+        public Sprite Sprite
+        {
+            get
+            {
+                if (_imageData == null)
+                {
+                    _imageData = new(_rawData);
+                    _rawData = null;
+                }
+
+                return _imageData.Sprite;
+            }
+        }
+
+        public LazyImageDataLoader(byte[] rawData)
+        {
+            _rawData = rawData;
+        }
+    }
+
+    public class LazyAudioDataLoader : Model.IAudioClipData
+    {
+        private byte[] _rawData;
+        private Model.AudioClipData _audioClipData;
+
+        public AudioClip AudioClip
+        {
+            get
+            {
+                if (_audioClipData == null)
+                {
+                    _audioClipData = new(_rawData);
+                    _rawData = null;
+                }
+
+                return _audioClipData.AudioClip;
+            }
+        }
+
+        public LazyAudioDataLoader(byte[] rawData)
+        {
+            _rawData = rawData;
+        }
     }
 }

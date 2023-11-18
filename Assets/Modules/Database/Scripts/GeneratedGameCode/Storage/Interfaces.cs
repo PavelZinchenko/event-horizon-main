@@ -6,6 +6,8 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
+using GameDatabase.Model;
+
 namespace GameDatabase.Storage
 {
     public interface IJsonSerializer
@@ -23,7 +25,7 @@ namespace GameDatabase.Storage
     {
         void LoadJson(string name, string data);
         void LoadLocalization(string name, string data);
-        void LoadImage(string name, byte[] data);
-        void LoadAudioClip(string name, byte[] data);
+        void LoadImage(string name, IImageData image);
+        void LoadAudioClip(string name, IAudioClipData audioClip);
     }
 }
