@@ -17,6 +17,7 @@ namespace GameDatabase
 	public partial interface IDatabase
 	{
 		DatabaseSettings DatabaseSettings { get; }
+		DebugSettings DebugSettings { get; }
 		ExplorationSettings ExplorationSettings { get; }
 		FrontierSettings FrontierSettings { get; }
 		GalaxySettings GalaxySettings { get; }
@@ -79,6 +80,7 @@ namespace GameDatabase
     public partial class Database : IDatabase
     {
 		public DatabaseSettings DatabaseSettings { get; private set; }
+		public DebugSettings DebugSettings { get; private set; }
 		public ExplorationSettings ExplorationSettings { get; private set; }
 		public FrontierSettings FrontierSettings { get; private set; }
 		public GalaxySettings GalaxySettings { get; private set; }
@@ -163,6 +165,7 @@ namespace GameDatabase
 			_weaponMap.Clear();
 
 			DatabaseSettings = null;
+			DebugSettings = null;
 			ExplorationSettings = null;
 			FrontierSettings = null;
 			GalaxySettings = null;
@@ -300,6 +303,8 @@ namespace GameDatabase
 
 				if (_database.DatabaseSettings == null)
 					_database.DatabaseSettings = DatabaseSettings.Create(_content.DatabaseSettings ?? new Serializable.DatabaseSettingsSerializable { ItemType = Enums.ItemType.DatabaseSettings }, this);
+				if (_database.DebugSettings == null)
+					_database.DebugSettings = DebugSettings.Create(_content.DebugSettings ?? new Serializable.DebugSettingsSerializable { ItemType = Enums.ItemType.DebugSettings }, this);
 				if (_database.ExplorationSettings == null)
 					_database.ExplorationSettings = ExplorationSettings.Create(_content.ExplorationSettings ?? new Serializable.ExplorationSettingsSerializable { ItemType = Enums.ItemType.ExplorationSettings }, this);
 				if (_database.FrontierSettings == null)

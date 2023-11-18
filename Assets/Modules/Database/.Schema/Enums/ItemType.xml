@@ -32,4 +32,5 @@
     <item name="ShipModSettings">105</item>
     <item name="SpecialEventSettings">106</item>
     <item name="SkillSettings">107</item>
+    <item name="DebugSettings">108</item>
 </data>

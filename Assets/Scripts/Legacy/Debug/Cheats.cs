@@ -51,10 +51,13 @@ public class Cheats
     [Inject] private readonly StarMap _starMap;
     [Inject] private readonly IDatabase _database;
     [Inject] private readonly ILevelLoader _levelLoader;
-    //[Inject] private readonly ItemTypeFactory _itemTypeFactory;
+    [Inject] private readonly DatabaseCodesProcessor _databaseCodesProcessor;
 
     public bool TryExecuteCommand(string command, int hash)
 	{
+        if (_databaseCodesProcessor.TryExecuteDatabaseCommand(command))
+            return true;
+
 		#if UNITY_EDITOR
 		if (command == "123")
 		{

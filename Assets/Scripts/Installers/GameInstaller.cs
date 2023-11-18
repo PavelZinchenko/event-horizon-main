@@ -77,6 +77,8 @@ namespace Installers
             Container.BindTrigger<ShipDestroyedSignal.Trigger>();
 
             Container.Bind<Cheats>();
+            Container.Bind<DatabaseCodesProcessor>();
+
             Container.Bind<GuiHelper>();
             Container.Bind<HolidayManager>().AsSingle();
             Container.Bind<NotificationManager>().AsSingle().NonLazy();

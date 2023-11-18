@@ -334,6 +334,19 @@ namespace GameDatabase.Storage
 				if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate DatabaseSettings file found - " + name);
             }
+            else if (type == ItemType.DebugSettings)
+            {
+                if (DebugSettings == null)
+                {
+                    var data = _serializer.FromJson<DebugSettingsSerializable>(content);
+                    data.FileName = name;
+                    DebugSettings = data;
+                    return;
+                }
+
+				if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate DebugSettings file found - " + name);
+            }
             else if (type == ItemType.ExplorationSettings)
             {
                 if (ExplorationSettings == null)
@@ -447,6 +460,7 @@ namespace GameDatabase.Storage
         }
 
 		public DatabaseSettingsSerializable DatabaseSettings { get; private set; }
+		public DebugSettingsSerializable DebugSettings { get; private set; }
 		public ExplorationSettingsSerializable ExplorationSettings { get; private set; }
 		public FrontierSettingsSerializable FrontierSettings { get; private set; }
 		public GalaxySettingsSerializable GalaxySettings { get; private set; }
