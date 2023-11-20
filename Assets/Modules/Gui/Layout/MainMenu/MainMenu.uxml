@@ -1,0 +1,30 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="PrivacyPolicyButton" src="project://database/Assets/Modules/Gui/Layout/MainMenu/PrivacyPolicyButton.uxml?fileID=9197481963319205126&amp;guid=138cc7ca773fc2d48a114d8f6abf52f3&amp;type=3#PrivacyPolicyButton" />
+    <ui:Template name="MenuButton" src="project://database/Assets/Modules/Gui/Layout/MainMenu/MenuButton.uxml?fileID=9197481963319205126&amp;guid=4e4ba5e61c1e86e4cb857efb1c9dcea0&amp;type=3#MenuButton" />
+    <ui:Template name="MenuInputButton" src="project://database/Assets/Modules/Gui/Layout/MainMenu/MenuInputButton.uxml?fileID=9197481963319205126&amp;guid=105c736dfcd7a2f46b1ae63c109b7304&amp;type=3#MenuInputButton" />
+    <Style src="project://database/Assets/Modules/Gui/Layout/MainMenu/MainMenu.uss?fileID=7433441132597879392&amp;guid=7721a7bf253a04a49b6392e18158087a&amp;type=3#MainMenu" />
+    <ui:VisualElement style="width: 600px; position: absolute; right: 0; bottom: 0; top: 0; justify-content: flex-end; align-items: stretch;">
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row; align-items: flex-start; justify-content: flex-end;">
+            <ui:Instance template="PrivacyPolicyButton" name="PrivacyPolicy" />
+        </ui:VisualElement>
+        <ui:Instance template="MenuButton" name="NewGame">
+            <AttributeOverrides element-name="label" text="$MenuNewGame" />
+        </ui:Instance>
+        <ui:Instance template="MenuButton" name="Continue">
+            <AttributeOverrides element-name="label" text="$MenuContinueGame" />
+        </ui:Instance>
+        <ui:Instance template="MenuButton" name="QuickCombat">
+            <AttributeOverrides element-name="label" text="$MenuCombat" />
+        </ui:Instance>
+        <ui:Instance template="MenuButton" name="Settings">
+            <AttributeOverrides element-name="label" text="$MenuSettings" />
+        </ui:Instance>
+        <ui:Instance template="MenuInputButton" name="Constructor" />
+        <ui:Instance template="MenuButton" name="RestorePurchases">
+            <AttributeOverrides element-name="label" text="$RestorePurchases" />
+        </ui:Instance>
+        <ui:Instance template="MenuButton" name="Exit">
+            <AttributeOverrides element-name="label" text="$Exit" />
+        </ui:Instance>
+    </ui:VisualElement>
+</ui:UXML>

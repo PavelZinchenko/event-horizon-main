@@ -1,0 +1,50 @@
+.menu-button {
+    height: 112px;
+}
+
+.menu-button .unity-base-text-field__input {
+    font-size: 36px;
+    -unity-font-definition: url('project://database/Assets/Fonts/Bicubik%20SDF.asset?fileID=11400000&guid=94c4f79ac2bbcef4ca01ded39151b6d5&type=2#Bicubik SDF');
+    -unity-text-align: middle-center;
+    --unity-sync-text-editor-engine: true;
+    white-space: nowrap;
+    color: var(--normal-text-color);
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: var(--text-outline-color);
+    background-color: var(--button-focus-color-hover);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-left-color: var(--panel-color);
+    border-right-color: var(--panel-color);
+    border-top-color: var(--panel-color);
+    border-bottom-color: var(--panel-color);
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.menu-privacy-policy-button {
+    background-image: url('project://database/Assets/Sprites/UI/ui_button2.psd?fileID=21300000&guid=b48e6e3a82e818945b26df929ec0618f&type=3#ui_button2');
+    height: 96px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+    font-size: 24px;
+    -unity-font-definition: url('project://database/Assets/Fonts/Bicubik%20SDF.asset?fileID=11400000&guid=94c4f79ac2bbcef4ca01ded39151b6d5&type=2#Bicubik SDF');
+    white-space: normal;
+    -unity-text-align: middle-center;
+    width: 400px;
+    -unity-font-style: italic;
+}

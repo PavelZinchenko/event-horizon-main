@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Modules/Gui/Style/Common.uss?fileID=7433441132597879392&amp;guid=14c17551acd6e8147a213e34d9e83ad3&amp;type=3#Common" />
+    <Style src="project://database/Assets/Modules/Gui/Style/CommonButton.uss?fileID=7433441132597879392&amp;guid=8c3e5bd053822c945bff7a98fe6a1af6&amp;type=3#CommonButton" />
+    <Style src="project://database/Assets/Modules/Gui/Layout/MainMenu/MenuButton.uss?fileID=7433441132597879392&amp;guid=f203bb8bdd2bb81478b83a88fe5bf7b8&amp;type=3#MenuButton" />
+    <ui:Button name="button" class="menu-button common-button">
+        <ui:VisualElement class="left">
+            <ui:VisualElement name="icon" class="icon" />
+        </ui:VisualElement>
+        <ui:VisualElement class="right">
+            <ui:TextField name="input" max-length="8" style="flex-grow: 1; margin-left: 0; margin-right: 8px; margin-top: 8px; margin-bottom: 8px;" />
+        </ui:VisualElement>
+        <ui:VisualElement picking-mode="Ignore" class="background" />
+    </ui:Button>
+</ui:UXML>

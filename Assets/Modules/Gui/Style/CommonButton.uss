@@ -1,0 +1,69 @@
+.common-button {
+    -unity-background-image-tint-color: var(--panel-color);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 36px;
+    white-space: normal;
+    color: var(--normal-text-color);
+    background-color: rgba(0, 0, 0, 0);
+    flex-direction: row;
+}
+
+.common-button .icon {
+    -unity-background-image-tint-color: var(--icon-color);
+    -unity-background-scale-mode: scale-to-fit;
+    min-width: 64px;
+    min-height: 64px;
+}
+
+.common-button > .background {
+    background-image: url('project://database/Assets/Sprites/UI/ui_button2_sel.psd?fileID=21300000&guid=612367935854aa241a649ee7d6a2e51a&type=3#ui_button2_sel');
+    -unity-background-image-tint-color: var(--button-focus-color-normal);
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    transition-duration: 0.2s;
+}
+
+.common-button:hover > .background {
+    -unity-background-image-tint-color: var(--button-focus-color-hover);
+}
+
+.common-button:active > .background {
+    -unity-background-image-tint-color: var(--button-focus-color-active);
+}
+
+.common-button > .left {
+    background-image: url('project://database/Assets/Sprites/UI/ui_button4l.psd?fileID=21300000&guid=337db6900bc267b4983fc3d05bf3512b&type=3#ui_button4l');
+    -unity-background-image-tint-color: var(--panel-color);
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+    justify-content: center;
+    align-items: center;
+}
+
+.common-button > .right {
+    background-image: url('project://database/Assets/Sprites/UI/ui_button4r.psd?fileID=21300000&guid=7cbdf6fc5f1d25042bd92e4ed33d4982&type=3#ui_button4r');
+    -unity-background-image-tint-color: var(--panel-color);
+    padding-left: 24px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    flex-grow: 1;
+    align-items: stretch;
+    justify-content: center;
+}

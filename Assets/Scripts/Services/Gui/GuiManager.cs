@@ -244,14 +244,15 @@ namespace Services.Gui
 
         private void FindWindows(Transform root, ICollection<IWindow> windows)
         {
-            foreach (Transform child in root)
+            var window = root.GetComponent<IWindow>();
+            if (window != null)
             {
-                var item = child.GetComponent<IWindow>();
-                if (item != null)
-                    windows.Add(item);
-                else
-                    FindWindows(child, windows);
+                windows.Add(window);
+                return;
             }
+
+            foreach (Transform child in root)
+                FindWindows(child, windows);
         }
 
         private void ScanSceneForWindows()
