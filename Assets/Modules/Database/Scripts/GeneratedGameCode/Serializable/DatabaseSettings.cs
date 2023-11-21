@@ -16,6 +16,7 @@ namespace GameDatabase.Serializable
 	public class DatabaseSettingsSerializable : SerializableItem
 	{
 		public int DatabaseVersion;
+		public int DatabaseVersionMinor;
 		public string ModName;
 		public string ModId;
 		public int ModVersion;

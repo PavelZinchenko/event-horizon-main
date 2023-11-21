@@ -28,8 +28,6 @@ namespace GameDatabase.Storage
             storage?.LoadContent(this);
         }
 
-        public const int SchemaVersion = 1;
-
         public void LoadJson(string name, string content)
         {
             var item = _serializer.FromJson<SerializableItem>(content);

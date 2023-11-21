@@ -13,7 +13,7 @@ namespace GameDatabase.Storage
             Name = info.Name;
             Id = info.Name;
 
-            var modInfo = info.GetFiles("mod", SearchOption.AllDirectories).FirstOrDefault();
+            var modInfo = info.GetFiles(SignatureFileName, SearchOption.AllDirectories).FirstOrDefault();
             if (modInfo != null)
             {
                 var data = File.ReadAllText(modInfo.FullName).Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
@@ -63,8 +63,8 @@ namespace GameDatabase.Storage
 
         public string Name { get; }
         public string Id { get; }
-        public int SchemaVersion => DatabaseContent.SchemaVersion;
         public bool IsEditable => true;
+        public Version Version { get; } = new Version(Database.VersionMajor, Database.VersionMinor);
 
         public void UpdateItem(string name, string content)
         {
@@ -85,6 +85,7 @@ namespace GameDatabase.Storage
         }
 
         private readonly string _path;
+        private const string SignatureFileName = "id";
     }
 
     public class LazyImageFileLoader : Model.IImageData

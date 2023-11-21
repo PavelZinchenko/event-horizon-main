@@ -32,7 +32,7 @@ namespace GameDatabase.Storage
 
         public string Name { get; }
         public string Id { get; }
-        public int SchemaVersion => DatabaseContent.SchemaVersion;
+        public Version Version { get; } = new Version(Database.VersionMajor, Database.VersionMinor);
         public bool IsEditable
         {
             get

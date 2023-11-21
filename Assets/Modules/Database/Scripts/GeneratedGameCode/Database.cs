@@ -79,6 +79,9 @@ namespace GameDatabase
 
     public partial class Database : IDatabase
     {
+		public const int VersionMajor = 1;
+		public const int VersionMinor = 1;
+
 		public DatabaseSettings DatabaseSettings { get; private set; }
 		public DebugSettings DebugSettings { get; private set; }
 		public ExplorationSettings ExplorationSettings { get; private set; }
