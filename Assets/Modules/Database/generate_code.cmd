@@ -1,1 +1,1 @@
-.CodeGenerator\DatabaseCodeGenerator\bin\Release\DatabaseCodeGenerator.exe .Schema Scripts game
+.CodeGenerator\DatabaseCodeGenerator\bin\Release\DatabaseCodeGenerator.exe .Schema\versions.xml Scripts game

@@ -24,8 +24,8 @@ namespace GameDatabase.DataModel
 
 		private DatabaseSettings(DatabaseSettingsSerializable serializable, Database.Loader loader)
 		{
-			DatabaseVersion = UnityEngine.Mathf.Clamp(serializable.DatabaseVersion, 1, 1);
-			DatabaseVersionMinor = UnityEngine.Mathf.Clamp(serializable.DatabaseVersionMinor, 0, 1);
+			DatabaseVersion = UnityEngine.Mathf.Clamp(serializable.DatabaseVersion, 1, 2147483647);
+			DatabaseVersionMinor = UnityEngine.Mathf.Clamp(serializable.DatabaseVersionMinor, 0, 2147483647);
 			ModName = serializable.ModName;
 			ModId = serializable.ModId;
 			ModVersion = UnityEngine.Mathf.Clamp(serializable.ModVersion, -2147483648, 2147483647);

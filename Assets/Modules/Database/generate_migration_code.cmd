@@ -1,0 +1,1 @@
+.CodeGenerator\DatabaseCodeGenerator\bin\Release\DatabaseCodeGenerator.exe .Schema\versions.xml Scripts upgrade

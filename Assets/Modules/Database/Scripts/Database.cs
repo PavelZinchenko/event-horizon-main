@@ -132,10 +132,10 @@ namespace GameDatabase
             Clear();
             _storage = null;
 
-            _content = new DatabaseContent(_jsonSerializer, storage);
+            _content = LoadContent(storage);
 
             if (_content.DatabaseSettings == null || !_content.DatabaseSettings.UnloadOriginalDatabase)
-                _content.LoadParent(_defaultStorage);
+                LoadExtraContent(_content, _defaultStorage);
 
             // TODO: increase id of all factions by 1, add neutral faction to database, 0 = undefined
             _factionMap.Add(Faction.Neutral.Id.Value, Faction.Neutral);
@@ -146,7 +146,37 @@ namespace GameDatabase
             DatabaseLoaded?.Invoke();
         }
 
-#region TODO: remove this after database editor can edit builds
+        private DatabaseContent LoadExtraContent(DatabaseContent content, IDataStorage storage)
+        {
+            if (storage == null)
+                return content;
+
+            if (storage.Version.Major == VersionMajor && storage.Version.Minor == VersionMinor)
+            {
+                content.LoadParent(storage);
+                return content;
+            }
+
+            var upgrader = new DatabaseMigration.DatabaseUpgrader(_jsonSerializer, storage);
+            upgrader.Upgrade(content);
+            return content;
+        }
+
+        private DatabaseContent LoadContent(IDataStorage storage)
+        {
+            if (storage == null)
+                return new DatabaseContent(_jsonSerializer, null);
+
+            if (storage.Version.Major == VersionMajor && storage.Version.Minor == VersionMinor)
+                return new DatabaseContent(_jsonSerializer, storage);
+
+            var upgrader = new DatabaseMigration.DatabaseUpgrader(_jsonSerializer, storage);
+            var content = new DatabaseContent(_jsonSerializer, null);
+            upgrader.Upgrade(content);
+            return content;
+        }
+
+        #region TODO: remove this after database editor can edit builds
 
         public void SaveShipBuild(ItemId<ShipBuild> id)
         {

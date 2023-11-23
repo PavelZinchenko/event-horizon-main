@@ -25,6 +25,28 @@ namespace GameDatabase.Storage
             }
 
             _path = path;
+
+            if (TryFindDatabaseVersion(out var version))
+                Version = version;
+            else
+                Version = new Version(1, 0);
+        }
+
+        private bool TryFindDatabaseVersion(out Version version)
+        {
+            var serializer = new UnityJsonSerializer();
+            var info = new DirectoryInfo(_path);
+            foreach (var fileInfo in info.GetFiles("*.json", SearchOption.AllDirectories))
+            {
+                var data = File.ReadAllText(fileInfo.FullName);
+                var settings = serializer.FromJson<Serializable.DatabaseSettingsSerializable>(data);
+                if (settings.ItemType != Enums.ItemType.DatabaseSettings) continue;
+                version = new Version(settings.DatabaseVersion, settings.DatabaseVersionMinor);
+                return true;
+            }
+
+            version = new();
+            return false;
         }
 
         public void LoadContent(IContentLoader loader)
@@ -64,7 +86,7 @@ namespace GameDatabase.Storage
         public string Name { get; }
         public string Id { get; }
         public bool IsEditable => true;
-        public Version Version { get; } = new Version(Database.VersionMajor, Database.VersionMinor);
+        public Version Version { get; }
 
         public void UpdateItem(string name, string content)
         {
