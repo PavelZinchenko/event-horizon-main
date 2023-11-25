@@ -10,7 +10,10 @@ namespace Gui.CodeGenerator
     internal class DocumentClassBuilder
     {
         private readonly string _className;
+        private string _baseClass = "MonoBehaviour";
         private string _namespace;
+        private string[] _rootElement;
+        private List<string> _usings = new();
         private int _braceCounter;
         private StringBuilder _stringBuilder;
         private List<Property> _properties = new();
@@ -24,6 +27,24 @@ namespace Gui.CodeGenerator
         public DocumentClassBuilder SetNamespace(string name)
         {
             _namespace = name;
+            return this;
+        }
+
+        public DocumentClassBuilder SetBaseClass(string baseClass)
+        {
+            _baseClass = baseClass;
+            return this;
+        }
+
+        public DocumentClassBuilder Using(string value)
+        {
+            _usings.Add(value);
+            return this;
+        }
+
+        public DocumentClassBuilder SetRootElement(string rootElement)
+        {
+            _rootElement = rootElement?.Split('.', System.StringSplitOptions.RemoveEmptyEntries);
             return this;
         }
 
@@ -41,9 +62,13 @@ namespace Gui.CodeGenerator
             GenerateNamespace();
             GenerateClass();
 
-            var rootNode = new Node(-1, null, null);
+            var rootNode = new Node(null, -1, null, null);
             TryBuildDocumentTree(rootNode, document.rootVisualElement);
-            CalculateProperties(rootNode, null, null);
+
+            if (!TryFindNode(rootNode, 0, out var node))
+                throw new System.ArgumentException("Root node not found: " + string.Join('.', _rootElement));
+
+            CalculateProperties(node, null);
 
             GenerateProperties();
 
@@ -51,6 +76,34 @@ namespace Gui.CodeGenerator
                 CloseBrace();
 
             return _stringBuilder.ToString();
+        }
+
+        private bool TryFindNode(Node parent, int index, out Node node)
+        {
+            if (_rootElement == null || index == _rootElement.Length)
+            {
+                node = parent;
+                return true;
+            }
+
+            var elementName = _rootElement[index];
+            foreach (var child in parent.Children)
+            {
+                var name = child.Name;
+                if (string.IsNullOrEmpty(name))
+                {
+                    if (TryFindNode(child, index, out node))
+                        return true;
+                }
+                else if (string.Compare(name, elementName, System.StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    if (TryFindNode(child, index + 1, out node))
+                        return true;
+                }
+            }
+
+            node = null;
+            return false;
         }
 
         private bool TryBuildDocumentTree(Node parent, VisualElement element)
@@ -64,7 +117,7 @@ namespace Gui.CodeGenerator
                 var type = child.GetType();
                 if (type.IsNested) continue;
 
-                var node = new Node(index, child.name, type.Name);
+                var node = new Node(parent, index, child.name, type.Name);
 
                 if (TryBuildDocumentTree(node, child) || hasName)
                 {
@@ -78,32 +131,26 @@ namespace Gui.CodeGenerator
             return success;
         }
 
-        private void CalculateProperties(Node node, string name, string path)
+        private void CalculateProperties(Node node, string name)
         {
-            if (node.Index >= 0)
-                path += "." + node.Index;
-
             if (!string.IsNullOrEmpty(node.Name))
             {
                 if (!string.IsNullOrEmpty(name))
                     name += "_";
 
                 name += node.Name;
-                _properties.Add(new() { Name = name, Type = node.Type, Path = path });
+                _properties.Add(new() { Name = name, Type = node.Type, Path = node.GetPath() });
             }
 
             if (node.Children != null)
             {
                 foreach (var child in node.Children)
-                    CalculateProperties(child, name, path);
+                    CalculateProperties(child, name);
             }
         }
 
         private void GenerateProperties()
         {
-            AddIndent();
-            _stringBuilder.AppendLine($"private UIDocument _uiDocument;");
-
             foreach (var property in _properties)
             {
                 AddIndent();
@@ -111,9 +158,11 @@ namespace Gui.CodeGenerator
             }
 
             _stringBuilder.AppendLine();
-
-            AddIndent();
-            _stringBuilder.AppendLine($"public UIDocument UiDocument => _uiDocument ??= GetComponent<UIDocument>();");
+            if (_properties.Count > 0)
+            {
+                AddIndent();
+                _stringBuilder.AppendLine($"public override VisualElement RootElement => {_properties[0].Name};");
+            }
 
             foreach (var property in _properties)
             {
@@ -135,9 +184,8 @@ namespace Gui.CodeGenerator
         private void GenerateUsings()
         {
             AddIndent();
-            _stringBuilder.AppendLine("using UnityEngine;");
-            AddIndent();
-            _stringBuilder.AppendLine("using UnityEngine.UIElements;");
+            foreach (var value in _usings)
+                _stringBuilder.Append("using ").Append(value).AppendLine(";");
             _stringBuilder.AppendLine();
         }
 
@@ -154,9 +202,15 @@ namespace Gui.CodeGenerator
         private void GenerateClass()
         {
             AddIndent();
-            _stringBuilder.AppendLine("[RequireComponent(typeof(UIDocument))]");
-            AddIndent();
-            _stringBuilder.AppendLine($"public partial class {_className} : MonoBehaviour");
+            _stringBuilder.Append($"public partial class {_className}");
+
+            if (!string.IsNullOrEmpty(_baseClass))
+            {
+                _stringBuilder.Append(" : ");
+                _stringBuilder.Append(_baseClass);
+            }
+
+            _stringBuilder.AppendLine();
             OpenBrace();
         }
 
@@ -183,11 +237,12 @@ namespace Gui.CodeGenerator
 
         private class Node
         {
-            public Node(int index, string name, string type)
+            public Node(Node parent, int index, string name, string type)
             {
                 Index = index;
                 Name = name;
                 Type = type;
+                Parent = parent;
                 Children = null;
             }
 
@@ -199,10 +254,28 @@ namespace Gui.CodeGenerator
                 Children.Add(child);
             }
 
+            public string GetPath()
+            {
+                return CreatePathElement(new StringBuilder()).ToString();
+            }
+
+            private StringBuilder CreatePathElement(StringBuilder builder)
+            {
+                if (Parent != null)
+                {
+                    Parent.CreatePathElement(builder);
+                    builder.Append('.');
+                    builder.Append(Index);
+                }
+
+                return builder;
+            }
+
             public readonly int Index;
             public readonly string Type;
             public readonly string Name;
             public List<Node> Children;
+            public Node Parent;
         }
 
         private struct Property

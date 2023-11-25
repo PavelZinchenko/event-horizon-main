@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Gui.Presenter;
 
 namespace Gui.Animation
 {
-
-    [RequireComponent(typeof(UIDocument)), DisallowMultipleComponent]
+    [RequireComponent(typeof(PresenterBase)), DisallowMultipleComponent]
     public abstract class WindowAnimationBase : MonoBehaviour
     {
         [SerializeField] private float _duration = 0.5f;
@@ -16,7 +16,7 @@ namespace Gui.Animation
         [SerializeField] private UnityEngine.Events.UnityEvent _animationFinished;
         [SerializeField] private UnityEngine.Events.UnityEvent<bool> _valueChanged;
 
-        private UIDocument _uIDocument;
+        private PresenterBase _presenter;
         private bool _visible;
         private bool _stateChanged;
         private bool _isAnimationRunning;
@@ -50,15 +50,15 @@ namespace Gui.Animation
             }
         }
 
-        protected VisualElement RootElement => _uIDocument.rootVisualElement;
+        protected VisualElement RootElement => _presenter.RootElement;
 
         protected abstract void ShowElement(bool visible);
 
         private void Awake()
         {
-            _uIDocument = GetComponent<UIDocument>();
+            _presenter = GetComponent<PresenterBase>();
 
-            var element = _uIDocument.rootVisualElement;
+            var element = _presenter.RootElement;
             element.style.transitionDuration = new List<TimeValue>() { new TimeValue(_duration, TimeUnit.Second) };
             element.style.transitionTimingFunction = new(new List<EasingFunction>() { new EasingFunction(_easing) });
 

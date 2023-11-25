@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-using UnityEngine.UIElements;
 using Zenject;
 using Services.Gui;
+using Gui.Presenter;
 
 namespace Gui.Window
 {
-    [RequireComponent(typeof(Animation.WindowAnimationBase), typeof(UIDocument))]
+    [RequireComponent(typeof(Animation.WindowAnimationBase), typeof(PresenterBase))]
     public class UiDocumentWindow : MonoBehaviour, IWindow
     {
         [Inject] WindowOpenedSignal.Trigger _windowOpenedTrigger;
@@ -15,13 +15,13 @@ namespace Gui.Window
         [SerializeField] private EscapeKeyAction _escapeKeyAction = EscapeKeyAction.None;
 
         private Animation.WindowAnimationBase _animation;
-        private UIDocument _uiDocument;
+        private PresenterBase _presenter;
         private bool _isEnabled = true;
 
         public string Id => name;
         public WindowClass Class => _class;
 
-        public bool IsVisible => _animation.Visible;
+        public bool IsVisible => _animation != null ? _animation.Visible : false;
         public EscapeKeyAction EscapeAction => _escapeKeyAction;
 
         public bool Enabled 
@@ -36,7 +36,7 @@ namespace Gui.Window
 
         private void Awake()
         {
-            _uiDocument = GetComponent<UIDocument>();
+            _presenter = GetComponent<PresenterBase>();
             _animation = GetComponent<Animation.WindowAnimationBase>();
         }
 
@@ -77,6 +77,8 @@ namespace Gui.Window
 
         private void OnAnimationFinished()
         {
+            if (!_animation.Visible)
+                gameObject.SetActive(false);
         }
 
         private void OnVisibilityChanged(bool visible)
@@ -86,7 +88,7 @@ namespace Gui.Window
 
         private void UpdateWindowState()
         {
-            _uiDocument.rootVisualElement.SetEnabled(_isEnabled && _animation.Visible);
+            _presenter.RootElement.SetEnabled(_isEnabled && _animation.Visible);
         }
     }
 }
