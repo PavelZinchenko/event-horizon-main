@@ -35,6 +35,7 @@ namespace GameDatabase.DataModel
 			ExpCondition = serializable.ExpCondition;
 			SpecificShips = new ImmutableCollection<ShipBuild>(serializable.SpecificShips?.Select(item => loader.GetShipBuild(new ItemId<ShipBuild>(item), true)));
 			NoShipChanging = serializable.NoShipChanging;
+			PlayerHasOneShip = serializable.PlayerHasOneShip;
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -49,6 +50,7 @@ namespace GameDatabase.DataModel
 		public RewardCondition ExpCondition { get; private set; }
 		public ImmutableCollection<ShipBuild> SpecificShips { get; private set; }
 		public bool NoShipChanging { get; private set; }
+		public bool PlayerHasOneShip { get; private set; }
 
 		public static Fleet DefaultValue { get; private set; }
 	}

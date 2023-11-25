@@ -8,4 +8,5 @@
     <member name="ExpCondition" type="enum" typeid="RewardCondition" />
     <member name="SpecificShips" type="object_list" typeid="ShipBuild" />
     <member name="NoShipChanging" type="bool" />
+    <member name="PlayerHasOneShip" type="bool" />
 </data>

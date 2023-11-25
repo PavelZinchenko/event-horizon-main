@@ -14,6 +14,7 @@ namespace Domain.Quests
         public RewardCondition LootCondition;
         public RewardCondition ExpCondition;
         public bool NoRetreats;
+        public bool PlayerHasOneShip;
         public int TimeLimit;
         public int Level;
         public int Seed;
@@ -38,6 +39,7 @@ namespace Domain.Quests
                 LootCondition = enemy.LootCondition,
                 ExpCondition = enemy.ExpCondition,
                 NoRetreats = enemy.NoShipChanging,
+                PlayerHasOneShip = enemy.PlayerHasOneShip,
                 TimeLimit = enemy.CombatTimeLimit,
                 Level = level,
                 Seed = questInfo.Seed

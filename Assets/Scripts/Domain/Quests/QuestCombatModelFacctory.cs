@@ -32,8 +32,6 @@ namespace Domain.Quests
         public ICombatModel CreateCombatModel(QuestEnemyData enemyData, ILoot specialLoot)
         {
 			var builder = _combatModelBuilderFactory.Create();
-
-
 			var rules = new Model.Military.CombatRules
 			{
 				RewardType = Model.Military.RewardType.Default,
@@ -53,6 +51,7 @@ namespace Domain.Quests
 			rules.LootCondition = enemyData.LootCondition;
 			rules.ExpCondition = enemyData.ExpCondition;
 			rules.NoRetreats = enemyData.NoRetreats;
+			rules.PlayerHasOneShip = enemyData.PlayerHasOneShip;
 
 			builder.EnemyFleet = CreateEnemyFleet(enemyData);
 			builder.PlayerFleet = Model.Factories.Fleet.Player(_playerFleet, _database);

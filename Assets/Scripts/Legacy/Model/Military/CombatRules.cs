@@ -34,6 +34,7 @@ namespace Model
 			public bool CanSelectShips;
 			public bool NoRetreats;
 			public bool CanCallEnemies;
+			public bool PlayerHasOneShip;
 			public bool AsteroidsEnabled;
 			public bool PlanetEnabled;
 			public bool DisableBonusses;

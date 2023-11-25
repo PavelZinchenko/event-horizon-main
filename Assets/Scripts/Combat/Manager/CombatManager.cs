@@ -180,7 +180,13 @@ namespace Combat.Manager
 
         public bool CanChangeShip()
         {
-            return _combatModel.Rules.CanSelectShips && !_combatModel.Rules.NoRetreats && _playerSkills.HasRescueUnit && _combatModel.PlayerFleet.IsAnyShipLeft();
+            if (!_combatModel.Rules.CanSelectShips) return false;
+            if (_combatModel.Rules.NoRetreats) return false;
+            if (_combatModel.Rules.PlayerHasOneShip) return false;
+            if (!_playerSkills.HasRescueUnit) return false;
+            if (!_combatModel.PlayerFleet.IsAnyShipLeft()) return false;
+
+            return true;
         }
 
         public void ChangeShip()
@@ -271,7 +277,7 @@ namespace Combat.Manager
                 {
                     _nextPlayerShipCooldown = 0;
 
-                    if (!_combatModel.PlayerFleet.IsAnyShipLeft())
+                    if (IsPlayerDefeated())
                     {
                         UnityEngine.Debug.Log("No more ships");
                         Exit();
@@ -292,6 +298,17 @@ namespace Combat.Manager
                 _playerStatsPanel.Open(player);
                 _enemyStatsPanel.Open(enemy);
             }
+        }
+
+        private bool IsPlayerDefeated()
+        {
+            if (_combatModel.Rules.PlayerHasOneShip && _scene.PlayerShip != null && _scene.PlayerShip.State == UnitState.Destroyed)
+                return true;
+
+            if (!_combatModel.PlayerFleet.IsAnyShipLeft())
+                return true;
+
+            return false;
         }
 
         private bool _canCallNextEnemy;
