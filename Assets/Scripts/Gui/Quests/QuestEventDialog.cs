@@ -1,5 +1,6 @@
 ﻿using Domain.Quests;
 using UnityEngine;
+using UnityEngine.UI;
 using Services.Gui;
 using ViewModel.Quests;
 using Zenject;
@@ -22,6 +23,12 @@ namespace Gui.Quests
             _actions.Initialize(data.Actions);
             if (_fleet) _fleet.Initialize(_questCombatModelFacctory.CreateEnemyFleet(data.EnemyData));
             if (_items) _items.Initialize(data.Loot);
+
+            var scrollRect = GetComponent<ScrollRect>();
+            if (scrollRect != null)
+            {
+                scrollRect.verticalNormalizedPosition = 1;
+            }
         }
     }
 }
