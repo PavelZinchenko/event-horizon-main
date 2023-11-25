@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public SatelliteSerializable()
 		{
 			ItemType = ItemType.Satellite;
-			FileName = $"{ItemType}.json";
+			FileName = "Satellite.json";
 		}
 
 		public string Name;

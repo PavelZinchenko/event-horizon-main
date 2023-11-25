@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public QuestSerializable()
 		{
 			ItemType = ItemType.Quest;
-			FileName = $"{ItemType}.json";
+			FileName = "Quest.json";
 		}
 
 		public string Name;

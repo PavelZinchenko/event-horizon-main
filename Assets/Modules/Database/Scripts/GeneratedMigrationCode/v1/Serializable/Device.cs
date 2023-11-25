@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public DeviceSerializable()
 		{
 			ItemType = ItemType.Device;
-			FileName = $"{ItemType}.json";
+			FileName = "Device.json";
 		}
 
 		public DeviceClass DeviceClass;

@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public ShipBuildSerializable()
 		{
 			ItemType = ItemType.ShipBuild;
-			FileName = $"{ItemType}.json";
+			FileName = "ShipBuild.json";
 		}
 
 		public int ShipId;

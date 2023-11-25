@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public SkillSerializable()
 		{
 			ItemType = ItemType.Skill;
-			FileName = $"{ItemType}.json";
+			FileName = "Skill.json";
 		}
 
 		public string Name;

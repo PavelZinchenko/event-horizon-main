@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public FactionSerializable()
 		{
 			ItemType = ItemType.Faction;
-			FileName = $"{ItemType}.json";
+			FileName = "Faction.json";
 		}
 
 		public string Name;

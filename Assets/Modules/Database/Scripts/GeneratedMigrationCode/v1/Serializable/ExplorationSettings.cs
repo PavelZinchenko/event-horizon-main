@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public ExplorationSettingsSerializable()
 		{
 			ItemType = ItemType.ExplorationSettings;
-			FileName = $"{ItemType}.json";
+			FileName = "ExplorationSettings.json";
 		}
 
 		public int OutpostShip;

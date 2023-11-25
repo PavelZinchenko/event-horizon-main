@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public LootSerializable()
 		{
 			ItemType = ItemType.Loot;
-			FileName = $"{ItemType}.json";
+			FileName = "Loot.json";
 		}
 
 		public LootContentSerializable Loot;

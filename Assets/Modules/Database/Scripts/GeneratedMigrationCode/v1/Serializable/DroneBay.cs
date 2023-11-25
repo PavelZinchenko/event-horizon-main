@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public DroneBaySerializable()
 		{
 			ItemType = ItemType.DroneBay;
-			FileName = $"{ItemType}.json";
+			FileName = "DroneBay.json";
 		}
 
 		public float EnergyConsumption;

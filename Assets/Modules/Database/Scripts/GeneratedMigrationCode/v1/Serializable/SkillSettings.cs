@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public SkillSettingsSerializable()
 		{
 			ItemType = ItemType.SkillSettings;
-			FileName = $"{ItemType}.json";
+			FileName = "SkillSettings.json";
 		}
 
 		public int[] BeatAllEnemiesFactionList;

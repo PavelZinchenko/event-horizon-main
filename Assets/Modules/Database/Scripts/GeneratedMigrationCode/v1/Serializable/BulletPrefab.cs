@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public BulletPrefabSerializable()
 		{
 			ItemType = ItemType.BulletPrefab;
-			FileName = $"{ItemType}.json";
+			FileName = "BulletPrefab.json";
 		}
 
 		public BulletShape Shape;

@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public GalaxySettingsSerializable()
 		{
 			ItemType = ItemType.GalaxySettings;
-			FileName = $"{ItemType}.json";
+			FileName = "GalaxySettings.json";
 		}
 
 		public int AbandonedStarbaseFaction;

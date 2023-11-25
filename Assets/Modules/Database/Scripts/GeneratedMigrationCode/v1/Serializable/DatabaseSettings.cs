@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public DatabaseSettingsSerializable()
 		{
 			ItemType = ItemType.DatabaseSettings;
-			FileName = $"{ItemType}.json";
+			FileName = "DatabaseSettings.json";
 		}
 
 		public int DatabaseVersion;

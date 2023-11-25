@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public AmmunitionSerializable()
 		{
 			ItemType = ItemType.Ammunition;
-			FileName = $"{ItemType}.json";
+			FileName = "Ammunition.json";
 		}
 
 		public BulletBodySerializable Body;

@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public ComponentStatsSerializable()
 		{
 			ItemType = ItemType.ComponentStats;
-			FileName = $"{ItemType}.json";
+			FileName = "ComponentStats.json";
 		}
 
 		public ComponentStatsType Type;

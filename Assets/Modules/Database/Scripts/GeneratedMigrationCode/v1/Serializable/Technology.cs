@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public TechnologySerializable()
 		{
 			ItemType = ItemType.Technology;
-			FileName = $"{ItemType}.json";
+			FileName = "Technology.json";
 		}
 
 		public TechType Type;

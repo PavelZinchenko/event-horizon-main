@@ -18,7 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public AmmunitionObsoleteSerializable()
 		{
 			ItemType = ItemType.AmmunitionObsolete;
-			FileName = $"{ItemType}.json";
+			FileName = "AmmunitionObsolete.json";
 		}
 
 		public AmmunitionClassObsolete AmmunitionClass;
