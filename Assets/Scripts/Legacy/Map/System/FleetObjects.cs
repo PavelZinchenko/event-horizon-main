@@ -21,7 +21,7 @@ namespace StarSystem
 
 		public void CreateShips(IEnumerable<IShip> ships, Vector2 position)
 		{
-			foreach (var ship in ships.Where(item => item.Model.ShipType == ShipType.Common))
+			foreach (var ship in ships.Where(item => item.Model.ShipType != ShipType.Starbase))
 				CreateShip(ship.Model.OriginalShip, position);
 		}
 		
