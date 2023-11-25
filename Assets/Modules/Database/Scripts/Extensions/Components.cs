@@ -27,6 +27,11 @@ namespace GameDatabase.Extensions
             return components.Where(item => item.Faction == faction);
         }
 
+        public static IEnumerable<Component> FilterByFactionOrEmpty(this IEnumerable<Component> components, Faction faction)
+        {
+            return components.Where(item => item.Faction == faction || item.Faction == Faction.Empty);
+        }
+
         public static IEnumerable<Component> Available(this IEnumerable<Component> components)
         {
             return components.CommonAndRare();
