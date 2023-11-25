@@ -2,17 +2,14 @@
   "ItemType": 8,
   "Id": 214,
   "ShipId": 79,
-  "BuildFaction": -1,
   "Components": [
     {
       "ComponentId": 86,
-      "Locked": true,
       "X": 1,
       "Y": 2
     },
     {
       "ComponentId": 78,
-      "Locked": true,
       "X": 1,
       "Y": 1
     }

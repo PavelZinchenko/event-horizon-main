@@ -11,7 +11,7 @@
       "Position": {
         "x": -0.2
       },
-      "PlatformType": 1,
+      "AutoAimingArc": 360.0,
       "WeaponClass": "C",
       "Image": "hovertank_gun",
       "Size": 1.4

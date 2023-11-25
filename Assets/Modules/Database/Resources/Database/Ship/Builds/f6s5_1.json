@@ -3,11 +3,9 @@
   "Id": 138,
   "ShipId": 49,
   "DifficultyClass": 1,
-  "BuildFaction": -1,
   "Components": [
     {
       "ComponentId": 74,
-      "Locked": true,
       "X": 6,
       "Y": 2
     },
@@ -15,7 +13,6 @@
       "ComponentId": 174,
       "Modification": 14,
       "Quality": 5,
-      "Locked": true,
       "X": 12,
       "Y": 10,
       "BarrelId": 1
@@ -24,14 +21,12 @@
       "ComponentId": 174,
       "Modification": 14,
       "Quality": 5,
-      "Locked": true,
       "Y": 10
     },
     {
       "ComponentId": 55,
       "Modification": 11,
       "Quality": 5,
-      "Locked": true,
       "X": 6,
       "Y": 12,
       "KeyBinding": 1
@@ -40,7 +35,6 @@
       "ComponentId": 56,
       "Modification": 11,
       "Quality": 5,
-      "Locked": true,
       "X": 8,
       "Y": 12,
       "KeyBinding": 1
@@ -49,7 +43,6 @@
       "ComponentId": 57,
       "Modification": 11,
       "Quality": 5,
-      "Locked": true,
       "X": 9,
       "Y": 12,
       "KeyBinding": 1
@@ -58,7 +51,6 @@
       "ComponentId": 57,
       "Modification": 11,
       "Quality": 5,
-      "Locked": true,
       "X": 7,
       "Y": 11,
       "KeyBinding": 1
@@ -67,7 +59,6 @@
       "ComponentId": 57,
       "Modification": 11,
       "Quality": 5,
-      "Locked": true,
       "X": 5,
       "Y": 12,
       "KeyBinding": 1
@@ -76,7 +67,6 @@
       "ComponentId": 57,
       "Modification": 11,
       "Quality": 5,
-      "Locked": true,
       "X": 7,
       "Y": 14,
       "KeyBinding": 1
@@ -85,14 +75,12 @@
       "ComponentId": 29,
       "Modification": 2,
       "Quality": 5,
-      "Locked": true,
       "X": 6,
       "Y": 9,
       "KeyBinding": 1
     },
     {
       "ComponentId": 74,
-      "Locked": true,
       "X": 6,
       "Y": 7
     },
@@ -100,7 +88,6 @@
       "ComponentId": 71,
       "Modification": 2,
       "Quality": 5,
-      "Locked": true,
       "X": 9,
       "Y": 10,
       "KeyBinding": 2
@@ -109,7 +96,6 @@
       "ComponentId": 71,
       "Modification": 2,
       "Quality": 5,
-      "Locked": true,
       "X": 4,
       "Y": 10,
       "KeyBinding": 2
@@ -118,7 +104,6 @@
       "ComponentId": 64,
       "Modification": 9,
       "Quality": 5,
-      "Locked": true,
       "X": 11,
       "Y": 11,
       "KeyBinding": -1
@@ -127,7 +112,6 @@
       "ComponentId": 64,
       "Modification": 9,
       "Quality": 5,
-      "Locked": true,
       "X": 11,
       "Y": 10,
       "KeyBinding": -1
@@ -136,7 +120,6 @@
       "ComponentId": 64,
       "Modification": 9,
       "Quality": 5,
-      "Locked": true,
       "X": 3,
       "Y": 11,
       "KeyBinding": -1
@@ -145,7 +128,6 @@
       "ComponentId": 64,
       "Modification": 9,
       "Quality": 5,
-      "Locked": true,
       "X": 3,
       "Y": 10,
       "KeyBinding": -1
@@ -154,7 +136,6 @@
       "ComponentId": 64,
       "Modification": 9,
       "Quality": 5,
-      "Locked": true,
       "X": 8,
       "Y": 6,
       "KeyBinding": -1
@@ -163,7 +144,6 @@
       "ComponentId": 64,
       "Modification": 9,
       "Quality": 5,
-      "Locked": true,
       "X": 6,
       "Y": 6,
       "KeyBinding": -1
@@ -172,7 +152,6 @@
       "ComponentId": 64,
       "Modification": 9,
       "Quality": 5,
-      "Locked": true,
       "X": 8,
       "Y": 4,
       "KeyBinding": -1
@@ -181,7 +160,6 @@
       "ComponentId": 64,
       "Modification": 9,
       "Quality": 5,
-      "Locked": true,
       "X": 6,
       "Y": 4,
       "KeyBinding": -1
@@ -190,7 +168,6 @@
       "ComponentId": 222,
       "Modification": 3,
       "Quality": 5,
-      "Locked": true,
       "X": 8,
       "KeyBinding": 2
     },
@@ -198,7 +175,6 @@
       "ComponentId": 222,
       "Modification": 3,
       "Quality": 5,
-      "Locked": true,
       "X": 6,
       "KeyBinding": 2
     },
@@ -206,7 +182,6 @@
       "ComponentId": 222,
       "Modification": 3,
       "Quality": 5,
-      "Locked": true,
       "X": 10,
       "Y": 12,
       "KeyBinding": 2
@@ -215,7 +190,6 @@
       "ComponentId": 222,
       "Modification": 3,
       "Quality": 5,
-      "Locked": true,
       "X": 11,
       "Y": 12,
       "KeyBinding": 2
@@ -224,7 +198,6 @@
       "ComponentId": 222,
       "Modification": 3,
       "Quality": 5,
-      "Locked": true,
       "X": 4,
       "Y": 12,
       "KeyBinding": 2
@@ -233,7 +206,6 @@
       "ComponentId": 222,
       "Modification": 3,
       "Quality": 5,
-      "Locked": true,
       "X": 3,
       "Y": 12,
       "KeyBinding": 2
@@ -242,7 +214,6 @@
       "ComponentId": 78,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 8,
       "Y": 7,
       "KeyBinding": -1
@@ -251,7 +222,6 @@
       "ComponentId": 78,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 6,
       "Y": 7,
       "KeyBinding": -1
@@ -260,7 +230,6 @@
       "ComponentId": 78,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 7,
       "Y": 6,
       "KeyBinding": -1
@@ -269,7 +238,6 @@
       "ComponentId": 78,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 7,
       "Y": 5,
       "KeyBinding": -1
@@ -278,7 +246,6 @@
       "ComponentId": 78,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 7,
       "KeyBinding": -1
     },
@@ -286,7 +253,6 @@
       "ComponentId": 78,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 7,
       "Y": 1,
       "KeyBinding": -1
@@ -295,7 +261,6 @@
       "ComponentId": 78,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 8,
       "Y": 2,
       "KeyBinding": -1
@@ -304,7 +269,6 @@
       "ComponentId": 78,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 6,
       "Y": 2,
       "KeyBinding": -1
@@ -313,7 +277,6 @@
       "ComponentId": 78,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 8,
       "Y": 1,
       "KeyBinding": -1
@@ -322,7 +285,6 @@
       "ComponentId": 78,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 6,
       "Y": 1,
       "KeyBinding": -1
@@ -331,7 +293,6 @@
       "ComponentId": 67,
       "Modification": 9,
       "Quality": 5,
-      "Locked": true,
       "X": 12,
       "Y": 12,
       "BarrelId": 1,
@@ -341,7 +302,6 @@
       "ComponentId": 67,
       "Modification": 9,
       "Quality": 5,
-      "Locked": true,
       "X": 13,
       "Y": 12,
       "BarrelId": 1,
@@ -351,7 +311,6 @@
       "ComponentId": 67,
       "Modification": 9,
       "Quality": 5,
-      "Locked": true,
       "X": 2,
       "Y": 12,
       "KeyBinding": 2
@@ -360,7 +319,6 @@
       "ComponentId": 67,
       "Modification": 9,
       "Quality": 5,
-      "Locked": true,
       "X": 1,
       "Y": 12,
       "KeyBinding": 2

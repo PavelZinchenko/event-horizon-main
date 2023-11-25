@@ -1,3 +1,5 @@
 {
-  "ItemType": 102
+  "ItemType": 102,
+  "DatabaseVersion": 1,
+  "DatabaseVersionMinor": 1
 }

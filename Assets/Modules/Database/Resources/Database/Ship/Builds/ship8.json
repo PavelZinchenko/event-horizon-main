@@ -2,23 +2,19 @@
   "ItemType": 8,
   "Id": 299,
   "ShipId": 136,
-  "BuildFaction": -1,
   "Components": [
     {
       "ComponentId": 57,
-      "Locked": true,
       "X": 3,
       "Y": 5
     },
     {
       "ComponentId": 57,
-      "Locked": true,
       "X": 5,
       "Y": 5
     },
     {
       "ComponentId": 194,
-      "Locked": true,
       "X": 3,
       "Y": 1
     },
@@ -26,14 +22,12 @@
       "ComponentId": 78,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 5,
       "Y": 4,
       "KeyBinding": 1
     },
     {
       "ComponentId": 57,
-      "Locked": true,
       "X": 4,
       "Y": 6,
       "KeyBinding": 1
@@ -42,83 +36,71 @@
       "ComponentId": 78,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 3,
       "Y": 4,
       "KeyBinding": 1
     },
     {
       "ComponentId": 12,
-      "Locked": true,
       "X": 7,
       "Y": 5,
       "KeyBinding": 1
     },
     {
       "ComponentId": 12,
-      "Locked": true,
       "X": 8,
       "Y": 5,
       "KeyBinding": 1
     },
     {
       "ComponentId": 12,
-      "Locked": true,
       "Y": 5,
       "KeyBinding": 1
     },
     {
       "ComponentId": 67,
-      "Locked": true,
       "X": 7,
       "Y": 4,
       "KeyBinding": 1
     },
     {
       "ComponentId": 67,
-      "Locked": true,
       "X": 6,
       "Y": 5,
       "KeyBinding": 1
     },
     {
       "ComponentId": 67,
-      "Locked": true,
       "X": 4,
       "Y": 4,
       "KeyBinding": 1
     },
     {
       "ComponentId": 66,
-      "Locked": true,
       "X": 1,
       "Y": 4,
       "KeyBinding": 1
     },
     {
       "ComponentId": 78,
-      "Locked": true,
       "X": 6,
       "Y": 4,
       "KeyBinding": 1
     },
     {
       "ComponentId": 78,
-      "Locked": true,
       "X": 6,
       "Y": 3,
       "KeyBinding": 1
     },
     {
       "ComponentId": 78,
-      "Locked": true,
       "X": 2,
       "Y": 3,
       "KeyBinding": 1
     },
     {
       "ComponentId": 57,
-      "Locked": true,
       "X": 4,
       "Y": 5,
       "KeyBinding": 1

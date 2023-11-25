@@ -3,279 +3,233 @@
   "Id": 164,
   "ShipId": 21,
   "DifficultyClass": 2,
-  "BuildFaction": -1,
   "Components": [
     {
       "ComponentId": 56,
-      "Locked": true,
       "X": 7,
       "Y": 13
     },
     {
       "ComponentId": 55,
-      "Locked": true,
       "X": 5,
       "Y": 13
     },
     {
       "ComponentId": 58,
-      "Locked": true,
       "X": 8,
       "Y": 13
     },
     {
       "ComponentId": 74,
-      "Locked": true,
       "X": 5,
       "Y": 10
     },
     {
       "ComponentId": 83,
-      "Locked": true,
       "X": 6,
       "Y": 3
     },
     {
       "ComponentId": 74,
-      "Locked": true,
       "X": 6,
       "Y": 1
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 3,
       "Y": 13
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 3,
       "Y": 12
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 3,
       "Y": 11
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 1,
       "Y": 12
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 1,
       "Y": 11
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 13,
       "Y": 11
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 13,
       "Y": 12
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 11,
       "Y": 13
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 11,
       "Y": 12
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 11,
       "Y": 11
     },
     {
       "ComponentId": 74,
-      "Locked": true,
       "X": 6,
       "Y": 8
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 8
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 7
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 6
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 8,
       "Y": 7
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 7,
       "Y": 7
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 6,
       "Y": 7
     },
     {
       "ComponentId": 112,
-      "Locked": true,
       "X": 11,
       "Y": 10,
       "BarrelId": 3
     },
     {
       "ComponentId": 112,
-      "Locked": true,
       "X": 9,
       "Y": 10,
       "BarrelId": 2
     },
     {
       "ComponentId": 112,
-      "Locked": true,
       "X": 3,
       "Y": 10,
       "BarrelId": 1
     },
     {
       "ComponentId": 112,
-      "Locked": true,
       "X": 1,
       "Y": 10
     },
     {
       "ComponentId": 67,
-      "Locked": true,
       "X": 4,
       "Y": 13,
       "BarrelId": 1
     },
     {
       "ComponentId": 67,
-      "Locked": true,
       "X": 2,
       "Y": 13
     },
     {
       "ComponentId": 67,
-      "Locked": true,
       "X": 12,
       "Y": 13,
       "BarrelId": 3
     },
     {
       "ComponentId": 67,
-      "Locked": true,
       "X": 10,
       "Y": 13,
       "BarrelId": 2
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 5,
       "Y": 10
     },
     {
       "ComponentId": 64,
-      "Locked": true,
       "X": 9,
       "Y": 10
     },
     {
       "ComponentId": 79,
-      "Locked": true,
       "X": 8,
       "Y": 11,
       "KeyBinding": 1
     },
     {
       "ComponentId": 69,
-      "Locked": true,
       "X": 7,
       "Y": 12
     },
     {
       "ComponentId": 69,
-      "Locked": true,
       "X": 8,
       "Y": 10
     },
     {
       "ComponentId": 69,
-      "Locked": true,
       "X": 5,
       "Y": 12
     },
     {
       "ComponentId": 69,
-      "Locked": true,
       "X": 8,
       "Y": 8
     },
     {
       "ComponentId": 69,
-      "Locked": true,
       "X": 6,
       "Y": 8
     },
     {
       "ComponentId": 69,
-      "Locked": true,
       "X": 8,
       "Y": 1
     },
     {
       "ComponentId": 69,
-      "Locked": true,
       "X": 6,
       "Y": 1
     },
     {
       "ComponentId": 69,
-      "Locked": true,
       "X": 7,
       "Y": 5
     },
     {
       "ComponentId": 69,
-      "Locked": true,
       "X": 8,
       "Y": 6
     },
     {
       "ComponentId": 69,
-      "Locked": true,
       "X": 7,
       "Y": 6
     },
     {
       "ComponentId": 69,
-      "Locked": true,
       "X": 6,
       "Y": 6
     }

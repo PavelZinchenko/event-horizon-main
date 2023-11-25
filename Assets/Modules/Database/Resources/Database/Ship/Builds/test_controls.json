@@ -3,18 +3,15 @@
   "Id": 226,
   "ShipId": 32,
   "NotAvailableInGame": true,
-  "BuildFaction": -1,
   "Components": [
     {
       "ComponentId": 84,
-      "Locked": true,
       "X": 3,
       "Y": 8,
       "KeyBinding": 3
     },
     {
       "ComponentId": 54,
-      "Locked": true,
       "X": 5,
       "Y": 9,
       "KeyBinding": 4
@@ -23,7 +20,6 @@
       "ComponentId": 55,
       "Modification": 11,
       "Quality": 5,
-      "Locked": true,
       "X": 4,
       "Y": 10
     },
@@ -31,7 +27,6 @@
       "ComponentId": 64,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 8,
       "Y": 11
     },
@@ -39,7 +34,6 @@
       "ComponentId": 64,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 8,
       "Y": 10
     },
@@ -47,7 +41,6 @@
       "ComponentId": 64,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 9,
       "Y": 10
     },
@@ -55,7 +48,6 @@
       "ComponentId": 64,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 9,
       "Y": 9
     },
@@ -63,7 +55,6 @@
       "ComponentId": 64,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 9,
       "Y": 8
     },
@@ -71,7 +62,6 @@
       "ComponentId": 64,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 3,
       "Y": 11
     },
@@ -79,7 +69,6 @@
       "ComponentId": 64,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 3,
       "Y": 10
     },
@@ -87,7 +76,6 @@
       "ComponentId": 64,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 2,
       "Y": 10
     },
@@ -95,7 +83,6 @@
       "ComponentId": 64,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 2,
       "Y": 9
     },
@@ -103,7 +90,6 @@
       "ComponentId": 64,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 2,
       "Y": 8
     },
@@ -111,7 +97,6 @@
       "ComponentId": 106,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 9,
       "Y": 7,
       "BarrelId": 2,
@@ -121,7 +106,6 @@
       "ComponentId": 106,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "Y": 7,
       "BarrelId": 1,
       "KeyBinding": 2
@@ -130,7 +114,6 @@
       "ComponentId": 108,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 10,
       "Y": 7,
       "BarrelId": 2,
@@ -140,7 +123,6 @@
       "ComponentId": 108,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": -1,
       "Y": 7,
       "BarrelId": 1,
@@ -150,7 +132,6 @@
       "ComponentId": 58,
       "Modification": 11,
       "Quality": 5,
-      "Locked": true,
       "X": 6,
       "Y": 10
     },
@@ -158,7 +139,6 @@
       "ComponentId": 48,
       "Modification": 1,
       "Quality": 5,
-      "Locked": true,
       "X": 5,
       "Y": 2,
       "KeyBinding": 5
@@ -167,14 +147,12 @@
       "ComponentId": 121,
       "Modification": 7,
       "Quality": 5,
-      "Locked": true,
       "X": 5
     },
     {
       "ComponentId": 74,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 6,
       "Y": 7
     },
@@ -182,7 +160,6 @@
       "ComponentId": 69,
       "Modification": 2,
       "Quality": 5,
-      "Locked": true,
       "X": 8,
       "Y": 9
     },
@@ -190,7 +167,6 @@
       "ComponentId": 69,
       "Modification": 2,
       "Quality": 5,
-      "Locked": true,
       "X": 3,
       "Y": 9
     },
@@ -198,7 +174,6 @@
       "ComponentId": 69,
       "Modification": 2,
       "Quality": 5,
-      "Locked": true,
       "X": 5,
       "Y": 7
     },
@@ -206,7 +181,6 @@
       "ComponentId": 69,
       "Modification": 2,
       "Quality": 5,
-      "Locked": true,
       "X": 6,
       "Y": 7
     },
@@ -214,7 +188,6 @@
       "ComponentId": 69,
       "Modification": 2,
       "Quality": 5,
-      "Locked": true,
       "X": 4,
       "Y": 7
     },
@@ -222,7 +195,6 @@
       "ComponentId": 77,
       "Modification": 12,
       "Quality": 5,
-      "Locked": true,
       "X": 5,
       "Y": 5
     }

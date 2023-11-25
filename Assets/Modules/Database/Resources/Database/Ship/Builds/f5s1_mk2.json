@@ -2,126 +2,106 @@
   "ItemType": 8,
   "Id": 62,
   "ShipId": 40,
-  "BuildFaction": -1,
   "Components": [
     {
       "ComponentId": 47,
-      "Locked": true,
       "Y": 2,
       "KeyBinding": 1
     },
     {
       "ComponentId": 133,
-      "Locked": true,
       "Y": 1
     },
     {
       "ComponentId": 133,
-      "Locked": true,
       "X": 5,
       "Y": 1,
       "BarrelId": 1
     },
     {
       "ComponentId": 57,
-      "Locked": true,
       "X": 4,
       "Y": 5
     },
     {
       "ComponentId": 57,
-      "Locked": true,
       "X": 5,
       "Y": 5
     },
     {
       "ComponentId": 57,
-      "Locked": true,
       "X": 2,
       "Y": 5
     },
     {
       "ComponentId": 57,
-      "Locked": true,
       "X": 1,
       "Y": 5
     },
     {
       "ComponentId": 78,
-      "Locked": true,
       "X": 3,
       "Y": 1
     },
     {
       "ComponentId": 78,
-      "Locked": true,
       "X": 4,
       "Y": 1
     },
     {
       "ComponentId": 78,
-      "Locked": true,
       "X": 2,
       "Y": 1
     },
     {
       "ComponentId": 78,
-      "Locked": true,
       "X": 2,
       "Y": 4
     },
     {
       "ComponentId": 47,
-      "Locked": true,
       "X": 5,
       "Y": 2,
       "KeyBinding": 1
     },
     {
       "ComponentId": 78,
-      "Locked": true,
       "X": 3,
       "Y": 4,
       "KeyBinding": -1
     },
     {
       "ComponentId": 78,
-      "Locked": true,
       "X": 4,
       "Y": 4,
       "KeyBinding": -1
     },
     {
       "ComponentId": 67,
-      "Locked": true,
       "X": 4,
       "Y": 2,
       "KeyBinding": -1
     },
     {
       "ComponentId": 67,
-      "Locked": true,
       "X": 3,
       "Y": 2,
       "KeyBinding": -1
     },
     {
       "ComponentId": 67,
-      "Locked": true,
       "X": 2,
       "Y": 2,
       "KeyBinding": -1
     },
     {
       "ComponentId": 12,
-      "Locked": true,
       "X": 6,
       "Y": 5,
       "KeyBinding": -1
     },
     {
       "ComponentId": 12,
-      "Locked": true,
       "Y": 5,
       "KeyBinding": -1
     }

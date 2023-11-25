@@ -2,52 +2,44 @@
   "ItemType": 8,
   "Id": 295,
   "ShipId": 132,
-  "BuildFaction": -1,
   "Components": [
     {
       "ComponentId": 76,
-      "Locked": true,
       "X": 6,
       "Y": 9,
       "KeyBinding": 1
     },
     {
       "ComponentId": 55,
-      "Locked": true,
       "X": 7,
       "Y": 13,
       "KeyBinding": 1
     },
     {
       "ComponentId": 59,
-      "Locked": true,
       "X": 7,
       "Y": 15,
       "KeyBinding": 1
     },
     {
       "ComponentId": 65,
-      "Locked": true,
       "X": 10,
       "Y": 8,
       "KeyBinding": 1
     },
     {
       "ComponentId": 10,
-      "Locked": true,
       "X": 13,
       "Y": 8,
       "KeyBinding": 1
     },
     {
       "ComponentId": 194,
-      "Locked": true,
       "X": 6,
       "KeyBinding": 1
     },
     {
       "ComponentId": 200,
-      "Locked": true,
       "Y": 6
     }
   ]
