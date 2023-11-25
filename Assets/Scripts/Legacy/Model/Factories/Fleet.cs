@@ -34,15 +34,18 @@ namespace Model
 				var count = Maths.Distance.FleetSize(distance, random) - 1;
 				var bossClass = distance > 50 ? DifficultyClass.Class2 : DifficultyClass.Class1;
 
-				var boss = database.ShipBuildList.
-					Flagships().
-					BelongToFaction(faction).
-					WithDifficultyClass(DifficultyClass.Class1, bossClass).
-					RandomElement(random);
+				ShipBuild boss = null;
+				if (faction != Faction.Empty)
+					boss = database.ShipBuildList.
+						Flagships().
+						BelongToFaction(faction).
+						WithDifficultyClass(DifficultyClass.Class1, bossClass).
+						RandomElement(random);
 				
 				if (boss == null)
 					boss = database.ShipBuildList.
 					Flagships().
+					LimitFactionByStarLevel(distance).
 					WithDifficultyClass(DifficultyClass.Class1, bossClass).
 					RandomElement(random);
 
@@ -55,20 +58,7 @@ namespace Model
 				return new CommonFleet(database, ships.Prepend(boss), distance, random.Next());
 			}
 
-		    public static IFleet SingleBoss(int distance, Faction faction, int seed, IDatabase database)
-		    {
-		        var random = new Random(seed);
-		        var bossClass = distance < 50 ? DifficultyClass.Default : distance < 150 ? DifficultyClass.Class1 : DifficultyClass.Class2;
-				var boss = database.ShipBuildList.
-					Flagships().
-					BelongToFaction(faction).
-					WithDifficultyClass(bossClass, bossClass).
-					RandomElements(1, random);
-
-		        return new CommonFleet(database, boss, distance, random.Next());
-		    }
-
-			public static IFleet Faction(GameModel.Region region, int seed, IDatabase database)
+			public static IFleet FactionDefenders(GameModel.Region region, int seed, IDatabase database)
 			{
 				var random = new Random(seed);
 				var distance = region.MilitaryPower;

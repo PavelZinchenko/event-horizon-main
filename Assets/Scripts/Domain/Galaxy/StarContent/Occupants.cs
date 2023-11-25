@@ -92,7 +92,7 @@ namespace Galaxy.StarContent
             var level = _starData.GetLevel(starId);
 
             if (region.Id > Region.PlayerHomeRegionId)
-                return Model.Factories.Fleet.Faction(region, starId + _random.Seed, _database);
+                return Model.Factories.Fleet.FactionDefenders(region, starId + _random.Seed, _database);
             else
                 return Model.Factories.Fleet.Common(level, starId + _random.Seed, _database);
         }
