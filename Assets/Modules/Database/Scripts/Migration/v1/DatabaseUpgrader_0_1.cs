@@ -114,7 +114,6 @@ namespace DatabaseMigration.v1
             foreach (var stats in Content.ComponentStatsList)
                 if (stats.AlterWeaponPlatform > 0)
                     stats.AutoAimingArc = PlatformTypeToAngle(stats.AlterWeaponPlatform);
-
         }
 
         private static BarrelSerializable ProcessBarrel(BarrelSerializable barrel)

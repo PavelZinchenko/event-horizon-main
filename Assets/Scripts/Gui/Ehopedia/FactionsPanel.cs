@@ -27,7 +27,7 @@ namespace Gui.Ehopedia
 
         public void Initialize()
         {
-            FactionsLayout.transform.InitializeElements<FactionListItem, Faction>(_database.FactionList.WithTechTree(), UpdateFaction, _factory);
+            FactionsLayout.transform.InitializeElements<FactionListItem, Faction>(_database.FactionsWithEmpty.WithTechTree(), UpdateFaction, _factory);
         }
 
         private void UpdateFaction(FactionListItem item, Faction faction)

@@ -146,7 +146,7 @@ namespace Constructor
 		    foreach (var barrel in _ship.Barrels)
 		    {
 		        var platform = new WeaponPlatform(barrel) { BarrelId = id++ };
-                if (stats.TargetingSystem) platform.ChangeAutoAimingArc(Barrel.PlatformTypeToAngle(3));
+                if (stats.TargetingSystem) platform.ChangeAutoAimingArc(20); // TODO: move angle value to database
 		        yield return platform;
 		    }
 

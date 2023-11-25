@@ -48,7 +48,7 @@ namespace Gui.Craft
             var requiredFaction = ship.Model.Faction;
             var requiredShipLevel = GetLevelRequirement(quality);
 
-            if (requiredLevel > level || (requiredFaction != Faction.Neutral && requiredFaction != faction))
+            if (requiredLevel > level || (requiredFaction != Faction.Empty && requiredFaction != faction))
                 _requirementsText.text = _localization.GetString("$RequiredShipyardLevel", requiredLevel, _localization.GetString(requiredFaction.Name));
             else if (ship.Experience.Level < requiredShipLevel)
                 _requirementsText.text = _localization.GetString("$RequiredShipLevel", requiredShipLevel);
@@ -58,7 +58,7 @@ namespace Gui.Craft
             Price = (tech != null ? tech.GetCraftPrice(quality)*1.1f - tech.GetCraftPrice(quality-1) : new CraftingPrice(ship.Price()*(ship.Model.Modifications.Count + 1)))*_playerSkills.CraftingPriceScale;
             _craftPricePanel.Initialize(Price, requiredFaction);
 
-            CanUnlock = requiredLevel <= level && (requiredFaction == faction || requiredFaction == Faction.Neutral) && requiredShipLevel <= ship.Experience.Level && _craftPricePanel.HaveEnoughResources;
+            CanUnlock = requiredLevel <= level && (requiredFaction == faction || requiredFaction == Faction.Empty) && requiredShipLevel <= ship.Experience.Level && _craftPricePanel.HaveEnoughResources;
             _unlockButton.interactable = CanUnlock;
         }
 

@@ -18,7 +18,7 @@ namespace Domain.Quests
             StarId = 0;
             Seed = seed;
             Level = 0;
-            Faction = Faction.Undefined;
+            Faction = Faction.Empty;
         }
 
         public readonly int QuestId;

@@ -40,7 +40,7 @@ namespace Domain.Player
 
         public bool IsFactionDiscovered(Faction faction)
         {
-            return faction == Faction.Neutral || _factions.Contains(faction);
+            return faction == Faction.Empty || _factions.Contains(faction);
         }
 
         protected override void OnSessionDataLoaded()

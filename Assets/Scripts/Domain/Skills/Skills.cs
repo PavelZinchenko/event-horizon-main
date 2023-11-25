@@ -60,7 +60,7 @@ namespace GameServices.Database
                 if (_database.SkillSettings.BeatAllEnemiesFactionList.Count > 0)
                     factions = _database.SkillSettings.BeatAllEnemiesFactionList.Select(item => item.Id.Value).ToHashSet();
                 else
-                    factions = _database.FactionList.Where(item => !item.NoTerritories && item != Faction.Neutral).Select(item => item.Id.Value).ToHashSet();
+                    factions = _database.FactionList.Where(item => !item.NoTerritories).Select(item => item.Id.Value).ToHashSet();
 
                 foreach (var faction in _session.Regions.GetCapturedFactions())
                     factions.Remove(faction.Value);

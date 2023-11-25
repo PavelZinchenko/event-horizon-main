@@ -8,7 +8,7 @@ namespace Constructor.Ships
     public class EditorModeShip : BaseShip
     {
         public EditorModeShip(ShipBuild build, IDatabase database)
-            : base(new ShipModel(build.Ship, Faction.Undefined))
+            : base(new ShipModel(build.Ship))
         {
             _database = database;
             _shipBuild = build;

@@ -83,15 +83,15 @@ namespace Galaxy
                 objects.Add(StarObjectType.Wormhole);
             //if (value >= 150 && value < 175 && Faction > 0)
             //	pointsOfInterest.Add(PointOfInterest.Laboratory);
-            if (value >= 200 && value < 300 && faction == Faction.Neutral)
+            if (value >= 200 && value < 300 && faction == Faction.Empty)
             	objects.Add(StarObjectType.Event);
-            if (value >= 300 && value < 325 && faction == Faction.Neutral)
+            if (value >= 300 && value < 325 && faction == Faction.Empty)
                 objects.Add(StarObjectType.Survival);
-            if (value >= 350 && value < 375 && faction != Faction.Neutral)
+            if (value >= 350 && value < 375 && faction != Faction.Empty)
                 objects.Add(StarObjectType.Arena);
-            if (value >= 400 && value < 450 && (faction != Faction.Neutral || value < 420))
+            if (value >= 400 && value < 450 && (faction != Faction.Empty || value < 420))
                 objects.Add(StarObjectType.Boss);
-            if (value >= 450 && value < 475 && faction == Faction.Neutral)
+            if (value >= 450 && value < 475 && faction == Faction.Empty)
                 objects.Add(StarObjectType.Ruins);
 #if !IAP_DISABLED
             if (value >= 500 && value < 510)
@@ -99,9 +99,9 @@ namespace Galaxy
 #endif
             if (value >= 550 && value < 570)
                 objects.Add(StarObjectType.Challenge);
-            if (value >= 600 && value < 650 && faction != Faction.Neutral)
+            if (value >= 600 && value < 650 && faction != Faction.Empty)
                 objects.Add(StarObjectType.Hive);
-            if (value >= 700 && value < 720 && faction == Faction.Neutral)
+            if (value >= 700 && value < 720 && faction == Faction.Empty)
                 objects.Add(StarObjectType.BlackMarket);
             if (value >= 800 && value < 810 && _holidayManager.IsChristmas)
                 objects.Add(StarObjectType.Xmas);

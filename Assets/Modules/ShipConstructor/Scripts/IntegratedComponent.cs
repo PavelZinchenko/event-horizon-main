@@ -166,7 +166,7 @@ namespace Constructor
         public static IntegratedComponent FromDatabase(InstalledComponent serializable)
         {
             var info = new ComponentInfo(serializable.Component, serializable.Modification, serializable.Quality);
-            var component = new IntegratedComponent(info, serializable.X, serializable.Y, serializable.BarrelId, serializable.KeyBinding, serializable.Behaviour, serializable.Locked);
+            var component = new IntegratedComponent(info, serializable.X, serializable.Y, serializable.BarrelId, serializable.KeyBinding, serializable.Behaviour, true);
 
             return component;
         }

@@ -39,7 +39,7 @@ namespace ViewModel
 		private void UpdateFactions()
 		{
 			if (gameObject.activeSelf)
-				FactionsLayout.transform.InitializeElements<FactionViewModel, Faction>(_database.FactionList.WithTechTree(), UpdateFaction, _factory);
+				FactionsLayout.transform.InitializeElements<FactionViewModel, Faction>(_database.FactionsWithEmpty.WithTechTree(), UpdateFaction, _factory);
 		}
 
 		private void UpdateFaction(FactionViewModel item, Faction faction)

@@ -50,7 +50,7 @@ namespace ViewModel
 			_suppressBookmarkChangeEvent = false;
 
 			var faction = star.Region.Faction;
-			if (faction != Faction.Neutral)
+			if (faction != Faction.Empty)
 			{
 				FactionNameText.gameObject.SetActive(true);
 				FactionNameText.color = faction.Color;

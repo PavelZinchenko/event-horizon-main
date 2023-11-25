@@ -50,7 +50,7 @@ namespace GameModel
 						_items = new List<IProduct>();
 						_items.Add(_productFactory.CreateRenewableMarketProduct(_itemTypeFactory.CreateFuelItem(), 100 + extraGoods*50, _starId, Market.FuelRenewalTime, 5f*pricescale));
 
-						foreach(var id in _database.FactionList.ValidForMerchants().CanGiveTechPoints(_level).RandomUniqueElements(random.Next(2, 5 + extraGoods), random))
+						foreach(var id in _database.FactionsWithEmpty.ValidForMerchants().CanGiveTechPoints(_level).RandomUniqueElements(random.Next(2, 5 + extraGoods), random))
 							_items.Add(_productFactory.CreateRenewableMarketProduct(_itemTypeFactory.CreateResearchItem(id), random.Next(1,5), _starId, Market.TechRenewalTime, pricescale));
 #if !IAP_DISABLED
     					_items.Add(_productFactory.CreateRenewableMarketProduct(_itemTypeFactory.CreateCurrencyItem(Currency.Stars), random.Next(5, 15 + 5*extraGoods), _starId, Market.StarsRenewalTime, 2f*pricescale));
@@ -60,10 +60,10 @@ namespace GameModel
 
 						var componentCount = random.Next(4, 7);
 						for (var i = 0; i < componentCount; ++i)
-							_items.Add(_productFactory.CreateRandomComponentProduct(_starId, i, _level+75, ComponentQuality.P3, Faction.Undefined, true, Market.RareComponentRenewalTime, true, 2f * pricescale));
+							_items.Add(_productFactory.CreateRandomComponentProduct(_starId, i, _level+75, ComponentQuality.P3, null, true, Market.RareComponentRenewalTime, true, 2f * pricescale));
 
                         if (extraGoods > 0)
-                            _items.Add(_productFactory.CreateRandomComponentProduct(_starId, componentCount, _level + 75, ComponentQuality.P3, Faction.Undefined, true, Market.RareComponentRenewalTime, false, 5f*pricescale));
+                            _items.Add(_productFactory.CreateRandomComponentProduct(_starId, componentCount, _level + 75, ComponentQuality.P3, null, true, Market.RareComponentRenewalTime, false, 5f*pricescale));
 
                         foreach (var item in _database.SatelliteList.Where(item => item.SizeClass != SizeClass.Titan).RandomUniqueElements(random.Next(extraGoods + 3), random))
 							_items.Add(_productFactory.CreateRenewableMarketProduct(_itemTypeFactory.CreateSatelliteItem(item, true), 1, _starId, Market.SatelliteRenewalTime, pricescale));
@@ -80,7 +80,7 @@ namespace GameModel
 
 			private bool IsShipFactionValid(ShipBuild build)
             {
-				var faction = build.BuildFaction != Faction.Undefined ? build.BuildFaction : build.Ship.Faction;
+				var faction = build.BuildFaction != Faction.Empty ? build.BuildFaction : build.Ship.Faction;
 
 				if (faction.HideFromMerchants) return false;
 				if (!faction.NoWanderingShips && faction.WanderingShipsDistance <= _level) return true;

@@ -142,7 +142,7 @@ namespace Domain.Quests
         {
             var amount = _random.Range(content.MinAmount, content.MaxAmount);
             var factionFilter = new FactionFilter(content.Factions, _questInfo.Level, _questInfo.Faction);
-            var faction = _database.FactionList.Where(factionFilter.IsSuitableForResearch).RandomElement(_random);
+            var faction = _database.FactionsWithEmpty.Where(factionFilter.IsSuitableForResearch).RandomElement(_random);
 
             if (faction != null)
                 yield return _lootItemFactory.CreateResearchPoints(faction, amount);

@@ -40,7 +40,7 @@ namespace GameModel
 
 						_items.Add(_productFactory.CreateMarketProduct(_lootGenerator.Factory.CreateFuelItem(), random.Next(10,100) + extraGoods*30, 2f*pricescale));
 
-                        _items.AddRange(_lootGenerator.GetRandomComponents(_level - 25, random.Next(2, 6) + extraGoods, Faction.Undefined, _random.Seed + _starId, false, extraGoods > 0 ? Constructor.ComponentQuality.P1 : ComponentQuality.P0)
+                        _items.AddRange(_lootGenerator.GetRandomComponents(_level - 25, random.Next(2, 6) + extraGoods, _random.Seed + _starId, false, extraGoods > 0 ? Constructor.ComponentQuality.P1 : ComponentQuality.P0)
 							.Select(item => _productFactory.CreateMarketProduct(item, 1, 2f*pricescale)));
 
 						var factionMap = _lootGenerator.Factory.TryCreateFactionMapItem(_starId);

@@ -46,7 +46,7 @@ namespace Galaxy.StarContent
                 CommonAndRareShips().
                 LimitSizeByStarLevel(level).
                 WithDifficultyClass(DifficultyClass.Default, DifficultyClass.Default).
-                LimitByFactionOrStarLevel(Faction.Undefined, level).
+                LimitFactionByStarLevel(level).
                 RandomUniqueElements(MaxLevel, new System.Random(starId)).
                 Take(MaxLevel).
                 ToList();
@@ -69,7 +69,7 @@ namespace Galaxy.StarContent
             var ship = _database.ShipBuildList.
                 ValidForPlayer().
                 CommonShips().
-                LimitByFactionOrStarLevel(Faction.Undefined, level).
+                LimitFactionByStarLevel(level).
                 WithSizeClass(SizeClass.Frigate, SizeClass.Cruiser).
                 RandomElement(new System.Random(starId));
 
@@ -102,7 +102,7 @@ namespace Galaxy.StarContent
             var step = GetCurrentLevel(starId);
             var level = _starData.GetLevel(starId);
 
-            yield return new Product(_lootGenerator.GetRandomComponent(level + (step + 1) * 10, Faction.Undefined, starId + step + 3456, false));
+            yield return new Product(_lootGenerator.GetRandomComponent(level + (step + 1) * 10, starId + step + 3456, false));
 
             if (step + 1 < MaxLevel)
                 yield break;

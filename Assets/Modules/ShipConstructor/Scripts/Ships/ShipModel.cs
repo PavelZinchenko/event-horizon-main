@@ -28,15 +28,12 @@ namespace Constructor.Ships
 
         public ShipModel(Ship ship, Faction faction) : this(ship)
         {
-            if (faction != null && faction != Faction.Undefined)
+            if (faction != Faction.Empty)
                 Faction = faction;
         }
 
-        public ShipModel(Ship ship, IEnumerable<IShipModification> modifications, Faction faction) : this(ship)
+        public ShipModel(Ship ship, IEnumerable<IShipModification> modifications, Faction faction) : this(ship, faction)
         {
-            if (faction != null && faction != Faction.Undefined)
-                Faction = faction;
-
             if (modifications != null)
                 Modifications.Assign(modifications);
         }

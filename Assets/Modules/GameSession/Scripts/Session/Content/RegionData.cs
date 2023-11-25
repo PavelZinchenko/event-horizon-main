@@ -40,10 +40,16 @@ namespace Session.Content
 
         public IEnumerable<int> Regions => _factions.Keys;
 
-        public ItemId<Faction> GetRegionFactionId(int regionId)
+        public bool TryGetRegionFactionId(int regionId, out ItemId<Faction> faction)
 	    {
-	        int factionId;
-	        return _factions.TryGetValue(regionId, out factionId) ? new ItemId<Faction>(factionId) : Faction.Undefined.Id;
+			if (_factions.TryGetValue(regionId, out var factionId))
+			{
+				faction = ItemId<Faction>.Create(factionId);
+				return true;
+			}
+
+			faction = ItemId<Faction>.Empty;
+			return false;
 	    }
 
 	    public void SetRegionFactionId(int regionId, ItemId<Faction> factionId)

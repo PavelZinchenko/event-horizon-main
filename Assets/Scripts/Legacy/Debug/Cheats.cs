@@ -82,7 +82,7 @@ public class Cheats
       //      _playerResources.Money += 200000;
       //      _playerResources.Stars += 50;
 
-		    foreach (var faction in _database.FactionList.WithTechTree())
+		    foreach (var faction in _database.FactionsWithEmpty.WithTechTree())
 			    _research.AddResearchPoints(faction, 50);
 
 		    _playerSkills.Experience = GameModel.Skills.Experience.FromLevel(_playerSkills.Experience.Level + 50);
@@ -212,7 +212,7 @@ public class Cheats
 				ship.SetLevel(ship.Experience.Level + 10);
 			break;
 		case 10:
-		    foreach (var faction in _database.FactionList.WithTechTree())
+		    foreach (var faction in _database.FactionsWithEmpty.WithTechTree())
 				_research.AddResearchPoints(faction, 100);
 			break;
 		case 11:

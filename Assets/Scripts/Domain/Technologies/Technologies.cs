@@ -110,12 +110,12 @@ namespace GameServices.Database
 
         public static IEnumerable<ITechnology> OfFaction(this IEnumerable<ITechnology> technologies, Faction faction)
         {
-            return technologies.Where(item => faction == Faction.Undefined || item.Faction == faction);
+            return technologies.Where(item => faction == Faction.Empty || item.Faction == faction);
         }
 
         public static IEnumerable<ITechnology> ForWorkshop(this IEnumerable<ITechnology> technologies, Faction faction)
         {
-            return technologies.Where(item => item.Faction == faction || item.Faction == Faction.Neutral);
+            return technologies.Where(item => item.Faction == faction || item.Faction == Faction.Empty);
         }
 
         public static IEnumerable<ITechnology> Free(this IEnumerable<ITechnology> technologies)

@@ -96,9 +96,14 @@ namespace GameServices.Research
 		    _messenger.Broadcast(EventType.TechPointsChanged);
 		}
 
+		public IEnumerable<ITechnology> GetAvailableTechs()
+		{
+			return _technologies.All.Where(item => !_researchedTech.Contains(item) && IsAvailabe(item, false));
+		}
+
 		public IEnumerable<ITechnology> GetAvailableTechs(Faction faction)
 	    {
-	        return _technologies.All.OfFaction(faction).Where(item => !_researchedTech.Contains(item) && IsAvailabe(item, false));
+	        return GetAvailableTechs().OfFaction(faction);
 	    }
 
 		public bool AnyResearchPointsObtained(Faction faction)
@@ -128,7 +133,7 @@ namespace GameServices.Research
                 _researchedTech.Add(tech);
             }
 
-            _researchPoints = _database.FactionList.ToDictionary(item => item.Id.Value, item => (ObscuredInt)_session.Research.GetResearchPoints(item));
+            _researchPoints = _database.FactionsWithEmpty.ToDictionary(item => item.Id.Value, item => (ObscuredInt)_session.Research.GetResearchPoints(item));
 
             foreach (var tech in _researchedTech)
                 _researchPoints[tech.Faction.Id.Value] = Math.Max(0, _researchPoints[tech.Faction.Id.Value] - tech.Price);

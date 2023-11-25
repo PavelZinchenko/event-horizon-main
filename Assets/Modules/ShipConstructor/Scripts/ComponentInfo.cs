@@ -51,7 +51,8 @@ namespace Constructor
         {
             var maxLevel = 3*level/2;
             var components = allowRare ? database.ComponentList.CommonAndRare() : database.ComponentList.Common();
-            var component = components.FilterByFaction(faction).LevelLessOrEqual(maxLevel).RandomElement(random);
+            if (faction != null) components = components.FilterByFaction(faction);
+            var component = components.LevelLessOrEqual(maxLevel).RandomElement(random);
 
             var componentLevel = Mathf.Max(10, component.Level);
             var requiredLevel = Mathf.Max(10, level);

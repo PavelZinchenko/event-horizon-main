@@ -210,7 +210,7 @@ namespace Gui.ShipService
 
                 RequiredShipyardLevel = Cells * 5 + 5;
                 IsShipyardLevelEnough = shipyardLevel >= RequiredShipyardLevel &&
-                    (ship.Model.Faction == Faction.Neutral || ship.Model.Faction == shipyardFaction);
+                    (ship.Model.Faction == Faction.Empty || ship.Model.Faction == shipyardFaction);
             }
 
             public bool CanReset { get { return Cells > 0; } }

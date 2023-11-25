@@ -15,14 +15,14 @@ namespace Model
 	{
 		public static class Fleet
 		{
-			public static IFleet Common(int distance, Faction faction, int seed, IDatabase database)
+			public static IFleet Common(int distance, int seed, IDatabase database)
 			{
 				var random = new Random(seed);
 				var count = Maths.Distance.FleetSize(distance, random);
 				var ships = database.ShipBuildList.
 					ValidForEnemy().
 					CommonShips().
-					LimitByStarLevel(distance, faction).
+					LimitByStarLevel(distance).
 					RandomElements(count, random).OrderBy(item => random.Next());
 
 				return new CommonFleet(database, ships, distance, random.Next());
@@ -36,7 +36,7 @@ namespace Model
 
 				var boss = database.ShipBuildList.
 					Flagships().
-					LimitByFactionOrStarLevel(faction, distance).
+					BelongToFaction(faction).
 					WithDifficultyClass(DifficultyClass.Class1, bossClass).
 					RandomElement(random);
 				
@@ -61,7 +61,7 @@ namespace Model
 		        var bossClass = distance < 50 ? DifficultyClass.Default : distance < 150 ? DifficultyClass.Class1 : DifficultyClass.Class2;
 				var boss = database.ShipBuildList.
 					Flagships().
-					LimitByFactionOrStarLevel(faction, distance).
+					BelongToFaction(faction).
 					WithDifficultyClass(bossClass, bossClass).
 					RandomElements(1, random);
 
@@ -141,7 +141,7 @@ namespace Model
                 var hidden = database.ShipBuildList.
 					ValidForEnemy().
 					HiddenShips().
-					BelongToFaction(GameDatabase.DataModel.Faction.Neutral).
+					BelongToFaction(GameDatabase.DataModel.Faction.Empty).
 					Hardcore().
 					LimitSizeByStarLevel(distance*2);
 
@@ -179,7 +179,7 @@ namespace Model
 				var factionShips = database.ShipBuildList.
 					ValidForEnemy().
 					CommonAndRareShips().
-					LimitByFactionOrStarLevel(faction,distance).
+					BelongToFaction(faction).
 					RandomElements(fleetSize - numberOfRandomShips, random);
 				return new SurvivalFleet(database, factionShips.Concat(randomShips).OrderBy(item => item.Ship.Layout.CellCount + random.Next(20)), distance, random.Next());
 			}

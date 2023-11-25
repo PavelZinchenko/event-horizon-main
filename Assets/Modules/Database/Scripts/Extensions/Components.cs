@@ -17,12 +17,14 @@ namespace GameDatabase.Extensions
             return components.Where(item => item.Availability == Availability.Common || item.Availability == Availability.Rare);
         }
 
+        public static IEnumerable<Component> AvailableForMerchants(this IEnumerable<Component> components)
+        {
+            return components.Where(item => !item.Faction.HideFromMerchants);
+        }
+
         public static IEnumerable<Component> FilterByFaction(this IEnumerable<Component> components, Faction faction)
         {
-            if (faction == Faction.Neutral || faction == Faction.Undefined)
-                return components.Where(item => !item.Faction.HideFromMerchants);
-
-            return components.Where(item => item.Faction == faction || item.Faction == Faction.Neutral || item.Faction == Faction.Undefined);
+            return components.Where(item => item.Faction == faction);
         }
 
         public static IEnumerable<Component> Available(this IEnumerable<Component> components)

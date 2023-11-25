@@ -65,7 +65,7 @@ namespace GameDatabase.Extensions
         {
             foreach (var build in builds)
             {
-                if (build.BuildFaction != Faction.Undefined)
+                if (build.BuildFaction != Faction.Empty)
                 {
                     if (build.BuildFaction == faction)
                         yield return build;
@@ -81,14 +81,6 @@ namespace GameDatabase.Extensions
         public static IEnumerable<ShipBuild> LimitFactionByStarLevel(this IEnumerable<ShipBuild> ships, int distance)
         {
             return ships.Where(item => !item.Ship.Faction.NoWanderingShips && item.Ship.Faction.WanderingShipsRange.Contains(distance));
-        }
-
-        public static IEnumerable<ShipBuild> LimitByFactionOrStarLevel(this IEnumerable<ShipBuild> ships, Faction faction, int distance)
-        {
-            if (faction == Faction.Undefined)
-                return ships.LimitFactionByStarLevel(distance);
-            else
-                return ships.BelongToFaction(faction);
         }
 
         public static IEnumerable<ShipBuild> WithSizeClass(this IEnumerable<ShipBuild> builds, SizeClass size)
@@ -152,10 +144,18 @@ namespace GameDatabase.Extensions
             return ships.Where(item => item.DifficultyClass == bestClass);
         }
 
+        public static IEnumerable<ShipBuild> LimitByStarLevel(this IEnumerable<ShipBuild> builds, int distance)
+        {
+            return builds.
+                LimitFactionByStarLevel(distance).
+                LimitSizeByStarLevel(distance).
+                LimitClassByStarLevel(distance);
+        }
+
         public static IEnumerable<ShipBuild> LimitByStarLevel(this IEnumerable<ShipBuild> builds, int distance, Faction faction)
         {
             return builds.
-                LimitByFactionOrStarLevel(faction, distance).
+                BelongToFaction(faction).
                 LimitSizeByStarLevel(distance).
                 LimitClassByStarLevel(distance);
         }

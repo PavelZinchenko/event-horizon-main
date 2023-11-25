@@ -255,9 +255,10 @@ namespace Game.Exploration
                 return true;
 
             var shipFaction = build.Ship.Faction;
-            if (shipFaction == Faction.Neutral || shipFaction == Faction.Undefined)
+            if (shipFaction == Faction.Empty)
                 return true;
-            if (_planet.Faction == Faction.Neutral)
+
+            if (_planet.Faction == Faction.Empty)
                 return !shipFaction.NoWanderingShips && shipFaction.WanderingShipsRange.Contains(_planet.Level);
 
             return _planet.Faction == shipFaction;

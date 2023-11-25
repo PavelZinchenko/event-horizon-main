@@ -94,7 +94,7 @@ namespace Galaxy.StarContent
             if (region.Id > Region.PlayerHomeRegionId)
                 return Model.Factories.Fleet.Faction(region, starId + _random.Seed, _database);
             else
-                return Model.Factories.Fleet.Common(level, Faction.Undefined, starId + _random.Seed, _database);
+                return Model.Factories.Fleet.Common(level, starId + _random.Seed, _database);
         }
 
         public CombatModelBuilder CreateCombatModelBuilder(int starId)
@@ -121,7 +121,7 @@ namespace Galaxy.StarContent
 		        builder.Rules = Model.Factories.CombatRules.Neutral(level);
 
                 if (_random.RandomInt(starId + 123, 100) <= 20)
-                    builder.AddSpecialReward(new Product(_itemTypeFactory.CreateResearchItem(Faction.Neutral)));
+                    builder.AddSpecialReward(new Product(_itemTypeFactory.CreateResearchItem(Faction.Empty)));
             }
 
             return builder;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DataModel.Technology;
 using GameDatabase.DataModel;
-using GameDatabase.Model;
 using GameServices.Database;
 using GameServices.Gui;
 using GameServices.Research;
@@ -42,19 +41,14 @@ namespace ViewModel
         [SerializeField] private Image _itemIcon;
         [SerializeField] private GameObject _itemIconPanel;
 
-        public void Initialize(Faction faction)
-        {
-            if (_faction == faction)
-                return;
+		public void Initialize(Faction faction)
+		{
+			if (_faction == faction)
+				return;
 
-            _faction = faction;
-            ResearchButton.interactable = false;
-            MoreInfoButton.interactable = false;
-            _selectedItem = null;
-            UpdateTree(faction);
-			ToggleGroup.SetAllTogglesOff();
-            OnTechDeselected(null);
-        }
+			_faction = faction;
+			UpdateContent();
+		}
 
 		public void OnTechSelected(ITechnology technology)
 		{
@@ -100,13 +94,18 @@ namespace ViewModel
 
 	    private void OnEnable()
 	    {
-	        Initialize(Faction.Neutral);
+	        UpdateContent();
 	    }
 
-	    private void OnDisable()
-	    {
-	        _faction = Faction.Undefined;
-	    }
+		private void UpdateContent()
+		{
+			ResearchButton.interactable = false;
+			MoreInfoButton.interactable = false;
+			_selectedItem = null;
+			UpdateTree(_faction);
+			ToggleGroup.SetAllTogglesOff();
+			OnTechDeselected(null);
+		}
 
 		private void UpdateTree(Faction faction)
 		{
@@ -531,6 +530,6 @@ namespace ViewModel
 			}
 		}
 
-        private Faction _faction = Faction.Undefined;
+        private Faction _faction = Faction.Empty;
     }
 }

@@ -18,6 +18,8 @@ namespace GameDatabase
         string Name { get; }
         bool IsEditable { get; }
 
+        IEnumerable<Faction> FactionsWithEmpty { get; }
+
         #region temporary members
         // TODO: remove this after database editor can edit builds
         void SaveShipBuild(ItemId<ShipBuild> id);

@@ -261,10 +261,9 @@ namespace Domain.Quests
         public INode Create(Node_OpenShipyard content)
         {
             var starData = _starMapData.GetStarData(_context.StarId);
-            var faction = content.Faction != Faction.Undefined ? content.Faction : starData.Region.Faction;
             var level = content.Level > 0 ? content.Level : starData.Level;
 
-            var node = new ShipyardNode(content.Id, faction, level);
+            var node = new ShipyardNode(content.Id, content.Faction, level);
             _nodes.Add(node.Id, node);
             node.TargetNode = CreateNode(content.Transition);
             return node;
@@ -291,10 +290,9 @@ namespace Domain.Quests
         public INode Create(Node_OpenWorkshop content)
         {
             var starData = _starMapData.GetStarData(_context.StarId);
-            var faction = content.Faction != Faction.Undefined ? content.Faction : starData.Region.Faction;
             var level = content.Level > 0 ? content.Level : starData.Level;
 
-            var node = new WorkshopNode(content.Id, faction, level);
+            var node = new WorkshopNode(content.Id, content.Faction, level);
             _nodes.Add(node.Id, node);
             node.TargetNode = CreateNode(content.Transition);
             return node;

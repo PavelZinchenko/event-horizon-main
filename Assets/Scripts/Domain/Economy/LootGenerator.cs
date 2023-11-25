@@ -237,7 +237,7 @@ namespace GameServices.Economy
                 var random = _random.CreateRandom(region.Id);
 
                 yield return Price.Premium(Mathf.Min(10, 1 + region.MilitaryPower / 30)).GetProduct(_factory);
-                foreach (var faction in _database.FactionList.ValidForMerchants().RandomUniqueElements(4, random))
+                foreach (var faction in _database.FactionsWithEmpty.ValidForMerchants().RandomUniqueElements(4, random))
                     yield return new Product(_factory.CreateResearchItem(faction), Mathf.Min(10, 1 + region.MilitaryPower / 30));
 
                 if (random.Percentage(30))
@@ -274,7 +274,7 @@ namespace GameServices.Economy
 
             if (random.Percentage(30))
             {
-                var tech = _research.GetAvailableTechs(Faction.Undefined).Where(item => item.Price <= 15).RandomElement(random);
+                var tech = _research.GetAvailableTechs().Where(item => item.Price <= 15).RandomElement(random);
                 if (tech != null)
                     yield return new Product(_factory.CreateBlueprintItem(tech));
             }
@@ -295,7 +295,7 @@ namespace GameServices.Economy
                     yield return new Product(_factory.CreateSatelliteItem(item));
             }
 
-            foreach (var item in RandomComponents(Maths.Distance.ComponentLevel(level) + 35, random.Next(1, 3), Faction.Undefined, random, false))
+            foreach (var item in RandomComponents(Maths.Distance.ComponentLevel(level) + 35, random.Next(1, 3), null, random, false))
                 yield return new Product(item);
 
             var quantity = random.Next(3);
@@ -340,14 +340,14 @@ namespace GameServices.Economy
             if (day % 2 == 0)
                 yield return new Product(_factory.CreateFuelItem(), Mathf.Min(30, 10*day/2));
             else if (day % 3 == 0)
-                yield return new Product(_factory.CreateResearchItem(_database.FactionList.CanGiveTechPoints(level).RandomElement(new System.Random(seed))), Mathf.Min(5,day/3));
+                yield return new Product(_factory.CreateResearchItem(_database.FactionsWithEmpty.CanGiveTechPoints(level).RandomElement(new System.Random(seed))), Mathf.Min(5,day/3));
             else if (day % 5 == 0)
                 yield return Price.Premium(Mathf.Min(5,day/5)).GetProduct(_factory);
 
             if (day > 3)
             {
                 var quality = (ComponentQuality)Mathf.Min(day/3, (int)ComponentQuality.P3);
-                var component = ComponentInfo.CreateRandom(_database, level, Faction.Undefined, _random.CreateRandom(seed), false, quality);
+                var component = ComponentInfo.CreateRandom(_database, level, null, _random.CreateRandom(seed), false, quality);
                 yield return new Product(_factory.CreateComponentItem(component));
             }
         }
@@ -358,10 +358,22 @@ namespace GameServices.Economy
             return RandomComponent(distance, faction, random, allowRare);
         }
 
+        public IItemType GetRandomComponent(int distance, int seed, bool allowRare)
+        {
+            var random = _random.CreateRandom(seed);
+            return RandomComponent(distance, null, random, allowRare);
+        }
+
         public IEnumerable<IItemType> GetRandomComponents(int distance, int count, Faction faction, int seed, bool allowRare, ComponentQuality maxQuality = ComponentQuality.P3)
         {
             var random = _random.CreateRandom(seed);
             return RandomComponents(distance, count, faction, random, allowRare, maxQuality);
+        }
+
+        public IEnumerable<IItemType> GetRandomComponents(int distance, int count, int seed, bool allowRare, ComponentQuality maxQuality = ComponentQuality.P3)
+        {
+            var random = _random.CreateRandom(seed);
+            return RandomComponents(distance, count, null, random, allowRare, maxQuality);
         }
 
         public IItemType GetRandomFactionShip(int distance, Faction faction, int seed)

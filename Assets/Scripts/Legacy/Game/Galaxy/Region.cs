@@ -1,4 +1,3 @@
-using System.Linq;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Extensions;
@@ -21,7 +20,7 @@ namespace GameModel
 
 			if (Id == 0 || Id == PlayerHomeRegionId || isPirateBase)
 			{
-				_faction = Faction.Neutral;
+				_faction = Faction.Empty;
 			    Size = 0;
 			}
 			else
@@ -51,7 +50,7 @@ namespace GameModel
 
 		public int PlayerReputation => _session.Quests.GetFactionRelations(HomeStar);
 
-	    public bool IsPirateBase => _faction == Faction.Neutral;
+	    public bool IsPirateBase => _faction == Faction.Empty;
 
         public int Relations
         {
@@ -102,25 +101,23 @@ namespace GameModel
 		{
 			get
 			{
-			    if (_faction != Faction.Undefined)
+			    if (_faction != null)
 			        return _faction;
 
-    	        var factionId = _session.Regions.GetRegionFactionId(Id);
-			    if (factionId != Faction.Undefined.Id)
-			    {
-			        var faction = _database.GetFaction(factionId);
-			        if (faction != Faction.Undefined/* && !faction.Hidden*/)
-			            return _faction = faction;
-			    }
+				if (_session.Regions.TryGetRegionFactionId(Id, out var factionId))
+                {
+					_faction = _database.GetFaction(factionId);
+					return _faction;
+				}
 
-			    _faction = _database.FactionList.WithStarbases(MilitaryPower).Where(item => item != Faction.Neutral).RandomElement(new System.Random(HomeStar + _session.Game.Seed));
+			    _faction = _database.FactionList.WithStarbases(MilitaryPower).RandomElement(new System.Random(HomeStar + _session.Game.Seed));
 			    _session.Regions.SetRegionFactionId(Id, _faction.Id);
 
                 return _faction;
 			}
             set
             {
-				if (_faction != Faction.Undefined && value == _faction) return;
+				if (value == _faction) return;
                 _faction = value;
 				_session.Regions.SetRegionFactionId(Id, value.Id);
 				_baseCapturedTrigger.Fire(this);
@@ -140,17 +137,17 @@ namespace GameModel
 
 	    private Region()
 	    {
-	        Id = 0;
+	        Id = UnoccupiedRegionId;
 	        OwnerId = 0;
-	        _faction = Faction.Neutral;
 	        Size = 0;
+			_faction = Faction.Empty;
 	        _isCaptured = true;
 	    }
 
         private bool _isCaptured;
 		private int _defeatedFleetCount = 0;
 		private int _homeStar = -1;
-		private Faction _faction = Faction.Undefined;
+		private Faction _faction;
 
 	    private readonly IDatabase _database;
 	    private readonly ISessionData _session;

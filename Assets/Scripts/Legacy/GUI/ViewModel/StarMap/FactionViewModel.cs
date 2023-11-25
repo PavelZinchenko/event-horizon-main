@@ -59,6 +59,6 @@ namespace ViewModel
 			Toggle.onValueChanged.AddListener(OnValueChanged);
 		}
 
-		private Faction _faction = Faction.Undefined;
+		private Faction _faction = Faction.Empty;
 	}
 }
