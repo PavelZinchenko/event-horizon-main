@@ -18,6 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public DebugSettingsSerializable()
 		{
 			ItemType = ItemType.DebugSettings;
+			FileName = $"{ItemType}.json";
 		}
 
 		public DebugCodeSerializable[] Codes;

@@ -18,6 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public ShipModSettingsSerializable()
 		{
 			ItemType = ItemType.ShipModSettings;
+			FileName = $"{ItemType}.json";
 		}
 
 		public bool RemoveWeaponSlotMod;

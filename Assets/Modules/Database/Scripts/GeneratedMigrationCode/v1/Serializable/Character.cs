@@ -18,6 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public CharacterSerializable()
 		{
 			ItemType = ItemType.Character;
+			FileName = $"{ItemType}.json";
 		}
 
 		public string Name;

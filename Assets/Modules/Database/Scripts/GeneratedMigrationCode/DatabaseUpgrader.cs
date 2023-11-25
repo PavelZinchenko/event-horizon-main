@@ -10,7 +10,7 @@ using GameDatabase.Storage;
 
 namespace DatabaseMigration
 {
-    public class DatabaseUpgrader
+    public partial class DatabaseUpgrader
     {
         public DatabaseUpgrader(IJsonSerializer jsonSerializer, IDataStorage storage)
         {
@@ -23,19 +23,35 @@ namespace DatabaseMigration
             var major = _storage.Version.Major;
             var minor = _storage.Version.Minor;
 
+            if (major == 0)
+            {
+                major = 1;
+                minor = 0;
+            }
+            
+            if (!IsValidVersion(major, minor))
+                throw new DatabaseException($"invalid database version: {major}.{minor}");
+
             v1.Storage.DatabaseContent content1 = null;
             if (major <= 1)
             {
                 content1 = new v1.Storage.DatabaseContent(_serializer, _storage);
+                content1.VersionMajor = major;
+                content1.VersionMinor = minor;
                 var upgrader = new v1.DatabaseUpgrader(content1);
                 upgrader.UpgradeMinor();
             }
 
 
-            if (major <= 0 || major > 1)
-                throw new DatabaseException($"invalid database version: {major}.{minor}");
-
             content1.Export(result);
+        }
+
+        private bool IsValidVersion(int major, int minor)
+        {
+            if (major == 1)
+                return minor >= 0 && minor <= 1;
+
+            return false;
         }
 
         private readonly IDataStorage _storage;

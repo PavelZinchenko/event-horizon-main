@@ -18,6 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public ShipSettingsSerializable()
 		{
 			ItemType = ItemType.ShipSettings;
+			FileName = $"{ItemType}.json";
 		}
 
 		public float DefaultWeightPerCell;

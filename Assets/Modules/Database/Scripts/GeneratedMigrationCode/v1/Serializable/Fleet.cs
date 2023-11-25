@@ -18,6 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public FleetSerializable()
 		{
 			ItemType = ItemType.Fleet;
+			FileName = $"{ItemType}.json";
 		}
 
 		public FactionFilterSerializable Factions;

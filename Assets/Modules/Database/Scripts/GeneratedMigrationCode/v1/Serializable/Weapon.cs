@@ -18,6 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public WeaponSerializable()
 		{
 			ItemType = ItemType.Weapon;
+			FileName = $"{ItemType}.json";
 		}
 
 		public WeaponClass WeaponClass;

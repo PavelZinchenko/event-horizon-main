@@ -29,7 +29,6 @@ namespace GameDatabase.DataModel
 			    throw new DatabaseException(this.GetType().Name + ".Component cannot be null - " + serializable.ComponentId);
 			Modification = serializable.Modification;
 			Quality = serializable.Quality;
-			Locked = serializable.Locked;
 			X = UnityEngine.Mathf.Clamp(serializable.X, -32768, 32767);
 			Y = UnityEngine.Mathf.Clamp(serializable.Y, -32768, 32767);
 			BarrelId = UnityEngine.Mathf.Clamp(serializable.BarrelId, 0, 255);
@@ -42,7 +41,6 @@ namespace GameDatabase.DataModel
 		public Component Component { get; private set; }
 		public ComponentModType Modification { get; private set; }
 		public ModificationQuality Quality { get; private set; }
-		public bool Locked { get; private set; }
 		public int X { get; private set; }
 		public int Y { get; private set; }
 		public int BarrelId { get; private set; }

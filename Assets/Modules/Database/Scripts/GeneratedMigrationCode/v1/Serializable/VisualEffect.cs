@@ -18,6 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public VisualEffectSerializable()
 		{
 			ItemType = ItemType.VisualEffect;
+			FileName = $"{ItemType}.json";
 		}
 
 		public VisualEffectElementSerializable[] Elements;

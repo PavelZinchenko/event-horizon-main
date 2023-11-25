@@ -18,6 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public ComponentModSerializable()
 		{
 			ItemType = ItemType.ComponentMod;
+			FileName = $"{ItemType}.json";
 		}
 
 		public ComponentModType Type;

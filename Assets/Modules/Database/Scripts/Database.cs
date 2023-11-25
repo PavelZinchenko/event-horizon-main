@@ -26,6 +26,8 @@ namespace GameDatabase
         public string Id => Storage.Id;
         public bool IsEditable => Storage.IsEditable;
 
+        public IEnumerable<Faction> FactionsWithEmpty => FactionList.Prepend(Faction.Empty);
+
         private IDataStorage Storage => _storage ?? _defaultStorage;
 
         public void LookForMods()
@@ -136,9 +138,6 @@ namespace GameDatabase
 
             if (_content.DatabaseSettings == null || !_content.DatabaseSettings.UnloadOriginalDatabase)
                 LoadExtraContent(_content, _defaultStorage);
-
-            // TODO: increase id of all factions by 1, add neutral faction to database, 0 = undefined
-            _factionMap.Add(Faction.Neutral.Id.Value, Faction.Neutral);
 
             Loader.Load(this, _content);
             

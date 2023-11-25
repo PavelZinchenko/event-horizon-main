@@ -19,7 +19,6 @@ namespace GameDatabase.DataModel
             Component = component;
             Modification = modType;
             Quality = quality;
-            Locked = true;
             X = x;
             Y = y;
             BarrelId = barrelId;
@@ -34,7 +33,6 @@ namespace GameDatabase.DataModel
                 ComponentId = Component.Id.Value,
                 Modification = Modification,
                 Quality = Quality,
-                Locked = Locked,
                 X = X,
                 Y = Y,
                 BarrelId = BarrelId,

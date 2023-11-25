@@ -3,7 +3,6 @@
     <member name="ComponentId" type="object" typeid="Component" alias="Component" options="notnull" />
     <member name="Modification" type="enum" typeid="ComponentModType" />
     <member name="Quality" type="enum" typeid="ModificationQuality" />
-    <member name="Locked" type="bool" />
     <member name="X" type="int" minvalue="-32768" maxvalue="32767" />
     <member name="Y" type="int" minvalue="-32768" maxvalue="32767" />
     <member name="BarrelId" type="int" minvalue="0" maxvalue="255" />

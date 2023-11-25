@@ -18,6 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public FrontierSettingsSerializable()
 		{
 			ItemType = ItemType.FrontierSettings;
+			FileName = $"{ItemType}.json";
 		}
 
 		public int BaseCommandPoints;

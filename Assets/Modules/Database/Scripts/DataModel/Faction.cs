@@ -7,25 +7,11 @@ namespace GameDatabase.DataModel
     {
         static Faction()
         {
-            Neutral = new Faction(0, UnityEngine.Color.grey, "$NeutralFaction");
-            DefaultValue = Undefined = new Faction(-1, UnityEngine.Color.black, "UNDEFINED");
+            DefaultValue = Empty = new Faction(0, UnityEngine.Color.gray, "$NeutralFaction");
         }
 
         partial void OnDataDeserialized(FactionSerializable serializable, Database.Loader loader)
         {
-            if (serializable.Hidden)
-            {
-                NoTerritories = true;
-                NoWanderingShips = true;
-                HideFromMerchants = true;
-                HideResearchTree = true;
-            }
-
-            if (serializable.Hostile)
-            {
-                NoMissions = true;
-            }
-
             WanderingShipsRange = new Range(
                 WanderingShipsDistance != 0 ? WanderingShipsDistance : int.MinValue,
                 WanderingShipsDistanceMax != 0 ? WanderingShipsDistanceMax : int.MaxValue);
@@ -44,8 +30,7 @@ namespace GameDatabase.DataModel
         public Range HomeStarRange { get; private set; }
         public Range WanderingShipsRange { get; private set; }
 
-        public static readonly Faction Neutral;
-        public static readonly Faction Undefined;
+        public static readonly Faction Empty;
     }
 
     public struct Range

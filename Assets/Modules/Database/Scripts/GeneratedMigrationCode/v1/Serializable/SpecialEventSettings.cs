@@ -18,6 +18,7 @@ namespace DatabaseMigration.v1.Serializable
 		public SpecialEventSettingsSerializable()
 		{
 			ItemType = ItemType.SpecialEventSettings;
+			FileName = $"{ItemType}.json";
 		}
 
 		public bool EnableXmasEvent = true;
