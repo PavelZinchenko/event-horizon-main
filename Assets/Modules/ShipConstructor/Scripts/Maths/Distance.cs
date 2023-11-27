@@ -5,22 +5,6 @@ namespace Maths
 {
 	public static class Distance
 	{
-		public static int ToShipLevel(int distance, int maxLevel)
-		{
-			var level = 3*distance/5 - 5;
-			return UnityEngine.Mathf.Clamp(level, 0, maxLevel);
-		}
-
-		public static int ToShipSize(int distance)
-		{
-			return 25 + 2*distance;
-		}
-
-		public static int FromShipLevel(int level)
-		{
-			return 5*(level + 5)/3;
-		}
-
 		public static int FleetSize(int distance, System.Random random)
 		{
 			var max = 3 + random.Next(100)*random.Next(100)/2000;

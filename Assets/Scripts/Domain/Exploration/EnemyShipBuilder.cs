@@ -36,7 +36,7 @@ namespace Game.Exploration
             var build = _database.GetShipBuild(new ItemId<ShipBuild>(_shipId));
             var ship = new EnemyShip(build);
 
-            var shipLevel = Maths.Distance.ToShipLevel(_level, _database.GalaxySettings.MaxEnemyShipsLevel);
+            var shipLevel = Mathf.Min(_database.GalaxySettings.EnemyLevel(_level), _database.GalaxySettings.MaxEnemyShipsLevel);
             shipLevel -= random.Next(shipLevel/3);
             ship.Experience = Maths.Experience.FromLevel(shipLevel);
 

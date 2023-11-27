@@ -19,5 +19,6 @@ namespace GameDatabase.Serializable
 		public int[] StartingShipBuilds;
 		public int DefaultStarbaseBuild;
 		public int MaxEnemyShipsLevel = 300;
+		public string EnemyLevel;
 	}
 }

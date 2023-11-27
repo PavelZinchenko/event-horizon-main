@@ -25,5 +25,6 @@ namespace DatabaseMigration.v1.Serializable
 		public int[] StartingShipBuilds;
 		public int DefaultStarbaseBuild;
 		public int MaxEnemyShipsLevel = 300;
+		public string EnemyLevel;
 	}
 }

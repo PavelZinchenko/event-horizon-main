@@ -12,6 +12,10 @@ namespace GameDatabase.Storage
             Name = info.Name;
             Id = string.Empty;
             _path = path;
+#if UNITY_EDITOR
+            if (TryFindDatabaseVersion(out var version))
+                Version = version;
+#endif
         }
 
         public void LoadContent(IContentLoader loader)
@@ -58,6 +62,23 @@ namespace GameDatabase.Storage
             }
 #endif
         }
+
+#if UNITY_EDITOR
+        private bool TryFindDatabaseVersion(out Version version)
+        {
+            var serializer = new UnityJsonSerializer();
+            foreach (var asset in Resources.LoadAll<TextAsset>(_path))
+            {
+                var settings = serializer.FromJson<Serializable.DatabaseSettingsSerializable>(asset.text);
+                if (settings.ItemType != Enums.ItemType.DatabaseSettings) continue;
+                version = new Version(settings.DatabaseVersion, settings.DatabaseVersionMinor);
+                return true;
+            }
+
+            version = new();
+            return false;
+        }
+#endif
 
         private readonly string _path;
     }

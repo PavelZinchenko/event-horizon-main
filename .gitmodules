@@ -7,3 +7,6 @@
 [submodule "Assets/ModulesPrivate"]
 	path = Assets/ModulesPrivate
 	url = https://github.com/PavelZinchenko/event-horizon-private-stuff
+[submodule "Assets/ExpressionParser"]
+	path = Assets/ExpressionParser
+	url = https://github.com/PavelZinchenko/Expression-Parser
