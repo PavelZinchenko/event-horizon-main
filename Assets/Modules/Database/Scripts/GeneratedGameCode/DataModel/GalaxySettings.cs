@@ -30,7 +30,9 @@ namespace GameDatabase.DataModel
 			StartingShipBuilds = new ImmutableCollection<ShipBuild>(serializable.StartingShipBuilds?.Select(item => loader.GetShipBuild(new ItemId<ShipBuild>(item), true)));
 			DefaultStarbaseBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.DefaultStarbaseBuild));
 			MaxEnemyShipsLevel = UnityEngine.Mathf.Clamp(serializable.MaxEnemyShipsLevel, 100, 500);
-			EnemyLevel = new Expressions.IntToInt(serializable.EnemyLevel, 0, 500, variableResolver) { ParamName1 = "distance" }.Evaluate;
+			_enemyLevel = new Expressions.IntToInt(serializable.EnemyLevel, 0, 500, variableResolver) { ParamName1 = "distance" };
+			EnemyLevel = _enemyLevel.Evaluate;
+
 			OnDataDeserialized(serializable, loader);
 		}
 
@@ -38,6 +40,7 @@ namespace GameDatabase.DataModel
 		public ImmutableCollection<ShipBuild> StartingShipBuilds { get; private set; }
 		public ShipBuild DefaultStarbaseBuild { get; private set; }
 		public int MaxEnemyShipsLevel { get; private set; }
+		private readonly Expressions.IntToInt _enemyLevel;
 		public delegate int EnemyLevelDelegate(int distance);
 		public EnemyLevelDelegate EnemyLevel { get; private set; }
 
@@ -52,7 +55,13 @@ namespace GameDatabase.DataModel
 				_context = context;
 			}
 
-			public Expression<Variant> Resolve(string name)
+			public IFunction<Variant> ResolveFunction(string name)
+            {
+				if (name == "EnemyLevel") return _context._enemyLevel;
+				return null;
+			}
+
+			public Expression<Variant> ResolveVariable(string name)
 			{
 				if (name == "MaxEnemyShipsLevel") return GetMaxEnemyShipsLevel;
 				return null;

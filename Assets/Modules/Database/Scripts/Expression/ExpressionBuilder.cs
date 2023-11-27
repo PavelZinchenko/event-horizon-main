@@ -4,7 +4,14 @@ namespace GameDatabase.Model
 {
     public interface IVariableResolver
     {
-        Expression<Variant> Resolve(string name);
+        IFunction<Variant> ResolveFunction(string name);
+        Expression<Variant> ResolveVariable(string name);
+    }
+
+    public interface Expression
+    {
+        int ArgumentCount { get; }
+        Variant Invoke(Variant[] arguments);
     }
 
     public class ExpressionBuilder
@@ -13,17 +20,12 @@ namespace GameDatabase.Model
 
         public ExpressionBuilder(IVariableResolver variableResolver = null)
         {
-            _context = new(null, variableResolver.Resolve);
+            _context = new(null, variableResolver.ResolveVariable, variableResolver.ResolveFunction);
         }
 
         public void AddParameter(string name, Expression<Variant> valueProvider)
         {
             _context.RegisterVariable(name, valueProvider);
-        }
-
-        public void AddParameter(string name, Expression<float> valueProvider)
-        {
-            throw new System.NotImplementedException();
         }
 
         public Expression<Variant> Build(string expression)
