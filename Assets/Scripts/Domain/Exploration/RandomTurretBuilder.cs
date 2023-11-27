@@ -29,7 +29,7 @@ namespace Game.Exploration
 
             var ship = new CommonShip(new ShipModel(_database.ExplorationSettings.TurretShip), GetComponents(random));
 
-            var shipLevel = Mathf.Min(_database.GalaxySettings.EnemyLevel(_level), _database.GalaxySettings.MaxEnemyShipsLevel);
+            var shipLevel = _database.GalaxySettings.EnemyLevel(_level);
             ship.Experience = Maths.Experience.FromLevel(shipLevel);
             //ship.ColorScheme.Type = ColorScheme.SchemeType.Hsv;
             //ship.ColorScheme.Hue = random.NextFloat();

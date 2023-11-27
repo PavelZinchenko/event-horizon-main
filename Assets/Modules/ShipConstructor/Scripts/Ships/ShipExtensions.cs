@@ -85,7 +85,7 @@ namespace Constructor.Ships
 
         public static IShip Create(this ShipBuild data, int distance, Random random, IDatabase database)
         {
-            var shipLevel = UnityEngine.Mathf.Min(database.GalaxySettings.EnemyLevel(distance), database.GalaxySettings.MaxEnemyShipsLevel);
+            var shipLevel = database.GalaxySettings.EnemyLevel(distance);
             var delta = Math.Min(10, shipLevel / 5);
             shipLevel += random.Next(delta + 1) - delta / 2;
             var ship = new EnemyShip(data) { Experience = Maths.Experience.FromLevel(shipLevel) };
