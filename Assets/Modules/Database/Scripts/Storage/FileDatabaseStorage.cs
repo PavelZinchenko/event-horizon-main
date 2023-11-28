@@ -47,8 +47,17 @@ namespace GameDatabase.Storage
                 else if (type == 1) // json
                 {
                     var fileContent = content.ReadString();
-                    loader.LoadJson(string.Empty, fileContent);
-                    itemCount++;
+
+                    try
+                    {
+                        loader.LoadJson(string.Empty, fileContent);
+                        itemCount++;
+                    }
+                    catch (Exception e)
+                    {
+                        // Skip files with errors to allow loading mods created with differen database version
+                        Debug.LogException(e);
+                    }
                 }
                 else if (type == 2) // image
                 {
