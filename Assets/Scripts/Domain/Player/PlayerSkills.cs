@@ -106,7 +106,7 @@ namespace GameServices.Player
         public float ExperienceMultiplier => 1.0f + _database.SkillSettings.ExperienceBonus(GetSkillLevels()[SkillType.ShipExperience]);
         public float AttackMultiplier => 1.0f + _database.SkillSettings.AttackBonus(GetSkillLevels()[SkillType.ShipAttack]);
         public float DefenseMultiplier => 1.0f + _database.SkillSettings.DefenseBonus(GetSkillLevels()[SkillType.ShipDefense]);
-        public float ShieldStrengthBonus => 1.0f + _database.SkillSettings.ShieldStrengthBonus(GetSkillLevels()[SkillType.ShieldStrength]);
+        public float ShieldStrengthBonus => _database.SkillSettings.ShieldStrengthBonus(GetSkillLevels()[SkillType.ShieldStrength]);
         public float ShieldRechargeMultiplier => 1.0f + _database.SkillSettings.ShieldRechargeBonus(GetSkillLevels()[SkillType.ShieldRecharge]);
         public int MainFuelCapacity => _database.SkillSettings.FuelTankCapacity(GetSkillLevels()[SkillType.MainFuelCapacity]);
         public float MainEnginePower => _database.SkillSettings.FlightSpeed(GetSkillLevels()[SkillType.MainEnginePower]);
@@ -119,7 +119,7 @@ namespace GameServices.Player
         public float KineticResistance => _database.SkillSettings.KineticResistance(GetSkillLevels()[SkillType.KineticDefense]);
         public bool HasMasterTrader => GetSkillLevels()[SkillType.MasterTrader] > 0;
         public float PriceScale => _database.SkillSettings.MerchantPriceFactor(GetSkillLevels()[SkillType.Trading]);
-        public int CraftingLevelModifier => _database.SkillSettings.CraftingLevelReduction(GetSkillLevels()[SkillType.CraftingLevel]);
+        public int CraftingLevelModifier => -_database.SkillSettings.CraftingLevelReduction(GetSkillLevels()[SkillType.CraftingLevel]);
         public float CraftingPriceScale => _database.SkillSettings.CraftingPriceFactor(GetSkillLevels()[SkillType.CraftingPrice]);
 
         public long MaxShipExperience 
