@@ -16,5 +16,7 @@
   "CraftingPriceFactor": "1 - 0.05*level",
   "CraftingLevelReduction": "5*level",
   "IncreasedLevelLimit": 200,
-  "BaseFuelCapacity": 100
+  "BaseFuelCapacity": 100,
+  "BaseFlightRange": 1.5,
+  "BaseFlightSpeed": 1.0
 }
