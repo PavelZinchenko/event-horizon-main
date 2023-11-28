@@ -41,6 +41,8 @@ namespace Domain.Quests
                         return false;
                 }
 
+                if (_operation == Operation.Any) return false;
+
                 return true;
             }
         }
@@ -61,7 +63,9 @@ namespace Domain.Quests
                     return false;
             }
 
-            return true;
+            if (_operation == Operation.Any) return false;
+
+            return false;
         }
 
         public string GetDescription(ILocalization localization)
