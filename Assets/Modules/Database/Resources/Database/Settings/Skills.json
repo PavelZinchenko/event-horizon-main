@@ -1,3 +1,20 @@
 {
-  "ItemType": 107
+  "ItemType": 107,
+  "FuelTankCapacity": "BaseFuelCapacity + 50*level",
+  "AttackBonus": "0.1*level",
+  "DefenseBonus": "0.1*level",
+  "ShieldStrengthBonus": "0.1*level",
+  "ShieldRechargeBonus": "0.1*level",
+  "ExperienceBonus": "0.1*level",
+  "FlightSpeed": "BaseFlightSpeed + 0.4*level",
+  "FlightRange": "BaseFlightRange + 0.09*level",
+  "ExplorationLootBonus": "0.1*level",
+  "HeatResistance": "0.1*level",
+  "KineticResistance": "0.1*level",
+  "EnergyResistance": "0.1*level",
+  "MerchantPriceFactor": "1 - 0.05*level",
+  "CraftingPriceFactor": "1 - 0.05*level",
+  "CraftingLevelReduction": "5*level",
+  "IncreasedLevelLimit": 200,
+  "BaseFuelCapacity": 100
 }

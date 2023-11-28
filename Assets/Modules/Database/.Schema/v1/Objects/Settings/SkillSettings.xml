@@ -2,21 +2,23 @@
 <data name="SkillSettings" type="settings" typeid="SkillSettings">
     <member name="BeatAllEnemiesFactionList" type="object_list" typeid="Faction" />
     <member name="DisableExceedTheLimits" type="bool" />
-    <member name="FuelTankCapacity" type="int" minvalue="0" maxvalue="100" default="50" />
-    <member name="MapFlightRange" type="int" minvalue="0" maxvalue="100" default="6" />
-    <member name="MapFlightSpeed" type="int" minvalue="0" maxvalue="100" default="40" />
-    <member name="AttackBonus" type="int" minvalue="0" maxvalue="100" default="10" />
-    <member name="DefenseBonus" type="int" minvalue="0" maxvalue="100" default="10" />
-    <member name="ExperienceBonus" type="int" minvalue="0" maxvalue="100" default="10" />
-    <member name="ExplorationLootBonus" type="int" minvalue="0" maxvalue="100" default="10" />
-    <member name="HeatDefenseBonus" type="int" minvalue="0" maxvalue="100" default="10" />
-    <member name="KineticDefenseBonus" type="int" minvalue="0" maxvalue="100" default="10" />
-    <member name="EnergyDefenseBonus" type="int" minvalue="0" maxvalue="100" default="10" />
-    <member name="MerchantPriceReduction" type="int" minvalue="0" maxvalue="100" default="5" />
-    <member name="CraftPriceReduction" type="int" minvalue="0" maxvalue="100" default="5" />
-    <member name="CraftLevelReduction" type="int" minvalue="0" maxvalue="100" default="5" />
-    <member name="ShieldStrengthBonus" type="int" minvalue="0" maxvalue="100" default="10" />
-    <member name="ShieldRechargeBonus" type="int" minvalue="0" maxvalue="100" default="10" />
+    <member name="FuelTankCapacity" type="expression" typeid="IntToInt" arguments="level" minvalue="0" />
+    <member name="AttackBonus" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="DefenseBonus" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="ShieldStrengthBonus" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="ShieldRechargeBonus" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="ExperienceBonus" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="FlightSpeed" type="expression" typeid="IntToFloat" arguments="level" minvalue="1" />
+    <member name="FlightRange" type="expression" typeid="IntToFloat" arguments="level" minvalue="1.5" />
+    <member name="ExplorationLootBonus" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="HeatResistance" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" maxvalue="1" />
+    <member name="KineticResistance" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" maxvalue="1" />
+    <member name="EnergyResistance" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" maxvalue="1" />
+    <member name="MerchantPriceFactor" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="CraftingPriceFactor" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="CraftingLevelReduction" type="expression" typeid="IntToInt" arguments="level" minvalue="0" />
     <member name="IncreasedLevelLimit" type="int" minvalue="100" maxvalue="1000" default="200" />
     <member name="BaseFuelCapacity" type="int" minvalue="10" default="100" />
+    <member name="BaseFlightRange" type="float" minvalue="1.5" default="1.5" />
+    <member name="BaseFlightSpeed" type="float" minvalue="1" default="1" />
 </data>

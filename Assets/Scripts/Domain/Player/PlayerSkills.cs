@@ -103,27 +103,24 @@ namespace GameServices.Player
             }
         }
 
-        public float ExperienceMultiplier { get { return 1.0f + GetSkillLevels()[SkillType.ShipExperience] * _database.SkillSettings.ExperienceBonus / 100f; } }
-        public float AttackMultiplier { get { return 1.0f + GetSkillLevels()[SkillType.ShipAttack] * _database.SkillSettings.AttackBonus / 100f; } }
-        public float DefenseMultiplier { get { return 1.0f + GetSkillLevels()[SkillType.ShipDefense] * _database.SkillSettings.DefenseBonus / 100f; } }
-        public float ShieldStrengthBonus { get { return GetSkillLevels()[SkillType.ShieldStrength] * _database.SkillSettings.ShieldStrengthBonus / 100f; } }
-        public float ShieldRechargeMultiplier { get { return 1.0f + GetSkillLevels()[SkillType.ShieldRecharge] * _database.SkillSettings.ShieldRechargeBonus / 100f; } }
-        public int MainFuelCapacity { get { return 100 + _database.SkillSettings.FuelTankCapacity * GetSkillLevels()[SkillType.MainFuelCapacity]; } }
-        public float MainEnginePower { get { return 1f + GetSkillLevels()[SkillType.MainEnginePower] * _database.SkillSettings.MapFlightSpeed / 100f; } }
-        public float MainFilghtRange { get { return 1.5f + 1.5f * GetSkillLevels()[SkillType.MainEnginePower] * _database.SkillSettings.MapFlightRange / 100f; } }
-        public bool HasRescueUnit { get { return GetSkillLevels()[SkillType.MainRescueUnit] > 0; } }
-        public float PlanetaryScanner { get { return 1.0f + GetSkillLevels()[SkillType.PlanetaryScanner] * _database.SkillSettings.ExplorationLootBonus / 100f; } }
-        public int SpaceScanner { get { return GetSkillLevels()[SkillType.SpaceScanner]; } }
-
-        public float HeatResistance { get { return GetSkillLevels()[SkillType.HeatDefense] * _database.SkillSettings.HeatDefenseBonus / 100f; } }
-        public float EnergyResistance { get { return GetSkillLevels()[SkillType.EnergyDefense] * _database.SkillSettings.EnergyDefenseBonus / 100f; } }
-        public float KineticResistance { get { return GetSkillLevels()[SkillType.KineticDefense] * _database.SkillSettings.KineticDefenseBonus / 100f; } }
-
-        public bool HasMasterTrader { get { return GetSkillLevels()[SkillType.MasterTrader] > 0; } }
-        public float PriceScale { get { return MathF.Max(0f, 1f - GetSkillLevels()[SkillType.Trading] * _database.SkillSettings.MerchantPriceReduction / 100f); } }
-
-        public int CraftingLevelModifier { get { return -GetSkillLevels()[SkillType.CraftingLevel] * _database.SkillSettings.CraftLevelReduction; } }
-        public float CraftingPriceScale { get { return MathF.Max(0, 1f - GetSkillLevels()[SkillType.CraftingPrice] * _database.SkillSettings.CraftPriceReduction / 100f); } }
+        public float ExperienceMultiplier => 1.0f + _database.SkillSettings.ExperienceBonus(GetSkillLevels()[SkillType.ShipExperience]);
+        public float AttackMultiplier => 1.0f + _database.SkillSettings.AttackBonus(GetSkillLevels()[SkillType.ShipAttack]);
+        public float DefenseMultiplier => 1.0f + _database.SkillSettings.DefenseBonus(GetSkillLevels()[SkillType.ShipDefense]);
+        public float ShieldStrengthBonus => 1.0f + _database.SkillSettings.ShieldStrengthBonus(GetSkillLevels()[SkillType.ShieldStrength]);
+        public float ShieldRechargeMultiplier => 1.0f + _database.SkillSettings.ShieldRechargeBonus(GetSkillLevels()[SkillType.ShieldRecharge]);
+        public int MainFuelCapacity => _database.SkillSettings.FuelTankCapacity(GetSkillLevels()[SkillType.MainFuelCapacity]);
+        public float MainEnginePower => _database.SkillSettings.FlightSpeed(GetSkillLevels()[SkillType.MainEnginePower]);
+        public float MainFilghtRange => _database.SkillSettings.FlightRange(GetSkillLevels()[SkillType.MainEnginePower]);
+        public bool HasRescueUnit => GetSkillLevels()[SkillType.MainRescueUnit] > 0;
+        public float PlanetaryScanner => _database.SkillSettings.ExplorationLootBonus(GetSkillLevels()[SkillType.PlanetaryScanner]);
+        public int SpaceScanner => GetSkillLevels()[SkillType.SpaceScanner];
+        public float HeatResistance => _database.SkillSettings.HeatResistance(GetSkillLevels()[SkillType.HeatDefense]);
+        public float EnergyResistance => _database.SkillSettings.EnergyResistance(GetSkillLevels()[SkillType.EnergyDefense]);
+        public float KineticResistance => _database.SkillSettings.KineticResistance(GetSkillLevels()[SkillType.KineticDefense]);
+        public bool HasMasterTrader => GetSkillLevels()[SkillType.MasterTrader] > 0;
+        public float PriceScale => _database.SkillSettings.MerchantPriceFactor(GetSkillLevels()[SkillType.Trading]);
+        public int CraftingLevelModifier => _database.SkillSettings.CraftingLevelReduction(GetSkillLevels()[SkillType.CraftingLevel]);
+        public float CraftingPriceScale => _database.SkillSettings.CraftingPriceFactor(GetSkillLevels()[SkillType.CraftingPrice]);
 
         public long MaxShipExperience 
         {

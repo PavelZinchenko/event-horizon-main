@@ -158,17 +158,19 @@ namespace GameModel.Skills
 			switch (type) 
 			{
 			case SkillType.MainFuelCapacity:
-				return localization.GetString("$FuelTankCapacityDesc", settings.FuelTankCapacity * level);
+				return localization.GetString("$FuelTankCapacityDesc", settings.FuelTankCapacity(level) - settings.BaseFuelCapacity);
 			case SkillType.MainEnginePower:
-				return localization.GetString("$MainEnginePowerDesc", settings.MapFlightRange * level, settings.MapFlightSpeed * level);
+				return localization.GetString("$MainEnginePowerDesc", 
+                    ToPercentage((settings.FlightRange(level) - settings.BaseFlightRange) / settings.BaseFlightRange), 
+                    ToPercentage((settings.FlightSpeed(level) - settings.BaseFlightSpeed) / settings.BaseFlightSpeed));
 			case SkillType.MainRescueUnit:
 				return localization.GetString("$MainRescueUnitDesc");
 			case SkillType.ShipAttack:
-				return localization.GetString("$AttackBoosterDesc", settings.AttackBonus * level);
+				return localization.GetString("$AttackBoosterDesc", ToPercentage(settings.AttackBonus(level)));
 			case SkillType.ShipDefense:
-				return localization.GetString("$DefenseBoosterDesc", settings.DefenseBonus * level);
+				return localization.GetString("$DefenseBoosterDesc", ToPercentage(settings.DefenseBonus(level)));
 			case SkillType.ShipExperience:
-				return localization.GetString("$ExperienceBoosterDesc", settings.ExperienceBonus * level);
+				return localization.GetString("$ExperienceBoosterDesc", ToPercentage(settings.ExperienceBonus(level)));
 			case SkillType.RequierementMaxLevel:
 				return localization.GetString("$ShipLevelsRequirement", level, Maths.Experience.MaxPlayerRank);
             case SkillType.HangarSlot1:
@@ -182,27 +184,27 @@ namespace GameModel.Skills
             case SkillType.HangarSlot5:
                 return localization.GetString("$UpgradeHangarSlotDesc4");
             case SkillType.PlanetaryScanner:
-                return localization.GetString("$PlanetaryScannerDesc", settings.ExplorationLootBonus * level);
+                return localization.GetString("$PlanetaryScannerDesc", ToPercentage(settings.ExplorationLootBonus(level)));
             case SkillType.HeatDefense:
-                return localization.GetString("$HeatDefenseDesc", settings.HeatDefenseBonus * level);
+                return localization.GetString("$HeatDefenseDesc", ToPercentage(settings.HeatResistance(level)));
             case SkillType.EnergyDefense:
-                return localization.GetString("$EnergyDefenseDesc", settings.EnergyDefenseBonus * level);
+                return localization.GetString("$EnergyDefenseDesc", ToPercentage(settings.EnergyResistance(level)));
             case SkillType.KineticDefense:
-                return localization.GetString("$KineticDefenseDesc", settings.KineticDefenseBonus * level);
+                return localization.GetString("$KineticDefenseDesc", ToPercentage(settings.KineticResistance(level)));
             case SkillType.Trading:
-                return localization.GetString("$TradingDesc", settings.MerchantPriceReduction * level);
+                return localization.GetString("$TradingDesc", ToPercentage(1.0f - settings.MerchantPriceFactor(level)));
             case SkillType.MasterTrader:
                 return localization.GetString("$MasterTraderDesc");
             case SkillType.CraftingPrice:
-                return localization.GetString("$CraftingPriceDesc", settings.CraftPriceReduction * level);
+                return localization.GetString("$CraftingPriceDesc", ToPercentage(1.0f - settings.CraftingPriceFactor(level)));
             case SkillType.CraftingLevel:
-                return localization.GetString("$CraftingLevelDesc", settings.CraftLevelReduction * level);
+                return localization.GetString("$CraftingLevelDesc", settings.CraftingLevelReduction(level));
 			case SkillType.SpaceScanner:
 			    return localization.GetString("$SpaceScannerDesc", level);
 			case SkillType.ShieldStrength:
-			    return localization.GetString("$ShieldStrengthDesc", settings.ShieldStrengthBonus * level);
+			    return localization.GetString("$ShieldStrengthDesc", ToPercentage(settings.ShieldStrengthBonus(level)));
 			case SkillType.ShieldRecharge:
-			    return localization.GetString("$ShieldRechargeDesc", settings.ShieldRechargeBonus * level);
+			    return localization.GetString("$ShieldRechargeDesc", ToPercentage(settings.ShieldRechargeBonus(level)));
 			case SkillType.RequierementBeatAllEnemies:
 			    return localization.GetString("$BeatAllEnemiesRequirement");
 			case SkillType.ExceedTheLimits:
@@ -211,5 +213,7 @@ namespace GameModel.Skills
 
             return string.Empty;
 		}
+
+        private static int ToPercentage(float value) => UnityEngine.Mathf.RoundToInt(value*100);
 	}
 }
