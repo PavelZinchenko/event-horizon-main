@@ -192,11 +192,11 @@ public class Cheats
                 _playerFleet.Ships.Add(new CommonShip(ship));
 			break;
 		case 7:
-			foreach (var ship in _database.ShipBuildList.ValidForPlayer())
+			foreach (var ship in _database.ShipBuildList.Drones())
                 _playerFleet.Ships.Add(new CommonShip(ship));
 			break;
 		case 8:
-			foreach (var ship in _database.ShipBuildList.ValidForPlayer())
+			foreach (var ship in _database.ShipBuildList.Flagships())
                 _playerFleet.Ships.Add(new CommonShip(ship));
 			break;
 		case 9:
