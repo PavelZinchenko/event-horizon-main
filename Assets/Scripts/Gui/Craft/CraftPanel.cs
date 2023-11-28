@@ -17,7 +17,7 @@ namespace Gui.Craft
         [Inject] private readonly PlayerResources _resources;
         [Inject] private readonly PlayerSkills _playerSkills;
         [Inject] private readonly Research _research;
-        [Inject] private readonly IRandom _random;
+        [Inject] private readonly Session.ISessionData _session;
 
         [SerializeField] private ItemCreatedEvent _itemCreatedEvent = new ItemCreatedEvent();
 
@@ -75,8 +75,8 @@ namespace Gui.Craft
             if (!TryConsumeResources())
                 return;
 
-            var seed = _resources.Money + _motherShip.CurrentStar.Id;
-            var item = _technology.CreateItem(_itemQuality, _random.CreateRandom(seed));
+            var seed = _session.Game.Seed + _session.Game.Counter + _resources.Money + _motherShip.CurrentStar.Id;
+            var item = _technology.CreateItem(_itemQuality, new System.Random(seed));
             item.Consume(1);
             _itemCreatedEvent.Invoke(item);
         }

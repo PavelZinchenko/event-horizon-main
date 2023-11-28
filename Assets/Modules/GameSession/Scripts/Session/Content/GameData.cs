@@ -24,10 +24,16 @@ namespace Session.Content
         public bool IsChanged { get; private set; }
 		public static int CurrentVersion => 4;
 
-		public int Seed
-		{
-			get { return _seed; }
-		}
+		public int Seed => _seed;
+
+        public int Counter
+        {
+            get
+            {
+                IsChanged = true;
+                return _counter++;
+            }
+        }
 
         public void Regenerate()
         {
@@ -82,10 +88,10 @@ namespace Session.Content
 		        yield return value;
             foreach (var value in Helpers.Serialize(_totalPlayTime))
                 yield return value;
+            foreach (var value in Helpers.Serialize(_counter))
+                yield return value;
 
             foreach (var value in Helpers.Serialize(0)) // reserved
-                yield return value;
-            foreach (var value in Helpers.Serialize(0))
                 yield return value;
             foreach (var value in Helpers.Serialize(0))
                 yield return value;
@@ -113,6 +119,7 @@ namespace Session.Content
 
             _supplyShipStartTime = Helpers.DeserializeLong(buffer, ref index);
             _totalPlayTime = Helpers.DeserializeLong(buffer, ref index);
+            _counter = Helpers.DeserializeInt(buffer, ref index);
 
             IsChanged = false;
 		}
@@ -212,9 +219,9 @@ namespace Session.Content
                 yield return value;
             foreach (var value in Helpers.Serialize(TimeSpan.TicksPerDay*30)) // totalPlayTime
                 yield return value;
-
-            foreach (var value in Helpers.Serialize(0)) // reserved
+            foreach (var value in Helpers.Serialize(0)) // counter
                 yield return value;
+
             foreach (var value in Helpers.Serialize(0)) // reserved
                 yield return value;
             foreach (var value in Helpers.Serialize(0)) // reserved
@@ -224,7 +231,8 @@ namespace Session.Content
         }
 
         private int _seed;
-		private long _gameStartTime;
+        private int _counter;
+        private long _gameStartTime;
         private long _supplyShipStartTime;
         private long _totalPlayTime;
     }
