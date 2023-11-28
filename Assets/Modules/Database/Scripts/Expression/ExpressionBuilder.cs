@@ -30,7 +30,10 @@ namespace GameDatabase.Model
 
         public Expression<Variant> Build(string expression)
         {
-            return new VariantExpressionParser().Compile(expression, _context, false);
+            if (string.IsNullOrEmpty(expression))
+                return () => default;
+            else
+                return new VariantExpressionParser().Compile(expression, _context, false);
         }
     }
 }
