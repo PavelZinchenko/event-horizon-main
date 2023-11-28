@@ -65,7 +65,7 @@ namespace Domain.Quests
 
             if (_operation == Operation.Any) return false;
 
-            return false;
+            return true;
         }
 
         public string GetDescription(ILocalization localization)
