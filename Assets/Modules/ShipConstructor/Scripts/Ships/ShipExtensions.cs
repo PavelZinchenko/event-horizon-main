@@ -85,9 +85,7 @@ namespace Constructor.Ships
 
         public static IShip Create(this ShipBuild data, int distance, Random random, IDatabase database)
         {
-            var shipLevel = database.GalaxySettings.EnemyLevel(distance);
-            var delta = Math.Min(10, shipLevel / 5);
-            shipLevel += random.Next(delta + 1) - delta / 2;
+            var shipLevel = database.GalaxySettings.EnemyLevel(distance + random.Range(-10, 10));
             var ship = new EnemyShip(data) { Experience = Maths.Experience.FromLevel(shipLevel) };
 
             if (data.Ship.ShipType != ShipType.Common)
