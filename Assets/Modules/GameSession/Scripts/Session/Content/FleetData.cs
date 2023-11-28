@@ -106,8 +106,8 @@ namespace Session.Content
         {
             if (version == 1)
             {
-                data = Upgrade_1_2(data, database).ToArray();
-                version = 2;
+                data = Upgrade_1_3(data, database).ToArray();
+                version = 3;
             }
 
             if (version == 2)
@@ -131,11 +131,11 @@ namespace Session.Content
             return version == CurrentVersion;
         }
 
-        private static IEnumerable<byte> Upgrade_1_2(byte[] buffer, IDatabase database)
+        private static IEnumerable<byte> Upgrade_1_3(byte[] buffer, IDatabase database)
         {
             var index = 0;
             Helpers.DeserializeInt(buffer, ref index);
-            foreach (var value in Helpers.Serialize(2)) // version
+            foreach (var value in Helpers.Serialize(3)) // version
                 yield return value;
 
             var count = Helpers.DeserializeInt(buffer, ref index);
@@ -144,7 +144,7 @@ namespace Session.Content
 
             for (var i = 0; i < count; ++i)
             {
-                var ship = ShipInfoV1.Deserialize(buffer, ref index).ToShipInfoObsolete(database);
+                var ship = ShipInfoV1.Deserialize(buffer, ref index).ToShipInfo(database);
                 foreach (var value in ship.Serialize())
                     yield return value;
             }
@@ -273,19 +273,6 @@ namespace Session.Content
                     yield return value;
                 foreach (var value in SecondSatellite.Serialize())
                     yield return value;
-            }
-
-            public ShipInfoObsolete ToShipInfoObsolete(IDatabase database)
-            {
-                var info = new ShipInfoObsolete();
-                info.Id = Id;
-                info.Name = Name;
-                info.Experience = Experience;
-                info.Components = Components.Select(item => ComponentExtensions.DeserializeFromInt64Obsolete(database, item).SerializeObsolete().ToArray());
-                info.Modifications = Modifications;
-                info.FirstSatellite = FirstSatellite.ToSatelliteInfo(database);
-                info.SecondSatellite = SecondSatellite.ToSatelliteInfo(database);
-                return info;
             }
 
             public ShipInfoObsolete ToShipInfo(IDatabase database)

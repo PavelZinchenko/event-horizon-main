@@ -113,14 +113,6 @@ public class Cheats
             _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(267))));
             _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(235))));
         }
-        else if (command == "999")
-        {
-            var random = new System.Random();
-            for (var i = 0; i < 100; ++i)
-            {
-                _playerInventory.Components.Add(ComponentInfo.CreateRandomModification(_database.GetComponent(LegacyComponentNames.GetId("Nanofiber")), random, ModificationQuality.N3, ModificationQuality.N3));
-            }
-        }
         #endif
 
         if (command == "000")

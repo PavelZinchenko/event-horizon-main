@@ -107,20 +107,6 @@ namespace Constructor
             return _level <= 0 ? localization.GetString(Data.Name) : localization.GetString(Data.Name) + " +" + _level;
         }
 
-        public static ComponentInfo FormString(IDatabase _database, string data)
-        {
-            var parser = new StringParser(data, _separator);
-
-            if (parser.IsLast)
-                return new ComponentInfo(_database.GetComponent(LegacyComponentNames.GetId(data)));
-
-            var modification = (ComponentModType)parser.CurrentInt;
-            var quality = (ModificationQuality)parser.MoveNext().CurrentInt;
-            var component = _database.GetComponent(LegacyComponentNames.GetId(parser.MoveNext().CurrentString));
-
-            return new ComponentInfo(component, modification, quality);
-        }
-
         public override bool Equals(object obj)
         {
             if (obj == null || !(obj is ComponentInfo))
@@ -204,21 +190,6 @@ namespace Constructor
             var component = database.GetComponent(new ItemId<GameDatabase.DataModel.Component>((int)data));
 
             return new ComponentInfo(component, modification, quality, level);
-        }
-
-        public override string ToString()
-        {
-            if (_modificationType == ComponentModType.Empty)
-                return LegacyComponentNames.GetName(Data.Id);
-
-            var builder = new StringBuilder();
-            builder.Append((int)_modificationType);
-            builder.Append(_separator);
-            builder.Append((int)_quality);
-            builder.Append(_separator);
-            builder.Append(Data.Id);
-
-            return builder.ToString();
         }
 
         public IComponent CreateComponent(int shipSize)

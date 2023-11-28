@@ -90,44 +90,6 @@ namespace Constructor
             return new IntegratedComponent(component, x, y, barrelId, keyBinding, mode, locked);
         }
 
-        public static string SerializeToStringObsolete(this IntegratedComponent component)
-        {
-            var builder = new StringBuilder();
-            builder.Append(component.Info.ToString());
-            builder.Append(_separator);
-            builder.Append(component.X);
-            builder.Append(_separator);
-            builder.Append(component.Y);
-            builder.Append(_separator);
-            builder.Append(component.BarrelId);
-            builder.Append(_separator);
-            builder.Append(component.KeyBinding);
-            builder.Append(_separator);
-            if (component.Locked)
-                builder.Append('1');
-            builder.Append(_separator);
-            builder.Append(component.Behaviour);
-
-            return builder.ToString();
-        }
-
-        public static IntegratedComponent DeserializeFromStringObsolete(IDatabase database, string data)
-        {
-            var parser = new StringParser(data, _separator);
-
-            var info = ComponentInfo.FormString(database, parser.CurrentString);
-            var x = parser.MoveNext().CurrentInt;
-            var y = parser.MoveNext().CurrentInt;
-            var barrelId = parser.MoveNext().CurrentInt;
-            var keyBinding = parser.MoveNext().CurrentInt;
-            var locked = !string.IsNullOrEmpty(parser.MoveNext().CurrentString);
-            var mode = parser.MoveNext().CurrentInt;
-
-            var component = new IntegratedComponent(info, x, y, barrelId, keyBinding, mode, locked);
-
-            return component;
-        }
-
         public static long SerializeToInt64Obsolete(this IntegratedComponent component) // deprecated
         {
             long value = component.Info.SerializeToInt32Obsolete();
