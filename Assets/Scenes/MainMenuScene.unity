@@ -10610,8 +10610,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09c8b611e0fab024db99a56bf2f2684a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _duration: 0.5
-  _easing: 21
+  _duration: 0.3
+  _easing: 9
   _initiallyVisible: 0
   _animationFinished:
     m_PersistentCalls:
