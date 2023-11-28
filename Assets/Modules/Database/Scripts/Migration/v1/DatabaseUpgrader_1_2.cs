@@ -8,10 +8,11 @@ namespace DatabaseMigration.v1
         {
             UnityEngine.Debug.LogWarning("Database migration: v1.1 -> v1.2");
 
-            Content.GalaxySettings.EnemyLevel = "MIN(3*distance/5 - 5, MaxEnemyShipsLevel)";
+            Content.CreateGalaxySettings().EnemyLevel = "MIN(3*distance/5 - 5, MaxEnemyShipsLevel)";
 
+            Content.CreateSkillSettings();
             const string commonFormula = "0.1*level";
-            Content.SkillSettings.AttackBonus = commonFormula;
+            Content.CreateSkillSettings().AttackBonus = commonFormula;
             Content.SkillSettings.DefenseBonus = commonFormula;
             Content.SkillSettings.ShieldStrengthBonus = commonFormula;
             Content.SkillSettings.ShieldRechargeBonus = commonFormula;

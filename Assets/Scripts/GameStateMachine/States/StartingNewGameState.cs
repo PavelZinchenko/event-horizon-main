@@ -57,6 +57,8 @@ namespace GameStateMachine.States
 
         private void InitializeInventory()
         {
+            if (_database.GalaxySettings.StartingInvenory == null) return;
+
             var inventory = new Loot(new LootModel(_database.GalaxySettings.StartingInvenory.Loot), new QuestInfo(0), _lootItemFactory, _database);
             foreach (var item in inventory.Items)
                 item.Type.Consume(item.Quantity);
@@ -73,11 +75,7 @@ namespace GameStateMachine.States
             }
 
             if (_session.Purchases.SupporterPack)
-            {
-                var ship = new CommonShip(_database.GalaxySettings.SupporterPackShip);
-                if (_playerFleet.Ships.FindIndex(item => item.Id == ship.Id) < 0)
-                    _playerFleet.Ships.Add(ship);
-            }
+                _playerFleet.AddSupporterPack();
 
             foreach (var ship in _playerFleet.Ships)
                 foreach (var item in ship.Components)

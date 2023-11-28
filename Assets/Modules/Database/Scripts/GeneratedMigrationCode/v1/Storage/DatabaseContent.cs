@@ -26,13 +26,13 @@ namespace DatabaseMigration.v1.Storage
         public int VersionMajor 
         {
             get => DatabaseSettings != null ? DatabaseSettings.DatabaseVersion : 1;
-            set => (DatabaseSettings ?? (DatabaseSettings = new DatabaseSettingsSerializable())).DatabaseVersion = value;
+            set => CreateDatabaseSettings().DatabaseVersion = value;
         }
 
         public int VersionMinor
         {
             get => DatabaseSettings != null ? DatabaseSettings.DatabaseVersionMinor : 0;
-            set => (DatabaseSettings ?? (DatabaseSettings = new DatabaseSettingsSerializable())).DatabaseVersionMinor = value;
+            set => CreateDatabaseSettings().DatabaseVersionMinor = value;
         }
 
         public void LoadJson(string name, string content)
@@ -176,81 +176,54 @@ namespace DatabaseMigration.v1.Storage
             {
                 var data = _serializer.FromJson<DatabaseSettingsSerializable>(content);
                 data.FileName = name;
-
-				if (DatabaseSettings != null)
-                    throw new DatabaseException("Duplicate DatabaseSettings file found - " + name);
                 DatabaseSettings = data;
             }
             else if (type == ItemType.DebugSettings)
             {
                 var data = _serializer.FromJson<DebugSettingsSerializable>(content);
                 data.FileName = name;
-
-				if (DebugSettings != null)
-                    throw new DatabaseException("Duplicate DebugSettings file found - " + name);
                 DebugSettings = data;
             }
             else if (type == ItemType.ExplorationSettings)
             {
                 var data = _serializer.FromJson<ExplorationSettingsSerializable>(content);
                 data.FileName = name;
-
-				if (ExplorationSettings != null)
-                    throw new DatabaseException("Duplicate ExplorationSettings file found - " + name);
                 ExplorationSettings = data;
             }
             else if (type == ItemType.FrontierSettings)
             {
                 var data = _serializer.FromJson<FrontierSettingsSerializable>(content);
                 data.FileName = name;
-
-				if (FrontierSettings != null)
-                    throw new DatabaseException("Duplicate FrontierSettings file found - " + name);
                 FrontierSettings = data;
             }
             else if (type == ItemType.GalaxySettings)
             {
                 var data = _serializer.FromJson<GalaxySettingsSerializable>(content);
                 data.FileName = name;
-
-				if (GalaxySettings != null)
-                    throw new DatabaseException("Duplicate GalaxySettings file found - " + name);
                 GalaxySettings = data;
             }
             else if (type == ItemType.ShipModSettings)
             {
                 var data = _serializer.FromJson<ShipModSettingsSerializable>(content);
                 data.FileName = name;
-
-				if (ShipModSettings != null)
-                    throw new DatabaseException("Duplicate ShipModSettings file found - " + name);
                 ShipModSettings = data;
             }
             else if (type == ItemType.ShipSettings)
             {
                 var data = _serializer.FromJson<ShipSettingsSerializable>(content);
                 data.FileName = name;
-
-				if (ShipSettings != null)
-                    throw new DatabaseException("Duplicate ShipSettings file found - " + name);
                 ShipSettings = data;
             }
             else if (type == ItemType.SkillSettings)
             {
                 var data = _serializer.FromJson<SkillSettingsSerializable>(content);
                 data.FileName = name;
-
-				if (SkillSettings != null)
-                    throw new DatabaseException("Duplicate SkillSettings file found - " + name);
                 SkillSettings = data;
             }
             else if (type == ItemType.SpecialEventSettings)
             {
                 var data = _serializer.FromJson<SpecialEventSettingsSerializable>(content);
                 data.FileName = name;
-
-				if (SpecialEventSettings != null)
-                    throw new DatabaseException("Duplicate SpecialEventSettings file found - " + name);
                 SpecialEventSettings = data;
             }
             else
@@ -355,6 +328,16 @@ namespace DatabaseMigration.v1.Storage
 		public ShipSettingsSerializable ShipSettings { get; private set; }
 		public SkillSettingsSerializable SkillSettings { get; private set; }
 		public SpecialEventSettingsSerializable SpecialEventSettings { get; private set; }
+
+		public DatabaseSettingsSerializable CreateDatabaseSettings() => DatabaseSettings ?? (DatabaseSettings = new DatabaseSettingsSerializable());
+		public DebugSettingsSerializable CreateDebugSettings() => DebugSettings ?? (DebugSettings = new DebugSettingsSerializable());
+		public ExplorationSettingsSerializable CreateExplorationSettings() => ExplorationSettings ?? (ExplorationSettings = new ExplorationSettingsSerializable());
+		public FrontierSettingsSerializable CreateFrontierSettings() => FrontierSettings ?? (FrontierSettings = new FrontierSettingsSerializable());
+		public GalaxySettingsSerializable CreateGalaxySettings() => GalaxySettings ?? (GalaxySettings = new GalaxySettingsSerializable());
+		public ShipModSettingsSerializable CreateShipModSettings() => ShipModSettings ?? (ShipModSettings = new ShipModSettingsSerializable());
+		public ShipSettingsSerializable CreateShipSettings() => ShipSettings ?? (ShipSettings = new ShipSettingsSerializable());
+		public SkillSettingsSerializable CreateSkillSettings() => SkillSettings ?? (SkillSettings = new SkillSettingsSerializable());
+		public SpecialEventSettingsSerializable CreateSpecialEventSettings() => SpecialEventSettings ?? (SpecialEventSettings = new SpecialEventSettingsSerializable());
 
 		public List<AmmunitionObsoleteSerializable> AmmunitionObsoleteList { get; } = new List<AmmunitionObsoleteSerializable>();
 		public List<ComponentSerializable> ComponentList { get; } = new List<ComponentSerializable>();

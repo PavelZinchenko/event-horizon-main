@@ -31,9 +31,19 @@ namespace GameDatabase.Model
         public Expression<Variant> Build(string expression)
         {
             if (string.IsNullOrEmpty(expression))
-                return () => default;
-            else
+                return Empty;
+
+            try 
+            {
                 return new VariantExpressionParser().Compile(expression, _context, false);
+            }
+            catch (System.Exception e)
+            {
+                UnityEngine.Debug.LogException(e);
+                return Empty;
+            }
         }
+
+        private static Variant Empty() => default;
     }
 }

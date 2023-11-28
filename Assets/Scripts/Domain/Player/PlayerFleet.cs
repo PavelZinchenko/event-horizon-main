@@ -228,9 +228,11 @@ namespace GameServices.Player
             DataChanged = false;
         }
 
-        private void AddSupporterPack()
+        public void AddSupporterPack()
         {
             var falcon = _database.GalaxySettings.SupporterPackShip;
+            if (falcon == null) return;
+
             if (_ships.FindIndex(item => item.Id == falcon.Ship.Id) < 0)
                 _ships.Add(new CommonShip(falcon));
         }
