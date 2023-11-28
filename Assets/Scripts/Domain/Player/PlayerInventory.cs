@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Constructor;
-using Database.Legacy;
 using Diagnostics;
 using GameDatabase;
 using GameDatabase.DataModel;
@@ -9,6 +8,7 @@ using GameServices.GameManager;
 using Session;
 using Utils;
 using Zenject;
+using Domain.Quests;
 
 namespace GameServices.Player
 {
@@ -42,12 +42,6 @@ namespace GameServices.Player
             Clear();
 
             var debug = _debugManager.CreateLog("Inventory");
-
-            if (!_session.Fleet.Ships.Any())
-            {
-                CreateDefault();
-                return;
-            }
 
             var random = new System.Random(_session.Game.Seed);
             foreach (var item in _session.Inventory.Components.Items)
@@ -100,19 +94,6 @@ namespace GameServices.Player
         {
             if (_satellites.IsDirty || _components.IsDirty)
                 SaveComponents();
-        }
-
-        private void CreateDefault()
-        {
-            Clear();
-
-            _components.Add(ComponentInfo.FormString(_database, "TitaniumArmor_S"), 5);
-            _components.Add(ComponentInfo.FormString(_database, "FuelCell_S"), 5);
-            _components.Add(ComponentInfo.FormString(_database, "NuclearReactor_S"), 3);
-            _components.Add(ComponentInfo.FormString(_database, "PlasmaCannon_S_1"), 1);
-            _components.Add(ComponentInfo.FormString(_database, "PulseCannon_S_1"), 1);
-            _satellites.Add(_database.GetSatellite(LegacySatelliteNames.GetId("1s")), 1);
-            _satellites.Add(_database.GetSatellite(LegacySatelliteNames.GetId("2s")), 1);
         }
 
         private void Clear()

@@ -3,6 +3,7 @@ using Economy;
 using Session;
 using Session.Content;
 using Utils;
+using GameDatabase;
 using Zenject;
 
 namespace GameServices.Player
@@ -28,6 +29,7 @@ namespace GameServices.Player
 
         [Inject] private readonly MotherShip _motherShip;
         [Inject] private readonly PlayerResources _resources;
+        [Inject] private readonly IDatabase _database;
 
         public bool IsActive
         {
@@ -91,7 +93,7 @@ namespace GameServices.Player
 
         private void OnArrived()
         {
-            _resources.Fuel = MotherShip.FuelMinimum;
+            _resources.Fuel = _database.SkillSettings.BaseFuelCapacity;
             _finishTime = 0;
         }
 

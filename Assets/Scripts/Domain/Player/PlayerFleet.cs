@@ -176,12 +176,6 @@ namespace GameServices.Player
                 }
             }
 
-            if (ships.Count == 0)
-            {
-                CreateDefault();
-                return;
-            }
-
             _ships.Assign(ships.Where(ship => ship != null));
 
             _activeShips.Clear();
@@ -234,43 +228,9 @@ namespace GameServices.Player
             DataChanged = false;
         }
 
-        private void CreateDefault()
-        {
-            Clear();
-
-            var startingBuilds = _database.GalaxySettings.StartingShipBuilds;
-            if (startingBuilds.Count == 0)
-            {
-                startingBuilds += new[] {
-                    _database.GetShipBuild(new ItemId<ShipBuild>(39)),
-                    _database.GetShipBuild(new ItemId<ShipBuild>(45)),
-                    _database.GetShipBuild(new ItemId<ShipBuild>(51)),
-                };
-            }
-
-            foreach (var build in startingBuilds)
-            {
-                var ship = new CommonShip(build);
-                _ships.Add(ship);
-                ActiveShipGroup.Add(ship);
-            }
-
-            if (_session.Purchases.SupporterPack)
-            {
-                AddSupporterPack();
-                ActiveShipGroup.Add(_ships.Last());
-            }
-
-            _explorationShip = _ships.FirstOrDefault(ship => ship.Model.SizeClass == SizeClass.Frigate);
-
-            foreach (var ship in _ships)
-                foreach (var item in ship.Components)
-                    item.Locked = false;
-        }
-
         private void AddSupporterPack()
         {
-            var falcon = _database.GetShipBuild(LegacyShipBuildNames.GetId("fns2"));
+            var falcon = _database.GalaxySettings.SupporterPackShip;
             if (_ships.FindIndex(item => item.Id == falcon.Ship.Id) < 0)
                 _ships.Add(new CommonShip(falcon));
         }

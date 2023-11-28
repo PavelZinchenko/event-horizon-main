@@ -211,7 +211,10 @@ namespace Installers
             Container.Bind<StarMapState>();
             Container.BindFactory<StarMapState, StarMapState.Factory>();
 
-			Container.Bind<QuestState>();
+            Container.Bind<StartingNewGameState>();
+            Container.BindFactory<StartingNewGameState, StartingNewGameState.Factory>();
+            
+            Container.Bind<QuestState>();
 			Container.BindFactory<IUserInteraction, QuestState, QuestState.Factory>();
 
             Container.Bind<SkillTreeState>();

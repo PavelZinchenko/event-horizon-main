@@ -18,4 +18,5 @@
     <member name="ShieldStrengthBonus" type="int" minvalue="0" maxvalue="100" default="10" />
     <member name="ShieldRechargeBonus" type="int" minvalue="0" maxvalue="100" default="10" />
     <member name="IncreasedLevelLimit" type="int" minvalue="100" maxvalue="1000" default="200" />
+    <member name="BaseFuelCapacity" type="int" minvalue="10" default="100" />
 </data>

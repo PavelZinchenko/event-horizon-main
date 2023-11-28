@@ -22,4 +22,6 @@
 
     <item name="Blueprint">40</item>
     <item name="ResearchPoints">41</item>
+
+    <item name="Satellite">45</item>
 </data>

@@ -26,5 +26,6 @@ namespace GameDatabase.Enums
 		Component = 35,
 		Blueprint = 40,
 		ResearchPoints = 41,
+		Satellite = 45,
 	}
 }

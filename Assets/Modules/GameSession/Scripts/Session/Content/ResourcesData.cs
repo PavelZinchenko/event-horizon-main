@@ -25,12 +25,12 @@ namespace Session.Content
             _specialResourcesChangedTrigger = specialResourcesChangedTrigger;
 
             IsChanged = true;
-			_money = 100;
+			_money = 0;
 			_stars = 0;
-            _tokens = 0;
-			_fuel = 100;
+			_tokens = 0;
+			_fuel = 0;
 
-            if (buffer != null && buffer.Length > 0)
+			if (buffer != null && buffer.Length > 0)
                 Deserialize(buffer);
 
             _resources.CollectionChangedEvent += OnCollectionChanged;

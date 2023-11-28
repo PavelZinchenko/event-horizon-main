@@ -15,6 +15,7 @@ using GameServices.Player;
 using Model.Military;
 using Scripts.GameStateMachine;
 using Utils;
+using Domain.Quests;
 using Zenject;
 
 namespace GameStateMachine.States
@@ -90,12 +91,9 @@ namespace GameStateMachine.States
                 throw new BadGameStateException();
 
             if (_session.Game.GameStartTime == 0)
-            {
-                _session.Game.GameStartTime = System.DateTime.UtcNow.Ticks;
-                _motherShip.ViewMode = ViewMode.StarSystem;
-            }
-
-            StateMachine.LoadAdditionalState(StateFactory.CreateStarMapState());
+                StateMachine.LoadAdditionalState(StateFactory.CreateNewGameState());
+            else
+                StateMachine.LoadAdditionalState(StateFactory.CreateStarMapState());
         }
 
         private void OnStartQuickBattle(bool easyMode, string testShipId)

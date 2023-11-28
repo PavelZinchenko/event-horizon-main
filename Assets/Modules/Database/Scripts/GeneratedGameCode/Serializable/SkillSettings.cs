@@ -33,5 +33,6 @@ namespace GameDatabase.Serializable
 		public int ShieldStrengthBonus = 10;
 		public int ShieldRechargeBonus = 10;
 		public int IncreasedLevelLimit = 200;
+		public int BaseFuelCapacity = 100;
 	}
 }

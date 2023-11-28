@@ -72,6 +72,11 @@ namespace Domain.Quests
             return new LootItem(_itemTypeFactory.CreateQuestShipItem(new CommonShip(ship, Enumerable.Empty<IntegratedComponent>())));
         }
 
+        public LootItem CreateSatellite(Satellite satellite, int amount)
+        {
+            return new LootItem(_itemTypeFactory.CreateSatelliteItem(satellite), amount);
+        }
+
         public LootItem CreateStarMap(int starId)
         {
             return new LootItem(_itemTypeFactory.CreateStarMapItem(starId));

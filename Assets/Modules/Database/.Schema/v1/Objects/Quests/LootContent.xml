@@ -6,10 +6,11 @@
     <member name="ItemId" type="object" typeid="ShipBuild" case="Ship" alias="ShipBuild" options="notnull" />
     <member name="ItemId" type="object" typeid="Component" case="Component" alias="Component" options="notnull" />
     <member name="ItemId" type="object" typeid="Technology" case="Blueprint" alias="Blueprint" options="notnull" />
+    <member name="ItemId" type="object" typeid="Satellite" case="Satellite" alias="Satellite" options="notnull" />
     <member name="MinAmount" type="int" case="Money,Fuel,Stars,RandomComponents,
-    RandomItems,QuestItem,Component,ResearchPoints" minvalue="0" maxvalue="999999999" />
+    RandomItems,QuestItem,Component,ResearchPoints,Satellite" minvalue="0" maxvalue="999999999" />
     <member name="MaxAmount" type="int" case="Money,Fuel,Stars,RandomComponents,
-    RandomItems,QuestItem,Component,ResearchPoints" minvalue="0" maxvalue="999999999" />
+    RandomItems,QuestItem,Component,ResearchPoints,Satellite" minvalue="0" maxvalue="999999999" />
     <member name="ValueRatio" type="float" case="SomeMoney,RandomComponents" minvalue="0.001" maxvalue="1000" />
     <member name="Factions" type="struct" typeid="FactionFilter" case="RandomComponents,ResearchPoints" />
     <member name="Items" type="struct_list" typeid="LootItem" case="RandomItems,AllItems,ItemsWithChance" />

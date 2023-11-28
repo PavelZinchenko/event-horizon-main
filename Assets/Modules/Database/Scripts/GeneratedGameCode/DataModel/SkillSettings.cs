@@ -42,6 +42,7 @@ namespace GameDatabase.DataModel
 			ShieldStrengthBonus = UnityEngine.Mathf.Clamp(serializable.ShieldStrengthBonus, 0, 100);
 			ShieldRechargeBonus = UnityEngine.Mathf.Clamp(serializable.ShieldRechargeBonus, 0, 100);
 			IncreasedLevelLimit = UnityEngine.Mathf.Clamp(serializable.IncreasedLevelLimit, 100, 1000);
+			BaseFuelCapacity = UnityEngine.Mathf.Clamp(serializable.BaseFuelCapacity, 10, 2147483647);
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -64,6 +65,7 @@ namespace GameDatabase.DataModel
 		public int ShieldStrengthBonus { get; private set; }
 		public int ShieldRechargeBonus { get; private set; }
 		public int IncreasedLevelLimit { get; private set; }
+		public int BaseFuelCapacity { get; private set; }
 
 		public static SkillSettings DefaultValue { get; private set; }
 	}

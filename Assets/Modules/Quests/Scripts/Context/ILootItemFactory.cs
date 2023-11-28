@@ -16,6 +16,7 @@ namespace Domain.Quests
         LootItem CreateShip(Ship ship);
         LootItem CreateComponent(Component component, int amount);
         LootItem CreateBlueprint(Technology technology);
+        LootItem CreateSatellite(Satellite satellite, int amount);
         IEnumerable<LootItem> CreateRandomComponents(IEnumerable<Component> components, int amount, int level, System.Random random);
     }
 }

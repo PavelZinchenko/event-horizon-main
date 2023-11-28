@@ -53,6 +53,8 @@ namespace GameDatabase.DataModel
 					return new LootContent_Blueprint(serializable, loader);
 				case LootItemType.ResearchPoints:
 					return new LootContent_ResearchPoints(serializable, loader);
+				case LootItemType.Satellite:
+					return new LootContent_Satellite(serializable, loader);
 				default:
                     throw new DatabaseException("LootContent: Invalid content type - " + serializable.Type);
 			}
@@ -90,6 +92,7 @@ namespace GameDatabase.DataModel
 	    T Create(LootContent_Component content);
 	    T Create(LootContent_Blueprint content);
 	    T Create(LootContent_ResearchPoints content);
+	    T Create(LootContent_Satellite content);
     }
 
     public partial class LootContent_None : LootContent
@@ -429,6 +432,31 @@ namespace GameDatabase.DataModel
 		public int MinAmount { get; private set; }
 		public int MaxAmount { get; private set; }
 		public RequiredFactions Factions { get; private set; }
+    }
+    public partial class LootContent_Satellite : LootContent
+    {
+		partial void OnDataDeserialized(LootContentSerializable serializable, Database.Loader loader);
+
+  		public LootContent_Satellite(LootContentSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Satellite = loader.GetSatellite(new ItemId<Satellite>(serializable.ItemId));
+			if (Satellite == null)
+			    throw new DatabaseException(this.GetType().Name + ".Satellite cannot be null - " + serializable.ItemId);
+			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
+			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(ILootContentFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public Satellite Satellite { get; private set; }
+		public int MinAmount { get; private set; }
+		public int MaxAmount { get; private set; }
     }
 
 }

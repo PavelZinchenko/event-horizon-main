@@ -5,6 +5,7 @@
         Undefined,
         Initialization,
         MainMenu,
+        StartingNewGame,
         StarMap,
         Travel,
         Combat,

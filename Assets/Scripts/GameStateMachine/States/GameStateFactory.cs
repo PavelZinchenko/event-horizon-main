@@ -12,6 +12,7 @@ namespace GameStateMachine.States
     {
         [Inject] private readonly MainMenuState.Factory _mainMenuStateFactory;
         [Inject] private readonly StarMapState.Factory _starMapStateFactory;
+        [Inject] private readonly StartingNewGameState.Factory _startingNewFameStateFactory;
         [Inject] private readonly TravelState.Factory _flightStateFactory;
         [Inject] private readonly QuestState.Factory _questStateFactory;
         [Inject] private readonly RetreatState.Factory _retreatStateFactory;
@@ -31,6 +32,10 @@ namespace GameStateMachine.States
             return _starMapStateFactory.Create();
         }
 
+        public IGameState CreateNewGameState()
+        {
+            return _startingNewFameStateFactory.Create();
+        }
         public IGameState CreateMainMenuState()
         {
             return _mainMenuStateFactory.Create();

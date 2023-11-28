@@ -70,7 +70,5 @@ namespace GameServices.Player
         protected override void OnSessionCreated() {}
 
         private ViewMode _viewMode = ViewMode.StarMap;
-
-        public const int FuelMinimum = 100;
     }
 }

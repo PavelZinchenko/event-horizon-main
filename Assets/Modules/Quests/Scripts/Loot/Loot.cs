@@ -225,6 +225,12 @@ namespace Domain.Quests
             yield return _lootItemFactory.CreateBlueprint(content.Blueprint);
         }
 
+        public IEnumerable<LootItem> Create(LootContent_Satellite content)
+        {
+            var amount = _random.Range(content.MinAmount, content.MaxAmount);
+            yield return _lootItemFactory.CreateSatellite(content.Satellite, amount);
+        }
+
         #endregion
 
         private List<LootItem> _items;
