@@ -41,7 +41,7 @@ namespace Gui.MainMenu
         private void OnDatabaseLoaded()
         {
             UpdateMods();
-            _localization.Initialize(_settings.Language, _database);
+            _localization.Initialize(_settings.Language, _database, true);
         }
 
         private void OnEnable()
