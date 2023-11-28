@@ -6,7 +6,7 @@ namespace Services.Localization
 	public interface ILocalization
 	{
 		string GetString(string key, params object[] parameters);
-        void Initialize(string language, GameDatabase.IDatabase database = null);
+        void Initialize(string language, GameDatabase.IDatabase database, bool forceReload = false);
         List<XmlLanguageInfo> LoadLocalizationList();
     }
 

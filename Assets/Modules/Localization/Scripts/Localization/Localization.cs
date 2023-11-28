@@ -9,8 +9,10 @@ namespace Services.Localization
     internal class Localization
     {
 		private const char SpecialChar = '$';
-		private List<PluralForm> _pluralForms = new();
-        private Dictionary<string, string> _keys;
+		private readonly List<PluralForm> _pluralForms = new();
+        private readonly Dictionary<string, string> _keys;
+
+		public string Language { get; }
 
 		public static bool TryLoad(string language, IDatabase database, out Localization localization)
         {
@@ -26,7 +28,7 @@ namespace Services.Localization
 			if (keys.Count == 0) 
 				return false;
 
-			localization = new Localization(keys);
+			localization = new Localization(keys, language);
 			return true;
 		}
 
@@ -58,9 +60,10 @@ namespace Services.Localization
 			}
 		}
 
-		private Localization(Dictionary<string, string> keys)
+		private Localization(Dictionary<string, string> keys, string language)
 		{
 			_keys = keys;
+			Language = language;
 			InitPluralForms();
 		}
 

@@ -19,17 +19,20 @@ namespace Services.Localization
             return key;
 		}
 
-        public void Initialize(string language, IDatabase database = null)
+        public void Initialize(string language, IDatabase database, bool forceReload = false)
 		{
             if (string.IsNullOrEmpty(language))
                 language = GetSystemLanguage();
 
             UnityEngine.Debug.Log("LocalizationManager.Initialize - " + language);
 
-            if (!Localization.TryLoad(_defaultLanguage, database, out _defaultLocalization))
-                UnityEngine.Debug.LogError("Can't load localization for " + _defaultLanguage);
+            if (_defaultLocalization == null || forceReload)
+                if (!Localization.TryLoad(_defaultLanguage, database, out _defaultLocalization))
+                    UnityEngine.Debug.LogError("Can't load localization for " + _defaultLanguage);
 
-            if (!string.Equals(language, _defaultLanguage, System.StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(language, _defaultLanguage, System.StringComparison.OrdinalIgnoreCase))
+                _localization = null;
+            else if (_localization == null || forceReload || !string.Equals(language, _localization.Language, System.StringComparison.OrdinalIgnoreCase))
                 if (!Localization.TryLoad(language, database, out _localization))
                     UnityEngine.Debug.LogError("Can't load localization for " + language);
         }
