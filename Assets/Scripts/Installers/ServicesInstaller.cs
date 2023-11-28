@@ -68,7 +68,7 @@ namespace Installers
 #if UNITY_WEBGL
             Container.Bind<IApplication>().To<WebGlApplication>().FromGameObject().AsSingle().NonLazy();
 #elif UNITY_STANDALONE
-            Container.Bind<IApplication>().To<MobileApplication>().FromGameObject().AsSingle().NonLazy();
+            Container.Bind<IApplication>().To<StandaloneApplication>().FromGameObject().AsSingle().NonLazy();
 #elif UNITY_IPHONE || UNITY_ANDROID
             Container.Bind<IApplication>().To<MobileApplication>().FromGameObject().AsSingle().NonLazy();
 #endif
