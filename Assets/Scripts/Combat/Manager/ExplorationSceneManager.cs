@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Combat.Ai;
 using Combat.Collision;
-using Combat.Component.Body;
+using Combat.Domain;
 using Combat.Component.Triggers;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
@@ -161,15 +161,6 @@ namespace Combat.Manager
             _exitTrigger.Fire();
         }
 
-        //private void ApplyExperience()
-        //{
-        //    var player = _scene.PlayerShip;
-        //    var damageDealt = player.Stats.TotalDamageDealt;
-        //    var experience = _playerFleet.PlayerShip.CalculateExperience(damageDealt * _playerSkills.ExperienceMultiplier, _sceneMap.Level);
-        //    if (experience > 0)
-        //        _expReceivedTrigger.Fire(new ShipExpPoints(_playerFleet.PlayerShip, experience));
-        //}
-
         private void KillThemAll()
         {
             foreach (var ship in _scene.Ships.Items)
@@ -180,7 +171,6 @@ namespace Combat.Manager
         public void Initialize()
         {
             CreatePlayerShip();
-            //_guiManager.OpenWindow(Gui.Notifications.WindowNames.MessageBalloon, new WindowArgs(_localization.GetKey("$ExplorationLevelMessage")));
             _radarPanel.Initialize(_scene.Units.Items);
             BuildLevel();
         }
@@ -191,7 +181,7 @@ namespace Combat.Manager
 
         private void CreatePlayerShip()
         {
-            var spec = _playerFleet.ExplorationShip.CreateBuilder().Build(_database.ShipSettings);
+            var spec = _playerFleet.ExplorationShip.CreateBuilder().ApplyPlayerSkills(_playerSkills).Build(_database.ShipSettings);
             var controllerFactory = new KeyboardController.Factory(_keyboard, _mouse);
             var ship = _shipFactory.CreateShip(spec, controllerFactory, UnitSide.Player, Vector2.zero, new System.Random().Next(360));
 
@@ -371,24 +361,6 @@ namespace Combat.Manager
                 }
             }
         }
-
-        //private static Color RandomBoxColor(System.Random random)
-        //{
-        //    var r = random.NextFloat();
-        //    var g = random.NextFloat();
-        //    var b = random.NextFloat();
-
-        //    return Color.Lerp(new Color(r, g, b), new Color(0.2f, 0.2f, 0.2f), 0.65f);
-        //}
-
-        //private static Color RandomPlanetColor(System.Random random)
-        //{
-        //    var r = random.NextFloat();
-        //    var g = Mathf.Sqrt(1f - r * r);
-        //    var b = random.NextFloat();
-
-        //    return Color.Lerp(new Color(r, g, b), Color.gray, 0.5f);
-        //}
 
         private readonly IMessenger _messenger;
         private readonly Dictionary<int, IUnit> _objectives = new Dictionary<int, IUnit>();
