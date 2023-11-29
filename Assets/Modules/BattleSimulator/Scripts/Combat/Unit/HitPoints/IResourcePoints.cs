@@ -12,8 +12,6 @@ namespace Combat.Unit.HitPoints
 		float RechargeRate { get; }
 
 		void Update(float elapsedTime);
-		//IEnumerable<byte> Serialize();
-		//void Deserialize(byte[] data, ref int index);
 
         bool Exists { get; }
 
@@ -28,8 +26,6 @@ namespace Combat.Unit.HitPoints
         public float Percentage { get { return 0.0f; } }
         public float RechargeRate { get { return 0.0f; } }
         public void Update(float elapsedTime) { }
-        //public IEnumerable<byte> Serialize() { return Enumerable.Empty<byte>(); }
-        //public void Deserialize(byte[] data, ref int index) { }
         public bool TryGet(float value) { return true; }
         public void Get(float value) { }
         public bool Exists { get { return false; } }
@@ -92,7 +88,8 @@ namespace Combat.Unit.HitPoints
 
 			if (ThreadSafe.ChangeValue(ref _value, func))
 			{
-				_delay = _rechargeDelay;
+				if (how > 0)
+					_delay = _rechargeDelay;
 				return true;
 			}
 
@@ -109,20 +106,6 @@ namespace Combat.Unit.HitPoints
 		}
 		
 		public readonly static Energy Zero = new Energy(0,1,1);
-
-		//public IEnumerable<byte> Serialize()
-		//{
-		//	foreach (var value in Helpers.Serialize(_value))
-		//		yield return value;
-		//	foreach (var value in Helpers.Serialize(_delay))
-		//		yield return value;
-		//}
-
-		//public void Deserialize(byte[] data, ref int index)
-		//{
-		//	_value = Helpers.DeserializeFloat(data, ref index);
-		//	_delay = Helpers.DeserializeFloat(data, ref index);
-		//}
 
 	    public bool Exists { get { return MaxValue > 0; } }
 
@@ -160,8 +143,6 @@ namespace Combat.Unit.HitPoints
 			throw new System.NotImplementedException();
 		}
 
-		//public IEnumerable<byte> Serialize() { return Helpers.Serialize(_value); }
-		//public void Deserialize(byte[] data, ref int index) { _value = Helpers.DeserializeFloat(data, ref index); }
 		public static int SerializedSize { get { return sizeof(float); } }
         public bool Exists { get { return true; } }
 
