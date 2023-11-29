@@ -179,9 +179,9 @@ namespace Combat.Factory
             if (_stats.HitPoints > 0)
                 return new MissileDamageHandler(bullet, _stats.HitPoints * _bulletStats.HitPointsMultiplier);
             else if (_stats.AmmunitionClass.IsBoundToCannon())
-                return new BeamDamageHandler(bullet);
+                return new BeamDamageHandler(bullet, _stats.AmmunitionClass.CanSiphonHitpoint());
             else
-                return new DefaultDamageHandler(bullet);
+                return new DefaultDamageHandler(bullet, _stats.AmmunitionClass.CanSiphonHitpoint());
         }
 
         private IController CreateController(IWeaponPlatform parent, Bullet bullet, float spread, float velocity, float rotationOffset)

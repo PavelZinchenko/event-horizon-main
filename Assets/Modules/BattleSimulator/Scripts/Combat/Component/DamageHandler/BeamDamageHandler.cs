@@ -6,25 +6,24 @@ namespace Combat.Component.DamageHandler
 {
     public class BeamDamageHandler : IDamageHandler
     {
-        public BeamDamageHandler(IUnit unit)
+        public BeamDamageHandler(IUnit unit, bool canRepair)
         {
             _unit = unit;
+            _canRepair = canRepair;
         }
 
         public CollisionEffect ApplyDamage(Impact impact)
         {
-            var owner = _unit.Type.Owner;
-
-            if (impact.Repair > 0 && owner.IsActive())
-            {
-                owner.Affect(new Impact { Repair = impact.Repair });
-            }
+            if (_canRepair && impact.Repair > 0)
+                if (_unit.Type.Owner.IsActive())
+                    _unit.Type.Owner.Affect(new Impact { Repair = impact.Repair });
 
             return CollisionEffect.None;
         }
 
         public void Dispose() { }
 
+        private readonly bool _canRepair;
         private readonly IUnit _unit;
     }
 }

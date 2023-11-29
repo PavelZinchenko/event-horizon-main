@@ -74,12 +74,16 @@ namespace Combat.Factory
 
             _scene.AddUnit(bullet);
             bullet.UpdateView(0);
-
-            //if (!_stats.AmmunitionClass.IsBoundToCannon() && !_stats.IgnoresShipSpeed && Recoil > 0)
-            //    parent.Body.ApplyForce(bullet.Body.WorldPosition(), -Recoil * (bullet.Body.WorldVelocity() - parent.Body.WorldVelocity()));
-
             bullet.AddResource(bulletGameObject);
             return bullet;
+        }
+
+        private bool CanSiphonHitpoints()
+        {
+            for (int i = 0; i < _ammunition.Effects.Count; ++i)
+                if (_ammunition.Effects[i].Type == ImpactEffectType.SiphonHitPoints)
+                    return true;
+            return false;
         }
 
         private BulletCollisionBehaviour CreateCollisionBehaviour(IBullet bullet)
@@ -87,8 +91,9 @@ namespace Combat.Factory
             var collisionBehaviour = new BulletCollisionBehaviour();
             var impactType = _ammunition.ImpactType;
 
-            foreach (var effect in _ammunition.Effects)
+            for (int i = 0; i < _ammunition.Effects.Count; ++i)
             {
+                var effect = _ammunition.Effects[i];
                 if (effect.Type == ImpactEffectType.Damage)
                     collisionBehaviour.AddAction(new DealDamageAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.Push)
@@ -155,7 +160,7 @@ namespace Combat.Factory
             var weight = _stats.Weight;
             var scale = _stats.BodySize;
 
-            if (_ammunition.Body.Type == GameDatabase.Enums.BulletType.Continuous && !parent.IsTemporary)
+            if (_ammunition.Body.Type == BulletType.Continuous && !parent.IsTemporary)
             {
                 parentBody = parent.Body;
                 position = new Vector2(offset, 0);
@@ -166,14 +171,14 @@ namespace Combat.Factory
                 position = parent.Body.WorldPosition() + RotationHelpers.Direction(rotation) * offset;
             }
 
-            if (_ammunition.Body.Type != GameDatabase.Enums.BulletType.Continuous)
+            if (_ammunition.Body.Type != BulletType.Continuous)
             {
                 velocity = RotationHelpers.Direction(rotation) * bulletSpeed;
 
-                if (_ammunition.Body.Type == GameDatabase.Enums.BulletType.Homing)
+                if (_ammunition.Body.Type == BulletType.Homing)
                     velocity *= 0.1f;
 
-                if (_ammunition.Body.Type != GameDatabase.Enums.BulletType.Static)
+                if (_ammunition.Body.Type != BulletType.Static)
                     velocity += parent.Body.WorldVelocity();
             }
 
@@ -194,7 +199,7 @@ namespace Combat.Factory
         {
             collider.Unit = unit;
 
-            if (_ammunition.Body.Type == GameDatabase.Enums.BulletType.Continuous)
+            if (_ammunition.Body.Type == BulletType.Continuous)
                 collider.MaxRange = _stats.Range;
 
             //if (_stats.AmmunitionClass == AmmunitionClassObsolete.IonBeam)
@@ -213,10 +218,10 @@ namespace Combat.Factory
                 //UnityEngine.Debug.LogError("HP:" + _stats.HitPoints);
                 return new MissileDamageHandler(bullet, hitPoints);
             }
-            else if (_ammunition.Body.Type == GameDatabase.Enums.BulletType.Continuous)
-                return new BeamDamageHandler(bullet);
+            else if (_ammunition.Body.Type == BulletType.Continuous)
+                return new BeamDamageHandler(bullet, CanSiphonHitpoints());
             else
-                return new DefaultDamageHandler(bullet);
+                return new DefaultDamageHandler(bullet, CanSiphonHitpoints());
         }
 
         private static float WeightToAcceleration(float weight)
@@ -230,15 +235,15 @@ namespace Combat.Factory
             var range = _stats.Range;
             var weight = _stats.Weight;
 
-            if (_ammunition.Body.Type == GameDatabase.Enums.BulletType.Homing)
+            if (_ammunition.Body.Type == BulletType.Homing)
                 return new HomingController(bullet, bulletSpeed, 120f * WeightToAcceleration(weight),
                     0.5f * bulletSpeed / (0.2f + weight * 2), range, _scene);
-            if (_ammunition.Body.Type == GameDatabase.Enums.BulletType.Magnetic)
+            if (_ammunition.Body.Type == BulletType.Magnetic)
             {
                 var hasDirection = _ammunition.Body.BulletPrefab.Shape.HasDirection();
                 return new MagneticController(bullet, bulletSpeed, bulletSpeed * WeightToAcceleration(weight), range, hasDirection, _scene);
             }
-            else if (_ammunition.Body.Type == GameDatabase.Enums.BulletType.Continuous && !parent.IsTemporary)
+            else if (_ammunition.Body.Type == BulletType.Continuous && !parent.IsTemporary)
                 return new BeamController(bullet, spread, rotationOffset);
 
             return null;

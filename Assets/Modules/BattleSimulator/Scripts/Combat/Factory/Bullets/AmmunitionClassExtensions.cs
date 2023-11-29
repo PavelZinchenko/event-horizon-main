@@ -84,6 +84,18 @@ namespace Combat.Factory
             }
         }
 
+        public static bool CanSiphonHitpoint(this AmmunitionClassObsolete ammunition)
+        {
+            switch (ammunition)
+            {
+                case AmmunitionClassObsolete.VampiricRay:
+                case AmmunitionClassObsolete.SmallVampiricRay:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public static bool IsRepair(this AmmunitionClassObsolete ammunition)
         {
             switch (ammunition)
