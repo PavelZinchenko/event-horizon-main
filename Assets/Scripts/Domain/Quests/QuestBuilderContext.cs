@@ -10,7 +10,7 @@ namespace Domain.Quests
             IStarMapDataProvider starMapDataProvider,
             ICharacterDataProvider characterDataProvider,
             IQuestDataProvider questDataProvider,
-            ITimeDataProvider timeDataProvider,
+            IGameDataProvider timeDataProvider,
             ILootItemFactory lootItemFactory,
             IDatabase database)
         {
@@ -19,7 +19,7 @@ namespace Domain.Quests
             StarMapDataProvider = starMapDataProvider;
             CharacterDataProvider = characterDataProvider;
             QuestDataProvider = questDataProvider;
-            TimeDataProvider = timeDataProvider;
+            GameDataProvider = timeDataProvider;
             LootItemFactory = lootItemFactory;
             Database = database;
         }
@@ -29,7 +29,7 @@ namespace Domain.Quests
         public IStarMapDataProvider StarMapDataProvider { get; }
         public ICharacterDataProvider CharacterDataProvider { get; }
         public IQuestDataProvider QuestDataProvider { get; }
-        public ITimeDataProvider TimeDataProvider { get; }
+        public IGameDataProvider GameDataProvider { get; }
         public ILootItemFactory LootItemFactory { get; }
         public IDatabase Database { get; }
     }

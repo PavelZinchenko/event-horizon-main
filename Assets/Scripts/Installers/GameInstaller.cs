@@ -114,10 +114,12 @@ namespace Installers
 
         private void BindQuestManager()
         {
+            Container.BindAllInterfaces<QuestManagerContext>().To<QuestManagerContext>().AsSingle();
             Container.BindAllInterfaces<QuestBuilderContext>().To<QuestBuilderContext>().AsSingle();
+            Container.BindAllInterfaces<QuestManagerEventProvider>().To<QuestManagerEventProvider>().AsSingle();
             Container.BindAllInterfaces<QuestDataProvider>().To<QuestDataProvider>().AsSingle();
             Container.BindAllInterfaces<StarMapDataProvider>().To<StarMapDataProvider>().AsSingle();
-            Container.BindAllInterfaces<TimeDataProvider>().To<TimeDataProvider>().AsSingle();
+            Container.BindAllInterfaces<GameDataProvider>().To<GameDataProvider>().AsSingle();
             Container.BindAllInterfaces<CharacterDataProvider>().To<CharacterDataProvider>().AsSingle();
             Container.BindAllInterfaces<InventoryDataProvider>().To<InventoryDataProvider>().AsSingle();
             Container.BindAllInterfaces<LootItemFactory>().To<LootItemFactory>().AsSingle();
@@ -126,7 +128,7 @@ namespace Installers
             Container.Bind<QuestFactory>().AsSingle();
             Container.Bind<RequirementsFactory>().AsSingle();
 
-            Container.BindAllInterfaces<QuestManager>().To<QuestManager>().AsSingle();
+            Container.BindAllInterfaces<QuestManager>().To<QuestManager>().AsSingle().NonLazy();
 
             Container.BindSignal<QuestListChangedSignal>();
             Container.BindTrigger<QuestListChangedSignal.Trigger>();

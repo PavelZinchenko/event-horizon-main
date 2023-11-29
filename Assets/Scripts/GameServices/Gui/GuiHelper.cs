@@ -5,7 +5,7 @@ using Constructor.Ships;
 using Economy;
 using Economy.ItemType;
 using Economy.Products;
-using GameServices.Quests;
+using Domain.Quests;
 using Services.Gui;
 using Zenject;
 

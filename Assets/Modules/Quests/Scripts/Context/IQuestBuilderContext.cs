@@ -12,7 +12,7 @@ namespace Domain.Quests
         IStarMapDataProvider StarMapDataProvider { get; }
         ICharacterDataProvider CharacterDataProvider { get; }
         IQuestDataProvider QuestDataProvider { get; }
-        ITimeDataProvider TimeDataProvider { get; }
+        IGameDataProvider GameDataProvider { get; }
         ILootItemFactory LootItemFactory { get; }
         IDatabase Database { get; }
     }
@@ -58,20 +58,11 @@ namespace Domain.Quests
         IRegionDataProvider Region { get; }
     }
 
-    public interface ITimeDataProvider
+    public interface IGameDataProvider
     {
+        bool IsGameStarted { get; }
         long TotalPlayTime { get; }
-    }
-
-    public interface IQuestDataProvider
-    {
-        bool IsActive(int id);
-        bool IsActiveOrCompleted(int id);
-        bool IsActive(int id, int starId);
-        bool HasBeenCompleted(int id);
-        long LastStartTime(int id);
-        long LastCompletionTime(int id);
-        long QuestStartTime(int id, int starId);
         int GameSeed { get; }
+        int Counter { get; }
     }
 }

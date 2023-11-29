@@ -1,49 +1,28 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Domain.Quests;
-using Galaxy;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameModel;
-using Services.InternetTime;
-using Session;
-using Utils;
 using Zenject;
 
-namespace GameServices.Quests
+namespace Domain.Quests
 {
-	public class QuestManager : GameServiceBase, IQuestManager, ITickable
+	public class QuestManager : IQuestManager, IInitializable, IDisposable, ITickable
 	{
-		[Inject] private readonly QuestFactory _factory;
-	    [Inject] private readonly RequirementsFactory _requirementsFactory;
-        [Inject] private readonly GameTime _gameTime;
-
-        [Inject]
 	    public QuestManager(
-			ISessionData session,
             IDatabase database,
-            IQuestBuilderContext questBuilderContext,
-			QuestActionRequiredSignal.Trigger questActionRequiredTrigger,
-            QuestListChangedSignal.Trigger questListChangedTrigger,
-            QuestEventSignal questEventSignal,
-            StarContentChangedSignal.Trigger starContentChangedTrigger,
-            SessionDataLoadedSignal dataLoadedSignal, 
-            SessionCreatedSignal sessionCreatedSignal)
-            : base(dataLoadedSignal, sessionCreatedSignal)
+			QuestFactory questFactory,
+			RequirementsFactory requirementsFactory,
+			IQuestManagerContext questManagerContext)
 	    {
-	        _session = session;
-	        _database = database;
-            _questBuilderContext = questBuilderContext;
-            _questListChangedTrigger = questListChangedTrigger;
-			_questActionRequiredTrigger = questActionRequiredTrigger;
-	        _starContentChangedTrigger = starContentChangedTrigger;
-	        _questEventSignal = questEventSignal;
-	        _questEventSignal.Event += OnQuestEvent;
-	    }
+			_database = database;
+			_factory = questFactory;
+			_requirementsFactory = requirementsFactory;
+			_context = questManagerContext;
+		}
 
-	    public bool ActionRequired { get; private set; }
+		public bool ActionRequired { get; private set; }
 
 	    public void InvokeAction(IQuestActionProcessor processor)
 	    {
@@ -51,16 +30,30 @@ namespace GameServices.Quests
                 _recentlyUpdatedQuests.Add(_activeQuest);
 	    }
 
-	    public IEnumerable<IQuest> Quests { get { return _quests.Cast<IQuest>(); } }
+	    public IEnumerable<IQuest> Quests => _quests.Cast<IQuest>(); 
 
         public bool IsQuestObjective(int starId)
         {
             return _questBeacons.Count > 0 && _questBeacons.Contains(starId);
         }
 
-	    public void Tick()
+		public void Initialize()
+        {
+			_context.EventProvider.QuestEventOccured += OnQuestEvent;
+			_context.EventProvider.SessionLoaded += Reset;
+			_context.EventProvider.SessionCreated += LoadQuests;
+		}
+
+		public void Dispose()
+        {
+			_context.EventProvider.QuestEventOccured -= OnQuestEvent;
+			_context.EventProvider.SessionLoaded -= Reset;
+			_context.EventProvider.SessionCreated -= LoadQuests;
+		}
+
+		public void Tick()
 	    {
-	        if (!_session.IsGameStarted()) return;
+			if (!_context.GameDataProvider.IsGameStarted) return;
 
             var counter = 100;
             while (_recentlyUpdatedQuests.Count > 0)
@@ -80,9 +73,9 @@ namespace GameServices.Quests
                 OnQuestUpdated(quest);
             }
 
-            if (_gameTime.TotalPlayTime - _lastUpdateTime > UpdateCooldown)
+            if (_context.GameDataProvider.TotalPlayTime - _lastUpdateTime > UpdateCooldown)
             {
-                _lastUpdateTime = _gameTime.TotalPlayTime;
+                _lastUpdateTime = _context.GameDataProvider.TotalPlayTime;
 				OnQuestEvent(new SimpleEventData(QuestEventType.Timer));
             }
         }
@@ -96,9 +89,9 @@ namespace GameServices.Quests
 	        UpdateQuestBeacons();
         }
 
-        protected override void OnSessionDataLoaded()
+		private void Reset()
 	    {
-	        _quests.Clear();
+			_quests.Clear();
 	        _questBeacons.Clear();
             _questBeaconsOld.Clear();
             _recentlyUpdatedQuests.Clear();
@@ -113,18 +106,16 @@ namespace GameServices.Quests
             _dailyQuests.Clear();
         }
 
-        protected override void OnSessionCreated()
+        private void LoadQuests()
 	    {
-	        foreach (var item in _session.Quests.GetActiveQuests())
-	        {
-                Add(_factory.Create(item.QuestId, item.StarId, item.ActiveNode, item.Seed));
-	        }
+			foreach (var item in _context.QuestDataStorage.GetActiveQuests())
+				Add(_factory.Create(item));
 
-	        var starId = _session.StarMap.PlayerPosition;
-	        var seed = _session.Game.Seed;
+	        var starId = _context.StarMapDataProvider.CurrentStar.Id;
+	        var seed = _context.GameDataProvider.GameSeed;
 
             foreach (var questData in _database.QuestList)
-                if (questData.StartCondition == StartCondition.GameStart && questData.CanBeStarted(_questBuilderContext.QuestDataProvider, starId))
+                if (questData.StartCondition == StartCondition.GameStart && questData.CanBeStarted(_context.QuestDataStorage, starId))
 	                Add(_factory.Create(questData, starId, seed + questData.Id.Value));
 
             _beaconQuests.Assign(_database.QuestList.Where(item => item.StartCondition == StartCondition.Beacon), _requirementsFactory, seed);
@@ -139,8 +130,8 @@ namespace GameServices.Quests
 	    {
             if (questModel == null) return;
 
-	        var starId = _session.StarMap.PlayerPosition;
-	        var seed = _session.Game.Seed + starId;
+	        var starId = _context.StarMapDataProvider.CurrentStar.Id;
+	        var seed = _context.GameDataProvider.GameSeed + starId;
 
 	        if (questModel.StartCondition != StartCondition.Manual)
 	        {
@@ -148,7 +139,7 @@ namespace GameServices.Quests
 	            return;
 	        }
 
-            if (!questModel.CanBeStarted(_questBuilderContext.QuestDataProvider, starId))
+            if (!questModel.CanBeStarted(_context.QuestDataStorage, starId))
 	        {
 	            UnityEngine.Debug.LogError(new ArgumentException("QuestManager.StartQuest: Quest can't be started - " + questModel.Id.Value));
                 return;
@@ -165,7 +156,7 @@ namespace GameServices.Quests
 
         private void Add(Quest quest)
 	    {
-	        if (quest == null)
+			if (quest == null)
 	        {
 	            //UnityEngine.Debug.LogException(new ArgumentException("QuestManager: quest is null"));
                 return;
@@ -174,14 +165,15 @@ namespace GameServices.Quests
 	        UnityEngine.Debug.Log("new quest: " + quest.Model.Name);
 
 	        _quests.Add(quest);
-            _recentlyUpdatedQuests.Add(quest);
-            _questListChangedTrigger.Fire();
+
+			_recentlyUpdatedQuests.Add(quest);
+			_context.EventProvider.FireQuestsUpdatedEvent();
 	    }
 
         private void OnQuestUpdated(Quest quest)
         {
             if (quest.Model.QuestType != QuestType.Temporary)
-                _session.Quests.SetQuestProgress(quest.Id, quest.StarId, quest.Seed, quest.NodeId, _gameTime.TotalPlayTime);
+				_context.QuestDataStorage.SetQuestProgress(new QuestProgress(quest.Id, quest.StarId, quest.Seed, quest.NodeId));
 
             if (quest.Status.IsFinished())
             {
@@ -194,8 +186,8 @@ namespace GameServices.Quests
 		        {
 		            _activeQuest = quest;
 		            ActionRequired = true;
-		            _questActionRequiredTrigger.Fire();
-		        }
+					_context.EventProvider.FireActionRequiredEvent();
+				}
             }
             else if (quest == _activeQuest || _activeQuest == null)
             {
@@ -219,7 +211,7 @@ namespace GameServices.Quests
 	        if (_questBeaconsOld.Count <= 0) return;
 
 	        foreach (var id in _questBeaconsOld)
-	            _starContentChangedTrigger.Fire(id);
+				_context.EventProvider.FireBeaconUpdatedEvent(id);
 	    }
 
         private void FindActiveQuest()
@@ -235,70 +227,70 @@ namespace GameServices.Quests
 
                 _activeQuest = item;
 	            ActionRequired = true;
-	            _questActionRequiredTrigger.Fire();
-	            break;
+				_context.EventProvider.FireActionRequiredEvent();
+				break;
 	        }
 	    }
 
         private void CompleteQuest(Quest quest)
 	    {
-	        _quests.Remove(quest);
+			_quests.Remove(quest);
 	        _recentlyUpdatedQuests.Remove(quest);
 
-            if (quest.Model.QuestType == QuestType.Temporary) return;
+			if (quest.Model.QuestType == QuestType.Temporary) return;
 
 	        switch (quest.Status)
 	        {
                 case QuestStatus.Completed:
-                    _session.Quests.SetQuestCompleted(quest.Id, quest.StarId, true, _gameTime.TotalPlayTime);
+                    _context.QuestDataStorage.SetQuestCompleted(quest.Id, quest.StarId);
                     break;
 	            case QuestStatus.Failed:
-                    _session.Quests.SetQuestCompleted(quest.Id, quest.StarId, false, _gameTime.TotalPlayTime);
+                    _context.QuestDataStorage.SetQuestFailed(quest.Id, quest.StarId);
                     break;
                 case QuestStatus.Cancelled:
-	                _session.Quests.CancelQuest(quest.Id, quest.StarId);
+	                _context.QuestDataStorage.SetQuestCancelled(quest.Id, quest.StarId);
 	                break;
                 case QuestStatus.Error:
                 default:
                     UnityEngine.Debug.LogException(new InvalidOperationException("QuestManager: Error has occured - " + quest.Model.Name));
-                    _session.Quests.CancelQuest(quest.Id, quest.StarId);
+                    _context.QuestDataStorage.SetQuestCancelled(quest.Id, quest.StarId);
                     break;
             }
 
-            _questListChangedTrigger.Fire();
-        }
+			_context.EventProvider.FireQuestsUpdatedEvent();
+		}
 
         private void OnQuestEvent(IQuestEventData data)
 	    {
-            var time = _gameTime.TotalPlayTime;
+            var time = _context.GameDataProvider.TotalPlayTime;
 
             if (data.Type == QuestEventType.BeaconActivated)
 	        {
 	            var eventData = (BeaconEventData)data;
-                _beaconQuests.UpdateQuests(eventData.StarId, eventData.Seed, time, _questBuilderContext.QuestDataProvider);
+                _beaconQuests.UpdateQuests(eventData.StarId, eventData.Seed, time, _context);
 	            Add(_beaconQuests.CreateRandomWeighted(_factory, eventData.Seed));
                 return;
 	        }
 	        if (data.Type == QuestEventType.LocalEncounter)
 	        {
 	            var eventData = (LocalEncounterEventData)data;
-                _localEncounterQuests.UpdateQuests(eventData.StarId, eventData.Seed, time, _questBuilderContext.QuestDataProvider);
+                _localEncounterQuests.UpdateQuests(eventData.StarId, eventData.Seed, time, _context);
 	            Add(_localEncounterQuests.CreateRandomWeighted(_factory, eventData.Seed));
                 return;
 	        }
 	        if (data.Type == QuestEventType.NewStarSystemSecured)
 	        {
 	            var eventData = (StarEventData)data;
-                var seed = _session.Game.Seed + eventData.StarId;
-                _newStarExploredQuests.UpdateQuests(eventData.StarId, seed, time, _questBuilderContext.QuestDataProvider);
+                var seed = _context.GameDataProvider.GameSeed + eventData.StarId;
+                _newStarExploredQuests.UpdateQuests(eventData.StarId, seed, time, _context);
 	            Add(_newStarExploredQuests.CreateRandomWeighted(_factory, seed));
                 return;
 	        }
             if (data.Type == QuestEventType.FactionMissionAccepted)
 	        {
 	            var eventData = (StarEventData)data;
-	            var seed = _session.Game.Seed + eventData.StarId + _session.Quests.GetFactionRelations(eventData.StarId);
-                _factionQuests.UpdateQuests(eventData.StarId, seed, time, _questBuilderContext.QuestDataProvider);
+	            var seed = _context.GameDataProvider.GameSeed + eventData.StarId + _context.StarMapDataProvider.GetStarData(eventData.StarId).Region.Relations;
+                _factionQuests.UpdateQuests(eventData.StarId, seed, time, _context);
                 Add(_factionQuests.CreateRandomWeighted(_factory, seed));
                 return;
 	        }
@@ -306,15 +298,15 @@ namespace GameServices.Quests
 	        if (data.Type == QuestEventType.ArrivedAtStarSystem)
 	        {
 	            var eventData = (StarEventData)data;
-	            var seed = _session.Game.Seed + eventData.StarId + _session.Quests.TotalQuestCount();
-                _arrivedAtStarQuests.UpdateQuests(eventData.StarId, seed, time, _questBuilderContext.QuestDataProvider);
+	            var seed = _context.GameDataProvider.GameSeed + eventData.StarId + _context.QuestDataStorage.TotalQuestCount();
+                _arrivedAtStarQuests.UpdateQuests(eventData.StarId, seed, time, _context);
 	            Add(_arrivedAtStarQuests.CreateRandomWeighted(_factory, seed));
 	        }
 
             if (data.Type == QuestEventType.Timer)
             {
-                var seed = _session.Game.Seed + (int)(time / TimeSpan.TicksPerMinute) + _session.Quests.TotalQuestCount();
-                _dailyQuests.UpdateQuests(_session.StarMap.PlayerPosition, seed, time, _questBuilderContext.QuestDataProvider);
+                var seed = _context.GameDataProvider.GameSeed + (int)(time / TimeSpan.TicksPerMinute) + _context.QuestDataStorage.TotalQuestCount();
+                _dailyQuests.UpdateQuests(_context.StarMapDataProvider.CurrentStar.Id, seed, time, _context);
                 Add(_dailyQuests.CreateFirstAvailable(_factory));
             }
 
@@ -342,110 +334,11 @@ namespace GameServices.Quests
 	    private HashSet<int> _questBeaconsOld = new();
 
         private long _lastUpdateTime;
-        private readonly ISessionData _session;
-	    private readonly IDatabase _database;
-        private readonly IQuestBuilderContext _questBuilderContext;
+		private readonly QuestFactory _factory;
+		private readonly RequirementsFactory _requirementsFactory;
+		private readonly IDatabase _database;
+		private readonly IQuestManagerContext _context;
 
-        private readonly QuestListChangedSignal.Trigger _questListChangedTrigger;
-	    private readonly StarContentChangedSignal.Trigger _starContentChangedTrigger;
-        private readonly QuestActionRequiredSignal.Trigger _questActionRequiredTrigger;
-	    private readonly QuestEventSignal _questEventSignal;
-
-        private const long UpdateCooldown = 10 * TimeSpan.TicksPerSecond;
-
-        private class QuestCollection
-        {
-            public void Assign(IEnumerable<QuestModel> quests, RequirementsFactory factory, int seed)
-            {
-                _quests.Clear();
-                _quests.AddRange(quests.Select(item => new QuestInfo
-                {
-					QuestGiver = factory.CreateQuestGiver(item.Origin),
-                    Requirements = factory.CreateForQuest(item.Requirement, seed + item.Id.Value), 
-                    Quest = item
-                }));
-            }
-
-            public void Clear()
-            {
-                _quests.Clear();
-            }
-
-            public Quest CreateFirstAvailable(QuestFactory questFactory)
-            {
-                if (_allowedQuests.Count == 0) return null;
-                var item = _allowedQuests[0];
-
-                return questFactory.Create(item.Quest, item.StarId, item.Seed);
-            }
-
-            public Quest CreateRandomWeighted(QuestFactory questFactory, int seed)
-            {
-				var random = new System.Random(seed);
-                var value = random.NextFloat() * (_totalWeight < 1f ? 1f : _totalWeight);
-
-                foreach (var item in _allowedQuests)
-                {
-                    value -= item.Quest.Weight;
-                    if (value > 0.0001f) continue;
-                    return questFactory.Create(item.Quest, item.StarId, item.Seed);
-                }
-
-                return null;
-            }
-
-            public void UpdateQuests(int currentStarId, int seed, long currentTime, IQuestDataProvider questData)
-            {
-                _allowedQuests.Clear();
-                _totalWeight = 0f;
-                var maxLevel = StarLayout.GetStarLevel(currentStarId, questData.GameSeed);
-                var random = new System.Random(seed);
-
-                foreach (var item in _quests)
-                {
-                    var quest = item.Quest;
-                    //if (quest.Weight <= 0) continue;
-                    if (quest.Level > maxLevel) continue;
-                    if (quest.IsOnCooldown(questData, currentTime, random)) continue;
-
-                    var starId = item.QuestGiver.GetStartSystem(currentStarId, seed);
-                    if (starId < 0) continue;
-
-                    if (!quest.CanBeStarted(questData, starId)) continue;
-                    if (!item.Requirements.CanStart(starId, seed)) continue;
-
-                    _allowedQuests.Add(new AllowedQuest { Quest = quest, StarId = starId, Seed = seed });
-                    _totalWeight += quest.Weight;
-                }
-            }
-
-            private float _totalWeight;
-            private readonly List<QuestInfo> _quests = new();
-            private readonly List<AllowedQuest> _allowedQuests = new();
-
-			private struct AllowedQuest
-            {
-                public QuestModel Quest;
-                public int StarId;
-                public int Seed;
-            }
-
-			private struct QuestInfo
-            {
-                public QuestGiver QuestGiver;
-                public IQuestRequirements Requirements;
-                public QuestModel Quest;
-            }
-        }
+		private const long UpdateCooldown = 10 * TimeSpan.TicksPerSecond;
 	}
-
-	public class QuestActionRequiredSignal : SmartWeakSignal
-	{
-		public class Trigger : TriggerBase {}
-	}
-
-    public class QuestListChangedSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
 }

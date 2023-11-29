@@ -1,6 +1,5 @@
 ﻿using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameServices.Quests;
 
 namespace Domain.Quests
 {

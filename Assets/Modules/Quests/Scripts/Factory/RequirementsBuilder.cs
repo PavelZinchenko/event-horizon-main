@@ -111,12 +111,12 @@ namespace Domain.Quests
 
         public IRequirements Create(Requirement_TimeSinceQuestStart content)
         {
-            return new TimeSinceQuestStart(_questInfo.QuestId, _questInfo.StarId, _context.QuestDataProvider, _context.TimeDataProvider, TimeSpan.TicksPerMinute * (content.Hours*60 + content.Minutes));
+            return new TimeSinceQuestStart(_questInfo.QuestId, _questInfo.StarId, _context.QuestDataProvider, _context.GameDataProvider, TimeSpan.TicksPerMinute * (content.Hours*60 + content.Minutes));
         }
 
         public IRequirements Create(Requirement_TimeSinceLastCompletion content)
         {
-            return new TimeSinceLastCompletion(_questInfo.QuestId, _context.QuestDataProvider, _context.TimeDataProvider, TimeSpan.TicksPerMinute * (content.Hours * 60 + content.Minutes));
+            return new TimeSinceLastCompletion(_questInfo.QuestId, _context.QuestDataProvider, _context.GameDataProvider, TimeSpan.TicksPerMinute * (content.Hours * 60 + content.Minutes));
         }
 
         public IRequirements Create(Requirement_ComeToOrigin content)

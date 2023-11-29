@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Domain.Quests;
 using GameDatabase.DataModel;
 
-namespace GameServices.Quests
+namespace Domain.Quests
 {
     public interface IQuestManager
     {

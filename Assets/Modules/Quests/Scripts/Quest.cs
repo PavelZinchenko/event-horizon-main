@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameServices.Quests;
 using Services.Localization;
 
 namespace Domain.Quests

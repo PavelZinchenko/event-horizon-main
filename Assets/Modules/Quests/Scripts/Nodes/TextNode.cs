@@ -2,7 +2,6 @@
 using System.Linq;
 using GameDatabase.Enums;
 using GameDatabase.Model;
-using GameServices.Quests;
 using Services.Localization;
 
 namespace Domain.Quests

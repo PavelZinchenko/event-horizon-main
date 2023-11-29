@@ -7,7 +7,7 @@ namespace Domain.Quests
 {
     public class TimeSinceLastCompletion : IRequirements
     {
-        public TimeSinceLastCompletion(int questId, IQuestDataProvider questData, ITimeDataProvider timeData, long totalTicks)
+        public TimeSinceLastCompletion(int questId, IQuestDataProvider questData, IGameDataProvider timeData, long totalTicks)
         {
             _questId = questId;
             _totalTicks = totalTicks;
@@ -49,6 +49,6 @@ namespace Domain.Quests
         private readonly long _totalTicks;
         private readonly int _questId;
         private readonly IQuestDataProvider _questData;
-        private readonly ITimeDataProvider _timeData;
+        private readonly IGameDataProvider _timeData;
     }
 }

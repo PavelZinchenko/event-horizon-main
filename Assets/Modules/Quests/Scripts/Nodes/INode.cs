@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using GameDatabase.Enums;
-using GameServices.Quests;
 using Services.Localization;
 
 namespace Domain.Quests

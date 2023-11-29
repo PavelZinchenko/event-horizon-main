@@ -1,5 +1,4 @@
 ﻿using GameDatabase.Enums;
-using GameServices.Quests;
 
 namespace Domain.Quests
 {

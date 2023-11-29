@@ -28,8 +28,10 @@ namespace Services.InternetTime
 
         public void Tick()
         {
+            if (!_session.IsGameStarted()) return;
+
             var now = DateTime.Now.Ticks;
-            if (!_paused &&_lastUpdateTime < now && now - _lastUpdateTime < TimeSpan.TicksPerMinute)
+            if (!_paused && _lastUpdateTime < now && now - _lastUpdateTime < TimeSpan.TicksPerMinute)
                 _totalPlayTime += now - _lastUpdateTime;
 
             _lastUpdateTime = now;

@@ -1,7 +1,7 @@
 ﻿using System;
 using GameDatabase;
 using GameServices;
-using GameServices.Quests;
+using Domain.Quests;
 using Services.InternetTime;
 using Session;
 

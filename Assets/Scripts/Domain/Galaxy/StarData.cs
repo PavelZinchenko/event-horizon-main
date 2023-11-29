@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Economy;
 using Galaxy.StarContent;
 using Game;
 using GameDatabase.DataModel;
 using GameModel;
 using GameServices;
-using GameServices.Quests;
+using Domain.Quests;
 using GameServices.Random;
 using Model.Generators;
 using Session;

@@ -5,7 +5,7 @@ namespace Domain.Quests
 {
     public class TimeSinceQuestStart : IRequirements
     {
-        public TimeSinceQuestStart(int questId, int starId, IQuestDataProvider questData, ITimeDataProvider timeData, long totalTicks)
+        public TimeSinceQuestStart(int questId, int starId, IQuestDataProvider questData, IGameDataProvider timeData, long totalTicks)
         {
             _questId = questId;
             _starId = starId;
@@ -32,6 +32,6 @@ namespace Domain.Quests
         private readonly int _starId;
         private readonly int _questId;
         private readonly IQuestDataProvider _questData;
-        private readonly ITimeDataProvider _timeData;
+        private readonly IGameDataProvider _timeData;
     }
 }
