@@ -78,6 +78,14 @@ namespace Constructor.Ships
             return ship;
         }
 
+        public static bool CanBeSold(this IShip ship)
+        {
+            if (ship.Model.ShipRarity == ShipRarity.Unique) 
+                return false;
+
+            return ship.Model.ShipType == ShipType.Common || ship.Model.ShipType == ShipType.Flagship;
+        }
+
         public static IEnumerable<IShip> Create(this IEnumerable<ShipBuild> ships, int requiredLevel, Random random, IDatabase database)
         {
             return ships.Select(item => item.Create(requiredLevel, random, database));

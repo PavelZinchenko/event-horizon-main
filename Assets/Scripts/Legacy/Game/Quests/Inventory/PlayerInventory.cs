@@ -41,8 +41,7 @@ namespace GameModel
 					foreach (var item in _inventory.Satellites.Items)
 						yield return new PlayerProduct(_playerResources, _factory.CreateSatelliteItem(item.Key), item.Value);
 
-					var activeShips = new HashSet<IShip>(_fleet.GetAllHangarShips());
-					foreach (var item in _fleet.Ships.Where(ship => ship.Model.ShipType == ShipType.Common && ship.Model.ShipRarity != ShipRarity.Unique && !activeShips.Contains(ship)))
+					foreach (var item in _fleet.Ships.Where(ShipExtensions.CanBeSold).Except(_fleet.GetAllHangarShips()))
 						yield return new PlayerProduct(_playerResources, _factory.CreatePlayerShipItem(item));
 				}
 			}
