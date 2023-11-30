@@ -6,11 +6,23 @@ using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
 using Services.Reources;
+using GameDatabase;
 using Zenject;
 
 public class PrefabCache : MonoBehaviour 
 {
-    [Inject] private readonly IResourceLocator _resourceLocator;
+    [Inject] 
+    public void Initialize(IResourceLocator resourceLocator, IDatabase database)
+    {
+        _database = database;
+        _resourceLocator = resourceLocator;
+        _database.DatabaseLoaded += OnDatabaseLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        _database.DatabaseLoaded -= OnDatabaseLoaded;
+    }
 
     public GameObject LoadResourcePrefab(string path, bool noExceptions = false)
     {
@@ -122,6 +134,14 @@ public class PrefabCache : MonoBehaviour
         return prefab;
     }
 
+    private void OnDatabaseLoaded()
+    {
+        _bulletPrefabs.Clear();
+        _effectPrefabs.Clear();
+    }
+
+    private IDatabase _database;
+    private IResourceLocator _resourceLocator;
     private readonly Dictionary<string, GameObject> _prefabs = new Dictionary<string, GameObject>();
     private readonly Dictionary<int, GameObject> _bulletPrefabs = new Dictionary<int, GameObject>();
     private readonly Dictionary<string, GameObject> _effectPrefabs = new Dictionary<string, GameObject>();
