@@ -360,7 +360,6 @@ namespace Combat.Factory
         public struct Settings
         {
             public bool Shadows;
-            //public bool Marks;
             public bool StaticWrecks;
             public bool NoDamageIndicator;
         }

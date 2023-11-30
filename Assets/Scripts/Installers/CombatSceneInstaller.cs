@@ -8,6 +8,7 @@ using Combat.Scene;
 using Combat.Services;
 using Gui.Combat;
 using Services.ObjectPool;
+using Services.Settings;
 using UnityEngine;
 using Zenject;
 
@@ -27,6 +28,8 @@ namespace Installers
         [SerializeField] private TrailRendererPool _trailRendererPool;
         [SerializeField] private Camera _camera;
 
+        [Inject] private readonly IGameSettings _gameSettings;
+
         public override void InstallBindings()
         {
             Container.BindAllInterfacesAndSelf<CombatManager>().To<CombatManager>().AsSingle().NonLazy();
@@ -45,7 +48,7 @@ namespace Installers
             Container.Bind<TimerPanel>().FromInstance(_timerPanel);
             Container.Bind<Settings>().FromInstance(_settings);
             Container.Bind<WeaponFactory>().AsSingle();
-            Container.Bind<ShipFactory>().AsSingle().WithArguments(new ShipFactory.Settings());
+            Container.Bind<ShipFactory>().AsSingle().WithArguments(new ShipFactory.Settings() { NoDamageIndicator = !_gameSettings.ShowDamage });
             Container.Bind<SpaceObjectFactory>().AsSingle();
             Container.Bind<DeviceFactory>().AsSingle();
             Container.Bind<DroneBayFactory>().AsSingle();
