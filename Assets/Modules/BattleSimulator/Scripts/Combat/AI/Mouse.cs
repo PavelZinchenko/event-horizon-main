@@ -105,6 +105,7 @@ namespace Combat.Ai
             if (!ShouldTrackMousePosition(position)) return;
 
             IsActive = true;
+            _timeFromLastAction = 0f;
             _screenPosition = position;
             if (_camera) _worldPosition = _camera.ScreenToWorldPoint(_screenPosition);
         }
@@ -112,16 +113,19 @@ namespace Combat.Ai
         private void OnThrust(UnityEngine.InputSystem.InputAction.CallbackContext context)
         {
             _thrust = context.ReadValueAsButton();
+            _timeFromLastAction = 0f;
         }
 
         private void OnAction1(UnityEngine.InputSystem.InputAction.CallbackContext context)
         {
             _action1 = context.ReadValueAsButton();
+            _timeFromLastAction = 0f;
         }
 
         private void OnAction2(UnityEngine.InputSystem.InputAction.CallbackContext context)
         {
             _action2 = context.ReadValueAsButton();
+            _timeFromLastAction = 0f;
         }
 
         public bool IsActive 
@@ -129,7 +133,7 @@ namespace Combat.Ai
             get => _isActive && !_pointerOverUI;
             set 
             {
-                _isActive = value;  
+                _isActive = value;
             }
         }
 
@@ -137,6 +141,10 @@ namespace Combat.Ai
 
         public void Tick()
         {
+            _timeFromLastAction += Time.unscaledDeltaTime;
+            if (_timeFromLastAction > _deactivationCooldown)
+                _isActive = false;
+
             if (IsActive && _camera) 
                 _worldPosition = _camera.ScreenToWorldPoint(_screenPosition);
 
@@ -165,6 +173,7 @@ namespace Combat.Ai
 
         private bool _isActive;
         private bool _pointerOverUI;
+        private float _timeFromLastAction;
         private UnityEngine.Camera _camera;
 
         private Vector2 _worldPosition;
@@ -173,5 +182,7 @@ namespace Combat.Ai
         private bool _initialized;
         private GameSettings _gameSettings;
         private readonly MouseEnabledSignal _mouseEnabledSignal;
+
+        private const float _deactivationCooldown = 0.5f;
     }
 }
