@@ -221,8 +221,8 @@ namespace Constructor.Component
                 var quantity = trigger.Quantity > 0 ? trigger.Quantity : 1;
                 var spawnRate = GetSpawnRate(ammunition, trigger, fireRate);
 
-                var bullet = trigger.Ammunition;
-                damage += GetDPS(bullet, bulletPower /** quantity*/, spawnRate, nestingLevel + 1) * powerMultiplier;
+                if (trigger.Ammunition != null)
+                    damage += GetDPS(trigger.Ammunition, bulletPower /** quantity*/, spawnRate, nestingLevel + 1) * powerMultiplier;
             }
 
             return damage;
