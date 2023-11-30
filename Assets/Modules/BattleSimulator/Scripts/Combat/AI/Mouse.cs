@@ -91,10 +91,21 @@ namespace Combat.Ai
             action.started -= callback;
         }
 
+        private bool ShouldTrackMousePosition(Vector2 position)
+        {
+            if (_action1 || _action2 || _thrust)
+                return true;
+
+            return position.x > 0 && position.y > 0 && position.x < Screen.width && position.y < Screen.height;
+        }
+
         private void OnMouseMove(UnityEngine.InputSystem.InputAction.CallbackContext context)
         {
+            var position = context.ReadValue<Vector2>();
+            if (!ShouldTrackMousePosition(position)) return;
+
             IsActive = true;
-            _screenPosition = context.ReadValue<Vector2>();
+            _screenPosition = position;
             if (_camera) _worldPosition = _camera.ScreenToWorldPoint(_screenPosition);
         }
 
