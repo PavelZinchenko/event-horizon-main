@@ -29,6 +29,7 @@ using IShip = Combat.Component.Ship.IShip;
 using Ship = Combat.Component.Ship.Ship;
 using System.Collections.Generic;
 using Combat.Component.Systems.Devices;
+using Collider2DOptimization;
 
 namespace Combat.Factory
 {
@@ -91,16 +92,16 @@ namespace Combat.Factory
             if (createShadow)
                 ship.AddTrigger(CreateShadow(ship));
 
-            if (stats.ModelScale < 0.9f)
+            if (stats.ShipModel.ModelScale < 0.9f)
                 ship.AddTrigger(new DroneExplosionAction(ship, _effectFactory, _soundPlayer));
             else
             {
                 ship.AddTrigger(new ShipExplosionAction(ship, _effectFactory, _soundPlayer));
-                ship.AddTrigger(new ShipWreckAction(ship, _effectFactory, _resourceLocator.GetSprite(stats.ModelImage), spec.Stats.ShipColor.Color, _settings.StaticWrecks));
+                ship.AddTrigger(new ShipWreckAction(ship, _effectFactory, _resourceLocator.GetSprite(stats.ShipModel.ModelImage), spec.Stats.ShipColor.Color, _settings.StaticWrecks));
             }
 
             if (spec.Stats.ShieldPoints > 0)
-                ship.AddTrigger(CreateShield(ship, stats.EngineColor));
+                ship.AddTrigger(CreateShield(ship, stats.ShipModel.EngineColor));
 
             foreach (var item in spec.Platforms)
             {
@@ -206,7 +207,7 @@ namespace Combat.Factory
         public GameObjectHolder CreateShipObject(IShipStats stats, ColorScheme colorScheme)
         {
             GameObjectHolder gameObject;
-            var prefab = _prefabCache.LoadResourcePrefab("Combat/Ships/" + stats.ModelImage.Id, true);
+            var prefab = _prefabCache.LoadResourcePrefab("Combat/Ships/" + stats.ShipModel.ModelImage.Id, true);
             if (prefab != null)
             {
                 gameObject = new GameObjectHolder(prefab, _objectPool);
@@ -215,13 +216,16 @@ namespace Combat.Factory
             {
                 prefab = _prefabCache.LoadResourcePrefab("Combat/Ships/Default");
                 gameObject = new GameObjectHolder(prefab, _objectPool);
-                var sprite = _resourceLocator.GetSprite(stats.ModelImage);
+                var sprite = _resourceLocator.GetSprite(stats.ShipModel.ModelImage);
                 gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
 
-                if (stats.SizeClass == SizeClass.Undefined)
+                if (stats.ShipModel.SizeClass == SizeClass.Undefined)
                     gameObject.AddComponent<CircleCollider2D>();
                 else
-                    gameObject.AddComponent<PolygonCollider2D>();
+                {
+                    var collider = gameObject.AddComponent<PolygonCollider2D>();
+                    collider.Optimize(stats.ShipModel.ColliderTolerance);
+                }
             }
 
             if (colorScheme.IsHsv)
@@ -232,10 +236,10 @@ namespace Combat.Factory
 
         private void CreateEngineEffect(Ship ship, IShipStats model, string effectType = "ShipTrail")
         {
-            foreach (var engine in model.Engines)
+            foreach (var engine in model.ShipModel.Engines)
             {
-                ship.AddTrigger(CreateEngineLight(ship, engine.Position * 0.5f, 0f, 5 * engine.Size / model.ModelScale, model.EngineColor));
-                ship.AddTrigger(CreateTrail(ship, engine.Position * 0.5f, engine.Size, model.EngineColor, effectType));
+                ship.AddTrigger(CreateEngineLight(ship, engine.Position * 0.5f, 0f, 5 * engine.Size / model.ShipModel.ModelScale, model.ShipModel.EngineColor));
+                ship.AddTrigger(CreateTrail(ship, engine.Position * 0.5f, engine.Size, model.ShipModel.EngineColor, effectType));
             }
         }
 
@@ -259,7 +263,7 @@ namespace Combat.Factory
         public static IBody CreateBody(GameObjectHolder gameObjectHolder, IShipStats stats, Vector2 position, float rotation)
         {
             var body = gameObjectHolder.GetComponent<IBodyComponent>();
-            body.Initialize(null, position, rotation, stats.ModelScale, Vector2.zero, 0f, stats.Weight);
+            body.Initialize(null, position, rotation, stats.ShipModel.ModelScale, Vector2.zero, 0f, stats.Weight);
             return body;
         }
 

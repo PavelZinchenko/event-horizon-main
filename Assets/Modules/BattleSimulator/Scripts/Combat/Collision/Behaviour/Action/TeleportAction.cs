@@ -23,7 +23,7 @@ namespace Combat.Collision.Behaviour.Action
             if (target.Type.Class == UnitClass.Ship)
             {
                 var ship = target as IShip;
-                if (ship.Specification.Stats.SizeClass == GameDatabase.Enums.SizeClass.Starbase) return;
+                if (ship.Specification.Stats.ShipModel.SizeClass == GameDatabase.Enums.SizeClass.Starbase) return;
             }
 
             if (target.Type.Class == UnitClass.Ship /*|| target.Type.Class == UnitClass.SpaceObject*/ ||

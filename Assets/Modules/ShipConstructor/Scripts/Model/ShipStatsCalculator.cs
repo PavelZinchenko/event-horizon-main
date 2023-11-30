@@ -61,12 +61,7 @@ namespace Constructor.Model
         float DroneBuildSpeed { get; }
         float DroneBuildTime { get; }
 
-        SpriteId IconImage { get; }
-        SpriteId ModelImage { get; }
-        float ModelScale { get; }
-        Color EngineColor { get; }
-        SizeClass SizeClass { get; }
-        IEnumerable<Engine> Engines { get; }
+        Ship ShipModel { get; }
     }
 
     public class ShipStatsCalculator : IShipStats
@@ -238,12 +233,7 @@ namespace Constructor.Model
             }
         }
 
-        public float ModelScale => _ship.ModelScale * SizeMultiplier.Value;
-        public SpriteId ModelImage => _ship.ModelImage;
-        public SpriteId IconImage => _ship.IconImage;
-        public Color EngineColor => _ship.EngineColor;
-        public SizeClass SizeClass => _ship.SizeClass;
-        public IEnumerable<Engine> Engines => _ship.Engines;
+        public Ship ShipModel => _ship;
 
         private readonly Ship _ship;
     }

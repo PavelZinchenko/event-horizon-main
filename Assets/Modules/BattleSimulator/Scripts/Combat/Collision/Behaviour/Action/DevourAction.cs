@@ -31,7 +31,7 @@ namespace Combat.Collision.Behaviour.Action
             else if (target.Type.Class == UnitClass.Ship)
             {
                 var ship = target as IShip;
-                if (ship.Specification.Stats.SizeClass == GameDatabase.Enums.SizeClass.Starbase)
+                if (ship.Specification.Stats.ShipModel.SizeClass == GameDatabase.Enums.SizeClass.Starbase)
                 {
                     selfImpact.Effects |= CollisionEffect.Destroy;
                     return;

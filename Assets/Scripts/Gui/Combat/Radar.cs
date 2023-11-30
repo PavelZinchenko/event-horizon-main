@@ -93,7 +93,7 @@ namespace Gui.Combat
             var model = _ship.Specification.Stats;
             var isAlly = _ship.Type.Side.IsAlly(UnitSide.Player);
 
-            switch (model.SizeClass)
+            switch (model.ShipModel.SizeClass)
             {
                 case SizeClass.Starbase:
                     _offset = Size*1.8f;
@@ -109,7 +109,7 @@ namespace Gui.Combat
                     break;
             }
 
-            ShipIcon.sprite = resourceLocator.GetSprite(model.ModelImage);
+            ShipIcon.sprite = resourceLocator.GetSprite(model.ShipModel.ModelImage);
 
             _screenSize = RectTransform.parent.GetComponent<RectTransform>().rect.size;
 

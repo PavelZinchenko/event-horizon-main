@@ -46,7 +46,8 @@ namespace Gui.Combat
             _ship = ship;
 
             if (_icon)
-                _icon.sprite = _resourceLocator.GetSprite(ship.Specification.Stats.IconImage) ?? _resourceLocator.GetSprite(ship.Specification.Stats.ModelImage);
+                _icon.sprite = _resourceLocator.GetSprite(ship.Specification.Stats.ShipModel.IconImage) ??
+                    _resourceLocator.GetSprite(ship.Specification.Stats.ShipModel.ModelImage);
 
             _shipItem.SetLevel(ship.Specification.Info.Level);
             _shipItem.SetClass(ship.Specification.Info.Class);

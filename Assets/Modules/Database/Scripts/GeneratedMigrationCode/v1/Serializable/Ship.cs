@@ -35,6 +35,7 @@ namespace DatabaseMigration.v1.Serializable
 		public string Layout;
 		public BarrelSerializable[] Barrels;
 		public ShipFeaturesSerializable Features;
+		public float ColliderTolerance = 0.02f;
 		public UnityEngine.Vector2 EnginePosition;
 		public float EngineSize;
 		public int ShipCategory;

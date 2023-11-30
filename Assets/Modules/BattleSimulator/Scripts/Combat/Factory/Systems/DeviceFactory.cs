@@ -51,7 +51,7 @@ namespace Combat.Factory
                         device = new AcceleratorDevice(ship, stats, deviceData.KeyBinding);
                         if (stats.EffectPrefab)
                         {
-                            foreach (var engine in shipSpec.Stats.Engines)
+                            foreach (var engine in shipSpec.Stats.ShipModel.Engines)
                                 device.AddTrigger(new FlashEffect(CreateEffect(stats, ship), ship.Body, 0.5f, engine.Position * 0.5f,
                                     ConditionType.OnRemainActive | ConditionType.OnActivate));
                         }

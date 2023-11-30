@@ -191,17 +191,7 @@ namespace Combat.Component.Systems.Devices
 
             public float DroneBuildTime => _stats.DroneBuildTime;
 
-            public SpriteId IconImage => _stats.IconImage;
-
-            public SpriteId ModelImage => _stats.ModelImage;
-
-            public float ModelScale => _stats.ModelScale * _size;
-
-            public Color EngineColor => _stats.EngineColor;
-
-            public SizeClass SizeClass => _stats.SizeClass;
-
-            public IEnumerable<GameDatabase.DataModel.Engine> Engines => _stats.Engines;
+            public GameDatabase.DataModel.Ship ShipModel => _stats.ShipModel;
 
             private readonly float _size;
             private readonly float _attack;
