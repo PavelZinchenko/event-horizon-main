@@ -8,13 +8,8 @@
 /UserSettings/
 /Mods/
 
-/Assets/GooglePlayGames/
-/Assets/GoogleMobileAds/
-/Assets/ExternalDependencyManager/
-/Assets/com.rlabrecque.steamworks.net/
-/Assets/Scripts/Steamworks.NET/
-/Assets/Editor/Steamworks.NET/
-
+/Assets/Plugins/Android/
+/Assets/Plugins/iOS/
 
 **/bin/Debug/
 **/bin/Release/
