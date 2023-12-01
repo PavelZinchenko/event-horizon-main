@@ -28,7 +28,8 @@ namespace EditorWindows
             Disabled,
             Unity,
             Google,
-            Yandex
+            Yandex,
+            Appodeal
         }
 
         public enum LicenseType
@@ -62,6 +63,8 @@ namespace EditorWindows
                     return "ADS_YANDEX";
                 case AdsType.Google:
                     return "ADS_GOOGLE";
+                case AdsType.Appodeal:
+                    return "ADS_APPODEAL";
                 case AdsType.Disabled:
                 default:
                     return "ADS_DISABLED";
@@ -381,6 +384,8 @@ namespace EditorWindows
         private AdsType _adsType = AdsType.Unity;
 #elif ADS_YANDEX
         private AdsType _adsType = AdsType.Yandex;
+#elif ADS_APPODEAL
+        private AdsType _adsType = AdsType.Appodeal;
 #elif ADS_GOOGLE
         private AdsType _adsType = AdsType.Google;
 #else

@@ -15,7 +15,7 @@ using GameServices.Player;
 using Model.Military;
 using Scripts.GameStateMachine;
 using Utils;
-using Domain.Quests;
+using Services.Audio;
 using Zenject;
 
 namespace GameStateMachine.States
@@ -29,6 +29,7 @@ namespace GameStateMachine.States
             ILevelLoader levelLoader,
             ISessionData session,
             IDatabase database,
+            IMusicPlayer musicPlayer,
             StartGameSignal startGameSignal,
             StartQuickBattleSignal startQuickBattleSignal,
             ConfigureControlsSignal configureControlsSignal,
@@ -49,6 +50,7 @@ namespace GameStateMachine.States
             _session = session;
             _database = database;
             _combatModelBuilderFactory = combatModelBuilderFactory;
+            _musicPlayer = musicPlayer;
 
             _startGameSignal = startGameSignal;
             _startGameSignal.Event += OnStartGame;
@@ -70,6 +72,8 @@ namespace GameStateMachine.States
 
         protected override void OnActivate()
         {
+            _musicPlayer.Play(AudioTrackType.Menu);
+
 #if UNITY_STANDALONE
 #else
             CheckDailyReward();
@@ -195,6 +199,7 @@ namespace GameStateMachine.States
                 StateMachine.UnloadActiveState();
         }
 
+        private readonly IMusicPlayer _musicPlayer;
         private readonly StartGameSignal _startGameSignal;
         private readonly StartQuickBattleSignal _startQuickBattleSignal;
         private readonly ConfigureControlsSignal _configureControlsSignal;

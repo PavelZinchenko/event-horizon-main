@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using Zenject;
-using GameServices.Settings;
+using Services.Settings;
 
 namespace Combat.Ai
 {
@@ -26,7 +26,7 @@ namespace Combat.Ai
 
     public class InputSystemMouse : IMouse, ITickable, IInitializable, IDisposable
     {
-        public InputSystemMouse(UnityEngine.Camera camera, MouseEnabledSignal mouseEnabledSignal, GameSettings settings)
+        public InputSystemMouse(UnityEngine.Camera camera, MouseEnabledSignal mouseEnabledSignal, IGameSettings settings)
         {
             _camera = camera;
             _actions = new InputActions().Mouse;
@@ -180,7 +180,7 @@ namespace Combat.Ai
         private Vector2 _screenPosition;
 
         private bool _initialized;
-        private GameSettings _gameSettings;
+        private IGameSettings _gameSettings;
         private readonly MouseEnabledSignal _mouseEnabledSignal;
 
         private const float _deactivationCooldown = 0.5f;

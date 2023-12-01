@@ -8,6 +8,7 @@ using GameServices.Quests;
 using Galaxy;
 using GameServices.Player;
 using Services.Gui;
+using Services.Audio;
 using Constructor.Ships;
 using Domain.Quests;
 using Game.Exploration;
@@ -35,6 +36,7 @@ namespace GameStateMachine.States
             InventoryFactory inventoryFactory,
             SupplyShip supplyShip,
             RetreatSignal retreatSignal,
+            IMusicPlayer musicPlayer,
 			StartTravelSignal startTravelSignal, 
 			StartBattleSignal startBattleSignal,
 			QuestActionRequiredSignal questActionRequiredSignal,
@@ -61,6 +63,7 @@ namespace GameStateMachine.States
             _inventoryFactory = inventoryFactory;
             _guiManager = guiManager;
             _supplyShip = supplyShip;
+            _musicPlayer = musicPlayer;
             _questCombatModelFacctory = questCombatModelFacctory;
             _retreatSignal = retreatSignal;
 			_retreatSignal.Event += OnRetreat;
@@ -100,6 +103,8 @@ namespace GameStateMachine.States
 
         protected override void OnActivate()
 		{
+            _musicPlayer.Play(AudioTrackType.Game);
+
             if (!string.IsNullOrEmpty(DesiredWindowOnResume))
             {
                 var id = DesiredWindowOnResume;
@@ -366,6 +371,7 @@ namespace GameStateMachine.States
         private readonly PlayerResources _playerResources;
         private readonly InventoryFactory _inventoryFactory;
         private readonly IGuiManager _guiManager;
+        private readonly IMusicPlayer _musicPlayer;
         private readonly QuestCombatModelFacctory _questCombatModelFacctory;
         private readonly RetreatSignal _retreatSignal;
         private readonly StartTravelSignal _startTravelSignal;

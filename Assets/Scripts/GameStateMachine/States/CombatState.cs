@@ -3,6 +3,7 @@ using Combat.Domain;
 using GameModel.Quests;
 using GameServices.LevelManager;
 using GameServices.Player;
+using Services.Audio;
 using Utils;
 using Zenject;
 
@@ -19,7 +20,9 @@ namespace GameStateMachine.States
             System.Action<ICombatModel> onCompleteAction,
             PlayerSkills playerSkills,
             MotherShip motherShip,
+            IMusicPlayer musicPlayer,
             GameServices.Economy.LootGenerator lootGenerator,
+            
             ExitSignal exitSignal,
             CombatCompletedSignal.Trigger combatCompletedTrigger)
             : base(stateMachine, stateFactory, levelLoader)
@@ -29,6 +32,7 @@ namespace GameStateMachine.States
             _lootGenerator = lootGenerator;
             _combatCompletedTrigger = combatCompletedTrigger;
             _playerSkills = playerSkills;
+            _musicPlayer = musicPlayer;
             _onCompleteAction = onCompleteAction;
 
             _exitSignal = exitSignal;
@@ -39,6 +43,11 @@ namespace GameStateMachine.States
 
         protected override Action<DiContainer> Installer => InstallBindings;
         protected override LevelName RequiredLevel => LevelName.Combat;
+
+        protected override void OnActivate()
+        {
+            _musicPlayer.Play(AudioTrackType.Combat);
+        }
 
         private void OnCombatCompleted()
         {
@@ -78,6 +87,7 @@ namespace GameStateMachine.States
         private readonly ExitSignal _exitSignal;
         private readonly MotherShip _motherShip;
         private readonly GameServices.Economy.LootGenerator _lootGenerator;
+        private readonly IMusicPlayer _musicPlayer;
         private readonly CombatCompletedSignal.Trigger _combatCompletedTrigger;
         private readonly PlayerSkills _playerSkills;
 

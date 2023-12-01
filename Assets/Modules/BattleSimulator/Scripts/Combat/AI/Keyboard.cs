@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using GameServices.Settings;
+using Services.Settings;
 using Services.Input;
 using Zenject;
 using System;
@@ -30,7 +30,7 @@ namespace Combat.Ai
     public class InputSystemKeyboard : IKeyboard, IInitializable, IDisposable
 	{
         [Inject]
-        public InputSystemKeyboard(GameSettings settings, KeyBindingsChangedSignal keyBindingsChangedSignal)
+        public InputSystemKeyboard(IGameSettings settings, KeyBindingsChangedSignal keyBindingsChangedSignal)
         {
             var configuration = new Configuration();
 

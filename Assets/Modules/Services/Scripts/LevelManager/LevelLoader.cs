@@ -49,14 +49,4 @@ namespace GameServices.LevelManager
             });
         }
     }
-
-    public class SceneBeforeUnloadSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class SceneLoadedSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
 }

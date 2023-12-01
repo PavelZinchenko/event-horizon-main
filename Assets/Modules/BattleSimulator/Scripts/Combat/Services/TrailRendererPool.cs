@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using GameServices.Settings;
+using Services.Settings;
 using UnityEngine;
 using Zenject;
 
@@ -10,7 +10,7 @@ namespace Combat.Services
         [SerializeField] private TrailRenderer _prefab;
 
         [Inject]
-        private void Initialize(GameSettings gameSettings)
+        private void Initialize(IGameSettings gameSettings)
         {
             _powerSavingMode = gameSettings.QualityMode < 0;
         }

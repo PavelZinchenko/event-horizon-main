@@ -1,4 +1,5 @@
 ﻿using Zenject;
+using Utils;
 
 namespace GameServices.LevelManager
 {
@@ -8,5 +9,16 @@ namespace GameServices.LevelManager
         void ReloadLevel(System.Action onCompleted = null, System.Action<DiContainer> installBindingsAction = null);
         bool IsLoading { get; }
         LevelName Current { get; }
+    }
+
+
+    public class SceneBeforeUnloadSignal : SmartWeakSignal
+    {
+        public class Trigger : TriggerBase { }
+    }
+
+    public class SceneLoadedSignal : SmartWeakSignal
+    {
+        public class Trigger : TriggerBase { }
     }
 }

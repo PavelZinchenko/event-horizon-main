@@ -13,6 +13,7 @@ using Services.RateGame;
 using Services.Reources;
 using Services.Storage;
 using Services.Unity;
+using Services.Assets;
 using Services.GameApplication;
 using UnityEngine;
 using Zenject;
@@ -124,6 +125,8 @@ namespace Installers
             Container.BindAllInterfaces<GoogleAdsManager>().To<GoogleAdsManager>().AsSingle().NonLazy();
 #elif ADS_UNITY
             Container.BindAllInterfaces<UnityAdsManager>().To<UnityAdsManager>().AsSingle().NonLazy();
+#elif ADS_APPODEAL
+            Container.BindAllInterfaces<AppodealAdsManager>().To<AppodealAdsManager>().AsSingle().NonLazy();
 #endif
 
 #if NO_INTERNET
@@ -147,6 +150,12 @@ namespace Installers
 #endif
 
             Container.Bind<ILevelLoader>().To<LevelLoader>().AsSingle();
+
+#if LICENSE_COMMERCIAL
+            Container.BindAllInterfaces<AssetLoader>().To<AssetLoader>().AsSingle();
+#else
+            Container.BindAllInterfaces<LocalAssetLoader>().To<LocalAssetLoader>().AsSingle();
+#endif
         }
 
         public void BindSignals()
@@ -180,10 +189,10 @@ namespace Installers
             Container.BindTrigger<RewardedVideoCompletedSignal.Trigger>();
             Container.BindSignal<AdStatusChangedSignal>();
             Container.BindTrigger<AdStatusChangedSignal.Trigger>();
-            //Container.BindSignal<LanguageChangedSignal>();
-            //Container.BindTrigger<LanguageChangedSignal.Trigger>();
             Container.BindSignal<IapDataSavedSignal>();
             Container.BindTrigger<IapDataSavedSignal.Trigger>();
+            Container.BindSignal<AssetLoaderStatusChangedSignal>();
+            Container.BindTrigger<AssetLoaderStatusChangedSignal.Trigger>();
         }
     }
 }
