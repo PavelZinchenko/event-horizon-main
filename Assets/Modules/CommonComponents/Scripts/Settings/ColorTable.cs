@@ -1,6 +1,6 @@
 using System.IO;
 using UnityEngine;
-using AppConfiguration.Utils;
+using CommonComponents.Utils;
 
 namespace AppConfiguration
 {

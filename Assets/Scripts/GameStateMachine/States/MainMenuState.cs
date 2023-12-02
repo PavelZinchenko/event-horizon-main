@@ -14,7 +14,7 @@ using GameServices.LevelManager;
 using GameServices.Player;
 using Model.Military;
 using Scripts.GameStateMachine;
-using Utils;
+using CommonComponents.Utils;
 using Services.Audio;
 using Zenject;
 

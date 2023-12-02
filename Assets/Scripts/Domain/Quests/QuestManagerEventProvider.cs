@@ -2,7 +2,7 @@ using System;
 using Domain.Quests;
 using Galaxy;
 using Session;
-using Utils;
+using CommonComponents.Utils;
 
 namespace GameServices.Quests
 {

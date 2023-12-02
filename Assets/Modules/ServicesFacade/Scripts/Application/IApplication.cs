@@ -1,4 +1,4 @@
-﻿using Utils;
+﻿using CommonComponents.Utils;
 
 namespace Services.GameApplication
 {

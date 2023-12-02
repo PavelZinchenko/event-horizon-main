@@ -6,7 +6,7 @@ using Database.Legacy;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 using Helpers = GameModel.Serialization.Helpers;
 

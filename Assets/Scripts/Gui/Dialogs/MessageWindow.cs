@@ -2,7 +2,7 @@
 using Services.Storage;
 using UnityEngine;
 using UnityEngine.UI;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 
 namespace Gui.Common

@@ -13,7 +13,7 @@ using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
 using UnityEngine.Assertions;
-using Utils;
+using CommonComponents.Utils;
 using Services.InAppPurchasing;
 
 namespace GameServices.Player

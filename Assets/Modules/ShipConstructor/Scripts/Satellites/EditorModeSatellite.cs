@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using GameDatabase;
 using GameDatabase.DataModel;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Constructor.Satellites
 {

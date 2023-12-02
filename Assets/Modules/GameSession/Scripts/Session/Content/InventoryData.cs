@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Database.Legacy;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 using Helpers = GameModel.Serialization.Helpers;
 

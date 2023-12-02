@@ -1,5 +1,5 @@
 ﻿using GameServices.LevelManager;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 
 namespace GameStateMachine.States

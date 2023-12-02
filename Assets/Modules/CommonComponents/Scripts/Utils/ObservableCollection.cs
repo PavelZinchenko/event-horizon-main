@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Assertions;
 
-namespace Utils
+namespace CommonComponents.Utils
 {
     public interface IItemCollection<T> : IList<T>
     {

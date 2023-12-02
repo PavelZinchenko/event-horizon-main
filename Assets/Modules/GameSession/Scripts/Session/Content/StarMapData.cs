@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Zenject;
 using GameModel.Serialization;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Session.Content
 {

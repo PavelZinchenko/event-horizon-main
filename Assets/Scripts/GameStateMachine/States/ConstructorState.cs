@@ -1,7 +1,7 @@
 ﻿using GameServices.LevelManager;
 using Services.Messenger;
 using Constructor.Ships;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 
 namespace GameStateMachine.States

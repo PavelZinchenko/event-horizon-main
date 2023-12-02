@@ -4,7 +4,7 @@ using GameModel.Quests;
 using GameServices.LevelManager;
 using GameServices.Player;
 using Services.Audio;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 
 namespace GameStateMachine.States

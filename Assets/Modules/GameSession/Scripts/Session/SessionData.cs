@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Zenject;
 using Session.Content;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Session
 {

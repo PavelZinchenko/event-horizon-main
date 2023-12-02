@@ -5,7 +5,7 @@ using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
 using Maths;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Constructor.Ships
 {

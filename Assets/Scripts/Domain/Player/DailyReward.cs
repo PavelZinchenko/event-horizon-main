@@ -8,7 +8,7 @@ using GameServices.Settings;
 using Services.InternetTime;
 using Session;
 using UnityEngine;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Domain.Player
 {

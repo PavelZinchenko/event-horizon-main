@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Constructor.Ships
 {

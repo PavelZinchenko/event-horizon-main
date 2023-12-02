@@ -5,7 +5,7 @@ using GameServices.LevelManager;
 using Gui.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 
 namespace Services.Gui

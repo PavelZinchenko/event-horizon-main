@@ -1,5 +1,5 @@
 ﻿using GameDatabase.DataModel;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Constructor.Satellites
 {

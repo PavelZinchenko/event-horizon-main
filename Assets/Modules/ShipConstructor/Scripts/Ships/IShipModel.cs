@@ -4,7 +4,7 @@ using Constructor.Ships.Modification;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Constructor.Ships
 {

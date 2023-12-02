@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using UnityEngine.InputSystem;
 using UnityEngine;
-using Utils;
+using CommonComponents.Utils;
 using System;
 
 namespace Services.Input

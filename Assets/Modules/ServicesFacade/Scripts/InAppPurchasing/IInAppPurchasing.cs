@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Economy.ItemType;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Services.InAppPurchasing
 {

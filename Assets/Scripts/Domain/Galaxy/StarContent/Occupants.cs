@@ -1,5 +1,4 @@
-﻿using Combat.Component.Unit.Classification;
-using Combat.Domain;
+﻿using Combat.Domain;
 using Domain.Quests;
 using Economy.ItemType;
 using Economy.Products;
@@ -10,7 +9,7 @@ using GameServices.Random;
 using Session;
 using Session.Content;
 using Model.Military;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 using PlayerFleet = GameServices.Player.PlayerFleet;
 

@@ -1,5 +1,5 @@
 ﻿using Zenject;
-using Utils;
+using CommonComponents.Utils;
 
 namespace GameServices.LevelManager
 {

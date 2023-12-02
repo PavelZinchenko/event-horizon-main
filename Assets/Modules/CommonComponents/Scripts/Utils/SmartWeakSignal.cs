@@ -2,7 +2,7 @@
 using Zenject;
 using SmartWeakEvent;
 
-namespace Utils
+namespace CommonComponents.Utils
 {
     public class SmartWeakSignal : ISignal
     {

@@ -1,6 +1,6 @@
 ﻿using UniRx;
 using UnityEngine.SceneManagement;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 
 namespace GameServices.LevelManager

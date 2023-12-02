@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Constructor.Satellites;
-using Utils;
+﻿using Constructor.Satellites;
+using CommonComponents.Utils;
 
 namespace Constructor.Ships
 {

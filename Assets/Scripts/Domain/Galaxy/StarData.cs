@@ -11,7 +11,7 @@ using Model.Generators;
 using Session;
 using Session.Content;
 using UnityEngine;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 using Random = System.Random;
 

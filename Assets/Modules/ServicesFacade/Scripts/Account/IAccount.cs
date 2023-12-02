@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Services.Account
 {

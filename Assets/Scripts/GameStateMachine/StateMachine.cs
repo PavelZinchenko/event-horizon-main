@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameStateMachine.States;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 
 namespace GameStateMachine

@@ -4,7 +4,7 @@ using System.Linq;
 using Constructor;
 using Constructor.Ships;
 using GameDatabase.Model;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Gui.ComponentList
 {

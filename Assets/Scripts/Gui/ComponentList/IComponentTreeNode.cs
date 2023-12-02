@@ -2,7 +2,7 @@
 using System.Linq;
 using Constructor;
 using GameDatabase.Model;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Gui.ComponentList
 {

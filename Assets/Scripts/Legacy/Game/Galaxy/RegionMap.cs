@@ -3,7 +3,7 @@ using GameDatabase;
 using GameServices;
 using GameServices.Random;
 using Session;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 
 namespace GameModel

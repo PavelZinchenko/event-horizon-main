@@ -1,7 +1,7 @@
 ﻿using Constructor;
 using Constructor.Ships;
 using GameDatabase.DataModel;
-using Utils;
+using CommonComponents.Utils;
 
 namespace Gui.ComponentList
 {

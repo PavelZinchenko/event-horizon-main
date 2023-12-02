@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameModel.Serialization;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 
 namespace Session.Content

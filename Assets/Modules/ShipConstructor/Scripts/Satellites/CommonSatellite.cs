@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using GameDatabase;
 using GameDatabase.DataModel;
-using GameDatabase.Model;
-using Utils;
+using CommonComponents.Utils;
 using Helpers = GameModel.Serialization.Helpers;
 
 namespace Constructor.Satellites

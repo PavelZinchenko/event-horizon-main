@@ -7,7 +7,7 @@ using Services.Gui;
 using Services.InAppPurchasing;
 using Services.Localization;
 using Services.Storage;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 
 namespace GameServices.Gui

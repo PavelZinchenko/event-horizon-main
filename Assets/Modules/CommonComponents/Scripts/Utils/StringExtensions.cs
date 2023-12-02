@@ -1,7 +1,6 @@
 ﻿using System;
-using UnityEngine.UIElements;
 
-namespace AppConfiguration.Utils
+namespace CommonComponents.Utils
 {
     internal static class StringExtensions
     {

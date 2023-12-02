@@ -9,7 +9,7 @@ using Services.InAppPurchasing;
 using Services.Localization;
 using Services.Storage;
 using UnityEngine;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 
 namespace GameServices.GameManager

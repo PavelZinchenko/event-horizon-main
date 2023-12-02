@@ -21,7 +21,7 @@ using Services.Audio;
 using Services.Localization;
 using Services.Reources;
 using UnityEngine.Events;
-using Utils;
+using CommonComponents.Utils;
 using Zenject;
 using Component = GameDatabase.DataModel.Component;
 using ICommand = Gui.Constructor.ICommand;

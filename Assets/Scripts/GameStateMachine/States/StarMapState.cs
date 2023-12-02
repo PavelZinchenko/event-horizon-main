@@ -1,7 +1,7 @@
 ﻿using Combat.Domain;
 using GameServices.LevelManager;
 using Scripts.GameStateMachine;
-using Utils;
+using CommonComponents.Utils;
 using Session;
 using Zenject;
 using GameServices.Quests;
