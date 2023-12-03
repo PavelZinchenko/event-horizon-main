@@ -147,7 +147,7 @@ namespace Gui.Presenter.MainMenu
             MainMenu_Constructor_button_input.value = _gameSettings.EditorText;
 
 #if !UNITY_ANDROID && !UNITY_STANDALONE
-        MainMenu_Exit_button.style.display = DisplayStyle.None;
+            MainMenu_Exit_button.style.display = DisplayStyle.None;
 #endif
 
 #if !UNITY_IOS

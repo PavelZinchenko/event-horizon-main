@@ -33,7 +33,7 @@ namespace Gui.Presenter
 
             var path = Path.Combine(Application.dataPath, _generatedFilePath, ns.Replace('.', '\\'));
             Directory.CreateDirectory(path);
-            File.WriteAllText(Path.Combine(path, className + ".cs"), code);
+            File.WriteAllText(Path.Combine(path, className + "Partial.cs"), code);
         }
 #endif
     }
