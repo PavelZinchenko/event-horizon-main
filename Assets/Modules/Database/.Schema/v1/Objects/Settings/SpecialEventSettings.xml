@@ -4,6 +4,7 @@
     <member name="XmasDaysBefore" type="int" minvalue="0" maxvalue="30" default="24" />
     <member name="XmasDaysAfter" type="int" minvalue="0" maxvalue="30" default="15" />
     <member name="XmasQuest" type="object" typeid="Quest" />
+    <member name="ConvertCreditsToSnowflakes" type="expression" typeid="IntToInt" arguments="credits" minvalue="1" default="1 + credits/500" />
     <member name="EnableEasterEvent" type="bool" />
     <member name="EasterDaysBefore" type="int" minvalue="0" maxvalue="30" />
     <member name="EasterDaysAfter" type="int" minvalue="0" maxvalue="30" />

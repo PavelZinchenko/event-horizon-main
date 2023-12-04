@@ -63,13 +63,9 @@ namespace GameModel
                         {
                             var component = ComponentInfo.CreateRandomModification(item, random, ModificationQuality.P2);
 
-#if IAP_DISABLED
-                            var itemType = _itemTypeFactory.CreateComponentItem(component, false);
-#else
-                            var itemType = _itemTypeFactory.CreateComponentItem(component, true);
-#endif
-                            var price = new Price(1 + itemType.Price.Amount / 500, Currency.Snowflakes);
-                            _items.Add(_productFactory.CreateSpecial(itemType, price));
+                            var itemType = _itemTypeFactory.CreateComponentItem(component);
+                            var snowflakes = _database.SpecialEventSettings.ConvertCreditsToSnowflakes(itemType.Price.Amount);
+                            _items.Add(_productFactory.CreateSpecial(itemType, new Price(snowflakes, Currency.Snowflakes)));
                         }
                     }
 

@@ -19,6 +19,7 @@ namespace GameDatabase.Serializable
 		public int XmasDaysBefore = 24;
 		public int XmasDaysAfter = 15;
 		public int XmasQuest;
+		public string ConvertCreditsToSnowflakes = "1 + credits/500";
 		public bool EnableEasterEvent;
 		public int EasterDaysBefore;
 		public int EasterDaysAfter;
