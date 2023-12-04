@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64203d51a81ad3248857de5e576c4286, type: 3}
+  m_Name: FontTable
+  m_EditorClassIdentifier: 
+  _windowsFonts:
+  - Language: chinese
+    Filename: msyh.ttc
+  - Language: korean
+    Filename: malgun.ttf
+  - Language: 
+    Filename: segoeui.ttf
+  _androidFonts:
+  - Language: chinese
+    Filename: NotoSansCJK-Regular.ttc
+  - Language: korean
+    Filename: NotoSansCJK-Regular.ttc
+  - Language: armenian
+    Filename: NotoSansArmenian-VF.ttf
+  - Language: 
+    Filename: DroidSans.ttf
+  _iosFonts: []
+  _macFonts: []
+  _linuxFonts: []
+  _noExtraFontLanguages:
+  - english
+  - russian

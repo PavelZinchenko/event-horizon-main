@@ -13,6 +13,7 @@ using Services.Advertisements;
 using Services.Gui;
 using Services.Storage;
 using Services.InAppPurchasing;
+using Services.Localization;
 
 namespace Services.Messenger
 {
@@ -45,6 +46,7 @@ namespace Services.Messenger
         private readonly BaseCapturedSignal _baseCapturedSignal;
         private readonly SupplyShipActivatedSignal _supplyShipActivatedSignal;
         private readonly InAppItemListUpdatedSignal _inAppItemListUpdatedSignal;
+        private readonly LocalizationChangedSignal _localizationChangedSignal;
 
         public SignalsTranslator(
             IMessenger messenger,
@@ -73,7 +75,8 @@ namespace Services.Messenger
             QuestListChangedSignal questListChangedSignal,
             BaseCapturedSignal baseCapturedSignal,
             SupplyShipActivatedSignal supplyShipActivatedSignal,
-            InAppItemListUpdatedSignal inAppItemListUpdatedSignal)
+            InAppItemListUpdatedSignal inAppItemListUpdatedSignal,
+            LocalizationChangedSignal localizationChangedSignal)
         {
             _messenger = messenger;
             _session = session;
@@ -129,6 +132,8 @@ namespace Services.Messenger
             _supplyShipActivatedSignal.Event += OnSupplyShipActivated;
             _inAppItemListUpdatedSignal = inAppItemListUpdatedSignal;
             _inAppItemListUpdatedSignal.Event += OnInAppItemListUpdated;
+            _localizationChangedSignal = localizationChangedSignal;
+            _localizationChangedSignal.Event += OnLocalizationChanged;
         }
 
         public void Dispose()
@@ -264,6 +269,11 @@ namespace Services.Messenger
         private void OnInAppItemListUpdated()
         {
             _messenger.Broadcast(EventType.IapItemsRefreshed);
+        }
+
+        private void OnLocalizationChanged(string language)
+        {
+            _messenger.Broadcast<string>(EventType.ArrivedToPlanet, language);
         }
     }
 }

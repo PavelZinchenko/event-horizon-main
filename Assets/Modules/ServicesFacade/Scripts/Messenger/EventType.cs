@@ -76,4 +76,6 @@ public enum EventType
 
     Surrender,
     KillAllEnemies,
+
+    LocalizationChanged, // string language
 }

@@ -27,6 +27,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4000012398460942}
   m_RootOrder: 0
@@ -85,9 +86,11 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4000014127978044}
   - {fileID: 4000010437026018}
+  - {fileID: 4079411331119977817}
   m_Father: {fileID: 4000013340396510}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -105,6 +108,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _musicPlayer: {fileID: 114000010692856206}
   _soundPlayer: {fileID: 114000010227438544}
+  _systemFontLoader: {fileID: 3094198216511760091}
 --- !u!1 &1000010690906568
 GameObject:
   m_ObjectHideFlags: 0
@@ -132,6 +136,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4000011937754354}
   - {fileID: 4000012398460942}
@@ -183,6 +188,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4000011937754354}
   m_RootOrder: 0
@@ -199,16 +205,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb2c6b3ad7a39154093744b5fb420299, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MenuMusic:
-  - {fileID: 8300000, guid: bc3fac79e99c5bb4cb243af95045f7d7, type: 3}
-  CombatMusic:
-  - {fileID: 8300000, guid: 708b013b13cca7f429eaecd4c7dfa260, type: 3}
-  - {fileID: 8300000, guid: 11c0a7054ad758b45ab98039d60f417b, type: 3}
-  - {fileID: 8300000, guid: 2b85650db88582c48874847388e95f6a, type: 3}
-  GalaxyMapMusic:
-  - {fileID: 8300000, guid: 3afb9bc4f7586794b8900d9e412c8e71, type: 3}
-  ExplorationMusic:
-  - {fileID: 8300000, guid: 03d258dac12b9de4facc5cae97ff9a35, type: 3}
 --- !u!82 &82000013520888972
 AudioSource:
   m_ObjectHideFlags: 0
@@ -333,6 +329,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4000011178795242}
   m_Father: {fileID: 4000013340396510}
@@ -386,6 +383,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4000011937754354}
   m_RootOrder: 1
@@ -1178,3 +1176,50 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!1 &8663135744920648459
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4079411331119977817}
+  - component: {fileID: 3094198216511760091}
+  m_Layer: 0
+  m_Name: SystemFontLocator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4079411331119977817
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8663135744920648459}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4000011937754354}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3094198216511760091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8663135744920648459}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 769b76af7f0ee1e42b518d2b7ba5de15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fontSize: 12
+  _textSettings: {fileID: 11400000, guid: c521a1269ba032e4989e065f1f66ed22, type: 2}
+  _fontTable: {fileID: 11400000, guid: 33e5737fb03cd704fa5c8894bb76ae47, type: 2}

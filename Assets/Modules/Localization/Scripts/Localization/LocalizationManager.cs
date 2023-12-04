@@ -6,7 +6,14 @@ namespace Services.Localization
 {
 	public class LocalizationManager : ILocalization
 	{
-		public string GetString(string key, params object[] parameters)
+        public LocalizationManager(LocalizationChangedSignal.Trigger localizationChangedTrigger)
+        {
+            _localizationChangedTrigger = localizationChangedTrigger;
+        }
+
+        public string Language => _localization?.Language ?? _defaultLanguage;
+
+        public string GetString(string key, params object[] parameters)
 		{
             string result;
             if (_localization != null && _localization.TryGetString(key, parameters, out result))
@@ -35,6 +42,8 @@ namespace Services.Localization
             else if (_localization == null || forceReload || !string.Equals(language, _localization.Language, System.StringComparison.OrdinalIgnoreCase))
                 if (!Localization.TryLoad(language, database, out _localization))
                     UnityEngine.Debug.LogError("Can't load localization for " + language);
+
+            _localizationChangedTrigger.Fire(language);
         }
 
         public List<XmlLanguageInfo> LoadLocalizationList()
@@ -57,8 +66,9 @@ namespace Services.Localization
             }
         }
 
-        private const string _defaultLanguage = "English";
         private Localization _localization;
         private Localization _defaultLocalization;
+        private readonly LocalizationChangedSignal.Trigger _localizationChangedTrigger;
+        private const string _defaultLanguage = "English";
     }
 }

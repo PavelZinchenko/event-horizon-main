@@ -27,6 +27,7 @@ namespace Installers
     {
         [SerializeField] private MusicPlayer _musicPlayer;
         [SerializeField] private SoundPlayer _soundPlayer;
+        [SerializeField] private SystemFontLocator _systemFontLoader;
 
         public override void InstallBindings()
         {
@@ -44,6 +45,7 @@ namespace Installers
 
             Container.Bind<ILocalization>().To<LocalizationManager>().AsSingle();
             Container.BindAllInterfaces<KeyNameLocalizer>().To<KeyNameLocalizer>().AsSingle();
+            Container.Bind<SystemFontLocator>().FromInstance(_systemFontLoader);
 
 //#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
 //            Container.BindAllInterfaces<DiscordController>().To<DiscordController>().AsSingle().NonLazy();
@@ -193,6 +195,8 @@ namespace Installers
             Container.BindTrigger<IapDataSavedSignal.Trigger>();
             Container.BindSignal<AssetLoaderStatusChangedSignal>();
             Container.BindTrigger<AssetLoaderStatusChangedSignal.Trigger>();
+            Container.BindSignal<LocalizationChangedSignal>();
+            Container.BindTrigger<LocalizationChangedSignal.Trigger>();
         }
     }
 }

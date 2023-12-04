@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
+using CommonComponents.Utils;
 
 namespace Services.Localization
 {
 	public interface ILocalization
 	{
+        string Language { get; }
 		string GetString(string key, params object[] parameters);
         void Initialize(string language, GameDatabase.IDatabase database, bool forceReload = false);
         List<XmlLanguageInfo> LoadLocalizationList();
@@ -49,5 +51,10 @@ namespace Services.Localization
     {
         [XmlElement("string")]
         public List<XmlKeyValuePair> items = new();
+    }
+
+    public class LocalizationChangedSignal : SmartWeakSignal<string>
+    {
+        public class Trigger : TriggerBase { }
     }
 }
