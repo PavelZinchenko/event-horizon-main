@@ -64,7 +64,7 @@ namespace Services.Localization
 
             foreach (var font in LookForFont(_localization.Language))
             {
-                Debug.LogError("Update font: " + font.sourceFontFile.name);
+                Debug.Log("Font loaded: " + font.sourceFontFile.name);
                 _textSettings.fallbackFontAssets.Add(font);
             }
         }
@@ -79,8 +79,8 @@ namespace Services.Localization
                     _systemFonts.Add(System.IO.Path.GetFileName(paths[i]), paths[i]);
             }
 
-            foreach (var item in _systemFonts)
-                Debug.LogError(item.Key + ": " + item.Value);
+            //foreach (var item in _systemFonts)
+            //    Debug.LogError(item.Key + ": " + item.Value);
         }
 
         [Serializable]
