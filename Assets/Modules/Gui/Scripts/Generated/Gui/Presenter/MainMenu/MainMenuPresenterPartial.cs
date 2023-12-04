@@ -23,7 +23,7 @@ namespace Gui.Presenter.MainMenu
         private Button _MainMenu_Settings_button;
         private Label _MainMenu_Settings_button_label;
         private TemplateContainer _MainMenu_Constructor;
-        private Button _MainMenu_Constructor_button;
+        private VisualElement _MainMenu_Constructor_button;
         private VisualElement _MainMenu_Constructor_button_icon;
         private TextField _MainMenu_Constructor_button_input;
         private TemplateContainer _MainMenu_RestorePurchases;
@@ -48,7 +48,7 @@ namespace Gui.Presenter.MainMenu
         public Button MainMenu_Settings_button => _MainMenu_Settings_button ??= (Button)UiDocument.rootVisualElement[1][3][0];
         public Label MainMenu_Settings_button_label => _MainMenu_Settings_button_label ??= (Label)UiDocument.rootVisualElement[1][3][0][1][0];
         public TemplateContainer MainMenu_Constructor => _MainMenu_Constructor ??= (TemplateContainer)UiDocument.rootVisualElement[1][4];
-        public Button MainMenu_Constructor_button => _MainMenu_Constructor_button ??= (Button)UiDocument.rootVisualElement[1][4][0];
+        public VisualElement MainMenu_Constructor_button => _MainMenu_Constructor_button ??= (VisualElement)UiDocument.rootVisualElement[1][4][0];
         public VisualElement MainMenu_Constructor_button_icon => _MainMenu_Constructor_button_icon ??= (VisualElement)UiDocument.rootVisualElement[1][4][0][0][0];
         public TextField MainMenu_Constructor_button_input => _MainMenu_Constructor_button_input ??= (TextField)UiDocument.rootVisualElement[1][4][0][1][0];
         public TemplateContainer MainMenu_RestorePurchases => _MainMenu_RestorePurchases ??= (TemplateContainer)UiDocument.rootVisualElement[1][5];
