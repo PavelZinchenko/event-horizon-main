@@ -6,5 +6,6 @@
     <member name="SupporterPackShip" type="object" typeid="ShipBuild" />
     <member name="DefaultStarbaseBuild" type="object" typeid="ShipBuild" />
     <member name="MaxEnemyShipsLevel" type="int" minvalue="100" maxvalue="500" default="300" />
-    <member name="EnemyLevel" type="expression" typeid="IntToInt" arguments="distance" minvalue="0" maxvalue="500" />
+    <member name="EnemyLevel" type="expression" typeid="IntToInt" arguments="distance" minvalue="0" maxvalue="500" 
+        default="MIN(3*distance/5 - 5, MaxEnemyShipsLevel)" />
 </data>

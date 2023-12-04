@@ -8,6 +8,5 @@
   ],
   "StartingInvenory": 12,
   "SupporterPackShip": 92,
-  "DefaultStarbaseBuild": 192,
-  "EnemyLevel": "MIN(3*distance/5 - 5, MaxEnemyShipsLevel)"
+  "DefaultStarbaseBuild": 192
 }

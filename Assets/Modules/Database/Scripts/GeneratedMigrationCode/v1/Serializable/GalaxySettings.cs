@@ -27,6 +27,6 @@ namespace DatabaseMigration.v1.Serializable
 		public int SupporterPackShip;
 		public int DefaultStarbaseBuild;
 		public int MaxEnemyShipsLevel = 300;
-		public string EnemyLevel;
+		public string EnemyLevel = "MIN(3*distance/5 - 5, MaxEnemyShipsLevel)";
 	}
 }
