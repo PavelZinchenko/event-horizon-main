@@ -16,19 +16,19 @@ namespace Combat.Ai
             _weaponId = weaponId;
         }
 
-        public void Perform(Context context, ref ShipControls controls)
+        public void Perform(Context context, ShipControls controls)
         {
             var ship = context.Ship;
             var enemy = context.Enemy;
             if (enemy.IsDrone())
-                Perform(ship, enemy, ref controls);
+                Perform(ship, enemy, controls);
             var targets = context.Targets.Items;
             for (var i = 0; i < targets.Count; i++)
                 if (targets[i].IsDrone())
-                    Perform(ship, targets[i], ref controls);
+                    Perform(ship, targets[i], controls);
         }
 
-        public void Perform(IShipCombatModel ship, IShipCombatModel enemy, ref ShipControls controls)
+        public void Perform(IShipCombatModel ship, IShipCombatModel enemy, ShipControls controls)
         {
             var targetAngle = 0f;
             var targetDeltaAngle = 10000f;
@@ -66,7 +66,7 @@ namespace Combat.Ai
 			_trackAlways = trackAlways;
 		}
 		
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
 			var ship = context.Ship;
 			var enemy = context.Enemy;
@@ -114,7 +114,7 @@ namespace Combat.Ai
 	        _directOnly = directOnly;
 	    }
 
-	    public void Perform(Context context, ref ShipControls controls)
+	    public void Perform(Context context, ShipControls controls)
 	    {
 	        var ship = context.Ship;
 	        var enemy = context.Enemy;
@@ -123,15 +123,15 @@ namespace Combat.Ai
 	        {
 	            var targets = context.Targets.Items;
 	            for (var i = 0; i < targets.Count; i++)
-	                Perform(ship, targets[i], ref controls);
+	                Perform(ship, targets[i], controls);
 	        }
 	        else
 	        {
-                Perform(ship, enemy, ref controls);
+                Perform(ship, enemy, controls);
             }
         }
 
-        public void Perform(IShip ship, IShip enemy, ref ShipControls controls)
+        public void Perform(IShip ship, IShip enemy, ShipControls controls)
         {
             var targetAngle = 0f;
 			var targetDeltaAngle = 10000f;
@@ -181,7 +181,7 @@ namespace Combat.Ai
 			_weaponId = weaponId;
 		}
 
-		public virtual void Perform(Context context, ref ShipControls controls)
+		public virtual void Perform(Context context, ShipControls controls)
 		{
 			if (controls.IsSystemLocked(_weaponId) || AttackHelpers.CantDetectTarget(context.Ship, context.Enemy))
 				return;
@@ -217,7 +217,7 @@ namespace Combat.Ai
 			_weaponId = weaponId;
 		}
 		
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
             if (controls.IsSystemLocked(_weaponId))
                 return;
@@ -266,7 +266,7 @@ namespace Combat.Ai
 			_weaponId = weaponId;
 		}
 		
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
 			if (controls.IsSystemLocked(_weaponId) || AttackHelpers.CantDetectTarget(context.Ship, context.Enemy))
 				return;
@@ -297,7 +297,7 @@ namespace Combat.Ai
 			_weaponId = weaponId;
 		}
 		
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
 			if (controls.IsSystemLocked(_weaponId))
 				return;

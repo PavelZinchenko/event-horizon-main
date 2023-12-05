@@ -10,7 +10,7 @@ namespace Combat.Ai
 			_time = 1.0f; // TODO
 		}
 		
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
 			var ship = context.Ship;
 			var enemy = context.Enemy;

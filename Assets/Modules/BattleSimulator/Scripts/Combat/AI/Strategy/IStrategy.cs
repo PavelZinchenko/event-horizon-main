@@ -6,6 +6,6 @@ namespace Combat.Ai
 	public interface IStrategy 
 	{
 		bool IsThreat(IShip ship, IUnit unit);
-		void Apply(Context context);
+		void Apply(Context context, ShipControls controls);
 	}
 }

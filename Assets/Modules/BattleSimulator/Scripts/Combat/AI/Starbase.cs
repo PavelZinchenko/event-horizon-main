@@ -22,18 +22,17 @@ namespace Combat.Ai
                 CreateIdleStrategy();
         }
 
-        public bool IsAlive { get { return _ship.IsActive(); } }
+        public ControllerStatus Status => _ship.IsActive() ? ControllerStatus.Active : ControllerStatus.Dead;
 
         public void Update(float deltaTime)
         {
             var context = new Context(_ship, null, _targets, null, _currentTime);
-            var controls = new ShipControls();
 
             _targets.Update(deltaTime, _ship, null);
             foreach (var policy in _strategy)
-                policy.Perform(context, ref controls);
+                policy.Perform(context, _controls);
 
-            controls.Apply(_ship);
+            _controls.Apply(_ship);
             _currentTime += deltaTime;
         }
 
@@ -80,11 +79,12 @@ namespace Combat.Ai
                     _strategy.Add(new Policy(new AlwaysTrueCondition(), new DroneAction(i)));
         }
 
-        private readonly List<Policy> _strategy = new List<Policy>();
         private float _currentTime;
         private readonly TargetList _targets;
         private readonly IShip _ship;
         private readonly IScene _scene;
+        private readonly List<Policy> _strategy = new();
+        private readonly ShipControls _controls = new();
 
         public class Factory : IControllerFactory
         {

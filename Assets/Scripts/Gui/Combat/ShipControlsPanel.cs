@@ -83,14 +83,14 @@ namespace Gui.Combat
         {
             ActiveButtons++;
             if (_ship.IsActive())
-                _ship.Controls.SetSystemState(id, true);
+                _ship.Controls.Systems.SetState(id, true);
         }
 
         public void DeactivateSystem(int id)
         {
             ActiveButtons--;
             if (_ship.IsActive())
-                _ship.Controls.SetSystemState(id, false);
+                _ship.Controls.Systems.SetState(id, false);
         }
 
         public void ActivateDroneBays()
@@ -98,7 +98,7 @@ namespace Gui.Combat
             ActiveButtons++;
             if (_ship.IsActive())
                 foreach (var id in _ship.Systems.All.GetDroneBayIndices())
-                    _ship.Controls.SetSystemState(id, true);
+                    _ship.Controls.Systems.SetState(id, true);
         }
 
         public void DeactivateDroneBays()
@@ -106,7 +106,7 @@ namespace Gui.Combat
             ActiveButtons--;
             if (_ship.IsActive())
                 foreach (var id in _ship.Systems.All.GetDroneBayIndices())
-                    _ship.Controls.SetSystemState(id, false);
+                    _ship.Controls.Systems.SetState(id, false);
         }
 
         public void OnKeyPressed(int key)

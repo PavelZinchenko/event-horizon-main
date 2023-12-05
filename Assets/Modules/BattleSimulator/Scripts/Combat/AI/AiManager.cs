@@ -50,20 +50,24 @@ namespace Combat.Ai
 
 			var needCleanup = false;
 			var count = _controllers.Count;
-			for (var i = 0; i < count; ++i) {
+			var deltaTime = _fixedDeltaTime * (_currentFrame - _lastFrame);
+			for (var i = 0; i < count; ++i) 
+			{
 				var controller = _controllers [i];
-				if (controller.IsAlive)
-					controller.Update(_fixedDeltaTime*(_currentFrame - _lastFrame));
+				if (controller.Status != ControllerStatus.Dead)
+					controller.Update(deltaTime);
 				else
 					needCleanup = true;
 			}
 
 			if (needCleanup)
-				_controllers.RemoveAll(item => !item.IsAlive);
+				_controllers.RemoveAll(IsDead);
 
             _lastFrame = _currentFrame;
 			return true;
 		}
+
+		private static bool IsDead(IController controller) => controller.Status == ControllerStatus.Dead;
 
 		protected override void OnIdle ()
 		{

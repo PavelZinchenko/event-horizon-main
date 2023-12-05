@@ -9,14 +9,14 @@ namespace Combat.Ai
 		{
 		}
 		
-		public override void Perform(Context context, ref ShipControls controls)
+		public override void Perform(Context context, ShipControls controls)
 		{
             var parent = context.Ship.Type.Owner;
             if (!parent.IsActive() || parent.Stats.Armor.Percentage >= 0.99f || parent.Stats.TimeFromLastHit < 1.0f)
                 return;
 
             context.Enemy = parent;
-            base.Perform(context, ref controls);
+            base.Perform(context, controls);
         }
 	}
 }

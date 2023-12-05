@@ -82,19 +82,5 @@ namespace Services.Localization
             //foreach (var item in _systemFonts)
             //    Debug.LogError(item.Key + ": " + item.Value);
         }
-
-        [Serializable]
-        public struct FontInfo
-        {
-            public string Language;
-            public string[] FontList;
-        }
-
-        [Serializable]
-        public struct FontData
-        {
-            public string Language;
-            public string Filename;
-        }
     }
 }

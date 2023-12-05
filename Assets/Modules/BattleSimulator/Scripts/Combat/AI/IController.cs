@@ -2,10 +2,17 @@
 
 namespace Combat.Ai
 {
+    public enum ControllerStatus
+    {
+        Active,
+        Idle,
+        Dead,
+    }
+
     public interface IController
     {
 	    void Update(float deltaTime);
-	    bool IsAlive { get; }
+        ControllerStatus Status { get; }
     }
 
     public interface IControllerFactory

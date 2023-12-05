@@ -11,7 +11,7 @@ namespace Combat.Ai
 			_distance = distance;
 		}
 
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
 			var ship = context.Ship;			
 			var direction = ship.Body.Position.Direction(_unit.Body.Position);

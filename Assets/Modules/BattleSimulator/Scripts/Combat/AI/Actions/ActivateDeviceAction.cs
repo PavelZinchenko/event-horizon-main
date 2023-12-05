@@ -8,7 +8,7 @@ namespace Combat.Ai
 		    _timerState = timerState;
 		}
 		
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
 			controls.ActivateSystem(_deviceId);
 		    if (_timerState != null)

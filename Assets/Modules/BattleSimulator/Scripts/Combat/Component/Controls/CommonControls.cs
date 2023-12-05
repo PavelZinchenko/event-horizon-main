@@ -2,7 +2,13 @@
 {
     public class CommonControls : IControls
     {
+        public CommonControls()
+        {
+            _systems = new SystemsState(new(0), OnDataChanged);
+        }
+
         public bool DataChanged { get; set; }
+        public SystemsState Systems => _systems;
 
         public float Throttle
         {
@@ -27,41 +33,13 @@
             }
         }
 
-        public void SetSystemState(int id, bool active)
+        public void OnDataChanged()
         {
-            if (id < 0 || id >= 64) return;
-
-            var key = 1UL << id;
-            _systems |= key;
-            if (!active)
-                _systems ^= key;
-
             DataChanged = true;
         }
 
-        public bool GetSystemState(int id)
-        {
-            if (id < 0 || id >= 64) return false;
-
-            return (_systems & (1UL << id)) != 0;
-        }
-
-        public ulong SystemsState
-        {
-            get
-            {
-                return _systems;
-            }
-            set
-            {
-                _systems = value;
-                DataChanged = true;
-            }
-        }
-
-        private ulong _systems;
+        private SystemsState _systems;
         private float _throttle;
-        private bool _hasCourse;
         private float? _course;
     }
 }

@@ -9,14 +9,14 @@ namespace Combat.Ai
 			_action = new KeepDistanceAction(distance*0.99f, distance*1.01f, 1);
 		}
 
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
             var parent = context.Ship.Type.Owner;
             if (!parent.IsActive())
                 return;
 
             context.Enemy = parent;
-            _action.Perform(context, ref controls);
+            _action.Perform(context, controls);
         }
 		
 		private readonly KeepDistanceAction _action;

@@ -1,14 +1,23 @@
 using Combat.Component.Ship;
+using Combat.Component.Controls;
 
 namespace Combat.Ai
 {
-	public struct ShipControls
+	public class ShipControls
 	{
+		public int SystemCount { get; }
+		public bool RotationLocked => _courseLocked;
+		public bool MovementLocked => _thrustLocked;
+
 		public void Apply(IShip ship)
-		{
+        {
 			ship.Controls.Throttle = _thrust;
 			ship.Controls.Course = _course;
-		    ship.Controls.SystemsState = _systems;
+			ship.Controls.Systems.Assign(_systems);
+			_courseLocked = false;
+			_thrustLocked = false;
+			_systems.Clear();
+			_systemsMask.Clear();
 		}
 
 		public float Course
@@ -33,40 +42,27 @@ namespace Combat.Ai
 					_thrustLocked = true;
 				}
 			}
-			get
-			{
+            get
+            {
 				return _thrust;
 			}
 		}
 
-		public bool IsSystemLocked(int id)
-		{
-			return (_systemsMask & (1UL << id)) != 0;
-        }
+		public bool IsSystemLocked(int id) => _systemsMask[id];
 
 	    public void ActivateSystem(int index, bool active = true)
 	    {
-            if (IsSystemLocked(index)) return;
-
-	        var value = 1UL << index;
-
-	        if (active)
-	            _systems |= value;
-	        else
-	            _systems &= ~value;
-
-	        _systemsMask |= value;
+			if (_systemsMask[index]) return;
+			_systems[index] = active;
+			_systemsMask[index] = true;
 	    }
-
-		public bool RotationLocked { get { return _courseLocked; } }
-		public bool MovementLocked { get { return _thrustLocked; } }
 
 		private bool _thrustLocked;
 		private float _thrust;
 		private bool _courseLocked;
 		private float? _course;
-	    private ulong _systemsMask;
-        private ulong _systems;
+		private SystemsState _systems = SystemsState.Create();
+		private SystemsState _systemsMask = SystemsState.Create();
     }
 
     public struct Context
@@ -96,6 +92,6 @@ namespace Combat.Ai
 
 	public interface IAction
 	{
-		void Perform(Context context, ref ShipControls controls);
+		void Perform(Context context, ShipControls controls);
 	}
 }

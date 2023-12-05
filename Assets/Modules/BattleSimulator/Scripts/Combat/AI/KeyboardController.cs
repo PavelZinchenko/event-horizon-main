@@ -14,7 +14,15 @@ namespace Combat.Ai
             _mouse = mouse;
         }
 
-        public bool IsAlive { get { return _ship.IsActive(); } }
+        public ControllerStatus Status
+        {
+            get
+            {
+                if (!_ship.IsActive()) return ControllerStatus.Dead;
+                if (_fire || _left || _right || _joystick || _throttle || _mouse.IsActive) return ControllerStatus.Active;
+                return ControllerStatus.Idle;
+            }
+        }
 
         public void Update(float deltaTime)
         {
@@ -85,12 +93,12 @@ namespace Combat.Ai
                 {
                     fire = true;
                     foreach (var id in _keyBindings[i])
-                        controls.SetSystemState(id, true);
+                        controls.Systems.SetState(id, true);
                 }
                 else if (_fire)
                 {
                     foreach (var id in _keyBindings[i])
-                        controls.SetSystemState(id, false);
+                        controls.Systems.SetState(id, false);
                 }
             }
 

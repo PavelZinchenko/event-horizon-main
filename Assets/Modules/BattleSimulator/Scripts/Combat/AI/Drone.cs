@@ -26,7 +26,7 @@ namespace Combat.Ai
             }
         }
 
-        public bool IsAlive { get { return _ship.IsActive(); } }
+        public ControllerStatus Status => _ship.IsActive() ? ControllerStatus.Active : ControllerStatus.Dead;
 
         public void Update(float deltaTime)
         {
@@ -41,7 +41,8 @@ namespace Combat.Ai
             }
 
             var context = new Context(_ship, enemy, _targets, _threats, _currentTime);
-            _strategy.Apply(context);
+            _strategy.Apply(context, _controls);
+            _controls.Apply(_ship);
         }
 
         private void UpdateStrategy(IShip enemy)
@@ -115,6 +116,7 @@ namespace Combat.Ai
         private readonly float _attackRange;
         private readonly IShip _ship;
         private readonly IScene _scene;
+        private readonly ShipControls _controls = new();
         private readonly DroneBehaviour _behaviour;
         private readonly ThreatList _threats;
         private readonly TargetList _targets;

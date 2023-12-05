@@ -11,36 +11,41 @@ namespace Combat.Ai
 		{
 			_ship = ship;
 			_level = level;
-		    _scene = scene;
-		    _autopilotMode = autopilotMode;
-            _attackRange = Helpers.ShipMaxRange(_ship);
-            _targets = new TargetList(_scene, ship.Type.Side == UnitSide.Player);
-            _threats = new ThreatList(_scene);
-
-		    if (autopilotMode)
-		        _autoPilotCooldown = AutoPilotDelay;
+			_scene = scene;
+			_autopilotMode = autopilotMode;
+			_attackRange = Helpers.ShipMaxRange(_ship);
+			_targets = new TargetList(_scene, ship.Type.Side == UnitSide.Player);
+			_threats = new ThreatList(_scene);
 		}
 
-		public bool IsAlive { get { return _ship.IsActive(); } }
+		public ControllerStatus Status
+		{
+            get
+            {
+				if (!_ship.IsActive()) return ControllerStatus.Dead;
+				if (_autopilotMode && _autoPilotCooldown > 0) return ControllerStatus.Idle;
+				return ControllerStatus.Active;
+			}
+		}
 
 		public void Update(float deltaTime)
 		{
-		    if (_autopilotMode)
-		    {
-		        if (_ship.Controls.DataChanged)
-		        {
-		            _ship.Controls.DataChanged = false;
-		            _autoPilotCooldown = AutoPilotDelay;
-		        }
+			if (_autopilotMode)
+			{
+				if (_ship.Controls.DataChanged)
+				{
+					_ship.Controls.DataChanged = false;
+					_autoPilotCooldown = AutoPilotDelay;
+				}
 
-		        if (_autoPilotCooldown > 0)
-		        {
-		            _autoPilotCooldown -= deltaTime;
-		            return;
-		        }
-		    }
+				if (_autoPilotCooldown > 0)
+				{
+					_autoPilotCooldown -= deltaTime;
+					return;
+				}
+			}
 
-		    var enemy = GetEnemy();
+			var enemy = GetEnemy();
 			var strategy = GetStrategy();
 			if (strategy == null)
 			{
@@ -52,8 +57,8 @@ namespace Combat.Ai
 		    _targets.Update(deltaTime, _ship, enemy);
 			var context = new Context(_ship, enemy, _targets, _threats, _currentTime);
 
-			strategy.Apply(context);
-		    _ship.Controls.DataChanged = false;
+			strategy.Apply(context, _controls);
+			_controls.Apply(_ship);
 
 			_currentTime += deltaTime;
 			_enemyUpdateCooldown -= deltaTime;
@@ -64,7 +69,7 @@ namespace Combat.Ai
 		{
 			_ship.Controls.Throttle = 0;
 			_ship.Controls.Course = null;
-			_ship.Controls.SystemsState = 0;
+			_ship.Controls.Systems.Clear();
 		}
 
 		private IStrategy GetStrategy()
@@ -102,9 +107,10 @@ namespace Combat.Ai
 		private float _enemyUpdateCooldown;
 		private float _strategyUpdateCooldown;
 		private float _currentTime;
-	    private float _autoPilotCooldown;
+		private float _autoPilotCooldown = AutoPilotDelay;
 		private IStrategy _strategy;
-	    private readonly bool _autopilotMode;
+		private readonly bool _autopilotMode;
+		private readonly ShipControls _controls = new();
 	    private readonly ThreatList _threats;
 	    private readonly TargetList _targets;
         private readonly float _attackRange;
@@ -117,21 +123,21 @@ namespace Combat.Ai
 
         public class Factory : IControllerFactory
         {
-            public Factory(IScene scene, int level, bool autopilotMode = false)
-            {
-                _scene = scene;
-                _level = level;
-                _autopilotMode = autopilotMode;
-            }
+			public Factory(IScene scene, int level, bool autopilotMode = false)
+			{
+				_scene = scene;
+				_level = level;
+				_autopilotMode = autopilotMode;
+			}
 
-            public IController Create(IShip ship)
+			public IController Create(IShip ship)
             {
-                return new Computer(_scene, ship, _level, _autopilotMode);
-            }
+				return new Computer(_scene, ship, _level, _autopilotMode);
+			}
 
-            private readonly bool _autopilotMode;
-            private readonly int _level;
-            private readonly IScene _scene;
+			private readonly bool _autopilotMode;
+			private readonly int _level;
+			private readonly IScene _scene;
         }
 	}
 }

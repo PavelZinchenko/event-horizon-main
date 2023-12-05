@@ -97,7 +97,7 @@ namespace Combat.Component.Systems
                 if (energyLeft < 0)
                     return false;
             }
-            else if (!_ship.Controls.GetSystemState(id))
+            else if (!_ship.Controls.Systems[id])
                 return false;
 
             return _modifications.CanActivateSystem(system);

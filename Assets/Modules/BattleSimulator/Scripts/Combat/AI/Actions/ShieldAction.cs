@@ -9,7 +9,7 @@ namespace Combat.Ai
 			_deviceId = deviceId;
 		}
 		
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
             if (context.Threats == null) return;
 

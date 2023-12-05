@@ -10,7 +10,7 @@ namespace Combat.Ai
 			_weaponId = weaponId;
 		}
 		
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
 			var ship = context.Ship;
 			var weapon = ship.Systems.All.Weapon(_weaponId);

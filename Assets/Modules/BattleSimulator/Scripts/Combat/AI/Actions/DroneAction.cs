@@ -7,7 +7,7 @@ namespace Combat.Ai
 			_droneBayId = droneBayId;
 		}
 		
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
 			controls.ActivateSystem(_droneBayId);
 		}

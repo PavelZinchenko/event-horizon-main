@@ -9,7 +9,7 @@ namespace Combat.Ai
 			_distanceMin = distance;
 		}
 		
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
 			var ship = context.Ship;
 			var enemy = context.Enemy;

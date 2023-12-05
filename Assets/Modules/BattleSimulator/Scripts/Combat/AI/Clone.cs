@@ -1,7 +1,6 @@
 ﻿using Combat.Component.Ship;
 using Combat.Scene;
 using Combat.Unit;
-using Constructor;
 
 namespace Combat.Ai
 {
@@ -13,14 +12,15 @@ namespace Combat.Ai
             _scene = scene;
         }
 
-        public bool IsAlive => _ship.IsActive();
+        public ControllerStatus Status => _ship.IsActive() ? ControllerStatus.Active : ControllerStatus.Dead;
 
         public void Update(float deltaTime)
         {
             _currentTime += deltaTime;
             var enemy = GetEnemy();
             var context = new Context(_ship, enemy, null, null, _currentTime);
-            _strategy.Apply(context);
+            _strategy.Apply(context, _controls);
+            _controls.Apply(_ship);
         }
 
         private void UpdateStrategy(IShip enemy)
@@ -72,6 +72,7 @@ namespace Combat.Ai
         private IStrategy _strategy;
         private readonly IShip _ship;
         private readonly IScene _scene;
+        private readonly ShipControls _controls = new();
         private const float ChangeTargetDelay = 5.0f;
         private const float FindTargetDelay = 0.5f;
 

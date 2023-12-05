@@ -8,13 +8,10 @@ namespace Combat.Ai
 	{
 		public abstract bool IsThreat(IShip ship, IUnit unit);
 
-		public void Apply(Context context)
+		public void Apply(Context context, ShipControls controls)
 		{
-			var controls = new ShipControls();
 			foreach (var policy in _policyList)
-			    policy.Perform(context, ref controls);
-
-            controls.Apply(context.Ship);
+			    policy.Perform(context, controls);
 		}
 
 		public void AddPolicy(ICondition condition, IAction action, IAction oppositeAction = null)

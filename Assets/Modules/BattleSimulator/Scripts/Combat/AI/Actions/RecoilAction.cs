@@ -7,7 +7,7 @@ namespace Combat.Ai
 			_weaponId = weaponId;
 		}
 		
-		public void Perform(Context context, ref ShipControls controls)
+		public void Perform(Context context, ShipControls controls)
 		{
 			controls.ActivateSystem(_weaponId, true);
 			controls.Thrust = 0;

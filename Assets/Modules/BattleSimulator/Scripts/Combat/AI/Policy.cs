@@ -9,12 +9,12 @@ namespace Combat.Ai
 		    this.oppositeAction = oppositeAction;
 		}
 
-	    public void Perform(Context context, ref ShipControls controls)
+	    public void Perform(Context context, ShipControls controls)
 	    {
 	        if (condition.IsTrue(context))
-                action.Perform(context, ref controls);
+                action.Perform(context, controls);
             else if (oppositeAction != null)
-                oppositeAction.Perform(context, ref controls);
+                oppositeAction.Perform(context, controls);
 	    }
 		
 		private readonly ICondition condition;
