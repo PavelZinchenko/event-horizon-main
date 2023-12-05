@@ -33,10 +33,10 @@ namespace ViewModel
 	    [Inject] private readonly ILocalization _localization;
 	    [Inject] private readonly IResourceLocator _resourceLocator;
 
-        [SerializeField]
-        private ConstructorViewModel.CommandEvent _onCommandExecutedEvent = new ConstructorViewModel.CommandEvent();
+		[SerializeField] private ConstructorViewModel.CommandEvent _onCommandExecutedEvent;
+		[SerializeField] private UnityEngine.Events.UnityEvent _componentUnlocked;
 
-        public ComponentViewModel ComponentViewModel;
+		public ComponentViewModel ComponentViewModel;
 		public DragAndDropComponent ComponentPanel;
 		public ShipLayoutViewModel ShipLayout;
 		public ShipLayoutViewModel LeftPlatformLayout;
@@ -127,6 +127,7 @@ namespace ViewModel
 				if (!price.TryWithdraw(_playerResources)) return;
 				layout.UnlockComponent(componentId);
 				SetComponent(layout, componentId);
+				_componentUnlocked?.Invoke();
 			});
 		}
 
@@ -146,9 +147,9 @@ namespace ViewModel
                 ShipLayout.Layout?.ComponentsIndex.Where(item => CanBeUnlocked(item.Value)).Select(item => item.Key).ToList().ForEach(ShipLayout.UnlockComponent);
                 LeftPlatformLayout.Layout?.ComponentsIndex.Where(item => CanBeUnlocked(item.Value)).Select(item => item.Key).ToList().ForEach(LeftPlatformLayout.UnlockComponent);
                 RightPlatformLayout.Layout?.ComponentsIndex.Where(item => CanBeUnlocked(item.Value)).Select(item => item.Key).ToList().ForEach(RightPlatformLayout.UnlockComponent);
-
                 SetComponent(_activeLayout, _componentId);
-            });
+				_componentUnlocked?.Invoke();
+			});
         }
 
         public void SetComponent(ShipLayoutViewModel activeLayout, int id)
