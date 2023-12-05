@@ -34,7 +34,7 @@ namespace GameDatabase.Storage
 
         private bool TryFindDatabaseVersion(out Version version)
         {
-            var serializer = new UnityJsonSerializer();
+            var serializer = new NewtonJsonSerializer();
             var info = new DirectoryInfo(_path);
             foreach (var fileInfo in info.GetFiles("*.json", SearchOption.AllDirectories))
             {

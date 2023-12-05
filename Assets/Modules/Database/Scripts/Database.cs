@@ -14,7 +14,7 @@ namespace GameDatabase
         private IDataStorage _storage;
         private DatabaseContent _content;
         private readonly IDataStorage _defaultStorage = new ResourceDatabaseStorage(DefaultPath);
-        private readonly IJsonSerializer _jsonSerializer = new UnityJsonSerializer();
+        private readonly IJsonSerializer _jsonSerializer = new NewtonJsonSerializer();
         private readonly List<ModInfo> _mods = new List<ModInfo>();
         private const string DefaultPath = "Database";
 

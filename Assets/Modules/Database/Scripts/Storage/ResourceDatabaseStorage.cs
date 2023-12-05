@@ -66,7 +66,7 @@ namespace GameDatabase.Storage
 #if UNITY_EDITOR
         private bool TryFindDatabaseVersion(out Version version)
         {
-            var serializer = new UnityJsonSerializer();
+            var serializer = new NewtonJsonSerializer();
             foreach (var asset in Resources.LoadAll<TextAsset>(_path))
             {
                 var settings = serializer.FromJson<Serializable.DatabaseSettingsSerializable>(asset.text);
