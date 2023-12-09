@@ -8,7 +8,7 @@
     <string name="FacebookItemDescription">Поделиться в Facebook</string>
     <string name="AdItemDescription">Посмотрите рекламный ролик и получите награду</string>
     <string name="XmasBox">Новогодний подарок</string>
-    <string name="AlienTechnology">Инопланетные технологии</string>
+    <string name="AlienTechnology">Инопланетные технологии ($1)</string>
     <string name="Commodity_Scraps">Обломки</string>
     <string name="Commodity_Artifacts">Инопланетные артефакты</string>
     <string name="Commodity_Minerals">Полезные ископаемые</string>

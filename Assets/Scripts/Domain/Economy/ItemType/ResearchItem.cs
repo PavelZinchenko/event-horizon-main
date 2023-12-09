@@ -17,15 +17,15 @@ namespace Economy.ItemType
             _faction = faction;
         }
 
-        public string Id { get { return "r" + _faction.Id.Value; } }
-        public string Name { get { return _localization.GetString("$AlienTechnology"); } }
-        public string Description { get { return string.Empty; } }
+		public string Id => "r" + _faction.Id.Value;
+		public string Name => _localization.GetString("$AlienTechnology", _localization.GetString(_faction.Name));
+		public string Description => string.Empty;
         public SpriteId Icon => new("Textures/GUI/tech_icon", SpriteId.Type.Default);
-        public Color Color { get { return _faction.Color; } }
-        public Price Price { get { return Price.Premium(1); } }
-        public ItemQuality Quality { get { return ItemQuality.Common; } }
+		public Color Color => _faction.Color;
+		public Price Price => Price.Premium(1);
+		public ItemQuality Quality => ItemQuality.Common;
 
-        public void Consume(int amount)
+		public void Consume(int amount)
         {
             _research.AddResearchPoints(_faction, amount);
         }
@@ -35,11 +35,11 @@ namespace Economy.ItemType
             _research.AddResearchPoints(_faction, -amount);
         }
 
-        public int MaxItemsToConsume { get { return int.MaxValue; } }
+		public int MaxItemsToConsume => int.MaxValue;
 
-        public int MaxItemsToWithdraw { get { return _research.GetAvailablePoints(_faction); } }
+		public int MaxItemsToWithdraw => _research.GetAvailablePoints(_faction);
 
-        private readonly Faction _faction;
+		private readonly Faction _faction;
         private readonly ILocalization _localization;
         private readonly Research _research;
     }
