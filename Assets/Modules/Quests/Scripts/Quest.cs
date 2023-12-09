@@ -38,7 +38,7 @@ namespace Domain.Quests
         {
             get
             {
-                switch (_activeNode.Type)
+                switch (ActiveNode.Type)
                 {
                     case NodeType.CompleteQuest:
                         return QuestStatus.Completed;
