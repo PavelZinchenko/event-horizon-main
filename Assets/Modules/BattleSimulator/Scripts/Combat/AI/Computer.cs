@@ -63,6 +63,9 @@ namespace Combat.Ai
 			_currentTime += deltaTime;
 			_enemyUpdateCooldown -= deltaTime;
 			_strategyUpdateCooldown -= deltaTime;
+
+			if (_autopilotMode)
+				_ship.Controls.DataChanged = false;
 		}
 
 		private void Stop()
