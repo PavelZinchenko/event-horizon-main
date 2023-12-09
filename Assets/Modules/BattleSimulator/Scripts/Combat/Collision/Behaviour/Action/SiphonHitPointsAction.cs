@@ -1,5 +1,6 @@
 ﻿using Combat.Collision.Manager;
 using Combat.Component.Unit;
+using Combat.Component.Ship;
 using Combat.Component.Unit.Classification;
 using GameDatabase.Enums;
 
@@ -36,8 +37,11 @@ namespace Combat.Collision.Behaviour.Action
             }
 
             if (target.Type.Class == UnitClass.Ship || target.Type.Class == UnitClass.Drone)
-                selfImpact.Repair += damage * _conversionFactor;
-        }
+			{
+				var ship = (IShip)target;
+				selfImpact.Repair += ship.Stats.Resistance.ModifyDamage(_damageType, damage) * _conversionFactor;
+			}
+		}
 
         public void Dispose() { }
 

@@ -66,11 +66,11 @@ namespace Combat.Collision
         public float GetTotalDamage(Resistance resistance)
         {
             var minResistance = Mathf.Min(Mathf.Min(resistance.Kinetic, resistance.Energy), resistance.Heat);
-            var damage =
-                KineticDamage * (1f - resistance.Kinetic) +
-                EnergyDamage * (1f - resistance.Energy) +
-                HeatDamage * (1f - resistance.Heat) +
-                DirectDamage * (1f - 0.5f*resistance.MinResistance);
+			var damage =
+				resistance.ModifyKineticDamage(KineticDamage) +
+				resistance.ModifyEnergyDamage(EnergyDamage) +
+				resistance.ModifyHeatDamage(HeatDamage) +
+				resistance.ModifyDirectDamage(DirectDamage);
             return damage;
         }
 
