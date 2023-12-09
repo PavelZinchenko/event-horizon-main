@@ -102,7 +102,7 @@ namespace Combat.Factory
 
                     var repairRate = stats.Power * ship.Stats.Armor.MaxValue / 100;
                     var hitPoints = ship.Stats.HitPointsMultiplier * stats.Size;
-                    var trigger = new RepairBotAction(ship, device, _satelliteFactory, repairRate, stats.Size, stats.Range, hitPoints, stats.Cooldown, 
+                    var trigger = new RepairBotAction(ship, device, _satelliteFactory, repairRate, stats.Size, stats.Range, hitPoints, stats.Lifetime, 
                         stats.Color, stats.Sound);
 
                     device.AddTrigger(trigger);
