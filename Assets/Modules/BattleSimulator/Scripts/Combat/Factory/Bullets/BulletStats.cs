@@ -15,8 +15,9 @@ namespace Combat.Factory
         Color FlashColor { get; }
         float FlashTime { get; }
 
-        float EnergyCost { get; }
-        float BulletSpeed { get; }
+		float EnergyCost { get; }
+		float ActivationCost { get; }
+		float BulletSpeed { get; }
         float BulletHitRange { get; }
         float Recoil { get; }
         bool IgnoresShipSpeed { get; }
@@ -81,9 +82,10 @@ namespace Combat.Factory
         public float BulletHitRange { get { return _ammunition.Body.Type == BulletType.Continuous ? Range : Range + BodySize; } }
         public float BulletSpeed { get { return _ammunition.Body.Velocity * _statModifier.VelocityMultiplier.Value; } }
         public float EnergyCost { get { return _ammunition.Body.EnergyCost * _statModifier.EnergyCostMultiplier.Value; } }
-        public bool IgnoresShipSpeed { get { return _ammunition.Body.Type == BulletType.Static; } }
+		public bool IgnoresShipSpeed { get { return _ammunition.Body.Type == BulletType.Static; } }
+		public float ActivationCost => _ammunition.Body.Type == BulletType.Continuous ? EnergyCost * _ammunition.Body.Lifetime : EnergyCost;
 
-        public float Recoil
+		public float Recoil
         {
             get
             {
@@ -183,10 +185,11 @@ namespace Combat.Factory
         public float Recoil { get { return _stats.Recoil * SizeMultiplier; } }
         public float AreaOfEffect { get { return _stats.AreaOfEffect * SizeMultiplier; } }
         public float Velocity { get { return _stats.Velocity; } }
-        public float EnergyCost { get { return _stats.EnergyCost; } }
-        public bool IgnoresShipSpeed { get { return _stats.IgnoresShipVelocity; } }
+		public float EnergyCost { get { return _stats.EnergyCost; } }
+		public bool IgnoresShipSpeed { get { return _stats.IgnoresShipVelocity; } }
+		public float ActivationCost => _stats.AmmunitionClass.IsBeam() ? EnergyCost * _stats.LifeTime : EnergyCost;
 
-        public float BulletSpeed { get { return Velocity; } }
+		public float BulletSpeed { get { return Velocity; } }
         public float BulletHitRange { get { return Mathf.Max(Range, AreaOfEffect); } }
 
         private float RangeMultiplier { get { return PowerLevel > 0.1f ? PowerLevel : 0f; } }

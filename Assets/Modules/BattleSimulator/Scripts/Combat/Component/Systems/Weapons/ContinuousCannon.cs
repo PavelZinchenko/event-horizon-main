@@ -17,20 +17,21 @@ namespace Combat.Component.Systems.Weapons
             _bulletFactory = bulletFactory;
             _platform = platform;
             _energyConsumption = bulletFactory.Stats.EnergyCost;
+			_activationCost = bulletFactory.Stats.ActivationCost;
             _spread = weaponStats.Spread;
 
             Info = new WeaponInfo(WeaponType.Continuous, _spread, bulletFactory, platform);
         }
 
-        public override bool CanBeActivated { get { return base.CanBeActivated && (HasActiveBullet || _platform.IsReady && _platform.EnergyPoints.Value > _energyConsumption * 0.5f); } }
-        public override float Cooldown { get { return Mathf.Max(base.Cooldown, _platform.Cooldown); } }
+		public override bool CanBeActivated => base.CanBeActivated && (HasActiveBullet || _platform.IsReady);
+		public override float Cooldown => Mathf.Max(base.Cooldown, _platform.Cooldown);
 
-        public WeaponInfo Info { get; private set; }
-        public IWeaponPlatform Platform { get { return _platform; } }
-        public float PowerLevel { get { return 1.0f; } }
-        public IBullet ActiveBullet { get { return HasActiveBullet ? _activeBullet : null; } }
+		public WeaponInfo Info { get; private set; }
+		public IWeaponPlatform Platform { get { return _platform; } }
+		public float PowerLevel { get { return 1.0f; } }
+		public IBullet ActiveBullet { get { return HasActiveBullet ? _activeBullet : null; } }
 
-        protected override void OnUpdateView(float elapsedTime) {}
+		protected override void OnUpdateView(float elapsedTime) {}
 
         protected override void OnUpdatePhysics(float elapsedTime)
         {
@@ -49,7 +50,7 @@ namespace Combat.Component.Systems.Weapons
                     InvokeTriggers(ConditionType.OnDeactivate);
                 }
             }
-            else if (Active && CanBeActivated)
+            else if (Active && CanBeActivated && _platform.EnergyPoints.TryGet(_activationCost))
             {
                 Shot();
                 InvokeTriggers(ConditionType.OnActivate);
@@ -66,11 +67,12 @@ namespace Combat.Component.Systems.Weapons
             _activeBullet.Lifetime.Restore();
         }
 
-        private bool HasActiveBullet { get { return _activeBullet.IsActive(); } }
+		private bool HasActiveBullet { get { return _activeBullet.IsActive(); } }
 
-        private IBullet _activeBullet;
+		private IBullet _activeBullet;
         private readonly float _spread;
         private readonly float _energyConsumption;
+		private readonly float _activationCost;
         private readonly IWeaponPlatform _platform;
         private readonly Factory.IBulletFactory _bulletFactory;
     }
