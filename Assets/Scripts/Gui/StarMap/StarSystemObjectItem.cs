@@ -20,10 +20,11 @@ namespace Gui.StarMap
         [SerializeField] private Sprite PandemicIcon;
         [SerializeField] private Color PandemicIconColor;
 
-        public void Initialize(Galaxy.Star star, StarObjectType objectType, IMessenger messenger, ILocalization localization, IResourceLocator resourceLocator)
+		public StarObjectType Type { get; private set; }
+
+		public void Initialize(Galaxy.Star star, StarObjectType objectType, ILocalization localization, IResourceLocator resourceLocator)
         {
-            _messenger = messenger;
-            _objectType = objectType;
+            Type = objectType;
             _name.text = localization.GetString("$Object" + objectType);
             _icon.color = Color.white;
 
@@ -49,13 +50,5 @@ namespace Gui.StarMap
                     break;
             }
         }
-
-        public void OnButtonClicked()
-        {
-            _messenger.Broadcast<StarObjectType>(EventType.ArrivedToObject, _objectType);
-        }
-
-        private StarObjectType _objectType;
-        private IMessenger _messenger;
     }
 }

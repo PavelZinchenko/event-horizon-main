@@ -41,15 +41,15 @@ namespace ViewModel
 
 		public void Initialize(WindowArgs args)
 		{
-			var star = _motherShip.CurrentStar;
+			_star = _motherShip.CurrentStar;
 
-			NameText.text = star.Name;
+			NameText.text = _star.Name;
 
 			_suppressBookmarkChangeEvent = true;
-			Bookmark.text = star.Bookmark;
+			Bookmark.text = _star.Bookmark;
 			_suppressBookmarkChangeEvent = false;
 
-			var faction = star.Region.Faction;
+			var faction = _star.Region.Faction;
 			if (faction != Faction.Empty)
 			{
 				FactionNameText.gameObject.SetActive(true);
@@ -61,8 +61,16 @@ namespace ViewModel
 				FactionNameText.gameObject.SetActive(false);
 			}
 
-			Planets.transform.InitializeElements<PlanetInfo, Planet>(_planetFactory.CreatePlanets(star.Id), UpdatePlanetInfo, _factory);
-		    ObjectsGroup.transform.InitializeElements<StarSystemObjectItem, StarObjectType>(star.Objects.ToEnumerable().Where(item => item.IsActive(star)), UpdateStarObject);
+			Planets.transform.InitializeElements<PlanetInfo, Planet>(_planetFactory.CreatePlanets(_star.Id), UpdatePlanetInfo, _factory);
+		    ObjectsGroup.transform.InitializeElements<StarSystemObjectItem, StarObjectType>(_star.Objects.ToEnumerable().Where(item => item.IsActive(_star)), UpdateStarObject);
+		}
+
+		public void OnObjectClicked(StarSystemObjectItem starSystemObject)
+		{
+			if (_star.Id != _motherShip.CurrentStar.Id) return;
+			if (_star.Occupant.IsAggressive) return;
+
+			_messenger.Broadcast<StarObjectType>(EventType.ArrivedToObject, starSystemObject.Type);
 		}
 
 		private void UpdatePlanetInfo(PlanetInfo planet, Planet model)
@@ -72,9 +80,10 @@ namespace ViewModel
 
         private void UpdateStarObject(StarSystemObjectItem item, StarObjectType type)
         {
-            item.Initialize(_motherShip.CurrentStar, type, _messenger, _localization, _resourceLocator);
+            item.Initialize(_motherShip.CurrentStar, type, _localization, _resourceLocator);
         }
 
-        private bool _suppressBookmarkChangeEvent = false;
+		private Galaxy.Star _star;
+		private bool _suppressBookmarkChangeEvent = false;
 	}
 }

@@ -1455,6 +1455,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &114543776993018536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2139,13 +2140,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114802162853262926}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: OnButtonClicked
-        m_Mode: 1
+      - m_Target: {fileID: 114071007254181914}
+        m_TargetAssemblyTypeName: ViewModel.InformationPanel, Assembly-CSharp
+        m_MethodName: OnObjectClicked
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 114802162853262926}
+          m_ObjectArgumentAssemblyTypeName: Gui.StarMap.StarSystemObjectItem, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2168,8 +2169,8 @@ MonoBehaviour:
   SpaceStationIcon: {fileID: 21300000, guid: 1f933126cc2b9154d8c61a734bff9203, type: 3}
   StarBaseIcon: {fileID: 21300000, guid: 0faf9b6e6d740bf4d8ac96fd34a4de8c, type: 3}
   BeaconIcon: {fileID: 21300000, guid: e9e6043f477fda646a03721b10eb7d5a, type: 3}
-  PandemicIcon: {fileID: 0}
-  PandemicIconColor: {r: 0, g: 0, b: 0, a: 0}
+  PandemicIcon: {fileID: 21300000, guid: 1eb08c77ed217cf4fbef74edd0ceff5c, type: 3}
+  PandemicIconColor: {r: 0.7607843, g: 1, b: 0.49411765, a: 1}
 --- !u!1 &1557804300162830
 GameObject:
   m_ObjectHideFlags: 0
@@ -2877,8 +2878,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 240, y: -389.16748}
-  m_SizeDelta: {x: 432, y: 730.33496}
+  m_AnchoredPosition: {x: 240, y: -436.04395}
+  m_SizeDelta: {x: 432, y: 824.0879}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222490840177331092
 CanvasRenderer:
