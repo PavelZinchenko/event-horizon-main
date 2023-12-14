@@ -15,28 +15,39 @@ MonoBehaviour:
   _windowsFonts:
   - Language: chinese
     Filename: msyh.ttc
+    BuiltInFont: {fileID: 0}
   - Language: korean
     Filename: malgun.ttf
+    BuiltInFont: {fileID: 0}
   - Language: 
     Filename: segoeui.ttf
+    BuiltInFont: {fileID: 0}
   _androidFonts:
   - Language: chinese
     Filename: NotoSansCJK-Regular.ttc
+    BuiltInFont: {fileID: 0}
   - Language: korean
     Filename: NotoSansCJK-Regular.ttc
+    BuiltInFont: {fileID: 0}
   - Language: armenian
     Filename: NotoSansArmenian-VF.ttf
+    BuiltInFont: {fileID: 0}
   - Language: 
     Filename: DroidSans.ttf
+    BuiltInFont: {fileID: 0}
   _iosFonts:
   - Language: chinese
     Filename: PingFang.ttc
+    BuiltInFont: {fileID: 0}
   - Language: korean
     Filename: AppleSDGothicNeo.ttc
+    BuiltInFont: {fileID: 0}
   - Language: armenian
-    Filename: Arial.ttf
+    Filename: 
+    BuiltInFont: {fileID: 12800000, guid: 55c7189e256c5f64a896531cdd98f629, type: 3}
   - Language: 
     Filename: Arial.ttf
+    BuiltInFont: {fileID: 0}
   _macFonts: []
   _linuxFonts: []
   _noExtraFontLanguages:
