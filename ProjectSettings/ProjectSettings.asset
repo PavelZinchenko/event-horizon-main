@@ -136,7 +136,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.10.2
+  bundleVersion: 1.10.3
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -164,10 +164,10 @@ PlayerSettings:
     tvOS: com.ZipasGames.EventHorizon
   buildNumber:
     Standalone: 0
-    iPhone: 27
+    iPhone: 29
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 110201
+  AndroidBundleVersionCode: 110302
   AndroidMinSdkVersion: 22
   AndroidTargetSdkVersion: 33
   AndroidPreferredInstallLocation: 0
@@ -968,9 +968,9 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: UNITY_ASSERTIONS;LICENSE_OPENSOURCE;STEAMWORKS_NET;ADS_DISABLED;IAP_DISABLED
+    Android: UNITY_ASSERTIONS;STEAMWORKS_NET;ADS_GOOGLE;IAP_UNITY;LICENSE_OPENSOURCE
     Standalone: UNITY_ASSERTIONS;NO_GPGS;ADS_DISABLED;IAP_DISABLED;STEAMWORKS_NET;LICENSE_OPENSOURCE
-    iPhone: NO_GPGS;LICENSE_OPENSOURCE
+    iPhone: NO_GPGS;STEAMWORKS_NET;IAP_UNITY;LICENSE_OPENSOURCE;ADS_UNITY
   additionalCompilerArguments: {}
   platformArchitecture:
     iPhone: 1
