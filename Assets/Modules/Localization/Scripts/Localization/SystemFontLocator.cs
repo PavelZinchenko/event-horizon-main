@@ -41,33 +41,40 @@ namespace Services.Localization
 
         private IEnumerable<FontAsset> LookForFont(string language)
         {
-            foreach (var name in _fontTable.FindSystemFonts(language))
+			foreach (var info in _fontTable.GetFontList(language))
             {
-                if (!_systemFonts.TryGetValue(name, out var path)) continue;
+				Font font;
 
-                if (!_cache.TryGetValue(name, out var font))
+				if (info.BuiltInFont != null)
+					font = info.BuiltInFont;
+				else if (_systemFonts.TryGetValue(info.Filename, out var path))
+					font = new Font(path);
+				else
+					continue;
+
+                if (!_cache.TryGetValue(font.name, out var fontAsset))
                 {
-                    font = FontAsset.CreateFontAsset(new Font(path));
-                    _cache.Add(name, font);
+                    fontAsset = FontAsset.CreateFontAsset(font);
+                    _cache.Add(font.name, fontAsset);
                 }
 
-                yield return font;
+                yield return fontAsset;
             }
         }
 
         private void OnLocalizationChanged(string language)
         {
-            if (_language == language) return;
-            _language = language;
+			if (_language == language) return;
+			_language = language;
 
-            _textSettings.fallbackFontAssets.Clear();
+			_textSettings.fallbackFontAssets.Clear();
 
-            foreach (var font in LookForFont(_localization.Language))
-            {
-                Debug.Log("Font loaded: " + font.sourceFontFile.name);
-                _textSettings.fallbackFontAssets.Add(font);
-            }
-        }
+			foreach (var font in LookForFont(_localization.Language))
+			{
+				Debug.Log("Font loaded: " + font.sourceFontFile.name);
+				_textSettings.fallbackFontAssets.Add(font);
+			}
+		}
 
         private void LoadFontList()
         {
@@ -75,12 +82,12 @@ namespace Services.Localization
             {
                 var paths = Font.GetPathsToOSFonts();
 
-                for (var i = 0; i < paths.Length; ++i)
-                    _systemFonts.Add(System.IO.Path.GetFileName(paths[i]), paths[i]);
+				for (var i = 0; i < paths.Length; ++i)
+					_systemFonts.TryAdd(System.IO.Path.GetFileName(paths[i]), paths[i]);
             }
 
-            //foreach (var item in _systemFonts)
-            //    Debug.LogError(item.Key + ": " + item.Value);
-        }
+			//foreach (var item in _systemFonts)
+			//	Debug.LogError(item.Key + ": " + item.Value);
+		}
     }
 }

@@ -28,7 +28,15 @@ MonoBehaviour:
     Filename: NotoSansArmenian-VF.ttf
   - Language: 
     Filename: DroidSans.ttf
-  _iosFonts: []
+  _iosFonts:
+  - Language: chinese
+    Filename: PingFang.ttc
+  - Language: korean
+    Filename: AppleSDGothicNeo.ttc
+  - Language: armenian
+    Filename: Arial.ttf
+  - Language: 
+    Filename: Arial.ttf
   _macFonts: []
   _linuxFonts: []
   _noExtraFontLanguages:

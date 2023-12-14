@@ -7,7 +7,7 @@
             <ui:VisualElement class="icon" />
         </ui:VisualElement>
         <ui:VisualElement class="right">
-            <ui:Label name="label" text="OK" class="label font-default localize" />
+            <ui:Label name="label" text="OK" class="label font-default localize" style="white-space: normal;" />
         </ui:VisualElement>
         <ui:VisualElement picking-mode="Ignore" class="background" />
     </ui:Button>

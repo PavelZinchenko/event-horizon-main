@@ -28,7 +28,7 @@ namespace Services.Localization
         private FontData[] FontList => _linuxFonts;
 #endif
 
-        public IEnumerable<string> FindSystemFonts(string language)
+		public IEnumerable<FontData> GetFontList(string language)
         {
             bool wasFound = false;
 
@@ -37,10 +37,8 @@ namespace Services.Localization
                 var data = FontList[i];
                 if (!string.Equals(data.Language, language, StringComparison.OrdinalIgnoreCase)) continue;
 
-                wasFound = true;
-                if (string.IsNullOrEmpty(data.Filename)) continue;
-
-                yield return data.Filename;
+				wasFound = true;
+				yield return data;
             }
 
             if (wasFound) yield break;
@@ -48,7 +46,7 @@ namespace Services.Localization
             if (_noExtraFontLanguages.Contains(language, StringComparer.OrdinalIgnoreCase)) yield break;
 
             foreach (var data in FontList.Where(data => string.IsNullOrEmpty(data.Language)))
-                yield return data.Filename;
+                yield return data;
         }
 
         [Serializable]
@@ -56,6 +54,7 @@ namespace Services.Localization
         {
             public string Language;
             public string Filename;
-        }
-    }
+			public Font BuiltInFont;
+		}
+	}
 }
