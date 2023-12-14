@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
-using UnityEngine.Assertions;
 
 namespace Constructor.Ships.Modification
 {
@@ -14,23 +12,19 @@ namespace Constructor.Ships.Modification
 
         public LayoutModifications(Ship ship)
         {
-            _ship = ship;
-            _size = ship.Layout.Size;
-            _layout = new char[_size*_size];
-            Initialize();
+            _layout = new(ship.Layout);
         }
 
         public Layout BuildLayout()
         {
-            return new Layout(new string(_layout));
+            return _layout.BuildLayout();
         }
 
         public bool TryAddCell(int x, int y, CellType cellType)
         {
-            if (!IsCellValid(x, y, cellType))
-                return false;
+			if (!_layout.TryModifyCell(x, y, cellType))
+				return false;
 
-            _layout[x + y*_size] = (char)cellType;
             DataChangedEvent.Invoke();
 
             return true;
@@ -38,19 +32,17 @@ namespace Constructor.Ships.Modification
 
         public int TotalExtraCells()
         {
-            var shipLayout = _ship.Layout.Data;
-            return _layout.Where((t, i) => t != shipLayout[i]).Count();
+			return _layout.ModifiedCellCount(false);
         }
 
         public int ExtraCells()
         {
-            var shipLayout = _ship.Layout.Data;
-            return _layout.Where((t, i) => t != shipLayout[i] && t != (char)CellType.Custom).Count();
+			return _layout.ModifiedCellCount(true);
         }
 
         public void Reset()
         {
-            Initialize();
+            _layout.Reset();
             DataChangedEvent.Invoke();
         }
 
@@ -62,164 +54,186 @@ namespace Constructor.Ships.Modification
                 return;
             }
 
-            Initialize();
-
-            var index = 0;
-            var dataIndex = 0;
-
-            while (dataIndex < data.Length && index < _layout.Length)
-            {
-                if (data[dataIndex] == (byte)CellType.Empty)
-                {
-                    dataIndex++;
-                    index += data[dataIndex++];
-                    continue;
-                }
-
-                var x = index % _size;
-                var y = index / _size;
-
-                if (_layout[index] == (char)CellType.Custom && IsCellValid(x, y, (CellType)data[dataIndex]))
-                    _layout[index] = (char)data[dataIndex];
-
-                index++;
-                dataIndex++;
-            }
+			_layout.Deserialize(data);
 
             DataChangedEvent.Invoke();
         }
 
         public IEnumerable<byte> Serialize()
         {
-            if (ExtraCells() == 0)
-                yield break;
-
-            var shipLayout = _ship.Layout.Data;
-            byte emptyCells = 0;
-            for (var i = 0; i < _layout.Length; ++i)
-            {
-                var isEmpty = _layout[i] == (byte)CellType.Custom || _layout[i] == (byte)CellType.Empty || _layout[i] == shipLayout[i];
-                if (isEmpty)
-                {
-                    if (emptyCells == 0)
-                        yield return (byte)CellType.Empty;
-
-                    if (emptyCells == 0xff)
-                    {
-                        yield return emptyCells;
-                        emptyCells = 0;
-                        yield return (byte)CellType.Empty;
-                    }
-
-                    emptyCells++;
-                }
-                else
-                {
-                    if (emptyCells > 0)
-                    {
-                        yield return emptyCells;
-                        emptyCells = 0;
-                    }
-
-                    yield return (byte)_layout[i];
-                }
-            }
-
-            if (emptyCells > 0)
-                yield return emptyCells;
+			return _layout.Serialize();
         }
 
-        private void Initialize()
-        {
-            var layout = _ship.Layout;
-            var size = layout.Size;
+		public bool IsCellValid(int x, int y, CellType type)
+		{
+			return _layout.IsValidModification(x, y, type);
+		}
 
-            Assert.AreEqual(size*size, _layout.Length);
+		private readonly CustomLayout _layout;
 
-            for (var i = 0; i < size; ++i)
-            {
-                for (var j = 0; j < size; ++j)
-                {
-                    var x = j;
-                    var y = i;
+		private readonly struct CustomLayout
+		{
+			public CustomLayout(Layout stockLayout)
+			{
+				_stockLayout = stockLayout;
+				_layout = new char[_stockLayout.Size * _stockLayout.Size];
 
-                    var cellType = layout[x, y];
-                    if (cellType != (char)CellType.Empty)
-                    {
-                        _layout[i * size + j] = cellType;
-                    }
-                    else if (layout[x, y - 1] != (char)CellType.Empty || layout[x - 1, y] != (char)CellType.Empty ||
-                             layout[x + 1, y] != (char)CellType.Empty || layout[x, y + 1] != (char)CellType.Empty)
-                    {
-                        _layout[i * size + j] = (char)CellType.Custom;
-                    }
-                    else
-                    {
-                        _layout[i * size + j] = (char)CellType.Empty;
-                    }
-                }
-            }
-        }
+				Reset();
+			}
 
-        public bool IsCellValid(int x, int y, CellType type)
-        {
-            if (x < 0 || y < 0 || x >= _size || y >= _size)
-                return false;
+			public bool IsCustomizable(int index) => _stockLayout.Data[index] == (char)CellType.Empty && _layout[index] != (char)CellType.Empty;
 
-            if (type == CellType.Empty || type == CellType.Custom)
-                return false;
+			public bool IsValidModification(int x, int y, CellType value)
+			{
+				var size = _stockLayout.Size;
 
-            var layout = _ship.Layout;
-            if (layout[x,y] != (char)CellType.Empty)
-                return false;
+				if (x < 0 || y < 0 || x >= size || y >= size)
+					return false;
 
-            var index = x + y*layout.Size;
-            if (_layout[index] == (char)CellType.Empty)
-                return false;
+				var index = x + y * size;
+				if (!IsCustomizable(index)) return false;
 
-            if (type == CellType.Outer)
-                return true;
+				var l = (CellType)_stockLayout[x - 1, y];
+				var r = (CellType)_stockLayout[x + 1, y];
+				var t = (CellType)_stockLayout[x, y - 1];
+				var b = (CellType)_stockLayout[x, y + 1];
 
-            var l = (CellType)layout[x-1,y];
-            var r = (CellType)layout[x +1,y];
-            var t = (CellType)layout[x,y-1];
-            var b = (CellType)layout[x,y+1];
+				return value == l || value == r || value == t || value == b;
+			}
 
-            if (type != l && type != r && type != t && type != b) return false;
-            if (type != CellType.Weapon) return true;
+			public bool TryModifyCell(int x, int y, CellType value)
+			{
+				if (!IsValidModification(x, y, value)) return false;
 
-            l = GetCell(x-1, y);
-            r = GetCell(x+1, y);
-            t = GetCell(x, y-1);
-            b = GetCell(x, y+1);
-            var tl = GetCell(x-1,y-1);
-            var tr = GetCell(x+1,y-1);
-            var bl = GetCell(x-1,y+1);
-            var br = GetCell(x+1,y+1);
+				if (value == CellType.Weapon)
+					value = Layout.CustomWeaponCell;
 
-            if (t == CellType.Weapon && l == CellType.Weapon && tl != CellType.Weapon) return false;
-            if (t == CellType.Weapon && r == CellType.Weapon && tr != CellType.Weapon) return false;
-            if (b == CellType.Weapon && l == CellType.Weapon && bl != CellType.Weapon) return false;
-            if (b == CellType.Weapon && r == CellType.Weapon && br != CellType.Weapon) return false;
+				_layout[x + y * _stockLayout.Size] = (char)value;
+				return true;
+			}
 
-            if (t == CellType.Weapon && b == CellType.Weapon)
-                return l == CellType.Weapon || r == CellType.Weapon;
-            if (l == CellType.Weapon && r == CellType.Weapon)
-                return t == CellType.Weapon || b == CellType.Weapon;
+			public IEnumerable<byte> Serialize()
+			{
+				if (ModifiedCellCount(true) == 0)
+					yield break;
 
-            return true;
-        }
+				byte emptyCells = 0;
+				for (var i = 0; i < _layout.Length; ++i)
+				{
+					var isEmpty = _layout[i] == (char)Layout.CustomizableCell || _layout[i] == (char)CellType.Empty || _layout[i] == _stockLayout.Data[i];
+					if (isEmpty)
+					{
+						if (emptyCells == 0)
+							yield return (byte)CellType.Empty;
 
-        private CellType GetCell(int x, int y)
-        {
-            if (x < 0 || x >= _size || y < 0 || y >= _size)
-                return CellType.Empty;
+						if (emptyCells == 0xff)
+						{
+							yield return emptyCells;
+							emptyCells = 0;
+							yield return (byte)CellType.Empty;
+						}
 
-            return (CellType)_layout[y*_size + x];
-        }
+						emptyCells++;
+					}
+					else
+					{
+						if (emptyCells > 0)
+						{
+							yield return emptyCells;
+							emptyCells = 0;
+						}
 
-        private readonly int _size;
-        private readonly char[] _layout;
-        private readonly Ship _ship;
-    }
+						var value = (byte)_layout[i];
+						if (value == (byte)Layout.CustomWeaponCell)
+							value = (byte)CellType.Weapon;
+
+						yield return value;
+					}
+				}
+
+				if (emptyCells > 0)
+					yield return emptyCells;
+			}
+
+			public void Deserialize(byte[] data)
+			{
+				Reset();
+
+				var index = 0;
+				var dataIndex = 0;
+				var size = _stockLayout.Size;
+
+				while (dataIndex < data.Length && index < _layout.Length)
+				{
+					if (data[dataIndex] == (byte)CellType.Empty)
+					{
+						dataIndex++;
+						index += data[dataIndex++];
+						continue;
+					}
+
+					var x = index % size;
+					var y = index / size;
+
+					TryModifyCell(x, y, (CellType)data[dataIndex]);
+
+					index++;
+					dataIndex++;
+				}
+			}
+
+			public void Reset()
+			{
+				var size = _stockLayout.Size;
+
+				for (var i = 0; i < size; ++i)
+				{
+					for (var j = 0; j < size; ++j)
+					{
+						var x = j;
+						var y = i;
+
+						var cellType = _stockLayout[x, y];
+						if (cellType != (char)CellType.Empty)
+						{
+							_layout[i * size + j] = cellType;
+						}
+						else if (_stockLayout[x, y - 1] != (char)CellType.Empty || _stockLayout[x - 1, y] != (char)CellType.Empty ||
+							_stockLayout[x + 1, y] != (char)CellType.Empty || _stockLayout[x, y + 1] != (char)CellType.Empty)
+						{
+							_layout[i * size + j] = (char)Layout.CustomizableCell;
+						}
+						else
+						{
+							_layout[i * size + j] = (char)CellType.Empty;
+						}
+					}
+				}
+			}
+
+			public int ModifiedCellCount(bool skipEmpty)
+			{
+				var data = _stockLayout.Data;
+
+				int count = 0;
+				for (int i = 0; i < _layout.Length; i++)
+				{
+					var cell = _layout[i];
+					if (cell == (char)Layout.CustomizableCell && skipEmpty) continue;
+					if (cell == data[i]) continue;
+					count++;
+				}
+
+				return count;
+			}
+
+			public Layout BuildLayout()
+			{
+				return new Layout(new string(_layout));
+			}
+
+			private readonly Layout _stockLayout;
+			private readonly char[] _layout;
+		}
+	}
 }

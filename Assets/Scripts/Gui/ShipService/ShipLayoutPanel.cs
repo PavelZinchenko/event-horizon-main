@@ -60,7 +60,7 @@ namespace Gui.ShipService
         {
             int x, y;
             GetComponentPosition(eventData.position, 1, out x, out y);
-            if ((CellType)_layout[x, y] != CellType.Custom) return;
+            if ((CellType)_layout[x, y] != Layout.CustomizableCell) return;
             _onBlockSelected.Invoke(x, y);
 
             Selection.gameObject.SetActive(true);
@@ -116,7 +116,7 @@ namespace Gui.ShipService
 
         private BlockViewModel CreateBlock(/*ShipLayout.LayoutElement cell*/CellType cell)
         {
-            switch (cell)
+			switch (cell)
             {
                 case CellType.Outer:
                     return GameObject.Instantiate<BlockViewModel>(OuterBlock);
@@ -124,17 +124,17 @@ namespace Gui.ShipService
                     return GameObject.Instantiate<BlockViewModel>(InnerBlock);
                 case CellType.InnerOuter:
                     return GameObject.Instantiate<BlockViewModel>(IoBlock);
-                case CellType.Weapon:
-                    var item = GameObject.Instantiate<BlockViewModel>(WeaponBlock);
-                    //item.Label.text = string.IsNullOrEmpty(cell.WeaponClass) ? "•" : cell.WeaponClass;
-                    return item;
-                case CellType.Engine:
+				case CellType.Weapon:
+					var item = GameObject.Instantiate<BlockViewModel>(WeaponBlock);
+					//item.Label.text = string.IsNullOrEmpty(cell.WeaponClass) ? "•" : cell.WeaponClass;
+					return item;
+				case CellType.Engine:
                     return GameObject.Instantiate<BlockViewModel>(EngineBlock);
-                case CellType.Custom:
-                    return GameObject.Instantiate<BlockViewModel>(CustomBlock);
-            }
+				case Layout.CustomizableCell:
+					return GameObject.Instantiate<BlockViewModel>(CustomBlock);
+			}
 
-            return null;
+			return null;
         }
 
         private void SetBlockLayout(RectTransform item, int x, int y, int size)

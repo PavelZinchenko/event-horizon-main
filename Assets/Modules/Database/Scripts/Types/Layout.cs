@@ -12,15 +12,17 @@ namespace GameDatabase.Model
             _data = null;
             _cellcount = 0;
             _size = 0;
+			_cache = null;
 
             Data = data;
         }
 
         public string Data
         {
-            get => _data?.ToString() ?? string.Empty;
+            get => _cache ??= _data?.ToString() ?? string.Empty;
             private set
             {
+				_cache = null;
                 _data = new StringBuilder();
                 if (string.IsNullOrEmpty(value))
                 {
@@ -31,7 +33,7 @@ namespace GameDatabase.Model
                 }
 
                 _data.Append(value);
-                _cellcount = value.Count(cell => cell != _defaultValue && cell != _customCell);
+                _cellcount = value.Count(cell => cell != _defaultValue && cell != (char)CustomizableCell);
 
                 var length = value.Length;
                 _size = (int)Math.Sqrt(length);
@@ -57,9 +59,10 @@ namespace GameDatabase.Model
                 if (x < 0 || x >= _size || y < 0 || y >= _size)
                     return;
 
-                _data[y * _size + x] = value;
-            }
-        }
+				_data[y * _size + x] = value;
+				_cache = null;
+			}
+		}
 
         public int CellCount => _cellcount;
 
@@ -83,13 +86,17 @@ namespace GameDatabase.Model
                 }
 
                 _size = value;
-            }
-        }
+				_cache = null;
+			}
+		}
 
         private int _size;
         private int _cellcount;
+		private string _cache;
         private StringBuilder _data;
         private const char _defaultValue = (char)CellType.Empty;
-        private const char _customCell = (char)CellType.Custom;
-    }
+	
+		public const CellType CustomizableCell = (CellType)'*';
+		public const CellType CustomWeaponCell = (CellType)'X';
+	}
 }

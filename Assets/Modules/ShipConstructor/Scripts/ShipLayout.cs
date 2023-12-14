@@ -12,7 +12,7 @@ namespace Constructor
 	{
 		public ShipLayout(Layout layout, IEnumerable<Barrel> barrels, IEnumerable<IntegratedComponent> predefinedComponents, bool ignoreWeaponClass, IDebugLog debugLog = null)
 		{
-			_layout = layout.Data.Select(item => new LayoutElement { Type = (CellType)item, ComponentId = -1, BarrelId = -1 } ).ToArray();
+			_layout = layout.Data.Select(item => new LayoutElement((CellType)item)).ToArray();
 		    Size = layout.Size;
 		    CellCount = layout.CellCount;
 			_ignoreWeaponClass = ignoreWeaponClass;
@@ -67,7 +67,8 @@ namespace Constructor
 			get
 			{
 				if (x < 0 || y < 0 || x >= Size || y >= Size)
-					return new LayoutElement { Type = CellType.Empty, ComponentId = -1 };
+					return LayoutElement.Empty;
+
 				return _layout[x + y*Size];
 			}
 		}
@@ -224,8 +225,8 @@ namespace Constructor
             var index = y * Size + x;
             var item = _layout[index];
 
-            if (item.Type != CellType.Weapon || item.BarrelId >= 0)
-                return false;
+			if (item.Type != CellType.Weapon || item.BarrelId >= 0)
+				return false;
 
             var dataChanged = false;
 
@@ -245,7 +246,7 @@ namespace Constructor
 
 		private static bool TryAssignBarrelId(ref LayoutElement item, LayoutElement other)
 		{
-			if (other.Type == CellType.Weapon && other.BarrelId >= 0)
+			if (other.Type == CellType.Weapon && !other.IsCustomWeaponCell && other.BarrelId >= 0)
 			{
 				item.BarrelId = other.BarrelId;
 				item.WeaponClass = other.WeaponClass;
@@ -261,10 +262,24 @@ namespace Constructor
 
         public struct LayoutElement
 		{
-			public CellType Type;
+			public LayoutElement(CellType cellType)
+			{
+				_type = cellType;
+				ComponentId = -1;
+				BarrelId = -1;
+				WeaponClass = null;
+			}
+
+			public CellType Type => IsCustomWeaponCell ? CellType.Weapon : _type;
+			public bool IsCustomWeaponCell => _type == Layout.CustomWeaponCell;
+
 			public int ComponentId;
 			public int BarrelId;
 			public string WeaponClass;
+
+			private readonly CellType _type;
+
+			public static readonly LayoutElement Empty = new(CellType.Empty);
 		}
 	}
 }
