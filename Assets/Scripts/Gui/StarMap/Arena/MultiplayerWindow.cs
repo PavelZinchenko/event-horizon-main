@@ -178,7 +178,7 @@ namespace Gui.Multiplayer
 
             switch (_adsManager.Status)
             {
-                case AdStatus.NotLaded:
+                case AdStatus.NotLoaded:
                     ready = true;
                     break;
                 case AdStatus.Busy:

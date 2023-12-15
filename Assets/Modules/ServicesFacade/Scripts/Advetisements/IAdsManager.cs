@@ -4,7 +4,7 @@ namespace Services.Advertisements
 {
     public enum AdStatus
     {
-        NotLaded,
+        NotLoaded,
         Busy,
         Ready,
         ShowFailed,

@@ -7,6 +7,6 @@
         public void ShowInterstitial() {}
         public void CancelAd() {}
 
-        AdStatus IAdsManager.Status => AdStatus.NotLaded;
+        AdStatus IAdsManager.Status => AdStatus.NotLoaded;
     }
 }
