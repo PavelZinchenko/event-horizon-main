@@ -24,7 +24,7 @@
     <string name="TUTORIAL_NAME">Tutorial</string>
     <string name="TUTORIAL_DESCRIPTION">If you are playing for the first time, it is recommended that you play the tutorial first.</string>
     <string name="TUTORIAL_Start">Greetings, Commander. You have been assigned to lead the deep space expedition. But first, I will teach you the basics of your mission.</string>
-    <string name="TUTORIAL_Info1">Your ship, the Event Horizon, is equipped with a hyperdrive, which allows you to traverse the stars.</string>
+    <string name="TUTORIAL_Info1">Your ship is equipped with a hyperdrive, which allows you to traverse the stars.</string>
     <string name="TUTORIAL_Training">It can also carry several combat ships, in case you encounter hostiles. Would you like to try them in action?</string>
     <string name="TUTORIAL_End">That\'s all. Go. I wish you good luck.</string>
     <string name="TUTORIAL_ACTION_Training">Start training</string>

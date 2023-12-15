@@ -5,14 +5,20 @@ namespace ViewModel
 {
 	public class CreditsPanelViewModel : MonoBehaviour
 	{
-		public RectTransform Panel;
-		public RectTransform Content;
-		public float TimeInSeconds = 120f;
+		[SerializeField] public RectTransform Panel;
+		[SerializeField] public RectTransform Content;
+		[SerializeField] public float TimeInSeconds = 120f;
+
+		[SerializeField] private GameObject _gameTitle;
+		[SerializeField] private GameObject _gameAlternativeTitle;
 
 		private void Start()
 		{
 			if (!_startTime.HasValue)
 				_startTime = Time.time;
+
+			_gameTitle.SetActive(!AppConfig.alternativeTitle);
+			_gameAlternativeTitle.SetActive(AppConfig.alternativeTitle);
 		}
 
 		private void Update()

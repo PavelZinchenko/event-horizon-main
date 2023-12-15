@@ -131,7 +131,7 @@ namespace EditorWindows
                 EditorGUILayout.BeginHorizontal();
 
                 if (GUILayout.Button("Update config file"))
-                    GenerateAppConfigFile(_localizationFile, false, _fakeIap, _enableCheats);
+                    GenerateAppConfigFile(_localizationFile, false, _fakeIap, _enableCheats, _alternativeTitle);
 
                 if (GUILayout.Button("Generate ship prefabs"))
                     GenerateShipPrefabs();
@@ -146,10 +146,17 @@ namespace EditorWindows
                 PlayerSettings.Android.bundleVersionCode.ToString()));
             _localizationFile = EditorGUILayout.TextField("Localizations", _localizationFile);
             _fakeIap = EditorGUILayout.Toggle("Fake in app purchases ", _fakeIap);
-            _enableCheats = EditorGUILayout.Toggle("Enable cheats", _enableCheats);
+			_enableCheats = EditorGUILayout.Toggle("Enable cheats", _enableCheats);
+
+			var alternativeTitle = EditorGUILayout.Toggle("Use alternative title", _alternativeTitle);
+			if (alternativeTitle != _alternativeTitle)
+			{
+				_alternativeTitle = alternativeTitle;
+				PlayerSettings.productName = alternativeTitle ? ProductNameAlternative : ProductNameDefault;
+			}
 
 #if NO_GPGS
-            if (!EditorGUILayout.Toggle("Disable GooglePlay", true)) RemoveDefineSymbol("NO_GPGS");
+			if (!EditorGUILayout.Toggle("Disable GooglePlay", true)) RemoveDefineSymbol("NO_GPGS");
 #else
             if (EditorGUILayout.Toggle("Disable GooglePlay", false)) AddDefineSymbol("NO_GPGS");
 #endif
@@ -283,14 +290,15 @@ namespace EditorWindows
         [PostProcessBuild]
         private static void OnPostBuild(BuildTarget buildTarget, string pathToBuildProject)
         {
-            GenerateAppConfigFile(AppConfig.localizationFile, true, AppConfig.testMode, AppConfig.enableCheats);
+            GenerateAppConfigFile(AppConfig.localizationFile, true, AppConfig.testMode, AppConfig.enableCheats, AppConfig.alternativeTitle);
         }
 
         private static void GenerateAppConfigFile(
             string localizationFile,
             bool increaseBuildNumber, 
             bool fakePurchases, 
-            bool enableCheats)
+            bool enableCheats,
+			bool alternativeTitle)
         {
             var code = string.Empty;
             code += "public static class " + ClassName + Environment.NewLine;
@@ -306,8 +314,9 @@ namespace EditorWindows
             code += "    public const string localizationFile = \"" + localizationFile + "\";" + Environment.NewLine;
             code += "    public const bool testMode = " + (fakePurchases ? "true" : "false") + ";" +
                     Environment.NewLine;
-            code += "    public const bool enableCheats = " + (enableCheats ? "true" : "false") + ";" + Environment.NewLine;
-            code += "}" + Environment.NewLine;
+			code += "    public const bool enableCheats = " + (enableCheats ? "true" : "false") + ";" + Environment.NewLine;
+			code += "    public const bool alternativeTitle = " + (alternativeTitle ? "true" : "false") + ";" + Environment.NewLine;
+			code += "}" + Environment.NewLine;
 
             CreateNewBuildVersionClassFile(code);
         }
@@ -367,11 +376,12 @@ namespace EditorWindows
         private string _localizationFile = AppConfig.localizationFile;
         private bool _fakeIap = AppConfig.testMode;
         private bool _enableCheats = AppConfig.enableCheats;
+		private bool _alternativeTitle = AppConfig.alternativeTitle;
 
 #if IAP_DISABLED
         private IapType _iapType = IapType.Disabled;
 #elif IAP_UNITY
-        private IapType _iapType = IapType.Unity;
+		private IapType _iapType = IapType.Unity;
 #elif IAP_YANDEX
         private IapType _iapType = IapType.Yandex;
 #else
@@ -403,5 +413,8 @@ namespace EditorWindows
         private const string AssetsDir = "Assets/";
         private const string ConfigDir = "Modules/CommonComponents/Scripts/Generated";
         private const string ClassName = "AppConfig";
-    }
+
+		private const string ProductNameDefault = "Event Horizon";
+		private const string ProductNameAlternative = "Cosmic Horizons";
+	}
 }

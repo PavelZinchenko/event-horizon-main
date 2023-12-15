@@ -74,7 +74,6 @@
     <string name="MerchantEventAction2">Attack</string>
     <string name="CivilianUnderAttackEventDescription">You receive a distress call from a civilian ship. Pirates are chasing him.</string>
     <string name="CivilianUnderAttackEventAction1">Aid the ship</string>
-    <string name="WelcomeText">Welcome to\nEvent Horizon!</string>
     <string name="ChallengePanelHeader">Challenge</string>
     <string name="ChallengeDescription">Challenges are harder than the normal battles, as you cannot choose which ship to use.</string>
     <string name="ChallengeCompleted">Challenge completed</string>

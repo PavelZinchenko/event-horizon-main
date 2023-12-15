@@ -7,5 +7,6 @@ public static class AppConfig
     public const string localizationFile = "Languages";
     public const bool testMode = false;
     public const bool enableCheats = true;
+    public const bool alternativeTitle = true;
 }
 
