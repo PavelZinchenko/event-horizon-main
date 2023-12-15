@@ -93,6 +93,9 @@ namespace Constructor.Ships.Modification
 				var index = x + y * size;
 				if (!IsCustomizable(index)) return false;
 
+				if (value == CellType.Outer)
+					return true;
+
 				var l = (CellType)_stockLayout[x - 1, y];
 				var r = (CellType)_stockLayout[x + 1, y];
 				var t = (CellType)_stockLayout[x, y - 1];
