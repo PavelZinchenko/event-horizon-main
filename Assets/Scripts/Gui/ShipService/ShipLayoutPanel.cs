@@ -125,6 +125,7 @@ namespace Gui.ShipService
                 case CellType.InnerOuter:
                     return GameObject.Instantiate<BlockViewModel>(IoBlock);
 				case CellType.Weapon:
+				case Layout.CustomWeaponCell:
 					var item = GameObject.Instantiate<BlockViewModel>(WeaponBlock);
 					//item.Label.text = string.IsNullOrEmpty(cell.WeaponClass) ? "•" : cell.WeaponClass;
 					return item;
