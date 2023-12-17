@@ -60,15 +60,15 @@ namespace Services.GameApplication
             UpdateStatus();
         }
 
-        public void Pause()
+        public void Pause(object sender)
         {
-            if (_pauseCounter.TryPause())
+            if (_pauseCounter.TryPause(sender))
                 UpdateStatus();
         }
 
-        public void Resume()
+        public void Resume(object sender)
         {
-            if (_pauseCounter.TryResume())
+            if (_pauseCounter.TryResume(sender))
                 UpdateStatus();
         }
 

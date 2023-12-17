@@ -82,15 +82,15 @@ namespace Services.GameApplication
             }
         }
 
-        public void Pause()
+        public void Pause(object sender)
         {
-            if (_pauseCounter.TryPause())
+            if (_pauseCounter.TryPause(sender))
                 OnGamePaused();
         }
 
-        public void Resume()
+        public void Resume(object sender)
         {
-            if (_pauseCounter.TryResume())
+            if (_pauseCounter.TryResume(sender))
                 OnGamePaused();
         }
 

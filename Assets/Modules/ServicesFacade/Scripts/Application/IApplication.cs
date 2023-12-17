@@ -1,4 +1,5 @@
-﻿using CommonComponents.Utils;
+﻿using System.Collections.Generic;
+using CommonComponents.Utils;
 
 namespace Services.GameApplication
 {
@@ -7,8 +8,8 @@ namespace Services.GameApplication
         bool IsActive { get; }
         bool Paused { get; }
 
-        void Pause();
-        void Resume();
+        void Pause(object sender = null);
+        void Resume(object sender = null);
     }
 
     public class GamePausedSignal : SmartWeakSignal<bool>
@@ -23,25 +24,23 @@ namespace Services.GameApplication
 
     public class GamePauseCounter
     {
-        public bool Paused => _gamePauseCounter > 0;
+        public bool Paused => _objects.Count > 0;
 
-        public bool TryPause()
+        public bool TryPause(object sender = null)
         {
-            _gamePauseCounter++;
-            return _gamePauseCounter == 1;
+			return _objects.Add(sender) && _objects.Count == 1;
         }
 
-        public bool TryResume()
+        public bool TryResume(object sender = null)
         {
-            if (_gamePauseCounter == 0) return false;
-            return --_gamePauseCounter == 0;
+			return _objects.Remove(sender) && _objects.Count == 0;
+		}
+
+		public void Reset()
+        {
+            _objects.Clear();
         }
 
-        public void Reset()
-        {
-            _gamePauseCounter = 0;
-        }
-
-        private int _gamePauseCounter = 0;
+		private readonly HashSet<object> _objects = new();
     }
 }

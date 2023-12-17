@@ -11,12 +11,12 @@ namespace Gui.Combat
 
         public void PauseGame()
         {
-            _application.Pause();
+            _application.Pause(this);
         }
 
         public void ResumeGame()
         {
-            _application.Resume();
+            _application.Resume(this);
         }
     }
 }
