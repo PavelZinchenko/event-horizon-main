@@ -14,10 +14,19 @@ namespace Gui.Presenter
 
         public virtual VisualElement RootElement => null;
 
-        protected UIDocument UiDocument => _uIDocument;
+		protected UIDocument UiDocument => _uIDocument != null ? _uIDocument : (_uIDocument = FindUiDocument());
+
+		private UIDocument FindUiDocument()
+		{
+			var uiDocument = gameObject.GetComponentInParent<UIDocument>();
+			if (uiDocument == null)
+				Debug.LogError($"Cannot find UiDocument for {gameObject.name}");
+
+			return uiDocument;
+		}
 
 #if UNITY_EDITOR
-        [ContextMenu("Ganerate Code")]
+		[ContextMenu("Ganerate Code")]
         private void GenerateScript()
         {
             var ns = GetType().Namespace ?? string.Empty;
@@ -29,7 +38,7 @@ namespace Gui.Presenter
                 .SetNamespace(ns)
                 .SetBaseClass(nameof(PresenterBase))
                 .SetRootElement(_rootElement)
-                .Build(_uIDocument);
+                .Build(UiDocument);
 
             var path = Path.Combine(Application.dataPath, _generatedFilePath, ns.Replace('.', '\\'));
             Directory.CreateDirectory(path);
