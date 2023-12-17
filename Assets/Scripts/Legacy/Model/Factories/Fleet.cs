@@ -7,6 +7,7 @@ using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Extensions;
 using GameDatabase.Model;
+using GameDatabase.Query;
 using Model.Military;
 
 namespace Model
@@ -19,13 +20,14 @@ namespace Model
 			{
 				var random = new Random(seed);
 				var count = Maths.Distance.FleetSize(distance, random);
-				var ships = database.ShipBuildList.
-					ValidForEnemy().
-					CommonShips().
-					LimitByStarLevel(distance).
-					RandomElements(count, random).OrderBy(item => random.Next());
 
-				return new CommonFleet(database, ships, distance, random.Next());
+				var ships = ShipBuildQuery.EnemyShips(database).
+					Common().
+					FilterByStarDistance(distance).
+					SelectRandom(count, random).
+					Shuffle(random);
+
+				return new CommonFleet(database, ships.All, distance, random.Next());
 			}
 
 			public static IFleet Boss(int distance, Faction faction, int seed, IDatabase database)
@@ -34,28 +36,24 @@ namespace Model
 				var count = Maths.Distance.FleetSize(distance, random) - 1;
 				var bossClass = distance > 50 ? DifficultyClass.Class2 : DifficultyClass.Class1;
 
+				var flagships = ShipBuildQuery.EnemyShips(database).Flagships();
+
 				ShipBuild boss = null;
 				if (faction != Faction.Empty)
-					boss = database.ShipBuildList.
-						Flagships().
-						BelongToFaction(faction).
-						WithDifficultyClass(DifficultyClass.Class1, bossClass).
-						RandomElement(random);
-				
+					boss = flagships.BelongToFaction(faction).WithDifficulty(DifficultyClass.Class1, bossClass).Random(random);
 				if (boss == null)
-					boss = database.ShipBuildList.
-					Flagships().
-					LimitFactionByStarLevel(distance).
-					WithDifficultyClass(DifficultyClass.Class1, bossClass).
-					RandomElement(random);
+					boss = flagships.FilterByStarDistance(distance, ShipBuildQuery.FilterMode.Faction).
+						WithDifficulty(DifficultyClass.Class1, bossClass).Random(random);
 
-				var ships = database.ShipBuildList.
-					ValidForEnemy().
-					CommonAndRareShips().
-					LimitByStarLevel(distance, faction).
-					RandomElements(count, random).OrderBy(item => random.Next());
+				var ships = ShipBuildQuery.EnemyShips(database).
+					CommonAndRare().
+					BelongToFaction(boss.Faction).
+					FilterByStarDistance(distance, ShipBuildQuery.FilterMode.SizeAndDifficulty).
+					SelectRandom(count, random).
+					Shuffle(random).
+					Prepend(boss);
 
-				return new CommonFleet(database, ships.Prepend(boss), distance, random.Next());
+				return new CommonFleet(database, ships.All, distance, random.Next());
 			}
 
 			public static IFleet FactionDefenders(GameModel.Region region, int seed, IDatabase database)
@@ -63,13 +61,14 @@ namespace Model
 				var random = new Random(seed);
 				var distance = region.MilitaryPower;
 				var count = Maths.Distance.FleetSize(distance, random);
-				var ships = database.ShipBuildList.
-					ValidForEnemy().
-					CommonAndRareShips().
-					LimitByStarLevel(distance, region.Faction).
-					RandomElements(count, random);
+				var ships = ShipBuildQuery.EnemyShips(database).
+					CommonAndRare().
+					BelongToFaction(region.Faction).
+					FilterByStarDistance(distance, ShipBuildQuery.FilterMode.SizeAndDifficulty).
+					SelectRandom(count, random).
+					Shuffle(random);
 
-				return new CommonFleet(database, ships, distance, random.Next());
+				return new CommonFleet(database, ships.All, distance, random.Next());
 			}
 
 			public static IFleet Capital(GameModel.Region region, IDatabase database)
@@ -83,44 +82,41 @@ namespace Model
 				var numberOfBosses = (int)Math.Floor(region.BaseDefensePower);
 				var bossClass = numberOfBosses >= 2 ? DifficultyClass.Class2 : DifficultyClass.Class1;
 
-				var bosses = database.ShipBuildList.
+				var bosses = ShipBuildQuery.EnemyShips(database).
 					Flagships().
 					BelongToFaction(region.Faction).
-					WithDifficultyClass(DifficultyClass.Class1, bossClass).
-					RandomElements(numberOfBosses, random);
+					WithDifficulty(DifficultyClass.Class1, bossClass).
+					SelectRandom(numberOfBosses, random);
 
-				var ships = database.ShipBuildList.
-					ValidForEnemy().
-					CommonAndRareShips().
+				var ships = ShipBuildQuery.EnemyShips(database).
+					CommonAndRare().
 					BelongToFaction(region.Faction).
-					LimitClassByStarLevel(distance).
-					LimitSizeByStarLevel(distance).
-					RandomElements(numberOfShips, random);
+					FilterByStarDistance(distance, ShipBuildQuery.FilterMode.SizeAndDifficulty).
+					SelectRandom(numberOfShips, random);
 
                 var starbaseClass = region.MilitaryPower < 40 ? DifficultyClass.Default : DifficultyClass.Class1;
-			    var starbase = database.ShipBuildList.
-					Starbases().
+			    var starbase = ShipBuildQuery.Starbases(database).
 					BelongToFaction(region.Faction).
-					WithBestAvailableClass(starbaseClass).
-					FirstOrDefault();
+					WithDifficulty(starbaseClass, starbaseClass).
+					Random(random);
 
 				if (starbase == null) starbase = database.GalaxySettings.DefaultStarbaseBuild;
 
-                var fleet = (starbase == null ? Enumerable.Empty<ShipBuild>() : Enumerable.Repeat(starbase, 1)).Concat((bosses.Concat(ships).OrderBy(item => random.Next())));
-				return new CommonFleet(database, fleet, distance, random.Next());
+				var fleet = bosses.Concat(ships).Shuffle(random).Prepend(starbase);
+				return new CommonFleet(database, fleet.All, distance, random.Next());
 			}
 
             public static IFleet Ruins(int distance, int seed, IDatabase database)
             {
                 var random = new Random(seed);
-                var ships = database.ShipBuildList.
-					ValidForEnemy().
+                var ships = ShipBuildQuery.EnemyShips(database).
 					BelongToFaction(database.GalaxySettings.AbandonedStarbaseFaction).
-					Hardcore().
-					LimitSizeByStarLevel(distance).
-                    RandomElements(Maths.Distance.FleetSize(distance, random) * 2, random);
+					WithMinDifficulty(DifficultyClass.Class1).
+					FilterByStarDistance(distance, ShipBuildQuery.FilterMode.Size).
+                    SelectRandom(Maths.Distance.FleetSize(distance, random) * 2, random).
+					Shuffle(random);
 
-                return new CommonFleet(database, ships, distance, random.Next());
+                return new CommonFleet(database, ships.All, distance, random.Next());
             }
 
             public static IFleet Xmas(int distance, int seed, IDatabase database)
@@ -128,33 +124,30 @@ namespace Model
                 var random = new Random(seed);
 
                 var starbase = database.GetShipBuild(new ItemId<ShipBuild>(232));
-                var hidden = database.ShipBuildList.
-					ValidForEnemy().
+                var hidden = ShipBuildQuery.EnemyShips(database).
 					HiddenShips().
-					BelongToFaction(GameDatabase.DataModel.Faction.Empty).
-					Hardcore().
-					LimitSizeByStarLevel(distance*2);
+					BelongToFaction(Faction.Empty).
+					WithMinDifficulty(DifficultyClass.Class1).
+					FilterByStarDistance(distance*2, ShipBuildQuery.FilterMode.Size);
 
-                var normal = database.ShipBuildList.
-					ValidForEnemy().
-					CommonAndRareShips().
-					Hardcore().
-					LimitSizeByStarLevel(distance);
+                var normal = ShipBuildQuery.EnemyShips(database).
+					CommonAndRare().
+					WithMinDifficulty(DifficultyClass.Class1).
+					FilterByStarDistance(distance * 2, ShipBuildQuery.FilterMode.Size).
+					SelectRandom(Maths.Distance.FleetSize(distance, random), random);
 
-                var ships = starbase.ToEnumerable().Concat(hidden.Concat(normal.RandomElements(Maths.Distance.FleetSize(distance, random), random)).OrderBy(item => random.Next()));
-                return new CommonFleet(database, ships, distance, random.Next());
+				var ships = hidden.Concat(normal).Shuffle(random).Prepend(starbase);
+                return new CommonFleet(database, ships.All, distance, random.Next());
             }
 
             public static IFleet Arena(int distance, int seed, IDatabase database)
 			{
 				var random = new Random(seed);
-				var ships = database.ShipBuildList.
-					ValidForEnemy().
-					LimitClassByStarLevel(distance).
-					LimitSizeByStarLevel(distance).
-					RandomUniqueElements(1, random);
+				var ships = ShipBuildQuery.EnemyShips(database).
+					FilterByStarDistance(distance, ShipBuildQuery.FilterMode.SizeAndDifficulty).
+					SelectRandom(1, random);
 
-				return new CommonFleet(database, ships, distance, random.Next());
+				return new CommonFleet(database, ships.All, distance, random.Next());
 			}
 
 			public static IFleet Survival(int distance, Faction faction, int seed, IDatabase database)
@@ -162,16 +155,15 @@ namespace Model
 				const int fleetSize = 100;
 				var random = new Random(seed);
 				var numberOfRandomShips = fleetSize/10;
-				var randomShips = database.ShipBuildList.
-					ValidForEnemy().
-					CommonAndRareShips().
-					RandomElements(numberOfRandomShips, random);
-				var factionShips = database.ShipBuildList.
-					ValidForEnemy().
-					CommonAndRareShips().
+				var randomShips = ShipBuildQuery.EnemyShips(database).
+					CommonAndRare().
+					SelectRandom(numberOfRandomShips, random);
+				var factionShips = ShipBuildQuery.EnemyShips(database).
+					CommonAndRare().
 					BelongToFaction(faction).
-					RandomElements(fleetSize - numberOfRandomShips, random);
-				return new SurvivalFleet(database, factionShips.Concat(randomShips).OrderBy(item => item.Ship.Layout.CellCount + random.Next(20)), distance, random.Next());
+					SelectRandom(fleetSize - numberOfRandomShips, random);
+
+				return new SurvivalFleet(database, factionShips.Concat(randomShips).All.OrderBy(item => item.Ship.Layout.CellCount + random.Next(20)), distance, random.Next());
 			}
 
 			public static IFleet Tutorial(IDatabase database)

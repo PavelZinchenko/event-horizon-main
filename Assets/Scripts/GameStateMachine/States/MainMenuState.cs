@@ -7,7 +7,7 @@ using Domain.Player;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameDatabase.Extensions;
+using GameDatabase.Query;
 using GameDatabase.Model;
 using Session;
 using GameServices.LevelManager;
@@ -167,7 +167,7 @@ namespace GameStateMachine.States
 
                 foreach (var id in _session.Statistics.UnlockedShips)
                 {
-                    var build = _database.ShipBuildList.ValidForPlayer().FirstOrDefault(item => item.Ship.Id == id);
+                    var build = ShipBuildQuery.PlayerShips(_database).All.FirstOrDefault(item => item.Ship.Id == id);
                     if (build != null)
                         ships.Add(build);
                 }

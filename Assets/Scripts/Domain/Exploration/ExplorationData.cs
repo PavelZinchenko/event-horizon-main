@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Economy.Products;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameDatabase.Extensions;
+using GameDatabase.Query;
 using GameDatabase.Model;
 using GameServices.Economy;
 using Session;
@@ -322,9 +321,8 @@ namespace Game.Exploration
             get
             {
                 if (_drones == null)
-                    _drones = new List<int>(_database.ShipBuildList.Drones().Where(IsValidForPlanet).Select(build => build.Id.Value));
+                    _drones = new List<int>(ShipBuildQuery.Drones(_database).TryApplyFilter(IsValidForPlanet).All.Select(build => build.Id.Value));
 
-                if (_drones.Count == 0) _drones.AddRange(_database.ShipBuildList.Drones().Select(build => build.Id.Value));
                 return _drones;
             }
         }
@@ -334,10 +332,9 @@ namespace Game.Exploration
             get
             {
                 if (_capitalShips == null)
-                    _capitalShips = new List<int>(_database.ShipBuildList.ValidForEnemy().Where(IsFlagship).Where(IsValidForPlanet).
-                        Where(IsValidFaction).Where(IsValidClass).Select(build => build.Id.Value));
+                    _capitalShips = new List<int>(ShipBuildQuery.EnemyShips(_database).
+						Flagships().TryApplyFilter(IsValidShip).All.Select(build => build.Id.Value));
 
-                if (_capitalShips.Count == 0) _capitalShips.AddRange(_database.ShipBuildList.Where(IsFlagship).Select(build => build.Id.Value));
                 return _capitalShips;
             }
         }
@@ -347,10 +344,11 @@ namespace Game.Exploration
             get
             {
                 if (_smallShips == null)
-                    _smallShips = new List<int>(_database.ShipBuildList.ValidForEnemy().Where(IsSmall).Where(IsValidForPlanet)
-                        .Where(IsValidFaction).Where(IsValidClass).Select(build => build.Id.Value));
+                    _smallShips = new List<int>(ShipBuildQuery.EnemyShips(_database).
+						Where(IsSmall).
+						TryApplyFilter(IsValidShip).
+						All.Select(build => build.Id.Value));
 
-                if (_smallShips.Count == 0) _smallShips.AddRange(_database.ShipBuildList.Where(IsSmall).Select(build => build.Id.Value));
                 return _smallShips;
             }
         }
@@ -360,15 +358,18 @@ namespace Game.Exploration
             get
             {
                 if (_bigShips == null)
-                    _bigShips = new List<int>(_database.ShipBuildList.ValidForEnemy().Where(IsBig).Where(IsValidForPlanet)
-                        .Where(IsValidFaction).Where(IsValidClass).Select(build => build.Id.Value));
+                    _bigShips = new List<int>(ShipBuildQuery.EnemyShips(_database).
+						Where(IsBig).
+						TryApplyFilter(IsValidShip).
+                        All.Select(build => build.Id.Value));
 
-                if (_bigShips.Count == 0) _bigShips.AddRange(_database.ShipBuildList.Where(IsBig).Select(build => build.Id.Value));
                 return _bigShips;
             }
         }
 
-        private List<int> _drones;
+		private bool IsValidShip(ShipBuild build) => IsValidFaction(build) && IsValidClass(build) && IsValidForPlanet(build);
+
+		private List<int> _drones;
         private List<int> _smallShips;
         private List<int> _bigShips;
         private List<int> _capitalShips;

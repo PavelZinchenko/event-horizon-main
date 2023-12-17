@@ -38,7 +38,6 @@ namespace Installers
             Container.Bind<IResourceLocator>().FromPrefabResource("ResourceLocator").AsSingle().NonLazy();
 
             Container.BindAllInterfaces<GameDatabase.Database>().To<GameDatabase.Database>().AsSingle().NonLazy();
-            Container.BindAllInterfacesAndSelf<DatabaseStatistics>().To<DatabaseStatistics>().AsSingle().NonLazy();
             Container.BindAllInterfaces<DebugManager>().To<DebugManager>().AsSingle();
 
             Container.Bind<IMessenger>().To<Messenger>().AsSingle();

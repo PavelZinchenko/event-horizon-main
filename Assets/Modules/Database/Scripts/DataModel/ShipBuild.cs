@@ -9,5 +9,7 @@ namespace GameDatabase.DataModel
         {
             Components = new ImmutableCollection<InstalledComponent>(components);
         }
+
+		public Faction Faction => BuildFaction != Faction.Empty ? BuildFaction : Ship.Faction;
     }
 }

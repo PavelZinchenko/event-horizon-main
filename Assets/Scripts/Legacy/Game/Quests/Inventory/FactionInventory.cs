@@ -7,7 +7,7 @@ using Economy.Products;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameDatabase.Extensions;
+using GameDatabase.Query;
 using GameServices.Player;
 using GameServices.Random;
 using Market = Model.Regulations.Market;
@@ -90,12 +90,11 @@ namespace GameModel
 
 				_items.Add(_productFactory.CreateRenewableMarketProduct(_itemTypeFactory.CreateResearchItem(_faction), random.Next(1,5) + extraGoods, _starId, 0, pricescale));
 				
-				var ship = _database.ShipBuildList.
-					ValidForPlayer().
+				var ship = ShipBuildQuery.PlayerShips(_database).
 					BelongToFaction(_faction).
-					CommonShips().
+					Common().
 					WithSizeClass(SizeClass.Frigate, extraGoods > 0 ? SizeClass.Battleship : SizeClass.Cruiser).
-					RandomElement(random);
+					Random(random);
 
 				if (ship != null)
 					_items.Add(_productFactory.CreateRenewableMarketProduct(_itemTypeFactory.CreateMarketShipItem(new CommonShip(ship)), 1, _starId, Market.ShipRenewalTime, 3f*pricescale));

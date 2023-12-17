@@ -4,7 +4,7 @@ using System.Linq;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameDatabase.Extensions;
+using GameDatabase.Query;
 
 namespace Domain.Quests
 {
@@ -53,10 +53,14 @@ namespace Domain.Quests
 
             var numberOfShips = enemy.NoRandomShips ? 0 : FleetSize(level, random);
 
-            var ships = _database.ShipBuildList.ValidForEnemy().CommonShips().Where(item => factionFilter.IsSuitableForFleet(item.Ship.Faction)).
-                LimitSizeByStarLevel(level).LimitClassByStarLevel(level).RandomElements(numberOfShips, random).Concat(enemy.SpecificShips);
+            var ships = ShipBuildQuery.EnemyShips(_database).
+				Common().
+				FilterByStarDistance(level, ShipBuildQuery.FilterMode.SizeAndDifficulty).
+				Where(item => factionFilter.IsSuitableForFleet(item.Ship.Faction)).
+				SelectRandom(numberOfShips, random).
+				Concat(enemy.SpecificShips);
 
-            return ships.ToList().Shuffle(random);
+            return ships.All.ToList().Shuffle(random);
         }
 
         // TODO: move to database

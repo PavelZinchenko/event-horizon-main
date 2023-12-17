@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Linq;
 using GameDatabase;
-using GameDatabase.Extensions;
+using GameDatabase.Query;
 using GameServices.LevelManager;
 using Services.Localization;
 using Services.Reources;
@@ -43,7 +43,7 @@ public class LoadingScreen : MonoBehaviour
         {
             _shipIcon.gameObject.SetActive(true);
             _background.gameObject.SetActive(true);
-            var ship = _database.ShipBuildList.ValidForPlayer().CommonAndRareShips().RandomUniqueElements(1, _random).First().Ship;
+            var ship = ShipBuildQuery.PlayerShips(_database).CommonAndRare().Random(_random).Ship;
             _shipNameText.text = _localization.GetString(ship.Name);
             _shipIcon.sprite = _resourceLocator.GetSprite(ship.IconImage) ?? _resourceLocator.GetSprite(ship.ModelImage);
             _shipSprite.sprite = _resourceLocator.GetSprite(ship.ModelImage);

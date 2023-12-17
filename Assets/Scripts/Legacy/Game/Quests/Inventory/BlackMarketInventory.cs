@@ -9,7 +9,7 @@ using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Extensions;
-using GameDatabase.Model;
+using GameDatabase.Query;
 using GameServices.Player;
 using GameServices.Random;
 using Services.InAppPurchasing;
@@ -55,7 +55,7 @@ namespace GameModel
 #if !IAP_DISABLED
     					_items.Add(_productFactory.CreateRenewableMarketProduct(_itemTypeFactory.CreateCurrencyItem(Currency.Stars), random.Next(5, 15 + 5*extraGoods), _starId, Market.StarsRenewalTime, 2f*pricescale));
 #endif
-						foreach (var ship in _database.ShipBuildList.ValidForPlayer().CommonShips().WithSizeClass(SizeClass.Frigate, SizeClass.Battleship).Where(IsShipFactionValid).RandomUniqueElements(random.Next(extraGoods + 1, 5), random))
+						foreach (var ship in ShipBuildQuery.PlayerShips(_database).Common().WithSizeClass(SizeClass.Frigate, SizeClass.Battleship).Where(IsShipFactionValid).SelectUniqueRandom(random.Next(extraGoods + 1, 5), random).All)
 							_items.Add(_productFactory.CreateRenewableMarketProduct(_itemTypeFactory.CreateMarketShipItem(new CommonShip(ship), true), 1, _starId, Market.ShipRenewalTime, pricescale));
 
 						var componentCount = random.Next(4, 7);

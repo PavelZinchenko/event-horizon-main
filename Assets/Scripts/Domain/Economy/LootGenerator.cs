@@ -1,14 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Constructor;
 using Economy;
 using Economy.ItemType;
 using Economy.Products;
 using GameServices.Random;
 using Constructor.Ships;
-using Database.Legacy;
 using Game;
 using Game.Exploration;
 using GameDatabase;
@@ -16,6 +14,7 @@ using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Extensions;
 using GameDatabase.Model;
+using GameDatabase.Query;
 using GameModel;
 using GameServices.Player;
 using Zenject;
@@ -387,16 +386,17 @@ namespace GameServices.Economy
             var random = _random.CreateRandom(seed);
 
             var value = random.Next(distance);
-            var ships = value > 20 ? _database.ShipBuildList.ValidForPlayer().CommonAndRareShips() : _database.ShipBuildList.ValidForPlayer().CommonShips();
-            var ship = ships.LimitSizeByStarLevel(value).LimitFactionByStarLevel(distance/2).RandomElements(1, random).First();
+            var ships = value > 20 ? ShipBuildQuery.PlayerShips(_database).CommonAndRare() : ShipBuildQuery.PlayerShips(_database).Common();
+            var ship = ships.FilterByStarDistance(distance/2).Random(random);
 
             return (DamagedShipItem)_factory.CreateDamagedShipItem(ship, random.Next());
         }
 
         private IItemType RandomFactionShip(int distance, Faction faction, System.Random random)
         {
-            var ships = _database.ShipBuildList.ValidForPlayer().CommonShips().BelongToFaction(faction).LimitSizeByStarLevel(distance).ToArray();
-            return ships.Length > 0 ? _factory.CreateMarketShipItem(new CommonShip(ships[random.Next(ships.Length)])) : null;
+            var ship = ShipBuildQuery.PlayerShips(_database).Common().BelongToFaction(faction).
+				FilterByStarDistance(distance, ShipBuildQuery.FilterMode.Size).Random(random);
+            return ship != null ? _factory.CreateMarketShipItem(new CommonShip(ship)) : null;
         }
 
         private IEnumerable<IItemType> RandomComponents(int distance, int count, Faction faction, System.Random random, bool allowRare, ComponentQuality maxQuality = ComponentQuality.P3)

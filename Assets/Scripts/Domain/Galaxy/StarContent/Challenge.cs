@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Combat.Component.Unit.Classification;
 using Combat.Domain;
 using Constructor.Ships;
 using Economy;
@@ -13,7 +12,7 @@ using GameServices.Economy;
 using GameServices.Random;
 using GameStateMachine.States;
 using GameDatabase.DataModel;
-using GameDatabase.Extensions;
+using GameDatabase.Query;
 using GameDatabase.Model;
 using Model.Factories;
 using Session;
@@ -41,15 +40,13 @@ namespace Galaxy.StarContent
         public ShipBuild GetEnemyShip(int starId)
         {
             var level = _starData.GetLevel(starId);
-            var ships = _database.ShipBuildList.
-                ValidForEnemy().
-                CommonAndRareShips().
-                LimitSizeByStarLevel(level).
-                WithDifficultyClass(DifficultyClass.Default, DifficultyClass.Default).
-                LimitFactionByStarLevel(level).
-                RandomUniqueElements(MaxLevel, new System.Random(starId)).
+            var ships = ShipBuildQuery.EnemyShips(_database).
+                CommonAndRare().
+				FilterByStarDistance(level, ShipBuildQuery.FilterMode.Size | ShipBuildQuery.FilterMode.Faction).
+                WithDifficulty(DifficultyClass.Default, DifficultyClass.Default).
+				SelectUniqueRandom(MaxLevel, new System.Random(starId)).
                 Take(MaxLevel).
-                ToList();
+                All.ToList();
 
             ships.Sort((first, second) => first.Ship.Layout.CellCount - second.Ship.Layout.CellCount);
 
@@ -66,12 +63,11 @@ namespace Galaxy.StarContent
         public ShipBuild GetPlayerShip(int starId)
         {
             var level = _starData.GetLevel(starId);
-            var ship = _database.ShipBuildList.
-                ValidForPlayer().
-                CommonShips().
-                LimitFactionByStarLevel(level).
+            var ship = ShipBuildQuery.PlayerShips(_database).
+                Common().
+				FilterByStarDistance(level, ShipBuildQuery.FilterMode.Faction).
                 WithSizeClass(SizeClass.Frigate, SizeClass.Cruiser).
-                RandomElement(new System.Random(starId));
+                Random(new System.Random(starId));
 
             return ship ?? _database.GalaxySettings.StartingShipBuilds.FirstOrDefault() ?? _database.GetShipBuild(new ItemId<ShipBuild>(DefaultShipBuild));
         }

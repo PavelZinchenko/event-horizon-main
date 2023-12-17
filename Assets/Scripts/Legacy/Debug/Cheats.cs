@@ -28,6 +28,7 @@ using GameDatabase.Enums;
 using GameDatabase.Model;
 using GameServices.LevelManager;
 using GameDatabase.Extensions;
+using GameDatabase.Query;
 using Session.Content;
 using Helpers = GameModel.Serialization.Helpers;
 
@@ -188,15 +189,15 @@ public class Cheats
 			_gameDataManager.LoadGameFromLocalCopy();
 			break;
 		case 6:
-			foreach (var ship in _database.ShipBuildList.ValidForPlayer())
+			foreach (var ship in ShipBuildQuery.PlayerShips(_database).All)
                 _playerFleet.Ships.Add(new CommonShip(ship));
 			break;
 		case 7:
-			foreach (var ship in _database.ShipBuildList.Drones())
+			foreach (var ship in ShipBuildQuery.Drones(_database).All)
                 _playerFleet.Ships.Add(new CommonShip(ship));
 			break;
 		case 8:
-			foreach (var ship in _database.ShipBuildList.Flagships())
+			foreach (var ship in ShipBuildQuery.AllShips(_database).Flagships().All)
                 _playerFleet.Ships.Add(new CommonShip(ship));
 			break;
 		case 9:

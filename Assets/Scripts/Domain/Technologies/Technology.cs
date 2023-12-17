@@ -13,9 +13,9 @@ using GameDatabase.Enums;
 using GameDatabase.Model;
 using GameDatabase.Extensions;
 using GameServices.Database;
+using GameDatabase.Query;
 using Services.Localization;
 using Services.Reources;
-using UnityEngine.Assertions;
 
 namespace DataModel.Technology
 {
@@ -128,7 +128,7 @@ namespace DataModel.Technology
                     throw new InvalidEnumArgumentException();
             }
             
-            var defaultBuild = _database.ShipBuildList.ValidForPlayer().FirstOrDefault(build => build.Ship.Id == Ship.Id);
+            var defaultBuild = ShipBuildQuery.PlayerShips(_database).All.FirstOrDefault(build => build.Ship.Id == Ship.Id);
             var ship = new CommonShip(model, defaultBuild?.Components.Select<InstalledComponent,IntegratedComponent>(Constructor.ComponentExtensions.FromDatabase) ?? Enumerable.Empty<IntegratedComponent>());
 			return new Product(_factory.CreateMarketShipItem(ship));
 		}
