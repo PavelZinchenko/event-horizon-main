@@ -140,7 +140,7 @@ namespace Galaxy.StarContent
 		    public IFleet CreateFleet() { return _occupants.CreateFleet(_starId); }
 		    public CombatModelBuilder CreateCombatModelBuilder() { return _occupants.CreateCombatModelBuilder(_starId); }
             public void Attack() { _occupants.Attack(_starId); }
-		    public void Suppress(bool destroy) { _occupants.Suppress(_starId, true); }
+		    public void Suppress(bool destroy) { _occupants.Suppress(_starId, destroy); }
 
 
             private readonly Occupants _occupants;
