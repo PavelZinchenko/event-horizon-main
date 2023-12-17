@@ -79,8 +79,8 @@ namespace GameDatabase.Query
 			var filterByFaction = HasFlag(filterMode, FilterMode.Faction);
 			var filterByDifficultyClass = HasFlag(filterMode, FilterMode.Difficulty);
 			var filterBySizeClass = HasFlag(filterMode, FilterMode.Size);
-			var maxShipClass = Utils.Helpers.StarLevelToMaxDifficulty(distance);
-			var minShipClass = Utils.Helpers.StarLevelToMinDifficulty(distance);
+			var maxShipClass = StarLevelToMaxDifficulty(distance);
+			var minShipClass = StarLevelToMinDifficulty(distance);
 			var minSpawnDistance = _database.GalaxySettings.ShipMinSpawnDistance;
 
 			return new ShipBuildQuery(_database, _shipBuilds.Where(build => {
