@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="expression" name="SizeClassToInt" result="int">
+    <param name="value" type="enum" typeid="SizeClass" />
+</data>

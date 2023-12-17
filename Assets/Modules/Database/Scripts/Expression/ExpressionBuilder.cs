@@ -18,9 +18,9 @@ namespace GameDatabase.Model
     {
         private ExpressionContext<Variant> _context;
 
-        public ExpressionBuilder(IVariableResolver variableResolver = null)
+		public void AddVariableResolver(IVariableResolver variableResolver)
         {
-            _context = new(null, variableResolver.ResolveVariable, variableResolver.ResolveFunction);
+            _context = new(_context, variableResolver.ResolveVariable, variableResolver.ResolveFunction);
         }
 
         public void AddParameter(string name, Expression<Variant> valueProvider)

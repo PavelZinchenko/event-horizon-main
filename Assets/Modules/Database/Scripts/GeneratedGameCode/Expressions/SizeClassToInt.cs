@@ -13,7 +13,7 @@ using CodeWriter.ExpressionParser;
 
 namespace GameDatabase.Expressions
 {
-	public class IntToFloat : IFunction<Variant>
+	public class SizeClassToInt : IFunction<Variant>
 	{
 		public string ParamName1 { get; set; } = "value";
 
@@ -27,6 +27,7 @@ namespace GameDatabase.Expressions
 				{
 					var builder = new ExpressionBuilder();
 					builder.AddVariableResolver(_variableResolver);
+					builder.AddVariableResolver(new EnumResolver());
 					builder.AddParameter(ParamName1, GetValue);
 					_expression = builder.Build(_expressionText).Invoke;
 				}
@@ -36,7 +37,7 @@ namespace GameDatabase.Expressions
 		}
 
 
-		public IntToFloat(string data, float minvalue, float maxvalue, IVariableResolver variableResolver)
+		public SizeClassToInt(string data, int minvalue, int maxvalue, IVariableResolver variableResolver)
 		{
 			_expressionText = data;
 			_minvalue = minvalue;
@@ -44,13 +45,13 @@ namespace GameDatabase.Expressions
 			_variableResolver = variableResolver;
 		}
 
-		public float Evaluate(int value)
+		public int Evaluate(SizeClass value)
 		{
 			_value = (int)value;
-			return ClampResult(Expression.Invoke().AsSingle);
+			return ClampResult(Expression.Invoke().AsInt);
 		}
 
-		private float ClampResult(float value)
+		private int ClampResult(int value)
 		{
 			if (value < _minvalue) return _minvalue;
 			if (value > _maxvalue) return _maxvalue;
@@ -67,16 +68,40 @@ namespace GameDatabase.Expressions
 			return () =>
 			{
 				_value = arguments[0].Invoke().AsInt;
-				return ClampResult(Expression.Invoke().AsSingle);
+				return ClampResult(Expression.Invoke().AsInt);
 			};
 		}
 
 		private IVariableResolver _variableResolver;
 		private Expression<Variant> _expression;
 		private string _expressionText;
-		private float _minvalue;
-		private float _maxvalue;
+		private int _minvalue;
+		private int _maxvalue;
 
 		private int _value;
+
+		private class EnumResolver : IVariableResolver
+		{
+			public IFunction<Variant> ResolveFunction(string name)
+			{
+				return null;
+			}
+
+			public Expression<Variant> ResolveVariable(string name)
+			{
+				switch (name)
+				{
+					case "Undefined": return () => (int)SizeClass.Undefined;
+					case "Frigate": return () => (int)SizeClass.Frigate;
+					case "Destroyer": return () => (int)SizeClass.Destroyer;
+					case "Cruiser": return () => (int)SizeClass.Cruiser;
+					case "Battleship": return () => (int)SizeClass.Battleship;
+					case "Titan": return () => (int)SizeClass.Titan;
+					case "Starbase": return () => (int)SizeClass.Starbase;
+				}
+
+				return null;
+			}
+		}
 	}
 }

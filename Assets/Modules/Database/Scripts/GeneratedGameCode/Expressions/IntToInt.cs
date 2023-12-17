@@ -25,7 +25,8 @@ namespace GameDatabase.Expressions
 			{
 				if (_expression == null)
 				{
-					var builder = new ExpressionBuilder(_variableResolver);
+					var builder = new ExpressionBuilder();
+					builder.AddVariableResolver(_variableResolver);
 					builder.AddParameter(ParamName1, GetValue);
 					_expression = builder.Build(_expressionText).Invoke;
 				}
@@ -45,7 +46,7 @@ namespace GameDatabase.Expressions
 
 		public int Evaluate(int value)
 		{
-			_value = value;
+			_value = (int)value;
 			return ClampResult(Expression.Invoke().AsInt);
 		}
 

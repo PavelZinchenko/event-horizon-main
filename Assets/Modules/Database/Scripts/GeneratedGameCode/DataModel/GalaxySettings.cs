@@ -34,6 +34,8 @@ namespace GameDatabase.DataModel
 			MaxEnemyShipsLevel = UnityEngine.Mathf.Clamp(serializable.MaxEnemyShipsLevel, 100, 500);
 			_enemyLevel = new Expressions.IntToInt(serializable.EnemyLevel, 0, 500, variableResolver) { ParamName1 = "distance" };
 			EnemyLevel = _enemyLevel.Evaluate;
+			_shipMinSpawnDistance = new Expressions.SizeClassToInt(serializable.ShipMinSpawnDistance, 0, 1000, variableResolver) { ParamName1 = "size" };
+			ShipMinSpawnDistance = _shipMinSpawnDistance.Evaluate;
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -47,6 +49,9 @@ namespace GameDatabase.DataModel
 		private readonly Expressions.IntToInt _enemyLevel;
 		public delegate int EnemyLevelDelegate(int distance);
 		public EnemyLevelDelegate EnemyLevel { get; private set; }
+		private readonly Expressions.SizeClassToInt _shipMinSpawnDistance;
+		public delegate int ShipMinSpawnDistanceDelegate(SizeClass size);
+		public ShipMinSpawnDistanceDelegate ShipMinSpawnDistance { get; private set; }
 
 		public static GalaxySettings DefaultValue { get; private set; }
 
@@ -62,6 +67,7 @@ namespace GameDatabase.DataModel
 			public IFunction<Variant> ResolveFunction(string name)
             {
 				if (name == "EnemyLevel") return _context._enemyLevel;
+				if (name == "ShipMinSpawnDistance") return _context._shipMinSpawnDistance;
 				return null;
 			}
 
