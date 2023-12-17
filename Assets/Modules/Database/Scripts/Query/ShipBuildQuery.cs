@@ -13,6 +13,7 @@ namespace GameDatabase.Query
 			Faction = 2,
 			Difficulty = 4,
 			SizeAndDifficulty = Size|Difficulty,
+			SizeAndFaction = Size|Faction,
 			All = 0xffff,
 		}
 

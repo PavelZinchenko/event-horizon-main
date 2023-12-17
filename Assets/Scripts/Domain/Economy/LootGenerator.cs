@@ -387,7 +387,7 @@ namespace GameServices.Economy
 
             var value = random.Next(distance);
             var ships = value > 20 ? ShipBuildQuery.PlayerShips(_database).CommonAndRare() : ShipBuildQuery.PlayerShips(_database).Common();
-            var ship = ships.FilterByStarDistance(distance/2).Random(random);
+            var ship = ships.FilterByStarDistance(distance/2, ShipBuildQuery.FilterMode.SizeAndFaction).Random(random);
 
             return (DamagedShipItem)_factory.CreateDamagedShipItem(ship, random.Next());
         }
