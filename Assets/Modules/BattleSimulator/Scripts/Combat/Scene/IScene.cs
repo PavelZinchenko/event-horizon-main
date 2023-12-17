@@ -24,9 +24,11 @@ namespace Combat.Scene
         Rect ViewRect { get; }
 
         SceneSettings Settings { get; }
-    }
+	
+		void Clear();
+	}
 
-    public struct SceneSettings
+	public struct SceneSettings
     {
         public float AreaWidth;
         public float AreaHeight;

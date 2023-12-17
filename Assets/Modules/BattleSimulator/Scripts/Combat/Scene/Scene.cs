@@ -114,11 +114,16 @@ namespace Combat.Scene
 
         public void Dispose()
         {
-            _unitList.Clear();
-            _shipList.Clear();
+			Clear();
         }
 
-        private bool UpdateUnitView(IUnit unit)
+		public void Clear()
+		{
+			_unitList.Clear();
+			_shipList.Clear();
+		}
+
+		private bool UpdateUnitView(IUnit unit)
         {
             unit.UpdateView(Time.deltaTime);
             return unit.IsActive();

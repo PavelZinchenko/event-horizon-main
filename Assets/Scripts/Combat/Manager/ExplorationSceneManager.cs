@@ -43,7 +43,7 @@ namespace Combat.Manager
 
             _messenger.AddListener<IShip>(EventType.CombatShipCreated, OnShipCreated);
             _messenger.AddListener<IShip>(EventType.CombatShipDestroyed, OnShipDestroyed);
-            _messenger.AddListener(EventType.Surrender, CancelCombat);
+            _messenger.AddListener(EventType.Surrender, Exit);
             _messenger.AddListener(EventType.KillAllEnemies, KillThemAll);
             _messenger.AddListener<int>(EventType.PlayerShipDocked, OnPlayerDocked);
             _messenger.AddListener<int>(EventType.PlayerShipUndocked, OnPlayerUndocked);
@@ -153,12 +153,13 @@ namespace Combat.Manager
 
         private void DelayedExit()
         {
-            Observable.Timer(TimeSpan.FromSeconds(5)).Subscribe(_ => _exitTrigger.Fire());
+            Observable.Timer(TimeSpan.FromSeconds(5)).Subscribe(_ => Exit());
         }
 
-        private void CancelCombat()
+        private void Exit()
         {
-            _exitTrigger.Fire();
+			_scene.Clear();
+			_exitTrigger.Fire();
         }
 
         private void KillThemAll()

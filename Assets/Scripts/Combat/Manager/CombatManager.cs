@@ -176,6 +176,7 @@ namespace Combat.Manager
         {
             _application.Pause();
             _exitTrigger.Fire();
+			_scene.Clear();
         }
 
         public bool CanChangeShip()
