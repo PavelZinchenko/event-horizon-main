@@ -101,4 +101,5 @@
     <string name="Covidr_Message1">Всем кто меня слышит я посылаю запрос о помощи. Мы столкнулись со страшным врагом, который не знает милосердия. Мы долго не продержимся...</string>
     <string name="Covidr_Message2">На нас напали!</string>
     <string name="Covidr_Message3">Мы премного благодарны вам, командир. Наша нация этого никогда не забудет.</string>
+    <string name="AttackStarbase_Message">Вы точно хотите атаковать базу? Это испортит вашу репутацию.</string>
 </resources>

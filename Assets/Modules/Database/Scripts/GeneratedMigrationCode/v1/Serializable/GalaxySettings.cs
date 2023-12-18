@@ -29,6 +29,7 @@ namespace DatabaseMigration.v1.Serializable
 		public int MaxEnemyShipsLevel = 300;
 		public string EnemyLevel = "MIN(3*distance/5 - 5, MaxEnemyShipsLevel)";
 		public string ShipMinSpawnDistance = "IF(size == Destroyer, 5, size == Cruiser, 15, size == Battleship, 50, 0)";
+		public int CaptureStarbaseQuest;
 		public int StartingInvenory;
 	}
 }

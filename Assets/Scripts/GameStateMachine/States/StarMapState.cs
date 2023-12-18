@@ -321,24 +321,27 @@ namespace GameStateMachine.States
             _starData.GetRegion(starId).Faction = faction;
         }
 
-        public void SuppressOccupant(int starId, bool destroy)
+        public void SuppressOccupants(int starId, bool destroy)
         {
             _starData.GetOccupant(starId).Suppress(destroy);
         }
 
         public void StartCombat(QuestEnemyData enemyData, ILoot specialLoot)
         {
-            var model = _questCombatModelFacctory.CreateCombatModel(enemyData, specialLoot);
-            StateMachine.LoadAdditionalState(StateFactory.CreateCombatState(model, value => _questEventTrigger.Fire(new CombatEventData(value.IsVictory()))));
+            StartCombat(_questCombatModelFacctory.CreateCombatModel(enemyData, specialLoot));
         }
 
         public void AttackOccupants(int starId)
         {
-            var model = _starData.GetOccupant(starId).CreateCombatModelBuilder().Build();
-            StateMachine.LoadAdditionalState(StateFactory.CreateCombatState(model, value => _questEventTrigger.Fire(new CombatEventData(value.IsVictory()))));
+			StartCombat(_starData.GetOccupant(starId).CreateCombatModelBuilder().Build());
         }
 
-        public void StartTrading(ILoot merchantItems)
+		public void AttackStarbase(int starId)
+		{
+			StartCombat(_starData.GetStarbase(starId).CreateCombatModelBuilder().Build());
+		}
+
+		public void StartTrading(ILoot merchantItems)
         {
             OnOpenShop(_inventoryFactory.CreateQuestInventory(merchantItems), _inventoryFactory.CreatePlayerInventory());
         }
@@ -362,7 +365,12 @@ namespace GameStateMachine.States
             }
         }
 
-        private bool _supplyShipStatusChanged = true;
+		private void StartCombat(ICombatModel model)
+		{
+			StateMachine.LoadAdditionalState(StateFactory.CreateCombatState(model, value => _questEventTrigger.Fire(new CombatEventData(value.IsVictory()))));
+		}
+
+		private bool _supplyShipStatusChanged = true;
 
         private readonly IQuestManager _questManager;
 		private readonly ISessionData _session;

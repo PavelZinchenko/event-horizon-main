@@ -1,4 +1,5 @@
 using GameDatabase.DataModel;
+using GameDatabase.Enums;
 
 namespace Domain.Quests
 {
@@ -6,8 +7,9 @@ namespace Domain.Quests
     {
         void ShowUiDialog(IUserInteraction userInteraction);
         void StartCombat(QuestEnemyData enemyData, ILoot specialLoot);
-        void AttackOccupants(int starId);
-        void SuppressOccupant(int starId, bool destroy);
+		void AttackStarbase(int starId);
+		void AttackOccupants(int starId);
+		void SuppressOccupants(int starId, bool destroy);
         void StartTrading(ILoot merchantItems);
         void Retreat();
         void SetCharacterRelations(int characterId, int value, bool additive);

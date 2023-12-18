@@ -13,6 +13,7 @@
     
     <item name="AttackFleet">20</item>
     <item name="AttackOccupants">21</item>
+    <item name="AttackStarbase">22</item>
     
     <item name="DestroyOccupants">25</item>
     <item name="SuppressOccupants">26</item>

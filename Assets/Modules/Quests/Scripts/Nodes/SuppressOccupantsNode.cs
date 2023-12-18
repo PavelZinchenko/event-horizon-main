@@ -13,7 +13,7 @@ namespace Domain.Quests
 
         protected override void InvokeAction(IQuestActionProcessor processor)
         {
-            processor.SuppressOccupant(_starId, _destroy);
+            processor.SuppressOccupants(_starId, _destroy);
         }
 
         private readonly int _starId;

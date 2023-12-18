@@ -112,7 +112,7 @@ namespace Galaxy
                 return false;
             if (ShowBookmarks && _starData.HasBookmark(starId))
                 return true;
-            if (_starData.HasStarBase(starId))
+            if (_starData.GetStarbase(starId).IsExists)
                 return true;
 
             var objects = _starData.GetObjects(starId);

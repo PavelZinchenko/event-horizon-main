@@ -4,12 +4,19 @@ using Services.Localization;
 
 namespace Domain.Quests
 {
-    public class AttackOccupantsNode : INode
+    public class AttackEnemyNode : INode
     {
-        public AttackOccupantsNode(int id, int starId)
+		public enum EnemyType
+		{
+			Occupants,
+			StarbaseDefenders,
+		}
+
+        public AttackEnemyNode(int id, int starId, EnemyType enemyType)
         {
             _id = id;
             _starId = starId;
+			_enemyType = enemyType;
         }
 
         public int Id { get { return _id; } }
@@ -53,12 +60,21 @@ namespace Domain.Quests
         public bool TryInvokeAction(IQuestActionProcessor processor)
         {
             _started = true;
-            processor.AttackOccupants(_starId);
-            return true;
+
+			switch (_enemyType)
+			{
+				case EnemyType.Occupants: processor.AttackOccupants(_starId); break;
+				case EnemyType.StarbaseDefenders: processor.AttackStarbase(_starId); break;
+				default: throw new System.InvalidOperationException();
+			}
+
+
+			return true;
         }
 
         private bool _started;
-        private readonly int _id;
+		private readonly EnemyType _enemyType;
+		private readonly int _id;
         private readonly int _starId;
     }
 }

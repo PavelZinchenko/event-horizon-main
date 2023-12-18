@@ -2,6 +2,7 @@
 using System.Linq;
 using Galaxy.StarContent;
 using Game;
+using GameDatabase;
 using GameDatabase.DataModel;
 using GameModel;
 using GameServices;
@@ -19,6 +20,7 @@ namespace Galaxy
 {
     public sealed class StarData : GameServiceBase
     {
+		[Inject] private readonly IDatabase _database;
         [Inject] private readonly RegionMap _regionMap;
         [Inject] private readonly IRandom _random;
         [Inject] private readonly HolidayManager _holidayManager;
@@ -66,7 +68,7 @@ namespace Galaxy
         {
             var objects = new StarObjects();
 
-            if (HasStarBase(starId))
+            if (_starBase.IsExists(starId))
             {
                 objects.Add(StarObjectType.StarBase);
                 return objects;
@@ -108,23 +110,9 @@ namespace Galaxy
             return objects;
         }
 
-        public bool HasStarBase(int starId)
-        {
-            int x, y;
-			StarLayout.IdToPosition(starId, out x, out y);
-            if (!RegionMap.IsHomeStar(x, y))
-                return false;
-
-            return GetRegion(starId).Id != Region.UnoccupiedRegionId;
-        }
-
-        public void CaptureBase(int starId)
-        {
-            _starBase.Attack(starId);
-        }
-
+		public StarBase.Facade GetStarbase(int starId) { return new StarBase.Facade(_starBase, starId); }
 		public Occupants.Facade GetOccupant(int starId) { return new Occupants.Facade(_occupants, starId); }
-        public Boss.Facade GetBoss(int starId) { return new Boss.Facade(_boss, starId); }
+		public Boss.Facade GetBoss(int starId) { return new Boss.Facade(_boss, starId); }
         public Ruins.Facade GetRuins(int starId) { return new Ruins.Facade(_ruins, starId); }
         public XmasTree.Facade GetXmasTree(int starId) { return new XmasTree.Facade(_xmas, starId); }
         public Challenge.Facade GetChallenge(int starId) { return new Challenge.Facade(_challenge, starId); }

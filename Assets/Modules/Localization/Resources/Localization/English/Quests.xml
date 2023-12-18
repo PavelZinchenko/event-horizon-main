@@ -101,6 +101,7 @@
     <string name="HappyEaster_Message1">Hey captain! Long time no see! Have an egg-celent Easter! Here is your egg.</string>
     <string name="HappyEaster_Message2">Hey captain! Don\'t worry, nothing has happened. I just want to wish you happy Easter. Here is your egg.</string>
     <string name="HappyEaster_Message3">Greetings, Commander. I have a delivery for you. Have an egg-celent Easter!</string>
+    <string name="AttackStarbase_Message">Are you sure you want to attack the starbase? It will ruin your reputation.</string>
 
     <string name="Quest_Covid">COVID-6019</string>
     <string name="Covidr_Message1">I send you an urgent appeal for help. We are faced with the unknown enemy. We won't last long...</string>

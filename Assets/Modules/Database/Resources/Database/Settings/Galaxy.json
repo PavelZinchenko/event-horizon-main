@@ -8,5 +8,6 @@
   ],
   "StartingInventory": 12,
   "SupporterPackShip": 92,
-  "DefaultStarbaseBuild": 192
+  "DefaultStarbaseBuild": 192,
+  "CaptureStarbaseQuest": 9
 }

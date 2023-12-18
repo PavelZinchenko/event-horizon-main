@@ -36,6 +36,7 @@ namespace GameDatabase.DataModel
 			EnemyLevel = _enemyLevel.Evaluate;
 			_shipMinSpawnDistance = new Expressions.SizeClassToInt(serializable.ShipMinSpawnDistance, 0, 1000, variableResolver) { ParamName1 = "size" };
 			ShipMinSpawnDistance = _shipMinSpawnDistance.Evaluate;
+			CaptureStarbaseQuest = loader.GetQuest(new ItemId<QuestModel>(serializable.CaptureStarbaseQuest));
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -52,6 +53,7 @@ namespace GameDatabase.DataModel
 		private readonly Expressions.SizeClassToInt _shipMinSpawnDistance;
 		public delegate int ShipMinSpawnDistanceDelegate(SizeClass size);
 		public ShipMinSpawnDistanceDelegate ShipMinSpawnDistance { get; private set; }
+		public QuestModel CaptureStarbaseQuest { get; private set; }
 
 		public static GalaxySettings DefaultValue { get; private set; }
 

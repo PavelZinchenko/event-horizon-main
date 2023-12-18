@@ -41,6 +41,8 @@ namespace GameDatabase.DataModel
 					return new Node_AttackFleet(serializable, loader);
 				case NodeType.AttackOccupants:
 					return new Node_AttackOccupants(serializable, loader);
+				case NodeType.AttackStarbase:
+					return new Node_AttackStarbase(serializable, loader);
 				case NodeType.DestroyOccupants:
 					return new Node_DestroyOccupants(serializable, loader);
 				case NodeType.SuppressOccupants:
@@ -108,6 +110,7 @@ namespace GameDatabase.DataModel
 	    T Create(Node_Condition content);
 	    T Create(Node_AttackFleet content);
 	    T Create(Node_AttackOccupants content);
+	    T Create(Node_AttackStarbase content);
 	    T Create(Node_DestroyOccupants content);
 	    T Create(Node_SuppressOccupants content);
 	    T Create(Node_Retreat content);
@@ -333,6 +336,27 @@ namespace GameDatabase.DataModel
 		partial void OnDataDeserialized(NodeSerializable serializable, Database.Loader loader);
 
   		public Node_AttackOccupants(NodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			VictoryTransition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
+			FailureTransition = UnityEngine.Mathf.Clamp(serializable.FailureTransition, 1, 999999);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(INodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public int VictoryTransition { get; private set; }
+		public int FailureTransition { get; private set; }
+    }
+    public partial class Node_AttackStarbase : Node
+    {
+		partial void OnDataDeserialized(NodeSerializable serializable, Database.Loader loader);
+
+  		public Node_AttackStarbase(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 			VictoryTransition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);

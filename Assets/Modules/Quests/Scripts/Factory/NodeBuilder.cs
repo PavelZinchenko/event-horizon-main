@@ -280,14 +280,23 @@ namespace Domain.Quests
 
         public INode Create(Node_AttackOccupants content)
         {
-            var node = new AttackOccupantsNode(content.Id, _context.StarId);
+            var node = new AttackEnemyNode(content.Id, _context.StarId, AttackEnemyNode.EnemyType.Occupants);
             _nodes.Add(node.Id, node);
             node.VictoryNode = CreateNode(content.VictoryTransition);
             node.DefeatNode = CreateNode(content.FailureTransition);
             return node;
         }
 
-        public INode Create(Node_OpenWorkshop content)
+		public INode Create(Node_AttackStarbase content)
+		{
+			var node = new AttackEnemyNode(content.Id, _context.StarId, AttackEnemyNode.EnemyType.StarbaseDefenders);
+			_nodes.Add(node.Id, node);
+			node.VictoryNode = CreateNode(content.VictoryTransition);
+			node.DefeatNode = CreateNode(content.FailureTransition);
+			return node;
+		}
+
+		public INode Create(Node_OpenWorkshop content)
         {
             var starData = _starMapData.GetStarData(_context.StarId);
             var level = content.Level > 0 ? content.Level : starData.Level;
@@ -298,7 +307,7 @@ namespace Domain.Quests
             return node;
         }
 
-        private readonly QuestInfo _context;
+		private readonly QuestInfo _context;
         private readonly Dictionary<NodeId, INode> _nodes;
         private readonly Dictionary<NodeId, Node> _nodesData;
         private readonly IStarMapDataProvider _starMapData;
