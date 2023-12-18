@@ -1,5 +1,6 @@
 using System;
 using DataModel.Technology;
+using GameServices.Player;
 using Services.Localization;
 using Services.Reources;
 using UnityEngine;
@@ -11,8 +12,9 @@ namespace ViewModel
 {
 	public class CraftListItem : MonoBehaviour
 	{
-	    [Inject] private readonly ILocalization _localization;
-	    [Inject] private readonly IResourceLocator _resourceLocator;
+		[Inject] private readonly ILocalization _localization;
+		[Inject] private readonly IResourceLocator _resourceLocator;
+		[Inject] private readonly PlayerSkills _playerSkills;
 
 		public Toggle Toggle;
 		public Image Icon;
@@ -37,7 +39,7 @@ namespace ViewModel
 			Description.text = technology.GetDescription(_localization);
 			Icon.color = technology.Color;
 
-		    var techLevel = technology.GetWorkshopLevel();
+		    var techLevel = technology.GetWorkshopLevel() + _playerSkills.CraftingLevelModifier;
             var available = techLevel <= workshopLevel;
             RequiredLevelPanel.gameObject.SetActive(!available);
             RequiredLevelText.text = techLevel.ToString();
