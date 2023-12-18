@@ -2,6 +2,7 @@
   "ItemType": 8,
   "Id": 281,
   "ShipId": 121,
+  "AvailableForPlayer": false,
   "DifficultyClass": 2,
   "Components": [
     {

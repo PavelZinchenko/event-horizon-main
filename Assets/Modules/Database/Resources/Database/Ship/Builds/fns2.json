@@ -2,6 +2,7 @@
   "ItemType": 8,
   "Id": 92,
   "ShipId": 70,
+  "AvailableForEnemy": false,
   "Components": [
     {
       "ComponentId": 55,

@@ -2,7 +2,8 @@
   "ItemType": 8,
   "Id": 222,
   "ShipId": 84,
-  "NotAvailableInGame": true,
+  "AvailableForPlayer": false,
+  "AvailableForEnemy": false,
   "Components": [
     {
       "ComponentId": 55,
@@ -405,5 +406,6 @@
       "Y": 10,
       "KeyBinding": -1
     }
-  ]
+  ],
+  "NotAvailableInGame": true
 }

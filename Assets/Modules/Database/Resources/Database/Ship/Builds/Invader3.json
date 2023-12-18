@@ -2,7 +2,8 @@
   "ItemType": 8,
   "Id": 218,
   "ShipId": 98,
-  "NotAvailableInGame": true,
+  "AvailableForPlayer": false,
+  "AvailableForEnemy": false,
   "Components": [
     {
       "ComponentId": 60,
@@ -147,5 +148,6 @@
       "ComponentId": 12,
       "Y": 3
     }
-  ]
+  ],
+  "NotAvailableInGame": true
 }
