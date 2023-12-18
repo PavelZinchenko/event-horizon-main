@@ -28,7 +28,7 @@ namespace GameDatabase.DataModel
 			var variableResolver = new VariableResolver(this);
 			AbandonedStarbaseFaction = loader.GetFaction(new ItemId<Faction>(serializable.AbandonedStarbaseFaction));
 			StartingShipBuilds = new ImmutableCollection<ShipBuild>(serializable.StartingShipBuilds?.Select(item => loader.GetShipBuild(new ItemId<ShipBuild>(item), true)));
-			StartingInvenory = loader.GetLoot(new ItemId<LootModel>(serializable.StartingInvenory));
+			StartingInventory = loader.GetLoot(new ItemId<LootModel>(serializable.StartingInventory));
 			SupporterPackShip = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.SupporterPackShip));
 			DefaultStarbaseBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.DefaultStarbaseBuild));
 			MaxEnemyShipsLevel = UnityEngine.Mathf.Clamp(serializable.MaxEnemyShipsLevel, 100, 500);
@@ -42,7 +42,7 @@ namespace GameDatabase.DataModel
 
 		public Faction AbandonedStarbaseFaction { get; private set; }
 		public ImmutableCollection<ShipBuild> StartingShipBuilds { get; private set; }
-		public LootModel StartingInvenory { get; private set; }
+		public LootModel StartingInventory { get; private set; }
 		public ShipBuild SupporterPackShip { get; private set; }
 		public ShipBuild DefaultStarbaseBuild { get; private set; }
 		public int MaxEnemyShipsLevel { get; private set; }

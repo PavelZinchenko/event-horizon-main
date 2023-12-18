@@ -2,7 +2,7 @@
     <data name="GalaxySettings" type="settings" typeid="GalaxySettings" >
     <member name="AbandonedStarbaseFaction" type="object" typeid="Faction" />
     <member name="StartingShipBuilds" type="object_list" typeid="ShipBuild" />
-    <member name="StartingInvenory" type="object" typeid="Loot" />
+    <member name="StartingInventory" type="object" typeid="Loot" />
     <member name="SupporterPackShip" type="object" typeid="ShipBuild" />
     <member name="DefaultStarbaseBuild" type="object" typeid="ShipBuild" />
     <member name="MaxEnemyShipsLevel" type="int" minvalue="100" maxvalue="500" default="300" />
@@ -10,4 +10,6 @@
         default="MIN(3*distance/5 - 5, MaxEnemyShipsLevel)" />
     <member name="ShipMinSpawnDistance" type="expression" typeid="SizeClassToInt" arguments="size" minvalue="0" maxvalue="1000"
         default="IF(size == Destroyer, 5, size == Cruiser, 15, size == Battleship, 50, 0)" />
+
+    <member name="StartingInvenory" type="object" typeid="Loot" options="obsolete" />
 </data>
