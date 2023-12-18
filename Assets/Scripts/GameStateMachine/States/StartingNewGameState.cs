@@ -57,9 +57,9 @@ namespace GameStateMachine.States
 
         private void InitializeInventory()
         {
-            if (_database.GalaxySettings.StartingInvenory == null) return;
+            if (_database.GalaxySettings.StartingInventory == null) return;
 
-            var inventory = new Loot(new LootModel(_database.GalaxySettings.StartingInvenory.Loot), new QuestInfo(0), _lootItemFactory, _database);
+            var inventory = new Loot(new LootModel(_database.GalaxySettings.StartingInventory.Loot), new QuestInfo(0), _lootItemFactory, _database);
             foreach (var item in inventory.Items)
                 item.Type.Consume(item.Quantity);
         }

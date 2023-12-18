@@ -95,7 +95,7 @@ namespace GameStateMachine.States
 		                Debug.Break();
 		            }
 
-		            if ((item.Ship.ShipType == ShipType.Common || item.Ship.ShipType == ShipType.Drone) && !item.NotAvailableInGame &&
+		            if ((item.Ship.ShipType == ShipType.Common || item.Ship.ShipType == ShipType.Drone) && (item.AvailableForPlayer || item.AvailableForEnemy) &&
 		                !ShipValidator.IsShipViable(new CommonShip(item), _database.ShipSettings))
 		            {
 		                Debug.LogError("invalid build: " + item.Id);

@@ -99,30 +99,28 @@ namespace GameDatabase.Query
 
 		private static bool IsValidForEnemy(ShipBuild build)
 		{
-			if (build.NotAvailableInGame) return false;
+			if (!build.AvailableForEnemy) return false;
 			if (build.Ship.ShipType != ShipType.Common && build.Ship.ShipType != ShipType.Flagship) return false;
-			if (build.Ship.ShipRarity == ShipRarity.Unique) return false;
 			return true;
 		}
 
 		private static bool IsValidForPlayer(ShipBuild build)
 		{
-			if (build.NotAvailableInGame) return false;
-			if (build.DifficultyClass != DifficultyClass.Default) return false;
+			if (!build.AvailableForPlayer) return false;
 			if (build.Ship.ShipType != ShipType.Common && build.Ship.ShipType != ShipType.Flagship) return false;
 			return true;
 		}
 
 		private static bool IsStarbase(ShipBuild build)
 		{
-			if (build.NotAvailableInGame) return false;
+			if (!build.AvailableForEnemy) return false;
 			if (build.Ship.ShipType != ShipType.Starbase) return false;
 			return true;
 		}
 
 		public static bool IsDrone(ShipBuild build)
 		{
-			if (build.NotAvailableInGame) return false;
+			if (!build.AvailableForEnemy) return false;
 			if (build.Ship.ShipType != ShipType.Drone) return false;
 			return true;
 		}

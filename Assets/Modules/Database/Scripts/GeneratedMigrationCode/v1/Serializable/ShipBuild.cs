@@ -22,9 +22,11 @@ namespace DatabaseMigration.v1.Serializable
 		}
 
 		public int ShipId;
-		public bool NotAvailableInGame;
+		public bool AvailableForPlayer = true;
+		public bool AvailableForEnemy = true;
 		public DifficultyClass DifficultyClass;
 		public int BuildFaction;
 		public InstalledComponentSerializable[] Components;
+		public bool NotAvailableInGame;
 	}
 }

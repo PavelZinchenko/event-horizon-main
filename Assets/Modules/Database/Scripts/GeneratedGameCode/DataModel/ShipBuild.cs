@@ -30,7 +30,8 @@ namespace GameDatabase.DataModel
 			Ship = loader.GetShip(new ItemId<Ship>(serializable.ShipId));
 			if (Ship == null)
 			    throw new DatabaseException(this.GetType().Name + ".Ship cannot be null - " + serializable.ShipId);
-			NotAvailableInGame = serializable.NotAvailableInGame;
+			AvailableForPlayer = serializable.AvailableForPlayer;
+			AvailableForEnemy = serializable.AvailableForEnemy;
 			DifficultyClass = serializable.DifficultyClass;
 			BuildFaction = loader.GetFaction(new ItemId<Faction>(serializable.BuildFaction));
 			Components = new ImmutableCollection<InstalledComponent>(serializable.Components?.Select(item => InstalledComponent.Create(item, loader)));
@@ -41,7 +42,8 @@ namespace GameDatabase.DataModel
 		public readonly ItemId<ShipBuild> Id;
 
 		public Ship Ship { get; private set; }
-		public bool NotAvailableInGame { get; private set; }
+		public bool AvailableForPlayer { get; private set; }
+		public bool AvailableForEnemy { get; private set; }
 		public DifficultyClass DifficultyClass { get; private set; }
 		public Faction BuildFaction { get; private set; }
 		public ImmutableCollection<InstalledComponent> Components { get; private set; }
