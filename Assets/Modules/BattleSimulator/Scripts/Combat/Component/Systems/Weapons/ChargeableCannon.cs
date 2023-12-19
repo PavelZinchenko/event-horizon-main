@@ -57,7 +57,11 @@ namespace Combat.Component.Systems.Weapons
             }
         }
 
-        protected override void OnDispose() {}
+        protected override void OnDispose() 
+		{
+			if (_bulletFactory.Stats.IsBoundToCannon)
+				_activeBullet?.Vanish();
+		}
 
         private void Shot()
         {

@@ -97,9 +97,12 @@ namespace Combat.Component.Ship
             _effects.UpdateView(elapsedTime);
         }
 
-        protected override void OnDispose() { }
+        protected override void OnDispose() 
+		{
+			_systems.Dispose();
+		}
 
-        public override void Vanish()
+		public override void Vanish()
         {
             _state = UnitState.Inactive;
         }

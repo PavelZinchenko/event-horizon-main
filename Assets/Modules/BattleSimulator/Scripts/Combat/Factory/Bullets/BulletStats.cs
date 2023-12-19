@@ -21,8 +21,9 @@ namespace Combat.Factory
         float BulletHitRange { get; }
         float Recoil { get; }
         bool IgnoresShipSpeed { get; }
+		bool IsBoundToCannon { get; }
 
-        float PowerLevel { get; set; }
+		float PowerLevel { get; set; }
         float RandomFactor { get; set; }
         float HitPointsMultiplier { get; set; }
     }
@@ -144,10 +145,11 @@ namespace Combat.Factory
         public float PowerLevel { get; set; }
         public float RandomFactor { get; set; }
         public float HitPointsMultiplier { get; set; }
+		public bool IsBoundToCannon => _ammunition.Body.Type == BulletType.Continuous;
 
-        private bool IsAoe { get { return (_ammunition.ImpactType == BulletImpactType.DamageOverTime || _ammunition.ImpactType == BulletImpactType.HitAllTargets) && _ammunition.Effects.Count > 0; } }
+		private bool IsAoe { get { return (_ammunition.ImpactType == BulletImpactType.DamageOverTime || _ammunition.ImpactType == BulletImpactType.HitAllTargets) && _ammunition.Effects.Count > 0; } }
 
-        private float VelocityMultiplier { get { return _statModifier.VelocityMultiplier.Value; } }
+		private float VelocityMultiplier { get { return _statModifier.VelocityMultiplier.Value; } }
         private float RangeMultiplier { get { return PowerLevel > 0.1f ? PowerLevel * _statModifier.RangeMultiplier.Value : 0f; } }
         private float LifetimeMultiplier { get { return 0.5f + PowerLevel * 0.5f; } }
         private float SizeMultiplier { get { return 0.5f + PowerLevel * 0.5f; } }
@@ -200,7 +202,8 @@ namespace Combat.Factory
         public float PowerLevel { get; set; }
         public float RandomFactor { get; set; }
         public float HitPointsMultiplier { get; set; }
+		public bool IsBoundToCannon => _stats.AmmunitionClass.IsBoundToCannon();
 
-        private readonly AmmunitionObsoleteStats _stats;
+		private readonly AmmunitionObsoleteStats _stats;
     }
 }

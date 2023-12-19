@@ -58,8 +58,8 @@ namespace Combat.Component.Systems.Weapons
 
         protected override void OnDispose()
         {
-            //if (HasActiveBullet)
-            //    _activeBullet.Detonate();
+			if (_bulletFactory.Stats.IsBoundToCannon)
+				_activeBullet?.Vanish();
         }
 
         private void Shot()

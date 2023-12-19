@@ -18,6 +18,7 @@ namespace Combat.Component.Systems.Weapons
             _energyConsumption = bulletFactory.Stats.EnergyCost * weaponStats.Magazine;
             _spread = weaponStats.Spread;
             _magazine = weaponStats.Magazine;
+			_bullets = BulletCompositeDisposable.Create(_bulletFactory.Stats);
 
             Info = new WeaponInfo(WeaponType.Common, _spread, bulletFactory, platform);
         }
@@ -43,14 +44,17 @@ namespace Combat.Component.Systems.Weapons
             }
         }
 
-        protected override void OnDispose() { }
+        protected override void OnDispose() 
+		{
+			_bullets.Dispose();
+		}
 
         private void Shot()
         {
             _platform.Aim(Info.BulletSpeed, Info.Range, Info.IsRelativeVelocity);
 
             for (var i = 0; i < _magazine; ++i)
-                _bulletFactory.Create(Platform, _spread, 0, 0);
+                _bullets.Add(_bulletFactory.Create(Platform, _spread, 0, 0));
 
             _platform.OnShot();
         }
@@ -60,5 +64,6 @@ namespace Combat.Component.Systems.Weapons
         private readonly float _energyConsumption;
         private readonly IWeaponPlatform _platform;
         private readonly Factory.IBulletFactory _bulletFactory;
-    }
+		private readonly IBulletCompositeDisposable _bullets;
+	}
 }

@@ -57,7 +57,11 @@ namespace Combat.Component.Systems.Weapons
             }
         }
 
-        protected override void OnDispose() {}
+        protected override void OnDispose() 
+		{
+			if (_bulletFactory.Stats.IsBoundToCannon)
+				_activeBullet?.Vanish();
+		}
 
         private void Shot()
         {
@@ -67,7 +71,7 @@ namespace Combat.Component.Systems.Weapons
             _activeBullet.Lifetime.Restore();
         }
 
-		private bool HasActiveBullet { get { return _activeBullet.IsActive(); } }
+		private bool HasActiveBullet => _activeBullet.IsActive();
 
 		private IBullet _activeBullet;
         private readonly float _spread;
