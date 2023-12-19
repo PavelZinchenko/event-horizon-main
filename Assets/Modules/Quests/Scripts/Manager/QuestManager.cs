@@ -172,8 +172,8 @@ namespace Domain.Quests
 
         private void OnQuestUpdated(Quest quest)
         {
-            if (quest.Model.QuestType != QuestType.Temporary)
-				_context.QuestDataStorage.SetQuestProgress(new QuestProgress(quest.Id, quest.StarId, quest.Seed, quest.NodeId));
+			if (quest.Model.QuestType != QuestType.Temporary)
+				_context.QuestDataStorage.SetQuestProgress(new QuestProgress(quest.Id, quest.StarId, quest.NodeId, quest.Seed));
 
             if (quest.Status.IsFinished())
             {
