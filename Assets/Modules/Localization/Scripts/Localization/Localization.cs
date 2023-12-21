@@ -8,7 +8,6 @@ namespace Services.Localization
 {
     internal class Localization
     {
-		private const char SpecialChar = '$';
 		private readonly List<PluralForm> _pluralForms = new();
         private readonly Dictionary<string, string> _keys;
 
@@ -32,25 +31,31 @@ namespace Services.Localization
 			return true;
 		}
 
-		public bool TryGetString(string key, object[] parameters, out string result)
+		public bool TryGetString(string key, Parameters parameters, out string result)
 		{
 			try
 			{
-				if (string.IsNullOrEmpty(key) || key[0] != SpecialChar)
+				if (string.IsNullOrEmpty(key))
+				{
+					result = string.Empty;
+					return true;
+				}
+
+				if (key[0] == KeyParser.SpecialChar)
+				{
+					result = GetKey(key.Substring(1), parameters);
+					return result != null;
+				}
+				else if (key[0] == KeyParser.UppedCaseChar)
+				{
+					result = GetKey(key.Substring(1), parameters)?.ToUpper();
+					return result != null;
+				}
+				else
 				{
 					result = key;
 					return true;
 				}
-
-				if (!_keys.TryGetValue(key.Substring(1), out var value))
-				{
-					result = key;
-					return false;
-				}
-
-				value = value.Replace("\\n", "\n").Replace("\\", string.Empty);
-				result = ApplyParameters(value, parameters);
-				return true;
 			}
 			catch (Exception e)
 			{
@@ -58,6 +63,19 @@ namespace Services.Localization
 				result = string.Empty;
 				return false;
 			}
+		}
+
+		public string GetKey(string key, Parameters parameters)
+		{
+			if (string.IsNullOrEmpty(key))
+				return string.Empty;
+
+			string value;
+			if (!_keys.TryGetValue(key, out value))
+				return null;
+
+			value = value.Replace("\\n", "\n").Replace("\\", string.Empty);
+			return ApplyParameters(value, parameters);
 		}
 
 		private Localization(Dictionary<string, string> keys, string language)
@@ -77,23 +95,40 @@ namespace Services.Localization
 				_pluralForms.Add(PluralForm.FromString(item));
 		}
 
-		private string ApplyParameters(string value, object[] parameters)
+		private string ApplyParameters(string value, Parameters parameters)
 		{
-			var index = value.IndexOf(SpecialChar);
+			if (parameters.Count == 0)
+				return value;
+
+			var index = value.IndexOf(KeyParser.SpecialChar);
 			if (index < 0)
 				return value;
 
 			var builder = new StringBuilder(value.Substring(0, index));
 
+			var length = value.Length;
+			index++;
 			while (true)
 			{
-				++index;
+				if (index >= length)
+				{
+					UnityEngine.Debug.LogException(new ArgumentException("wrong localized string: " + value));
+					return string.Empty;
+				}
+
 				var ch = value[index];
 				if (ch == '{')
 				{
 					var end = value.IndexOf('}', index + 1);
 					Assert.IsTrue(end > index);
 					AddPluralForm(builder, value.Substring(index + 1, end - index - 1), parameters);
+					index = end + 1;
+				}
+				else if (ch == '[')
+				{
+					var end = value.IndexOf(']', index + 1);
+					Assert.IsTrue(end > index);
+					AddEnumeration(builder, value.Substring(index + 1, end - index - 1), parameters);
 					index = end + 1;
 				}
 				else if (char.IsDigit(ch))
@@ -105,7 +140,7 @@ namespace Services.Localization
 						++index;
 					}
 
-					if (id > 0 && id <= parameters.Length)
+					if (id > 0 && id <= parameters.Count)
 						builder.Append(parameters[id - 1]);
 					else
 						AddInvalidParameter(builder, id);
@@ -125,26 +160,36 @@ namespace Services.Localization
 				}
 
 				var old = index;
-				index = value.IndexOf(SpecialChar, index);
-				if (index < 0)
+				index = value.IndexOf(KeyParser.SpecialChar, index) + 1;
+				if (index <= 0)
+				{
+					builder.Append(value.Substring(old));
+					break;
+				}
+				else if (index == value.Length)
 				{
 					builder.Append(value.Substring(old));
 					break;
 				}
 				else
 				{
-					builder.Append(value.Substring(old, index - old));
+					builder.Append(value.Substring(old, index - old - 1));
 				}
 			}
 
 			return builder.ToString();
 		}
 
-		private void AddPluralForm(StringBuilder builder, string format, object[] parameters)
+		private void AddPluralForm(System.Text.StringBuilder builder, string format, Parameters parameters)
 		{
-			var items = format.Split('|');
-			var paramId = System.Convert.ToInt32(items[0]);
-			if (paramId <= 0 || paramId > parameters.Length)
+			var items = format.Split(KeyParser.SeparatorChar);
+			if (!int.TryParse(items[0], out var paramId))
+			{
+				UnityEngine.Debug.LogException(new LocalizationException("Invalid string format - " + format));
+				return;
+			}
+
+			if (paramId <= 0 || paramId > parameters.Count)
 			{
 				AddInvalidParameter(builder, paramId);
 				return;
@@ -166,10 +211,23 @@ namespace Services.Localization
 				AddInvalidParameter(builder, id);
 		}
 
+		private void AddEnumeration(System.Text.StringBuilder builder, string format, Parameters parameters)
+		{
+			var items = format.Split(KeyParser.SeparatorChar);
+			if (items.Length < 2)
+			{
+				AddInvalidParameter(builder, 0);
+				return;
+			}
+
+			var index = 1 + System.Convert.ToInt32(parameters[0]) % (items.Length - 1);
+			builder.Append(items[index]);
+		}
+
 		private void AddInvalidParameter(StringBuilder builder, int id)
 		{
 			builder.Append('[');
-			builder.Append(SpecialChar);
+			builder.Append(KeyParser.SpecialChar);
 			builder.Append(id);
 			builder.Append(']');
 		}
@@ -177,7 +235,7 @@ namespace Services.Localization
 		private void AddInvalidParameter(StringBuilder builder, string key)
 		{
 			builder.Append('[');
-			builder.Append(SpecialChar);
+			builder.Append(KeyParser.SpecialChar);
 			builder.Append(key);
 			builder.Append(']');
 		}
