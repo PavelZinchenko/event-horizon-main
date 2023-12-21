@@ -32,7 +32,7 @@ namespace Combat.Component.Systems.Weapons
 		private static bool IsNotActive(IBullet bullet) => bullet.State != Combat.Unit.UnitState.Active;
 
 		private readonly List<IBullet> _bullets = new();
-		private static Stub _stub = new();
+		private readonly static Stub _stub = new();
 
 		private class Stub : IBulletCompositeDisposable
 		{

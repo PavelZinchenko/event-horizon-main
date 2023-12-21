@@ -18,7 +18,11 @@ namespace Constructor.Modification
 
 		public ModificationQuality Quality { get; private set; }
 
-		public void Apply(ref ShipEquipmentStats stats) { }
+		public void Apply(ref ShipEquipmentStats stats) 
+		{
+			stats.ArmorRepairRate *= _multiplier;
+		}
+
 		public void Apply(ref GameDatabase.DataModel.Weapon weapon) { }
 
 	    public void Apply(ref DeviceStats device)
