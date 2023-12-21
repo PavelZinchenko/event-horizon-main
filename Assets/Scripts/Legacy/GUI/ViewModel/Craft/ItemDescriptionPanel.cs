@@ -70,8 +70,7 @@ namespace ViewModel.Craft
 
             _stats.gameObject.SetActive(true);
             _stats.transform.InitializeElements<TextFieldViewModel, KeyValuePair<string, string>>(GetShipDescription(ship, _localization), UpdateTextField);
-            _weaponSlots.gameObject.SetActive(true);
-            _weaponSlots.transform.InitializeElements<BlockViewModel, Barrel>(ship.Model.Barrels, UpdateWeaponSlot);
+			UpdateWeaponSlots(ship.Model.Barrels);
         }
 
         private void CreateSatellite(Satellite satellite)
@@ -86,8 +85,7 @@ namespace ViewModel.Craft
 
             _stats.gameObject.SetActive(true);
             _stats.transform.InitializeElements<TextFieldViewModel, KeyValuePair<string, string>>(GetSatelliteDescription(satellite), UpdateTextField);
-            _weaponSlots.gameObject.SetActive(satellite.Barrels.Any());
-            _weaponSlots.transform.InitializeElements<BlockViewModel, Barrel>(satellite.Barrels, UpdateWeaponSlot);
+			UpdateWeaponSlots(satellite.Barrels);
         }
 
         private void CreateComponent(ComponentInfo info)
@@ -136,20 +134,23 @@ namespace ViewModel.Craft
             _modification.gameObject.SetActive(false);
         }
 
-        private void UpdateTextField(TextFieldViewModel viewModel, KeyValuePair<string, string> data)
+		private void UpdateWeaponSlots(IReadOnlyCollection<Barrel> barrels)
+		{
+			HashSet<char> types = new(barrels.SelectMany(barrel => string.IsNullOrEmpty(barrel.WeaponClass) ? "•" : barrel.WeaponClass));
+
+			_weaponSlots.gameObject.SetActive(barrels.Count > 0);
+			_weaponSlots.transform.InitializeElements<BlockViewModel, char>(types, UpdateWeaponSlot);
+		}
+
+		private void UpdateTextField(TextFieldViewModel viewModel, KeyValuePair<string, string> data)
         {
             viewModel.Label.text = _localization.GetString(data.Key);
             viewModel.Value.text = data.Value;
         }
 
-        private static void UpdateWeaponSlot(BlockViewModel viewModel, Barrel data)
+        private static void UpdateWeaponSlot(BlockViewModel viewModel, char type)
         {
-            viewModel.Label.text = string.IsNullOrEmpty(data.WeaponClass) ? "•" : data.WeaponClass;
-        }
-
-        private static void UpdateWeaponSlot(BlockViewModel viewModel, BarrelSerializable data)
-        {
-            viewModel.Label.text = string.IsNullOrEmpty(data.WeaponClass) ? "•" : data.WeaponClass;
+            viewModel.Label.text = type.ToString();
         }
 
         private static IEnumerable<KeyValuePair<string, string>> GetShipDescription(IShip ship, ILocalization localization)
