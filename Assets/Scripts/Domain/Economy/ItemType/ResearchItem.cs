@@ -18,7 +18,7 @@ namespace Economy.ItemType
         }
 
 		public string Id => "r" + _faction.Id.Value;
-		public string Name => _localization.GetString("$AlienTechnology", _localization.GetString(_faction.Name));
+		public string Name => _localization.Localize($"$AlienTechnology ({_faction.Name})");
 		public string Description => string.Empty;
         public SpriteId Icon => new("Textures/GUI/tech_icon", SpriteId.Type.Default);
 		public Color Color => _faction.Color;
