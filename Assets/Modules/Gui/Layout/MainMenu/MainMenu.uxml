@@ -25,4 +25,5 @@
             <AttributeOverrides element-name="label" text="$Exit" />
         </ui:Instance>
     </ui:VisualElement>
+    <ui:Label text="0.0.0" display-tooltip-when-elided="false" name="Version" enable-rich-text="false" picking-mode="Ignore" style="position: absolute; left: 0; bottom: 0; font-size: 24px; color: rgba(255, 255, 255, 0.5);" />
 </ui:UXML>
