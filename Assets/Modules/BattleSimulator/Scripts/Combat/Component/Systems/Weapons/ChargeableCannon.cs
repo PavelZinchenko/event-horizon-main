@@ -17,8 +17,9 @@ namespace Combat.Component.Systems.Weapons
             _energyConsumption = bulletFactory.Stats.EnergyCost;
             _spread = weaponStats.Spread;
             _chargeTotalTime = 1.0f / weaponStats.FireRate;
+			_bullets = BulletCompositeDisposable.Create(_bulletFactory.Stats);
 
-            Info = new WeaponInfo(WeaponType.RequiredCharging, _spread, bulletFactory, platform);
+			Info = new WeaponInfo(WeaponType.RequiredCharging, _spread, bulletFactory, platform);
         }
 
         public override bool CanBeActivated { get { return _chargeTime > 0 || (_platform.IsReady && _platform.EnergyPoints.Value >= _energyConsumption*0.5f); } }
@@ -59,15 +60,15 @@ namespace Combat.Component.Systems.Weapons
 
         protected override void OnDispose() 
 		{
-			if (_bulletFactory.Stats.IsBoundToCannon)
-				_activeBullet?.Vanish();
+			_bullets.Dispose();
 		}
 
-        private void Shot()
+		private void Shot()
         {
             _platform.Aim(Info.BulletSpeed, Info.Range, Info.IsRelativeVelocity);
             _platform.OnShot();
             _activeBullet = _bulletFactory.Create(_platform, _spread, 0, 0);
+			_bullets.Add(_activeBullet);
 
             InvokeTriggers(ConditionType.OnDischarge);
         }
@@ -87,5 +88,6 @@ namespace Combat.Component.Systems.Weapons
         private readonly float _energyConsumption;
         private readonly IWeaponPlatform _platform;
         private readonly Factory.IBulletFactory _bulletFactory;
-    }
+		private readonly IBulletCompositeDisposable _bullets;
+	}
 }
