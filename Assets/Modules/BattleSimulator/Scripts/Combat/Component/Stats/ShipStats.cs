@@ -1,7 +1,5 @@
 ﻿using Combat.Collision;
 using Combat.Component.Mods;
-using Combat.Component.Unit;
-using Combat.Unit;
 using Combat.Unit.HitPoints;
 using Constructor;
 
@@ -67,6 +65,9 @@ namespace Combat.Component.Stats
 
         public void ApplyDamage(Impact impact)
         {
+			if (!IsAlive)
+				return;
+
             if (Shield.Exists)
                 impact.ApplyShield(Shield.Value - impact.ShieldDamage);
             else
