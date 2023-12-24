@@ -1,0 +1,41 @@
+.code-label {
+    -unity-font-definition: initial;
+    background-image: resource('Textures/GUI/tile');
+    height: 60px;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    color: rgb(255, 255, 128);
+    -unity-background-image-tint-color: rgba(192, 192, 128, 0.75);
+    font-size: 44px;
+    -unity-font: url('project://database/Assets/Fonts/TTWPGOTT.ttf?fileID=12800000&guid=1f7c2b15b1c46c2438125d280e866dde&type=3#TTWPGOTT');
+    margin-top: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    margin-left: 2px;
+}
+
+.num-button {
+    background-image: resource('Textures/GUI/tile');
+    height: 92px;
+    flex: 1;
+    font-size: 72px;
+    -unity-text-align: middle-center;
+    -unity-background-image-tint-color: rgba(160, 180, 180, 0.75);
+    -unity-font-definition: initial;
+    -unity-font: url('project://database/Assets/Fonts/Hyperspace%20Bold.ttf?fileID=12800000&guid=c11cd0345b114c84eacb7434275d4c0c&type=3#Hyperspace Bold');
+    padding-left: 8px;
+    transition-duration: 0.2s;
+    margin-top: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    margin-left: 2px;
+}
+
+.num-button:hover {
+    -unity-background-image-tint-color: rgb(160, 180, 180);
+}
+
+.num-button:active {
+    -unity-background-image-tint-color: rgba(180, 180, 160, 255);
+    color: rgba(255, 255, 255, 255);
+}
