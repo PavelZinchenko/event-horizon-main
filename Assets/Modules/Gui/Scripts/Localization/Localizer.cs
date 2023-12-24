@@ -10,14 +10,12 @@ namespace Gui.Localization
     {
         [Inject] private readonly ILocalization _localization;
 
-        [SerializeField] private string _className = "localize";
-
         private UIDocument _uIDocument;
 
         private void Awake()
         {
             _uIDocument = GetComponent<UIDocument>();
-            _uIDocument.rootVisualElement.Query<TextElement>(null, _className).ForEach(Localize);
+            _uIDocument.rootVisualElement.Query<TextElement>().ForEach(Localize);
         }
 
         private void Localize(TextElement label)

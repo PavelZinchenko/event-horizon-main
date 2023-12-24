@@ -1,0 +1,81 @@
+:root {
+    -unity-font-definition: url('project://database/Assets/Fonts/Bicubik.asset');
+}
+
+.unity-ui-document__root {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
+.unity-base-field {
+    flex-direction: row;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.unity-base-field__input {
+    flex: 1 0 0;
+    overflow: hidden;
+}
+
+.unity-toggle {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.unity-text-element {
+    font-size: 24px;
+    color: var(--normal-text-color);
+}
+
+.unity-toggle__input {
+    flex: 0 0 auto;
+    width: 80px;
+    height: 80px;
+    margin-left: -8px;
+    margin-right: -8px;
+    background-image: url('project://database/Assets/Sprites/UI/ui_content2.png');
+    -unity-background-image-tint-color: var(--panel-color);
+}
+
+.unity-toggle .unity-label {
+    margin-left: 8px;
+}
+
+.unity-toggle__checkmark {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-image: resource('Textures/Effects/cloud');
+    -unity-background-image-tint-color: var(--normal-text-color);
+    transition-duration: 0.2s;
+    opacity: 0;
+}
+
+.unity-toggle > .unity-toggle__input:checked > .unity-toggle__checkmark {
+    opacity: 1;
+}
+
+.unity-base-slider {
+    align-items: center;
+}
+
+.unity-base-slider .unity-base-slider__dragger {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    border-width: 0;
+    background-color: var(--panel-color);
+    margin: 14px 14px 14px 14px;
+}
+
+.unity-base-slider .unity-base-slider__drag-container {
+    background-image: url('project://database/Assets/Sprites/UI/ui_toolbar2.png?fileID=21300000&guid=6c82eefb4e3919e4194f8dc805593bba&type=3#ui_toolbar2');
+    -unity-background-image-tint-color: var(--panel-color);
+}

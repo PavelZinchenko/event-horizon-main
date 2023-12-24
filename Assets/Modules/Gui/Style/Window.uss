@@ -1,0 +1,4 @@
+.window-frame {
+    -unity-background-image-tint-color: var(--panel-color);
+    background-image: url('project://database/Assets/Sprites/UI/ui_content1.png?fileID=21300000&guid=7216b767ecf02d542a1180fac22be4f0&type=3#ui_content1');
+}

@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Modules/Gui/Layout/Settings/Settings.uss?fileID=7433441132597879392&amp;guid=f73f76b7b4cc55c4cabbce82bb64fbbc&amp;type=3#Settings" />
+    <ui:RadioButton name="Tab" class="button tab-button tab-button-frame">
+        <ui:VisualElement class="icon" />
+        <ui:VisualElement class="background" />
+    </ui:RadioButton>
+</ui:UXML>

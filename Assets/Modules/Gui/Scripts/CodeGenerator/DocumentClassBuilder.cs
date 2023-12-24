@@ -113,13 +113,13 @@ namespace Gui.CodeGenerator
 
             foreach (var child in element.Children())
             {
-                var hasName = !string.IsNullOrEmpty(child.name);
+				var name = GetElementName(child);
                 var type = child.GetType();
                 if (type.IsNested) continue;
 
-                var node = new Node(parent, index, child.name, type.Name);
+                var node = new Node(parent, index, name, type.Name);
 
-                if (TryBuildDocumentTree(node, child) || hasName)
+                if (TryBuildDocumentTree(node, child) || !string.IsNullOrEmpty(name))
                 {
                     parent.Add(node);
                     success = true;
@@ -130,6 +130,15 @@ namespace Gui.CodeGenerator
 
             return success;
         }
+
+		private static string GetElementName(VisualElement element)
+		{
+			var name = element.name;
+			if (name.StartsWith("unity-"))
+				return null;
+
+			return name.Replace('-', '_');
+		}
 
         private void CalculateProperties(Node node, string name)
         {

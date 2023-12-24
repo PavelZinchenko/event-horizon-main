@@ -5,9 +5,7 @@
     --button-focus-color-normal: rgba(80, 192, 255, 0);
     --button-focus-color-hover: rgba(80, 192, 255, 0.15);
     --button-focus-color-active: rgba(80, 192, 255, 0.25);
+    --button-focus-color-selected: rgba(80, 192, 255, 0.3);
     --text-outline-color: rgba(0, 0, 0, 0.5);
-}
-
-.font-default {
-    -unity-font-definition: url('project://database/Assets/Fonts/Bicubik%20SDF.asset?fileID=11400000&guid=94c4f79ac2bbcef4ca01ded39151b6d5&type=2#Bicubik SDF');
+    --common-font: url('project://database/Assets/Fonts/Exo2-Regular.asset');
 }

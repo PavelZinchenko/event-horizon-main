@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 0331ea93716811747acff9f890a054ac
+guid: b5e4db66e129d714aadaddfb86b16e7e
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Bicubik
+  - Exo 2
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

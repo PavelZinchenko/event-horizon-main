@@ -1,0 +1,51 @@
+.button {
+    -unity-background-image-tint-color: var(--panel-color);
+    flex-direction: row;
+}
+
+.button > .background {
+    -unity-background-image-tint-color: var(--button-focus-color-normal);
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    transition-duration: 0.2s;
+}
+
+.button:checked > .background, .button:checked:hover > .background {
+    -unity-background-image-tint-color: var(--button-focus-color-selected);
+}
+
+.button:hover > .background {
+    -unity-background-image-tint-color: var(--button-focus-color-hover);
+}
+
+.button:active > .background {
+    -unity-background-image-tint-color: var(--button-focus-color-active);
+}
+
+.button .icon {
+    -unity-background-image-tint-color: var(--icon-color);
+    -unity-background-scale-mode: scale-to-fit;
+    min-width: 64px;
+    min-height: 64px;
+}
+
+.button-frame-left {
+    background-image: url('project://database/Assets/Sprites/UI/ui_button4l.psd?fileID=21300000&guid=337db6900bc267b4983fc3d05bf3512b&type=3#ui_button4l');
+    -unity-background-image-tint-color: var(--panel-color);
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.button-frame-right {
+    background-image: url('project://database/Assets/Sprites/UI/ui_button4r.psd?fileID=21300000&guid=7cbdf6fc5f1d25042bd92e4ed33d4982&type=3#ui_button4r');
+    -unity-background-image-tint-color: var(--panel-color);
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}

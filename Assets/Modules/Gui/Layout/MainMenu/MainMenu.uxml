@@ -2,6 +2,7 @@
     <ui:Template name="PrivacyPolicyButton" src="project://database/Assets/Modules/Gui/Layout/MainMenu/PrivacyPolicyButton.uxml?fileID=9197481963319205126&amp;guid=138cc7ca773fc2d48a114d8f6abf52f3&amp;type=3#PrivacyPolicyButton" />
     <ui:Template name="MenuButton" src="project://database/Assets/Modules/Gui/Layout/MainMenu/MenuButton.uxml?fileID=9197481963319205126&amp;guid=4e4ba5e61c1e86e4cb857efb1c9dcea0&amp;type=3#MenuButton" />
     <ui:Template name="MenuInputButton" src="project://database/Assets/Modules/Gui/Layout/MainMenu/MenuInputButton.uxml?fileID=9197481963319205126&amp;guid=105c736dfcd7a2f46b1ae63c109b7304&amp;type=3#MenuInputButton" />
+    <ui:Template name="Settings" src="project://database/Assets/Modules/Gui/Layout/Settings/Settings.uxml?fileID=9197481963319205126&amp;guid=bb03d09157223c84ba64cde3fba0984c&amp;type=3#Settings" />
     <Style src="project://database/Assets/Modules/Gui/Layout/MainMenu/MainMenu.uss?fileID=7433441132597879392&amp;guid=7721a7bf253a04a49b6392e18158087a&amp;type=3#MainMenu" />
     <ui:Instance template="PrivacyPolicyButton" name="PrivacyPolicy" style="position: absolute; right: 0; top: 0;" />
     <ui:VisualElement name="MainMenu" style="width: 600px; position: absolute; right: 0; bottom: 0; top: auto; justify-content: flex-end; align-items: stretch;">
@@ -25,5 +26,6 @@
             <AttributeOverrides element-name="label" text="$Exit" />
         </ui:Instance>
     </ui:VisualElement>
-    <ui:Label text="0.0.0" display-tooltip-when-elided="false" name="Version" enable-rich-text="false" picking-mode="Ignore" style="position: absolute; left: 0; bottom: 0; font-size: 24px; color: rgba(255, 255, 255, 0.5);" />
+    <ui:Label text="0.0.0" display-tooltip-when-elided="false" name="Version" enable-rich-text="false" picking-mode="Ignore" style="position: absolute; left: 8px; bottom: 0; font-size: 24px; color: rgba(255, 255, 255, 0.5);" />
+    <ui:Instance template="Settings" name="Settings" picking-mode="Ignore" style="align-self: center; display: none;" />
 </ui:UXML>

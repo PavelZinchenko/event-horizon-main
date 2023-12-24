@@ -6,7 +6,7 @@ namespace Gui.Animation
     {
         [SerializeField] private int _windowWidth = 600;
 
-        protected override void ShowElement(bool visible)
+        protected override void SetElementState(bool visible)
         {
             RootElement.style.right = visible ? 0 : -_windowWidth;
         }

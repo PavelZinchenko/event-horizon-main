@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -9,7 +9,11 @@ namespace Gui.Animation
     [RequireComponent(typeof(PresenterBase)), DisallowMultipleComponent]
     public abstract class WindowAnimationBase : MonoBehaviour
     {
-        [SerializeField] private float _duration = 0.5f;
+		private const string PropertyNameDisplay = "display";
+		private const string PropertyNameAll = "all";
+		private const float DisplayTransitionDuration = 0.001f;
+
+		[SerializeField] private float _duration = 0.5f;
         [SerializeField] private EasingMode _easing = EasingMode.EaseInOutSine;
         [SerializeField] private bool _initiallyVisible;
 
@@ -18,10 +22,40 @@ namespace Gui.Animation
 
         private PresenterBase _presenter;
         private bool _visible;
-        private bool _stateChanged;
-        private bool _isAnimationRunning;
 
-        public event UnityEngine.Events.UnityAction AnimationFinished
+		private void OnEnable()
+		{
+			RootElement.RegisterCallback<TransitionStartEvent>(OnTransitionStarted, TrickleDown.TrickleDown);
+			RootElement.RegisterCallback<TransitionEndEvent>(OnTransitionEnded, TrickleDown.TrickleDown);
+		}
+
+		private void OnDisable()
+		{
+			RootElement.UnregisterCallback<TransitionStartEvent>(OnTransitionStarted, TrickleDown.TrickleDown);
+			RootElement.UnregisterCallback<TransitionEndEvent>(OnTransitionEnded, TrickleDown.TrickleDown);
+		}
+
+		private void OnTransitionStarted(TransitionStartEvent e)
+		{
+			//var names = string.Join(',', e.stylePropertyNames.ToArray());
+			//Debug.LogError($"OnTransitionStarted {RootElement.name} - {names}");
+		}
+
+		private void OnTransitionEnded(TransitionEndEvent e)
+		{
+			if (e.stylePropertyNames.Contains(PropertyNameDisplay))
+				return;
+
+			//var names = string.Join(',', e.stylePropertyNames.ToArray());
+			//Debug.LogError($"OnTransitionEnded {RootElement.name} - {names}");
+
+			if (!_visible) 
+				ShowElement(false);
+
+			_animationFinished?.Invoke();
+		}
+
+		public event UnityEngine.Events.UnityAction AnimationFinished
         {
             add => (_animationFinished ??= new()).AddListener(value);
             remove => (_animationFinished ??= new()).RemoveListener(value);
@@ -39,56 +73,40 @@ namespace Gui.Animation
             set
             {
                 if (_visible == value) return;
-
-                _visible = value;
-                _stateChanged = true;
-
-                if (!_isAnimationRunning)
-                    StartCoroutine(StartAnimation());
-
+				_visible = value;
+				
+				if (_visible) ShowElement(true);
+				SetElementState(_visible);
                 _valueChanged?.Invoke(_visible);
-            }
-        }
+			}
+		}
 
         protected VisualElement RootElement => _presenter.RootElement;
 
-        protected abstract void ShowElement(bool visible);
+        protected abstract void SetElementState(bool visible);
 
-        private void Awake()
+		private void Awake()
         {
             _presenter = GetComponent<PresenterBase>();
 
-            var element = _presenter.RootElement;
-            element.style.transitionDuration = new List<TimeValue>() { new TimeValue(_duration, TimeUnit.Second) };
-            element.style.transitionTimingFunction = new(new List<EasingFunction>() { new EasingFunction(_easing) });
+			var element = _presenter.RootElement;
+			element.style.transitionProperty = new List<StylePropertyName> { PropertyNameAll, PropertyNameDisplay };
+			element.style.transitionDuration = new List<TimeValue> { _duration, DisplayTransitionDuration };
+			element.style.transitionTimingFunction = new(new List<EasingFunction> { _easing });
 
-            _visible = _initiallyVisible;
-            ShowElement(_visible);
-        }
+			_visible = _initiallyVisible;
+		}
 
-        private IEnumerator StartAnimation()
-        {
-            _isAnimationRunning = true;
+		private void Start()
+		{
+			SetElementState(_visible);
+			ShowElement(_visible);
+		}
 
-            float elapsedTime = 0f;
-            yield return null;
-
-            while (elapsedTime < _duration)
-            {
-                if (_stateChanged)
-                {
-                    elapsedTime = 0f;
-                    _stateChanged = false;
-
-                    ShowElement(_visible);
-                }
-
-                elapsedTime += Time.unscaledDeltaTime;
-                yield return null;
-            }
-
-            _isAnimationRunning = false;
-            _animationFinished?.Invoke();
-        }
-    }
+		private void ShowElement(bool visible)
+		{
+			//Debug.LogError($"ShowElement {RootElement.name} - {visible}");
+			RootElement.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+		}
+	}
 }
