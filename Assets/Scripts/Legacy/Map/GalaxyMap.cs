@@ -18,6 +18,7 @@ public class GalaxyMap : MonoBehaviour
     [Inject] private readonly MotherShip _motherShip;
     [Inject] private readonly PlayerSkills _playerSkills;
 
+	[SerializeField] private Map.MapScaler _mapScaler;
 	[SerializeField] private Map.MapNavigator _mapNavigator;
 	//[SerializeField] private Map.ScreenCenter _screenCenter;
 
@@ -189,12 +190,12 @@ public class GalaxyMap : MonoBehaviour
 		_stars.Clear();
 
 		IEnumerable<Galaxy.Star> allStars;
-        switch (_motherShip.ViewMode)
-        {
-            case ViewMode.StarMap:
+		switch (_mapScaler.ViewMode)
+		{
+			case ViewMode.StarMap:
 				allStars = _starMap.GetVisibleStars(topLeft / DistanceBetweenStars, bottomRight / DistanceBetweenStars);
 				break;
-            case ViewMode.GalaxyMap:
+			case ViewMode.GalaxyMap:
 				allStars = _starMap.GetGalaxyViewVisibleStars(topLeft / DistanceBetweenStars, bottomRight / DistanceBetweenStars);
 				break;
 			case ViewMode.StarSystem:

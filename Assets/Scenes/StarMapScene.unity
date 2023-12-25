@@ -7863,6 +7863,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56726994b08906e4da3725d273b262a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mapScaler: {fileID: 1786119844}
   _mapNavigator: {fileID: 1288497068}
   DistanceBetweenStars: 8
   Boundary: {fileID: 1478954935}

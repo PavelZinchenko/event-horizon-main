@@ -40,8 +40,9 @@ namespace Map
 
         public float ZoomMin => _starZoomMin;
         public float ZoomMax => _galaxyZoomMax;
+		public ViewMode ViewMode => _viewMode;
 
-        private void OnValidate()
+		private void OnValidate()
         {
             if (_starZoomMax < _starZoomMin) _starZoomMax = _starZoomMin;
             if (_mapZoomMin < _starZoomMax) _mapZoomMin = _starZoomMax + 1f;
@@ -86,7 +87,7 @@ namespace Map
             UpdateViewMode();
         }
 
-        public void ShowStarMap()
+		public void ShowStarMap()
         {
             _viewMode = ViewMode.StarMap;
         }
