@@ -15,7 +15,7 @@ namespace Combat.Component.Triggers
 
         public bool TryUpdateEffect(float elapsedTime)
         {
-            _effect.Life = _ship.Stats.Shield.Percentage;
+            _effect.Life = _ship.Features.Opacity * _ship.Stats.Shield.Percentage;
             return true;
         }
 
