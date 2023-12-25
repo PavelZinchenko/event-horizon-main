@@ -2,7 +2,6 @@
 using DataModel.Technology;
 using Economy.Products;
 using GameServices.Player;
-using GameServices.Random;
 using GameServices.Research;
 using UnityEngine;
 using UnityEngine.Events;
@@ -35,7 +34,7 @@ namespace Gui.Craft
 
         public void Initialize(ITechnology tech, int level)
         {
-            if (_itemQuality != CraftItemQuality.Common && tech is SatelliteTechnology)
+			if (_itemQuality != CraftItemQuality.Common && !CanCraftImprovedItem(tech))
             {
                 Cleanup();
                 _notAvailablePanel.gameObject.SetActive(true);
@@ -99,9 +98,22 @@ namespace Gui.Craft
             return true;
         }
 
-        private int WorkshopLevel { get; set; }
+		private static bool CanCraftImprovedItem(ITechnology tech)
+		{
+			switch (tech)
+			{
+				case SatelliteTechnology:
+					return false;
+				case ComponentTechnology componentTech:
+					return componentTech.Component.PossibleModifications.Count > 0;
+				default:
+					return true;
+			}
+		}
+
+		private int WorkshopLevel { get; set; }
         private int RequiredLevel { get { return Math.Max(0, _itemQuality.GetWorkshopLevel(_technology.GetWorkshopLevel()) + _playerSkills.CraftingLevelModifier); } }
 
-        private ITechnology _technology;
+		private ITechnology _technology;
     }
 }
