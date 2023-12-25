@@ -59,7 +59,7 @@
     background-image: resource('Textures/Icons/icon_repair');
 }
 
-.unity-slider .unity-slider__label {
+.unity-base-slider--horizontal .unity-slider__label {
     width: 64px;
     height: 64px;
     flex-shrink: 0;

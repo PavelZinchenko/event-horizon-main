@@ -1,5 +1,8 @@
 
 @import url("Style/Unity.uss");
+@import url("Style/UnityToggle.uss");
+@import url("Style/UnitySlider.uss");
+@import url("Style/UnityScroller.uss");
 @import url("Style/Common.uss");
 @import url("Style/Button.uss");
 @import url("Style/Window.uss");

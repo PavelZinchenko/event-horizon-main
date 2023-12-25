@@ -1,10 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/Modules/Gui/Layout/MainMenu/MenuButton.uss?fileID=7433441132597879392&amp;guid=f203bb8bdd2bb81478b83a88fe5bf7b8&amp;type=3#MenuButton" />
-    <ui:Button name="button" class="menu-button button">
-        <ui:VisualElement class="button-frame-left">
+    <ui:Button name="button" class="menu-button button button-frame3">
+        <ui:VisualElement class="body-left">
             <ui:VisualElement class="icon" />
         </ui:VisualElement>
-        <ui:VisualElement class="button-frame-right">
+        <ui:VisualElement class="body-right">
             <ui:Label name="label" text="OK" />
         </ui:VisualElement>
         <ui:VisualElement picking-mode="Ignore" class="background" />

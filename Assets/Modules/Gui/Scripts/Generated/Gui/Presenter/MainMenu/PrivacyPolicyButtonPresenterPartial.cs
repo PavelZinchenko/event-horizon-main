@@ -13,7 +13,7 @@ namespace Gui.Presenter.MainMenu
         private Button _PrivacyPolicy_button;
 
         public override VisualElement RootElement => PrivacyPolicy;
-        public TemplateContainer PrivacyPolicy => _PrivacyPolicy ??= (TemplateContainer)UiDocument.rootVisualElement[0];
-        public Button PrivacyPolicy_button => _PrivacyPolicy_button ??= (Button)UiDocument.rootVisualElement[0][0];
+        public TemplateContainer PrivacyPolicy => _PrivacyPolicy ??= (TemplateContainer)UiDocument.rootVisualElement[1];
+        public Button PrivacyPolicy_button => _PrivacyPolicy_button ??= (Button)UiDocument.rootVisualElement[1][0];
     }
 }

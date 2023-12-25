@@ -21,3 +21,8 @@
 #Exit .menu-button .icon {
     background-image: resource('Textures/Icons/icon_exit');
 }
+.version-label {
+    font-size: 24px; 
+    color: rgba(255, 255, 255, 0.5); 
+    -unity-font-definition: var(--common-font);
+}

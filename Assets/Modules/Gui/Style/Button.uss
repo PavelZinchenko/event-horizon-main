@@ -32,7 +32,45 @@
     min-height: 64px;
 }
 
-.button-frame-left {
+.button-frame1 .background {
+    background-image: url('project://database/Assets/Sprites/UI/ui_content1_bg.png');
+}
+
+.button-frame1 .body-left {
+    background-image: url('project://database/Assets/Sprites/UI/ui_content1l_gray.png?fileID=21300000&guid=26ca97304200dbe4190166e2b71a7270&type=3#ui_content1l_gray');
+    -unity-background-image-tint-color: var(--panel-color);
+    padding-left: 24px;
+    padding-right: 12px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.button-frame1 .body-right {
+    background-image: url('project://database/Assets/Sprites/UI/ui_content1r_dark.png?fileID=21300000&guid=2d31d110a8a700e48837c4a5bf740a06&type=3#ui_content1r_dark');
+    -unity-background-image-tint-color: var(--panel-color);
+    padding-left: 12px;
+    padding-right: 24px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.button-frame2.body {
+    background-image: url('project://database/Assets/Sprites/UI/ui_button2.psd?fileID=21300000&guid=b48e6e3a82e818945b26df929ec0618f&type=3#ui_button2');
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.button-frame2 .background {
+    background-image: url('project://database/Assets/Sprites/UI/ui_button2_sel.psd?fileID=21300000&guid=612367935854aa241a649ee7d6a2e51a&type=3#ui_button2_sel');
+}
+
+.button-frame3 .background {
+    background-image: url('project://database/Assets/Sprites/UI/ui_button2_sel.psd?fileID=21300000&guid=612367935854aa241a649ee7d6a2e51a&type=3#ui_button2_sel');
+}
+
+.button-frame3 .body-left {
     background-image: url('project://database/Assets/Sprites/UI/ui_button4l.psd?fileID=21300000&guid=337db6900bc267b4983fc3d05bf3512b&type=3#ui_button4l');
     -unity-background-image-tint-color: var(--panel-color);
     padding-left: 24px;
@@ -41,7 +79,7 @@
     padding-bottom: 24px;
 }
 
-.button-frame-right {
+.button-frame3 .body-right {
     background-image: url('project://database/Assets/Sprites/UI/ui_button4r.psd?fileID=21300000&guid=7cbdf6fc5f1d25042bd92e4ed33d4982&type=3#ui_button4r');
     -unity-background-image-tint-color: var(--panel-color);
     padding-left: 24px;

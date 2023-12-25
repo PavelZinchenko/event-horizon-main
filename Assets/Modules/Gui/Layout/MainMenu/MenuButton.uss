@@ -8,12 +8,12 @@
     overflow: hidden;
 }
 
-.menu-button .button-frame-left {
+.menu-button .body-left {
     justify-content: center;
     align-items: center;
 }
 
-.menu-button .button-frame-right {
+.menu-button .body-right {
     align-items: stretch;
     justify-content: center;
     flex-grow: 1;
@@ -36,12 +36,7 @@
 }
 
 .menu-privacy-policy-button {
-    background-image: url('project://database/Assets/Sprites/UI/ui_button2.psd?fileID=21300000&guid=b48e6e3a82e818945b26df929ec0618f&type=3#ui_button2');
     height: 96px;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-top: 24px;
-    padding-bottom: 24px;
     font-size: 24px;
     -unity-text-align: middle-center;
     width: 400px;

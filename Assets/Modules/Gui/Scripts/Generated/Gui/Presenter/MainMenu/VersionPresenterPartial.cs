@@ -12,6 +12,6 @@ namespace Gui.Presenter.MainMenu
         private Label _Version;
 
         public override VisualElement RootElement => Version;
-        public Label Version => _Version ??= (Label)UiDocument.rootVisualElement[2];
+        public Label Version => _Version ??= (Label)UiDocument.rootVisualElement[3];
     }
 }

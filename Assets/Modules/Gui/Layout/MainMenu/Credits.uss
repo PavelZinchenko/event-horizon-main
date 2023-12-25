@@ -1,0 +1,41 @@
+.title-label {
+    font-size: 60px;
+    color: rgba(255, 255, 255, 0.5);
+    background-image: resource('Textures/Effects/cloud');
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.5);
+    -unity-background-scale-mode: stretch-to-fill;
+    padding-top: 24px;
+    padding-right: 64px;
+    padding-bottom: 12px;
+    padding-left: 64px;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    margin-bottom: 628px;
+}
+
+.header-label {
+    font-size: 32px;
+    color: rgba(255, 255, 255, 0.5);
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    margin-bottom: 64px;
+}
+
+.content-label {
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.5);
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    margin-bottom: 328px;
+}
+
+.unity-scroll-view__content-container {
+    align-items: center;
+}
+
+.unity-base-slider--vertical .unity-base-slider__dragger {
+    -unity-background-image-tint-color: var(--panel-color);
+    background-image: url('project://database/Assets/Sprites/UI/ui_scroll_right.png?fileID=21300000&guid=4fe4c4020fcaf7f42b37da5c85c15a28&type=3#ui_scroll_right');
+    background-color: initial;
+    border-radius: initial;
+}

@@ -122,15 +122,19 @@ namespace Gui.Presenter.MainMenu
 
 		private void OnPanelClicked(ClickEvent e)
 		{
-			if (Time.unscaledTime - _lastClickTime > _maxClickInterval)
+			if (!Visible)
 			{
-				_clickCount = 1;
-			}
-			else if (++_clickCount == 3)
-			{
-				_idletime = 0;
-				Visible = true;
-				Cheats_Code.text = _hash.ToString();
+				if (Time.unscaledTime - _lastClickTime > _maxClickInterval)
+				{
+					_clickCount = 1;
+				}
+				else if (++_clickCount == 3)
+				{
+					_idletime = 0;
+					_command = string.Empty;
+					Visible = true;
+					Cheats_Code.text = _hash.ToString();
+				}
 			}
 
 			_lastClickTime = Time.unscaledTime;
