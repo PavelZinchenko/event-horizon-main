@@ -2,9 +2,9 @@
     <Style src="project://database/Assets/Modules/Gui/Layout/Settings/Settings.uss?fileID=7433441132597879392&amp;guid=f73f76b7b4cc55c4cabbce82bb64fbbc&amp;type=3#Settings" />
     <ui:VisualElement name="General">
         <ui:DropdownField label="$LanguageLabel" index="-1" choices="System.Collections.Generic.List`1[System.String]" name="Languages" />
-        <ui:Slider picking-mode="Ignore" value="50" high-value="100" label=" " name="MusicVolume" />
-        <ui:Slider picking-mode="Ignore" value="50" high-value="100" label=" " name="SoundVolume" />
-        <ui:SliderInt picking-mode="Ignore" label="$GraphicsQuality" value="0" high-value="2" name="GraphicsQuality" />
+        <ui:MySlider picking-mode="Ignore" value="50" high-value="100" label=" " name="MusicVolume" />
+        <ui:MySlider picking-mode="Ignore" value="50" high-value="100" label=" " name="SoundVolume" />
+        <ui:MyIntSlider picking-mode="Ignore" label="$GraphicsQuality" value="0" high-value="2" name="GraphicsQuality" />
         <ui:Toggle label="$FullScreenMode" name="FullScreenMode" />
         <ui:Toggle label="$RunInBackground" name="RunInBackground" />
     </ui:VisualElement>
