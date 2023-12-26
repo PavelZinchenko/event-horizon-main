@@ -74,7 +74,7 @@ namespace Gui.Craft
             if (!TryConsumeResources())
                 return;
 
-            var seed = _session.Game.Seed + _session.Game.Counter + _resources.Money + _motherShip.CurrentStar.Id;
+            var seed = _session.Game.Seed + _session.Game.Counter + (int)_resources.Money + _motherShip.CurrentStar.Id;
             var item = _technology.CreateItem(_itemQuality, new System.Random(seed));
             item.Consume(1);
             _itemCreatedEvent.Invoke(item);
@@ -91,8 +91,8 @@ namespace Gui.Craft
             if (price.Techs > 0 && _research.GetAvailablePoints(_technology.Faction) < price.Techs)
                 return false;
 
-            _resources.Money -= price.Credits;
-            _resources.Stars -= price.Stars;
+            _resources.Money -= (int)price.Credits;  // TODO: change to some bigger type and remove conversion
+			_resources.Stars -= (int)price.Stars;
             _research.AddResearchPoints(_technology.Faction, -price.Techs);
 
             return true;

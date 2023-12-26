@@ -22,7 +22,7 @@ namespace Economy.ItemType
         public string Description { get { return string.Empty; } }
         public SpriteId Icon => new("Textures/Icons/icon_blueprint", SpriteId.Type.Default);
         public Color Color { get { return Color.white; } }
-        public Price Price { get { return Price.Common(_technology.GetCraftPrice(CraftItemQuality.Common).Credits*3); } }
+        public Price Price { get { return Price.Common((long)_technology.GetCraftPrice(CraftItemQuality.Common).Credits*3); } }
         public ItemQuality Quality { get { return ItemQuality.Medium; } }
 
         public void Consume(int amount)

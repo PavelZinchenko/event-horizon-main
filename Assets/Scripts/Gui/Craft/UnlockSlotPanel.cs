@@ -55,7 +55,7 @@ namespace Gui.Craft
             else
                 _requirementsText.text = string.Empty;
 
-            Price = (tech != null ? tech.GetCraftPrice(quality)*1.1f - tech.GetCraftPrice(quality-1) : new CraftingPrice(ship.Price()*(ship.Model.Modifications.Count + 1)))*_playerSkills.CraftingPriceScale;
+            Price = (tech != null ? tech.GetCraftPrice(quality)*1.1f - tech.GetCraftPrice(quality-1) : new CraftingPrice(ship.Price()*(ship.Model.Modifications.Count + 1), 0))*_playerSkills.CraftingPriceScale;
             _craftPricePanel.Initialize(Price, requiredFaction);
 
             CanUnlock = requiredLevel <= level && (requiredFaction == faction || requiredFaction == Faction.Empty) && requiredShipLevel <= ship.Experience.Level && _craftPricePanel.HaveEnoughResources;
@@ -67,8 +67,8 @@ namespace Gui.Craft
             if (!CanUnlock)
                 return;
 
-            _resources.Money -= Price.Credits;
-            _resources.Stars -= Price.Stars;
+            _resources.Money -= (int)Price.Credits; // TODO: change to some bigger type and remove conversion
+			_resources.Stars -= (int)Price.Stars;
             _research.AddResearchPoints(_ship.Model.Faction, -Price.Techs);
             var quality = CraftItemQuality.Improved + _ship.Model.Modifications.Count;
             _ship.Experience = Experience.FromLevel(_ship.Experience.Level - GetLevelCost(quality));

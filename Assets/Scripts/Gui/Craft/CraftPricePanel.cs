@@ -29,11 +29,11 @@ namespace Gui.Craft
         public void Initialize(CraftingPrice price, Faction faction)
         {
             _creditsPanel.SetActive(price.Credits > 0);
-            _creditsText.text = Economy.Price.PriceToString(price.Credits);
+            _creditsText.text = price.Credits.ToString();
             var enoughMoney = _resources.Money >= price.Credits;
             _creditsText.color = enoughMoney ? _enoughColor : _notEnoughColor;
             _starsPanel.SetActive(price.Stars > 0);
-            _starsText.text = Economy.Price.PriceToString(price.Stars);
+            _starsText.text = price.Stars.ToString();
             var enoughStars = _resources.Stars >= price.Stars;
             _starsText.color = enoughStars ? _enoughColor : _notEnoughColor;
             _techsPanel.SetActive(price.Techs > 0);

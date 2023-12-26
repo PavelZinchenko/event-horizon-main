@@ -1,5 +1,6 @@
 using GameDatabase.Enums;
 using GameDatabase.DataModel;
+using CommonComponents.Utils;
 
 namespace GameDatabase.Extensions
 {
@@ -36,9 +37,9 @@ namespace GameDatabase.Extensions
             return component.Level / 75;
         }
 
-        public static int CraftingPrice(this Ship ship)
+        public static FlexInt CraftingPrice(this Ship ship)
         {
-            var price = ship.Layout.CellCount * ship.Layout.CellCount * 5;
+            var price = (FlexInt)ship.Layout.CellCount * ship.Layout.CellCount * ship.Layout.CellCount * ship.Layout.CellCount * 5;
 
             if (ship.SizeClass == SizeClass.Titan)
                 return price * 3;
@@ -48,7 +49,7 @@ namespace GameDatabase.Extensions
                 return price;
         }
 
-        public static int CraftingStars(this Ship ship)
+        public static FlexInt CraftingStars(this Ship ship)
         {
             if (ship.SizeClass == SizeClass.Titan)
                 return ship.Layout.CellCount / 10;

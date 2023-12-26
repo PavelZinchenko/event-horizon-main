@@ -7,6 +7,7 @@ using GameDatabase.DataModel;
 using GameDatabase.Model;
 using Services.Localization;
 using Services.Reources;
+using CommonComponents.Utils;
 
 namespace DataModel.Technology
 {
@@ -40,14 +41,14 @@ namespace DataModel.Technology
 
     public struct CraftingPrice
     {
-        public CraftingPrice(int credits, int stars = 0, int techs = 0)
+        public CraftingPrice(FlexInt credits, FlexInt stars, int techs = 0)
         {
             Credits = credits;
             Techs = techs;
 
 #if IAP_DISABLED
             Stars = 0;
-            Credits += Economy.Price.Premium(Stars).Amount;
+            Credits += Economy.Price.Premium((long)Stars).Amount;
 #else
             Stars = stars;
 #endif
@@ -65,11 +66,11 @@ namespace DataModel.Technology
 
         public static CraftingPrice operator *(CraftingPrice price, float scale)
         {
-            return new CraftingPrice(Mathf.RoundToInt(price.Credits*scale), Mathf.RoundToInt(price.Stars*scale), Mathf.RoundToInt(price.Techs*scale));
+            return new CraftingPrice(price.Credits*scale, price.Stars*scale, Mathf.RoundToInt(price.Techs*scale));
         }
 
-        public readonly int Credits;
-        public readonly int Stars;
+        public readonly FlexInt Credits;
+        public readonly FlexInt Stars;
         public readonly int Techs;
     }
 
