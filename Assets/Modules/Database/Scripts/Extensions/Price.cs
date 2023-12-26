@@ -39,7 +39,7 @@ namespace GameDatabase.Extensions
 
         public static FlexInt CraftingPrice(this Ship ship)
         {
-            var price = (FlexInt)ship.Layout.CellCount * ship.Layout.CellCount * ship.Layout.CellCount * ship.Layout.CellCount * 5;
+            var price = (FlexInt)ship.Layout.CellCount * ship.Layout.CellCount * 5;
 
             if (ship.SizeClass == SizeClass.Titan)
                 return price * 3;
