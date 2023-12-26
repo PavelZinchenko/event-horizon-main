@@ -40,7 +40,16 @@ namespace Map
 
         public float ZoomMin => _starZoomMin;
         public float ZoomMax => _galaxyZoomMax;
-		public ViewMode ViewMode => _viewMode;
+		
+		public ViewMode SuitableViewMode
+		{
+			get
+			{
+				if (_viewMode == ViewMode.StarSystem) return _viewMode;
+				if (CameraZoom <= _mapZoomMax + _mapZoomMax*_allowance) return ViewMode.StarMap;
+				return ViewMode.GalaxyMap;
+			}
+		}
 
 		private void OnValidate()
         {

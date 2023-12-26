@@ -190,7 +190,8 @@ public class GalaxyMap : MonoBehaviour
 		_stars.Clear();
 
 		IEnumerable<Galaxy.Star> allStars;
-		switch (_mapScaler.ViewMode)
+
+		switch (_mapScaler.SuitableViewMode)
 		{
 			case ViewMode.StarMap:
 				allStars = _starMap.GetVisibleStars(topLeft / DistanceBetweenStars, bottomRight / DistanceBetweenStars);
