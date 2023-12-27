@@ -99,8 +99,10 @@ public class ListScrollRect : UnityEngine.UI.ScrollRect
 	[Tooltip("The spacing between each item in the list.")]
 	[SerializeField] private float				spacing;
 
+	[SerializeField] private float minHandleSize = 0.1f;
+
 	// Used by the editor only, disable the not used warning since we do use it in editor code.
-	#pragma warning disable 0414
+#pragma warning disable 0414
 	[SerializeField, HideInInspector] private bool editorShowPadding = false;
 	#pragma warning restore 0414
 
@@ -282,7 +284,27 @@ public class ListScrollRect : UnityEngine.UI.ScrollRect
 		tracker.Clear();
 	}
 
-	#if UNITY_EDITOR
+    protected override void LateUpdate()
+    {
+		base.LateUpdate();
+		UpdateScrollbars();
+    }
+
+    public override void Rebuild(CanvasUpdate executing)
+    {
+        base.Rebuild(executing);
+		UpdateScrollbars();
+    }
+
+    private void UpdateScrollbars()
+    {
+        if (this.verticalScrollbar)
+            this.verticalScrollbar.size = Mathf.Max(this.verticalScrollbar.size, minHandleSize);
+        if (this.horizontalScrollbar)
+            this.horizontalScrollbar.size = Mathf.Max(this.horizontalScrollbar.size, minHandleSize);
+	}
+
+#if UNITY_EDITOR
 	protected override void OnValidate()
 	{
 		tracker.Clear();

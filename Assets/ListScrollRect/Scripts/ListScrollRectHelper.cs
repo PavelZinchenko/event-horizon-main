@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Collections;
 
 /// <summary>
 /// This component is responsible for notifying the ListScrollRect when contents size has change so it can refresh
