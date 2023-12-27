@@ -13,6 +13,7 @@ using Services.Messenger;
 using UnityEngine.UI;
 using ViewModel;
 using Zenject;
+using CommonComponents;
 using Status = GameServices.Multiplayer.Status;
 
 namespace Gui.Multiplayer
@@ -74,8 +75,8 @@ namespace Gui.Multiplayer
             messenger.AddListener<IPlayerInfo>(EventType.ArenaEnemyFound, OnEnemyFound);
             messenger.AddListener<AdStatus>(EventType.AdStatusChanged, OnAdStatusChanged);
             messenger.AddListener(EventType.RewardedVideoCompleted, OnRewardedAdCompleted);
-            messenger.AddListener<int>(EventType.MoneyValueChanged, value => UpdateResources());
-            messenger.AddListener<int>(EventType.StarsValueChanged, value => UpdateResources());
+            messenger.AddListener<Money>(EventType.MoneyValueChanged, value => UpdateResources());
+            messenger.AddListener<Money>(EventType.StarsValueChanged, value => UpdateResources());
             messenger.AddListener<int>(EventType.TokensValueChanged, value => UpdateResources());
         }
 

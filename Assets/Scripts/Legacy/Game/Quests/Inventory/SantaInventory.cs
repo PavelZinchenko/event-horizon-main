@@ -64,7 +64,7 @@ namespace GameModel
                             var component = ComponentInfo.CreateRandomModification(item, random, ModificationQuality.P2);
 
                             var itemType = _itemTypeFactory.CreateComponentItem(component);
-                            var snowflakes = _database.SpecialEventSettings.ConvertCreditsToSnowflakes(itemType.Price.Amount);
+                            var snowflakes = _database.SpecialEventSettings.ConvertCreditsToSnowflakes((int)itemType.Price.Amount);
                             _items.Add(_productFactory.CreateSpecial(itemType, new Price(snowflakes, Currency.Snowflakes)));
                         }
                     }

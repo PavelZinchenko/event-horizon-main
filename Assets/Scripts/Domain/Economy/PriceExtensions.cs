@@ -9,7 +9,7 @@ namespace Economy
     {
         public static IProduct GetProduct(this Price price, ItemTypeFactory factory)
         {
-            return new Product(factory.CreateCurrencyItem(price.Currency), price.Amount);
+            return new Product(factory.CreateCurrencyItem(price.Currency), (int)price.Amount);
         }
 
         public static void Consume(this Price price, PlayerResources playerResources)
@@ -24,10 +24,10 @@ namespace Economy
                     playerResources.Stars = playerResources.Stars + amount;
                     break;
                 case Currency.Tokens:
-                    playerResources.Tokens = playerResources.Tokens + amount;
+                    playerResources.Tokens = (int)(playerResources.Tokens + amount);
                     break;
                 case Currency.Snowflakes:
-                    playerResources.Snowflakes = playerResources.Snowflakes + amount;
+                    playerResources.Snowflakes = (int)(playerResources.Snowflakes + amount);
                     break;
                 case Currency.Money:
                 case Currency.None:
@@ -57,13 +57,13 @@ namespace Economy
                     var tokens = playerResources.Tokens;
                     if (tokens < amount)
                         return false;
-                    playerResources.Tokens = tokens - amount;
+                    playerResources.Tokens = (int)(tokens - amount);
                     return true;
                 case Currency.Snowflakes:
                     var snowflakes = playerResources.Snowflakes;
                     if (snowflakes < amount)
                         return false;
-                    playerResources.Snowflakes = snowflakes - amount;
+                    playerResources.Snowflakes = (int)(snowflakes - amount);
                     return true;
                 case Currency.Money:
                 case Currency.None:

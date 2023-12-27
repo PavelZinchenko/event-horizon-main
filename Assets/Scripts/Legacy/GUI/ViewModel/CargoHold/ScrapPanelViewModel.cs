@@ -46,7 +46,7 @@ namespace ViewModel
                 return;
 
             item.Product.Withdraw(1);
-            _playerResources.Money += Mathf.RoundToInt(item.Product.Price.Amount * UnityEngine.Random.Range(priceScaleMin, priceScaleMax));
+            _playerResources.Money += item.Product.Price.Amount * UnityEngine.Random.Range(priceScaleMin, priceScaleMax);
 			_soundPlayer.Play(_scrapSound);
 			UpdateItems();
 		}

@@ -18,6 +18,7 @@ using Services.Localization;
 using Services.Messenger;
 using Services.ObjectPool;
 using Zenject;
+using CommonComponents;
 
 namespace Gui.Craft
 {
@@ -37,8 +38,8 @@ namespace Gui.Craft
         [Inject]
         private void Initialize(IMessenger messenger)
         {
-            messenger.AddListener<int>(EventType.MoneyValueChanged, value => UpdateResources());
-            messenger.AddListener<int>(EventType.StarsValueChanged, value => UpdateResources());
+            messenger.AddListener<Money>(EventType.MoneyValueChanged, value => UpdateResources());
+			messenger.AddListener<Money>(EventType.StarsValueChanged, value => UpdateResources());
             messenger.AddListener(EventType.TechPointsChanged, UpdateResources);
         }
 

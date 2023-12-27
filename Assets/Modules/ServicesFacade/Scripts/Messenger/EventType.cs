@@ -35,9 +35,9 @@ public enum EventType
 
     QuestListChanged,
 
-    MoneyValueChanged, // int
+    MoneyValueChanged, // Money
     FuelValueChanged, // int
-    StarsValueChanged, // int
+    StarsValueChanged, // Money
     TokensValueChanged, // int
     SpecialResourcesChanged,
 

@@ -14,6 +14,7 @@ using Services.Gui;
 using Services.Storage;
 using Services.InAppPurchasing;
 using Services.Localization;
+using CommonComponents;
 
 namespace Services.Messenger
 {
@@ -166,14 +167,14 @@ namespace Services.Messenger
             _messenger.Broadcast<int>(EventType.FuelValueChanged, value);
         }
 
-        private void OnMoneyValueChanged(int value)
+        private void OnMoneyValueChanged(long value)
         {
-            _messenger.Broadcast<int>(EventType.MoneyValueChanged, value);
+            _messenger.Broadcast<Money>(EventType.MoneyValueChanged, value);
         }
 
         private void OnStarsValueChanged()
         {
-            _messenger.Broadcast<int>(EventType.StarsValueChanged, _session.Resources.Stars + _session.Purchases.ExtraStarCount);
+            _messenger.Broadcast<Money>(EventType.StarsValueChanged, _session.Resources.Stars + _session.Purchases.ExtraStarCount);
         }
 
         private void OnTokensValueChanged(int value)

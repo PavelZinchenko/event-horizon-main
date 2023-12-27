@@ -14,6 +14,7 @@ using Services.Localization;
 using Services.Messenger;
 using Services.Reources;
 using Zenject;
+using CommonComponents;
 
 namespace ViewModel
 {
@@ -68,8 +69,8 @@ namespace ViewModel
                 _playerInventory = args.Get<IInventory>(1);
 
                 _messenger.AddListener(EventType.IapItemsRefreshed, OnIapItemsChanged);
-                _messenger.AddListener<int>(EventType.MoneyValueChanged, value => UpdateStats());
-                _messenger.AddListener<int>(EventType.StarsValueChanged, value => UpdateStats());
+                _messenger.AddListener<Money>(EventType.MoneyValueChanged, value => UpdateStats());
+                _messenger.AddListener<Money>(EventType.StarsValueChanged, value => UpdateStats());
 
                 DescriptionPanel.gameObject.SetActive(false);
                 BuyToggle.isOn = false;

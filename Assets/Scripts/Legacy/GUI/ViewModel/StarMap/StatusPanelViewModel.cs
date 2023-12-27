@@ -1,17 +1,16 @@
-using Economy;
 using Game;
 using GameServices.Player;
 using Services.Messenger;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using CommonComponents;
 
 namespace ViewModel
 {
 	public class StatusPanelViewModel : MonoBehaviour
 	{
 	    [Inject] private readonly PlayerResources _playerResources;
-        [Inject] private readonly PlayerSkills _playerSkills;
 	    [Inject] private readonly HolidayManager _holidayManager;
 
 		public Text CreditsText;
@@ -26,9 +25,9 @@ namespace ViewModel
         [Inject]
 	    private void Initialize(IMessenger messenger)
 	    {
-            messenger.AddListener<int>(EventType.MoneyValueChanged, OnMoneyValueChanged);
+            messenger.AddListener<Money>(EventType.MoneyValueChanged, OnMoneyValueChanged);
             messenger.AddListener<int>(EventType.FuelValueChanged, OnFuelValueChanged);
-            messenger.AddListener<int>(EventType.StarsValueChanged, OnStarsValueChanged);
+            messenger.AddListener<Money>(EventType.StarsValueChanged, OnStarsValueChanged);
 	        messenger.AddListener(EventType.SpecialResourcesChanged, OnSpecialResourcesChanged);
 
             Credits = _playerResources.Money;
@@ -37,7 +36,7 @@ namespace ViewModel
 	        Snowflakes = _playerResources.Snowflakes;
 	    }
 
-        public int Credits
+        public Money Credits
 		{
 			get { return _credits; }
 			set
@@ -45,12 +44,12 @@ namespace ViewModel
 				if (_credits != value)
 				{
 					_credits = value;
-					CreditsText.text = _credits.ToString("N0");
+					CreditsText.text = _credits.ToString();
 				}
 			}
 		}
 
-	    public int Stars
+	    public Money Stars
 	    {
 	        get { return _stars; }
 	        set
@@ -63,7 +62,7 @@ namespace ViewModel
 	            {
 	                _stars = value;
 	                StarPanel.gameObject.SetActive(true);
-	                StarsText.text = _stars.ToString("N0");
+	                StarsText.text = _stars.ToString();
 	            }
 #endif
             }
@@ -102,7 +101,7 @@ namespace ViewModel
 			}
 		}
 
-	    private void OnMoneyValueChanged(int value)
+	    private void OnMoneyValueChanged(Money value)
 	    {
 	        Credits = value;
 	    }
@@ -112,7 +111,7 @@ namespace ViewModel
             Fuel = value;
         }
 
-        private void OnStarsValueChanged(int value)
+        private void OnStarsValueChanged(Money value)
         {
             Stars = value;
         }
@@ -122,10 +121,9 @@ namespace ViewModel
 	        Snowflakes = _playerResources.Snowflakes;
 	    }
 
-        private int _credits = -1;
 		private int _fuel = -1;
-	    private int _stars = -1;
         private int _snowflakes = -1;
-
-    }
+		private Money _credits = -1;
+		private Money _stars = -1;
+	}
 }

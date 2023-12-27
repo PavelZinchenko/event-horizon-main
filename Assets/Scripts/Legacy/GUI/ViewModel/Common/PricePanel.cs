@@ -35,7 +35,7 @@ namespace ViewModel
 			    }
 
                 gameObject.SetActive(true);
-				PriceText.text = Price.PriceToString(price.Amount);
+				PriceText.text = price.Amount.ToString();
 
 				var icon = _currencySettings.GetIcon(price.Currency);
 				var color = _currencySettings.GetColor(price.Currency);

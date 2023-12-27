@@ -1,45 +1,45 @@
 using GameDatabase.Enums;
 using GameDatabase.DataModel;
-using CommonComponents.Utils;
+using CommonComponents;
 
 namespace GameDatabase.Extensions
 {
     // TODO: move formulas to database
     public static class PriceExtensions
     {
-        public static int PriceInStars(this Satellite satellite)
+        public static Money PriceInStars(this Satellite satellite)
         {
             return satellite.Layout.CellCount;
         }
 
-        public static int Price(this Satellite satellite)
+        public static Money Price(this Satellite satellite)
         {
             return satellite.Layout.CellCount * satellite.Layout.CellCount * 20;
         }
 
-        public static int CraftingPrice(this Satellite satellite)
+        public static Money CraftingPrice(this Satellite satellite)
         {
             return satellite.Price() * 10;
         }
 
-        public static int CraftingStars(this Satellite satellite)
+        public static Money CraftingStars(this Satellite satellite)
         {
             return UnityEngine.Mathf.Max(0, satellite.Layout.CellCount / 7 - 1);
         }
 
-        public static int CraftingPrice(this Component component)
+        public static Money CraftingPrice(this Component component)
         {
             return component.Price();
         }
 
-        public static int CraftingStars(this Component component)
+        public static Money CraftingStars(this Component component)
         {
             return component.Level / 75;
         }
 
-        public static FlexInt CraftingPrice(this Ship ship)
+        public static Money CraftingPrice(this Ship ship)
         {
-            var price = (FlexInt)ship.Layout.CellCount * ship.Layout.CellCount * 5;
+            Money price = (Money)ship.Layout.CellCount * ship.Layout.CellCount * 5 * ship.Layout.CellCount * ship.Layout.CellCount;
 
             if (ship.SizeClass == SizeClass.Titan)
                 return price * 3;
@@ -49,7 +49,7 @@ namespace GameDatabase.Extensions
                 return price;
         }
 
-        public static FlexInt CraftingStars(this Ship ship)
+        public static Money CraftingStars(this Ship ship)
         {
             if (ship.SizeClass == SizeClass.Titan)
                 return ship.Layout.CellCount / 10;
@@ -59,9 +59,9 @@ namespace GameDatabase.Extensions
                 return ship.Layout.CellCount / 70;
         }
 
-        public static int Price(this Component component, ModificationQuality? quality = null)
+        public static Money Price(this Component component, ModificationQuality? quality = null)
         {
-            var price = 50 + component.Level * 20;
+            Money price = 50 + component.Level * 20;
             if (quality.HasValue)
                 price = price * QualityToPrice(quality.Value) / 100;
             if (component.Weapon != null)
@@ -70,9 +70,9 @@ namespace GameDatabase.Extensions
             return 1 + price;
         }
 
-        public static int PremiumPriceInCredits(this Component component, ModificationQuality? quality = null)
+        public static Money PremiumPriceInCredits(this Component component, ModificationQuality? quality = null)
         {
-            var price = 100 + component.Level * 100;;
+            Money price = 100 + component.Level * 100;
             if (quality.HasValue)
                 price = price * QualityToPrice(quality.Value) / 100; 
             if (component.Weapon != null)
@@ -81,9 +81,9 @@ namespace GameDatabase.Extensions
             return 1 + price;
         }
 
-        public static int PremiumPriceInStas(this Component component, ModificationQuality? quality = null)
+        public static Money PremiumPriceInStas(this Component component, ModificationQuality? quality = null)
         {
-            var price = component.Level;
+            Money price = component.Level;
             if (quality.HasValue)
                 price = price * QualityToPrice(quality.Value) / 100;
 
@@ -93,6 +93,6 @@ namespace GameDatabase.Extensions
             return 1 + price/10;
         }
 
-        private static int QualityToPrice(ModificationQuality quality) => quality.ToValue(50, 75, 90, 150, 200, 300);
+        private static Money QualityToPrice(ModificationQuality quality) => quality.ToValue(50, 75, 90, 150, 200, 300);
     }
 }

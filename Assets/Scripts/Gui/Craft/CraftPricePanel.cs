@@ -8,6 +8,7 @@ using GameServices.Research;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using CommonComponents.Utils;
 
 namespace Gui.Craft
 {
@@ -28,16 +29,18 @@ namespace Gui.Craft
 
         public void Initialize(CraftingPrice price, Faction faction)
         {
-            _creditsPanel.SetActive(price.Credits > 0);
-            _creditsText.text = price.Credits.ToString();
+			const int PriceDigits = 7;
+
+			_creditsPanel.SetActive(price.Credits > 0);
+            _creditsText.text = price.Credits.ToString(PriceDigits);
             var enoughMoney = _resources.Money >= price.Credits;
             _creditsText.color = enoughMoney ? _enoughColor : _notEnoughColor;
             _starsPanel.SetActive(price.Stars > 0);
-            _starsText.text = price.Stars.ToString();
+            _starsText.text = price.Stars.ToString(PriceDigits);
             var enoughStars = _resources.Stars >= price.Stars;
             _starsText.color = enoughStars ? _enoughColor : _notEnoughColor;
             _techsPanel.SetActive(price.Techs > 0);
-            _techsText.text = Economy.Price.PriceToString(price.Techs);
+            _techsText.text = ValueFormatter.AsMoney(price.Techs);
             var enoughTechs = _research.GetAvailablePoints(faction) >= price.Techs;
             _techsText.color = enoughTechs ? _enoughColor : _notEnoughColor;
             _techsImage.color = faction.Color;

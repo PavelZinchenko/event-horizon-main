@@ -2,13 +2,13 @@
 using UnityEngine.UI;
 using Constructor.Ships;
 using Economy;
-using GameDatabase;
 using GameServices.Player;
 using Services.Audio;
 using Services.Localization;
 using Services.Messenger;
 using Services.ObjectPool;
 using Zenject;
+using CommonComponents;
 
 namespace Gui.StarMap
 {
@@ -24,8 +24,8 @@ namespace Gui.StarMap
         [Inject]
         private void Initialize(IMessenger _messenger)
         {
-            _messenger.AddListener<int>(EventType.MoneyValueChanged, value => UpdateResources());
-            _messenger.AddListener<int>(EventType.StarsValueChanged, value => UpdateResources());
+            _messenger.AddListener<Money>(EventType.MoneyValueChanged, value => UpdateResources());
+            _messenger.AddListener<Money>(EventType.StarsValueChanged, value => UpdateResources());
         }
 
         [SerializeField] private LayoutGroup _shipList;

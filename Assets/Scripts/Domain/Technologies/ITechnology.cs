@@ -7,7 +7,7 @@ using GameDatabase.DataModel;
 using GameDatabase.Model;
 using Services.Localization;
 using Services.Reources;
-using CommonComponents.Utils;
+using CommonComponents;
 
 namespace DataModel.Technology
 {
@@ -41,7 +41,7 @@ namespace DataModel.Technology
 
     public struct CraftingPrice
     {
-        public CraftingPrice(FlexInt credits, FlexInt stars, int techs = 0)
+        public CraftingPrice(Money credits, Money stars, int techs = 0)
         {
             Credits = credits;
             Techs = techs;
@@ -69,8 +69,8 @@ namespace DataModel.Technology
             return new CraftingPrice(price.Credits*scale, price.Stars*scale, Mathf.RoundToInt(price.Techs*scale));
         }
 
-        public readonly FlexInt Credits;
-        public readonly FlexInt Stars;
+        public readonly Money Credits;
+        public readonly Money Stars;
         public readonly int Techs;
     }
 

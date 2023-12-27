@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Constructor;
@@ -14,6 +15,7 @@ using Gui.Constructor;
 using Services.Localization;
 using Services.Reources;
 using Zenject;
+using CommonComponents;
 
 namespace ViewModel
 {
@@ -138,7 +140,7 @@ namespace ViewModel
 
             var lockedItems = ShipLayout.Components.Concat(LeftPlatformLayout.Components).Concat(RightPlatformLayout.Components).Where(CanBeUnlocked);
 
-            var price = Price.Common(lockedItems.Sum(item => item.Info.Price.Amount*2));
+            var price = Price.Common(lockedItems.Sum(item => (long)item.Info.Price.Amount*2));
             _guiHelper.ShowConfirmation(_localization.GetString("$UnlockAllConfirmation"), price, () => 
             {
                 if (!price.TryWithdraw(_playerResources))

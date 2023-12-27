@@ -91,8 +91,8 @@ namespace Gui.Craft
             if (price.Techs > 0 && _research.GetAvailablePoints(_technology.Faction) < price.Techs)
                 return false;
 
-            _resources.Money -= (int)price.Credits;  // TODO: change to some bigger type and remove conversion
-			_resources.Stars -= (int)price.Stars;
+            _resources.Money -= price.Credits;
+			_resources.Stars -= price.Stars;
             _research.AddResearchPoints(_technology.Faction, -price.Techs);
 
             return true;

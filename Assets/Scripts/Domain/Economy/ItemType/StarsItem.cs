@@ -35,7 +35,7 @@ namespace Economy.ItemType
 
         public int MaxItemsToConsume { get { return int.MaxValue; } }
 
-        public int MaxItemsToWithdraw { get { return _playerResources.Stars; } }
+        public int MaxItemsToWithdraw { get { return (int)_playerResources.Stars; } }
 
         private readonly PlayerResources _playerResources;
         private readonly ILocalization _localization;

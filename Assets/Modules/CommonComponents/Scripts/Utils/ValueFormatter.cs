@@ -36,6 +36,22 @@ namespace CommonComponents.Utils
 		{
 			return value >= 0 ? "+" + AsDecimal(value) : AsDecimal(value);
 		}
+
+		public static string AsMoney(this long value, int maxDigits = 9)
+		{
+			var digits = DigitsInLong(value);
+
+			if (digits <= maxDigits)
+				return value.ToString("N0", CultureInfo.InvariantCulture);
+
+			var sections = (digits - maxDigits + 2) / 3;
+			for (int i = 0; i < sections; i++)
+				value /= 1000;
+
+			return value.ToString("N0", CultureInfo.InvariantCulture) + " " + DoubleFormatter.GetDigitsSuffix(sections*3);
+		}
+
+		private static int DigitsInLong(this long n) => n == 0L ? 1 : (n > 0L ? 1 : 2) + (int)Math.Log10(Math.Abs((double)n));
 	}
 
 	public static class DoubleFormatter
@@ -92,7 +108,7 @@ namespace CommonComponents.Utils
 			return result.ToString(CultureInfo.InvariantCulture) + GetDigitsSuffix(digs);
 		}
 
-		private static string GetDigitsSuffix(int digits)
+		internal static string GetDigitsSuffix(int digits)
 		{
 			// Currently hardcoded endings
 			switch (digits)

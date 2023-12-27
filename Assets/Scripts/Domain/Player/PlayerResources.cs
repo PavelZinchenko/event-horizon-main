@@ -4,6 +4,7 @@ using GameDatabase.DataModel;
 using GameDatabase.Model;
 using Session;
 using Zenject;
+using CommonComponents;
 
 namespace GameServices.Player
 {
@@ -21,16 +22,16 @@ namespace GameServices.Player
             _skills = skills;
         }
 
-        public int Money
+        public Money Money
         {
             get { return _session.Resources.Money; }
-            set { _session.Resources.Money = Clamp(value); }
+            set { _session.Resources.Money = (long)value; }
         }
 
-        public int Stars
+        public Money Stars
         {
             get { return _session.Resources.Stars + _session.Purchases.ExtraStarCount; }
-            set { _session.Resources.Stars = Clamp(value) - _session.Purchases.ExtraStarCount; }
+            set { _session.Resources.Stars = (long)value - _session.Purchases.ExtraStarCount; }
         }
 
         public int Tokens
@@ -88,7 +89,7 @@ namespace GameServices.Player
             return value < 0 ? 0 : value > max ? max : value;
         }
 
-        private enum SpecialResources
+		private enum SpecialResources
         {
             Snowflakes = 25,
         }

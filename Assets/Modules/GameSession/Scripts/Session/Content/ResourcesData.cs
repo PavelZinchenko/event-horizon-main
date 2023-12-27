@@ -36,13 +36,13 @@ namespace Session.Content
             _resources.CollectionChangedEvent += OnCollectionChanged;
         }
 
-        public string FileName { get { return Name; } }
+        public string FileName => Name;
         public const string Name = "resources";
 
         public bool IsChanged { get; private set; }
-		public static int CurrentVersion { get { return 5; } }
+		public static int CurrentVersion => 6;
 
-		public int Money 
+		public long Money 
 		{
 			get { return _money; }
 			set
@@ -84,7 +84,7 @@ namespace Session.Content
             }
         }
 
-        public int Stars
+        public long Stars
 		{
 			get { return _stars; }
 			set
@@ -109,9 +109,9 @@ namespace Session.Content
 
 			foreach (var value in Helpers.Serialize(Money))
 				yield return value;
-			foreach (var value in Helpers.Serialize(Fuel))
-				yield return value;
 			foreach (var value in Helpers.Serialize(Stars))
+				yield return value;
+			foreach (var value in Helpers.Serialize(Fuel))
 				yield return value;
             foreach (var value in Helpers.Serialize(Tokens))
                 yield return value;
@@ -141,9 +141,9 @@ namespace Session.Content
                 throw new ArgumentException();
             }
 
-			_money = Helpers.DeserializeInt(buffer, ref index);
+			_money = Helpers.DeserializeLong(buffer, ref index);
+			_stars = Helpers.DeserializeLong(buffer, ref index);
 			_fuel = Helpers.DeserializeInt(buffer, ref index);
-			_stars = Helpers.DeserializeInt(buffer, ref index);
             _tokens = Helpers.DeserializeInt(buffer, ref index);
 		    _resources.Assign(Helpers.DeserializeDictionary(buffer, ref index));
 
@@ -183,7 +183,13 @@ namespace Session.Content
 		        version = 5;
 		    }
 
-            return version == CurrentVersion;
+			if (version == 5)
+			{
+				data = Upgrade_5_6(data).ToArray();
+				version = 6;
+			}
+
+			return version == CurrentVersion;
 		}
 		
 		private static IEnumerable<byte> Upgrade_1_2(byte[] buffer)
@@ -308,15 +314,41 @@ namespace Session.Content
 	            yield return value;
         }
 
-        private void OnCollectionChanged()
+		private static IEnumerable<byte> Upgrade_5_6(byte[] buffer)
+		{
+			int index = 0;
+
+			Helpers.DeserializeInt(buffer, ref index); // version
+			foreach (var value in Helpers.Serialize(6))
+				yield return value;
+
+			var money = Helpers.DeserializeInt(buffer, ref index);
+			var fuel = Helpers.DeserializeInt(buffer, ref index);
+			var stars = Helpers.DeserializeInt(buffer, ref index);
+			var tokens = Helpers.DeserializeInt(buffer, ref index);
+
+			foreach (var value in Helpers.Serialize((long)money))
+				yield return value;
+			foreach (var value in Helpers.Serialize((long)stars))
+				yield return value;
+			foreach (var value in Helpers.Serialize(fuel))
+				yield return value;
+			foreach (var value in Helpers.Serialize(tokens))
+				yield return value;
+
+			for (int i = index; i < buffer.Length; ++i)
+				yield return buffer[i];
+		}
+
+		private void OnCollectionChanged()
 	    {
 	        IsChanged = true;
 	        _specialResourcesChangedTrigger.Fire();
 	    }
 
-        private ObscuredInt _money;
+        private ObscuredLong _money;
+		private ObscuredLong _stars;
 		private ObscuredInt _fuel;
-		private ObscuredInt _stars;
         private ObscuredInt _tokens;
 		private readonly Dictionary<int, int> _commonResources = new Dictionary<int, int>();
 	    private readonly GameItemCollection<int> _resources = new GameItemCollection<int>();
@@ -330,7 +362,7 @@ namespace Session.Content
         private static readonly int _mask = new System.Random((int)DateTime.Now.Ticks).Next();
 	}
 
-    public class MoneyValueChangedSignal : SmartWeakSignal<int> { public class Trigger : TriggerBase { } }
+    public class MoneyValueChangedSignal : SmartWeakSignal<long> { public class Trigger : TriggerBase { } }
     public class FuelValueChangedSignal : SmartWeakSignal<int> { public class Trigger : TriggerBase { } }
     public class StarsValueChangedSignal : SmartWeakSignal { public class Trigger : TriggerBase { } }
     public class TokensValueChangedSignal : SmartWeakSignal<int> { public class Trigger : TriggerBase { } }

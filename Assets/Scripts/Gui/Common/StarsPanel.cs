@@ -1,9 +1,9 @@
-﻿using Economy;
-using GameServices.Player;
+﻿using GameServices.Player;
 using Services.Messenger;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using CommonComponents;
 
 namespace Gui.Common
 {
@@ -17,18 +17,18 @@ namespace Gui.Common
 #if IAP_DISABLED
             gameObject.SetActive(false);
 #else
-            messenger.AddListener<int>(EventType.StarsValueChanged, SetValue);
+            messenger.AddListener<Money>(EventType.StarsValueChanged, SetValue);
             SetValue(playerResources.Stars);
 #endif
         }
 
-        private void SetValue(int value)
+        private void SetValue(Money value)
         {
             if (_stars == value) return;
             _stars = value;
-            _starsText.text = _stars.ToString("N0");
+			_starsText.text = _stars.ToString();
         }
 
-        private int _stars = -1;
+        private Money _stars = -1;
     }
 }

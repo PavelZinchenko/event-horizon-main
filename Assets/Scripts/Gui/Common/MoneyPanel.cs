@@ -3,6 +3,7 @@ using Services.Messenger;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using CommonComponents;
 
 namespace Gui.Common
 {
@@ -13,17 +14,17 @@ namespace Gui.Common
         [Inject]
         private void Initialize(IMessenger messenger, PlayerResources playerResources)
         {
-            messenger.AddListener<int>(EventType.MoneyValueChanged, SetValue);
+            messenger.AddListener<Money>(EventType.MoneyValueChanged, SetValue);
             SetValue(playerResources.Money);
         }
 
-        private void SetValue(int value)
+        private void SetValue(Money value)
         {
             if (_credits == value) return;
             _credits = value;
-            _creditsText.text = _credits.ToString("N0");
+			_creditsText.text = _credits.ToString();
         }
 
-        private int _credits = -1;
+        private Money _credits = -1;
     }
 }
