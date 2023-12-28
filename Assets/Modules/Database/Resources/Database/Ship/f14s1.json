@@ -22,16 +22,16 @@
     {
       "Position": {
         "x": 0.81,
-        "y": -0.34
+        "y": 0.34
       },
-      "Rotation": 10.0
+      "Rotation": -10.0
     },
     {
       "Position": {
         "x": 0.81,
-        "y": 0.34
+        "y": -0.34
       },
-      "Rotation": -10.0,
+      "Rotation": 10.0,
       "WeaponClass": "M"
     }
   ],

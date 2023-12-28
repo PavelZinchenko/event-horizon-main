@@ -21,14 +21,14 @@
     {
       "Position": {
         "x": 0.1,
-        "y": -0.95
+        "y": 0.95
       },
       "WeaponClass": "C"
     },
     {
       "Position": {
         "x": 0.1,
-        "y": 0.95
+        "y": -0.95
       },
       "WeaponClass": "M"
     }

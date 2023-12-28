@@ -22,23 +22,16 @@
     {
       "Position": {
         "x": 0.1,
-        "y": -0.7
-      },
-      "Rotation": -20.0
-    },
-    {
-      "Position": {
-        "x": 0.1,
         "y": 0.7
       },
       "Rotation": 20.0
     },
     {
       "Position": {
-        "x": -0.2,
-        "y": -0.67
+        "x": 0.1,
+        "y": -0.7
       },
-      "Rotation": -30.0
+      "Rotation": -20.0
     },
     {
       "Position": {
@@ -49,10 +42,10 @@
     },
     {
       "Position": {
-        "x": -0.45,
-        "y": -0.62
+        "x": -0.2,
+        "y": -0.67
       },
-      "Rotation": -45.0
+      "Rotation": -30.0
     },
     {
       "Position": {
@@ -60,6 +53,13 @@
         "y": 0.62
       },
       "Rotation": 45.0
+    },
+    {
+      "Position": {
+        "x": -0.45,
+        "y": -0.62
+      },
+      "Rotation": -45.0
     }
   ]
 }

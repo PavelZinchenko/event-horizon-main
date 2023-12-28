@@ -22,14 +22,14 @@
     {
       "Position": {
         "x": 0.4,
-        "y": -0.9
+        "y": 0.9
       },
       "AutoAimingArc": 20.0
     },
     {
       "Position": {
         "x": 0.4,
-        "y": 0.9
+        "y": -0.9
       },
       "AutoAimingArc": 20.0
     },
