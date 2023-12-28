@@ -6,12 +6,17 @@ namespace CommonComponents.Utils
 {
 	public static class ValueFormatter
 	{
-		public static string AsPercent(this float value)
+		public static string AsPercentageChange(this float value)
 		{
 			if (value >= 1)
 				return "+" + Mathf.RoundToInt(100 * (value - 1)) + "%";
 			else
 				return "-" + Mathf.RoundToInt(100 * (1 - value)) + "%";
+		}
+
+		public static string AsPercentage(this float value)
+		{
+			return Mathf.RoundToInt(100 * value) + "%";
 		}
 
 		public static string AsInteger(this float value)

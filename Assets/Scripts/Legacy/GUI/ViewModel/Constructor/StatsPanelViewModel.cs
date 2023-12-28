@@ -102,16 +102,16 @@ namespace ViewModel
 			DronesBlock.gameObject.SetActive(DronesBlock.transform.Cast<Transform>().Count(item => item.gameObject.activeSelf) > 1);
 
 			RamDamage.gameObject.SetActive(!Mathf.Approximately(spec.Stats.RammingDamage, 0));
-			RamDamage.Value.text = spec.Stats.RammingDamageMultiplier.AsPercent();
+			RamDamage.Value.text = spec.Stats.RammingDamageMultiplier.AsPercentageChange();
 			DamageAbsorption.gameObject.SetActive(spec.Stats.EnergyAbsorption > 0);
-			DamageAbsorption.Value.text = spec.Stats.EnergyAbsorptionPercentage.AsPercent();
+			DamageAbsorption.Value.text = spec.Stats.EnergyAbsorptionPercentage.AsPercentage();
 
 			KineticDamageResistance.gameObject.SetActive(!Mathf.Approximately(spec.Stats.KineticResistance, 0));
-			KineticDamageResistance.Value.text = $"{spec.Stats.KineticResistance.AsDecimal()} ( {spec.Stats.KineticResistancePercentage.AsPercent()})";
+			KineticDamageResistance.Value.text = $"{spec.Stats.KineticResistance.AsDecimal()} ( {spec.Stats.KineticResistancePercentage.AsPercentage()})";
 			HeatDamageResistance.gameObject.SetActive(!Mathf.Approximately(spec.Stats.ThermalResistance, 0));
-			HeatDamageResistance.Value.text = $"{spec.Stats.ThermalResistance.AsDecimal()} ( {spec.Stats.ThermalResistancePercentage.AsPercent()})";
+			HeatDamageResistance.Value.text = $"{spec.Stats.ThermalResistance.AsDecimal()} ( {spec.Stats.ThermalResistancePercentage.AsPercentage()})";
 			EnergyDamageResistance.gameObject.SetActive(!Mathf.Approximately(spec.Stats.EnergyResistance, 0));
-			EnergyDamageResistance.Value.text = $"{spec.Stats.EnergyResistance.AsDecimal()} ( {spec.Stats.EnergyResistancePercentage.AsPercent()})";
+			EnergyDamageResistance.Value.text = $"{spec.Stats.EnergyResistance.AsDecimal()} ( {spec.Stats.EnergyResistancePercentage.AsPercentage()})";
 			ResistanceBlock.gameObject.SetActive(ResistanceBlock.transform.Cast<Transform>().Count(item => item.gameObject.activeSelf) > 1);
 		}
     }
