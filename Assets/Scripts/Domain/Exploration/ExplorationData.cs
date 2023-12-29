@@ -35,8 +35,9 @@ namespace Game.Exploration
             _planet.OnExplorationStarted();
         }
 
-        public int Seed => _planet.Seed;
-        public Color PlanetColor => _planet.Color;
+		public int Seed => _planet.Seed;
+		public int Level => _planet.Level;
+		public Color PlanetColor => _planet.Color;
         public bool HasSolidGround => _planet.Type != PlanetType.Gas;
 
         public EnvironmentObjectType GetEnvironmentObject(System.Random random)

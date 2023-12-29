@@ -357,7 +357,8 @@ namespace Combat.Manager
                         _spaceObjectFactory.CreatePlanetaryCrater2(position, rotation, size, color); 
                         break;
                     case ExplorationData.EnvironmentObjectType.GasCloud:
-                        _spaceObjectFactory.CreatePlanetaryGasCloud(position, size * 2, random.NextFloatSigned() * 0.1f, size * 1.5f, _exploration.GetGasCloudColor(i), 1);
+                        _spaceObjectFactory.CreatePlanetaryGasCloud(position, size * 2, random.NextFloatSigned() * 0.1f, size * 1.5f, 
+							_exploration.GetGasCloudColor(i), _database.ExplorationSettings.GasCloudDPS(_exploration.Level));
                         break;
                 }
             }
