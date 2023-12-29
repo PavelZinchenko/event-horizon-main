@@ -34,6 +34,7 @@ namespace Domain.Quests
 			var builder = _combatModelBuilderFactory.Create();
 			var rules = new Model.Military.CombatRules
 			{
+				StarLevel = enemyData.Level,
 				RewardType = Model.Military.RewardType.Default,
 				LootCondition = RewardCondition.Default,
 				ExpCondition = RewardCondition.Default,

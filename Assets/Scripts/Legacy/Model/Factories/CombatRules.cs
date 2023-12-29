@@ -11,17 +11,18 @@ namespace Model
 			public static Military.CombatRules Default(int level = 1)
 			{
 				return new Model.Military.CombatRules {
+					StarLevel = level,
 					RewardType = Military.RewardType.Default,
 					LootCondition = RewardCondition.Default,
-                    ExpCondition = RewardCondition.Default,
+					ExpCondition = RewardCondition.Default,
 					TimeLimit = Maths.Distance.CombatTime(level),
 					TimeoutBehaviour = Military.TimeoutBehaviour.NextEnemy,
 					CanSelectShips = true,
-                    CanCallEnemies = true,
+					CanCallEnemies = true,
 					AsteroidsEnabled = true,
 					PlanetEnabled = true,
-                    InitialEnemies = 1,
-                    MaxEnemies = 3,
+					InitialEnemies = 1,
+					MaxEnemies = 3,
 				};
 			}
 		

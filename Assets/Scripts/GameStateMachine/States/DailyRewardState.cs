@@ -1,8 +1,6 @@
 ﻿using System.Linq;
-using Combat.Domain;
 using Domain.Player;
 using Economy.Products;
-using GameServices.Gui;
 using GameServices.LevelManager;
 using Gui.MainMenu;
 using Services.Gui;
@@ -58,7 +56,6 @@ namespace GameStateMachine.States
 
         private readonly IGuiManager _guiManager;
         private readonly ExitSignal _exitSignal;
-        private readonly CombatModelBuilder.Factory _combatModelBuilderFactory;
         private readonly DailyReward _dailyReward;
 
         public class Factory : Factory<DailyRewardState> { }

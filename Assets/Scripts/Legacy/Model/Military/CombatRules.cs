@@ -40,6 +40,7 @@ namespace Model
 			public bool DisableBonusses;
 		    public int InitialEnemies;
             public int MaxEnemies;
+			public int StarLevel;
         }
 	}
 }

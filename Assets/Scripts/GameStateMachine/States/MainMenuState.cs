@@ -36,7 +36,6 @@ namespace GameStateMachine.States
             OpenConstructorSignal openConstructorSignal,
             OpenEhopediaSignal openEhopediaSignal,
             CombatModelBuilder.Factory combatModelBuilderFactory,
-            MotherShip motherShip,
             DailyReward dailyReward,
             DailyRewardAwailableSignal dailyRewardAwailableSignal,
             ExitSignal exitSignal)
@@ -46,7 +45,6 @@ namespace GameStateMachine.States
             _dailyRewardAwailableSignal = dailyRewardAwailableSignal;
             _dailyRewardAwailableSignal.Event += CheckDailyReward;
 
-            _motherShip = motherShip;
             _session = session;
             _database = database;
             _combatModelBuilderFactory = combatModelBuilderFactory;
@@ -142,7 +140,6 @@ namespace GameStateMachine.States
             rules.ExpCondition = RewardCondition.Never;
             rules.DisableBonusses = true;
             rules.TimeoutBehaviour = TimeoutBehaviour.NextEnemy;
-            //rules.TimeLimit = 30;
 
             var builder = _combatModelBuilderFactory.Create();
             builder.PlayerFleet = firstFleet;
@@ -207,7 +204,6 @@ namespace GameStateMachine.States
         private readonly OpenEhopediaSignal _openEhopediaSignal;
         private readonly ExitSignal _exitSignal;
         private readonly ISessionData _session;
-        private readonly MotherShip _motherShip;
         private readonly IDatabase _database;
         private readonly CombatModelBuilder.Factory _combatModelBuilderFactory;
         private readonly DailyReward _dailyReward;

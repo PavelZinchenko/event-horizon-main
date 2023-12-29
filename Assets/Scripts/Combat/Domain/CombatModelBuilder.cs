@@ -2,7 +2,6 @@
 using System.Linq;
 using Combat.Component.Unit.Classification;
 using Combat.Scene;
-using Domain.Quests;
 using Economy.Products;
 using GameDatabase;
 using GameServices.Player;
@@ -57,8 +56,12 @@ namespace Combat.Domain
                 _shipCreatedSignal, 
                 _shipDestroyedSignal);
 
-            model.SpecialRewards = specialLoot != null ? _specialReward.Concat(specialLoot) : _specialReward;
-            model.Rules = Rules;
+			var rules = Rules;
+			if (useBonuses && !_playerSkills.HasRescueUnit)
+				rules.NoRetreats = true;
+
+			model.SpecialRewards = specialLoot != null ? _specialReward.Concat(specialLoot) : _specialReward;
+			model.Rules = rules;
 
             return model;
         }

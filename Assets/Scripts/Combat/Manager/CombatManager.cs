@@ -9,8 +9,6 @@ using Combat.Factory;
 using Combat.Scene;
 using Combat.Unit;
 using Combat.Unit.Ship.Effects.Special;
-using GameServices;
-using GameServices.Player;
 using GameStateMachine.States;
 using Services.Audio;
 using Services.Messenger;
@@ -18,8 +16,6 @@ using GameDatabase;
 using Gui.Combat;
 using Maths;
 using Model.Military;
-using Services.ObjectPool;
-using Services.Reources;
 using Zenject;
 using Services.GameApplication;
 
@@ -32,12 +28,10 @@ namespace Combat.Manager
             IApplication application,
             IMessenger messenger,
             ISoundPlayer soundPlayer,
-            PlayerSkills skills,
             ExitSignal.Trigger exitTrigger)
         {
             _application = application;
             _soundPlayer = soundPlayer;
-            _playerSkills = skills;
             _exitTrigger = exitTrigger;
             _messenger = messenger;
 
@@ -47,13 +41,9 @@ namespace Combat.Manager
         }
 
         [Inject] private readonly IScene _scene;
-        [Inject] private readonly IObjectPool _objectPool;
-        [Inject] private readonly IAiManager _aiManager;
         [Inject] private readonly IDatabase _database;
-        [Inject] private readonly IResourceLocator _resourceLocator;
         [Inject] private readonly ShipControlsPanel _shipControlsPanel;
         [Inject] private readonly ShipFactory _shipFactory;
-        [Inject] private readonly MotherShip _motherShip;
         [Inject] private readonly SpaceObjectFactory _spaceObjectFactory;
         [Inject] private readonly EffectFactory _effectFactory;
 
@@ -78,7 +68,7 @@ namespace Combat.Manager
             //    objectFactory.CreatePlanet(_config.PlanetPrefab, _config.AtmospherePrefab, Position.Random(random), Random.Range(0, 360), Vector2.zero, Random.Range(16, 25));
             //}
 
-            var level = _database.GalaxySettings.EnemyLevel(_motherShip.CurrentStar.Level);
+            var level = _database.GalaxySettings.EnemyLevel(_combatModel.Rules.StarLevel);
             var powerMultiplier = Experience.LevelToPowerMultiplier(level);
 
             if (_combatModel.Rules.AsteroidsEnabled)
@@ -184,7 +174,6 @@ namespace Combat.Manager
             if (!_combatModel.Rules.CanSelectShips) return false;
             if (_combatModel.Rules.NoRetreats) return false;
             if (_combatModel.Rules.PlayerHasOneShip) return false;
-            if (!_playerSkills.HasRescueUnit) return false;
             if (!_combatModel.PlayerFleet.IsAnyShipLeft()) return false;
 
             return true;
@@ -321,7 +310,6 @@ namespace Combat.Manager
         private int _pausedCount;
         private readonly IApplication _application;
         private readonly ISoundPlayer _soundPlayer;
-        private readonly PlayerSkills _playerSkills;
         private readonly ExitSignal.Trigger _exitTrigger;
         private readonly IMessenger _messenger;
     }
