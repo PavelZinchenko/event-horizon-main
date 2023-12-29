@@ -39,7 +39,7 @@ namespace GameDatabase.Extensions
 
         public static Money CraftingPrice(this Ship ship)
         {
-            Money price = (Money)ship.Layout.CellCount * ship.Layout.CellCount * 5 * ship.Layout.CellCount * ship.Layout.CellCount;
+            Money price = (Money)ship.Layout.CellCount * ship.Layout.CellCount * 5;
 
             if (ship.SizeClass == SizeClass.Titan)
                 return price * 3;
