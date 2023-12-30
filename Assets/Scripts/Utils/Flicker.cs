@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Monobehaviours
+namespace Utils
 {
     [RequireComponent(typeof(SpriteRenderer))]
     public class Flicker : MonoBehaviour

@@ -5,42 +5,51 @@ using GameDatabase.Query;
 using GameServices.SceneManager;
 using Services.Localization;
 using Services.Reources;
+using Services.Settings;
 using Zenject;
 
 public class LoadingScreen : MonoBehaviour
 {
-    [SerializeField] private Canvas _canvas;
+	[SerializeField] private Canvas _canvas;
     [SerializeField] private Text _shipNameText;
     [SerializeField] private Image _shipSprite;
     [SerializeField] private Image _shipIcon;
     [SerializeField] private Image _background;
+	[SerializeField] private Text _loadingText;
 
-    [Inject] private readonly IResourceLocator _resourceLocator;
+	[Inject] private readonly IResourceLocator _resourceLocator;
     [Inject] private readonly IDatabase _database;
+	[Inject] private readonly ILocalization _localization;
+	[Inject] private readonly IGameSettings _settings;
 
-    [Inject]
-    private void Initialize(SceneManagerStateChangedSignal sceneManagerStateChangedSignal, ILocalization localization)
+	[Inject]
+    private void Initialize(SceneManagerStateChangedSignal sceneManagerStateChangedSignal)
     {
         _sceneManagerStateChangedSignal = sceneManagerStateChangedSignal;
 		_sceneManagerStateChangedSignal.Event += OnSceneManagerStateChanged;
-		_localization = localization;
-    }
+		LocalizeText();
+	}
+
+	private void LocalizeText()
+	{
+		if (string.IsNullOrEmpty(_localization.Language))
+			_localization.Initialize(_settings.Language, _database);
+
+		_shipNameText.text = _localization.GetString("$Credits_Title");
+		_loadingText.text = _localization.GetString("$Loading");
+	}
 
 	private void OnSceneManagerStateChanged(State state)
 	{
 		if (state == State.Loading)
-		{
 			Show();
-		}
 		else
-		{
 			Hide();
-		}
 	}
 
 	private void Show()
     {
-        _canvas.enabled = true;
+		_canvas.enabled = true;
 
         if (_firstTime)
         {
@@ -61,11 +70,10 @@ public class LoadingScreen : MonoBehaviour
 
     private void Hide()
     {
-        _canvas.enabled = false;
+		_canvas.enabled = false;
     }
 
     private bool _firstTime = true;
     private readonly System.Random _random = new System.Random();
     private SceneManagerStateChangedSignal _sceneManagerStateChangedSignal;
-    private ILocalization _localization;
 }
