@@ -1,7 +1,5 @@
 #if !NOT_UNITY3D
 
-using System;
-using UnityEngine;
 using ModestTree;
 
 namespace Zenject

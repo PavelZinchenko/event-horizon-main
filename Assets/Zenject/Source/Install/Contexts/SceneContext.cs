@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ModestTree;
+using ModestTree.Util;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.SceneManagement;
@@ -23,6 +24,14 @@ namespace Zenject
         [Tooltip("When true, objects that are created at runtime will be parented to the SceneContext")]
         [SerializeField]
         bool _parentNewObjectsUnderRoot = false;
+
+        [Tooltip("Optional contract names for this SceneContext, allowing contexts in subsequently loaded scenes to depend on it and be parented to it, and also for previously loaded decorators to be included")]
+        [SerializeField]
+        List<string> _contractNames = new List<string>();
+
+        [Tooltip("Optional contract name of a SceneContext in a previously loaded scene that this context depends on and to which it must be parented")]
+        [SerializeField]
+        string _parentContractName;
 
         DiContainer _container;
         readonly List<object> _dependencyRoots = new List<object>();
@@ -70,6 +79,25 @@ namespace Zenject
             }
         }
 #endif
+
+        public IEnumerable<string> ContractNames
+        {
+            get { return _contractNames; }
+            set
+            {
+                _contractNames.Clear();
+                _contractNames.AddRange(value);
+            }
+        }
+
+        public string ParentContractName
+        {
+            get { return _parentContractName; }
+            set
+            {
+                _parentContractName = value;
+            }
+        }
 
         public bool ParentNewObjectsUnderRoot
         {
@@ -142,10 +170,37 @@ namespace Zenject
 
             Assert.IsNull(_container);
 
-            var parentContainer = ParentContainer ?? ProjectContext.Instance.Container;
+            var parentContainer = ParentContainer;// ?? ProjectContext.Instance.Container;
 
             // ParentContainer is optionally set temporarily before calling ZenUtil.LoadScene
             ParentContainer = null;
+
+            if (parentContainer == null && !string.IsNullOrEmpty(_parentContractName))
+            {
+                var sceneContexts = UnityUtil.AllLoadedScenes
+                    .Except(gameObject.scene)
+                    .SelectMany(scene => scene.GetRootGameObjects())
+                    .SelectMany(root => root.GetComponentsInChildren<SceneContext>())
+                    .Where(sceneContext => sceneContext.ContractNames.Contains(_parentContractName))
+                    .ToList();
+
+                Assert.That(sceneContexts.Any(), () => string.Format(
+                    "SceneContext on object {0} of scene {1} requires contract {2}, but none of the loaded SceneContexts implements that contract.",
+                    gameObject.name,
+                    gameObject.scene.name,
+                    _parentContractName));
+
+                Assert.That(sceneContexts.Count == 1, () => string.Format(
+                    "SceneContext on object {0} of scene {1} requires a single implementation of contract {2}, but multiple were found.",
+                    gameObject.name,
+                    gameObject.scene.name,
+                    _parentContractName));
+
+                parentContainer = sceneContexts.Single().Container;
+            }
+
+            if (parentContainer == null)
+                parentContainer = ProjectContext.Instance.Container;
 
             _container = parentContainer.CreateSubContainer(IsValidating);
 
