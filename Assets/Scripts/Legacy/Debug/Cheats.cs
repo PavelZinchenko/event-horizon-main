@@ -26,7 +26,6 @@ using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
-using GameServices.LevelManager;
 using GameDatabase.Extensions;
 using GameDatabase.Query;
 using Session.Content;
@@ -51,7 +50,6 @@ public class Cheats
     [Inject] private readonly MotherShip _motherShip;
     [Inject] private readonly StarMap _starMap;
     [Inject] private readonly IDatabase _database;
-    [Inject] private readonly ILevelLoader _levelLoader;
     [Inject] private readonly DatabaseCodesProcessor _databaseCodesProcessor;
 
     public bool TryExecuteCommand(string command, int hash)

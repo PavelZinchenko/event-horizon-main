@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using GameDatabase;
 using GameServices.GameManager;
 using GameServices.Gui;
-using GameServices.LevelManager;
 using GameServices.Settings;
+using GameStateMachine.States;
 using Services.Audio;
 using Services.Localization;
 using Services.Messenger;
@@ -28,7 +28,6 @@ namespace Gui.MainMenu
         [SerializeField] Toggle _highQualityToggle;
         [SerializeField] Toggle _fullScreenModeToogle;
 
-        [Inject] private readonly ILevelLoader _levelLoader;
         [Inject] private readonly ISoundPlayer _soundPlayer;
         [Inject] private readonly IMusicPlayer _musicPlayer;
         [Inject] private readonly ILocalization _localization;
@@ -37,8 +36,9 @@ namespace Gui.MainMenu
         [Inject] private readonly GuiHelper _guiHelper;
         [Inject] private readonly IDatabase _database;
         [Inject] private readonly IGameDataManager _gameDataManager;
+		[Inject] private readonly ReloadUiSignal.Trigger _reloadGuiTrigger;
 
-        [Inject]
+		[Inject]
         private void Initialize(IMessenger messenger)
         {
             messenger.AddListener(EventType.SessionCreated, OnSessionCreated);
@@ -54,7 +54,7 @@ namespace Gui.MainMenu
 
             _gameSettings.Language = language;
             _localization.Initialize(language, _database);
-            _levelLoader.ReloadLevel();
+            _reloadGuiTrigger.Fire();
         }
 
         public void SetSoundVolume(float value)

@@ -1,5 +1,6 @@
-﻿using Session;
-using GameServices.LevelManager;
+﻿using System.Collections.Generic;
+using GameServices.SceneManager;
+using Session;
 using GameServices.Player;
 using Services.Gui;
 using Services.Messenger;
@@ -13,13 +14,12 @@ namespace GameStateMachine.States
 		public RetreatState(
 			IStateMachine stateMachine,
             GameStateFactory gameStateFactory,
-			ILevelLoader levelLoader,
 			MotherShip motherShip,
 			Galaxy.StarMap starMap,
             IGuiManager guiManager,
             ISessionData session,
-			IMessenger messenger)
-			: base(stateMachine, gameStateFactory, levelLoader)
+			IMessengerContext messenger)
+			: base(stateMachine, gameStateFactory)
 		{
 			_source = session.StarMap.PlayerPosition;
 			_starMap = starMap;
@@ -29,7 +29,7 @@ namespace GameStateMachine.States
 		    _guiManager = guiManager;
 		}
 
-		public override StateType Type { get { return StateType.Travel; } }
+		public override StateType Type => StateType.Travel;
 
 		public override void Update(float elapsedTime)
 		{
@@ -44,11 +44,11 @@ namespace GameStateMachine.States
 				UnityEngine.Debug.Log("RetreatState: Finished");
 
 				_session.StarMap.PlayerPosition = _destination;
-				StateMachine.UnloadActiveState();
+				Unload();
 			}
 		}
 
-		protected override LevelName RequiredLevel { get { return LevelName.StarMap; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.StarMap; } }
 
 		protected override void OnLoad()
 		{
@@ -73,7 +73,7 @@ namespace GameStateMachine.States
 
 		private readonly int _source;
 		private readonly ISessionData _session;
-		private readonly IMessenger _messenger;
+		private readonly IMessengerContext _messenger;
 		private readonly Galaxy.StarMap _starMap;
 		private readonly MotherShip _motherShip;
         private readonly IGuiManager _guiManager;

@@ -1,4 +1,5 @@
-﻿using GameServices.LevelManager;
+﻿using System.Collections.Generic;
+using GameServices.SceneManager;
 using Zenject;
 
 namespace GameStateMachine.States
@@ -9,22 +10,20 @@ namespace GameStateMachine.States
         public SkillTreeState(
             IStateMachine stateMachine,
             GameStateFactory gameStateFactory,
-            ILevelLoader levelLoader,
             ExitSignal exitSignal)
-            : base(stateMachine, gameStateFactory, levelLoader)
+            : base(stateMachine, gameStateFactory)
         {
             _exitSignal = exitSignal;
             _exitSignal.Event += OnExit;
         }
 
-        public override StateType Type { get { return StateType.SkillTree; } }
+        public override StateType Type => StateType.SkillTree;
 
-        protected override LevelName RequiredLevel { get { return LevelName.SkillTree; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.SkillTree; } }
 
-        private void OnExit()
+		private void OnExit()
         {
-            if (IsActive)
-                StateMachine.UnloadActiveState();
+			LoadState(StateFactory.CreateStarMapState());
         }
 
         private readonly ExitSignal _exitSignal;

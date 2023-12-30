@@ -12,7 +12,7 @@ namespace Economy.ItemType
     public class FactionMapItem : IItemType
     {
         [Inject]
-        public FactionMapItem(StarMap starMap, IMessenger messenger, ILocalization localization, int starId)
+        public FactionMapItem(StarMap starMap, IMessengerContext messenger, ILocalization localization, int starId)
         {
             _localization = localization;
             _messenger = messenger;
@@ -55,6 +55,6 @@ namespace Economy.ItemType
 
         private readonly StarMap _starMap;
         private readonly ILocalization _localization;
-        private readonly IMessenger _messenger;
+        private readonly IMessengerContext _messenger;
     }
 }

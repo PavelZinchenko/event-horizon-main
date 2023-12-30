@@ -1,5 +1,4 @@
-﻿using GameServices.LevelManager;
-using UnityEngine;
+﻿using UnityEngine;
 using Zenject;
 
 namespace Services.GameApplication
@@ -11,18 +10,10 @@ namespace Services.GameApplication
 
         private bool _applicationPaused;
         private bool _applicationFocused = true;
-        private SceneLoadedSignal _sceneLoadedSignal;
         private readonly GamePauseCounter _pauseCounter = new();
 
         public bool Paused => _pauseCounter.Paused || !IsActive;
         public bool IsActive => !_applicationPaused && _applicationFocused;
-
-        [Inject]
-        private void Initialize(SceneLoadedSignal sceneLoadedSignal)
-        {
-            _sceneLoadedSignal = sceneLoadedSignal;
-            _sceneLoadedSignal.Event += OnSceneLoaded;
-        }
 
         private void Start()
         {
@@ -47,20 +38,6 @@ namespace Services.GameApplication
 
             _applicationPaused = paused;
             _appActivateTrigger.Fire(IsActive);
-
-            OnGamePaused();
-        }
-
-        private void OnSceneLoaded()
-        {
-            if (!_applicationFocused) // unity bug
-            {
-                _applicationFocused = true;
-                _appActivateTrigger.Fire(IsActive);
-            }
-
-            if (_pauseCounter.Paused)
-                _pauseCounter.Reset();
 
             OnGamePaused();
         }

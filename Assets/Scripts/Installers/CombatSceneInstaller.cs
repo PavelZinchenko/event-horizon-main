@@ -9,6 +9,8 @@ using Combat.Services;
 using Gui.Combat;
 using Services.ObjectPool;
 using Services.Settings;
+using Services.Messenger;
+using GameServices.SceneManager;
 using UnityEngine;
 using Zenject;
 
@@ -32,7 +34,9 @@ namespace Installers
 
         public override void InstallBindings()
         {
-            Container.BindAllInterfacesAndSelf<CombatManager>().To<CombatManager>().AsSingle().NonLazy();
+			Container.BindAllInterfaces<Messenger>().To<Messenger>().AsSingle().WithArguments(GameScene.Combat);
+
+			Container.BindAllInterfacesAndSelf<CombatManager>().To<CombatManager>().AsSingle().NonLazy();
             Container.BindAllInterfaces<ViewRect>().To<ViewRect>().AsTransient();
             Container.BindAllInterfaces<Scene>().To<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = 200, AreaHeight = 200 }).NonLazy();
             Container.BindAllInterfaces<CollisionManager>().To<CollisionManager>().AsSingle();
@@ -54,7 +58,7 @@ namespace Installers
             Container.Bind<DroneBayFactory>().AsSingle();
             Container.Bind<SatelliteFactory>().AsSingle();
             Container.Bind<EffectFactory>().AsSingle();
-            Container.BindAllInterfacesAndSelf<IObjectPool>().To<GameObjectPool>().FromGameObject().AsSingle();
+            Container.BindAllInterfacesAndSelf<GameObjectPool>().To<GameObjectPool>().AsSingle();
             Container.Bind<TrailRendererPool>().FromInstance(_trailRendererPool);
             Container.Bind<GameObjectFactory>();
             Container.BindAllInterfaces<InputSystemMouse>().To<InputSystemMouse>().AsSingle().WithArguments(_camera);

@@ -12,7 +12,7 @@ namespace GameServices.Player
         [Inject] private readonly StarMap _starMap;
         [Inject] private readonly ISessionData _session;
         [Inject] private readonly PlayerSkills _playerSkills;
-        [Inject] private readonly IMessenger _messenger;
+        [Inject] private readonly IMessengerContext _messenger;
 
         [Inject]
         public MotherShip(SessionDataLoadedSignal dataLoadedSignal, SessionCreatedSignal sessionCreatedSignal)

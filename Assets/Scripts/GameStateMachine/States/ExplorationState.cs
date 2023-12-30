@@ -1,6 +1,6 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using GameServices.SceneManager;
 using Game.Exploration;
-using GameServices.LevelManager;
 using Gui.Combat;
 using Services.Audio;
 using Services.Gui;
@@ -14,13 +14,12 @@ namespace GameStateMachine.States
         public ExplorationState(
             IStateMachine stateMachine,
             GameStateFactory stateFactory,
-            ILevelLoader levelLoader,
             IGuiManager guiManager,
             Planet planet,
             IMusicPlayer musicPlayer,
             EscapeKeyPressedSignal escapeKeyPressedSignal,
             ExitSignal exitSignal)
-            : base(stateMachine, stateFactory, levelLoader)
+            : base(stateMachine, stateFactory)
         {
             _guiManager = guiManager;
             _planet = planet;
@@ -33,10 +32,14 @@ namespace GameStateMachine.States
 
         public override StateType Type => StateType.Exploration;
 
-        protected override Action<DiContainer> Installer => InstallBindings;
-        protected override LevelName RequiredLevel => LevelName.Exploration;
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.Exploration; } }
 
-        protected override void OnActivate()
+		public override void InstallBindings(DiContainer container)
+		{
+			container.Bind<Planet>().FromInstance(_planet);
+		}
+
+		protected override void OnLoad()
         {
             _musicPlayer.Play(AudioTrackType.Exploration);
         }
@@ -48,36 +51,30 @@ namespace GameStateMachine.States
 
         private void OnCombatCompleted()
         {
-            //if (!IsActive)
-            //    return;
+			//if (!IsActive)
+			//    return;
 
-            //var reward = _combatModel.GetReward(_lootGenerator, _playerSkills, _motherShip.CurrentStar);
-            //reward.Consume(_playerSkills);
+			//var reward = _combatModel.GetReward(_lootGenerator, _playerSkills, _motherShip.CurrentStar);
+			//reward.Consume(_playerSkills);
 
-            //var action = _onCompleteAction;
-            //_onCompleteAction = null;
+			//var action = _onCompleteAction;
+			//_onCompleteAction = null;
 
-            //if (action != null)
-            //    action.Invoke(_combatModel);
+			//if (action != null)
+			//    action.Invoke(_combatModel);
 
-            //_combatCompletedTrigger.Fire(_combatModel);
+			//_combatCompletedTrigger.Fire(_combatModel);
 
-            //if (reward.Any())
-            //    ShowRewardDialog(reward);
+			//if (reward.Any())
+			//    ShowRewardDialog(reward);
 
-            if (IsActive)
-                StateMachine.UnloadActiveState();
+			LoadState(StateFactory.CreateStarMapState());
         }
 
         //private void ShowRewardDialog(IReward reward)
         //{
         //    StateMachine.LoadState(StateFactory.CreateCombatRewardState(reward));
         //}
-
-        private void InstallBindings(DiContainer container)
-        {
-            container.Bind<Planet>().FromInstance(_planet);
-        }
 
         private readonly Planet _planet;
         private readonly IMusicPlayer _musicPlayer;

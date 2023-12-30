@@ -1,7 +1,8 @@
 ﻿using System.Linq;
+using System.Collections.Generic;
+using GameServices.SceneManager;
 using Constructor.Ships;
 using GameDatabase;
-using GameServices.LevelManager;
 using Services.Gui;
 using UnityEngine;
 using Zenject;
@@ -14,14 +15,14 @@ namespace GameStateMachine.States
         [Inject] private readonly IDatabase _database;
 
         [Inject]
-        public EditorInitializationState(IStateMachine stateMachine, GameStateFactory stateFactory, ILevelLoader levelLoader)
-            : base(stateMachine, stateFactory, levelLoader)
+        public EditorInitializationState(IStateMachine stateMachine, GameStateFactory stateFactory)
+            : base(stateMachine, stateFactory)
         {
         }
 
-        public override StateType Type { get { return StateType.Initialization; } }
+		public override StateType Type => StateType.Initialization;
 
-        protected override void OnActivate()
+		protected override void OnLoad()
         {
             string error;
             if (!_database.TryLoad(Application.dataPath + "/../../Database/", out error))
@@ -31,16 +32,16 @@ namespace GameStateMachine.States
             }
 
             var ship = _database.ShipBuildList.First();
-            StateMachine.LoadState(StateFactory.CreateConstructorState(new EditorModeShip(ship, _database)));
+            LoadState(StateFactory.CreateConstructorState(new EditorModeShip(ship, _database), this));
         }
 
-        protected override LevelName RequiredLevel { get { return LevelName.CommonGui; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.CommonGui; } }
 
-        protected override void OnSuspend(StateType newState)
+		protected override void OnSuspend()
         {
         }
 
-        protected override void OnResume(StateType oldState)
+        protected override void OnResume()
         {
         }
 

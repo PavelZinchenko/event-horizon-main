@@ -223,7 +223,7 @@ namespace Installers
             Container.BindFactory<SkillTreeState, SkillTreeState.Factory>();
 
             Container.Bind<ConstructorState>();
-            Container.BindFactory<IShip, ConstructorState, ConstructorState.Factory>();
+            Container.BindFactory<IShip, IGameState, ConstructorState, ConstructorState.Factory>();
 
             Container.Bind<DialogState>();
             Container.BindFactory<string, WindowArgs, Action<WindowExitCode>, DialogState, DialogState.Factory>();
@@ -234,7 +234,10 @@ namespace Installers
             Container.Bind<CombatState>();
             Container.BindFactory<ICombatModel, Action<ICombatModel>, CombatState, CombatState.Factory>();
 
-            Container.Bind<ExplorationState>();
+			Container.Bind<QuickCombatState>();
+			Container.BindFactory<QuickCombatState.Settings, QuickCombatState, QuickCombatState.Factory>();
+
+			Container.Bind<ExplorationState>();
             Container.BindFactory<Planet, ExplorationState, ExplorationState.Factory>();
 
             Container.Bind<EhopediaState>();
@@ -315,9 +318,11 @@ namespace Installers
             Container.BindTrigger<StarContentChangedSignal.Trigger>();
             Container.BindSignal<KeyBindingsChangedSignal>();
             Container.BindTrigger<KeyBindingsChangedSignal.Trigger>();
-            Container.BindSignal<MouseEnabledSignal>();
-            Container.BindTrigger<MouseEnabledSignal.Trigger>();
-        }
+			Container.BindSignal<MouseEnabledSignal>();
+			Container.BindTrigger<MouseEnabledSignal.Trigger>();
+			Container.BindSignal<ReloadUiSignal>();
+			Container.BindTrigger<ReloadUiSignal.Trigger>();
+		}
 
         private void BindLegacyServices()
         {

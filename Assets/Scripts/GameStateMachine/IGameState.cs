@@ -1,15 +1,17 @@
-﻿namespace GameStateMachine
+﻿using System.Collections.Generic;
+using GameServices.SceneManager;
+using GameStateMachine.States;
+using Zenject;
+
+namespace GameStateMachine
 {
     public interface IGameState
     {
+        GameStateCondition Condition { get; set; }
+
         StateType Type { get; }
-
-        void Load();
-        void Unload();
-
-        void Suspend(StateType newState);
-        void Resume(StateType lastState);
-
+        IEnumerable<GameScene> RequiredScenes { get; }
+		void InstallBindings(DiContainer container);
         void Update(float elapsedTime);
     }
 }

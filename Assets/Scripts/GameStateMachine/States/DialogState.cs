@@ -1,4 +1,5 @@
-﻿using GameServices.LevelManager;
+﻿using System.Collections.Generic;
+using GameServices.SceneManager;
 using Scripts.GameStateMachine;
 using Services.Gui;
 using Zenject;
@@ -13,10 +14,9 @@ namespace GameStateMachine.States
             WindowArgs windowArgs,
             System.Action<WindowExitCode> onExitAction,
             IStateMachine stateMachine,
-            ILevelLoader levelLoader,
             GameStateFactory stateFactory,
             IGuiManager guiManager)
-            : base(stateMachine, stateFactory, levelLoader)
+            : base(stateMachine, stateFactory)
         {
             _windowName = windowName;
             _windowArgs = windowArgs;
@@ -26,21 +26,21 @@ namespace GameStateMachine.States
 
         public override StateType Type { get { return StateType.Dialog; } }
 
-        protected override LevelName RequiredLevel { get { return LevelName.StarMap; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.StarMap; } }
 
-        protected override void OnActivate()
+		protected override void OnLoad()
         {
             _guiManager.OpenWindow(_windowName, _windowArgs, OnDialogClosed);
         }
 
         protected virtual void OnExit(WindowExitCode exitCode)
         {
-            StateMachine.UnloadActiveState();
+            Unload();
         }
 
         private void OnDialogClosed(WindowExitCode exitCode)
         {
-            if (!IsActive)
+            if (Condition != GameStateCondition.Active)
                 throw new BadGameStateException();
 
             var action = _onExitAction;
@@ -48,8 +48,7 @@ namespace GameStateMachine.States
             if (action != null)
                 action.Invoke(exitCode);
 
-            if (IsActive)
-                StateMachine.UnloadActiveState();
+            Unload();
         }
 
         private readonly string _windowName;

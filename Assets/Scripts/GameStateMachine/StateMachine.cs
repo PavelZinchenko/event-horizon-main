@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameServices.SceneManager;
 using GameStateMachine.States;
+using Scripts.GameStateMachine;
+using UniRx;
 using CommonComponents.Utils;
 using Zenject;
 
@@ -9,12 +12,15 @@ namespace GameStateMachine
 {
     public class StateMachine : IStateMachine, IInitializable, IDisposable, ITickable
     {
-#if EDITOR_MODE
-        [Inject] private readonly EditorInitializationState.Factory _initializationStateFactory;
-#else
         [Inject] private readonly InitializationState.Factory _initializationStateFactory;
-#endif
+        [Inject] private readonly IGameSceneManager _gameSceneManager;
         [Inject] private readonly GameStateChangedSignal.Trigger _gameStateChangedTrigger;
+
+        public StateMachine(SceneManagerStateChangedSignal sceneManagerStateChangedSignal)
+        {
+            _sceneManagerStateChangedSignal = sceneManagerStateChangedSignal;
+            _sceneManagerStateChangedSignal.Event += OnSceneManagerStateChanged;
+        }
 
         public void Initialize()
         {
@@ -25,7 +31,7 @@ namespace GameStateMachine
         public void Dispose()
         {
             while (_states.Any())
-                _states.Pop().Unload();
+                _states.Pop().Condition = GameStateCondition.NotLoaded;
         }
 
         public void Tick()
@@ -46,45 +52,95 @@ namespace GameStateMachine
 
         public void LoadState(IGameState state)
         {
+            if (_isLevelLoading)
+            {
+                throw new BadGameStateException(state.Type + ": state already loading");
+            }
+
             if (_states.Any())
-                _states.Pop().Unload();
+                _states.Pop().Condition = GameStateCondition.NotLoaded;
 
             _states.Push(state);
-            state.Load();
-
-            _gameStateChangedTrigger.Fire(state.Type);
+            LoadRequiredScenes();
         }
 
-        public void LoadAdditionalState(IGameState state)
+        public void LoadStateAdditive(IGameState state)
         {
+            if (_isLevelLoading)
+            {
+                throw new BadGameStateException(state.Type + ": state already loading");
+            }
+
             if (_states.Any())
-                _states.Peek().Suspend(state.Type);
+                _states.Peek().Condition = GameStateCondition.Suspended;
 
             _states.Push(state);
-            state.Load();
-
-            _gameStateChangedTrigger.Fire(state.Type);
+            LoadRequiredScenes();
         }
 
-        private void UnloadState()
-        {
-            var lastState = _states.Pop();
-            lastState.Unload();
+		public void ReloadState()
+		{
+			if (!_states.TryPeek(out var state))
+				return;
 
-            if (_states.Any())
+			UnloadState();
+			LoadStateAdditive(state);
+		}
+
+		private void UnloadState()
+        {
+            if (_isLevelLoading)
             {
                 var state = _states.Peek();
-                state.Resume(lastState.Type);
+                throw new BadGameStateException(state?.Type + ": state already loading");
+            }
 
-                _gameStateChangedTrigger.Fire(state.Type);
+            var lastState = _states.Pop();
+            lastState.Condition = GameStateCondition.NotLoaded;
+
+            LoadRequiredScenes();
+        }
+
+        private void LoadRequiredScenes()
+        {
+            _isLevelLoading = true;
+
+			//Observable.Timer(TimeSpan.FromSeconds(5), Scheduler.MainThreadIgnoreTimeScale).Subscribe(_ => _gameSceneManager.Load(RequiredScenes));
+
+			if (_states.TryPeek(out var state))
+				SceneContext.BeforeInstallHooks = state.InstallBindings;
+
+			_gameSceneManager.Load(RequiredScenes);
+        }
+
+        private IEnumerable<GameScene> RequiredScenes
+        {
+            get { return _states.SelectMany(state => state.RequiredScenes); }
+        }
+
+        private void OnSceneManagerStateChanged(State state)
+        {
+            if (state == State.Ready && _isLevelLoading)
+            {
+                _isLevelLoading = false;
+				SceneContext.BeforeInstallHooks = null;
+
+                if (_states.Any())
+                {
+                    var currentState = _states.Peek();
+                    currentState.Condition = GameStateCondition.Active;
+                    _gameStateChangedTrigger.Fire(currentState.Type);
+                }
             }
         }
 
+        private bool _isLevelLoading;
         private readonly Stack<IGameState> _states = new Stack<IGameState>();
+        private readonly SceneManagerStateChangedSignal _sceneManagerStateChangedSignal;
     }
 
     public class GameStateChangedSignal : SmartWeakSignal<StateType>
     {
-        public class Trigger : TriggerBase { }
+        public class Trigger : TriggerBase {}
     }
 }

@@ -17,7 +17,7 @@ using Services.Assets;
 using Services.GameApplication;
 using UnityEngine;
 using Zenject;
-using GameServices.LevelManager;
+using GameServices.SceneManager;
 using GameServices.Settings;
 using GameServices.Gui;
 
@@ -40,9 +40,9 @@ namespace Installers
             Container.BindAllInterfaces<GameDatabase.Database>().To<GameDatabase.Database>().AsSingle().NonLazy();
             Container.BindAllInterfaces<DebugManager>().To<DebugManager>().AsSingle();
 
-            Container.Bind<IMessenger>().To<Messenger>().AsSingle();
+			Container.Bind<IMessengerContext>().To<MessengerContext>().AsSingle();
 
-            Container.Bind<ILocalization>().To<LocalizationManager>().AsSingle();
+			Container.Bind<ILocalization>().To<LocalizationManager>().AsSingle();
             Container.BindAllInterfaces<KeyNameLocalizer>().To<KeyNameLocalizer>().AsSingle();
             Container.Bind<SystemFontLocator>().FromInstance(_systemFontLoader);
 
@@ -56,15 +56,16 @@ namespace Installers
             Container.BindAllInterfaces<GuiManager>().To<GuiManager>().AsSingle().NonLazy();
             Container.BindSignal<WindowOpenedSignal>();
             Container.BindTrigger<WindowOpenedSignal.Trigger>();
-            Container.BindSignal<WindowClosedSignal>();
-            Container.BindTrigger<WindowClosedSignal.Trigger>();
-            Container.BindSignal<EscapeKeyPressedSignal>();
+			Container.BindSignal<WindowClosedSignal>();
+			Container.BindTrigger<WindowClosedSignal.Trigger>();
+			Container.BindSignal<WindowDestroyedSignal>();
+			Container.BindTrigger<WindowDestroyedSignal.Trigger>();
+			Container.BindSignal<EscapeKeyPressedSignal>();
             Container.BindTrigger<EscapeKeyPressedSignal.Trigger>();
 
-            Container.BindAllInterfacesAndSelf<IObjectPool>().To<GameObjectPool>().FromGameObject().AsSingle();
-            Container.Bind<GameObjectFactory>();
-
-            Container.Bind<IMusicPlayer>().To<MusicPlayer>().FromInstance(_musicPlayer);
+			Container.Bind<GameObjectFactory>();
+			
+			Container.Bind<IMusicPlayer>().To<MusicPlayer>().FromInstance(_musicPlayer);
             Container.Bind<ISoundPlayer>().To<SoundPlayer>().FromInstance(_soundPlayer);
 
 #if UNITY_WEBGL
@@ -150,10 +151,10 @@ namespace Installers
             Container.BindAllInterfaces<WebStorage>().To<WebStorage>().AsSingle();
 #endif
 
-            Container.Bind<ILevelLoader>().To<LevelLoader>().AsSingle();
+			Container.BindAllInterfaces<GameSceneManager>().To<GameSceneManager>().FromGameObject().AsSingle();
 
 #if LICENSE_COMMERCIAL
-            Container.BindAllInterfaces<AssetLoader>().To<AssetLoader>().AsSingle();
+			Container.BindAllInterfaces<AssetLoader>().To<AssetLoader>().AsSingle();
 #else
             Container.BindAllInterfaces<LocalAssetLoader>().To<LocalAssetLoader>().AsSingle();
 #endif
@@ -178,7 +179,9 @@ namespace Installers
             Container.BindTrigger<SceneBeforeUnloadSignal.Trigger>();
             Container.BindSignal<SceneLoadedSignal>();
             Container.BindTrigger<SceneLoadedSignal.Trigger>();
-            Container.BindSignal<GamePausedSignal>();
+			Container.BindSignal<SceneManagerStateChangedSignal>();
+			Container.BindTrigger<SceneManagerStateChangedSignal.Trigger>();
+			Container.BindSignal<GamePausedSignal>();
             Container.BindTrigger<GamePausedSignal.Trigger>();
             Container.BindSignal<AppActivatedSignal>();
             Container.BindTrigger<AppActivatedSignal.Trigger>();

@@ -18,7 +18,7 @@ namespace GameServices.Player
         public PlayerSkills(
             IDatabase database,
             ISessionData session, 
-            IMessenger messenger, 
+            IMessengerContext messenger, 
             Skills skills,
             SessionDataLoadedSignal dataLoadedSignal, 
             SessionCreatedSignal sessionCreatedSignal)
@@ -209,6 +209,6 @@ namespace GameServices.Player
 
         private readonly IDatabase _database;
         private readonly ISessionData _session;
-        private readonly IMessenger _messenger;
+        private readonly IMessengerContext _messenger;
     }
 }

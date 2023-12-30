@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
+using GameServices.SceneManager;
 using Constructor;
 using Constructor.Ships;
 using Diagnostics;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameServices.Database;
-using GameServices.LevelManager;
 using GameServices.Settings;
 using Services.Account;
 using UnityEngine;
@@ -22,13 +22,20 @@ namespace GameStateMachine.States
     public class InitializationState : BaseState
     {
         [Inject]
-        public InitializationState(IStateMachine stateMachine, GameStateFactory stateFactory, ILevelLoader levelLoader, 
-            SessionData sessionData, IDataStorage localStorage, GameSettings settings, IAccount account, IDatabase database, ITechnologies technologies, 
-            IAdsManager adsManager, ISessionData session, ILocalization localization, IDebugManager debugManager)
-            : base(stateMachine, stateFactory, levelLoader)
+        public InitializationState(
+			IStateMachine stateMachine, 
+			GameStateFactory stateFactory,
+            SessionData sessionData, 
+			IDataStorage localStorage, 
+			GameSettings settings, 
+			IAccount account, 
+			IDatabase database, 
+            IAdsManager adsManager, 
+			ILocalization localization, 
+			IDebugManager debugManager)
+            : base(stateMachine, stateFactory)
         {
             _sessionData = sessionData;
-            _technologies = technologies;
             _database = database;
             _localStorage = localStorage;
             _settings = settings;
@@ -73,10 +80,7 @@ namespace GameStateMachine.States
             }
 
             _localization.Initialize(_settings.Language, _database);
-        }
 
-        protected override void OnActivate()
-		{
 		    if (_database.IsEditable)
 		    {
 		        Debug.Log("Checking ships...");
@@ -148,24 +152,28 @@ namespace GameStateMachine.States
             if (!_sessionData.Purchases.RemoveAds)
                 _adsManager.ShowInterstitial();
 
-            StateMachine.LoadState(StateFactory.CreateMainMenuState());
+            LoadStateAdditive(StateFactory.CreateMainMenuState());
         }
 
-        protected override LevelName RequiredLevel { get { return LevelName.CommonGui; } }
+		public override IEnumerable<GameScene> RequiredScenes 
+		{
+			get 
+			{
+				yield return GameScene.Loader;
+				yield return GameScene.CommonGui;
+			}
+		}
 
-        protected override void OnSuspend(StateType newState)
+		protected override void OnSuspend()
         {
-            throw new InvalidOperationException();
         }
 
-        protected override void OnResume(StateType oldState)
+        protected override void OnResume()
         {
-            throw new InvalidOperationException();
         }
 
         private readonly SessionData _sessionData;
         private readonly IDatabase _database;
-        private readonly ITechnologies _technologies;
         private readonly IDataStorage _localStorage;
         private readonly GameSettings _settings;
         private readonly IAccount _account;

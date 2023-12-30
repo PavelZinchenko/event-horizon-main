@@ -1,6 +1,6 @@
-﻿using Combat.Domain;
-using GameServices.LevelManager;
-using Scripts.GameStateMachine;
+﻿using System.Collections.Generic;
+using GameServices.SceneManager;
+using Combat.Domain;
 using CommonComponents.Utils;
 using Session;
 using Zenject;
@@ -25,7 +25,6 @@ namespace GameStateMachine.States
         public StarMapState(
 			IStateMachine stateMachine,
             GameStateFactory gameStateFactory,
-            ILevelLoader levelLoader,
 			IQuestManager questManager,
 			ISessionData session,
             IGuiManager guiManager,
@@ -52,7 +51,7 @@ namespace GameStateMachine.States
             SupplyShipActivatedSignal supplyShipActivatedSignal,
             ExitSignal exitSignal,
             EscapeKeyPressedSignal escapeKeyPressedSignal)
-            : base(stateMachine, gameStateFactory, levelLoader)
+            : base(stateMachine, gameStateFactory)
         {
 			_questManager = questManager;
             _questEventTrigger = questEventTrigger;
@@ -97,18 +96,18 @@ namespace GameStateMachine.States
             _supplyShipActivatedSignal.Event += OnSupplyShipActivated;
         }
 
-        public override StateType Type => StateType.StarMap;
+		public override StateType Type => StateType.StarMap;
 
-        protected override LevelName RequiredLevel => LevelName.StarMap;
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.StarMap; } }
 
-        protected override void OnActivate()
+		protected override void OnActivate()
 		{
             _musicPlayer.Play(AudioTrackType.Game);
 
-            if (!string.IsNullOrEmpty(DesiredWindowOnResume))
+            if (!string.IsNullOrEmpty(DesiredWindowOnActivate))
             {
-                var id = DesiredWindowOnResume;
-                DesiredWindowOnResume = string.Empty;
+                var id = DesiredWindowOnActivate;
+                DesiredWindowOnActivate = string.Empty;
                 _guiManager.OpenWindow(id);
             }
 
@@ -117,7 +116,8 @@ namespace GameStateMachine.States
 
         private void OnPlayerPositionChanged(int position)
         {
-            if (IsActive) CheckStatus();
+			if (Condition == GameStateCondition.Active)
+				CheckStatus();
         }
 
         private void CheckStatus()
@@ -129,62 +129,48 @@ namespace GameStateMachine.States
 
         private void OnRetreat()
 		{
-			if (!IsActive)
-				throw new BadGameStateException();
-
-			StateMachine.LoadAdditionalState(StateFactory.CreateRetreatState());
+			LoadStateAdditive(StateFactory.CreateRetreatState());
 		}
 
         private void OnStartTravel(int destination)
         {
-            if (!IsActive)
-                throw new BadGameStateException();
-
             var requiredFuel = _motherShip.CalculateRequiredFuel(_motherShip.Position, destination);
-            if (_motherShip.ViewMode != ViewMode.GalaxyMap && requiredFuel < 3 && _playerResources.Fuel >= requiredFuel)
-            {
-                StateMachine.LoadAdditionalState(StateFactory.CreateTravelState(destination));
-                return;
-            }
-
-            StateMachine.LoadAdditionalState(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.FlightConfirmationDialog, new WindowArgs(destination),
-                code => OnFlightConfirmationDialogClosed(destination, code)));
+			if (_motherShip.ViewMode != ViewMode.GalaxyMap && requiredFuel < 3 && _playerResources.Fuel >= requiredFuel)
+			{
+				LoadStateAdditive(StateFactory.CreateTravelState(destination));
+			}
+			else
+			{
+				LoadStateAdditive(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.FlightConfirmationDialog, new WindowArgs(destination),
+					code => OnFlightConfirmationDialogClosed(destination, code)));
+			}
         }
 
         private void OnFlightConfirmationDialogClosed(int destination, WindowExitCode code)
         {
             if (code == WindowExitCode.Ok)
-                StateMachine.LoadState(StateFactory.CreateTravelState(destination));
+                LoadState(StateFactory.CreateTravelState(destination));
         }
 
 		private void OnStartBattle(ICombatModel combatModel, System.Action<ICombatModel> onCompletedAction)
         {
-            if (!IsActive)
-                throw new BadGameStateException();
-
-			StateMachine.LoadAdditionalState(StateFactory.CreateCombatState(combatModel, onCompletedAction));
+			LoadState(StateFactory.CreateCombatState(combatModel, onCompletedAction));
         }
 
         private void OnStartExploration(Planet planet)
         {
-            if (!IsActive)
-                throw new BadGameStateException();
-
-            StateMachine.LoadAdditionalState(StateFactory.CreateExplorationState(planet));
+            LoadState(StateFactory.CreateExplorationState(planet));
         }
 
         private void OnQuestActionRequired()
 		{
-			if (!IsActive)
-				return;
-			
 			UpdateQuests();
 		}
 
         private void OnEscapePressed()
         {
-            if (!IsActive)
-                return;
+			if (Condition != GameStateCondition.Active)
+				return;
 
             if (_motherShip.ViewMode != ViewMode.StarMap)
                 _motherShip.ViewMode = ViewMode.StarMap;
@@ -194,64 +180,43 @@ namespace GameStateMachine.States
 
         private void OnExit()
         {
-            if (!IsActive)
-                return;
-            
-            StateMachine.UnloadActiveState();
+			LoadState(StateFactory.CreateMainMenuState());
         }
 
         private void OnOpenSkillTree()
         {
-            if (!IsActive)
-                throw new BadGameStateException();
-
-            StateMachine.LoadAdditionalState(StateFactory.CreateSkillTreeState());
+            LoadState(StateFactory.CreateSkillTreeState());
         }
 
         private void OnOpenConstructor(IShip ship)
         {
-            if (!IsActive)
-                throw new BadGameStateException();
-
-            StateMachine.LoadAdditionalState(StateFactory.CreateConstructorState(ship));
-            DesiredWindowOnResume = Gui.StarMap.WindowNames.HangarWindow;
+            LoadState(StateFactory.CreateConstructorState(ship, this));
+            DesiredWindowOnActivate = Gui.StarMap.WindowNames.HangarWindow;
         }
 
         private void OnOpenShop(IInventory marketInventory, IInventory playerInventory)
         {
-            if (!IsActive)
-                throw new BadGameStateException();
-
-            StateMachine.LoadAdditionalState(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.MarketDialog, new WindowArgs(marketInventory, playerInventory)));
+            LoadStateAdditive(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.MarketDialog, new WindowArgs(marketInventory, playerInventory)));
         }
 
         private void OnOpenWorkshop(Faction faction, int level)
         {
-            if (!IsActive)
-                throw new BadGameStateException();
-
-            StateMachine.LoadAdditionalState(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.WorkshopDialog, new WindowArgs(faction, level)));
+            LoadStateAdditive(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.WorkshopDialog, new WindowArgs(faction, level)));
         }
 
         private void OnOpenShipyard(Faction faction, int level)
         {
-            if (!IsActive)
-                throw new BadGameStateException();
-
-            StateMachine.LoadAdditionalState(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.ShipyardWindow, new WindowArgs(faction, level)));
+            LoadStateAdditive(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.ShipyardWindow, new WindowArgs(faction, level)));
         }
 
         public void OnOpenEhopedia()
         {
-            if (!IsActive)
-                throw new BadGameStateException();
-
-            StateMachine.LoadAdditionalState(StateFactory.CreateEchopediaState());
+            LoadStateAdditive(StateFactory.CreateEchopediaState());
         }
 
         private bool CheckStarGuardian()
 		{
-			if (!IsActive)
+			if (Condition != GameStateCondition.Active)
 				return false;
 
 			var star = _session.StarMap.PlayerPosition;
@@ -269,8 +234,8 @@ namespace GameStateMachine.States
 
 		private void UpdateQuests()
 		{
-		    if (!IsActive)
-		        return;
+			if (Condition != GameStateCondition.Active)
+				return;
 
 		    if (_questManager.ActionRequired)
 		        _questManager.InvokeAction(this);
@@ -278,7 +243,7 @@ namespace GameStateMachine.States
 
         public void ShowUiDialog(IUserInteraction userInteraction)
         {
-            StateMachine.LoadAdditionalState(StateFactory.CreateQuestState(userInteraction));
+            LoadStateAdditive(StateFactory.CreateQuestState(userInteraction));
         }
 
         public void Retreat()
@@ -354,8 +319,8 @@ namespace GameStateMachine.States
 
         private void ShowOutOfFuelDialog()
         {
-            if (!IsActive)
-                return;
+			if (Condition != GameStateCondition.Active)
+				return;
 
             if (_supplyShipStatusChanged)
             {
@@ -367,7 +332,7 @@ namespace GameStateMachine.States
 
 		private void StartCombat(ICombatModel model)
 		{
-			StateMachine.LoadAdditionalState(StateFactory.CreateCombatState(model, value => _questEventTrigger.Fire(new CombatEventData(value.IsVictory()))));
+			LoadState(StateFactory.CreateCombatState(model, value => _questEventTrigger.Fire(new CombatEventData(value.IsVictory()))));
 		}
 
 		private bool _supplyShipStatusChanged = true;
@@ -399,7 +364,7 @@ namespace GameStateMachine.States
         private readonly StartExplorationSignal _startExplorationSignal;
         private readonly SupplyShipActivatedSignal _supplyShipActivatedSignal;
 
-        private string DesiredWindowOnResume { get; set; }
+        private string DesiredWindowOnActivate { get; set; }
 
         public class Factory : Factory<StarMapState> { }
     }

@@ -1,4 +1,5 @@
-﻿using GameServices.LevelManager;
+﻿using System.Collections.Generic;
+using GameServices.SceneManager;
 using Services.Messenger;
 using Constructor.Ships;
 using CommonComponents.Utils;
@@ -12,14 +13,15 @@ namespace GameStateMachine.States
         public ConstructorState(
             IStateMachine stateMachine,
             GameStateFactory stateFactory,
-            ILevelLoader levelLoader,
-            IMessenger messenger,
+            IMessengerContext messenger,
             IShip ship,
+			IGameState nextState,
             ExitSignal exitSignal,
             ShipSelectedSignal shipSelectedSignal)
-            : base(stateMachine, stateFactory, levelLoader)
+            : base(stateMachine, stateFactory)
         {
             _ship = ship;
+			_nextState = nextState;
             _messenger = messenger;
             _exitSignal = exitSignal;
             _exitSignal.Event += OnExit;
@@ -27,26 +29,25 @@ namespace GameStateMachine.States
             _shipSelectedSignal.Event += OnShipSelected;
         }
 
-        public override StateType Type { get { return StateType.Constructor; } }
+		public override StateType Type => StateType.Constructor;
 
-        protected override LevelName RequiredLevel { get { return LevelName.Constructor; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.ShipEditor; } }
 
-        protected override void OnLevelLoaded()
+		protected override void OnLoad()
         {
             OnShipSelected(_ship);
         }
 
         private void OnExit()
         {
-            if (IsActive)
-                StateMachine.UnloadActiveState();
+			LoadState(_nextState);
         }
 
         private void OnShipSelected(IShip ship)
         {
-            if (IsActive)
-            {
-                _ship = ship;
+			if (Condition == GameStateCondition.Active)
+			{
+				_ship = ship;
                 _messenger.Broadcast(EventType.ConstructorShipChanged, _ship);
             }
         }
@@ -54,9 +55,10 @@ namespace GameStateMachine.States
         private IShip _ship;
         private readonly ExitSignal _exitSignal;
         private readonly ShipSelectedSignal _shipSelectedSignal;
-        private readonly IMessenger _messenger;
+        private readonly IMessengerContext _messenger;
+		private readonly IGameState _nextState;
 
-        public class Factory : Factory<IShip, ConstructorState> { }
+		public class Factory : Factory<IShip, IGameState, ConstructorState> { }
     }
 
     public class ShipSelectedSignal : SmartWeakSignal<IShip>

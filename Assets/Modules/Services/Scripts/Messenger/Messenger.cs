@@ -1,181 +1,105 @@
 using System;
-using System.Collections.Generic;
-using GameServices.LevelManager;
+using GameServices.SceneManager;
+using Zenject;
 
 namespace Services.Messenger
 {
     public class Messenger : IMessenger
     {
-        public Messenger(SceneBeforeUnloadSignal sceneBeforeUnloadSignal)
+        [Inject]
+        public Messenger(GameScene scene, SceneBeforeUnloadSignal sceneBeforeUnloadSignal, IMessengerContext context)
         {
+            _scene = scene;
+            _context = context;
             _sceneBeforeUnloadSignal = sceneBeforeUnloadSignal;
             _sceneBeforeUnloadSignal.Event += Cleanup;
         }
 
         public void AddListener(EventType eventType, Callback handler)
         {
-            _listeners[eventType] = (Callback)GetListenerForAdding(eventType, handler) + handler;
+            if (!_isEnabled)
+                throw new InvalidOperationException();
+
+            _context.AddListener(eventType, _scene, handler);
         }
 
         public void AddListener<T>(EventType eventType, Callback<T> handler)
         {
-            _listeners[eventType] = (Callback<T>)GetListenerForAdding(eventType, handler) + handler;
+            if (!_isEnabled)
+                throw new InvalidOperationException();
+
+            _context.AddListener(eventType, _scene, handler);
         }
 
         public void AddListener<T, U>(EventType eventType, Callback<T, U> handler)
         {
-            _listeners[eventType] = (Callback<T, U>)GetListenerForAdding(eventType, handler) + handler;
+            if (!_isEnabled)
+                throw new InvalidOperationException();
+
+            _context.AddListener(eventType, _scene, handler);
         }
 
         public void AddListener<T, U, V>(EventType eventType, Callback<T, U, V> handler)
         {
-            _listeners[eventType] = (Callback<T, U, V>)GetListenerForAdding(eventType, handler) + handler;
-        }
+            if (!_isEnabled)
+                throw new InvalidOperationException();
 
-        public void RemoveListener(EventType eventType, Callback handler)
-        {
-            _listeners[eventType] = (Callback)GetListenerForRemoving(eventType, handler) - handler;
-        }
-
-        public void RemoveListener<T>(EventType eventType, Callback<T> handler)
-        {
-            _listeners[eventType] = (Callback<T>)GetListenerForRemoving(eventType, handler) - handler;
-        }
-
-        public void RemoveListener<T, U>(EventType eventType, Callback<T, U> handler)
-        {
-            _listeners[eventType] = (Callback<T, U>)GetListenerForRemoving(eventType, handler) - handler;
-        }
-
-        public void RemoveListener<T, U, V>(EventType eventType, Callback<T, U, V> handler)
-        {
-            _listeners[eventType] = (Callback<T, U, V>)GetListenerForRemoving(eventType, handler) - handler;
+            _context.AddListener(eventType, _scene, handler);
         }
 
         public void Broadcast(EventType eventType)
         {
-            Delegate d;
-            if (!_listeners.TryGetValue(eventType, out d))
-                return;
-
-            Callback callback = d as Callback;
-            if (callback != null)
-            {
-                callback();
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
+            _context.Broadcast(eventType);
         }
 
         public void Broadcast<T>(EventType eventType, T arg1)
         {
-            //UnityEngine.Debug.Log("Broadcast - " + eventType);
-
-            Delegate d;
-            if (!_listeners.TryGetValue(eventType, out d))
-                return;
-
-            Callback<T> callback = d as Callback<T>;
-            if (callback != null)
-            {
-                callback(arg1);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-
-            //UnityEngine.Debug.Log("Broadcast - done - " + eventType);
+            _context.Broadcast(eventType, arg1);
         }
 
         public void Broadcast<T, U>(EventType eventType, T arg1, U arg2)
         {
-            //UnityEngine.Debug.Log("Broadcast - " + eventType);
-
-            Delegate d;
-            if (!_listeners.TryGetValue(eventType, out d))
-                return;
-
-            Callback<T, U> callback = d as Callback<T, U>;
-            if (callback != null)
-            {
-                callback(arg1, arg2);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-
-            //UnityEngine.Debug.Log("Broadcast - done - " + eventType);
+            _context.Broadcast(eventType, arg1, arg2);
         }
 
         public void Broadcast<T, U, V>(EventType eventType, T arg1, U arg2, V arg3)
         {
-            //UnityEngine.Debug.Log("Broadcast - " + eventType);
+            _context.Broadcast(eventType, arg1, arg2, arg3);
+        }
 
-            Delegate d;
-            if (!_listeners.TryGetValue(eventType, out d))
+        private void Cleanup(GameScene scene)
+        {
+            if (!_isEnabled || scene != _scene)
                 return;
 
-            Callback<T, U, V> callback = d as Callback<T, U, V>;
-            if (callback != null)
-            {
-                callback(arg1, arg2, arg3);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-
-            //UnityEngine.Debug.Log("Broadcast - done - " + eventType);
+            _isEnabled = false;
+            _context.Cleanup(_scene);
+            UnityEngine.Debug.Log("Messenger.Cleanup - " + _scene);
         }
 
-        private void Cleanup()
-        {
-            _listeners.Clear();
-        }
+		public void RemoveListener(EventType eventType, Callback handler)
+		{
+			throw new NotImplementedException();
+		}
 
-        private Delegate GetListenerForAdding(EventType eventType, Delegate listenerBeingAdded)
-        {
-            if (!_listeners.ContainsKey(eventType))
-            {
-                _listeners.Add(eventType, null);
-            }
+		public void RemoveListener<T>(EventType eventType, Callback<T> handler)
+		{
+			throw new NotImplementedException();
+		}
 
-            var d = _listeners[eventType];
-            if (d != null && d.GetType() != listenerBeingAdded.GetType())
-            {
-                throw new ArgumentException(string.Format("Attempting to add listener with inconsistent signature for event type {0}. Current listeners have type {1} and listener being added has type {2}", eventType, d.GetType().Name, listenerBeingAdded.GetType().Name));
-            }
+		public void RemoveListener<T, U>(EventType eventType, Callback<T, U> handler)
+		{
+			throw new NotImplementedException();
+		}
 
-            return d;
-        }
+		public void RemoveListener<T, U, V>(EventType eventType, Callback<T, U, V> handler)
+		{
+			throw new NotImplementedException();
+		}
 
-        private Delegate GetListenerForRemoving(EventType eventType, Delegate listenerBeingRemoved)
-        {
-            Delegate d;
-            if (_listeners.TryGetValue(eventType, out d))
-            {
-                if (d == null)
-                {
-                    throw new ArgumentException(string.Format("Attempting to remove listener with for event type \"{0}\" but current listener is null.", eventType));
-                }
-                else if (d.GetType() != listenerBeingRemoved.GetType())
-                {
-                    throw new ArgumentException(string.Format("Attempting to remove listener with inconsistent signature for event type {0}. Current listeners have type {1} and listener being removed has type {2}", eventType, d.GetType().Name, listenerBeingRemoved.GetType().Name));
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException(string.Format("Attempting to remove listener for type \"{0}\" but Messenger doesn't know about this event type.", eventType));
-            }
-
-            return d;
-        }
-
+		private bool _isEnabled = true;
+        private readonly GameScene _scene;
+        private readonly IMessengerContext _context;
         private readonly SceneBeforeUnloadSignal _sceneBeforeUnloadSignal;
-        private readonly Dictionary<EventType, Delegate> _listeners = new Dictionary<EventType, Delegate>();
     }
 }

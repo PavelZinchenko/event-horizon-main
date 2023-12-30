@@ -1,5 +1,4 @@
-﻿using GameServices;
-using Services.GameApplication;
+﻿using Services.GameApplication;
 using UnityEngine;
 using Zenject;
 
@@ -18,5 +17,10 @@ namespace Gui.Combat
         {
             _application.Resume(this);
         }
-    }
+
+		public void OnDestroy()
+		{
+			ResumeGame();
+		}
+	}
 }

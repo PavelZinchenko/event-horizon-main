@@ -164,7 +164,6 @@ namespace Combat.Manager
 
         public void Exit()
         {
-            _application.Pause();
             _exitTrigger.Fire();
 			_scene.Clear();
         }

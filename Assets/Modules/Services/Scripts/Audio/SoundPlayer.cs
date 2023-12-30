@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GameDatabase.Model;
 using GameServices.Settings;
-using GameServices.LevelManager;
 using Services.Reources;
 using Zenject;
 using Services.GameApplication;
@@ -16,7 +15,7 @@ namespace Services.Audio
 	    private void Initialize(
 			GameSettings gameSettings, 
 			IResourceLocator resourceLocator,
-			SceneBeforeUnloadSignal sceneBeforeUnloadSignal,
+			//SceneBeforeUnloadSignal sceneBeforeUnloadSignal,
 			AppActivatedSignal appActivatedSignal)
 	    {
             _appActivatedSignal = appActivatedSignal;
@@ -25,8 +24,8 @@ namespace Services.Audio
 	        _resourceLocator = resourceLocator;
             Volume = _gameSettings.SoundVolume;
 		
-			_sceneBeforeUnloadSignal = sceneBeforeUnloadSignal;
-			_sceneBeforeUnloadSignal.Event += OnSceneBeforeUnload;
+			//_sceneBeforeUnloadSignal = sceneBeforeUnloadSignal;
+			//_sceneBeforeUnloadSignal.Event += OnSceneBeforeUnload;
 		}
 
 		public float Volume
@@ -249,7 +248,7 @@ namespace Services.Audio
 			public int id;
 		}
 
-		private SceneBeforeUnloadSignal _sceneBeforeUnloadSignal;
+		//private SceneBeforeUnloadSignal _sceneBeforeUnloadSignal;
 		private AppActivatedSignal _appActivatedSignal;
 		private GameSettings _gameSettings;
 	    private IResourceLocator _resourceLocator;

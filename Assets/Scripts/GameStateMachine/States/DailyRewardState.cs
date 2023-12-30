@@ -1,7 +1,8 @@
 ﻿using System.Linq;
+using System.Collections.Generic;
+using GameServices.SceneManager;
 using Domain.Player;
 using Economy.Products;
-using GameServices.LevelManager;
 using Gui.MainMenu;
 using Services.Gui;
 using Zenject;
@@ -14,11 +15,10 @@ namespace GameStateMachine.States
         public DailyRewardState(
             IStateMachine stateMachine,
             GameStateFactory stateFactory,
-            ILevelLoader levelLoader,
             DailyReward dailyReward,
             ExitSignal exitSignal,
             IGuiManager guiManager)
-            : base(stateMachine, stateFactory, levelLoader)
+            : base(stateMachine, stateFactory)
         {
             _exitSignal = exitSignal;
             _exitSignal.Event += OnExit;
@@ -28,12 +28,10 @@ namespace GameStateMachine.States
 
         public override StateType Type { get { return StateType.DailyReward; } }
 
-        protected override LevelName RequiredLevel { get { return LevelName.MainMenu; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.MainMenu; } }
 
-        protected override void OnActivate()
+        protected override void OnLoad()
         {
-            base.OnActivate();
-
             var rewards = _dailyReward.CollectReward();
             foreach (var item in rewards)
                 item.Consume();
@@ -44,14 +42,12 @@ namespace GameStateMachine.States
 
         private void OnRewardSelecred(WindowExitCode exitCode)
         {
-            if (IsActive)
-                StateMachine.UnloadActiveState();
+			Unload();
         }
 
         private void OnExit()
         {
-            if (IsActive)
-                StateMachine.UnloadActiveState();
+			Unload();
         }
 
         private readonly IGuiManager _guiManager;

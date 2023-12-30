@@ -2,8 +2,8 @@
 using GameDatabase;
 using GameServices.Gui;
 using Session;
-using GameServices.LevelManager;
 using GameServices.Settings;
+using GameServices.SceneManager;
 using Services.IapStorage;
 using Services.InAppPurchasing;
 using Services.Localization;
@@ -21,7 +21,6 @@ namespace GameServices.GameManager
             IDataStorage localStorage,
             ICloudStorage cloudStorage,
             ILocalization localization,
-            ILevelLoader levelLoader,
             SessionData sessionData,
             IIapStorage iapStorage,
             GameSettings gameSettings,
@@ -36,7 +35,6 @@ namespace GameServices.GameManager
             _localStorage = localStorage;
             _cloudStorage = cloudStorage;
             _localization = localization;
-            _levelLoader = levelLoader;
             _sessionData = sessionData;
             _iapProcessor = iapProcessor;
             _iapStorage = iapStorage;
@@ -185,9 +183,9 @@ namespace GameServices.GameManager
             Cleanup();
         }
 
-        private void OnLevelLoaded()
+        private void OnLevelLoaded(GameScene scene)
         {
-            if (_levelLoader.Current == LevelName.StarMap)
+            if (scene == GameScene.StarMap)
             {
                 SaveSession();
             }
@@ -215,7 +213,6 @@ namespace GameServices.GameManager
         private IDataStorage _localStorage;
         private ICloudStorage _cloudStorage;
         private ILocalization _localization;
-        private ILevelLoader _levelLoader;
         private SessionData _sessionData;
         private IIapStorage _iapStorage;
         private IapPurchaseProcessor _iapProcessor;

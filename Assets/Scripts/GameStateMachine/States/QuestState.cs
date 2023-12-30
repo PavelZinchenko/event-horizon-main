@@ -1,7 +1,7 @@
-﻿using Domain.Quests;
+﻿using System.Collections.Generic;
+using GameServices.SceneManager;
+using Domain.Quests;
 using GameDatabase.Enums;
-using GameServices.LevelManager;
-using Scripts.GameStateMachine;
 using Services.Gui;
 using Zenject;
 
@@ -13,26 +13,20 @@ namespace GameStateMachine.States
 		public QuestState(
 			IStateMachine stateMachine,
             GameStateFactory stateFactory,
-            ILevelLoader levelLoader,
 			IGuiManager guiManager,
 			GameServices.Player.MotherShip motherShip,
 			IUserInteraction userInteraction)
-			: base(stateMachine, stateFactory, levelLoader)
+			: base(stateMachine, stateFactory)
 		{
 			_guiManager = guiManager;
 			_motherShip = motherShip;
 		    _userInteraction = userInteraction;
 		}
 
-		public override StateType Type
-		{
-			get { return StateType.Quest; }
-		}
+		public override StateType Type => StateType.Quest;
 
-		protected override void OnActivate()
+		protected override void OnLoad()
 		{
-			UnityEngine.Debug.Log("QuestState loaded");
-
 		    var args = new WindowArgs(_userInteraction);
 
             switch (_userInteraction.RequiredView)
@@ -55,14 +49,11 @@ namespace GameStateMachine.States
 			}
 		}
 
-		protected override LevelName RequiredLevel { get { return LevelName.StarMap; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.StarMap; } }
 
 		private void OnDialogClosed(WindowExitCode exitCode)
 		{
-			if (!IsActive)
-				throw new BadGameStateException(); 
-
-			StateMachine.UnloadActiveState();
+			Unload();
 		}
 
 		private readonly IGuiManager _guiManager;

@@ -20,7 +20,7 @@ namespace Services.Messenger
 {
     public class SignalsTranslator : IDisposable
     {
-        private readonly IMessenger _messenger;
+        private readonly IMessengerContext _messenger;
         private readonly IDatabase _database;
         private readonly ISessionData _session;
         private readonly SessionCreatedSignal _sessionCreatedSignal;
@@ -50,7 +50,7 @@ namespace Services.Messenger
         private readonly LocalizationChangedSignal _localizationChangedSignal;
 
         public SignalsTranslator(
-            IMessenger messenger,
+            IMessengerContext messenger,
             ISessionData session,
             IDatabase database,
             SessionCreatedSignal sessionCreatedSignal,

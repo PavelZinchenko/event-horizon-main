@@ -1,4 +1,5 @@
-﻿using GameServices.LevelManager;
+﻿using System.Collections.Generic;
+using GameServices.SceneManager;
 using Zenject;
 
 namespace GameStateMachine.States
@@ -9,31 +10,20 @@ namespace GameStateMachine.States
         public TestingState(
             IStateMachine stateMachine,
             GameStateFactory gameStateFactory,
-            ILevelLoader levelLoader,
             ExitSignal exitSignal)
-            : base(stateMachine, gameStateFactory, levelLoader)
+            : base(stateMachine, gameStateFactory)
         {
             _exitSignal = exitSignal;
             _exitSignal.Event += OnExit;
         }
 
-        public override StateType Type
-        {
-            get { return StateType.Testing; }
-        }
+		public override StateType Type => StateType.Testing;
 
-        protected override LevelName RequiredLevel { get { return LevelName.ConfigureControls; } }
-
-        protected override void OnLevelLoaded()
-        {
-        }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.ConfigureControls; } }
 
         private void OnExit()
         {
-            if (!IsActive)
-                return;
-
-            StateMachine.UnloadActiveState();
+			LoadState(StateFactory.CreateMainMenuState());
         }
 
         private readonly ExitSignal _exitSignal;

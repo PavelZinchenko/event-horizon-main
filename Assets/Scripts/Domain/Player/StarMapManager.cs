@@ -17,7 +17,7 @@ namespace Domain.Player
         [Inject] private readonly RegionMap _regionMap;
         [Inject] private readonly StarData _starData;
         [Inject] private readonly PlayerSkills _playerSkills;
-        [Inject] private readonly IMessenger _messenger;
+        [Inject] private readonly IMessengerContext _messenger;
         [Inject] private readonly QuestEventSignal.Trigger _questEventTrigger;
 
         public StarMapManager(

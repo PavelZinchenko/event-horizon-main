@@ -1,4 +1,5 @@
-﻿using GameServices.LevelManager;
+﻿using System.Collections.Generic;
+using GameServices.SceneManager;
 using Zenject;
 
 namespace GameStateMachine.States
@@ -9,9 +10,8 @@ namespace GameStateMachine.States
         public EhopediaState(
             IStateMachine stateMachine,
             GameStateFactory stateFactory,
-            ILevelLoader levelLoader,
             ExitSignal exitSignal)
-            : base(stateMachine, stateFactory, levelLoader)
+            : base(stateMachine, stateFactory)
         {
             _exitSignal = exitSignal;
             _exitSignal.Event += OnExit;
@@ -19,12 +19,11 @@ namespace GameStateMachine.States
 
         public override StateType Type => StateType.Ehopedia;
 
-        protected override LevelName RequiredLevel => LevelName.Ehopedia;
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.Ehopedia; } }
 
-        private void OnExit()
+		private void OnExit()
         {
-            if (IsActive)
-                StateMachine.UnloadActiveState();
+			Unload();
         }
 
         private readonly ExitSignal _exitSignal;

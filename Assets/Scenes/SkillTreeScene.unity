@@ -889,7 +889,6 @@ GameObject:
   - component: {fileID: 30354255}
   - component: {fileID: 30354254}
   - component: {fileID: 30354252}
-  - component: {fileID: 30354251}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -897,15 +896,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &30354251
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 81886134792909706, guid: fbb4bf7886c467540843fc591a50594b,
-    type: 2}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 30354250}
-  m_Enabled: 1
 --- !u!124 &30354252
 Behaviour:
   m_ObjectHideFlags: 0
@@ -3486,6 +3476,8 @@ MonoBehaviour:
   _installerPrefabs: []
   _scriptableObjectInstallers: []
   _parentNewObjectsUnderRoot: 0
+  _contractNames: []
+  _parentContractName: services
 --- !u!4 &155257834
 Transform:
   m_ObjectHideFlags: 0
@@ -10060,7 +10052,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 84d7334344a8fc840b4223b331cef9fe, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 88ff8fe7202b5964c948976edce1500d, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -28978,7 +28970,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 84d7334344a8fc840b4223b331cef9fe, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0e348f582202c0a43a5c0ae19649dbe5, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

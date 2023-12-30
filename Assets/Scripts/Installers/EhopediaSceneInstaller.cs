@@ -6,6 +6,8 @@ using Combat.Manager;
 using Combat.Scene;
 using Combat.Services;
 using Services.ObjectPool;
+using Services.Messenger;
+using GameServices.SceneManager;
 using UnityEngine;
 using Zenject;
 
@@ -18,7 +20,9 @@ namespace Installers
 
         public override void InstallBindings()
         {
-            Container.Bind<Settings>().FromInstance(_settings);
+			Container.BindAllInterfaces<Messenger>().To<Messenger>().AsSingle().WithArguments(GameScene.Ehopedia);
+
+			Container.Bind<Settings>().FromInstance(_settings);
             Container.BindAllInterfacesAndSelf<EhopediaSceneManager>().To<EhopediaSceneManager>().AsSingle().NonLazy();
             Container.BindAllInterfaces<ViewRect>().To<ViewRect>().AsTransient();
             Container.BindAllInterfaces<Scene>().To<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = 200, AreaHeight = 200 }).NonLazy();
@@ -31,8 +35,8 @@ namespace Installers
             Container.Bind<DroneBayFactory>().AsSingle();
             Container.Bind<SatelliteFactory>().AsSingle();
             Container.Bind<EffectFactory>().AsSingle();
-            Container.BindAllInterfacesAndSelf<IObjectPool>().To<GameObjectPool>().FromGameObject().AsSingle();
-            Container.Bind<TrailRendererPool>().FromInstance(_trailRendererPool);
+			Container.BindAllInterfacesAndSelf<GameObjectPool>().To<GameObjectPool>().AsSingle();
+			Container.Bind<TrailRendererPool>().FromInstance(_trailRendererPool);
             Container.Bind<GameObjectFactory>();
         }
     }

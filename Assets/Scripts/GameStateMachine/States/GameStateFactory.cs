@@ -25,9 +25,10 @@ namespace GameStateMachine.States
         [Inject] private readonly DailyRewardState.Factory _dailyRewardStateFactory;
         [Inject] private readonly AnnouncementState.Factory _announcementStateFactory;
         [Inject] private readonly CombatRewardState.Factory _combatRewardStateFactory;
-        [Inject] private readonly ExplorationState.Factory _explorationStateFactory;
+		[Inject] private readonly ExplorationState.Factory _explorationStateFactory;
+		[Inject] private readonly QuickCombatState.Factory _quickCombatStateFactory;
 
-        public IGameState CreateStarMapState()
+		public IGameState CreateStarMapState()
         {
             return _starMapStateFactory.Create();
         }
@@ -71,9 +72,9 @@ namespace GameStateMachine.States
             return _skillTreeStateFactory.Create();
         }
 
-        public IGameState CreateConstructorState(IShip ship)
+        public IGameState CreateConstructorState(IShip ship, IGameState nextState)
         {
-            return _constructorStateStateFactory.Create(ship);
+            return _constructorStateStateFactory.Create(ship, nextState);
         }
 
         public IGameState CreateDialogState(string windowName, WindowArgs args, System.Action<WindowExitCode> onExitAction = null)
@@ -96,7 +97,12 @@ namespace GameStateMachine.States
             return _combatSceneStateFactory.Create(combatModel, onCompleteAction);
         }
 
-        public IGameState CreateCombatRewardState(IReward reward)
+		public IGameState CreateQuickCombatState(QuickCombatState.Settings settings)
+		{
+			return _quickCombatStateFactory.Create(settings);
+		}
+
+		public IGameState CreateCombatRewardState(IReward reward)
         {
             return _combatRewardStateFactory.Create(reward);
         }

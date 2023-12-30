@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using GameServices.SceneManager;
 using Combat.Domain;
 using GameModel.Quests;
-using GameServices.LevelManager;
 using GameServices.Player;
 using Services.Audio;
 using CommonComponents.Utils;
@@ -15,9 +16,8 @@ namespace GameStateMachine.States
         public CombatState(
             IStateMachine stateMachine,
             GameStateFactory stateFactory,
-            ILevelLoader levelLoader,
             ICombatModel combatModel,
-            System.Action<ICombatModel> onCompleteAction,
+            Action<ICombatModel> onCompleteAction,
             PlayerSkills playerSkills,
             MotherShip motherShip,
             IMusicPlayer musicPlayer,
@@ -25,7 +25,7 @@ namespace GameStateMachine.States
             
             ExitSignal exitSignal,
             CombatCompletedSignal.Trigger combatCompletedTrigger)
-            : base(stateMachine, stateFactory, levelLoader)
+            : base(stateMachine, stateFactory)
         {
             _combatModel = combatModel;
             _motherShip = motherShip;
@@ -41,18 +41,22 @@ namespace GameStateMachine.States
 
         public override StateType Type => StateType.Combat;
 
-        protected override Action<DiContainer> Installer => InstallBindings;
-        protected override LevelName RequiredLevel => LevelName.Combat;
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.Combat; } }
 
-        protected override void OnActivate()
+		public override void InstallBindings(DiContainer container)
+		{
+			container.Bind<ICombatModel>().FromInstance(_combatModel);
+		}
+
+		protected override void OnLoad()
         {
             _musicPlayer.Play(AudioTrackType.Combat);
         }
 
         private void OnCombatCompleted()
         {
-            if (!IsActive)
-                return;
+			if (Condition != GameStateCondition.Active)
+				return;
 
             var reward = _combatModel.GetReward(_lootGenerator, _playerSkills, _motherShip.CurrentStar);
             reward.Consume(_playerSkills);
@@ -68,21 +72,15 @@ namespace GameStateMachine.States
             if (reward.Any())
                 ShowRewardDialog(reward);
 
-            if (IsActive)
-                StateMachine.UnloadActiveState();
+			LoadState(StateFactory.CreateStarMapState());
         }
 
         private void ShowRewardDialog(IReward reward)
         {
-            StateMachine.LoadState(StateFactory.CreateCombatRewardState(reward));
-        }
-        
-        private void InstallBindings(DiContainer container)
-        {
-            container.Bind<ICombatModel>().FromInstance(_combatModel);
+            LoadState(StateFactory.CreateCombatRewardState(reward));
         }
 
-        private System.Action<ICombatModel> _onCompleteAction;
+        private Action<ICombatModel> _onCompleteAction;
         private readonly ICombatModel _combatModel;
         private readonly ExitSignal _exitSignal;
         private readonly MotherShip _motherShip;
@@ -91,7 +89,7 @@ namespace GameStateMachine.States
         private readonly CombatCompletedSignal.Trigger _combatCompletedTrigger;
         private readonly PlayerSkills _playerSkills;
 
-        public class Factory : Factory<ICombatModel, System.Action<ICombatModel>, CombatState> { }
+        public class Factory : Factory<ICombatModel, Action<ICombatModel>, CombatState> { }
     }
 
     public class CombatCompletedSignal : SmartWeakSignal<ICombatModel>

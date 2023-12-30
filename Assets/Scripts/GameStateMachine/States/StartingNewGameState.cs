@@ -3,7 +3,6 @@ using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using Session;
-using GameServices.LevelManager;
 using GameServices.Player;
 using Domain.Quests;
 using Constructor.Ships;
@@ -17,13 +16,12 @@ namespace GameStateMachine.States
         public StartingNewGameState(
             IStateMachine stateMachine,
             GameStateFactory stateFactory,
-            ILevelLoader levelLoader,
             ISessionData session,
             IDatabase database,
             ILootItemFactory lootItemFactory,
             PlayerFleet playerFleet,
             MotherShip motherShip)
-            : base(stateMachine, stateFactory, levelLoader)
+            : base(stateMachine, stateFactory)
         {
             _motherShip = motherShip;
             _session = session;
@@ -32,16 +30,16 @@ namespace GameStateMachine.States
             _lootItemFactory = lootItemFactory;
         }
 
-        public override StateType Type { get { return StateType.StartingNewGame; } }
+        public override StateType Type => StateType.StartingNewGame;
 
-        protected override void OnActivate()
+        protected override void OnLoad()
         {
             InitializeGame();
             InitializeResources();
             InitializeInventory();
             InitializeFleet();
 
-            StateMachine.LoadState(StateFactory.CreateStarMapState());
+            LoadState(StateFactory.CreateStarMapState());
         }
 
         private void InitializeGame()

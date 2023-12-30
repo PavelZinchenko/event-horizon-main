@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 using GameDatabase;
 using GameDatabase.Query;
-using GameServices.LevelManager;
+using GameServices.SceneManager;
 using Services.Localization;
 using Services.Reources;
 using Zenject;
@@ -20,16 +19,26 @@ public class LoadingScreen : MonoBehaviour
     [Inject] private readonly IDatabase _database;
 
     [Inject]
-    private void Initialize(SceneBeforeUnloadSignal sceneBeforeUnloadSignal, SceneLoadedSignal sceneLoadedSignal, ILocalization localization)
+    private void Initialize(SceneManagerStateChangedSignal sceneManagerStateChangedSignal, ILocalization localization)
     {
-        _sceneBeforeUnloadSignal = sceneBeforeUnloadSignal;
-        _sceneLoadedSignal = sceneLoadedSignal;
-        _localization = localization;
-        _sceneBeforeUnloadSignal.Event += OnSceneUnloaded;
-        _sceneLoadedSignal.Event += OnSceneLoaded;
+        _sceneManagerStateChangedSignal = sceneManagerStateChangedSignal;
+		_sceneManagerStateChangedSignal.Event += OnSceneManagerStateChanged;
+		_localization = localization;
     }
 
-    private void OnSceneUnloaded()
+	private void OnSceneManagerStateChanged(State state)
+	{
+		if (state == State.Loading)
+		{
+			Show();
+		}
+		else
+		{
+			Hide();
+		}
+	}
+
+	private void Show()
     {
         _canvas.enabled = true;
 
@@ -50,14 +59,13 @@ public class LoadingScreen : MonoBehaviour
         }
     }
 
-    private void OnSceneLoaded()
+    private void Hide()
     {
         _canvas.enabled = false;
     }
 
     private bool _firstTime = true;
     private readonly System.Random _random = new System.Random();
-    private SceneBeforeUnloadSignal _sceneBeforeUnloadSignal;
-    private SceneLoadedSignal _sceneLoadedSignal;
+    private SceneManagerStateChangedSignal _sceneManagerStateChangedSignal;
     private ILocalization _localization;
 }

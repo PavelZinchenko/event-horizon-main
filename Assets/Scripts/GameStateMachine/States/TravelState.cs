@@ -1,5 +1,6 @@
-﻿using Session;
-using GameServices.LevelManager;
+﻿using System.Collections.Generic;
+using GameServices.SceneManager;
+using Session;
 using GameServices.Player;
 using Services.Gui;
 using Services.Messenger;
@@ -13,14 +14,13 @@ namespace GameStateMachine.States
         public TravelState(
             IStateMachine stateMachine,
             GameStateFactory gameStateFactory,
-            ILevelLoader levelLoader,
             int destination,
             PlayerResources playerResources,
             MotherShip motherShip,
             IGuiManager guiManager,
             ISessionData session,
-            IMessenger messenger)
-            : base(stateMachine, gameStateFactory, levelLoader)
+            IMessengerContext messenger)
+            : base(stateMachine, gameStateFactory)
         {
             _source = session.StarMap.PlayerPosition;
             _destination = destination;
@@ -31,9 +31,9 @@ namespace GameStateMachine.States
             _guiManager = guiManager;
         }
 
-        public override StateType Type { get { return StateType.Travel; } }
+		public override StateType Type => StateType.Travel;
 
-        public override void Update(float elapsedTime)
+		public override void Update(float elapsedTime)
         {
             _progress += elapsedTime / _lifeTime;
 
@@ -46,13 +46,13 @@ namespace GameStateMachine.States
                 UnityEngine.Debug.Log("FlightState: Finished");
 
                 _session.StarMap.PlayerPosition = _destination;
-                StateMachine.UnloadActiveState();
+                Unload();
             }
         }
 
-        protected override LevelName RequiredLevel { get { return LevelName.StarMap; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.StarMap; } }
 
-        protected override void OnLoad()
+		protected override void OnLoad()
         {
             UnityEngine.Debug.Log("FlightState: Started - " + _destination);
 
@@ -61,7 +61,7 @@ namespace GameStateMachine.States
             if (!_playerResources.TryConsumeFuel(requiredFuel))
             {
 				UnityEngine.Debug.Log("FlightState: not enough fuel");
-                StateMachine.UnloadActiveState();
+				Unload();
                 return;
             }
 
@@ -83,7 +83,7 @@ namespace GameStateMachine.States
         private readonly int _destination;
         private readonly PlayerResources _playerResources;
         private readonly ISessionData _session;
-        private readonly IMessenger _messenger;
+        private readonly IMessengerContext _messenger;
         private readonly MotherShip _motherShip;
         private readonly IGuiManager _guiManager;
 

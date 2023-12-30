@@ -15,7 +15,7 @@ namespace GameServices.Research
 	public sealed class Research : GameServiceBase
 	{
         [Inject]
-		public Research(ISessionData session, ITechnologies technologies, IMessenger messenger, SessionDataLoadedSignal dataLoadedSignal, SessionCreatedSignal sessionCreatedSignal, IDatabase database)
+		public Research(ISessionData session, ITechnologies technologies, IMessengerContext messenger, SessionDataLoadedSignal dataLoadedSignal, SessionCreatedSignal sessionCreatedSignal, IDatabase database)
             : base(dataLoadedSignal, sessionCreatedSignal)
         {
             _session = session;
@@ -181,7 +181,7 @@ namespace GameServices.Research
 		private Dictionary<int, ObscuredInt> _researchPoints = new Dictionary<int, ObscuredInt>();
         private readonly IDatabase _database;
         private readonly ISessionData _session;
-	    private readonly IMessenger _messenger;
+	    private readonly IMessengerContext _messenger;
 	    private readonly ITechnologies _technologies;
 	}
 }

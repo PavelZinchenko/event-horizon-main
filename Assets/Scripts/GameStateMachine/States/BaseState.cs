@@ -1,86 +1,125 @@
-﻿using GameServices.LevelManager;
+﻿using System;
+using System.Collections.Generic;
+using GameServices.SceneManager;
 using CommonComponents.Utils;
 using Zenject;
 
 namespace GameStateMachine.States
 {
+    public enum GameStateCondition
+    {
+        NotLoaded,
+        Active,
+        Suspended,
+    }
+
     public abstract class BaseState : IGameState
     {
-        protected BaseState(IStateMachine stateMachine, GameStateFactory stateFactory, ILevelLoader levelLoader = null)
+        protected BaseState(IStateMachine stateMachine, GameStateFactory stateFactory)
         {
             _stateMachine = stateMachine;
             _stateFactory = stateFactory;
-            _levelLoader = levelLoader;
         }
+
+        public virtual IEnumerable<GameScene> RequiredScenes { get { yield break; } }
 
         public abstract StateType Type { get; }
 
-        public void Load()
+        public GameStateCondition Condition
         {
-            UnityEngine.Debug.Log(GetType().Name + ": loaded");
-
-			OnLoad();
-            LoadLevel();
-        }
-
-        public void Unload()
-        {
-            UnityEngine.Debug.Log(GetType().Name + ": unloaded");
-            IsActive = false;
-
-            OnUnload();
-        }
-
-        public void Suspend(StateType newState)
-        {
-            IsActive = false;
-            OnSuspend(newState);
-        }
-
-        public void Resume(StateType oldState)
-		{
-			OnResume (oldState);
-            LoadLevel();
-        }
-
-        private void LoadLevel()
-        {
-            if (RequiredLevel != LevelName.Undefined && RequiredLevel != _levelLoader.Current)
-                _levelLoader.LoadLevel(RequiredLevel, OnLevelLoadedCallback, Installer);
-            else
+            get { return _condition; }
+            set
             {
-                IsActive = true;
-                OnActivate();
-            }
-        }
+                if (_condition == value)
+                    return;
 
-        public virtual void Update(float elapsedTime) {}
+				if (value == GameStateCondition.NotLoaded)
+                {
+                    _condition = value;
+                    OnUnload();
+                }
+                else if (value == GameStateCondition.Suspended && _condition == GameStateCondition.Active)
+                {
+                    _condition = value;
+                    OnSuspend();
+                }
+                else if (value == GameStateCondition.Active && _condition == GameStateCondition.NotLoaded)
+                {
+                    _condition = value;
+                    OnLoad();
+                }
+                else if (value == GameStateCondition.Active && _condition == GameStateCondition.Suspended)
+                {
+                    _condition = value;
+                    OnResume();
+                }
+                else
+                {
+                    throw new ArgumentException("Can't change state from " + _condition + " to " + value);
+                }
 
-        protected virtual System.Action<DiContainer> Installer => null;
-
-        protected virtual void OnLoad() { }
-        protected virtual void OnUnload() { }
-        protected virtual void OnSuspend(StateType newState) { }
-        protected virtual void OnResume(StateType oldState) { }
-        protected virtual void OnLevelLoaded() {}
-		protected virtual void OnActivate() {}
-
-        protected virtual LevelName RequiredLevel { get { return LevelName.Undefined; } }
-
-        protected bool IsActive { get; private set; }
-
-        protected IStateMachine StateMachine { get { return _stateMachine; } }
-        protected GameStateFactory StateFactory { get { return _stateFactory; } }
-
-		private void OnLevelLoadedCallback()
-		{
-			UnityEngine.Debug.Log (GetType ().Name + ": level loaded");
-			IsActive = true;
-			OnActivate();
-			OnLevelLoaded();
+				if (value == GameStateCondition.Active)
+					OnActivate();
+			}
 		}
 
-        private readonly ILevelLoader _levelLoader;
+        public virtual void Update(float elapsedTime) {}
+		public virtual void InstallBindings(DiContainer container) {}
+
+		protected virtual void OnLoad() { }
+        protected virtual void OnUnload() { }
+        protected virtual void OnSuspend() { }
+        protected virtual void OnResume() { }
+		protected virtual void OnActivate() { }
+
+		protected void Unload()
+		{
+			if (Condition != GameStateCondition.Active)
+			{
+				UnityEngine.Debug.Log($"{Type}.Unload(): State is not active");
+				return;
+			}
+
+			_stateMachine.UnloadActiveState();
+		}
+
+		protected void Reload()
+		{
+			if (Condition != GameStateCondition.Active)
+			{
+				UnityEngine.Debug.Log($"{Type}.Reload(): State is not active");
+				return;
+			}
+
+			_stateMachine.ReloadState();
+		}
+
+		protected void LoadState(IGameState state)
+		{
+			if (Condition != GameStateCondition.Active)
+			{
+				UnityEngine.Debug.Log($"{Type}.LoadState({state.Type}): State is not active");
+				return;
+			}
+
+			_stateMachine.LoadState(state);
+		}
+
+		protected void LoadStateAdditive(IGameState state)
+		{
+			if (Condition != GameStateCondition.Active)
+			{
+				UnityEngine.Debug.Log($"{Type}.LoadStateAdditive({state.Type}): State is not active");
+				return;
+			}
+
+			_stateMachine.LoadStateAdditive(state);
+		}
+
+        protected GameStateFactory StateFactory { get { return _stateFactory; } }
+
+		private GameStateCondition _condition = GameStateCondition.NotLoaded;
+
         private readonly IStateMachine _stateMachine;
         private readonly GameStateFactory _stateFactory;
     }

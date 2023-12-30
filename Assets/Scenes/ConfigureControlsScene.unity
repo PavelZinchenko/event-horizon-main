@@ -4559,6 +4559,8 @@ MonoBehaviour:
   _installerPrefabs: []
   _scriptableObjectInstallers: []
   _parentNewObjectsUnderRoot: 0
+  _contractNames: []
+  _parentContractName: services
 --- !u!4 &581801799
 Transform:
   m_ObjectHideFlags: 0
@@ -9840,8 +9842,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1302316753}
   - component: {fileID: 1302316752}
-  - component: {fileID: 1302316750}
-  - component: {fileID: 1302316749}
   - component: {fileID: 1302316748}
   - component: {fileID: 1302316747}
   m_Layer: 0
@@ -9933,24 +9933,6 @@ MonoBehaviour:
   ZoomSpeed: 1
   LinearSpeed: 5
   ZoomOverride: -1
---- !u!81 &1302316749
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 81250712344544576, guid: 14899300ce08903478b114d1c0dad9f5,
-    type: 2}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1302316746}
-  m_Enabled: 1
---- !u!124 &1302316750
-Behaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 124532803749605624, guid: 14899300ce08903478b114d1c0dad9f5,
-    type: 2}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1302316746}
-  m_Enabled: 1
 --- !u!20 &1302316752
 Camera:
   m_ObjectHideFlags: 0
@@ -14639,6 +14621,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!225 &1916865451
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -15448,6 +15431,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2010760800
 GameObject:
   m_ObjectHideFlags: 0

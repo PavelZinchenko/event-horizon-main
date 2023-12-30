@@ -1,7 +1,8 @@
 ﻿using Combat;
 using Combat.Ai;
 using Combat.Collision.Manager;
-using Combat.Component.Triggers;
+using Services.Messenger;
+using GameServices.SceneManager;
 using Combat.Factory;
 using Combat.Manager;
 using Combat.Scene;
@@ -28,7 +29,9 @@ namespace Installers
 
         public override void InstallBindings()
         {
-            Container.BindAllInterfacesAndSelf<ExplorationData>().To<ExplorationData>().AsSingle().NonLazy();
+			Container.BindAllInterfaces<Messenger>().To<Messenger>().AsSingle().WithArguments(GameScene.Exploration);
+			
+			Container.BindAllInterfacesAndSelf<ExplorationData>().To<ExplorationData>().AsSingle().NonLazy();
             Container.BindAllInterfacesAndSelf<ExplorationSceneManager>().To<ExplorationSceneManager>().AsSingle().NonLazy();
             Container.BindAllInterfaces<ExplorationViewRect>().To<ExplorationViewRect>().AsTransient();
             Container.BindAllInterfaces<Scene>().To<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = 1000, AreaHeight = 1000, PlayerAlwaysInCenter = true }).NonLazy();
@@ -46,8 +49,8 @@ namespace Installers
             Container.Bind<DroneBayFactory>().AsSingle();
             Container.Bind<SatelliteFactory>().AsSingle();
             Container.Bind<EffectFactory>().AsSingle();
-            Container.BindAllInterfacesAndSelf<IObjectPool>().To<GameObjectPool>().FromGameObject().AsSingle();
-            Container.Bind<TrailRendererPool>().FromInstance(_trailRendererPool);
+			Container.BindAllInterfacesAndSelf<GameObjectPool>().To<GameObjectPool>().AsSingle();
+			Container.Bind<TrailRendererPool>().FromInstance(_trailRendererPool);
             Container.Bind<GameObjectFactory>();
             Container.BindAllInterfaces<InputSystemMouse>().To<InputSystemMouse>().AsSingle().WithArguments(_camera);
             Container.BindAllInterfaces<InputSystemKeyboard>().To<InputSystemKeyboard>().AsSingle();
