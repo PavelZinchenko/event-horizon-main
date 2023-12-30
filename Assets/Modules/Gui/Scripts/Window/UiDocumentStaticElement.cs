@@ -7,7 +7,7 @@ using Gui.Presenter;
 namespace Gui.Window
 {
     [RequireComponent(typeof(PresenterBase))]
-    public class UiDocumentStaticElement : MonoBehaviour, IWindow
+    public class UiDocumentStaticElement : MonoBehaviour//, IWindow
     {
         [Inject] WindowOpenedSignal.Trigger _windowOpenedTrigger;
         [Inject] WindowClosedSignal.Trigger _windowClosedTrigger;

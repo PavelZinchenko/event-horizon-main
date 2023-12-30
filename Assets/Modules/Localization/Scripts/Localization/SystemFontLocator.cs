@@ -12,6 +12,7 @@ namespace Services.Localization
         [SerializeField] private int _fontSize = 12;
         [SerializeField] private PanelTextSettings _textSettings;
         [SerializeField] private FontTable _fontTable;
+		[SerializeField] private bool _enabled = true;
 
         private string _language;
         private ILocalization _localization;
@@ -24,6 +25,8 @@ namespace Services.Localization
             ILocalization localization,
             LocalizationChangedSignal localizationChangedSignal)
         {
+			if (!_enabled) return;
+
             _localization = localization;
             _localizationChangedSignal = localizationChangedSignal;
             _localizationChangedSignal.Event += OnLocalizationChanged;

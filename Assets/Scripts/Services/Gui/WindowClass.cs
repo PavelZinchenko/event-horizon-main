@@ -5,7 +5,7 @@
         HudElement,
         TopLevel,
         Singleton,
-        Level2,
+        Common,
         ModalDialog,
         Balloon,
     }
@@ -31,7 +31,7 @@
             if (otherClass == WindowClass.TopLevel)
                 return true;
             if (otherClass == WindowClass.Singleton)
-                return myClass == WindowClass.Singleton || myClass == WindowClass.Level2;
+                return myClass == WindowClass.Singleton || myClass == WindowClass.Common;
 
             return false;
         }
@@ -48,6 +48,21 @@
                 return myClass != WindowClass.TopLevel;
 
             return false;
+        }
+
+        public static bool HasHigherClosePriority(this WindowClass myClass, WindowClass otherClass)
+        {
+            if (myClass == WindowClass.Balloon)
+                return true;
+            if (otherClass == WindowClass.Balloon)
+                return false;
+
+            if (myClass == WindowClass.ModalDialog)
+                return true;
+            if (otherClass == WindowClass.ModalDialog)
+                return false;
+
+            return true;
         }
 
         public static bool MustBeOpenedAutomatically(this WindowClass windowClass)

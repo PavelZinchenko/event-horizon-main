@@ -6,7 +6,7 @@ using Gui.Presenter;
 namespace Gui.Window
 {
     [RequireComponent(typeof(Animation.WindowAnimationBase), typeof(PresenterBase))]
-    public class UiDocumentWindow : MonoBehaviour, IWindow
+    public class UiDocumentWindow : MonoBehaviour//, IWindow
     {
         [Inject] WindowOpenedSignal.Trigger _windowOpenedTrigger;
         [Inject] WindowClosedSignal.Trigger _windowClosedTrigger;

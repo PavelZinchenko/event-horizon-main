@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GameServices.LevelManager;
-using Gui.Utils;
+using GameServices.SceneManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using CommonComponents.Utils;
@@ -15,28 +14,40 @@ namespace Services.Gui
         [Inject]
         public GuiManager(
             SceneLoadedSignal sceneLoadedSignal,
-            WindowOpenedSignal windowOpenedSignal,
+            SceneBeforeUnloadSignal sceneBeforeUnloadSignal,
+            WindowOpenedSignal windowOpenedSignal, 
             WindowClosedSignal windowClosedSignal,
+            WindowDestroyedSignal windowDestroyedSignal,
             EscapeKeyPressedSignal.Trigger escapeKeyPressedTrigger)
         {
             _sceneLoadedSignal = sceneLoadedSignal;
+            _sceneBeforeUnloadSignal = sceneBeforeUnloadSignal;
             _windowOpenedSignal = windowOpenedSignal;
             _windowClosedSignal = windowClosedSignal;
+            _windowDestroyedSignal = windowDestroyedSignal;
+            _windowDestroyedSignal.Event += OnWindowDestroyed;
             _escapeKeyPressedTrigger = escapeKeyPressedTrigger;
 
             _sceneLoadedSignal.Event += OnSceneLoaded;
+            _sceneBeforeUnloadSignal.Event += OnSceneBeforeUnload;
             _windowOpenedSignal.Event += OnWindowOpened;
             _windowClosedSignal.Event += OnWindowClosed;
         }
 
         public void Initialize()
         {
-            ScanSceneForWindows();
+            OnWindowsLoaded(GetAllWindows());
         }
 
         public void Dispose()
         {
             Cleanup();
+        }
+
+        public IWindow FindWindow(string id)
+        {
+            IWindow window;
+            return _windows.TryGetValue(id, out window) ? window : null;
         }
 
         public void OpenWindow(string id, Action<WindowExitCode> onCloseAction = null)
@@ -46,22 +57,27 @@ namespace Services.Gui
                 throw new ArgumentException();
 
             if (onCloseAction != null)
-                _onCloseActions.Add(window, onCloseAction);
+            {
+                if (!_onCloseActions.ContainsKey(window))
+                    _onCloseActions.Add(window, onCloseAction);
+                else
+                    Debug.LogWarning("Window already opened with another onclose action - " + id);
+            }
 
             window.Open();
         }
 
         public void OpenWindow(string id, WindowArgs args, Action<WindowExitCode> onCloseAction = null)
-        {
-            IWindow window;
-            if (!_windows.TryGetValue(id, out window))
-                throw new ArgumentException();
+		{
+		    IWindow window;
+		    if (!_windows.TryGetValue(id, out window))
+		        throw new ArgumentException();
 
             if (onCloseAction != null)
-                _onCloseActions.Add(window, onCloseAction);
+				_onCloseActions.Add(window, onCloseAction);
 
-            window.Open(args);
-        }
+			window.Open(args);
+		}
 
         public bool AutoWindowsAllowed
         {
@@ -95,7 +111,7 @@ namespace Services.Gui
 
             IWindow window;
             if (!_windows.TryGetValue(id, out window))
-                throw new InvalidOperationException("invalid window id - " + id);
+                throw new InvalidOperationException("invalid window id: " + id);
 
             var windowsToClose = new List<IWindow>();
             var enabled = true;
@@ -104,7 +120,7 @@ namespace Services.Gui
             {
                 if (window.Class.CantBeOpenedDueTo(item.Class))
                 {
-                    UnityEngine.Debug.Log("Window cant be opened: " + window.Id + " due to " + item.Id);
+                    //UnityEngine.Debug.Log("Window cant be opened: " + window.Id + " due to " + item.Id);
                     window.Close();
                     return;
                 }
@@ -212,60 +228,23 @@ namespace Services.Gui
             }
         }
 
-        private void OnSceneLoaded()
+        private void OnSceneLoaded(GameScene scene)
         {
-            ScanSceneForWindows();
+            OnWindowsLoaded(GetWindowsInScene(scene));
         }
 
-        private ICollection<IWindow> GetLoadedWindows()
+        private void OnSceneBeforeUnload(GameScene scene)
         {
-            var windows = new List<IWindow>();
-            var sceneCount = SceneManager.sceneCount;
-
-            foreach (var item in DontDestroyOnLoad.All)
-                FindWindows(item.transform, windows);
-
-            var rootObjects = new List<GameObject>();
-            for (var i = 0; i < sceneCount; ++i)
-            {
-                var scene = SceneManager.GetSceneAt(i);
-                rootObjects.Clear();
-                scene.GetRootGameObjects(rootObjects);
-
-                foreach (var rootObject in rootObjects)
-                {
-                    if (rootObject.GetComponent<DontDestroyOnLoad>() != null) continue;
-                    FindWindows(rootObject.transform, windows);
-                }
-            }
-
-            return windows;
+            OnWindowsUnloading(GetWindowsInScene(scene));
         }
 
-        private void FindWindows(Transform root, ICollection<IWindow> windows)
+        private void OnWindowsLoaded(IEnumerable<IWindow> windows)
         {
-            var window = root.GetComponent<IWindow>();
-            if (window != null)
-            {
-                windows.Add(window);
-                return;
-            }
-
-            foreach (Transform child in root)
-                FindWindows(child, windows);
-        }
-
-        private void ScanSceneForWindows()
-        {
-            UnityEngine.Debug.Log("GuiManager.ScanSceneForWindows");
-
-            Cleanup();
-            var windows = GetLoadedWindows();
             foreach (var window in windows)
             {
                 if (_windows.ContainsKey(window.Id))
                 {
-                    Debug.LogError("Window already exists - " + window.Id);
+                    UnityEngine.Debug.Log("Window already exists - " + window.Id);
                     Debug.Break();
                 }
 
@@ -273,7 +252,7 @@ namespace Services.Gui
 
                 if (window.IsVisible)
                 {
-                    UnityEngine.Debug.Log("Active window found: " + window.Id);
+                    //UnityEngine.Debug.Log("Active window found: " + window.Id);
                     _activeWindows.Add(window);
                 }
                 else
@@ -281,6 +260,63 @@ namespace Services.Gui
                     //UnityEngine.Debug.Log("Window found: " + window.Id);
                 }
             }
+        }
+
+        private void OnWindowsUnloading(IEnumerable<IWindow> windows)
+        {
+            foreach (var window in windows)
+            {
+                _windows.Remove(window.Id);
+                _activeWindows.Remove(window);
+                _showWhenPossibleWindows.Remove(window);
+
+                Action<WindowExitCode> action;
+                if (_onCloseActions.TryGetValue(window, out action))
+                {
+                    _onCloseActions.Remove(window);
+                    action.Invoke(WindowExitCode.Cancel);
+                }
+            }
+        }
+
+        private IEnumerable<IWindow> GetWindowsInScene(GameScene scene)
+        {
+            var sceneObject = SceneManager.GetSceneByName(scene.ToSceneName());
+            if (!sceneObject.IsValid() || !sceneObject.isLoaded)
+                yield break;
+
+            var windows = new List<IWindow>();
+            foreach (var gameObject in sceneObject.GetRootGameObjects())
+            {
+                gameObject.GetComponentsInChildren<IWindow>(true, windows);
+                foreach (var window in windows)
+                    yield return window;
+            }
+        }
+
+        private IEnumerable<IWindow> GetAllWindows()
+        {
+			foreach (var item in Resources.FindObjectsOfTypeAll<GameObject>())
+            {
+                var window = item.GetComponent<IWindow>();
+                if (window == null)
+                    continue;
+
+                yield return window;
+            }
+        }
+
+        private void OnWindowDestroyed(IWindow window)
+        {
+            if (window == null) return;
+
+            IWindow oldWindow;
+            if (!_windows.TryGetValue(window.Id, out oldWindow) || oldWindow != window) return;
+
+            _windows.Remove(window.Id);
+            _activeWindows.Remove(window);
+            _showWhenPossibleWindows.Remove(window);
+            _onCloseActions.Remove(window);
         }
 
         private void Cleanup()
@@ -297,15 +333,16 @@ namespace Services.Gui
         }
 
         private bool _autoWindowsAllowed = true;
-        //private readonly HashSet<WindowClass> _deniedClasses;
         private readonly HashSet<IWindow> _showWhenPossibleWindows = new HashSet<IWindow>();
         private readonly Dictionary<string, IWindow> _windows = new Dictionary<string, IWindow>();
         private readonly HashSet<IWindow> _activeWindows = new HashSet<IWindow>();
         private readonly Dictionary<IWindow, Action<WindowExitCode>> _onCloseActions = new Dictionary<IWindow, Action<WindowExitCode>>();
 
         private readonly SceneLoadedSignal _sceneLoadedSignal;
+        private readonly SceneBeforeUnloadSignal _sceneBeforeUnloadSignal;
         private readonly WindowOpenedSignal _windowOpenedSignal;
         private readonly WindowClosedSignal _windowClosedSignal;
+        private readonly WindowDestroyedSignal _windowDestroyedSignal;
         private readonly EscapeKeyPressedSignal.Trigger _escapeKeyPressedTrigger;
 
         public void Tick()
@@ -318,7 +355,8 @@ namespace Services.Gui
                     if (window.EscapeAction == EscapeKeyAction.Block)
                         return;
                     if (window.EscapeAction == EscapeKeyAction.Close && window.Enabled)
-                        windowToClose = window;
+                        if (windowToClose == null || window.Class.HasHigherClosePriority(windowToClose.Class))
+                            windowToClose = window;
                 }
 
                 if (windowToClose != null)
@@ -335,6 +373,11 @@ namespace Services.Gui
     }
 
     public class WindowClosedSignal : SmartWeakSignal<string, WindowExitCode>
+    {
+        public class Trigger : TriggerBase { }
+    }
+
+    public class WindowDestroyedSignal : SmartWeakSignal<IWindow>
     {
         public class Trigger : TriggerBase { }
     }
