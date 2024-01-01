@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Zenject;
 using GameModel.Serialization;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace Session.Content
 {
@@ -435,6 +435,6 @@ namespace Session.Content
 	    private readonly NewStarSecuredSignal.Trigger _newStarSecuredTrigger;
 	}
 
-	public class PlayerPositionChangedSignal : SmartWeakSignal<int> { public class Trigger : TriggerBase { } }
-    public class NewStarSecuredSignal : SmartWeakSignal<int> { public class Trigger : TriggerBase { } }
+	public class PlayerPositionChangedSignal : SmartWeakSignal<PlayerPositionChangedSignal, int> {}
+    public class NewStarSecuredSignal : SmartWeakSignal<NewStarSecuredSignal, int> {}
 }

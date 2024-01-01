@@ -685,13 +685,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89715ad69b973a14899afa2c6730b30b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _installers:
+  _scriptableObjectInstallers: []
+  _monoInstallers:
   - {fileID: 375107056}
   _installerPrefabs: []
-  _scriptableObjectInstallers: []
-  _parentNewObjectsUnderRoot: 0
+  _autoRun: 1
+  OnPreInstall:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPostInstall:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPreResolve:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPostResolve:
+    m_PersistentCalls:
+      m_Calls: []
+  _parentNewObjectsUnderSceneContext: 0
   _contractNames: []
-  _parentContractName: services
+  _parentContractNames:
+  - services
 --- !u!4 &84589972
 Transform:
   m_ObjectHideFlags: 0

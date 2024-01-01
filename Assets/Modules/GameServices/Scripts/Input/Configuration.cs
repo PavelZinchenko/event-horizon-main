@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using UnityEngine.InputSystem;
 using UnityEngine;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using System;
 
 namespace Services.Input
@@ -108,13 +108,6 @@ namespace Services.Input
         private const string Quote = "\"";
     }
 
-    public class KeyBindingsChangedSignal : SmartWeakSignal<string>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class MouseEnabledSignal : SmartWeakSignal<bool>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class KeyBindingsChangedSignal : SmartWeakSignal<KeyBindingsChangedSignal, string> {}
+    public class MouseEnabledSignal : SmartWeakSignal<MouseEnabledSignal, bool> {}
 }

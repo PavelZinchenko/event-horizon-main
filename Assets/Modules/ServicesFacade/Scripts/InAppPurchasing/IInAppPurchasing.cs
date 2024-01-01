@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Economy.ItemType;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace Services.InAppPurchasing
 {
@@ -23,8 +23,8 @@ namespace Services.InAppPurchasing
         public IapException(string message, System.Exception inner) : base(message, inner) { }
     }
 
-    public class InAppPurchaseCompletedSignal : SmartWeakSignal { public class Trigger : TriggerBase { } }
-    public class InAppPurchaseFailedSignal : SmartWeakSignal<string> { public class Trigger : TriggerBase { } }
-    public class SupporterPackPurchasedSignal : SmartWeakSignal { public class Trigger : TriggerBase { } }
-    public class InAppItemListUpdatedSignal : SmartWeakSignal { public class Trigger : TriggerBase { } }
+    public class InAppPurchaseCompletedSignal : SmartWeakSignal<InAppPurchaseCompletedSignal> {}
+    public class InAppPurchaseFailedSignal : SmartWeakSignal<InAppPurchaseFailedSignal, string> {}
+    public class SupporterPackPurchasedSignal : SmartWeakSignal<SupporterPackPurchasedSignal> {}
+    public class InAppItemListUpdatedSignal : SmartWeakSignal<InAppItemListUpdatedSignal> {}
 }

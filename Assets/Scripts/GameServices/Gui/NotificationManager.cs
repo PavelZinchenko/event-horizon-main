@@ -1,13 +1,10 @@
 ﻿using System;
-using Economy.ItemType;
-using GameDatabase;
-using GameServices.Player;
 using GameStateMachine;
 using Services.Gui;
 using Services.InAppPurchasing;
 using Services.Localization;
 using Services.Storage;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Zenject;
 
 namespace GameServices.Gui
@@ -93,13 +90,6 @@ namespace GameServices.Gui
         private readonly ShowDebugMessageSignal _debugMessageSingal;
     }
 
-    public class ShowMessageSignal : SmartWeakSignal<string>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class ShowDebugMessageSignal : SmartWeakSignal<string>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class ShowMessageSignal : SmartWeakSignal<ShowMessageSignal, string> {}
+    public class ShowDebugMessageSignal : SmartWeakSignal<ShowDebugMessageSignal, string> {}
 }

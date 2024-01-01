@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Zenject;
 using Session.Content;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace Session
 {
@@ -174,6 +174,6 @@ namespace Session
         public QuestData Quests { get; private set; }
     }
 
-    public class SessionDataLoadedSignal : SmartWeakSignal { public class Trigger : TriggerBase { } }
-    public class SessionCreatedSignal : SmartWeakSignal { public class Trigger : TriggerBase { } }
+    public class SessionDataLoadedSignal : SmartWeakSignal<SessionDataLoadedSignal> {}
+    public class SessionCreatedSignal : SmartWeakSignal<SessionCreatedSignal> {}
 }

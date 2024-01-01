@@ -1,4 +1,4 @@
-﻿using CommonComponents.Utils;
+﻿using CommonComponents.Signals;
 
 namespace Domain.Quests
 {
@@ -15,10 +15,7 @@ namespace Domain.Quests
         Timer,
     }
 
-    public class QuestEventSignal : SmartWeakSignal<IQuestEventData>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class QuestEventSignal : SmartWeakSignal<QuestEventSignal, IQuestEventData> {}
 
     public interface IQuestEventData
     {

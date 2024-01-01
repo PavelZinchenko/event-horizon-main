@@ -20,6 +20,7 @@ using Zenject;
 using GameServices.SceneManager;
 using GameServices.Settings;
 using GameServices.Gui;
+using CommonComponents.Signals;
 
 namespace Installers
 {
@@ -27,33 +28,34 @@ namespace Installers
     {
         [SerializeField] private MusicPlayer _musicPlayer;
         [SerializeField] private SoundPlayer _soundPlayer;
-        [SerializeField] private SystemFontLocator _systemFontLoader;
+		[SerializeField] private SystemFontLocator _systemFontLoader;
+		[SerializeField] private ResourceLocator _resourceLocator;
 
-        public override void InstallBindings()
+		public override void InstallBindings()
         {
             BindSignals();
 
-            Container.BindAllInterfacesAndSelf<GameSettings>().To<GameSettings>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<GameSettings>().AsSingle().NonLazy();
 
-            Container.Bind<IResourceLocator>().FromPrefabResource("ResourceLocator").AsSingle().NonLazy();
+            Container.Bind<IResourceLocator>().To<ResourceLocator>().FromInstance(_resourceLocator);
 
-            Container.BindAllInterfaces<GameDatabase.Database>().To<GameDatabase.Database>().AsSingle().NonLazy();
-            Container.BindAllInterfaces<DebugManager>().To<DebugManager>().AsSingle();
+            Container.BindInterfacesTo<GameDatabase.Database>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<DebugManager>().AsSingle();
 
 			Container.Bind<IMessengerContext>().To<MessengerContext>().AsSingle();
 
 			Container.Bind<ILocalization>().To<LocalizationManager>().AsSingle();
-            Container.BindAllInterfaces<KeyNameLocalizer>().To<KeyNameLocalizer>().AsSingle();
+            Container.BindInterfacesTo<KeyNameLocalizer>().AsSingle();
             Container.Bind<SystemFontLocator>().FromInstance(_systemFontLoader);
 
 //#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
-//            Container.BindAllInterfaces<DiscordController>().To<DiscordController>().AsSingle().NonLazy();
+//            Container.BindAllInterfaces<DiscordController>().AsSingle().NonLazy();
 //#endif
 
-            Container.Bind<ICoroutineManager>().To<CoroutineManager>().FromGameObject().AsSingle();
-            Container.BindAllInterfaces<ShaderTimeProvider>().To<ShaderTimeProvider>().AsSingle().NonLazy();
+            Container.Bind<ICoroutineManager>().To<CoroutineManager>().FromNewComponentOnNewGameObject().AsSingle();
+            Container.BindInterfacesTo<ShaderTimeProvider>().AsSingle().NonLazy();
 
-            Container.BindAllInterfaces<GuiManager>().To<GuiManager>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<GuiManager>().AsSingle().NonLazy();
             Container.BindSignal<WindowOpenedSignal>();
             Container.BindTrigger<WindowOpenedSignal.Trigger>();
 			Container.BindSignal<WindowClosedSignal>();
@@ -63,7 +65,7 @@ namespace Installers
 			Container.BindSignal<EscapeKeyPressedSignal>();
             Container.BindTrigger<EscapeKeyPressedSignal.Trigger>();
 
-			Container.Bind<GameObjectFactory>();
+			Container.Bind<GameObjectFactory>().AsCached();
 			
 			Container.Bind<IMusicPlayer>().To<MusicPlayer>().FromInstance(_musicPlayer);
             Container.Bind<ISoundPlayer>().To<SoundPlayer>().FromInstance(_soundPlayer);
@@ -73,94 +75,94 @@ namespace Installers
 #elif UNITY_STANDALONE
             Container.Bind<IApplication>().To<StandaloneApplication>().FromGameObject().AsSingle().NonLazy();
 #elif UNITY_IPHONE || UNITY_ANDROID
-            Container.Bind<IApplication>().To<MobileApplication>().FromGameObject().AsSingle().NonLazy();
+            Container.Bind<IApplication>().To<MobileApplication>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
 #endif
 
-            Container.Bind<PrefabCache>().To<PrefabCache>().FromGameObject().AsSingle();
+			Container.Bind<PrefabCache>().FromNewComponentOnNewGameObject().AsSingle();
 
-            Container.BindAllInterfacesAndSelf<InternetTimeService>().To<InternetTimeService>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<InternetTimeService>().AsSingle().NonLazy();
             Container.BindSignal<ServerTimeReceivedSignal>();
             Container.BindTrigger<ServerTimeReceivedSignal.Trigger>();
 
 #if LICENSE_OPENSOURCE
-            Container.BindAllInterfaces<EmptyAccount>().To<EmptyAccount>().AsSingle();
+            Container.BindInterfacesTo<EmptyAccount>().AsSingle();
 #elif UNITY_EDITOR
-            Container.BindAllInterfaces<EditorModeAccount>().To<EditorModeAccount>().AsSingle();
+			Container.BindInterfacesTo<EditorModeAccount>().AsSingle();
 #elif UNITY_ANDROID && !NO_GPGS
-            Container.BindAllInterfaces<GoogleAccount>().To<GoogleAccount>().AsSingle();
+            Container.BindInterfacesTo<GoogleAccount>().AsSingle();
 #elif UNITY_IPHONE
-            Container.BindAllInterfaces<GameCenterAccount>().To<GameCenterAccount>().AsSingle();
+            Container.BindInterfacesTo<GameCenterAccount>().AsSingle();
 #elif UNITY_STANDALONE
-            Container.BindAllInterfaces<SteamAccount>().To<SteamAccount>().AsSingle();
+            Container.BindInterfacesTo<SteamAccount>().AsSingle();
 #else
-            Container.BindAllInterfaces<EmptyAccount>().To<EmptyAccount>().AsSingle();
+            Container.BindInterfacesTo<EmptyAccount>().AsSingle();
 #endif
 
 #if LICENSE_OPENSOURCE
-            Container.BindAllInterfaces<PlayerPrefsStorage>().To<PlayerPrefsStorage>().AsSingle();
+            Container.BindInterfacesTo<PlayerPrefsStorage>().AsSingle();
 #elif UNITY_WEBGL && !UNITY_EDITOR
-            Container.BindAllInterfaces<PlayerPrefsStorage>().To<PlayerPrefsStorage>().AsSingle();
+            Container.BindInterfacesTo<PlayerPrefsStorage>().AsSingle();
 #elif UNITY_ANDROID && !UNITY_EDITOR
-            Container.BindAllInterfaces<AndroidLocalStorage>().To<AndroidLocalStorage>().AsSingle();
+            Container.BindInterfacesTo<AndroidLocalStorage>().AsSingle();
 #elif UNITY_STANDALONE_OSX && !UNITY_EDITOR
-            Container.BindAllInterfaces<MacLocalStorage>().To<MacLocalStorage>().AsSingle();
+            Container.BindInterfacesTo<MacLocalStorage>().AsSingle();
 #elif UNITY_STANDALONE_WIN && !UNITY_EDITOR
-            Container.BindAllInterfaces<WindowsLocalStorage>().To<WindowsLocalStorage>().AsSingle();
+            Container.BindInterfacesTo<WindowsLocalStorage>().AsSingle();
 #else
-            Container.BindAllInterfaces<LocalStorage>().To<LocalStorage>().AsSingle();
+			Container.BindInterfacesTo<LocalStorage>().AsSingle();
 #endif
 
 #if LICENSE_OPENSOURCE
-            Container.BindAllInterfaces<EmptyCloudStorage>().To<EmptyCloudStorage>().AsSingle();
+            Container.BindInterfacesTo<EmptyCloudStorage>().AsSingle();
 #elif UNITY_ANDROID && !UNITY_EDITOR && !NO_GPGS
-            Container.BindAllInterfaces<Services.GooglePlay.GooglePlayServices>().To<Services.GooglePlay.GooglePlayServices>().AsSingle().NonLazy();
-            Container.BindAllInterfaces<GoogleCloudStorage>().To<GoogleCloudStorage>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<Services.GooglePlay.GooglePlayServices>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<GoogleCloudStorage>().AsSingle().NonLazy();
 #elif UNITY_IPHONE && !UNITY_EDITOR
-            Container.BindAllInterfaces<AppleCloudStorage>().To<AppleCloudStorage>().AsSingle();
+            Container.BindInterfacesTo<AppleCloudStorage>().AsSingle();
 #else
-            Container.BindAllInterfaces<EmptyCloudStorage>().To<EmptyCloudStorage>().AsSingle();
+			Container.BindInterfacesTo<EmptyCloudStorage>().AsSingle();
 #endif
 
 #if ADS_DISABLED || LICENSE_OPENSOURCE
-            Container.BindAllInterfaces<AdsManagerStub>().To<AdsManagerStub>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<AdsManagerStub>().AsSingle().NonLazy();
 #elif ADS_GOOGLE
-            Container.BindAllInterfaces<GoogleAdsManager>().To<GoogleAdsManager>().AsSingle().NonLazy();
+			Container.BindInterfacesTo<GoogleAdsManager>().AsSingle().NonLazy();
 #elif ADS_UNITY
-            Container.BindAllInterfaces<UnityAdsManager>().To<UnityAdsManager>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<UnityAdsManager>().AsSingle().NonLazy();
 #elif ADS_APPODEAL
-            Container.BindAllInterfaces<AppodealAdsManager>().To<AppodealAdsManager>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<AppodealAdsManager>().AsSingle().NonLazy();
 #endif
 
 #if NO_INTERNET
-            Container.BindAllInterfaces<NullRateGameService>().To<NullRateGameService>().AsSingle();
+            Container.BindInterfacesTo<NullRateGameService>().AsSingle();
 #elif UNITY_IOS
-            Container.BindAllInterfaces<IosRateGameService>().To<IosRateGameService>().AsSingle();
+            Container.BindInterfacesTo<IosRateGameService>().AsSingle();
 #elif UNITY_ANDROID
-            Container.BindAllInterfaces<AndroidRateGameService>().To<AndroidRateGameService>().AsSingle();
+			Container.BindInterfacesTo<AndroidRateGameService>().AsSingle();
 #else
-            Container.BindAllInterfaces<NullRateGameService>().To<NullRateGameService>().AsSingle();
+            Container.BindInterfacesTo<NullRateGameService>().AsSingle();
 #endif
 
 #if LICENSE_OPENSOURCE
-            Container.BindAllInterfaces<EmptyStorage>().To<EmptyStorage>().AsSingle();
+            Container.BindInterfacesTo<EmptyStorage>().AsSingle();
 #elif UNITY_IOS && !UNITY_EDITOR
-            Container.BindAllInterfaces<KeyChainStorage>().To<KeyChainStorage>().AsSingle();
+            Container.BindInterfacesTo<KeyChainStorage>().AsSingle();
 #elif NO_INTERNET || IAP_DISABLED
-            Container.BindAllInterfaces<EmptyStorage>().To<EmptyStorage>().AsSingle();
+            Container.BindInterfacesTo<EmptyStorage>().AsSingle();
 #else
-            Container.BindAllInterfaces<WebStorage>().To<WebStorage>().AsSingle();
+			Container.BindInterfacesTo<WebStorage>().AsSingle();
 #endif
 
-			Container.BindAllInterfaces<GameSceneManager>().To<GameSceneManager>().FromGameObject().AsSingle();
+			Container.BindInterfacesTo<GameSceneManager>().FromNewComponentOnNewGameObject().AsSingle();
 
 #if LICENSE_COMMERCIAL
-			Container.BindAllInterfaces<AssetLoader>().To<AssetLoader>().AsSingle();
+			Container.BindInterfacesTo<AssetLoader>().AsSingle();
 #else
-            Container.BindAllInterfaces<LocalAssetLoader>().To<LocalAssetLoader>().AsSingle();
+            Container.BindInterfacesTo<LocalAssetLoader>().AsSingle();
 #endif
-        }
+		}
 
-        public void BindSignals()
+		public void BindSignals()
         {
             Container.BindSignal<CloudStorageStatusChangedSignal>();
             Container.BindTrigger<CloudStorageStatusChangedSignal.Trigger>();

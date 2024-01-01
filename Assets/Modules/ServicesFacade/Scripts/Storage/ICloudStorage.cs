@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace Services.Storage
 {
@@ -36,28 +36,9 @@ namespace Services.Storage
         string LastErrorMessage { get; }
     }
 
-    public class CloudStorageStatusChangedSignal : SmartWeakSignal<CloudStorageStatus>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class CloudLoadingCompletedSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class CloudSavingCompletedSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class CloudOperationFailedSignal : SmartWeakSignal<string>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class CloudSavedGamesReceivedSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class CloudStorageStatusChangedSignal : SmartWeakSignal<CloudStorageStatusChangedSignal, CloudStorageStatus> {}
+    public class CloudLoadingCompletedSignal : SmartWeakSignal<CloudLoadingCompletedSignal> {}
+    public class CloudSavingCompletedSignal : SmartWeakSignal<CloudSavingCompletedSignal> {}
+    public class CloudOperationFailedSignal : SmartWeakSignal<CloudOperationFailedSignal, string> {}
+    public class CloudSavedGamesReceivedSignal : SmartWeakSignal<CloudSavedGamesReceivedSignal> {}
 }

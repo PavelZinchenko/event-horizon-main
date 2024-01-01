@@ -8,7 +8,7 @@ namespace Installers
     {
         public override void InstallBindings()
         {
-			Container.BindAllInterfaces<Messenger>().To<Messenger>().AsSingle().WithArguments(GameScene.ShipEditor);
+			Container.BindInterfacesTo<Messenger>().AsSingle().WithArguments(GameScene.ShipConstructor);
 		}
 	}
 }

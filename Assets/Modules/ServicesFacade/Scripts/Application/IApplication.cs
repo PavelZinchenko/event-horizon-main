@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace Services.GameApplication
 {
@@ -12,15 +12,8 @@ namespace Services.GameApplication
         void Resume(object sender = null);
     }
 
-    public class GamePausedSignal : SmartWeakSignal<bool>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class AppActivatedSignal : SmartWeakSignal<bool>
-    {
-        public class Trigger : TriggerBase { }
-    }
+	public class GamePausedSignal : SmartWeakSignal<GamePausedSignal, bool> {}
+    public class AppActivatedSignal : SmartWeakSignal<AppActivatedSignal, bool> {}
 
     public class GamePauseCounter
     {

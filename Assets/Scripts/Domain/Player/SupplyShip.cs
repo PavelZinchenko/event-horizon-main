@@ -2,7 +2,7 @@
 using Economy;
 using Session;
 using Session.Content;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using GameDatabase;
 using Zenject;
 
@@ -124,8 +124,5 @@ namespace GameServices.Player
         private readonly ISessionData _session;
     }
 
-    public class SupplyShipActivatedSignal : SmartWeakSignal<bool>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class SupplyShipActivatedSignal : SmartWeakSignal<SupplyShipActivatedSignal, bool> {}
 }

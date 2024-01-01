@@ -35,6 +35,7 @@ using Session;
 using Session.Content;
 using UnityEngine;
 using Zenject;
+using CommonComponents.Signals;
 using PlayerInventory = GameServices.Player.PlayerInventory;
 
 namespace Installers
@@ -45,30 +46,30 @@ namespace Installers
 
         public override void InstallBindings()
         {
-            Container.BindAllInterfaces<RandomGenerator>().To<RandomGenerator>().AsSingle();
+            Container.BindInterfacesTo<RandomGenerator>().AsSingle();
 
 #if LICENSE_OPENSOURCE || IAP_DISABLED
-            Container.BindAllInterfaces<InAppPurchasingStub>().To<InAppPurchasingStub>().AsSingle();
+            Container.BindInterfacesTo<InAppPurchasingStub>().AsSingle();
 #elif IAP_UNITY
-            Container.BindAllInterfaces<InAppPurchasing>().To<InAppPurchasing>().AsSingle();
+			Container.BindInterfacesTo<InAppPurchasing>().AsSingle();
 #endif
 
-            Container.Bind<IapPurchaseProcessor>().To<IapPurchaseProcessor>().AsSingle();
+            Container.Bind<IapPurchaseProcessor>().AsSingle();
 
             Container.Bind<GameModel.Config>().FromInstance(_config);
 
-            Container.Bind<IGameDataManager>().To<GameDataManager>().FromGameObject().AsSingle().NonLazy();
+            Container.Bind<IGameDataManager>().To<GameDataManager>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
 
-            Container.BindAllInterfacesAndSelf<StarMap>().To<StarMap>().AsSingle();
+            Container.BindInterfacesAndSelfTo<StarMap>().AsSingle();
 
-            Container.BindAllInterfacesAndSelf<Research>().To<Research>().AsSingle();
+            Container.BindInterfacesAndSelfTo<Research>().AsSingle();
 
-            Container.Bind<OfflineMultiplayer>().To<OfflineMultiplayer>().AsSingle().NonLazy();
+            Container.Bind<OfflineMultiplayer>().AsSingle().NonLazy();
 
-            Container.Bind<ItemTypeFactory>();
-            Container.Bind<ProductFactory>();
-            Container.Bind<LootGenerator>();
-            Container.Bind<ModificationFactory>();
+            Container.Bind<ItemTypeFactory>().AsCached();
+            Container.Bind<ProductFactory>().AsCached();
+            Container.Bind<LootGenerator>().AsCached();
+            Container.Bind<ModificationFactory>().AsCached();
 
             Container.BindFactory<CombatModelBuilder, CombatModelBuilder.Factory>();
             Container.BindSignal<ShipCreatedSignal>();
@@ -76,20 +77,20 @@ namespace Installers
             Container.BindSignal<ShipDestroyedSignal>();
             Container.BindTrigger<ShipDestroyedSignal.Trigger>();
 
-            Container.Bind<Cheats>();
-            Container.Bind<DatabaseCodesProcessor>();
+            Container.Bind<Cheats>().AsCached();
+            Container.Bind<DatabaseCodesProcessor>().AsCached();
 
-            Container.Bind<GuiHelper>();
+            Container.Bind<GuiHelper>().AsCached();
             Container.Bind<HolidayManager>().AsSingle();
             Container.Bind<NotificationManager>().AsSingle().NonLazy();
-            Container.BindAllInterfacesAndSelf<GameTime>().To<GameTime>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<GameTime>().AsSingle().NonLazy();
 
-            Container.BindAllInterfaces<Technologies>().To<Technologies>().AsSingle();
+            Container.BindInterfacesTo<Technologies>().AsSingle();
             Container.Bind<Skills>().AsSingle();
             Container.Bind<InventoryFactory>().AsSingle();
             Container.Bind<Planet.Factory>().AsCached();
 
-            Container.BindAllInterfaces<SignalsTranslator>().To<SignalsTranslator>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<SignalsTranslator>().AsSingle().NonLazy();
 
             BindPlayerData();
             BindQuestManager();
@@ -102,33 +103,33 @@ namespace Installers
 
         private void BindPlayerData()
         {
-            Container.BindAllInterfacesAndSelf<PlayerSkills>().To<PlayerSkills>().AsSingle();
-            Container.BindAllInterfacesAndSelf<PlayerFleet>().To<PlayerFleet>().AsSingle();
-            Container.BindAllInterfacesAndSelf<PlayerResources>().To<PlayerResources>().AsSingle();
-            Container.BindAllInterfacesAndSelf<MotherShip>().To<MotherShip>().AsSingle();
-            Container.BindAllInterfacesAndSelf<PlayerInventory>().To<PlayerInventory>().AsSingle();
-            Container.BindAllInterfacesAndSelf<SupplyShip>().To<SupplyShip>().AsSingle().NonLazy();
-            Container.BindAllInterfacesAndSelf<DailyReward>().To<DailyReward>().AsSingle().NonLazy();
-            Container.BindAllInterfacesAndSelf<StarMapManager>().To<StarMapManager>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<PlayerSkills>().AsSingle();
+            Container.BindInterfacesAndSelfTo<PlayerFleet>().AsSingle();
+            Container.BindInterfacesAndSelfTo<PlayerResources>().AsSingle();
+            Container.BindInterfacesAndSelfTo<MotherShip>().AsSingle();
+            Container.BindInterfacesAndSelfTo<PlayerInventory>().AsSingle();
+            Container.BindInterfacesAndSelfTo<SupplyShip>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<DailyReward>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<StarMapManager>().AsSingle().NonLazy();
         }
 
         private void BindQuestManager()
         {
-            Container.BindAllInterfaces<QuestManagerContext>().To<QuestManagerContext>().AsSingle();
-            Container.BindAllInterfaces<QuestBuilderContext>().To<QuestBuilderContext>().AsSingle();
-            Container.BindAllInterfaces<QuestManagerEventProvider>().To<QuestManagerEventProvider>().AsSingle();
-            Container.BindAllInterfaces<QuestDataProvider>().To<QuestDataProvider>().AsSingle();
-            Container.BindAllInterfaces<StarMapDataProvider>().To<StarMapDataProvider>().AsSingle();
-            Container.BindAllInterfaces<GameDataProvider>().To<GameDataProvider>().AsSingle();
-            Container.BindAllInterfaces<CharacterDataProvider>().To<CharacterDataProvider>().AsSingle();
-            Container.BindAllInterfaces<InventoryDataProvider>().To<InventoryDataProvider>().AsSingle();
-            Container.BindAllInterfaces<LootItemFactory>().To<LootItemFactory>().AsSingle();
+            Container.BindInterfacesTo<QuestManagerContext>().AsSingle();
+            Container.BindInterfacesTo<QuestBuilderContext>().AsSingle();
+            Container.BindInterfacesTo<QuestManagerEventProvider>().AsSingle();
+            Container.BindInterfacesTo<QuestDataProvider>().AsSingle();
+            Container.BindInterfacesTo<StarMapDataProvider>().AsSingle();
+            Container.BindInterfacesTo<GameDataProvider>().AsSingle();
+            Container.BindInterfacesTo<CharacterDataProvider>().AsSingle();
+            Container.BindInterfacesTo<InventoryDataProvider>().AsSingle();
+            Container.BindInterfacesTo<LootItemFactory>().AsSingle();
 
             Container.Bind<QuestCombatModelFacctory>().AsSingle();
             Container.Bind<QuestFactory>().AsSingle();
             Container.Bind<RequirementsFactory>().AsSingle();
 
-            Container.BindAllInterfaces<QuestManager>().To<QuestManager>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<QuestManager>().AsSingle().NonLazy();
 
             Container.BindSignal<QuestListChangedSignal>();
             Container.BindTrigger<QuestListChangedSignal.Trigger>();
@@ -145,7 +146,7 @@ namespace Installers
 
         private void BindStarContent()
         {
-            Container.BindAllInterfacesAndSelf<StarData>().To<StarData>().AsSingle();
+            Container.BindInterfacesAndSelfTo<StarData>().AsSingle();
             Container.Bind<Occupants>().AsSingle();
             Container.Bind<Boss>().AsSingle();
             Container.Bind<Ruins>().AsSingle();
@@ -161,11 +162,11 @@ namespace Installers
         private void BindDatabase()
         {
 #if EDITOR_MODE
-            Container.BindAllInterfacesAndSelf<SessionDataStub>().To<SessionDataStub>().AsSingle();
+            Container.BindInterfacesAndSelfTo<SessionDataStub>()AsSingle();
 #else
-            Container.BindAllInterfacesAndSelf<SessionData>().To<SessionData>().AsSingle();
+            Container.BindInterfacesAndSelfTo<SessionData>().AsSingle();
 #endif
-            Container.Bind<ContentFactory>();
+            Container.Bind<ContentFactory>().AsCached();
 
             Container.BindSignal<SessionCreatedSignal>();
             Container.BindTrigger<SessionCreatedSignal.Trigger>();
@@ -192,64 +193,67 @@ namespace Installers
 
         private void BindStateMachine()
         {
-            Container.BindAllInterfaces<StateMachine>().To<StateMachine>().AsSingle().NonLazy();
-            Container.Bind<GameStateFactory>();
+            Container.BindInterfacesTo<StateMachine>().AsSingle().NonLazy();
+            Container.Bind<GameStateFactory>().AsTransient();
 
-            Container.Bind<TravelState>();
+            Container.Bind<TravelState>().AsTransient();
             Container.BindFactory<int, TravelState, TravelState.Factory>();
 
-			Container.Bind<RetreatState>();
+			Container.Bind<RetreatState>().AsTransient();
 			Container.BindFactory<RetreatState, RetreatState.Factory>();
 
-            Container.Bind<InitializationState>();
+            Container.Bind<InitializationState>().AsTransient();
             Container.BindFactory<InitializationState, InitializationState.Factory>();
 
-            Container.Bind<EditorInitializationState>();
+            Container.Bind<EditorInitializationState>().AsTransient();
             Container.BindFactory<EditorInitializationState, EditorInitializationState.Factory>();
 
-            Container.Bind<MainMenuState>();
+            Container.Bind<MainMenuState>().AsTransient();
             Container.BindFactory<MainMenuState, MainMenuState.Factory>();
 
-            Container.Bind<StarMapState>();
+            Container.Bind<StarMapState>().AsTransient();
             Container.BindFactory<StarMapState, StarMapState.Factory>();
 
-            Container.Bind<StartingNewGameState>();
+            Container.Bind<StartingNewGameState>().AsTransient();
             Container.BindFactory<StartingNewGameState, StartingNewGameState.Factory>();
             
-            Container.Bind<QuestState>();
+            Container.Bind<QuestState>().AsTransient();
 			Container.BindFactory<IUserInteraction, QuestState, QuestState.Factory>();
 
-            Container.Bind<SkillTreeState>();
+            Container.Bind<SkillTreeState>().AsTransient();
             Container.BindFactory<SkillTreeState, SkillTreeState.Factory>();
 
-            Container.Bind<ConstructorState>();
+            Container.Bind<ConstructorState>().AsTransient();
             Container.BindFactory<IShip, IGameState, ConstructorState, ConstructorState.Factory>();
 
-            Container.Bind<DialogState>();
+            Container.Bind<DialogState>().AsTransient();
             Container.BindFactory<string, WindowArgs, Action<WindowExitCode>, DialogState, DialogState.Factory>();
 
-            Container.Bind<TestingState>();
+            Container.Bind<TestingState>().AsTransient();
             Container.BindFactory<TestingState, TestingState.Factory>();
 
-            Container.Bind<CombatState>();
+            Container.Bind<CombatState>().AsTransient();
             Container.BindFactory<ICombatModel, Action<ICombatModel>, CombatState, CombatState.Factory>();
 
-			Container.Bind<QuickCombatState>();
+			Container.Bind<QuickCombatState>().AsTransient();
 			Container.BindFactory<QuickCombatState.Settings, QuickCombatState, QuickCombatState.Factory>();
 
-			Container.Bind<ExplorationState>();
+			Container.Bind<ShipEditorState>().AsTransient();
+			Container.BindFactory<ShipEditorState.Context, ShipEditorState, ShipEditorState.Factory>();
+
+			Container.Bind<ExplorationState>().AsTransient();
             Container.BindFactory<Planet, ExplorationState, ExplorationState.Factory>();
 
-            Container.Bind<EhopediaState>();
+            Container.Bind<EhopediaState>().AsTransient();
             Container.BindFactory<EhopediaState, EhopediaState.Factory>();
 
-            Container.Bind<CombatRewardState>();
+            Container.Bind<CombatRewardState>().AsTransient();
             Container.BindFactory<IReward, CombatRewardState, CombatRewardState.Factory>();
 
-            Container.Bind<DailyRewardState>();
+            Container.Bind<DailyRewardState>().AsTransient();
             Container.BindFactory<DailyRewardState, DailyRewardState.Factory>();
 
-            Container.Bind<AnnouncementState>();
+            Container.Bind<AnnouncementState>().AsTransient();
             Container.BindFactory<AnnouncementState, AnnouncementState.Factory>();
 
             Container.BindSignal<GameStateChangedSignal>();
@@ -268,9 +272,11 @@ namespace Installers
             Container.BindTrigger<ExitSignal.Trigger>();
             Container.BindSignal<OpenSkillTreeSignal>();
             Container.BindTrigger<OpenSkillTreeSignal.Trigger>();
-            Container.BindSignal<OpenConstructorSignal>();
-            Container.BindTrigger<OpenConstructorSignal.Trigger>();
-            Container.BindSignal<OpenShopSignal>();
+			Container.BindSignal<OpenConstructorSignal>();
+			Container.BindTrigger<OpenConstructorSignal.Trigger>();
+			Container.BindSignal<OpenShipEditorSignal>();
+			Container.BindTrigger<OpenShipEditorSignal.Trigger>();
+			Container.BindSignal<OpenShopSignal>();
             Container.BindTrigger<OpenShopSignal.Trigger>();
             Container.BindSignal<OpenWorkshopSignal>();
             Container.BindTrigger<OpenWorkshopSignal.Trigger>();
@@ -326,7 +332,7 @@ namespace Installers
 
         private void BindLegacyServices()
         {
-            Container.BindAllInterfacesAndSelf<GameModel.RegionMap>().To<GameModel.RegionMap>().AsSingle();
+            Container.BindInterfacesAndSelfTo<GameModel.RegionMap>().AsSingle();
         }
     }
 }

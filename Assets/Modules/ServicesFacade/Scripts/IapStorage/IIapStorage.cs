@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace Services.IapStorage
 {
@@ -37,8 +37,5 @@ namespace Services.IapStorage
 		void Write(IapData data);
 	}
 
-    public class IapDataSavedSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class IapDataSavedSignal : SmartWeakSignal<IapDataSavedSignal> {}
 }

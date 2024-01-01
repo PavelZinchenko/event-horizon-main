@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Zenject;
 using GameModel.Serialization;
+using CommonComponents.Signals;
 using CommonComponents.Utils;
 
 namespace Session.Content
@@ -362,9 +363,9 @@ namespace Session.Content
         private static readonly int _mask = new System.Random((int)DateTime.Now.Ticks).Next();
 	}
 
-    public class MoneyValueChangedSignal : SmartWeakSignal<long> { public class Trigger : TriggerBase { } }
-    public class FuelValueChangedSignal : SmartWeakSignal<int> { public class Trigger : TriggerBase { } }
-    public class StarsValueChangedSignal : SmartWeakSignal { public class Trigger : TriggerBase { } }
-    public class TokensValueChangedSignal : SmartWeakSignal<int> { public class Trigger : TriggerBase { } }
-    public class ResourcesChangedSignal : SmartWeakSignal { public class Trigger : TriggerBase { } }
+    public class MoneyValueChangedSignal : SmartWeakSignal<MoneyValueChangedSignal, long> {}
+    public class FuelValueChangedSignal : SmartWeakSignal<FuelValueChangedSignal, int> {}
+    public class StarsValueChangedSignal : SmartWeakSignal<StarsValueChangedSignal> {}
+    public class TokensValueChangedSignal : SmartWeakSignal<TokensValueChangedSignal, int> {}
+    public class ResourcesChangedSignal : SmartWeakSignal<ResourcesChangedSignal> {}
 }

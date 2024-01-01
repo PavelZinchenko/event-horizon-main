@@ -9,9 +9,9 @@ namespace Installers
     {
         public override void InstallBindings()
         {
-			Container.BindAllInterfaces<Messenger>().To<Messenger>().AsSingle().WithArguments(GameScene.StarMap);
-			Container.BindAllInterfacesAndSelf<GameObjectPool>().To<GameObjectPool>().AsSingle();
-			Container.Bind<GameObjectFactory>();
+			Container.BindInterfacesTo<Messenger>().AsSingle().WithArguments(GameScene.StarMap);
+			Container.BindInterfacesAndSelfTo<GameObjectPool>().AsSingle();
+			Container.Bind<GameObjectFactory>().AsCached();
 		}
 	}
 }

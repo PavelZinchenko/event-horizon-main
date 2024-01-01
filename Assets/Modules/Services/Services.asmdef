@@ -2,10 +2,10 @@
     "name": "Services",
     "rootNamespace": "Services",
     "references": [
-        "GUID:2787f9fdf7b069648a65437efda6f732",
-        "GUID:c591248a51153554ebb2741f0459e4ef",
-        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
-        "GUID:1d8ea6765031c7c468cb9f8ff07a587d"
+        "ServicesFacade",
+        "CommonComponents",
+        "UniRx",
+        "Zenject"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

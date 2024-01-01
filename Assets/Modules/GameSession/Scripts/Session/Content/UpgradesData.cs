@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameModel.Serialization;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Zenject;
 
 namespace Session.Content
@@ -166,5 +166,5 @@ namespace Session.Content
         private readonly PlayerSkillsResetSignal.Trigger _playerSkillsResetTrigger;
 	}
 
-    public class PlayerSkillsResetSignal : SmartWeakSignal { public class Trigger : TriggerBase { } }
+    public class PlayerSkillsResetSignal : SmartWeakSignal<PlayerSkillsResetSignal> {}
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using Services.Audio;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace Services.Assets
 {
@@ -16,8 +16,5 @@ namespace Services.Assets
         Status Status { get; }
     }
 
-    public class AssetLoaderStatusChangedSignal : SmartWeakSignal<Status>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class AssetLoaderStatusChangedSignal : SmartWeakSignal<AssetLoaderStatusChangedSignal, Status> {}
 }

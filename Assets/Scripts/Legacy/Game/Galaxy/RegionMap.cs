@@ -3,7 +3,7 @@ using GameDatabase;
 using GameServices;
 using GameServices.Random;
 using Session;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Zenject;
 
 namespace GameModel
@@ -330,13 +330,6 @@ namespace GameModel
 	    private readonly RegionFleetDefeatedSignal.Trigger _regionFleetDefeatedTrigger;
 	}
 
-    public class BaseCapturedSignal : SmartWeakSignal<Region>
-    {
-        public class Trigger : TriggerBase {}
-    }
-
-    public class RegionFleetDefeatedSignal : SmartWeakSignal<Region>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class BaseCapturedSignal : SmartWeakSignal<BaseCapturedSignal, Region> {}
+    public class RegionFleetDefeatedSignal : SmartWeakSignal<RegionFleetDefeatedSignal, Region> {}
 }

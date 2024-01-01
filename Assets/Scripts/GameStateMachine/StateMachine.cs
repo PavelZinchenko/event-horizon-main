@@ -5,7 +5,7 @@ using GameServices.SceneManager;
 using GameStateMachine.States;
 using Scripts.GameStateMachine;
 using UniRx;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Zenject;
 
 namespace GameStateMachine
@@ -108,7 +108,7 @@ namespace GameStateMachine
 			//Observable.Timer(TimeSpan.FromSeconds(5), Scheduler.MainThreadIgnoreTimeScale).Subscribe(_ => _gameSceneManager.Load(RequiredScenes));
 
 			if (_states.TryPeek(out var state))
-				SceneContext.BeforeInstallHooks = state.InstallBindings;
+				SceneContext.ExtraBindingsInstallMethod = state.InstallBindings;
 
 			_gameSceneManager.Load(RequiredScenes);
         }
@@ -123,7 +123,7 @@ namespace GameStateMachine
             if (state == State.Ready && _isLevelLoading)
             {
                 _isLevelLoading = false;
-				SceneContext.BeforeInstallHooks = null;
+				SceneContext.ExtraBindingsInstallMethod = null;
 
                 if (_states.Any())
                 {
@@ -139,8 +139,5 @@ namespace GameStateMachine
         private readonly SceneManagerStateChangedSignal _sceneManagerStateChangedSignal;
     }
 
-    public class GameStateChangedSignal : SmartWeakSignal<StateType>
-    {
-        public class Trigger : TriggerBase {}
-    }
+    public class GameStateChangedSignal : SmartWeakSignal<GameStateChangedSignal, StateType> {}
 }

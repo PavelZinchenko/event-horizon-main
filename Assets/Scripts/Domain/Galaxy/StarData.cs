@@ -12,7 +12,7 @@ using Model.Generators;
 using Session;
 using Session.Content;
 using UnityEngine;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Zenject;
 using Random = System.Random;
 
@@ -160,5 +160,5 @@ namespace Galaxy
         private readonly ISessionData _session;
     }
 
-    public class StarContentChangedSignal : SmartWeakSignal<int> { public class Trigger : TriggerBase {} }
+    public class StarContentChangedSignal : SmartWeakSignal<StarContentChangedSignal, int> {}
 }

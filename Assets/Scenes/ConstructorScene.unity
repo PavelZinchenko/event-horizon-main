@@ -11745,8 +11745,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 321200961}
   m_HandleRect: {fileID: 321200960}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.94408745
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -31071,13 +31071,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89715ad69b973a14899afa2c6730b30b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _installers:
+  _scriptableObjectInstallers: []
+  _monoInstallers:
   - {fileID: 85516817}
   _installerPrefabs: []
-  _scriptableObjectInstallers: []
-  _parentNewObjectsUnderRoot: 0
+  _autoRun: 1
+  OnPreInstall:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPostInstall:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPreResolve:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPostResolve:
+    m_PersistentCalls:
+      m_Calls: []
+  _parentNewObjectsUnderSceneContext: 0
   _contractNames: []
-  _parentContractName: services
+  _parentContractNames:
+  - services
 --- !u!4 &1918412307
 Transform:
   m_ObjectHideFlags: 0

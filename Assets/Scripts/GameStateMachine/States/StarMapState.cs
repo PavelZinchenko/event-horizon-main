@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using GameServices.SceneManager;
 using Combat.Domain;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Session;
 using Zenject;
 using GameServices.Quests;
@@ -369,53 +369,14 @@ namespace GameStateMachine.States
         public class Factory : Factory<StarMapState> { }
     }
 
-    public class RetreatSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-	public class StartTravelSignal : SmartWeakSignal<int>
-	{
-		public class Trigger : TriggerBase { }
-	}
-
-    public class StartBattleSignal : SmartWeakSignal<ICombatModel, System.Action<ICombatModel>>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class OpenSkillTreeSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class OpenConstructorSignal : SmartWeakSignal<IShip>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class OpenShopSignal : SmartWeakSignal<IInventory, IInventory>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class OpenWorkshopSignal : SmartWeakSignal<Faction, int>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class OpenShipyardSignal : SmartWeakSignal<Faction, int>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class StartExplorationSignal : SmartWeakSignal<Planet>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class OpenEhopediaSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
+	public class RetreatSignal : SmartWeakSignal<RetreatSignal> {}
+	public class StartTravelSignal : SmartWeakSignal<StartTravelSignal, int> {}
+	public class StartBattleSignal : SmartWeakSignal<StartBattleSignal, ICombatModel, System.Action<ICombatModel>> {}
+	public class OpenSkillTreeSignal : SmartWeakSignal<OpenSkillTreeSignal> {}
+	public class OpenConstructorSignal : SmartWeakSignal<OpenConstructorSignal, IShip> {}
+	public class OpenShopSignal : SmartWeakSignal<OpenShopSignal, IInventory, IInventory> {}
+	public class OpenWorkshopSignal : SmartWeakSignal<OpenWorkshopSignal, Faction, int> {}
+    public class OpenShipyardSignal : SmartWeakSignal<OpenShipyardSignal, Faction, int> {}
+    public class StartExplorationSignal : SmartWeakSignal<StartExplorationSignal, Planet> {}
+    public class OpenEhopediaSignal : SmartWeakSignal<OpenEhopediaSignal> {}
 }

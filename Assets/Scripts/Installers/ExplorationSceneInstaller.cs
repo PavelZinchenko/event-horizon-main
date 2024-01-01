@@ -29,14 +29,14 @@ namespace Installers
 
         public override void InstallBindings()
         {
-			Container.BindAllInterfaces<Messenger>().To<Messenger>().AsSingle().WithArguments(GameScene.Exploration);
+			Container.BindInterfacesTo<Messenger>().AsSingle().WithArguments(GameScene.Exploration);
 			
-			Container.BindAllInterfacesAndSelf<ExplorationData>().To<ExplorationData>().AsSingle().NonLazy();
-            Container.BindAllInterfacesAndSelf<ExplorationSceneManager>().To<ExplorationSceneManager>().AsSingle().NonLazy();
-            Container.BindAllInterfaces<ExplorationViewRect>().To<ExplorationViewRect>().AsTransient();
-            Container.BindAllInterfaces<Scene>().To<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = 1000, AreaHeight = 1000, PlayerAlwaysInCenter = true }).NonLazy();
-            Container.BindAllInterfaces<CollisionManager>().To<CollisionManager>().AsSingle();
-            Container.BindAllInterfaces<AiManager>().To<AiManager>().AsSingle().NonLazy();
+			Container.BindInterfacesAndSelfTo<ExplorationData>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<ExplorationSceneManager>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<ExplorationViewRect>().AsTransient();
+            Container.BindInterfacesTo<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = 1000, AreaHeight = 1000, PlayerAlwaysInCenter = true }).NonLazy();
+            Container.BindInterfacesTo<CollisionManager>().AsSingle();
+            Container.BindInterfacesTo<AiManager>().AsSingle().NonLazy();
             Container.Bind<ShipStatsPanel>().FromInstance(_playerStatsPanel).When(context => context.MemberName.Contains("player"));
             Container.Bind<ShipStatsPanel>().FromInstance(_enemyStatsPanel).When(context => context.MemberName.Contains("enemy"));
             Container.Bind<ShipControlsPanel>().FromInstance(_shipControlsPanel);
@@ -49,11 +49,11 @@ namespace Installers
             Container.Bind<DroneBayFactory>().AsSingle();
             Container.Bind<SatelliteFactory>().AsSingle();
             Container.Bind<EffectFactory>().AsSingle();
-			Container.BindAllInterfacesAndSelf<GameObjectPool>().To<GameObjectPool>().AsSingle();
+			Container.BindInterfacesAndSelfTo<GameObjectPool>().AsSingle();
 			Container.Bind<TrailRendererPool>().FromInstance(_trailRendererPool);
-            Container.Bind<GameObjectFactory>();
-            Container.BindAllInterfaces<InputSystemMouse>().To<InputSystemMouse>().AsSingle().WithArguments(_camera);
-            Container.BindAllInterfaces<InputSystemKeyboard>().To<InputSystemKeyboard>().AsSingle();
+            Container.Bind<GameObjectFactory>().AsCached();
+            Container.BindInterfacesTo<InputSystemMouse>().AsSingle().WithArguments(_camera);
+            Container.BindInterfacesTo<InputSystemKeyboard>().AsSingle();
         }
     }
 }

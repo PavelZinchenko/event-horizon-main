@@ -2,12 +2,12 @@
 using GameServices.SceneManager;
 using Services.Messenger;
 using Constructor.Ships;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Zenject;
 
 namespace GameStateMachine.States
 {
-    class ConstructorState : BaseState
+    public class ConstructorState : BaseState
     {
         [Inject]
         public ConstructorState(
@@ -31,7 +31,7 @@ namespace GameStateMachine.States
 
 		public override StateType Type => StateType.Constructor;
 
-		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.ShipEditor; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.ShipConstructor; } }
 
 		protected override void OnLoad()
         {
@@ -61,8 +61,5 @@ namespace GameStateMachine.States
 		public class Factory : Factory<IShip, IGameState, ConstructorState> { }
     }
 
-    public class ShipSelectedSignal : SmartWeakSignal<IShip>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class ShipSelectedSignal : SmartWeakSignal<ShipSelectedSignal, IShip> {}
 }

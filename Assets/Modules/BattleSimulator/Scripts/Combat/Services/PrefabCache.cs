@@ -12,7 +12,7 @@ using Zenject;
 public class PrefabCache : MonoBehaviour 
 {
     [Inject] 
-    public void Initialize(IResourceLocator resourceLocator, IDatabase database)
+    private void Initialize(IResourceLocator resourceLocator, IDatabase database)
     {
         _database = database;
         _resourceLocator = resourceLocator;

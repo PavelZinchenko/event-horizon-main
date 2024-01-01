@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace Services.Account
 {
@@ -25,8 +25,5 @@ namespace Services.Account
         IObservable<Texture2D> LoadUserIcon();
     }
 
-    public class AccountStatusChangedSignal : SmartWeakSignal<Status>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class AccountStatusChangedSignal : SmartWeakSignal<AccountStatusChangedSignal, Status> {}
 }

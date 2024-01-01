@@ -20,14 +20,14 @@ namespace Installers
 
         public override void InstallBindings()
         {
-			Container.BindAllInterfaces<Messenger>().To<Messenger>().AsSingle().WithArguments(GameScene.Ehopedia);
+			Container.BindInterfacesTo<Messenger>().AsSingle().WithArguments(GameScene.Ehopedia);
 
 			Container.Bind<Settings>().FromInstance(_settings);
-            Container.BindAllInterfacesAndSelf<EhopediaSceneManager>().To<EhopediaSceneManager>().AsSingle().NonLazy();
-            Container.BindAllInterfaces<ViewRect>().To<ViewRect>().AsTransient();
-            Container.BindAllInterfaces<Scene>().To<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = 200, AreaHeight = 200 }).NonLazy();
-            Container.BindAllInterfaces<CollisionManager>().To<CollisionManager>().AsSingle();
-            Container.BindAllInterfaces<AiManager>().To<AiManager>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<EhopediaSceneManager>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<ViewRect>().AsTransient();
+            Container.BindInterfacesTo<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = 200, AreaHeight = 200 }).NonLazy();
+            Container.BindInterfacesTo<CollisionManager>().AsSingle();
+            Container.BindInterfacesTo<AiManager>().AsSingle().NonLazy();
             Container.Bind<WeaponFactory>().AsSingle();
             Container.Bind<ShipFactory>().AsSingle().WithArguments(new ShipFactory.Settings());
             Container.Bind<SpaceObjectFactory>().AsSingle();
@@ -35,9 +35,9 @@ namespace Installers
             Container.Bind<DroneBayFactory>().AsSingle();
             Container.Bind<SatelliteFactory>().AsSingle();
             Container.Bind<EffectFactory>().AsSingle();
-			Container.BindAllInterfacesAndSelf<GameObjectPool>().To<GameObjectPool>().AsSingle();
+			Container.BindInterfacesAndSelfTo<GameObjectPool>().AsSingle();
 			Container.Bind<TrailRendererPool>().FromInstance(_trailRendererPool);
-            Container.Bind<GameObjectFactory>();
+            Container.Bind<GameObjectFactory>().AsCached();
         }
     }
 }

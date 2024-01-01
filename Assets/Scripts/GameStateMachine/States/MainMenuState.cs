@@ -3,7 +3,7 @@ using GameServices.SceneManager;
 using Constructor.Ships;
 using Domain.Player;
 using Session;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Services.Audio;
 using Zenject;
 
@@ -11,17 +11,17 @@ namespace GameStateMachine.States
 {
     public class MainMenuState : BaseState
     {
-        [Inject]
-        public MainMenuState(
-            IStateMachine stateMachine,
-            GameStateFactory stateFactory,
-            ISessionData session,
-            IMusicPlayer musicPlayer,
-            StartGameSignal startGameSignal,
-            StartQuickBattleSignal startQuickBattleSignal,
-            ConfigureControlsSignal configureControlsSignal,
-            OpenConstructorSignal openConstructorSignal,
-            OpenEhopediaSignal openEhopediaSignal,
+		[Inject]
+		public MainMenuState(
+			IStateMachine stateMachine,
+			GameStateFactory stateFactory,
+			ISessionData session,
+			IMusicPlayer musicPlayer,
+			StartGameSignal startGameSignal,
+			StartQuickBattleSignal startQuickBattleSignal,
+			ConfigureControlsSignal configureControlsSignal,
+			OpenConstructorSignal openConstructorSignal,
+			OpenEhopediaSignal openEhopediaSignal,
             DailyReward dailyReward,
             DailyRewardAwailableSignal dailyRewardAwailableSignal,
 			ReloadUiSignal reloadUiSignal,
@@ -94,7 +94,7 @@ namespace GameStateMachine.States
             LoadState(StateFactory.CreateConstructorState(ship, this));
         }
 
-        public void OnOpenEhopedia()
+		public void OnOpenEhopedia()
         {
 			LoadStateAdditive(StateFactory.CreateEchopediaState());
         }
@@ -115,7 +115,7 @@ namespace GameStateMachine.States
         private readonly StartQuickBattleSignal _startQuickBattleSignal;
         private readonly ConfigureControlsSignal _configureControlsSignal;
         private readonly OpenConstructorSignal _openConstructorSignal;
-        private readonly OpenEhopediaSignal _openEhopediaSignal;
+		private readonly OpenEhopediaSignal _openEhopediaSignal;
         private readonly ExitSignal _exitSignal;
         private readonly ISessionData _session;
         private readonly DailyReward _dailyReward;
@@ -124,23 +124,8 @@ namespace GameStateMachine.States
 		public class Factory : Factory<MainMenuState> { }
     }
 
-    public class StartGameSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class StartQuickBattleSignal : SmartWeakSignal<bool, string>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class ConfigureControlsSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-	public class ReloadUiSignal : SmartWeakSignal
-	{
-		public class Trigger : TriggerBase { }
-	}
+    public class StartGameSignal : SmartWeakSignal<StartGameSignal> {}
+    public class StartQuickBattleSignal : SmartWeakSignal<StartQuickBattleSignal, bool, string> {}
+    public class ConfigureControlsSignal : SmartWeakSignal<ConfigureControlsSignal> {}
+	public class ReloadUiSignal : SmartWeakSignal<ReloadUiSignal> {}
 }

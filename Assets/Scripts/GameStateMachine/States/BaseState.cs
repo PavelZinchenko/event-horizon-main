@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameServices.SceneManager;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Zenject;
 
 namespace GameStateMachine.States
@@ -124,8 +124,5 @@ namespace GameStateMachine.States
         private readonly GameStateFactory _stateFactory;
     }
 
-    public class ExitSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class ExitSignal : SmartWeakSignal<ExitSignal> {}
 }

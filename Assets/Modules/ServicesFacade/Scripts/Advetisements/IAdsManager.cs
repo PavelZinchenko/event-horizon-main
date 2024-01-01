@@ -1,4 +1,4 @@
-﻿using CommonComponents.Utils;
+﻿using CommonComponents.Signals;
 
 namespace Services.Advertisements
 {
@@ -20,13 +20,6 @@ namespace Services.Advertisements
         AdStatus Status { get; }
     }
 
-    public class RewardedVideoCompletedSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase {}
-    }
-
-    public class AdStatusChangedSignal : SmartWeakSignal<AdStatus>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class RewardedVideoCompletedSignal : SmartWeakSignal<RewardedVideoCompletedSignal> {}
+    public class AdStatusChangedSignal : SmartWeakSignal<AdStatusChangedSignal, AdStatus> {}
 }

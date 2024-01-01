@@ -4,7 +4,7 @@ using System.IO;
 using System.Net.Sockets;
 using UniRx;
 using UnityEngine;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Zenject;
 
 namespace Services.InternetTime
@@ -58,8 +58,5 @@ namespace Services.InternetTime
         private readonly ServerTimeReceivedSignal.Trigger _timeReceivedTrigger;
     }
 
-    public class ServerTimeReceivedSignal : SmartWeakSignal<DateTime>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class ServerTimeReceivedSignal : SmartWeakSignal<ServerTimeReceivedSignal, DateTime> {}
 }

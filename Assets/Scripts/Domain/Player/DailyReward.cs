@@ -8,7 +8,7 @@ using GameServices.Settings;
 using Services.InternetTime;
 using Session;
 using UnityEngine;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace Domain.Player
 {
@@ -129,8 +129,5 @@ namespace Domain.Player
         private readonly LootGenerator _lootGenerator;
     }
 
-    public class DailyRewardAwailableSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase {}
-    }
+    public class DailyRewardAwailableSignal : SmartWeakSignal<DailyRewardAwailableSignal> {}
 }

@@ -5,7 +5,7 @@ using Combat.Domain;
 using GameModel.Quests;
 using GameServices.Player;
 using Services.Audio;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Zenject;
 
 namespace GameStateMachine.States
@@ -92,8 +92,5 @@ namespace GameStateMachine.States
         public class Factory : Factory<ICombatModel, Action<ICombatModel>, CombatState> { }
     }
 
-    public class CombatCompletedSignal : SmartWeakSignal<ICombatModel>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class CombatCompletedSignal : SmartWeakSignal<CombatCompletedSignal, ICombatModel> {}
 }

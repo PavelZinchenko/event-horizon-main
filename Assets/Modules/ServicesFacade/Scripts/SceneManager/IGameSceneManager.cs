@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace GameServices.SceneManager
 {
@@ -15,18 +15,7 @@ namespace GameServices.SceneManager
         void Load(IEnumerable<GameScene> scenes);
     }
 
-	public class SceneBeforeUnloadSignal : SmartWeakSignal<GameScene>
-	{
-		public class Trigger : TriggerBase { }
-	}
-
-	public class SceneLoadedSignal : SmartWeakSignal<GameScene>
-	{
-	        public class Trigger : TriggerBase { }
-	}
-
-	public class SceneManagerStateChangedSignal : SmartWeakSignal<State>
-	{
-		public class Trigger : TriggerBase { }
-	}
+	public class SceneBeforeUnloadSignal : SmartWeakSignal<SceneBeforeUnloadSignal, GameScene> {}
+	public class SceneLoadedSignal : SmartWeakSignal<SceneLoadedSignal, GameScene> {}
+	public class SceneManagerStateChangedSignal : SmartWeakSignal<SceneManagerStateChangedSignal, State> {}
 }

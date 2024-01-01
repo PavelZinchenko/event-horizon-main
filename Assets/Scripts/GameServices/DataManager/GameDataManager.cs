@@ -9,7 +9,7 @@ using Services.InAppPurchasing;
 using Services.Localization;
 using Services.Storage;
 using UnityEngine;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Zenject;
 
 namespace GameServices.GameManager
@@ -226,8 +226,5 @@ namespace GameServices.GameManager
         private float _autoSaveTime;
     }
 
-    public class SessionAboutToSaveSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class SessionAboutToSaveSignal : SmartWeakSignal<SessionAboutToSaveSignal> {}
 }

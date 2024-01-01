@@ -2,8 +2,8 @@
     "name": "ServicesFacade",
     "rootNamespace": "Services",
     "references": [
-        "GUID:c591248a51153554ebb2741f0459e4ef",
-        "GUID:1d8ea6765031c7c468cb9f8ff07a587d"
+        "CommonComponents",
+        "Zenject"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

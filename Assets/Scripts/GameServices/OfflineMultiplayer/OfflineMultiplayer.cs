@@ -9,7 +9,7 @@ using GameStateMachine.States;
 using Services.Account;
 using Services.Unity;
 using Session;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Zenject;
 using UniRx;
 
@@ -200,7 +200,7 @@ namespace GameServices.Multiplayer
         private readonly AccountStatusChangedSignal _accountStatusChangedSignal;
     }
 
-    public class MultiplayerStatusChangedSignal : SmartWeakSignal<Status> { public class Trigger : TriggerBase { } }
-    public class EnemyFleetLoadedSignal : SmartWeakSignal<IPlayerInfo> { public class Trigger : TriggerBase { } }
-    public class EnemyFoundSignal : SmartWeakSignal<IPlayerInfo> { public class Trigger : TriggerBase { } }
+    public class MultiplayerStatusChangedSignal : SmartWeakSignal<MultiplayerStatusChangedSignal, Status> {}
+    public class EnemyFleetLoadedSignal : SmartWeakSignal<EnemyFleetLoadedSignal, IPlayerInfo> {}
+    public class EnemyFoundSignal : SmartWeakSignal<EnemyFoundSignal, IPlayerInfo> {}
 }

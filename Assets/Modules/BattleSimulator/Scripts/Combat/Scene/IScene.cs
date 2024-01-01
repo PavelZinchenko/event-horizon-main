@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Combat.Component.Ship;
+﻿using Combat.Component.Ship;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using UnityEngine;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace Combat.Scene
 {
@@ -35,13 +34,6 @@ namespace Combat.Scene
         public bool PlayerAlwaysInCenter;
     }
 
-    public class ShipDestroyedSignal : SmartWeakSignal<IShip>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class ShipCreatedSignal : SmartWeakSignal<IShip>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class ShipDestroyedSignal : SmartWeakSignal<ShipDestroyedSignal, IShip> {}
+    public class ShipCreatedSignal : SmartWeakSignal<ShipCreatedSignal, IShip> {}
 }

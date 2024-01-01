@@ -2,7 +2,7 @@ using System;
 using Domain.Quests;
 using Galaxy;
 using Session;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace GameServices.Quests
 {
@@ -70,13 +70,6 @@ namespace GameServices.Quests
 		private readonly SessionCreatedSignal _sessionCreatedSignal;
     }
 
-	public class QuestActionRequiredSignal : SmartWeakSignal
-	{
-		public class Trigger : TriggerBase {}
-	}
-
-    public class QuestListChangedSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
+	public class QuestActionRequiredSignal : SmartWeakSignal<QuestActionRequiredSignal> {}
+    public class QuestListChangedSignal : SmartWeakSignal<QuestListChangedSignal> {}
 }

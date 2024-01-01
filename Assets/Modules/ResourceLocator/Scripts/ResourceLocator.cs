@@ -22,16 +22,25 @@ namespace Services.Reources
         [SerializeField] private Sprite[] _guiIconSprites;
         [SerializeField] private AudioClip[] _audioClips;
 
-        private readonly Dictionary<string, Sprite> _ships = new();
-        private readonly Dictionary<string, Sprite> _shipIcons = new();
-        private readonly Dictionary<string, Sprite> _components = new();
-        private readonly Dictionary<string, Sprite> _satellites = new();
-        private readonly Dictionary<string, Sprite> _controlButtons = new();
-        private readonly Dictionary<string, Sprite> _guiIcons = new();
-        private readonly Dictionary<string, AudioClip> _audio = new();
-        private readonly Dictionary<string, Sprite> _cache = new(StringComparer.OrdinalIgnoreCase);
+		private readonly Dictionary<string, Sprite> _cache = new(StringComparer.OrdinalIgnoreCase);
+		
+		private Dictionary<string, Sprite> _ships;
+        private Dictionary<string, Sprite> _shipIcons;
+        private Dictionary<string, Sprite> _components;
+        private Dictionary<string, Sprite> _satellites;
+        private Dictionary<string, Sprite> _controlButtons;
+        private Dictionary<string, Sprite> _guiIcons;
+        private Dictionary<string, AudioClip> _audio;
 
-        public Sprite GetSprite(SpriteId spriteId)
+		private Dictionary<string, Sprite> Ships => _ships ??= new Dictionary<string, Sprite>(_shipSprites.ToDictionary(item => item.name));
+		private Dictionary<string, Sprite> ShipIcons => _shipIcons ??= new Dictionary<string, Sprite>(_shipIconSprites.ToDictionary(item => item.name));
+		private Dictionary<string, Sprite> Components => _components ??= new Dictionary<string, Sprite>(_componentSprites.ToDictionary(item => item.name));
+		private Dictionary<string, Sprite> Satellites => _satellites ??= new Dictionary<string, Sprite>(_satelliteSprites.ToDictionary(item => item.name));
+		private Dictionary<string, Sprite> ControlButtons => _controlButtons ??= new Dictionary<string, Sprite>(_controlButtonSprites.ToDictionary(item => item.name));
+		private Dictionary<string, Sprite> GuiIcons => _guiIcons ??= new Dictionary<string, Sprite>(_guiIconSprites.ToDictionary(item => item.name));
+		private Dictionary<string, AudioClip> Audio => _audio ??= new Dictionary<string, AudioClip>(_audioClips.ToDictionary(item => item.name));
+		
+		public Sprite GetSprite(SpriteId spriteId)
         {
             if (!spriteId) return null;
 
@@ -81,10 +90,8 @@ namespace Services.Reources
 
         public AudioClip GetAudioClip(AudioClipId id)
         {
-            AudioClip audioClip;
             if (!id) return null;
-
-            return _audio.TryGetValue(id.Id, out audioClip) ? audioClip : _database.GetAudioClip(id.Id).AudioClip;
+            return Audio.TryGetValue(id.Id, out var audioClip) ? audioClip : _database.GetAudioClip(id.Id).AudioClip;
         }
 
         public Sprite GetSprite(string name)
@@ -100,10 +107,10 @@ namespace Services.Reources
             return sprite;
         }
 
-        [Inject]
-        private void Initialize()
-        {
 #if UNITY_EDITOR
+		[ContextMenu("Reload")]
+		private void Reload()
+        {
             var prefab = Resources.Load<ResourceLocator>("ResourceLocator");
 
             _shipSprites = prefab._shipSprites = LoadAllAssets<Sprite>("/Sprites/Ships").ToArray();
@@ -114,25 +121,8 @@ namespace Services.Reources
             _audioClips = prefab._audioClips = LoadAllAssets<AudioClip>("/Audio").ToArray();
 
             PrefabUtility.SavePrefabAsset(prefab.gameObject);
-#endif
+		}
 
-            foreach (var item in _shipSprites)
-                _ships.Add(item.name, item);
-            foreach (var item in _shipIconSprites)
-                _shipIcons.Add(item.name, item);
-            foreach (var item in _componentSprites)
-                _components.Add(item.name, item);
-            foreach (var item in _satelliteSprites)
-                _satellites.Add(item.name, item);
-            foreach (var item in _controlButtonSprites)
-                _controlButtons.Add(item.name, item);
-            foreach (var item in _guiIconSprites)
-                _guiIcons.Add(item.name, item);
-            foreach (var item in _audioClips)
-                _audio.Add(item.name, item);
-        }
-
-#if UNITY_EDITOR
         private IEnumerable<T> LoadAllAssets<T>(string path) where T : UnityEngine.Object
         {
             var files =
@@ -148,40 +138,11 @@ namespace Services.Reources
         }
 #endif
 
-        private Sprite GetShipSprite(string id)
-        {
-            Sprite sprite;
-            return _ships.TryGetValue(id, out sprite) ? sprite : null;
-        }
-
-        private Sprite GetShipIconSprite(string id)
-        {
-            Sprite sprite;
-            return _shipIcons.TryGetValue(id, out sprite) || _ships.TryGetValue(id, out sprite) ? sprite : null;
-        }
-
-        private Sprite GetComponentSprite(string id)
-        {
-            Sprite sprite;
-            return _components.TryGetValue(id, out sprite) ? sprite : null;
-        }
-
-        private Sprite GetSatelliteSprite(string id)
-        {
-            Sprite sprite;
-            return _satellites.TryGetValue(id, out sprite) ? sprite : null;
-        }
-
-        private Sprite GetControlButtonSprite(string id)
-        {
-            Sprite sprite;
-            return _controlButtons.TryGetValue(id, out sprite) ? sprite : null;
-        }
-
-        private Sprite GetGuiIcon(string id)
-        {
-            Sprite sprite;
-            return _guiIcons.TryGetValue(id, out sprite) ? sprite : null;
-        }
-    }
+		private Sprite GetShipSprite(string id) => Ships.TryGetValue(id, out var sprite) ? sprite : null;
+		private Sprite GetShipIconSprite(string id) => ShipIcons.TryGetValue(id, out var sprite) || Ships.TryGetValue(id, out sprite) ? sprite : null;
+		private Sprite GetComponentSprite(string id) => Components.TryGetValue(id, out var sprite) ? sprite : null;
+		private Sprite GetSatelliteSprite(string id) => Satellites.TryGetValue(id, out var sprite) ? sprite : null;
+		private Sprite GetControlButtonSprite(string id) => ControlButtons.TryGetValue(id, out var sprite) ? sprite : null;
+		private Sprite GetGuiIcon(string id) => GuiIcons.TryGetValue(id, out var sprite) ? sprite : null;
+	}
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 
 namespace Services.Localization
 {
@@ -54,8 +54,5 @@ namespace Services.Localization
         public List<XmlKeyValuePair> items = new();
     }
 
-    public class LocalizationChangedSignal : SmartWeakSignal<string>
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class LocalizationChangedSignal : SmartWeakSignal<LocalizationChangedSignal, string> {}
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using GameServices.SceneManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using CommonComponents.Utils;
+using CommonComponents.Signals;
 using Zenject;
 
 namespace Services.Gui
@@ -367,23 +367,8 @@ namespace Services.Gui
         }
     }
 
-    public class WindowOpenedSignal : SmartWeakSignal<string>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class WindowClosedSignal : SmartWeakSignal<string, WindowExitCode>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class WindowDestroyedSignal : SmartWeakSignal<IWindow>
-    {
-        public class Trigger : TriggerBase { }
-    }
-
-    public class EscapeKeyPressedSignal : SmartWeakSignal
-    {
-        public class Trigger : TriggerBase { }
-    }
+    public class WindowOpenedSignal : SmartWeakSignal<WindowOpenedSignal, string> {}
+    public class WindowClosedSignal : SmartWeakSignal<WindowClosedSignal, string, WindowExitCode> {}
+    public class WindowDestroyedSignal : SmartWeakSignal<WindowDestroyedSignal, IWindow> {}
+    public class EscapeKeyPressedSignal : SmartWeakSignal<EscapeKeyPressedSignal> {}
 }
