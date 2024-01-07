@@ -13,7 +13,7 @@ namespace ViewModel
 	public class ResearchPanelViewModel : MonoBehaviour
 	{
 	    [Inject] private readonly IMessenger _messenger;
-	    [Inject] private readonly GameObjectFactory _factory;
+	    [Inject] private readonly IGameObjectFactory _factory;
 	    [Inject] private readonly IDatabase _database;
 
 		public TechTreePanelViewModel TechTree;

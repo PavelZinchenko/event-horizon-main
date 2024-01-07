@@ -18,7 +18,7 @@ namespace Gui.StarMap
         [Inject] private readonly PlayerResources _playerResources;
         [Inject] private readonly ILocalization _localization;
         [Inject] private readonly MotherShip _motherShip;
-        [Inject] private readonly GameObjectFactory _gameObjectFactory;
+        [Inject] private readonly IGameObjectFactory _gameObjectFactory;
         [Inject] private readonly PlayerFleet _playerFleet;
 
         [Inject]

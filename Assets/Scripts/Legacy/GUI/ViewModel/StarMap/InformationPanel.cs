@@ -20,7 +20,7 @@ namespace ViewModel
 	{
 	    [Inject] private readonly MotherShip _motherShip;
 	    [Inject] private readonly Planet.Factory _planetFactory;
-	    [Inject] private readonly GameObjectFactory _factory;
+	    [Inject] private readonly IGameObjectFactory _factory;
 	    [Inject] private readonly ILocalization _localization;
 	    [Inject] private readonly IMessenger _messenger;
 	    [Inject] private readonly IResourceLocator _resourceLocator;

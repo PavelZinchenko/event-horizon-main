@@ -5,6 +5,7 @@ using Constructor.Modification;
 using Constructor.Ships;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
+using GameDatabase.Extensions;
 
 namespace Constructor.Component
 {
@@ -134,21 +135,7 @@ namespace Constructor.Component
             }
         }
 
-        public ActivationType ActivationType
-        {
-            get
-            {
-                if (_component.Weapon != null)
-                    return _component.Weapon.Stats.ActivationType;
-                if (_component.Device != null)
-                    return _component.Device.Stats.ActivationType;
-                if (_component.DroneBay != null)
-                    return _component.DroneBay.Stats.ActivationType;
-
-                return ActivationType.None;
-            }
-        }
-
+		public ActivationType ActivationType => _component.GetActivationType();
         public IModification Modification { get; set; }
         public int UpgradeLevel { get; set; }
 

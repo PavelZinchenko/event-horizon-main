@@ -62,7 +62,7 @@ namespace Services.InternetTime
                 case StateType.DailyReward:
                 case StateType.Dialog:
                 case StateType.Ehopedia:
-                case StateType.Constructor:
+                case StateType.ShipEditor:
                 case StateType.Initialization:
                 case StateType.SkillTree:
                 case StateType.Testing:

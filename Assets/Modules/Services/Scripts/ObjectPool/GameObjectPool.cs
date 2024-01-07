@@ -1,15 +1,13 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using Zenject;
-using Object = UnityEngine.Object;
 
 namespace Services.ObjectPool
 {
-	public sealed class GameObjectPool : IObjectPool, IDisposable, ITickable
+	public sealed class GameObjectPool : IObjectPool, System.IDisposable, ITickable
 	{
-	    public GameObjectPool(GameObjectFactory factory)
+	    public GameObjectPool(IGameObjectFactory factory)
 	    {
 	        _factory = factory;
 	        _parent = _factory.CreateEmpty();
@@ -19,7 +17,7 @@ namespace Services.ObjectPool
         {
             if (!_parent)
             {
-                throw new InvalidOperationException("GetObject " + prefab.name + ": GameObjectPool has been already destroyed");
+                throw new System.InvalidOperationException("GetObject " + prefab.name + ": GameObjectPool has been already destroyed");
 
                 //Debug.LogError("GetObject " + prefab.name + ": GameObjectPool has been already destroyed");
                 //return Object.Instantiate(prefab);
@@ -160,30 +158,6 @@ namespace Services.ObjectPool
 		private readonly Dictionary<GameObject, GameObject> _objectPrefabs = new Dictionary<GameObject, GameObject>();
 		private readonly Dictionary<Object, HashSet<GameObject>> _unusedObjectsCache = new Dictionary<Object, HashSet<GameObject>>();
 
-	    private readonly GameObjectFactory _factory;
-    }
-
-    public sealed class GameObjectFactory : IFactory<GameObject, GameObject>
-    {
-        [Inject] private readonly DiContainer _container;
-
-        public GameObject CreateEmpty()
-        {
-            var gameObject = new GameObject("GameobjectPool");
-            gameObject.transform.parent = _container.DefaultParent;
-            return gameObject;
-        }
-
-        public GameObject Create(GameObject param)
-        {
-            var gameObject = _container.InstantiatePrefab(param);
-            var rectTransform = gameObject.GetComponent<RectTransform>();
-            if (rectTransform != null)
-                rectTransform.SetParent(null, false);
-            else
-                gameObject.transform.parent = null;
-
-            return gameObject;
-        }
+	    private readonly IGameObjectFactory _factory;
     }
 }

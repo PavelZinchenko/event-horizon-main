@@ -11,7 +11,7 @@ namespace Installers
         {
 			Container.BindInterfacesTo<Messenger>().AsSingle().WithArguments(GameScene.StarMap);
 			Container.BindInterfacesAndSelfTo<GameObjectPool>().AsSingle();
-			Container.Bind<GameObjectFactory>().AsCached();
+			Container.Bind<IGameObjectFactory>().To<GameObjectFactory>().AsCached();
 		}
 	}
 }

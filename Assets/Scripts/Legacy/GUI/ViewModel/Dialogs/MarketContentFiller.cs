@@ -13,7 +13,7 @@ namespace ViewModel
     class MarketContentFiller : MonoBehaviour, IContentFiller
     {
         [Inject] private readonly PlayerResources _playerResources;
-        [Inject] private readonly GameObjectFactory _gameObjectFactory;
+        [Inject] private readonly IGameObjectFactory _gameObjectFactory;
         [Inject] private readonly IResourceLocator _resourceLocator;
 
         [SerializeField] Common.InventoryItem _itemPrefab;

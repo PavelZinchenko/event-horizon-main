@@ -11,7 +11,7 @@ namespace Gui.Quests
 {
     public class ItemsPanel : MonoBehaviour
     {
-        [Inject] private readonly GameObjectFactory _factory;
+        [Inject] private readonly IGameObjectFactory _factory;
         [Inject] private readonly IResourceLocator _resourceLocator;
 
         [SerializeField] private LayoutGroup _layoutGroup;

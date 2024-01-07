@@ -11,7 +11,7 @@ namespace ViewModel
 {
 	public class LootPanel : MonoBehaviour
 	{
-	    [Inject] private readonly GameObjectFactory _factory;
+	    [Inject] private readonly IGameObjectFactory _factory;
 	    [Inject] private readonly IResourceLocator _resourceLocator;
 
 		public LayoutGroup ItemsGroup;

@@ -1,5 +1,4 @@
 using Diagnostics;
-using GameDatabase;
 using Services.Account;
 using Services.Advertisements;
 using Services.Audio;
@@ -28,7 +27,6 @@ namespace Installers
     {
         [SerializeField] private MusicPlayer _musicPlayer;
         [SerializeField] private SoundPlayer _soundPlayer;
-		[SerializeField] private SystemFontLocator _systemFontLoader;
 		[SerializeField] private ResourceLocator _resourceLocator;
 
 		public override void InstallBindings()
@@ -46,7 +44,6 @@ namespace Installers
 
 			Container.Bind<ILocalization>().To<LocalizationManager>().AsSingle();
             Container.BindInterfacesTo<KeyNameLocalizer>().AsSingle();
-            Container.Bind<SystemFontLocator>().FromInstance(_systemFontLoader);
 
 //#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
 //            Container.BindAllInterfaces<DiscordController>().AsSingle().NonLazy();
@@ -65,15 +62,15 @@ namespace Installers
 			Container.BindSignal<EscapeKeyPressedSignal>();
             Container.BindTrigger<EscapeKeyPressedSignal.Trigger>();
 
-			Container.Bind<GameObjectFactory>().AsCached();
-			
+			Container.Bind<IGameObjectFactory>().To<GameObjectFactory>().AsCached();
+
 			Container.Bind<IMusicPlayer>().To<MusicPlayer>().FromInstance(_musicPlayer);
             Container.Bind<ISoundPlayer>().To<SoundPlayer>().FromInstance(_soundPlayer);
 
 #if UNITY_WEBGL
-            Container.Bind<IApplication>().To<WebGlApplication>().FromGameObject().AsSingle().NonLazy();
+            Container.Bind<IApplication>().To<WebGlApplication>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
 #elif UNITY_STANDALONE
-            Container.Bind<IApplication>().To<StandaloneApplication>().FromGameObject().AsSingle().NonLazy();
+			Container.Bind<IApplication>().To<StandaloneApplication>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
 #elif UNITY_IPHONE || UNITY_ANDROID
             Container.Bind<IApplication>().To<MobileApplication>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
 #endif

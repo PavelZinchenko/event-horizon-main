@@ -32,7 +32,8 @@ namespace GameStateMachine.States
             }
 
             var ship = _database.ShipBuildList.First();
-            LoadState(StateFactory.CreateConstructorState(new EditorModeShip(ship, _database), this));
+            LoadState(StateFactory.CreateShipEditorState(new ShipEditorState.Context {
+				Ship = new EditorModeShip(ship, _database), DatabaseMode = true, NextState = this }));
         }
 
 		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.CommonGui; } }

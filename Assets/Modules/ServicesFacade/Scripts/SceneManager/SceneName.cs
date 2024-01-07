@@ -53,7 +53,7 @@ namespace GameServices.SceneManager
 				case GameScene.SkillTree:
 					return "SkillTreeScene";
 				case GameScene.ShipEditor:
-					return "ConstructorScene";
+					return "ShipEditorScene";
 				case GameScene.ConfigureControls:
 					return "ConfigureControlsScene";
 				case GameScene.Combat:

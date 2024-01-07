@@ -13,7 +13,7 @@ namespace Gui.Ehopedia
     public class FactionsPanel : MonoBehaviour
     {
         [Inject] private readonly IDatabase _database;
-        [Inject] private readonly GameObjectFactory _factory;
+        [Inject] private readonly IGameObjectFactory _factory;
         [Inject] private readonly ILocalization _localization;
         [Inject] private readonly StarMapManager _starMapManager;
 

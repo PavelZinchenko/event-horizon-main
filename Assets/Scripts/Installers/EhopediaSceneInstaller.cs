@@ -37,7 +37,7 @@ namespace Installers
             Container.Bind<EffectFactory>().AsSingle();
 			Container.BindInterfacesAndSelfTo<GameObjectPool>().AsSingle();
 			Container.Bind<TrailRendererPool>().FromInstance(_trailRendererPool);
-            Container.Bind<GameObjectFactory>().AsCached();
-        }
-    }
+			Container.Bind<IGameObjectFactory>().To<GameObjectFactory>().AsCached();
+		}
+	}
 }

@@ -728,7 +728,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _musicPlayer: {fileID: 1171077219}
   _soundPlayer: {fileID: 1993476686}
-  _systemFontLoader: {fileID: 799118357}
   _resourceLocator: {fileID: 2127999406}
 --- !u!4 &368924450
 Transform:
@@ -744,7 +743,6 @@ Transform:
   m_Children:
   - {fileID: 1171077217}
   - {fileID: 1993476677}
-  - {fileID: 799118358}
   - {fileID: 2127999405}
   m_Father: {fileID: 1482741057}
   m_RootOrder: 0
@@ -794,54 +792,6 @@ Transform:
   - {fileID: 1286594672}
   m_Father: {fileID: 1482741057}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &799118356
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 799118358}
-  - component: {fileID: 799118357}
-  m_Layer: 0
-  m_Name: SystemFontLocator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &799118357
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 799118356}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 769b76af7f0ee1e42b518d2b7ba5de15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _fontSize: 12
-  _textSettings: {fileID: 11400000, guid: c521a1269ba032e4989e065f1f66ed22, type: 2}
-  _fontTable: {fileID: 11400000, guid: 33e5737fb03cd704fa5c8894bb76ae47, type: 2}
-  _enabled: 1
---- !u!4 &799118358
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 799118356}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 368924450}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1171077216
 GameObject:

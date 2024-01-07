@@ -6,7 +6,6 @@ using Economy.ItemType;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameDatabase.Extensions;
 using Maths;
 
 namespace Constructor.Ships
@@ -15,7 +14,8 @@ namespace Constructor.Ships
     {
         public static bool IsSuitableSatelliteSize(this IShip ship, Satellite satellite)
         {
-            return satellite.IsSuitable(ship.Model.SizeClass, ship.Model.ModelScale);
+			if (ship.Model.ShipType == ShipType.Starbase) return false;
+			return satellite.IsSuitable(ship.Model.SizeClass, ship.Model.ModelScale);
         }
 
         public static int Price(this IShip ship)

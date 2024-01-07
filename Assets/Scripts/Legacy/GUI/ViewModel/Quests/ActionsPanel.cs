@@ -11,7 +11,7 @@ namespace ViewModel
 	{
 		public class ActionsPanel : MonoBehaviour
 		{
-			[Inject] private readonly Services.ObjectPool.GameObjectFactory _factory;
+			[Inject] private readonly Services.ObjectPool.IGameObjectFactory _factory;
 
 			public LayoutGroup LayoutGroup;
 

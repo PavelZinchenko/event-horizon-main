@@ -17,4 +17,11 @@
 		//void Pause();
 		//void Resume();
     }
+
+	public class MusicPlayerStub : IMusicPlayer
+	{
+		public float Volume { get; set; }
+		public void Mute(bool mute) {}
+		public void Play(AudioTrackType track) {}
+	}
 }

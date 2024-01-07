@@ -223,9 +223,6 @@ namespace Installers
             Container.Bind<SkillTreeState>().AsTransient();
             Container.BindFactory<SkillTreeState, SkillTreeState.Factory>();
 
-            Container.Bind<ConstructorState>().AsTransient();
-            Container.BindFactory<IShip, IGameState, ConstructorState, ConstructorState.Factory>();
-
             Container.Bind<DialogState>().AsTransient();
             Container.BindFactory<string, WindowArgs, Action<WindowExitCode>, DialogState, DialogState.Factory>();
 
@@ -272,8 +269,6 @@ namespace Installers
             Container.BindTrigger<ExitSignal.Trigger>();
             Container.BindSignal<OpenSkillTreeSignal>();
             Container.BindTrigger<OpenSkillTreeSignal.Trigger>();
-			Container.BindSignal<OpenConstructorSignal>();
-			Container.BindTrigger<OpenConstructorSignal.Trigger>();
 			Container.BindSignal<OpenShipEditorSignal>();
 			Container.BindTrigger<OpenShipEditorSignal.Trigger>();
 			Container.BindSignal<OpenShopSignal>();
@@ -284,8 +279,6 @@ namespace Installers
             Container.BindTrigger<OpenEhopediaSignal.Trigger>();
             Container.BindSignal<ConfigureControlsSignal>();
             Container.BindTrigger<ConfigureControlsSignal.Trigger>();
-            Container.BindSignal<ShipSelectedSignal>();
-            Container.BindTrigger<ShipSelectedSignal.Trigger>();
             Container.BindSignal<CombatCompletedSignal>();
             Container.BindTrigger<CombatCompletedSignal.Trigger>();
             Container.BindSignal<OpenShipyardSignal>();

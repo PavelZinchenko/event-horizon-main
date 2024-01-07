@@ -32,7 +32,7 @@ namespace Gui.Craft
         [Inject] private readonly Research _research;
         [Inject] private readonly ITechnologies _technologies;
         [Inject] private readonly MotherShip _motherShip;
-        [Inject] private readonly GameObjectFactory _gameObjectFactory;
+        [Inject] private readonly IGameObjectFactory _gameObjectFactory;
         [Inject] private readonly GuiHelper _helper;
 
         [Inject]
@@ -99,13 +99,13 @@ namespace Gui.Craft
             _levelText.text = _level.ToString();
 
 //#if UNITY_EDITOR
-//            if (true)
-//            {
-//                _technologyList.transform.InitializeElements<ViewModel.CraftListItem, ITechnology>(_technologies.All, UpdateTechnology, _gameObjectFactory);
-//            }
-//            else
+//			if (true)
+//			{
+//				_technologyList.transform.InitializeElements<ViewModel.CraftListItem, ITechnology>(_technologies.All, UpdateTechnology, _gameObjectFactory);
+//			}
+//			else
 //#endif
-            _technologyList.transform.InitializeElements<ViewModel.CraftListItem, ITechnology>(_technologies.All.ForWorkshop(_faction).
+			_technologyList.transform.InitializeElements<ViewModel.CraftListItem, ITechnology>(_technologies.All.ForWorkshop(_faction).
                 Where(_research.IsTechResearched), UpdateTechnology, _gameObjectFactory);
 
             _techGroup.SetAllTogglesOff();

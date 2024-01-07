@@ -15,7 +15,6 @@ namespace ViewModel
 	    [InjectOptional] private readonly PlayerFleet _playerFleet;
 		[SerializeField] private ShipListContentFiller _contentFiller;
 		[SerializeField] private ListScrollRect _shipList;
-		[Inject] private readonly ShipSelectedSignal.Trigger _shipSelectedTrigger;
 	    [Inject] private readonly IDatabase _database;
 
 		public void Open(bool isEditorMode)
@@ -47,7 +46,6 @@ namespace ViewModel
 
 		public void ShipButtonClicked(ShipItem item)
 		{
-            _shipSelectedTrigger.Fire(item.Ship);
         }
     }
 }

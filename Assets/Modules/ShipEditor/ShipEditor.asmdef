@@ -1,0 +1,22 @@
+{
+    "name": "ShipEditor",
+    "rootNamespace": "ShipEditor",
+    "references": [
+        "CommonComponents",
+        "Database",
+        "Zenject",
+        "ServicesFacade",
+        "ShipConstructor",
+        "Gui",
+        "Localization"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

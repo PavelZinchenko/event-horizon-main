@@ -20,7 +20,7 @@ namespace GameStateMachine.States
 			StartGameSignal startGameSignal,
 			StartQuickBattleSignal startQuickBattleSignal,
 			ConfigureControlsSignal configureControlsSignal,
-			OpenConstructorSignal openConstructorSignal,
+			OpenShipEditorSignal openShipEditorSignal,
 			OpenEhopediaSignal openEhopediaSignal,
             DailyReward dailyReward,
             DailyRewardAwailableSignal dailyRewardAwailableSignal,
@@ -45,10 +45,10 @@ namespace GameStateMachine.States
             _exitSignal.Event += OnExit;
             _configureControlsSignal = configureControlsSignal;
             _configureControlsSignal.Event += OnConfigureControls;
-            _openConstructorSignal = openConstructorSignal;
-            _openConstructorSignal.Event += OnOpenConstructor;
             _openEhopediaSignal = openEhopediaSignal;
             _openEhopediaSignal.Event += OnOpenEhopedia;
+			_openShipEditorSignal = openShipEditorSignal;
+			_openShipEditorSignal.Event += OnOpenShipEditor;
         }
 
         public override StateType Type { get { return StateType.MainMenu; } }
@@ -89,10 +89,11 @@ namespace GameStateMachine.States
 			LoadState(StateFactory.CreateTestingState());
         }
 
-        private void OnOpenConstructor(IShip ship)
-        {
-            LoadState(StateFactory.CreateConstructorState(ship, this));
-        }
+		private void OnOpenShipEditor(IShip ship)
+		{
+			var context = new ShipEditorState.Context { Ship = ship, DatabaseMode = true, NextState = this };
+			LoadState(StateFactory.CreateShipEditorState(context));
+		}
 
 		public void OnOpenEhopedia()
         {
@@ -114,7 +115,7 @@ namespace GameStateMachine.States
 		private readonly StartGameSignal _startGameSignal;
         private readonly StartQuickBattleSignal _startQuickBattleSignal;
         private readonly ConfigureControlsSignal _configureControlsSignal;
-        private readonly OpenConstructorSignal _openConstructorSignal;
+		private readonly OpenShipEditorSignal _openShipEditorSignal;
 		private readonly OpenEhopediaSignal _openEhopediaSignal;
         private readonly ExitSignal _exitSignal;
         private readonly ISessionData _session;

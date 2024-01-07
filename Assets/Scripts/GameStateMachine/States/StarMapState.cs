@@ -41,7 +41,7 @@ namespace GameStateMachine.States
 			QuestActionRequiredSignal questActionRequiredSignal,
 			QuestEventSignal.Trigger questEventTrigger,
             OpenSkillTreeSignal openSkillTreeSignal,
-            OpenConstructorSignal openConstructorSignal,
+            OpenShipEditorSignal openShipEditorSignal,
             OpenShopSignal openShopSignal,
             OpenWorkshopSignal openWorkshopSignal,
 			OpenShipyardSignal openShipyardSignal,
@@ -76,8 +76,8 @@ namespace GameStateMachine.States
             _exitSignal.Event += OnExit;
             _openSkillTreeSignal = openSkillTreeSignal;
             _openSkillTreeSignal.Event += OnOpenSkillTree;
-            _openConstructorSignal = openConstructorSignal;
-            _openConstructorSignal.Event += OnOpenConstructor;
+            _openShipEditorSignal = openShipEditorSignal;
+            _openShipEditorSignal.Event += OnOpenShipEditor;
             _openShopSignal = openShopSignal;
             _openShopSignal.Event += OnOpenShop;
             _openWorkshopSignal = openWorkshopSignal;
@@ -188,9 +188,9 @@ namespace GameStateMachine.States
             LoadState(StateFactory.CreateSkillTreeState());
         }
 
-        private void OnOpenConstructor(IShip ship)
+        private void OnOpenShipEditor(IShip ship)
         {
-            LoadState(StateFactory.CreateConstructorState(ship, this));
+            LoadState(StateFactory.CreateShipEditorState(new ShipEditorState.Context { Ship = ship, NextState = this }));
             DesiredWindowOnActivate = Gui.StarMap.WindowNames.HangarWindow;
         }
 
@@ -352,7 +352,7 @@ namespace GameStateMachine.States
 		private readonly QuestActionRequiredSignal _questActionRequiredSignal;
         private readonly QuestEventSignal.Trigger _questEventTrigger;
         private readonly OpenSkillTreeSignal _openSkillTreeSignal;
-        private readonly OpenConstructorSignal _openConstructorSignal;
+		private readonly OpenShipEditorSignal _openShipEditorSignal;
         private readonly OpenShopSignal _openShopSignal;
         private readonly OpenWorkshopSignal _openWorkshopSignal;
         private readonly OpenShipyardSignal _openShipyardSignal;
@@ -373,7 +373,7 @@ namespace GameStateMachine.States
 	public class StartTravelSignal : SmartWeakSignal<StartTravelSignal, int> {}
 	public class StartBattleSignal : SmartWeakSignal<StartBattleSignal, ICombatModel, System.Action<ICombatModel>> {}
 	public class OpenSkillTreeSignal : SmartWeakSignal<OpenSkillTreeSignal> {}
-	public class OpenConstructorSignal : SmartWeakSignal<OpenConstructorSignal, IShip> {}
+	public class OpenShipEditorSignal : SmartWeakSignal<OpenShipEditorSignal, IShip> {}
 	public class OpenShopSignal : SmartWeakSignal<OpenShopSignal, IInventory, IInventory> {}
 	public class OpenWorkshopSignal : SmartWeakSignal<OpenWorkshopSignal, Faction, int> {}
     public class OpenShipyardSignal : SmartWeakSignal<OpenShipyardSignal, Faction, int> {}

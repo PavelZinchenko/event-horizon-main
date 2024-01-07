@@ -12,7 +12,7 @@ namespace Gui.StarMap
 {
     public class HangarSlotInfo : MonoBehaviour
     {
-        [Inject] private readonly OpenConstructorSignal.Trigger _openConstructorTrigger;
+        [Inject] private readonly OpenShipEditorSignal.Trigger _openEditorTrigger;
         [Inject] private readonly ILocalization _localization;
         [Inject] private readonly IResourceLocator _resourceLocator;
         [Inject] private readonly GuiHelper _guiHelper;
@@ -39,7 +39,7 @@ namespace Gui.StarMap
         public void OnConstructorButtonClicked()
         {
             if (_ship != null)
-                _openConstructorTrigger.Fire(_ship);
+                _openEditorTrigger.Fire(_ship);
         }
 
         public void Initialize(IShip ship, bool canInstall)

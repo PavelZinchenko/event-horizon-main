@@ -14,6 +14,7 @@ using Services.Localization;
 using Services.Reources;
 using Zenject;
 using Constructor.Component;
+using GameDatabase.Extensions;
 
 namespace ViewModel
 {
@@ -280,7 +281,7 @@ namespace ViewModel
 
             yield return new KeyValuePair<string, string>("$DroneRangeModifier", droneBay.Key.Range.ToString("N"));
 
-            var weapon = droneBay.Value.Components.Select<InstalledComponent,IntegratedComponent>(ComponentExtensions.FromDatabase).FirstOrDefault(item => item.Info.Data.Weapon != null);
+            var weapon = droneBay.Value.Components.Select(Constructor.ComponentExtensions.FromDatabase).FirstOrDefault(item => item.Info.Data.Weapon != null);
             if (weapon != null)
                 yield return new KeyValuePair<string, string>("$WeaponType", localization.GetString(weapon.Info.Data.Name));
         }

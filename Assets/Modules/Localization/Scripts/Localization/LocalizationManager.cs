@@ -81,7 +81,7 @@ namespace Services.Localization
 			if (result == null)
 			{
 				Debug.LogError("key not found: '" + key + "'");
-				return string.Empty;
+				return key;
 			}
 
 			return result;

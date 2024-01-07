@@ -1,6 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Modules/Gui/Layout/MainMenu/MenuButton.uss?fileID=7433441132597879392&amp;guid=f203bb8bdd2bb81478b83a88fe5bf7b8&amp;type=3#MenuButton" />
-    <ui:Button name="button" text="$PrivacyPolicy" class="menu-privacy-policy-button button button-frame2 body">
-        <ui:VisualElement picking-mode="Ignore" class="background" />
-    </ui:Button>
-</ui:UXML>

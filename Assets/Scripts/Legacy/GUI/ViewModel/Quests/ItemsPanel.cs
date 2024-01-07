@@ -22,7 +22,7 @@ namespace ViewModel
 		public class ItemsPanel : MonoBehaviour
 		{
 		    [Inject] private readonly PlayerSkills _playerSkills;
-			[Inject] private readonly GameObjectFactory _factory;
+			[Inject] private readonly IGameObjectFactory _factory;
 		    [Inject] private readonly IResourceLocator _resourceLocator;
 
 			public LayoutGroup LayoutGroup;

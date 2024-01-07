@@ -20,7 +20,7 @@ namespace ViewModel.Craft
     public class ItemDescriptionPanel : MonoBehaviour
     {
         [Inject] private readonly ILocalization _localization;
-        [Inject] private readonly GameObjectFactory _factory;
+        [Inject] private readonly IGameObjectFactory _factory;
         [Inject] private readonly IResourceLocator _resourceLocator;
         [Inject] private readonly IDatabase _database;
 

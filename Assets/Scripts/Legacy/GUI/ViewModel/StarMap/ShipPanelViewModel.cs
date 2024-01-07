@@ -1,7 +1,6 @@
 using GameServices.Player;
 using GameStateMachine.States;
 using Gui.Windows;
-using Services.Gui;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -11,7 +10,7 @@ namespace ViewModel
 	public class ShipPanelViewModel : MonoBehaviour
 	{
 	    [Inject] private readonly PlayerFleet _playerFleet;
-	    [Inject] private readonly OpenConstructorSignal.Trigger _openConstructorTrigger;
+	    [Inject] private readonly OpenShipEditorSignal.Trigger _openEditorTrigger;
 
 		public GameObject ShipButtonPrefab;
 		public AnimatedWindow CompanionPanel;

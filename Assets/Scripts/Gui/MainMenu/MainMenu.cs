@@ -31,15 +31,15 @@ namespace Gui.MainMenu
         private void Initialize(
             StartGameSignal.Trigger startGameTrigger,
             StartQuickBattleSignal.Trigger startBattleTrigger,
-            OpenConstructorSignal.Trigger openConstructorTrigger,
-            OpenEhopediaSignal.Trigger openEchopediaTrigger,
-            IMessenger messenger,
+			OpenEhopediaSignal.Trigger openEchopediaTrigger,
+			OpenShipEditorSignal.Trigger openShipEditorTrigger,
+			IMessenger messenger,
             ISessionData gameSession,
             IGuiManager guiManager)
         {
             _startGameTrigger = startGameTrigger;
             _startBattleTrigger = startBattleTrigger;
-            _openConstructorTrigger = openConstructorTrigger;
+			_openShipEditorTrigger = openShipEditorTrigger;
             _openEchopediaTrigger = openEchopediaTrigger;
             _gameSession = gameSession;
             _guiManager = guiManager;
@@ -86,7 +86,8 @@ namespace Gui.MainMenu
             if (build == null)
                 return;
 
-            _openConstructorTrigger.Fire(new EditorModeShip(build, _database));
+			var ship = new EditorModeShip(build, _database);
+			_openShipEditorTrigger.Fire(ship);
         }
 
         public void ShowPrivacyPolicy()
@@ -135,9 +136,9 @@ namespace Gui.MainMenu
             _constructorButton.gameObject.SetActive(_database.IsEditable);
         }
 
-        private StartGameSignal.Trigger _startGameTrigger;
+		private OpenShipEditorSignal.Trigger _openShipEditorTrigger;
+		private StartGameSignal.Trigger _startGameTrigger;
         private StartQuickBattleSignal.Trigger _startBattleTrigger;
-        private OpenConstructorSignal.Trigger _openConstructorTrigger;
         private OpenEhopediaSignal.Trigger _openEchopediaTrigger;
         private ISessionData _gameSession;
         private IGuiManager _guiManager;

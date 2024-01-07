@@ -17,7 +17,6 @@ namespace GameStateMachine.States
         [Inject] private readonly QuestState.Factory _questStateFactory;
         [Inject] private readonly RetreatState.Factory _retreatStateFactory;
         [Inject] private readonly SkillTreeState.Factory _skillTreeStateFactory;
-        [Inject] private readonly ConstructorState.Factory _constructorStateStateFactory;
         [Inject] private readonly DialogState.Factory _dialogStateFactory;
         [Inject] private readonly TestingState.Factory _testingStateFactory;
         [Inject] private readonly EhopediaState.Factory _echopediaStateFactory;
@@ -27,6 +26,7 @@ namespace GameStateMachine.States
         [Inject] private readonly CombatRewardState.Factory _combatRewardStateFactory;
 		[Inject] private readonly ExplorationState.Factory _explorationStateFactory;
 		[Inject] private readonly QuickCombatState.Factory _quickCombatStateFactory;
+		[Inject] private readonly ShipEditorState.Factory _shipEditorStateStateFactory;
 
 		public IGameState CreateStarMapState()
         {
@@ -72,12 +72,12 @@ namespace GameStateMachine.States
             return _skillTreeStateFactory.Create();
         }
 
-        public IGameState CreateConstructorState(IShip ship, IGameState nextState)
-        {
-            return _constructorStateStateFactory.Create(ship, nextState);
-        }
+		public IGameState CreateShipEditorState(ShipEditorState.Context context)
+		{
+			return _shipEditorStateStateFactory.Create(context);
+		}
 
-        public IGameState CreateDialogState(string windowName, WindowArgs args, System.Action<WindowExitCode> onExitAction = null)
+		public IGameState CreateDialogState(string windowName, WindowArgs args, System.Action<WindowExitCode> onExitAction = null)
         {
             return _dialogStateFactory.Create(windowName, args, onExitAction);
         }

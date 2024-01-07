@@ -22,7 +22,7 @@ namespace ViewModel
 	    [Inject] private readonly Research _research;
 	    [Inject] private readonly ILocalization _localization;
 	    [Inject] private readonly ITechnologies _technologies;
-	    [Inject] private readonly GameObjectFactory _factory;
+	    [Inject] private readonly IGameObjectFactory _factory;
         [Inject] private readonly GuiHelper _helper;
 	    [Inject] private readonly IResourceLocator _resourceLocator;
 
