@@ -124,8 +124,8 @@
     <string name="GroupShip">$1 ship modules</string>
     <string name="GroupShips">Ships</string>
     <string name="GroupSatellites">Satellites</string>
-    <string name="GroupLeftSatellite">Left Satellite</string>
-    <string name="GroupRightSatellite">Right Satellite</string>
+    <string name="GroupLeftSatellite">Satellite 1</string>
+    <string name="GroupRightSatellite">Satellite 2</string>
     <string name="GroupWeaponAny">Weapons for any slot</string>
     <string name="GroupWeaponC">Projectile weapons</string>
     <string name="GroupWeaponL">Beam weapons</string>

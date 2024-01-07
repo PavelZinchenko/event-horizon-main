@@ -123,6 +123,8 @@
     <string name="GroupShip">Модули корабля $1</string>
     <string name="GroupShips">Корабли</string>
     <string name="GroupSatellites">Спутники</string>
+    <string name="GroupLeftSatellite">Спутник 1</string>
+    <string name="GroupRightSatellite">Спутник 2</string>
     <string name="GroupWeaponAny">Оружие для всех слотов</string>
     <string name="GroupWeaponC">Баллистическое оружие</string>
     <string name="GroupWeaponL">Лучевое оружие</string>
