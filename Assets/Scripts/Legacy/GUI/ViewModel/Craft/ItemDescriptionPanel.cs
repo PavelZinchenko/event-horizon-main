@@ -103,7 +103,7 @@ namespace ViewModel.Craft
             _modification.color = info.ItemQuality.ToColor();
 
             _stats.gameObject.SetActive(true);
-            _stats.transform.InitializeElements<TextFieldViewModel, KeyValuePair<string, string>>(ComponentViewModel.GetDescription(component, _localization), UpdateTextField, _factory);
+            _stats.transform.InitializeElements<TextFieldViewModel, KeyValuePair<string, string>>(ShipEditor.UI.ComponentItem.GetDescription(component, _localization), UpdateTextField, _factory);
             _weaponSlots.gameObject.SetActive(false);
         }
 
