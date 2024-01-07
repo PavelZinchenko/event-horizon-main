@@ -2,11 +2,11 @@
 using Constructor;
 using Constructor.Ships;
 using DataModel.Technology;
-using Galaxy;
 using GameDatabase.DataModel;
 using GameModel;
 using GameServices.Player;
 using GameServices.Random;
+using Session;
 using Zenject;
 
 namespace Economy.ItemType
@@ -14,7 +14,7 @@ namespace Economy.ItemType
     public class ItemTypeFactory
     {
         [Inject] private readonly DiContainer _container;
-        [Inject] private readonly StarData _starData;
+        [Inject] private readonly ISessionData _session;
         [Inject] private readonly RegionMap _regionMap;
         [Inject] private readonly IRandom _random;
         [Inject] private readonly PlayerResources _playerResources;
@@ -91,7 +91,7 @@ namespace Economy.ItemType
             var region = _regionMap.GetStarRegion(id);
             if (region.Id == Region.UnoccupiedRegionId || region.Id == Region.PlayerHomeRegionId)
                 return null;
-            if (_starData.IsVisited(starId))
+            if (_session.StarMap.IsVisited(starId))
                 return null;
 
             return _container.Instantiate<FactionMapItem>(new object[] {starId});

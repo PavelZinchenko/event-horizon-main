@@ -1,25 +1,27 @@
 ﻿using Session;
 using System;
 using System.Collections.Generic;
+using Galaxy.StarContent;
+using GameModel;
 
 namespace Domain.Quests
 {
     public class StarMapDataProvider : IStarMapDataProvider, IPlayerDataProvider
     {
         private readonly ISessionData _session;
-        private readonly Galaxy.StarData _starData;
-        private readonly GameModel.RegionMap _regionMap;
+        private readonly RegionMap _regionMap;
+		private readonly Occupants _occupants;
 
-        private StarDataProvider _currentStar;
+		private StarDataProvider _currentStar;
         private StarDataProvider _lastStar;
 
         public StarMapDataProvider(
             ISessionData session,
-            Galaxy.StarData starData,
-            GameModel.RegionMap regionMap)
+			Occupants occupants,
+            RegionMap regionMap)
         {
             _session = session;
-            _starData = starData;
+			_occupants = occupants;
             _regionMap = regionMap;
         }
 
@@ -31,7 +33,7 @@ namespace Domain.Quests
                 if (_currentStar != null && _currentStar.Id == id) 
                     return _currentStar;
 
-                return _currentStar = new StarDataProvider(new Galaxy.Star(id, _starData));
+                return _currentStar = new StarDataProvider(id, _occupants, _regionMap, _session.Game.Seed);
             }
         }
 
@@ -40,7 +42,7 @@ namespace Domain.Quests
             if (_lastStar != null && _lastStar.Id == id) 
                 return _lastStar;
 
-            return _lastStar = new StarDataProvider(new Galaxy.Star(id, _starData));
+            return _lastStar = new StarDataProvider(id, _occupants, _regionMap, _session.Game.Seed);
         }
 
         public int RandomStarAtDistance(int centerStarId, int distance, Random random)

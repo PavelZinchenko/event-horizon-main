@@ -9,7 +9,6 @@ using GameServices.Random;
 using Session;
 using Session.Content;
 using Model.Military;
-using CommonComponents.Utils;
 using Zenject;
 using PlayerFleet = GameServices.Player.PlayerFleet;
 
@@ -19,7 +18,7 @@ namespace Galaxy.StarContent
     {
 		[Inject] private readonly ISessionData _session;
         [Inject] private readonly IDatabase _database;
-        [Inject] private readonly StarData _starData;
+        [Inject] private readonly RegionMap _regionMap;
 		[Inject] private readonly IRandom _random;
 		[Inject] private readonly PlayerFleet _playerFleet;
         [Inject] private readonly ItemTypeFactory _itemTypeFactory;
@@ -47,7 +46,7 @@ namespace Galaxy.StarContent
             if (destroy)
             {
                 _session.StarMap.SetEnemy(starId, StarMapData.Occupant.Empty);
-                _starData.GetRegion(starId).OnFleetDefeated();
+                _regionMap.GetStarRegion(starId).OnFleetDefeated();
             }
             else
             {
@@ -63,7 +62,7 @@ namespace Galaxy.StarContent
             if (!CanBeAggressive(starId))
                 return false;
 
-            var region = _starData.GetRegion(starId);
+            var region = _regionMap.GetStarRegion(starId);
             if (region.Id > Region.PlayerHomeRegionId && !region.IsCaptured)
                 return true;
 
@@ -87,8 +86,8 @@ namespace Galaxy.StarContent
             if (!IsExists(starId))
                 return Model.Factories.Fleet.Empty;
 
-            var region = _starData.GetRegion(starId);
-            var level = _starData.GetLevel(starId);
+            var region = _regionMap.GetStarRegion(starId);
+            var level = StarLayout.GetStarLevel(starId, _session.Game.Seed);
 
             if (region.Id > Region.PlayerHomeRegionId)
                 return Model.Factories.Fleet.FactionDefenders(region, starId + _random.Seed, _database);
@@ -101,8 +100,8 @@ namespace Galaxy.StarContent
 		    if (!IsExists(starId))
 		        throw new System.InvalidOperationException();
 
-            var region = _starData.GetRegion(starId);
-		    var level = _starData.GetLevel(starId);
+            var region = _regionMap.GetStarRegion(starId);
+		    var level = StarLayout.GetStarLevel(starId, _session.Game.Seed);
 
 		    var builder = _combatModelBuilderFactory.Create();
 		    builder.PlayerFleet = Model.Factories.Fleet.Player(_playerFleet, _database);
