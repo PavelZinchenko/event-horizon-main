@@ -1,10 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Combat.Domain;
 using Combat.Scene;
-using Constructor.Ships;
 using Domain.Player;
 using Domain.Quests;
-using Economy;
 using Economy.ItemType;
 using Economy.Products;
 using Galaxy;
@@ -12,7 +11,6 @@ using Galaxy.StarContent;
 using Game;
 using Game.Exploration;
 using GameModel.Quests;
-using GameServices;
 using GameServices.Database;
 using GameServices.Economy;
 using GameServices.GameManager;
@@ -22,10 +20,8 @@ using GameServices.Player;
 using GameServices.Quests;
 using GameServices.Random;
 using GameServices.Research;
-using GameServices.Settings;
 using GameStateMachine;
 using GameStateMachine.States;
-using Services.Advertisements;
 using Services.Gui;
 using Services.InAppPurchasing;
 using Services.Input;
@@ -223,7 +219,10 @@ namespace Installers
             Container.Bind<SkillTreeState>().AsTransient();
             Container.BindFactory<SkillTreeState, SkillTreeState.Factory>();
 
-            Container.Bind<DialogState>().AsTransient();
+			Container.Bind<ModalDialogState>().AsTransient();
+			Container.BindFactory<string, IEnumerable<GameServices.SceneManager.GameScene>, ModalDialogState, ModalDialogState.Factory>();
+
+			Container.Bind<DialogState>().AsTransient();
             Container.BindFactory<string, WindowArgs, Action<WindowExitCode>, DialogState, DialogState.Factory>();
 
             Container.Bind<TestingState>().AsTransient();
@@ -321,6 +320,8 @@ namespace Installers
 			Container.BindTrigger<MouseEnabledSignal.Trigger>();
 			Container.BindSignal<ReloadUiSignal>();
 			Container.BindTrigger<ReloadUiSignal.Trigger>();
+			Container.BindSignal<OpenGameSettingsSignal>();
+			Container.BindTrigger<OpenGameSettingsSignal.Trigger>();
 		}
 
         private void BindLegacyServices()

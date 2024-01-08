@@ -24,6 +24,7 @@ namespace GameStateMachine.States
 			OpenEhopediaSignal openEhopediaSignal,
             DailyReward dailyReward,
             DailyRewardAwailableSignal dailyRewardAwailableSignal,
+			OpenGameSettingsSignal openGameSettingsSignal,
 			ReloadUiSignal reloadUiSignal,
             ExitSignal exitSignal)
             : base(stateMachine, stateFactory)
@@ -49,6 +50,8 @@ namespace GameStateMachine.States
             _openEhopediaSignal.Event += OnOpenEhopedia;
 			_openShipEditorSignal = openShipEditorSignal;
 			_openShipEditorSignal.Event += OnOpenShipEditor;
+			_openGameSettingsSignal = openGameSettingsSignal;
+			_openGameSettingsSignal.Event += OnOpenGameSettings;
         }
 
         public override StateType Type { get { return StateType.MainMenu; } }
@@ -95,6 +98,11 @@ namespace GameStateMachine.States
 			LoadState(StateFactory.CreateShipEditorState(context));
 		}
 
+		private void OnOpenGameSettings()
+		{
+			LoadStateAdditive(StateFactory.CreateGameSettingsState());
+		}
+
 		public void OnOpenEhopedia()
         {
 			LoadStateAdditive(StateFactory.CreateEchopediaState());
@@ -121,6 +129,7 @@ namespace GameStateMachine.States
         private readonly ISessionData _session;
         private readonly DailyReward _dailyReward;
         private readonly DailyRewardAwailableSignal _dailyRewardAwailableSignal;
+		private readonly OpenGameSettingsSignal _openGameSettingsSignal;
 
 		public class Factory : Factory<MainMenuState> { }
     }
@@ -129,4 +138,5 @@ namespace GameStateMachine.States
     public class StartQuickBattleSignal : SmartWeakSignal<StartQuickBattleSignal, bool, string> {}
     public class ConfigureControlsSignal : SmartWeakSignal<ConfigureControlsSignal> {}
 	public class ReloadUiSignal : SmartWeakSignal<ReloadUiSignal> {}
+	public class OpenGameSettingsSignal : SmartWeakSignal<OpenGameSettingsSignal> {}
 }

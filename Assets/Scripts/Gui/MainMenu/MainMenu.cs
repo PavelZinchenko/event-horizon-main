@@ -26,6 +26,7 @@ namespace Gui.MainMenu
         [Inject] private readonly GameSettings _gameSettings;
         [Inject] private readonly IDatabase _database;
         [Inject] private readonly GuiHelper _guiHelper;
+		[Inject] private readonly OpenGameSettingsSignal.Trigger _openSettingsTrigger;
 
         [Inject]
         private void Initialize(
@@ -65,6 +66,11 @@ namespace Gui.MainMenu
         {
             _guiManager.OpenWindow(Common.WindowNames.SelectDifficultyDialog, OnDialogClosed);
         }
+
+		public void OpenSettings()
+		{
+			_openSettingsTrigger.Fire();
+		}
 
         public void OpenConstructor()
         {

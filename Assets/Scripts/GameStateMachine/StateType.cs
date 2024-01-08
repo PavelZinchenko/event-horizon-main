@@ -15,8 +15,9 @@
         SkillTree,
 		ShipEditor,
 		Exploration,
-        Dialog,
-        Testing,
+		Dialog,
+		ModalDialog,
+		Testing,
         DailyReward,
         Ehopedia,
 

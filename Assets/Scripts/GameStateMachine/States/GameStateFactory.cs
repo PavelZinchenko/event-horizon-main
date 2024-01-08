@@ -1,9 +1,9 @@
 ﻿using Combat.Domain;
 using Services.Gui;
-using Constructor.Ships;
 using Domain.Quests;
 using Game.Exploration;
 using GameModel.Quests;
+using GameServices.SceneManager;
 using Zenject;
 
 namespace GameStateMachine.States
@@ -27,6 +27,7 @@ namespace GameStateMachine.States
 		[Inject] private readonly ExplorationState.Factory _explorationStateFactory;
 		[Inject] private readonly QuickCombatState.Factory _quickCombatStateFactory;
 		[Inject] private readonly ShipEditorState.Factory _shipEditorStateStateFactory;
+		[Inject] private readonly ModalDialogState.Factory _modalDialogStateFactory;
 
 		public IGameState CreateStarMapState()
         {
@@ -110,6 +111,16 @@ namespace GameStateMachine.States
         public IGameState CreateExplorationState(Planet planet)
         {
             return _explorationStateFactory.Create(planet);
-        }
-    }
+		}
+
+		public IGameState CreateModalDialogState(string windowName, params GameScene[] gameScenes)
+		{
+			return _modalDialogStateFactory.Create(windowName, gameScenes);
+		}
+
+		public IGameState CreateGameSettingsState()
+		{
+			return CreateModalDialogState(Gui.Common.WindowNames.Settings, GameScene.Settings);
+		}
+	}
 }
