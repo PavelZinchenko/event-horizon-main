@@ -57,10 +57,8 @@ namespace GameServices.Player
             get => _explorationShip;
             set
             {
-                Assert.IsNotNull(value);
-                Assert.IsTrue(value.Model.SizeClass == SizeClass.Frigate);
-                Assert.IsTrue(_ships.Contains(value));
-                _explorationShip = value;
+				Assert.IsTrue(value == null || value.Model.SizeClass == SizeClass.Frigate && _ships.Contains(value));
+				_explorationShip = value;
                 DataChanged = true;
             }
         }
