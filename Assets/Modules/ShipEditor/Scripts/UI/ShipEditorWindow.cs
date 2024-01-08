@@ -145,10 +145,7 @@ namespace ShipEditor.UI
 		public void RemoveAll()
 		{
 			if (_shipEditor.InstalledComponents.Any(item => !item.Locked))
-				_guiManager.ShowConfirmationDialog(_localization.GetString("$RemoveAllConfirmation"), _shipEditor.RemoveAllComponents);
-
-			if (_componentPanel.Visible || _satelliteListPanel.Visible)
-				ShowPanel(PanelType.ComponentList);
+				_guiManager.ShowConfirmationDialog(_localization.GetString("$RemoveAllConfirmation"), RemoveAllCompoents);
 		}
 
 		public void OnClick(Vector2 position)
@@ -184,6 +181,14 @@ namespace ShipEditor.UI
 		public void OnNameChanged(string name)
 		{
 			_shipEditor.ShipName = name != _shipInitialName ? name : null;
+		}
+
+		private void RemoveAllCompoents()
+		{
+			_shipEditor.RemoveAllComponents();
+
+			if (_componentPanel.Visible || _satelliteListPanel.Visible)
+				ShowPanel(PanelType.ComponentList);
 		}
 
 		private void ShowPanel(PanelType panel)
