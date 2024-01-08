@@ -59,7 +59,7 @@ namespace Gui.MainMenu
             if (connected)
                 _accountName.text = _account.DisplayName;
 
-            _account.LoadUserIcon().Subscribe(result => _accountIcon.texture = result);
+            _account.LoadUserIcon().Subscribe(result => _accountIcon.texture = result).AddTo(this);
         }
 
         private void OnEnable()
