@@ -21,14 +21,13 @@ namespace ShipEditor.UI
 		[SerializeField] private GameObject _removeSatelliteItem;
 
 		private SatelliteLocation _location;
-		private bool _needUpdate;
 
 		private void OnEnable()
 		{
 			_shipEditor.Events.SatelliteChanged += OnSatelliteChanged;
 			_shipEditor.Events.ShipChanged += OnShipChanged;
 
-			if (_needUpdate) UpdateContent();
+			UpdateContent();
 		}
 
 		private void OnDisable()
@@ -44,7 +43,6 @@ namespace ShipEditor.UI
 			{
 				if (_location == value) return;
 				_location = value;
-				UpdateContent();
 			}
 		}
 
@@ -58,7 +56,6 @@ namespace ShipEditor.UI
         {
 			var node = new RootNode(null);
 			_backButton.Initialize(node, node);
-			UpdateContent();
 		}
 
 		public void RemoveSatellite()
@@ -84,19 +81,11 @@ namespace ShipEditor.UI
 
 		private void UpdateContent()
 		{
-			if (!gameObject.activeSelf)
-			{
-				_needUpdate = true;
-				return;
-			}
-
 			var isInstalled = _shipEditor.HasSatellite(_location);
 			_removeSatelliteItem.SetActive(isInstalled);
 
 			_itemsLayoutGroup.transform.InitializeElements<SatelliteItem, KeyValuePair<Satellite, ObscuredInt>>(
 				_shipEditor.Inventory.Satellites.Items, UpdateSatellite);
-
-			_needUpdate = false;
 		}
 
 		private void UpdateSatellite(SatelliteItem item, KeyValuePair<Satellite, ObscuredInt> data)

@@ -146,6 +146,9 @@ namespace ShipEditor.UI
 		{
 			if (_shipEditor.InstalledComponents.Any(item => !item.Locked))
 				_guiManager.ShowConfirmationDialog(_localization.GetString("$RemoveAllConfirmation"), _shipEditor.RemoveAllComponents);
+
+			if (_componentPanel.Visible || _satelliteListPanel.Visible)
+				ShowPanel(PanelType.ComponentList);
 		}
 
 		public void OnClick(Vector2 position)

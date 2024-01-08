@@ -35,7 +35,6 @@ namespace ShipEditor.UI
 			_rightSatelliteNode = new SatellitesNode(_rootNode, SatellitesNode.Location.Right);
 			_rootNode.AddNode(_leftSatelliteNode, true);
 			_rootNode.AddNode(_rightSatelliteNode, true);
-
 			_selectedNode = _rootNode;
 			_noItemsText.SetActive(components.Count == 0);
 			_contentFiller.InitializeItems(_selectedNode);
@@ -45,6 +44,7 @@ namespace ShipEditor.UI
 		private void OnEnable()
 		{
 			_shipEditor.Events.ShipChanged += OnShipSelected;
+			_shipEditor.Events.SatelliteChanged += OnSatelliteChanged;
 			_shipEditor.Events.ComponentAdded += OnComponentAddedOrRemoved;
 			_shipEditor.Events.ComponentRemoved += OnComponentAddedOrRemoved;
 			_shipEditor.Events.MultipleComponentsChanged += RefreshList;
@@ -53,6 +53,7 @@ namespace ShipEditor.UI
 		private void OnDisable()
 		{
 			_shipEditor.Events.ShipChanged -= OnShipSelected;
+			_shipEditor.Events.SatelliteChanged -= OnSatelliteChanged;
 			_shipEditor.Events.ComponentAdded -= OnComponentAddedOrRemoved;
 			_shipEditor.Events.ComponentRemoved -= OnComponentAddedOrRemoved;
 			_shipEditor.Events.MultipleComponentsChanged -= RefreshList;
@@ -63,7 +64,12 @@ namespace ShipEditor.UI
 		public bool Visible
 		{
 			get => gameObject.activeSelf;
-			set => gameObject.SetActive(value);
+			set 
+			{
+				if (Visible == value) return;
+				gameObject.SetActive(value);
+				if (value) RefreshList();
+			}
 		}
 
 		public void GoBack()
@@ -110,18 +116,25 @@ namespace ShipEditor.UI
 			if (_rootNode == null) return;
             _rootNode.Assign(_shipEditor.Inventory.Components);
 
-            while (_selectedNode != _rootNode && _selectedNode.ItemCount == 0)
+			while (_selectedNode != _rootNode && _selectedNode.ItemCount == 0)
                 _selectedNode = _selectedNode.GetVisibleParent() ?? _rootNode;
-            
-            _contentFiller.InitializeItems(_selectedNode);
-            _componentList.RefreshContent();
-        }
 
-		private void OnShipSelected(IShip ship)
+			UpdateSatelliteGroups();
+			_contentFiller.InitializeItems(_selectedNode);
+            _componentList.RefreshContent();
+		}
+
+		private void OnShipSelected(IShip ship) => UpdateSatelliteGroups();
+
+		private void OnSatelliteChanged(SatelliteLocation location) => UpdateSatelliteGroups();
+
+		private void UpdateSatelliteGroups()
 		{
-			var isStarbase = ship.Model.ShipType == GameDatabase.Enums.ShipType.Starbase;
-			_leftSatelliteNode.IsVisible = !isStarbase;
-			_rightSatelliteNode.IsVisible = !isStarbase;
+			var isStarbase = _shipEditor.Ship.Model.ShipType == GameDatabase.Enums.ShipType.Starbase;
+			var haveSatellites = _shipEditor.Inventory.Satellites.Count > 0;
+
+			_leftSatelliteNode.IsVisible = !isStarbase && (haveSatellites || _shipEditor.HasSatellite(SatelliteLocation.Left));
+			_rightSatelliteNode.IsVisible = !isStarbase && (haveSatellites || _shipEditor.HasSatellite(SatelliteLocation.Left));
 		}
 	}
 }
