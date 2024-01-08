@@ -37,6 +37,7 @@ namespace ShipEditor.UI
 			_rootNode.AddNode(_rightSatelliteNode, true);
 			_selectedNode = _rootNode;
 			_noItemsText.SetActive(components.Count == 0);
+			UpdateSatelliteGroups();
 			_contentFiller.InitializeItems(_selectedNode);
 			_componentList.RefreshContent();
 		}
