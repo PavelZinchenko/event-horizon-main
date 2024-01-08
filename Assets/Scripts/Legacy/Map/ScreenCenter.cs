@@ -6,14 +6,10 @@ namespace Map
     [RequireComponent(typeof(RectTransform))]
     public class ScreenCenter : MonoBehaviour
     {
-        private Camera _camera;
+        [SerializeField] private Camera _camera;
+
         private bool _initialized;
         private Vector2 _position;
-
-        private void Awake()
-        {
-            _camera = Camera.main;
-        }
 
         private void OnRectTransformDimensionsChange()
         {
