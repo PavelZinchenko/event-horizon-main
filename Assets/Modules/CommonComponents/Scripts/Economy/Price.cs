@@ -40,6 +40,22 @@ namespace Economy
 			return new Price(price._amount*multiplier, price._currency);
 		}
 
+		public Price Min(Money minValue)
+		{
+			if (_amount < minValue)
+				return new Price(minValue, _currency);
+			else
+				return this;
+		}
+
+		public Price Max(Money maxValue)
+		{
+			if (_amount > maxValue)
+				return new Price(maxValue, _currency);
+			else
+				return this;
+		}
+
 		public static Price operator /(Price price, int multiplier)
 		{
 			if (price._amount <= 0)

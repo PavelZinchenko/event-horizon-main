@@ -38,7 +38,7 @@ namespace Economy.Products
         public IItemType Type { get; private set; }
         public int Quantity { get { return _quantity; } private set { _quantity = value; } }
 
-        public Price Price { get { return Type.Price / _invertedPriceScale; } }
+        public Price Price { get { return (Type.Price / _invertedPriceScale).Min(1); } }
 
         public void Buy(int amount)
         {

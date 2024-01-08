@@ -12,7 +12,7 @@ namespace CommonComponents
 
 		public static Money operator +(Money first, Money second) => new(SafeAdd(first.Amount, second.Amount));
 		public static Money operator -(Money first, Money second) => new(first.Amount - second.Amount);
-		public static Money operator /(Money first, Money second) => new(SafeDiv(first.Amount, second.Amount));
+		public static Money operator /(Money first, Money second) => new(first.Amount / second.Amount);
 		public static Money operator *(Money first, Money second) => new(SafeMul(first.Amount, second.Amount));
 
 		public static Money operator *(Money first, double second) => new(Clamp(first.Amount * second));
@@ -67,12 +67,6 @@ namespace CommonComponents
 			{
 				return long.MaxValue;
 			}
-		}
-
-		private static long SafeDiv(long a, long b)
-		{
-			var result = a / b;
-			return a % b == 0 ? result : result + 1;
 		}
 
 		private static int ToInt(long value)
