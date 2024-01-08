@@ -35,22 +35,29 @@ namespace ShipEditor
 			var ymin = rect.ymin;
 			var ymax = rect.ymax + 1;
 
-			var v1 = GetVertex(x + xmin, y + ymin);
-			var v2 = GetVertex(x + xmax, y + ymin);
-			var v3 = GetVertex(x + xmax, y + ymax);
-			var v4 = GetVertex(x + xmin, y + ymax);
+			var aspect = spriteRect.Aspect(rect.Width, rect.Height);
+			var centerX = x + 0.5f * (xmax + xmin) * _cellSize;
+			var centerY = y + 0.5f * (ymax + ymin) * _cellSize;
+			var halfWidth = rect.Width * _cellSize * 0.5f * aspect;
+			var halfHeight = rect.Height * _cellSize * 0.5f;
+
+			int index = _vertices.Count;
+			_vertices.Add(new Vector3(centerX - halfWidth, -centerY + halfHeight, 0));
+			_vertices.Add(new Vector3(centerX + halfWidth, -centerY + halfHeight, 0));
+			_vertices.Add(new Vector3(centerX + halfWidth, -centerY - halfHeight, 0));
+			_vertices.Add(new Vector3(centerX - halfWidth, -centerY - halfHeight, 0));
 
 			_uv.Add(spriteRect.TransformUV(rect.GetUV(xmin, ymin)));
 			_uv.Add(spriteRect.TransformUV(rect.GetUV(xmax, ymin)));
 			_uv.Add(spriteRect.TransformUV(rect.GetUV(xmax, ymax)));
 			_uv.Add(spriteRect.TransformUV(rect.GetUV(xmin, ymax)));
 
-			_triangles.Add(v1);
-			_triangles.Add(v2);
-			_triangles.Add(v3);
-			_triangles.Add(v3);
-			_triangles.Add(v4);
-			_triangles.Add(v1);
+			_triangles.Add(index);
+			_triangles.Add(index+1);
+			_triangles.Add(index+2);
+			_triangles.Add(index+2);
+			_triangles.Add(index+3);
+			_triangles.Add(index);
 
 			_colors.Add(color);
 			_colors.Add(color);
@@ -71,13 +78,6 @@ namespace ShipEditor
 			return mesh;
 		}
 
-		private int GetVertex(int x, int y)
-		{
-			int id = _vertices.Count;
-			_vertices.Add(new Vector3(x * _cellSize, -y * _cellSize, 0));
-			return id;
-		}
-
 		private struct SpriteRect
 		{
 			public float xmin;
@@ -86,6 +86,13 @@ namespace ShipEditor
 			public float ymax;
 
 			public Vector2 TransformUV(Vector2 uv) => new Vector2(xmin + (xmax - xmin) * uv.x, ymax + (ymin - ymax) * uv.y);
+
+			public float Aspect(int cellsX, int cellsY)
+			{
+				var aspectX = (xmax - xmin) / cellsX;
+				var aspectY = (ymax - ymin) / cellsY;
+				return aspectX / aspectY;
+			}
 
 			public SpriteRect(Sprite sprite)
 			{
