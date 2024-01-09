@@ -66,11 +66,13 @@ namespace ShipEditor.Model
 
 			int index = x + y * Size;
 			if (_map[index] > 0) return false;
-			if (_layout[index] != (char)CellType.Weapon) return false;
+			if (!IsWeapon((CellType)_layout[index])) return false;
 
 			_map[index] = barrelId;
 			_mapCells.Enqueue(index);
 			return true;
 		}
+
+		private static bool IsWeapon(CellType cellType) => cellType == CellType.Weapon || cellType == Layout.CustomWeaponCell;
 	}
 }

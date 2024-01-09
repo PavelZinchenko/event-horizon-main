@@ -29,7 +29,15 @@ namespace ShipEditor.Model
 
 		public int Width => _layout.Size;
 		public int Height => _layout.Size;
-		public CellType Cell(int x, int y) => (CellType)_layout[x, y];
+
+		public CellType Cell(int x, int y)
+		{
+			var cellType = (CellType)_layout[x, y];
+			if (cellType == Layout.CustomWeaponCell) return CellType.Weapon;
+			if (cellType == Layout.CustomizableCell) return CellType.Empty;
+			return cellType;
+		}
+
 		public IEnumerable<IComponentModel> Components => _components;
 
 		public Barrel Barrel(int x, int y)
@@ -145,7 +153,7 @@ namespace ShipEditor.Model
 			if (_filledCells.ContainsKey(index))
 				return false;
 
-			var cellType = (CellType)_layout[x, y];
+			var cellType = Cell(x, y);
 			if (cellType == CellType.Weapon && component.CellType == CellType.Weapon)
 			{
 				var requiredSlot = component.WeaponSlotType;
