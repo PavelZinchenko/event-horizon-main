@@ -24,7 +24,6 @@ namespace Installers
 		public override void InstallBindings()
 		{
 			Container.Bind<IGameObjectFactory>().To<GameObjectFactory>().AsCached();
-			Container.BindInterfacesTo<Messenger>().AsSingle().WithArguments(GameScene.ShipEditor);
 			Container.Bind<IShipEditorContext>().FromMethod(CreateTestContext).AsSingle().IfNotBound();
 			Container.BindInterfacesTo<ShipEditorModel>().AsSingle();
 			Container.Bind<CommandList>().AsSingle();

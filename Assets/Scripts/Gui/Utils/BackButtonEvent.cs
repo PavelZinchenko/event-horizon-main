@@ -1,4 +1,4 @@
-﻿using Services.Messenger;
+﻿using Services.Gui;
 using UnityEngine;
 using UnityEngine.Events;
 using Zenject;
@@ -11,14 +11,16 @@ namespace Gui.Utils
 
         [SerializeField] private bool _ignoreIfStandaloneBuild = false;
 
-        [Inject]
-        private void Initialize(IMessenger messenger)
+		private EscapeKeyPressedSignal _escapeKeyPressedSignal;
+
+		[Inject]
+        private void Initialize(EscapeKeyPressedSignal escapeKeyPressedSignal)
         {
 #if UNITY_STANDALONE
             if (_ignoreIfStandaloneBuild) return;
 #endif
-
-            messenger.AddListener(EventType.EscapeKeyPressed, OnCancel);
+			_escapeKeyPressedSignal = escapeKeyPressedSignal;
+			_escapeKeyPressedSignal.Event += OnCancel;
         }
 
         private void OnCancel()
