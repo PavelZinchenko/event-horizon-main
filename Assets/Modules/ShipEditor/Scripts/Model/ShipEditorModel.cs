@@ -35,6 +35,7 @@ namespace ShipEditor.Model
 		IShipLayoutModel Layout(SatelliteLocation location);
 		IShipLayoutModel Layout(ShipElementType elementType);
 
+		Satellite Satellite(SatelliteLocation location);
 		bool HasSatellite(SatelliteLocation location);
 		void RemoveSatellite(SatelliteLocation location);
 		void InstallSatellite(SatelliteLocation location, Satellite satellite);
@@ -87,6 +88,7 @@ namespace ShipEditor.Model
 		public IShipLayoutModel Layout(SatelliteLocation location) => _layout[location];
 		public IShipLayoutModel Layout(ShipElementType elementType) => _layout[elementType];
 		public bool HasSatellite(SatelliteLocation location) => _layout[location] != null;
+		public Satellite Satellite(SatelliteLocation location) => _satellite[location];
 
 		public string ShipName 
 		{

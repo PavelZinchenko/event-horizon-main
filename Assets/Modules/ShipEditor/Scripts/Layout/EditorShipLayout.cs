@@ -19,6 +19,7 @@ namespace ShipEditor
 		[SerializeField] private ShipLayoutElement _selection;
 		[SerializeField] private ShipLayoutElement _lockedCells;
 		[SerializeField] private WeaponClassLayout _weaponClasses;
+		[SerializeField] private SpriteRenderer _shipImage;
 
 		[SerializeField] private float _lockSize = 0.5f;
 
@@ -33,7 +34,7 @@ namespace ShipEditor
 		private Model.IShipLayoutModel _shipLayout;
 		private Vector2Int _selectedPosition;
 
-		public void Initialize(Model.IShipLayoutModel layout, float cellSize)
+		public void Initialize(Model.IShipLayoutModel layout, Sprite sprite, float cellSize)
 		{
 			_cellSize = cellSize;
 			_shipLayout = layout;
@@ -42,6 +43,14 @@ namespace ShipEditor
 			GenerateMesh();
 			GenerateModules();
 			GenerateWeaponClasses();
+
+			_shipImage.gameObject.SetActive(sprite != null);
+			if (sprite != null)
+			{
+				_shipImage.sprite = sprite;
+				_shipImage.transform.localPosition = new Vector3(Width/2, -Height/2, _shipImage.transform.localPosition.z);
+				_shipImage.transform.localScale = Mathf.Max(Width, Height) * _cellSize * Vector3.one;
+			}
 
 			_content.localPosition = new Vector3(-Width / 2, Height / 2, 0);
 		}

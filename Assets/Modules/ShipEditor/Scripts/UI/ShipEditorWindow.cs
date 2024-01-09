@@ -9,6 +9,7 @@ using Services.Gui;
 using Gui.Utils;
 using Services.Audio;
 using Services.Localization;
+using Services.Resources;
 
 namespace ShipEditor.UI
 {
@@ -27,6 +28,7 @@ namespace ShipEditor.UI
 		[Inject] private readonly ILocalization _localization;
 		[Inject] private readonly CommandList _commandList;
 		[Inject] private readonly ISoundPlayer _soundPlayer;
+		[Inject] private readonly IResourceLocator _resourceLocator;
 		[InjectOptional] private readonly CloseEditorSignal.Trigger _closeEditorTrigger;
 
 		[SerializeField] private ShipView _shipView;
@@ -234,7 +236,8 @@ namespace ShipEditor.UI
 
 		private void OnShipChanged(IShip ship)
 		{
-			_shipView.InitializeShip(_shipEditor.Layout(ShipElementType.Ship));
+			var sprite = _resourceLocator.GetSprite(ship.Model.ModelImage);
+			_shipView.InitializeShip(_shipEditor.Layout(ShipElementType.Ship), sprite);
 			_shipInitialName = _localization.GetString(_shipEditor.ShipName);
 			_shipNameInputField.text = _shipInitialName;
 			_commandList.Clear();
@@ -268,7 +271,11 @@ namespace ShipEditor.UI
 		private void OnSatelliteChanged(SatelliteLocation location)
 		{
 			var layout = _shipEditor.Layout(location);
-			_shipView.InitializeSatellite(layout, location);
+			if (layout == null)
+				_shipView.RemoveSatellite(location);
+			else
+				_shipView.InitializeSatellite(location, layout, _resourceLocator.GetSprite(_shipEditor.Satellite(location).ModelImage));
+
 			_commandList.Clear(location == SatelliteLocation.Left ? ShipElementType.SatelliteL : ShipElementType.SatelliteR);
 		}
 

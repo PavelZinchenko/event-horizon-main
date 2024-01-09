@@ -19,16 +19,17 @@ namespace ShipEditor.UI
 			_elements[ShipElementType.SatelliteR].Height), 
 			_elements[ShipElementType.Ship].Height);
 
-		public void InitializeShip(IShipLayoutModel layout)
+		public void InitializeShip(IShipLayoutModel layout, Sprite sprite)
 		{
-			_elements[ShipElementType.Ship].Initialize(layout, _cellSize);
+			_elements[ShipElementType.Ship].Initialize(layout, sprite, _cellSize);
 			UpdateSatellitePosition(SatelliteLocation.Left);
 			UpdateSatellitePosition(SatelliteLocation.Right);
 		}
 
-		public void InitializeSatellite(IShipLayoutModel layout, SatelliteLocation location)
+		public void RemoveSatellite(SatelliteLocation location) => InitializeSatellite(location, null, null);
+		public void InitializeSatellite(SatelliteLocation location, IShipLayoutModel layout, Sprite sprite)
 		{
-			_elements[location].Initialize(layout, _cellSize);
+			_elements[location].Initialize(layout, sprite, _cellSize);
 			UpdateSatellitePosition(location);
 		}
 
