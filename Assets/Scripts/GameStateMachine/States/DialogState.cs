@@ -43,12 +43,12 @@ namespace GameStateMachine.States
             if (Condition != GameStateCondition.Active)
                 throw new BadGameStateException();
 
-            var action = _onExitAction;
+			Unload();
+			
+			var action = _onExitAction;
             _onExitAction = null;
             if (action != null)
                 action.Invoke(exitCode);
-
-            Unload();
         }
 
         private readonly string _windowName;
