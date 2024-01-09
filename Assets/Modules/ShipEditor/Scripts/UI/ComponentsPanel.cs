@@ -60,7 +60,7 @@ namespace ShipEditor.UI
 			_shipEditor.Events.MultipleComponentsChanged -= RefreshList;
 		}
 
-		private void OnComponentAddedOrRemoved(IComponentModel component, ShipElementType elementType) => RefreshList();
+		private void OnComponentAddedOrRemoved(IComponentModel component) => RefreshList();
 
 		public bool Visible
 		{
@@ -132,7 +132,7 @@ namespace ShipEditor.UI
 		private void UpdateSatelliteGroups()
 		{
 			var isStarbase = _shipEditor.Ship.Model.ShipType == GameDatabase.Enums.ShipType.Starbase;
-			var haveSatellites = _shipEditor.Inventory.Satellites.Count > 0;
+			var haveSatellites = _shipEditor.Inventory.Satellites.Count > 0 || _shipEditor.Inventory.SatelliteBuilds.Count > 0;
 
 			_leftSatelliteNode.IsVisible = !isStarbase && (haveSatellites || _shipEditor.HasSatellite(SatelliteLocation.Left));
 			_rightSatelliteNode.IsVisible = !isStarbase && (haveSatellites || _shipEditor.HasSatellite(SatelliteLocation.Left));

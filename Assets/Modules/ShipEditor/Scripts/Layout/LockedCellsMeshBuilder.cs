@@ -28,7 +28,7 @@ namespace ShipEditor
 			for (int i = 0; i < size; ++i)
 				for (int j = 0; j < size; ++j)
 					if ((CellType)layout[j, i] != CellType.Empty)
-						result |= _map.Add(Index(x0 + j, y0 + i));
+						result |= _map.Add(Model.CellIndex.FromXY(x0 + j, y0 + i));
 
 			return result;
 		}
@@ -41,7 +41,7 @@ namespace ShipEditor
 			for (int i = 0; i < size; ++i)
 				for (int j = 0; j < size; ++j)
 					if ((CellType)layout[j, i] != CellType.Empty)
-						result |= _map.Remove(Index(x0 + j, y0 + i));
+						result |= _map.Remove(Model.CellIndex.FromXY(x0 + j, y0 + i));
 
 			return result;
 		}
@@ -54,7 +54,7 @@ namespace ShipEditor
 
 			foreach (ulong index in _map)
 			{
-				GetXY(index, out int x, out int y);
+				Model.CellIndex.GetXY(index, out int x, out int y);
 
 				var v1 = AddVertex(vertices, x + 0.5f - _iconHalfSize, y + 0.5f - _iconHalfSize);
 				var v2 = AddVertex(vertices, x + 0.5f + _iconHalfSize, y + 0.5f - _iconHalfSize);
@@ -88,14 +88,6 @@ namespace ShipEditor
 			var id = vertices.Count;
 			vertices.Add(new Vector3(x * _cellSize, -y * _cellSize));
 			return id;
-		}
-
-		private static ulong Index(int x, int y) => ((ulong)y << 32) + (uint)x;
-
-		private static void GetXY(ulong value, out int x, out int y)
-		{
-			y = (int)(value >> 32);
-			x = (int)(value & 0xFFFFFFFF);
 		}
 	}
 }

@@ -3,29 +3,27 @@
 	public class RemoveComponentCommand : ICommand
 	{
 		private readonly IShipEditorModel _shipEditor;
-		private readonly IComponentModel _model;
-		private ShipElementType _shipElement;
+		private readonly IComponentModel _component;
 
-		public bool BelongsToElement(ShipElementType shipElement) => shipElement == _shipElement;
+		public bool BelongsToElement(ShipElementType shipElement) => shipElement == _component.Location;
 
-		public RemoveComponentCommand(IShipEditorModel shipEditor, IComponentModel model)
+		public RemoveComponentCommand(IShipEditorModel shipEditor, IComponentModel component)
 		{
 			_shipEditor = shipEditor;
-			_model = model;
+			_component = component;
 		}
 
 		public bool TryExecute()
 		{
-			if (!_shipEditor.TryFindComponent(_model, out _shipElement)) return false;
-			_shipEditor.RemoveComponent(_shipElement, _model);
+			_shipEditor.RemoveComponent(_component);
 			return true;
 		}
 
 		public bool TryRollback()
 		{
-			var position = new UnityEngine.Vector2Int(_model.X, _model.Y);
-			var settings = new ComponentSettings(_model.KeyBinding, _model.Behaviour, _model.Locked);
-			return _shipEditor.TryInstallComponent(position, _shipElement, _model.Info, settings);
+			var position = new UnityEngine.Vector2Int(_component.X, _component.Y);
+			var settings = new ComponentSettings(_component.KeyBinding, _component.Behaviour, _component.Locked);
+			return _shipEditor.TryInstallComponent(_component.Location, position, _component.Info, settings);
 		}
 	}
 }

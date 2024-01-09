@@ -22,7 +22,8 @@ namespace Constructor.Satellites
             _components.DataChangedEvent += OnDataChanged;
         }
 
-        public Satellite Information { get; private set; }
+		public string Name => Information.Name;
+        public Satellite Information { get; }
 
         public IItemCollection<IntegratedComponent> Components { get { return _components; } }
 

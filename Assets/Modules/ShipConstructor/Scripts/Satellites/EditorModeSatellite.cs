@@ -13,28 +13,34 @@ namespace Constructor.Satellites
             _build = build;
         }
 
-        public Satellite Information { get { return _build.Satellite; } }
+		public string Name => _build.Satellite.Name + " #" + _build.Id.Value;
+        public Satellite Information => _build.Satellite;
 
-        public IItemCollection<IntegratedComponent> Components
-        {
-            get
-            {
-                if (_components == null)
-                {
-                    _components = new ObservableCollection<IntegratedComponent>(_build.Components.Select<InstalledComponent,IntegratedComponent>(ComponentExtensions.FromDatabase));
-                    _components.DataChangedEvent += OnDataChanged;
-                }
+		public IItemCollection<IntegratedComponent> Components
+		{
+			get
+			{
+				if (_components == null)
+				{
+					_components = new ObservableCollection<IntegratedComponent>(_build.Components.Select(item =>
+					{
+						var component = ComponentExtensions.FromDatabase(item);
+						component.Locked = false;
+						return component;
+					}));
 
-                return _components;
-            }
-        }
+					_components.DataChangedEvent += OnDataChanged;
+				}
 
-        public bool DataChanged { get { return false; } set {} }
+				return _components;
+			}
+		}
+
+        public bool DataChanged { get => false; set {} }
 
         private void OnDataChanged()
         {
             UnityEngine.Debug.Log("EditorModeSatellite.OnDataChanged");
-
             _build.SetComponents(_components.Select(item => ToDatabaseModel(item)));
             _database.SaveSatelliteBuild(_build.Id);
         }
@@ -48,5 +54,5 @@ namespace Constructor.Satellites
             return new InstalledComponent(component.Info.Data, component.Info.ModificationType, 
                 component.Info.ModificationQuality, component.X, component.Y, component.BarrelId, component.Behaviour, component.KeyBinding);
         }
-    }
+	}
 }

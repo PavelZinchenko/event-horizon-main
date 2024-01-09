@@ -135,18 +135,18 @@ namespace ShipEditor.UI
 					_shipEditor.UnlockComponent(item);
 		}
 
-		private void OnComponentAdded(IComponentModel model, ShipElementType shipElement)
+		private void OnComponentAdded(IComponentModel model)
 		{
 			if (_shipEditor.Inventory.Components.GetQuantity(_componentInfo) == 0)
 				_closeRequested?.Invoke();
 		}
 
-		private void OnComponentRemoved(IComponentModel model, ShipElementType shipElement)
+		private void OnComponentRemoved(IComponentModel model)
 		{
 			_closeRequested?.Invoke();
 		}
 
-		private void OnComponentModified(IComponentModel model, ShipElementType shipElement)
+		private void OnComponentModified(IComponentModel model)
 		{
 			if (model == _componentModel)
 				SetInstalledComponent(model);

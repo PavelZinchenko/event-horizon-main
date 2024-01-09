@@ -21,10 +21,11 @@ namespace ShipEditor.Model
 	public class ShipLayoutModel : IShipLayoutModel
 	{
 		private readonly List<ComponentModel> _components = new();
-		private readonly Dictionary<int, IComponentModel> _filledCells = new();
+		private readonly Dictionary<ulong, IComponentModel> _filledCells = new();
 		private readonly BarrelMapBuilder _barrelMap = new();
 		private readonly ImmutableCollection<Barrel> _barrels;
 		private readonly IComponentTracker _tracker;
+		private readonly ShipElementType _elementType;
 		private readonly Layout _layout;
 
 		public int Width => _layout.Size;
@@ -46,16 +47,16 @@ namespace ShipEditor.Model
 			return id >= 0 ? _barrels[id] : null;
 		}
 
-		public ShipLayoutModel(Layout layout, ImmutableCollection<Barrel> barrels, IComponentTracker tracker)
+		public ShipLayoutModel(ShipElementType elementType, Layout layout, ImmutableCollection<Barrel> barrels, IComponentTracker tracker)
 		{
 			_layout = layout;
 			_barrels = barrels;
 			_barrelMap.Build(layout);
 			_tracker = tracker;
+			_elementType = elementType;
 		}
 
-		public bool TryGetComponentAt(int x, int y, out IComponentModel component) => _filledCells.TryGetValue(Index(x, y), out component);
-		public IComponentModel GetComponentAt(int x, int y) => _filledCells.TryGetValue(Index(x, y), out var item) ? item : null;
+		public bool TryGetComponentAt(int x, int y, out IComponentModel component) => _filledCells.TryGetValue(CellIndex.FromXY(x, y), out component);
 		public int GetBarrelId(IComponentModel component) => GetBarrelId(component.X, component.Y, component.Data.Layout);
 
 		public IComponentModel FindComponent(int x, int y, ComponentInfo info)
@@ -134,7 +135,7 @@ namespace ShipEditor.Model
 		{
 			var id = _components.Count;
 			var layout = component.Data.Layout;
-			var model = new ComponentModel(id, x, y, component, settings);
+			var model = new ComponentModel(id, x, y, component, settings, _elementType);
 			FillCells(x, y, layout, model);
 			_components.Add(model);
 			_tracker.OnComponentAdded(component.Data);
@@ -149,7 +150,7 @@ namespace ShipEditor.Model
 			if (x < 0 || x >= size || y < 0 || y >= size)
 				return false;
 
-			var index = x + y * size;
+			var index = CellIndex.FromXY(x, y);
 			if (_filledCells.ContainsKey(index))
 				return false;
 
@@ -189,7 +190,7 @@ namespace ShipEditor.Model
 			for (int i = 0; i < layout.Size; ++i)
 				for (int j = 0; j < layout.Size; ++j)
 					if ((CellType)layout[j, i] != CellType.Empty)
-						_filledCells.Add(Index(j + x, i + y), component);
+						_filledCells.Add(CellIndex.FromXY(j + x, i + y), component);
 		}
 
 		private void ClearCells(int x, int y, Layout layout)
@@ -197,7 +198,7 @@ namespace ShipEditor.Model
 			for (int i = 0; i < layout.Size; ++i)
 				for (int j = 0; j < layout.Size; ++j)
 					if ((CellType)layout[j, i] != CellType.Empty)
-						_filledCells.Remove(Index(j + x, i + y));
+						_filledCells.Remove(CellIndex.FromXY(j + x, i + y));
 		}
 
 		private int GetBarrelId(int x, int y, Layout layout)
@@ -209,7 +210,5 @@ namespace ShipEditor.Model
 
 			return -1;
 		}
-
-		private int Index(int x, int y) => x + y * _layout.Size;
 	}
 }

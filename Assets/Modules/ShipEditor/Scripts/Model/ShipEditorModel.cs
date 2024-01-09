@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using ShipEditor.Context;
 using Constructor;
 using Constructor.Ships;
+using Constructor.Satellites;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 
@@ -39,13 +40,13 @@ namespace ShipEditor.Model
 		bool HasSatellite(SatelliteLocation location);
 		void RemoveSatellite(SatelliteLocation location);
 		void InstallSatellite(SatelliteLocation location, Satellite satellite);
+		void InstallSatellite(SatelliteLocation location, ISatellite satellite);
 
 		void SelectShip(IShip ship);
 
-		bool TryFindComponent(IComponentModel component, out ShipElementType shipElement);
-		bool TryFindComponent(UnityEngine.Vector2Int position, ComponentInfo info, out IComponentModel component, out ShipElementType shipElement);
-		bool TryInstallComponent(UnityEngine.Vector2Int position, ShipElementType shipElement, ComponentInfo componentInfo, ComponentSettings settings);
-		void RemoveComponent(ShipElementType shipElement, IComponentModel component);
+		bool TryFindComponent(ShipElementType elementType, UnityEngine.Vector2Int position, ComponentInfo info, out IComponentModel component);
+		bool TryInstallComponent(ShipElementType shipElement, UnityEngine.Vector2Int position, ComponentInfo componentInfo, ComponentSettings settings);
+		void RemoveComponent(IComponentModel component);
 		void RemoveAllComponents();
 
 		void SetComponentKeyBinding(IComponentModel component, int key);
@@ -60,7 +61,7 @@ namespace ShipEditor.Model
 		private readonly ShipEditorEvents _events = new();
 		private readonly IShipEditorContext _context;
 		private ShipElementContainer<ShipLayoutModel> _layout;
-		private ShipElementContainer<Satellite> _satellite;
+		private ShipElementContainer<ISatellite> _satellite;
 		private ComponentTracker _compatibilityChecker;
 		private IShip _ship;
 		private string _shipName;
@@ -88,7 +89,7 @@ namespace ShipEditor.Model
 		public IShipLayoutModel Layout(SatelliteLocation location) => _layout[location];
 		public IShipLayoutModel Layout(ShipElementType elementType) => _layout[elementType];
 		public bool HasSatellite(SatelliteLocation location) => _layout[location] != null;
-		public Satellite Satellite(SatelliteLocation location) => _satellite[location];
+		public Satellite Satellite(SatelliteLocation location) => _satellite[location]?.Information;
 
 		public string ShipName 
 		{
@@ -110,12 +111,20 @@ namespace ShipEditor.Model
 			_compatibilityChecker = new ComponentTracker(ship);
 			_shipName = null;
 
-			var shipLayout = _layout[ShipElementType.Ship] = new ShipLayoutModel(ship.Model.Layout, ship.Model.Barrels, _compatibilityChecker);
+			var shipLayout = _layout[ShipElementType.Ship] = new ShipLayoutModel(
+				ShipElementType.Ship, ship.Model.Layout, ship.Model.Barrels, _compatibilityChecker);
+
 			InitializeLayout(shipLayout, ship.Components);
-			InitializeSatellite(SatelliteLocation.Left, _ship.FirstSatellite?.Information, _ship.FirstSatellite?.Components);
-			InitializeSatellite(SatelliteLocation.Right, _ship.SecondSatellite?.Information, _ship.SecondSatellite?.Components);
+			InitializeSatellite(SatelliteLocation.Left, _ship.FirstSatellite);
+			InitializeSatellite(SatelliteLocation.Right, _ship.SecondSatellite);
 
 			_events.OnShipChanged(ship);
+		}
+
+		public void InstallSatellite(SatelliteLocation location, ISatellite satellite)
+		{
+			RemoveSatellite(location);
+			InitializeSatellite(location, satellite);
 		}
 
 		public void InstallSatellite(SatelliteLocation location, Satellite satellite)
@@ -131,37 +140,36 @@ namespace ShipEditor.Model
 			if (!_context.Inventory.TryRemoveSatellite(satellite))
 				throw new InvalidOperationException();
 
-			InitializeSatellite(location, satellite, null);
+			InitializeSatellite(location, new CommonSatellite(satellite, Enumerable.Empty<IntegratedComponent>()));
 		}
 
 		public void RemoveSatellite(SatelliteLocation location)
 		{
-			if (_layout[location] == null) return;
+			var layout = _layout[location];
+			var satellite = _satellite[location];
+			if (satellite == null) return;
 
-			RemoveAllComopnents(_layout[location]);
+			SaveSatellite(location);
+			RemoveAllComopnents(layout);
 			_events.OnMultipleComponentsChanged();
 
 			_layout[location] = null;
+			_satellite[location] = null;
 
-			if (_satellite[location] != null)
-			{
-				_context.Inventory.AddSatellite(_satellite[location]);
-				_satellite[location] = null;
-			}
-
+			_context.Inventory.AddSatellite(satellite.Information);
 			_events.OnSatelliteChanged(location);
 		}
 
 		public void SetComponentKeyBinding(IComponentModel component, int key)
 		{
 			if (key != component.KeyBinding)
-				TryUpdateComponent(component, new ComponentSettings(key, component.Behaviour, component.Locked));
+				UpdateComponent(component, new ComponentSettings(key, component.Behaviour, component.Locked));
 		}
 
 		public void SetComponentBehaviour(IComponentModel component, int behaviour)
 		{
 			if (behaviour != component.Behaviour)
-				TryUpdateComponent(component, new ComponentSettings(component.KeyBinding, behaviour, component.Locked));
+				UpdateComponent(component, new ComponentSettings(component.KeyBinding, behaviour, component.Locked));
 		}
 
 
@@ -183,10 +191,10 @@ namespace ShipEditor.Model
 			if (!_context.Inventory.TryPayForUnlock(component.Info))
 				throw new InvalidOperationException();
 
-			TryUpdateComponent(component, new ComponentSettings(component.KeyBinding, component.Behaviour, false));
+			UpdateComponent(component, new ComponentSettings(component.KeyBinding, component.Behaviour, false));
 		}
 
-		public bool TryInstallComponent(UnityEngine.Vector2Int position, ShipElementType shipElement, ComponentInfo componentInfo, ComponentSettings settings)
+		public bool TryInstallComponent(ShipElementType shipElement, UnityEngine.Vector2Int position, ComponentInfo componentInfo, ComponentSettings settings)
 		{
 			var layout = _layout[shipElement];
 			if (layout == null)
@@ -202,18 +210,18 @@ namespace ShipEditor.Model
 				return false;
 
 			var component = layout.InstallComponent(position.x, position.y, componentInfo, settings);
-			_events.OnComponentAdded(component, shipElement);
+			_events.OnComponentAdded(component);
 			return true;
 		}
 
-		public void RemoveComponent(ShipElementType elementType, IComponentModel component)
+		public void RemoveComponent(IComponentModel component)
 		{
 			if (component.Locked)
 				throw new InvalidOperationException();
 
-			_layout[elementType].RemoveComponent(component);
+			_layout[component.Location].RemoveComponent(component);
 			_context.Inventory.AddComponent(component.Info);
-			_events.OnComponentRemoved(component, elementType);
+			_events.OnComponentRemoved(component);
 		}
 
 		public void RemoveAllComponents()
@@ -229,36 +237,19 @@ namespace ShipEditor.Model
 			SaveShip(_ship);
 		}
 
-		public bool TryFindComponent(IComponentModel component, out ShipElementType elementType)
+		public bool TryFindComponent(ShipElementType elementType, UnityEngine.Vector2Int position, ComponentInfo info, out IComponentModel component)
 		{
-			elementType = ShipElementType.Ship;
-			if (_layout[elementType].HasComponent(component))
-				return true;
-
-			elementType = ShipElementType.SatelliteL;
-			if (_layout[elementType].HasComponent(component))
-				return true;
-
-			elementType = ShipElementType.SatelliteR;
-			if (_layout[elementType].HasComponent(component))
-				return true;
-
-			return false;
+			component = _layout[elementType].FindComponent(position.x, position.y, info);
+			return component != null;
 		}
 
-		public bool TryFindComponent(UnityEngine.Vector2Int position, ComponentInfo info, out IComponentModel component, out ShipElementType elementType)
+		private ISatellite SaveSatellite(SatelliteLocation location)
 		{
-			elementType = ShipElementType.Ship;
-			component = _layout[ShipElementType.Ship].FindComponent(position.x, position.y, info);
-			if (component != null) return true;
+			var satellite = _satellite[location];
+			if (satellite != null) 
+				satellite.Components.Assign(ExportComponents(_layout[location]));
 
-			elementType = ShipElementType.SatelliteL;
-			component = _layout[ShipElementType.Ship].FindComponent(position.x, position.y, info);
-			if (component != null) return true;
-
-			elementType = ShipElementType.SatelliteR;
-			component = _layout[ShipElementType.Ship].FindComponent(position.x, position.y, info);
-			return component != null;
+			return satellite;
 		}
 
 		private void SaveShip(IShip ship)
@@ -270,10 +261,8 @@ namespace ShipEditor.Model
 			if (!string.IsNullOrEmpty(_shipName))
 				Ship.Name = _shipName;
 
-			_ship.FirstSatellite = _satellite[SatelliteLocation.Left] == null ? null :
-				new Constructor.Satellites.CommonSatellite(_satellite[SatelliteLocation.Left], ExportComponents(_layout[SatelliteLocation.Left]));
-			_ship.SecondSatellite = _satellite[SatelliteLocation.Right] == null ? null :
-				new Constructor.Satellites.CommonSatellite(_satellite[SatelliteLocation.Right], ExportComponents(_layout[SatelliteLocation.Right]));
+			_ship.FirstSatellite = SaveSatellite(SatelliteLocation.Left);
+			_ship.SecondSatellite = SaveSatellite(SatelliteLocation.Right);
 		}
 
 		private static IEnumerable<IntegratedComponent> ExportComponents(ShipLayoutModel layout)
@@ -295,15 +284,10 @@ namespace ShipEditor.Model
 			layout.RemoveAll(keepLocked);
 		}
 
-		private bool TryUpdateComponent(IComponentModel component, ComponentSettings settings)
+		private void UpdateComponent(IComponentModel component, ComponentSettings settings)
 		{
-			if (!TryFindComponent(component, out var elementType))
-				return false;
-
-			_layout[elementType].UpdateComponent(component, settings);
-			_events.OnComponentModified(component, elementType);
-
-			return true;
+			_layout[component.Location].UpdateComponent(component, settings);
+			_events.OnComponentModified(component);
 		}
 
 		private void InitializeLayout(ShipLayoutModel layout, IEnumerable<IntegratedComponent> components)
@@ -323,13 +307,14 @@ namespace ShipEditor.Model
 			}
 		}
 
-		private void InitializeSatellite(SatelliteLocation location, Satellite satellite, IEnumerable<IntegratedComponent> components)
+		private void InitializeSatellite(SatelliteLocation location, ISatellite satellite)
 		{
 			_satellite[location] = satellite;
 			if (satellite != null)
 			{
-				_layout[location] = new ShipLayoutModel(satellite.Layout, satellite.Barrels, _compatibilityChecker);
-				InitializeLayout(_layout[location], components);
+				_layout[location] = new ShipLayoutModel(location.ToShipElement(),
+					satellite.Information.Layout, satellite.Information.Barrels, _compatibilityChecker);
+				InitializeLayout(_layout[location], satellite.Components);
 			}
 			else
 			{

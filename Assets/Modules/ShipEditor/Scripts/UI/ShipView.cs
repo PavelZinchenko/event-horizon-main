@@ -61,14 +61,14 @@ namespace ShipEditor.UI
 			_elements[ShipElementType.SatelliteR].ShowSelection(WorldToCell(position, ShipElementType.SatelliteR, size), component);
 		}
 
-		public void AddComponent(IComponentModel component, ShipElementType shipElement)
+		public void AddComponent(IComponentModel component)
 		{
-			_elements[shipElement].AddComponent(component);
+			_elements[component.Location].AddComponent(component);
 		}
 
-		public void RemoveComponent(IComponentModel component, ShipElementType shipElement)
+		public void RemoveComponent(IComponentModel component)
 		{
-			_elements[shipElement].RemoveComponent(component);
+			_elements[component.Location].RemoveComponent(component);
 		}
 
 		public void ReloadAllComponents(ShipElementType shipElement)
@@ -77,9 +77,9 @@ namespace ShipEditor.UI
 			_elements[shipElement].GenerateWeaponClasses();
 		}
 
-		public void UpdateComponent(IComponentModel model, ShipElementType shipElement)
+		public void UpdateComponent(IComponentModel component)
 		{
-			_elements[shipElement].UpdateComponent(model);
+			_elements[component.Location].UpdateComponent(component);
 		}
 	}
 }

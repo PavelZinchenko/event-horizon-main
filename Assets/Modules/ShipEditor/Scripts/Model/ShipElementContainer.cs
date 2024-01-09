@@ -35,18 +35,8 @@ namespace ShipEditor.Model
 
 		public T this[SatelliteLocation location]
 		{
-			get => this[ToShipElement(location)];
-			set => this[ToShipElement(location)] = value;
-		}
-
-		private static ShipElementType ToShipElement(SatelliteLocation location)
-		{
-			if (location == SatelliteLocation.Left)
-				return ShipElementType.SatelliteL;
-			else if (location == SatelliteLocation.Right)
-				return ShipElementType.SatelliteR;
-			else
-				return ShipElementType.Ship;
+			get => this[location.ToShipElement()];
+			set => this[location.ToShipElement()] = value;
 		}
 	}
 }

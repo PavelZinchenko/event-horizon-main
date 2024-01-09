@@ -2,10 +2,10 @@
 using GameServices.SceneManager;
 using GameServices.Player;
 using Constructor.Ships;
-using Services.Gui;
 using Zenject;
 using ShipEditor.Context;
 using CommonComponents.Utils;
+using Constructor.Satellites;
 using Constructor;
 using GameDatabase.DataModel;
 using GameServices.Database;
@@ -18,26 +18,15 @@ namespace GameStateMachine.States
     public class ShipEditorState : BaseState
     {
 		private Context _context;
-		private readonly PlayerInventory _playerInventory;
-		private readonly PlayerFleet _playerFleet;
-		private readonly PlayerResources _playerResources;
 		private readonly ShipEditor.CloseEditorSignal _closeEditorSignal;
 
 		public ShipEditorState(
 			Context context,
 			IStateMachine stateMachine,
-			IGuiManager guiManager,
-			PlayerResources playerResources,
-			PlayerInventory playerInventory,
-			PlayerFleet playerFleet,
 			GameStateFactory stateFactory)
             : base(stateMachine, stateFactory)
         {
 			_context = context;
-			_playerInventory = playerInventory;
-			_playerFleet = playerFleet;
-			_playerResources = playerResources;
-
 			_closeEditorSignal = new();
 			_closeEditorSignal.Event += OnExit;
         }
@@ -108,6 +97,7 @@ namespace GameStateMachine.States
 
 			public IReadOnlyGameItemCollection<ComponentInfo> Components => _playerInventory.Components;
 			public IReadOnlyGameItemCollection<Satellite> Satellites => _playerInventory.Satellites;
+			public IReadOnlyCollection<ISatellite> SatelliteBuilds => System.Array.Empty<ISatellite>();
 			public IEnumerable<IShip> Ships => _playerFleet.Ships;
 
 			public InventoryProvider(PlayerInventory playerInventory, PlayerFleet playerFleet, PlayerResources playerResources)

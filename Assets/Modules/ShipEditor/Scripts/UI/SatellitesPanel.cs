@@ -7,6 +7,7 @@ using Services.Localization;
 using Services.Resources;
 using GameDatabase.DataModel;
 using ShipEditor.Model;
+using Constructor.Satellites;
 
 namespace ShipEditor.UI
 {
@@ -65,7 +66,10 @@ namespace ShipEditor.UI
 
 		public void InstallSatellite(SatelliteItem item)
 		{
-			_shipEditor.InstallSatellite(_location, item.Satellite);
+			if (item.SatelliteBuild != null)
+				_shipEditor.InstallSatellite(_location, item.SatelliteBuild);
+			else
+				_shipEditor.InstallSatellite(_location, item.Satellite);
 		}
 
 		private void OnShipChanged(Constructor.Ships.IShip ship)
@@ -84,8 +88,18 @@ namespace ShipEditor.UI
 			var isInstalled = _shipEditor.HasSatellite(_location);
 			_removeSatelliteItem.SetActive(isInstalled);
 
-			_itemsLayoutGroup.transform.InitializeElements<SatelliteItem, KeyValuePair<Satellite, ObscuredInt>>(
-				_shipEditor.Inventory.Satellites.Items, UpdateSatellite);
+			if (_shipEditor.Inventory.SatelliteBuilds.Count > 0)
+				_itemsLayoutGroup.transform.InitializeElements<SatelliteItem, ISatellite>(
+					_shipEditor.Inventory.SatelliteBuilds, UpdateSatellite);
+			else
+				_itemsLayoutGroup.transform.InitializeElements<SatelliteItem, KeyValuePair<Satellite, ObscuredInt>>(
+					_shipEditor.Inventory.Satellites.Items, UpdateSatellite);
+		}
+
+		private void UpdateSatellite(SatelliteItem item, ISatellite satellite)
+		{
+			var canBeInstalled = _shipEditor.CompatibilityChecker.IsCompatible(satellite.Information);
+			item.Initialize(satellite, canBeInstalled, _resourceLocator, _localization);
 		}
 
 		private void UpdateSatellite(SatelliteItem item, KeyValuePair<Satellite, ObscuredInt> data)

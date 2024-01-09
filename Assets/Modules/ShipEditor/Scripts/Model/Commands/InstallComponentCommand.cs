@@ -28,14 +28,14 @@ namespace ShipEditor.Model
 
 		public bool TryExecute()
 		{
-			return _shipEditor.TryInstallComponent(_position, _shipElement, _component, _settings);
+			return _shipEditor.TryInstallComponent(_shipElement, _position, _component, _settings);
 		}
 
 		public bool TryRollback()
 		{
-			if (!_shipEditor.TryFindComponent(_position, _component, out var model, out var shipElement)) return false;
-			_shipEditor.RemoveComponent(shipElement, model);
-			return false;
+			if (!_shipEditor.TryFindComponent(_shipElement, _position, _component, out var component)) return false;
+			_shipEditor.RemoveComponent(component);
+			return true;
 		}
 	}
 }

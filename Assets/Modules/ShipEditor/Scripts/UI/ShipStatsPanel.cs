@@ -79,8 +79,8 @@ namespace ShipEditor.UI
 			_panelMini.SetActive(!show);
 		}
 
-		private void OnComponentAdded(IComponentModel component, ShipElementType elementType) => UpdateStats();
-		private void OnComponentRemoved(IComponentModel component, ShipElementType elementType) => UpdateStats();
+		private void OnComponentAdded(IComponentModel component) => UpdateStats();
+		private void OnComponentRemoved(IComponentModel component) => UpdateStats();
 		private void OnShipChanged(Constructor.Ships.IShip ship) => UpdateStats();
 
 		private void UpdateStats()

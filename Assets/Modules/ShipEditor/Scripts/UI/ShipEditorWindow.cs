@@ -169,7 +169,7 @@ namespace ShipEditor.UI
 		{
 			if (_overviewMode) return;
 
-			if (TrySelectComponent(position, out var component, out var elementType))
+			if (TrySelectComponent(position, out var component))
 				OpenEditComponentPanel(component);
 		}
 
@@ -186,7 +186,7 @@ namespace ShipEditor.UI
 			if (_overviewMode) return;
 
 			var position = Camera.main.ScreenToWorldPoint(eventData.pressPosition);
-			if (!TrySelectComponent(position, out var component, out var elementType)) return;
+			if (!TrySelectComponent(position, out var component)) return;
 			if (component.Locked) return;
 
 			var command = new RemoveComponentCommand(_shipEditor, component);
@@ -260,20 +260,20 @@ namespace ShipEditor.UI
 			return zoom + zoom * _cameraMargins;
 		}
 
-		private void OnComponentAdded(IComponentModel component, ShipElementType shipElement)
+		private void OnComponentAdded(IComponentModel component)
 		{
-			_shipView.AddComponent(component, shipElement);
+			_shipView.AddComponent(component);
 			_soundPlayer.Play(_installSound);
 		}
 
-		private void OnComponentRemoved(IComponentModel component, ShipElementType shipElement)
+		private void OnComponentRemoved(IComponentModel component)
 		{
-			_shipView.RemoveComponent(component, shipElement);
+			_shipView.RemoveComponent(component);
 		}
 
-		private void OnComponentModified(IComponentModel component, ShipElementType shipElement)
+		private void OnComponentModified(IComponentModel component)
 		{
-			_shipView.UpdateComponent(component, shipElement);
+			_shipView.UpdateComponent(component);
 		}
 
 		private void OnSatelliteChanged(SatelliteLocation location)
@@ -284,7 +284,7 @@ namespace ShipEditor.UI
 			else
 				_shipView.InitializeSatellite(location, layout, _resourceLocator.GetSprite(_shipEditor.Satellite(location).ModelImage));
 
-			_commandList.Clear(location == SatelliteLocation.Left ? ShipElementType.SatelliteL : ShipElementType.SatelliteR);
+			_commandList.Clear(location.ToShipElement());
 		}
 
 		private void OnMultipleComponentsChanged()
@@ -295,21 +295,11 @@ namespace ShipEditor.UI
 			_commandList.Clear();
 		}
 
-		private bool TrySelectComponent(Vector2 position, out IComponentModel component, out ShipElementType elementType)
+		private bool TrySelectComponent(Vector2 position, out IComponentModel component)
 		{
-			elementType = ShipElementType.Ship;
-			if (TrySelectComponent(position, elementType, out component))
-				return true;
-
-			elementType = ShipElementType.SatelliteL;
-			if (TrySelectComponent(position, elementType, out component))
-				return true;
-
-			elementType = ShipElementType.SatelliteR;
-			if (TrySelectComponent(position, elementType, out component))
-				return true;
-
-			return false;
+			return TrySelectComponent(position, ShipElementType.Ship, out component) ||
+				TrySelectComponent(position, ShipElementType.SatelliteL, out component) ||
+				TrySelectComponent(position, ShipElementType.SatelliteR, out component);
 		}
 
 		private bool TrySelectComponent(Vector2 position, ShipElementType elementType, out IComponentModel component)

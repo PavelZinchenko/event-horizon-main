@@ -2,6 +2,7 @@
 using Constructor;
 using CommonComponents.Utils;
 using Constructor.Ships;
+using Constructor.Satellites;
 using GameDatabase.DataModel;
 
 namespace ShipEditor.Context
@@ -16,6 +17,7 @@ namespace ShipEditor.Context
 	public interface IInventoryProvider 
 	{
 		IEnumerable<IShip> Ships { get; }
+		IReadOnlyCollection<ISatellite> SatelliteBuilds { get; }
 		IReadOnlyGameItemCollection<Satellite> Satellites { get; }
 		IReadOnlyGameItemCollection<ComponentInfo> Components { get; }
 

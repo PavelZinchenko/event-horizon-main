@@ -4,6 +4,7 @@ using CommonComponents.Utils;
 using GameDatabase;
 using GameDatabase.DataModel;
 using Constructor.Ships;
+using Constructor.Satellites;
 using Constructor;
 using Economy;
 
@@ -30,12 +31,14 @@ namespace ShipEditor.Context
 
 		private class DatabaseInventoryProvider : IInventoryProvider
 		{
+			private readonly GameItemCollection<Satellite> _satellites = new();
 			private readonly GameItemCollection<ComponentInfo> _components;
-			private readonly GameItemCollection<Satellite> _satellites;
+			private readonly List<ISatellite> _satelliteBuilds;
 			private readonly List<IShip> _ships;
 
 			public IReadOnlyGameItemCollection<ComponentInfo> Components => _components;
 			public IReadOnlyGameItemCollection<Satellite> Satellites => _satellites;
+			public IReadOnlyCollection<ISatellite> SatelliteBuilds => _satelliteBuilds;
 			public IEnumerable<IShip> Ships => _ships;
 
 			public DatabaseInventoryProvider(IDatabase database)
@@ -52,11 +55,8 @@ namespace ShipEditor.Context
 					}
 				}
 
-				_satellites = new GameItemCollection<Satellite>();
-				foreach (var item in database.SatelliteList)
-					_satellites.Add(item, 10);
-
 				_ships = database.ShipBuildList.Select<ShipBuild, IShip>(build => new EditorModeShip(build, database)).ToList();
+				_satelliteBuilds = database.SatelliteBuildList.Select<SatelliteBuild, ISatellite>(build => new EditorModeSatellite(build, database)).ToList();
 			}
 
 			public void AddComponent(ComponentInfo component)

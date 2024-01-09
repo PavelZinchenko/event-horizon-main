@@ -13,6 +13,7 @@ namespace ShipEditor.Model
 		bool Locked { get; }
 		Component Data { get; }
 		ComponentInfo Info { get; }
+		ShipElementType Location { get; }
 	}
 
 	public readonly struct ComponentSettings
@@ -31,13 +32,14 @@ namespace ShipEditor.Model
 
 	public class ComponentModel : IComponentModel
 	{
-		public ComponentModel(int id, int x, int y, ComponentInfo component, ComponentSettings settings)
+		public ComponentModel(int id, int x, int y, ComponentInfo component, ComponentSettings settings, ShipElementType location)
 		{
 			Id = id;
 			X = x;
 			Y = y;
 			Settings = settings;
 			Info = component;
+			Location = location;
 		}
 
 		public Component Data => Info.Data;
@@ -49,5 +51,6 @@ namespace ShipEditor.Model
 		public int KeyBinding => Settings.KeyBinding;
 		public int Behaviour => Settings.Behaviour;
 		public ComponentSettings Settings { get; set; }
+		public ShipElementType Location { get; }
 	}
 }
