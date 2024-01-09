@@ -11,13 +11,11 @@ using GameDatabase.Extensions;
 using GameDatabase.Model;
 using GameServices.Gui;
 using Services.Localization;
-using Zenject;
 
 namespace Economy.ItemType
 {
     public class XmaxBoxItem : IItemType
     {
-        [Inject]
         public XmaxBoxItem(HolidayManager holidayManager, IDatabase database, ItemTypeFactory itemTypeFactory, ILocalization localization, GuiHelper guiHelper, int seed)
         {
             _seed = seed;

@@ -133,7 +133,10 @@ namespace Economy.ItemType
 
         public IItemType CreateXmasBoxItem(int seed = -1)
         {
-            return _container.Instantiate<XmaxBoxItem>(new object[] { seed > 0 ? seed : _playerResources.Money + _playerResources.Stars + _random.Seed });
+			if (seed <= 0)
+				seed = (int)_playerResources.Money + (int)_playerResources.Stars + _random.Seed;
+
+			return _container.Instantiate<XmaxBoxItem>(new object[] { seed });
         }
     }
 }
