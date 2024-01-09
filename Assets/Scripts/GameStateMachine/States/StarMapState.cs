@@ -149,7 +149,7 @@ namespace GameStateMachine.States
         private void OnFlightConfirmationDialogClosed(int destination, WindowExitCode code)
         {
             if (code == WindowExitCode.Ok)
-                LoadState(StateFactory.CreateTravelState(destination));
+                LoadStateAdditive(StateFactory.CreateTravelState(destination));
         }
 
 		private void OnStartBattle(ICombatModel combatModel, System.Action<ICombatModel> onCompletedAction)
