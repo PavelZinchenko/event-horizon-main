@@ -296,7 +296,8 @@ namespace ShipEditor.Model
 
 			foreach (var component in components)
 			{
-				if (!layout.IsSuitableLocation(component.X, component.Y, component.Info.Data))
+				if (!layout.IsSuitableLocation(component.X, component.Y, component.Info.Data) || 
+					!_compatibilityChecker.IsCompatible(component.Info.Data))
 				{
 					UnityEngine.Debug.LogError($"Invalid component {component.Info.Data.Name} at [{component.X},{component.Y}]");
 					continue;
