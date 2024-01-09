@@ -12,7 +12,8 @@ namespace ShipEditor.UI
 		public float Width => 
 			_elements[ShipElementType.Ship].Width + 
 			_elements[ShipElementType.SatelliteL].Width + 
-			_elements[ShipElementType.SatelliteR].Width;
+			_elements[ShipElementType.SatelliteR].Width +
+			_satelliteOffset*2;
 
 		public float Height => Mathf.Max(Mathf.Max(
 			_elements[ShipElementType.SatelliteL].Height, 

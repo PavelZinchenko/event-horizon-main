@@ -45,6 +45,7 @@ namespace ShipEditor.UI
 
 		[SerializeField] private float _cameraZoomMin = 3;
 		[SerializeField] private float _cameraZoomMax = 25;
+		[SerializeField] private float _cameraMargins = 0.1f;
 		[SerializeField] private CameraController _camera;
 		[SerializeField] private RectTransform _cameraFocusDefault;
 		[SerializeField] private RectTransform _cameraFocusCenter;
@@ -82,6 +83,7 @@ namespace ShipEditor.UI
 			OnSatelliteChanged(SatelliteLocation.Left);
 			OnSatelliteChanged(SatelliteLocation.Right);
 			OpenComponentList();
+			ZoomToShip();
 		}
 
 		public void OpenShipList() => ShowPanel(PanelType.ShipList);
@@ -194,7 +196,7 @@ namespace ShipEditor.UI
 
 		public void OnZoom(float zoom)
 		{
-			var cameraZoomMax = _overviewMode ? _shipView.Height / 2 : _cameraZoomMax;
+			var cameraZoomMax = _overviewMode ? GetBestCameraZoom() : _cameraZoomMax;
 			_camera.OrthographicSize = Mathf.Clamp(_camera.OrthographicSize * zoom, _cameraZoomMin, cameraZoomMax);
 		}
 
@@ -247,9 +249,15 @@ namespace ShipEditor.UI
 
 		private void ZoomToShip()
 		{
-			var cameraZoom = _shipView.Height / 2;
+			var cameraZoom = GetBestCameraZoom();
 			var cameraZoomMax = _overviewMode ? cameraZoom : _cameraZoomMax;
 			_camera.OrthographicSize = Mathf.Clamp(cameraZoom, _cameraZoomMin, cameraZoomMax);
+		}
+
+		private float GetBestCameraZoom()
+		{
+			var zoom = Mathf.Max(_shipView.Height, _shipView.Width / _camera.AspectFromFocus) / 2;
+			return zoom + zoom * _cameraMargins;
 		}
 
 		private void OnComponentAdded(IComponentModel component, ShipElementType shipElement)

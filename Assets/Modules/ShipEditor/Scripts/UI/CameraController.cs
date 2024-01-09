@@ -18,15 +18,28 @@ namespace ShipEditor.UI
 
 		public float Width => Height * Aspect;
 		public float Height => 2*_orthographicSize;
-		public float Aspect => (float)_screenWidth / _screenHeight;
-		public RectTransform Focus { get => _focus; set => _focus = value; }
+		public float Aspect => _screenHeight > 0 ? (float)_screenWidth / _screenHeight : 1f;
 		public float OrthographicSize { get => _camera.orthographicSize; set => _camera.orthographicSize = value; }
 		public Vector2 Position { get => transform.localPosition; set => transform.localPosition = new Vector3(value.x, value.y, transform.localPosition.z); }
-		public Vector2 Offset => new Vector2((0.5f - _focusPoint.x)*Width, (0.5f - _focusPoint.y)*Height);
+		public Vector2 Offset => new Vector2((0.5f - _focusPoint.x) * Width, (0.5f - _focusPoint.y) * Height);
+		public RectTransform Focus  { get => _focus; set => _focus = value; }
+
+		public float AspectFromFocus
+		{
+			get
+			{
+				if (_screenHeight == 0) return 1.0f;
+				var focusPoint = (_focus.anchorMin + _focus.anchorMax) / 2;
+				var width = _screenWidth * (0.5f - Mathf.Abs(0.5f - Mathf.Clamp01(focusPoint.x)));
+				var height = _screenHeight * (0.5f - Mathf.Abs(0.5f - Mathf.Clamp01(focusPoint.y)));
+				return width / height;
+			}
+		}
 
 		private void Awake()
 		{
 			_camera = GetComponent<Camera>();
+			TryUpdateDimensions();
 		}
 
 		private void Update()
