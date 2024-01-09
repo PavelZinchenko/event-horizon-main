@@ -38,8 +38,8 @@ namespace ShipEditor
 			var aspect = spriteRect.Aspect(rect.Width, rect.Height);
 			var centerX = x + 0.5f * (xmax + xmin) * _cellSize;
 			var centerY = y + 0.5f * (ymax + ymin) * _cellSize;
-			var halfWidth = rect.Width * _cellSize * 0.5f * aspect;
-			var halfHeight = rect.Height * _cellSize * 0.5f;
+			var halfWidth = rect.Width * _cellSize * 0.5f * aspect.x;
+			var halfHeight = rect.Height * _cellSize * 0.5f * aspect.y;
 
 			int index = _vertices.Count;
 			_vertices.Add(new Vector3(centerX - halfWidth, -centerY + halfHeight, 0));
@@ -87,11 +87,12 @@ namespace ShipEditor
 
 			public Vector2 TransformUV(Vector2 uv) => new Vector2(xmin + (xmax - xmin) * uv.x, ymax + (ymin - ymax) * uv.y);
 
-			public float Aspect(int cellsX, int cellsY)
+			public Vector2 Aspect(int cellsX, int cellsY)
 			{
-				var aspectX = (xmax - xmin) / cellsX;
-				var aspectY = (ymax - ymin) / cellsY;
-				return aspectX / aspectY;
+				var aspectX = cellsX / (xmax - xmin);
+				var aspectY = cellsY / (ymax - ymin);
+				var max = Mathf.Max(aspectX, aspectY);
+				return new Vector2(max / aspectX, max / aspectY);
 			}
 
 			public SpriteRect(Sprite sprite)
