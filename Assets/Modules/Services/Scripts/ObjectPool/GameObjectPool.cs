@@ -125,6 +125,7 @@ namespace Services.ObjectPool
 			{
 				foreach (var item in items)
 				{
+					if (!item) continue;
 					item.SendMessage("OnDestroy", SendMessageOptions.DontRequireReceiver);
 					Object.Destroy(item);
 				}
