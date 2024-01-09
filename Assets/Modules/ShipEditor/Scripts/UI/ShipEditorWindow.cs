@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using ShipEditor.Model;
 using Zenject;
 using Constructor.Ships;
@@ -28,9 +29,6 @@ namespace ShipEditor.UI
 		[Inject] private readonly ISoundPlayer _soundPlayer;
 		[InjectOptional] private readonly CloseEditorSignal.Trigger _closeEditorTrigger;
 
-		[SerializeField] private float CameraZoomMin = 5;
-		[SerializeField] private float CameraZoomMax = 30;
-
 		[SerializeField] private ShipView _shipView;
 
 		[SerializeField] private RectTransform _editorWindow;
@@ -43,7 +41,16 @@ namespace ShipEditor.UI
 		[SerializeField] private UnityEngine.UI.InputField _shipNameInputField;
 		[SerializeField] private AudioClip _installSound;
 
+		[SerializeField] private float _cameraZoomMin = 3;
+		[SerializeField] private float _cameraZoomMax = 25;
+		[SerializeField] private CameraController _camera;
+		[SerializeField] private RectTransform _cameraFocusDefault;
+		[SerializeField] private RectTransform _cameraFocusCenter;
+		[SerializeField] private UnityEvent _overviewModeEnabled;
+		[SerializeField] private UnityEvent _overviewModeDisabled;
+
 		private string _shipInitialName;
+		private bool _overviewMode;
 
 		private void OnEnable()
 		{
@@ -134,6 +141,12 @@ namespace ShipEditor.UI
 
 		public void Exit()
 		{
+			if (_overviewMode)
+			{
+				SetOverviewMode(false);
+				return;
+			}
+
 			_closeEditorTrigger?.Fire();
 		}
 
@@ -150,20 +163,24 @@ namespace ShipEditor.UI
 
 		public void OnClick(Vector2 position)
 		{
+			if (_overviewMode) return;
+
 			if (TrySelectComponent(position, out var component, out var elementType))
 				OpenEditComponentPanel(component);
 		}
 
 		public void OnMove(Vector2 offset)
 		{
-			var position = _shipView.transform.localPosition + (Vector3)offset;
+			var position = _camera.Position - offset;
 			position.x = Mathf.Clamp(position.x, -_shipView.Width / 2, _shipView.Width / 2);
 			position.y = Mathf.Clamp(position.y, -_shipView.Height / 2, _shipView.Height / 2);
-			_shipView.transform.localPosition = position;
+			_camera.Position = position;
 		}
 
 		public void OnDrag(UnityEngine.EventSystems.PointerEventData eventData)
 		{
+			if (_overviewMode) return;
+
 			var position = Camera.main.ScreenToWorldPoint(eventData.pressPosition);
 			if (!TrySelectComponent(position, out var component, out var elementType)) return;
 			if (component.Locked) return;
@@ -175,12 +192,28 @@ namespace ShipEditor.UI
 
 		public void OnZoom(float zoom)
 		{
-			Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize * zoom, CameraZoomMin, CameraZoomMax);
+			var cameraZoomMax = _overviewMode ? _shipView.Height / 2 : _cameraZoomMax;
+			_camera.OrthographicSize = Mathf.Clamp(_camera.OrthographicSize * zoom, _cameraZoomMin, cameraZoomMax);
 		}
 
 		public void OnNameChanged(string name)
 		{
 			_shipEditor.ShipName = name != _shipInitialName ? name : null;
+		}
+
+		public void SetOverviewMode(bool enabled)
+		{
+			if (_overviewMode == enabled) return;
+			_overviewMode = enabled;
+
+			_camera.Focus = _overviewMode ? _cameraFocusCenter : _cameraFocusDefault;
+			_camera.Position = Vector2.zero;
+			ZoomToShip();
+
+			if (_overviewMode)
+				_overviewModeEnabled?.Invoke();
+			else
+				_overviewModeDisabled?.Invoke();
 		}
 
 		private void RemoveAllCompoents()
@@ -202,10 +235,18 @@ namespace ShipEditor.UI
 		private void OnShipChanged(IShip ship)
 		{
 			_shipView.InitializeShip(_shipEditor.Layout(ShipElementType.Ship));
-			_shipView.transform.localPosition = new Vector3(0, 0, _shipView.transform.localPosition.z);
-			_commandList.Clear();
 			_shipInitialName = _localization.GetString(_shipEditor.ShipName);
 			_shipNameInputField.text = _shipInitialName;
+			_commandList.Clear();
+			_camera.Position = Vector2.zero;
+			ZoomToShip();
+		}
+
+		private void ZoomToShip()
+		{
+			var cameraZoom = _shipView.Height / 2;
+			var cameraZoomMax = _overviewMode ? cameraZoom : _cameraZoomMax;
+			_camera.OrthographicSize = Mathf.Clamp(cameraZoom, _cameraZoomMin, cameraZoomMax);
 		}
 
 		private void OnComponentAdded(IComponentModel component, ShipElementType shipElement)
