@@ -2,7 +2,7 @@ using System;
 using DataModel.Technology;
 using GameServices.Player;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;

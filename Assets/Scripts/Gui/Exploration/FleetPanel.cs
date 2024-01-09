@@ -7,7 +7,7 @@ using Constructor.Ships;
 using GameDatabase;
 using GameDatabase.Enums;
 using Gui.StarMap;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.Events;
 using Zenject;

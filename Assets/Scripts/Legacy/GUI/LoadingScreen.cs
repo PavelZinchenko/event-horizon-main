@@ -4,7 +4,7 @@ using GameDatabase;
 using GameDatabase.Query;
 using GameServices.SceneManager;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using Services.Settings;
 using Zenject;
 

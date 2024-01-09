@@ -2,7 +2,7 @@ using Economy.Products;
 using UnityEngine;
 using UnityEngine.UI;
 using Economy.ItemType;
-using Services.Reources;
+using Services.Resources;
 using ViewModel.Quests;
 
 namespace ViewModel

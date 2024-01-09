@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace ShipEditor

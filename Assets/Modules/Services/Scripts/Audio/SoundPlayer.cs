@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameDatabase.Model;
 using GameServices.Settings;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 using Services.GameApplication;
 

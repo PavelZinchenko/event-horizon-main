@@ -2,7 +2,7 @@
 using Galaxy;
 using Services.Localization;
 using Services.Messenger;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using Star = Galaxy.Star;

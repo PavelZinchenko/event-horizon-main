@@ -3,7 +3,7 @@ using GameDatabase;
 using UnityEngine;
 using GameServices.Player;
 using Services.Messenger;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace StarSystem

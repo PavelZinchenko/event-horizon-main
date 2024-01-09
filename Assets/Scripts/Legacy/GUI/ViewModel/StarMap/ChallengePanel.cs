@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using GameServices.Player;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace ViewModel

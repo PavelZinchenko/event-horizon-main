@@ -4,7 +4,7 @@ using Economy.Products;
 using UnityEngine;
 using UnityEngine.UI;
 using Services.ObjectPool;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace Gui.Quests

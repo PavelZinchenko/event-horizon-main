@@ -2,7 +2,7 @@
 using UnityEngine;
 using GameDatabase.Model;
 using GameDatabase.Enums;
-using Services.Reources;
+using Services.Resources;
 
 namespace ShipEditor
 {

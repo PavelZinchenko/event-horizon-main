@@ -7,7 +7,7 @@ using GameServices.Player;
 using Services.Audio;
 using Services.Localization;
 using UnityEngine;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine.UI;
 using ViewModel.Common;
 using Zenject;

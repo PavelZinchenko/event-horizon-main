@@ -6,7 +6,7 @@ using GameServices.Gui;
 using GameServices.Player;
 using Services.Audio;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using Economy;

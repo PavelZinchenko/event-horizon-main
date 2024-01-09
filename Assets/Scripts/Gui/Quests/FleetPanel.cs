@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Constructor.Ships;
 using Model.Military;
-using Services.Reources;
+using Services.Resources;
 using ViewModel;
 using Zenject;
 

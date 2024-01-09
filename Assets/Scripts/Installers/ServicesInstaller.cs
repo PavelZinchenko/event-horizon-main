@@ -9,7 +9,7 @@ using Services.Localization;
 using Services.Messenger;
 using Services.ObjectPool;
 using Services.RateGame;
-using Services.Reources;
+using Services.Resources;
 using Services.Storage;
 using Services.Unity;
 using Services.Assets;

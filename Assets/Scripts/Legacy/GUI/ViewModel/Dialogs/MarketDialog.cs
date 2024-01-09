@@ -12,7 +12,7 @@ using Services.Audio;
 using Services.Gui;
 using Services.Localization;
 using Services.Messenger;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 using CommonComponents;
 

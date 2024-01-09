@@ -1,6 +1,6 @@
 ﻿using Constructor.Ships.Modification;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using ViewModel.Common;

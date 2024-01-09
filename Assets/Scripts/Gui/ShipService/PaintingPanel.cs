@@ -4,7 +4,7 @@ using GameServices.Research;
 using Services.Audio;
 using Services.Localization;
 using UnityEngine;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine.UI;
 using Zenject;
 

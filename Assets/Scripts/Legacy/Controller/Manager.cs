@@ -15,7 +15,7 @@ using Gui.Combat;
 using Services.Audio;
 using Services.Messenger;
 using Services.ObjectPool;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace Controller

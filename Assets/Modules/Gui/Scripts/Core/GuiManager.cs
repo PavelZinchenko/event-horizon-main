@@ -296,7 +296,7 @@ namespace Services.Gui
 
         private IEnumerable<IWindow> GetAllWindows()
         {
-			foreach (var item in Resources.FindObjectsOfTypeAll<GameObject>())
+			foreach (var item in UnityEngine.Resources.FindObjectsOfTypeAll<GameObject>())
             {
                 var window = item.GetComponent<IWindow>();
                 if (window == null)

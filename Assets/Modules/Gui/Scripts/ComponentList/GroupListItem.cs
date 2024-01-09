@@ -1,7 +1,7 @@
 ﻿using Services.Localization;
 using UnityEngine;
 using UnityEngine.UI;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace Gui.ComponentList

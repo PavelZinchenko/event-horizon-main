@@ -5,7 +5,7 @@ using Combat.Component.Helpers;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
-using Services.Reources;
+using Services.Resources;
 using GameDatabase;
 using Zenject;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using Game.Exploration;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using Zenject;
 

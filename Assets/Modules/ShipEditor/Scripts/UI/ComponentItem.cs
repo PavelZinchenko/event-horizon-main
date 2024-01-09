@@ -10,7 +10,7 @@ using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using Economy.ItemType;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using Constructor.Component;
 using GameDatabase.Extensions;
 using ShipEditor.Model;

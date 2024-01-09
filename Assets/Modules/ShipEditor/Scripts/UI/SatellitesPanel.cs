@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using Gui.ComponentList;
 using Zenject;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using GameDatabase.DataModel;
 using ShipEditor.Model;
 

@@ -1,6 +1,6 @@
 ﻿using Constructor.Ships;
 using GameDatabase.Enums;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;

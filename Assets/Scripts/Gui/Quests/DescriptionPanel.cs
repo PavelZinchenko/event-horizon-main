@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 
 namespace Gui.Quests
 {

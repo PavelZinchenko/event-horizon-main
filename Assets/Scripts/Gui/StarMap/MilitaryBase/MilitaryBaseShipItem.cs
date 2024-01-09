@@ -3,7 +3,7 @@ using Economy;
 using Economy.ItemType;
 using GameServices.Player;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using ViewModel.Common;

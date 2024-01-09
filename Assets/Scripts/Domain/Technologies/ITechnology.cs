@@ -6,7 +6,7 @@ using Economy.Products;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using CommonComponents;
 
 namespace DataModel.Technology

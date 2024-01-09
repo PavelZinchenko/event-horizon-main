@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace ViewModel

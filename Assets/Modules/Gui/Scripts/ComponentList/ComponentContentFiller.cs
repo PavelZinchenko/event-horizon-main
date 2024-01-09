@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Constructor;
 using Services.Localization;
 using Services.ObjectPool;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.Events;
 using Zenject;

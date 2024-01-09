@@ -18,7 +18,7 @@ using Constructor;
 using GameDatabase.Model;
 using Services.Audio;
 using Services.ObjectPool;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using Zenject;
 

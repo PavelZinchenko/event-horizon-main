@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using Zenject;
-using Services.Reources;
+using Services.Resources;
 using GameDatabase;
 using Services.Localization;
 using CommonComponents.Signals;

@@ -4,7 +4,7 @@ using System.Linq;
 using Constructor.Ships;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace StarSystem

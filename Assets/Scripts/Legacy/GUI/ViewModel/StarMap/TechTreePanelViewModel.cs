@@ -11,7 +11,7 @@ using UnityEngine.UI;
 using Services.Audio;
 using Services.Localization;
 using Services.ObjectPool;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace ViewModel

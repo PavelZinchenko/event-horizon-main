@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Constructor.Ships;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using Zenject;
 

@@ -2,7 +2,7 @@
 using Constructor.Ships;
 using GameDatabase;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using Zenject;
 

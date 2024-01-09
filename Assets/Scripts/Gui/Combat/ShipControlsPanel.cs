@@ -5,7 +5,7 @@ using Combat.Unit;
 using GameServices.Settings;
 using Gui.Windows;
 using Services.Gui;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using ViewModel;
 using Zenject;

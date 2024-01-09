@@ -22,7 +22,7 @@ using GameServices.Player;
 using Services.Gui;
 using Services.Localization;
 using Services.ObjectPool;
-using Services.Reources;
+using Services.Resources;
 using Services.Unity;
 using UniRx;
 using UnityEngine;

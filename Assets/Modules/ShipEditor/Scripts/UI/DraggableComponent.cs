@@ -2,7 +2,7 @@
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using Zenject;
-using Services.Reources;
+using Services.Resources;
 using Constructor;
 using GameDatabase.Model;
 

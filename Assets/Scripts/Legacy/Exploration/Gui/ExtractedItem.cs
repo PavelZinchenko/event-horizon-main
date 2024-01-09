@@ -1,5 +1,5 @@
 using Economy.Products;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 

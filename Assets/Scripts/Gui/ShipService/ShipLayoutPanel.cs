@@ -5,7 +5,7 @@ using System;
 using Constructor;
 using GameDatabase.Enums;
 using GameDatabase.Model;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using ViewModel;

@@ -1,5 +1,5 @@
 ﻿using GameDatabase.DataModel;
-using Services.Reources;
+using Services.Resources;
 
 namespace Combat.Component.Helpers
 {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Economy.Products;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine.UI;
 using UnityEngine;
 using Zenject;

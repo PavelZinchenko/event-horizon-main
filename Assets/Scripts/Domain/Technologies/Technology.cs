@@ -15,7 +15,7 @@ using GameDatabase.Extensions;
 using GameServices.Database;
 using GameDatabase.Query;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 
 namespace DataModel.Technology
 {

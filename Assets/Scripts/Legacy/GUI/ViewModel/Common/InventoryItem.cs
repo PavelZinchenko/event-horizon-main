@@ -2,7 +2,7 @@ using Economy.ItemType;
 using Economy.Products;
 using UnityEngine;
 using UnityEngine.UI;
-using Services.Reources;
+using Services.Resources;
 
 namespace ViewModel
 {

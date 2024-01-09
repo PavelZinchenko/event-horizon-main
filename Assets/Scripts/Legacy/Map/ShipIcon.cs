@@ -1,6 +1,6 @@
 using UnityEngine;
 using GameDatabase.DataModel;
-using Services.Reources;
+using Services.Resources;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class ShipIcon : Square

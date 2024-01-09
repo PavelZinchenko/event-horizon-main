@@ -11,7 +11,7 @@ using Services.Gui;
 using Services.Localization;
 using Services.Messenger;
 using Services.ObjectPool;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace ViewModel

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Constructor.Ships;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace ViewModel

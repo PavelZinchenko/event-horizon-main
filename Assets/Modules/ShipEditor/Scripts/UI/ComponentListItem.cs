@@ -7,7 +7,7 @@ using Constructor.Modification;
 using Economy.ItemType;
 using Gui.ComponentList;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using Constructor.Component;
 using ShipEditor.Model;
 

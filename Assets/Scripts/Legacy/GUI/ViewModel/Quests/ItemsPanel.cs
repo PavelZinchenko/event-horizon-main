@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using GameModel.Quests;
 using GameServices.Player;
 using Services.ObjectPool;
-using Services.Reources;
+using Services.Resources;
 using ViewModel.Common;
 using Zenject;
 

@@ -2,7 +2,7 @@
 using Economy.Products;
 using Gui.Windows;
 using Services.Gui;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;

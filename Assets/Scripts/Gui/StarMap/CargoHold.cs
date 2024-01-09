@@ -10,7 +10,7 @@ using GameServices.Player;
 using Services.Audio;
 using Services.Gui;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using ViewModel;
 using Zenject;
 

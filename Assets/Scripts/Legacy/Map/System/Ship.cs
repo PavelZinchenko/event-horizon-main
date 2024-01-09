@@ -1,6 +1,6 @@
 using GameDatabase.DataModel;
 using UnityEngine;
-using Services.Reources;
+using Services.Resources;
 
 namespace StarSystem
 {

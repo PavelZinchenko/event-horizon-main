@@ -12,7 +12,7 @@ using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Serializable;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace ViewModel.Craft

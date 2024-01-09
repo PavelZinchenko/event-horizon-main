@@ -3,7 +3,7 @@ using Combat.Unit;
 using Gui.Controls;
 using Gui.Windows;
 using Services.Gui;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using ViewModel;

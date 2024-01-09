@@ -1,5 +1,5 @@
 ﻿using Constructor.Ships.Modification;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 

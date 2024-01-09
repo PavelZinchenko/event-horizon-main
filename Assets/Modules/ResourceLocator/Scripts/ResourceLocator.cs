@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using Zenject;
 
-namespace Services.Reources
+namespace Services.Resources
 {
     public class ResourceLocator : MonoBehaviour, IResourceLocator
     {
@@ -98,7 +98,7 @@ namespace Services.Reources
         {
             if (!_cache.TryGetValue(name, out var sprite))
             {
-                sprite = Resources.Load<Sprite>(name);
+                sprite = UnityEngine.Resources.Load<Sprite>(name);
                 if (!sprite) return null;
 
                 _cache.Add(name, sprite);
@@ -111,7 +111,7 @@ namespace Services.Reources
 		[ContextMenu("Reload")]
 		private void Reload()
         {
-            var prefab = Resources.Load<ResourceLocator>("ResourceLocator");
+            var prefab = UnityEngine.Resources.Load<ResourceLocator>("ResourceLocator");
 
             _shipSprites = prefab._shipSprites = LoadAllAssets<Sprite>("/Sprites/Ships").ToArray();
             _shipIconSprites = prefab._shipIconSprites = LoadAllAssets<Sprite>("/Sprites/ShipIcons").ToArray();

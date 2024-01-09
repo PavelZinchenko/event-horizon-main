@@ -4,7 +4,7 @@ using GameServices.Player;
 using ViewModel.Quests;
 using Zenject;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 
 namespace ViewModel
 {

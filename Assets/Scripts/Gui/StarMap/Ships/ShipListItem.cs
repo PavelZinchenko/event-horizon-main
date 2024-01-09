@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Constructor.Ships;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using Economy.ItemType;

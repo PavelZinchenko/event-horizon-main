@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Services.Gui;
 using Services.ObjectPool;
-using Services.Reources;
+using Services.Resources;
 using Zenject;
 
 namespace ViewModel

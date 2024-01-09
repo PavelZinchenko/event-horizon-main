@@ -3,7 +3,7 @@ using System.Linq;
 using Combat.Component.Ship;
 using Combat.Domain;
 using Services.Localization;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using ViewModel;

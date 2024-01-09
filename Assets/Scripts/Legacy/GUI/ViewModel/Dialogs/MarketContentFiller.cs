@@ -2,7 +2,7 @@
 using Economy.Products;
 using GameServices.Player;
 using Services.ObjectPool;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using Economy;

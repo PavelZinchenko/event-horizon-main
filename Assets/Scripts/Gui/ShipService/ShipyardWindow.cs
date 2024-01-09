@@ -8,7 +8,7 @@ using UnityEngine;
 using Services.Gui;
 using Services.Localization;
 using Services.Messenger;
-using Services.Reources;
+using Services.Resources;
 using Services.Unity;
 using UnityEngine.UI;
 using ViewModel;

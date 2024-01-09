@@ -2,7 +2,7 @@
 using Combat.Domain;
 using GameDatabase;
 using Services.ObjectPool;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using Zenject;
 

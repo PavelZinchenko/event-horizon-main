@@ -1,7 +1,7 @@
 ﻿using GameDatabase.Model;
 using UnityEngine;
 
-namespace Services.Reources
+namespace Services.Resources
 {
     public interface IResourceLocator
     {

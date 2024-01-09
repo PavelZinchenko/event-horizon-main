@@ -4,7 +4,7 @@ using Combat.Component.Unit.Classification;
 using Combat.Scene;
 using Combat.Unit;
 using GameDatabase.Enums;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine.UI;
 
 namespace Gui.Combat

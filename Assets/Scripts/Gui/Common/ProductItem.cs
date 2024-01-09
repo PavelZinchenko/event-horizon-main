@@ -1,7 +1,7 @@
 ﻿using Economy.Products;
 using Economy.ItemType;
 using Gui.Common;
-using Services.Reources;
+using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 
