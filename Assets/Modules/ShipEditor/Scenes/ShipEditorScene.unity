@@ -9583,7 +9583,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  _dragThreshold: 0.2
+  _dragThreshold: 0.1
 --- !u!1 &689799386
 GameObject:
   m_ObjectHideFlags: 0

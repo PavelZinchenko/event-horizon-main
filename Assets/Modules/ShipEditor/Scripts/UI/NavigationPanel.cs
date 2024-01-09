@@ -15,7 +15,7 @@ namespace ShipEditor.UI
 		[SerializeField] private UnityEvent<Vector2> _clicked;
 		[SerializeField] private UnityEvent<Vector2> _moved;
 		[SerializeField] private UnityEvent<float> _zoomed;
-		[SerializeField] private float _dragThreshold = 0.5f;
+		[SerializeField] private float _dragThreshold = 0.1f;
 
 		private readonly TouchCollection _touches = new();
         //private readonly Dictionary<int, Vector2> _touches = new();
