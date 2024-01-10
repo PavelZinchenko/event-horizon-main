@@ -25634,6 +25634,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c953f897f4a8b074fbf6eed5333096c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _testShipBuildId: 5997984
+  _lockTestShipModules: 0
 --- !u!4 &1925655454
 Transform:
   m_ObjectHideFlags: 0

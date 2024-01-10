@@ -23,6 +23,8 @@ namespace ShipEditor
 		public void AddComponent(int x, int y, GameDatabase.DataModel.Component component, bool updateImmediately = true)
 		{
 			var texture = _resourceLocator.GetSprite(component.Icon)?.texture;
+			if (texture == null) return;
+
 			if (!_groups.TryGetValue(texture, out var group))
 			{
 				var builder = new ModuleMeshBuilder(_resourceLocator, _cellSize);

@@ -1,25 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using UnityEngine;
 using Zenject;
-using CommonComponents.Signals;
-using Services.Messenger;
-using GameServices.SceneManager;
 using GameDatabase;
 using GameDatabase.Model;
 using GameDatabase.DataModel;
 using ShipEditor.Context;
-using CommonComponents.Utils;
 using Constructor.Ships;
-using Constructor;
 using ShipEditor.Model;
 using Services.ObjectPool;
-using Economy;
 
 namespace Installers
 {
 	public class ShipEditorSceneInstaller : MonoInstaller<ShipEditorSceneInstaller>
 	{
 		[Inject] IDatabase _database;
+
+		[SerializeField] private int _testShipBuildId = 316;
+		[SerializeField] private bool _lockTestShipModules = true;
 
 		public override void InstallBindings()
 		{
@@ -31,8 +27,8 @@ namespace Installers
 
 		private IShipEditorContext CreateTestContext(InjectContext injectContext)
 		{
-			return new DatabaseEditorContext(_database, 
-				new CommonShip(_database.GetShipBuild(ItemId<ShipBuild>.Create(316))));
+			var shipBuild = _database.GetShipBuild(ItemId<ShipBuild>.Create(_testShipBuildId));
+			return new DatabaseEditorContext(_database, _lockTestShipModules ? new CommonShip(shipBuild) : new EditorModeShip(shipBuild, _database));
 		}
 	}
 }
