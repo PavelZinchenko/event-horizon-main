@@ -35,11 +35,11 @@ namespace ShipEditor
 			var ymin = rect.ymin;
 			var ymax = rect.ymax + 1;
 
-			var aspect = spriteRect.Aspect(rect.Width, rect.Height);
+			var aspect = spriteRect.Aspect;
 			var centerX = x + 0.5f * (xmax + xmin) * _cellSize;
 			var centerY = y + 0.5f * (ymax + ymin) * _cellSize;
-			var halfWidth = rect.Width * _cellSize * 0.5f * aspect.x;
-			var halfHeight = rect.Height * _cellSize * 0.5f * aspect.y;
+			var halfWidth = rect.Size * _cellSize * 0.5f * aspect.x;
+			var halfHeight = rect.Size * _cellSize * 0.5f * aspect.y;
 
 			int index = _vertices.Count;
 			_vertices.Add(new Vector3(centerX - halfWidth, -centerY + halfHeight, 0));
@@ -47,10 +47,10 @@ namespace ShipEditor
 			_vertices.Add(new Vector3(centerX + halfWidth, -centerY - halfHeight, 0));
 			_vertices.Add(new Vector3(centerX - halfWidth, -centerY - halfHeight, 0));
 
-			_uv.Add(spriteRect.TransformUV(rect.GetUV(xmin, ymin)));
-			_uv.Add(spriteRect.TransformUV(rect.GetUV(xmax, ymin)));
-			_uv.Add(spriteRect.TransformUV(rect.GetUV(xmax, ymax)));
-			_uv.Add(spriteRect.TransformUV(rect.GetUV(xmin, ymax)));
+			_uv.Add(spriteRect.TransformUV(new Vector2(0,0)));
+			_uv.Add(spriteRect.TransformUV(new Vector2(1,0)));
+			_uv.Add(spriteRect.TransformUV(new Vector2(1,1)));
+			_uv.Add(spriteRect.TransformUV(new Vector2(0,1)));
 
 			_triangles.Add(index);
 			_triangles.Add(index+1);
@@ -87,12 +87,15 @@ namespace ShipEditor
 
 			public Vector2 TransformUV(Vector2 uv) => new Vector2(xmin + (xmax - xmin) * uv.x, ymax + (ymin - ymax) * uv.y);
 
-			public Vector2 Aspect(int cellsX, int cellsY)
+			public Vector2 Aspect
 			{
-				var aspectX = cellsX / (xmax - xmin);
-				var aspectY = cellsY / (ymax - ymin);
-				var max = Mathf.Max(aspectX, aspectY);
-				return new Vector2(max / aspectX, max / aspectY);
+				get
+				{
+					var width = xmax - xmin;
+					var height = ymax - ymin;
+					var max = Mathf.Max(width, height);
+					return new Vector2(width / max, height / max);
+				}
 			}
 
 			public SpriteRect(Sprite sprite)
@@ -122,8 +125,7 @@ namespace ShipEditor
 
 			public int Width => xmax >= xmin ? xmax - xmin + 1 : 0;
 			public int Height => ymax >= ymin ? ymax - ymin + 1 : 0;
-
-			public Vector2 GetUV(int x, int y) => new((x - xmin) / (float)Width, (y - ymin) / (float)Height);
+			public int Size => Mathf.Max(Width, Height);
 
 			public ComponentRect(Layout layout)
 			{
