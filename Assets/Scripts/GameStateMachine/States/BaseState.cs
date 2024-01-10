@@ -11,66 +11,86 @@ namespace GameStateMachine.States
         NotLoaded,
         Active,
         Suspended,
-    }
+		Reloading,
+	}
 
-    public abstract class BaseState : IGameState
-    {
-        protected BaseState(IStateMachine stateMachine, GameStateFactory stateFactory)
-        {
-            _stateMachine = stateMachine;
-            _stateFactory = stateFactory;
-        }
+	public abstract class BaseState : IGameState
+	{
+		protected BaseState(IStateMachine stateMachine, GameStateFactory stateFactory)
+		{
+			_stateMachine = stateMachine;
+			_stateFactory = stateFactory;
+		}
 
-        public virtual IEnumerable<GameScene> RequiredScenes { get { yield break; } }
+		public virtual IEnumerable<GameScene> RequiredScenes { get { yield break; } }
 
-        public abstract StateType Type { get; }
+		public abstract StateType Type { get; }
 
-        public GameStateCondition Condition
-        {
-            get { return _condition; }
-            set
-            {
-                if (_condition == value)
-                    return;
+		public GameStateCondition Condition
+		{
+			get { return _condition; }
+			set
+			{
+				if (_condition == value)
+					return;
 
-				if (value == GameStateCondition.NotLoaded)
-                {
-                    _condition = value;
-                    OnUnload();
-                }
-                else if (value == GameStateCondition.Suspended && _condition == GameStateCondition.Active)
-                {
-                    _condition = value;
-                    OnSuspend();
-                }
-                else if (value == GameStateCondition.Active && _condition == GameStateCondition.NotLoaded)
-                {
-                    _condition = value;
-                    OnLoad();
-                }
-                else if (value == GameStateCondition.Active && _condition == GameStateCondition.Suspended)
-                {
-                    _condition = value;
-                    OnResume();
-                }
-                else
-                {
-                    throw new ArgumentException("Can't change state from " + _condition + " to " + value);
-                }
+				var oldValue = _condition;
+				_condition = value;
+
+				if (oldValue == GameStateCondition.Active)
+					OnDeactivate();
+
+				if (_reloadWhenPossible && value == GameStateCondition.Active)
+				{
+					_reloadWhenPossible = false;
+					_stateMachine.ReloadState();
+				}
+				else if (value == GameStateCondition.NotLoaded)
+				{
+					OnUnload();
+				}
+				else if (value == GameStateCondition.Suspended && oldValue == GameStateCondition.Active)
+				{
+					OnSuspend();
+				}
+				else if (value == GameStateCondition.Active && oldValue == GameStateCondition.NotLoaded)
+				{
+					OnLoad();
+				}
+				else if (value == GameStateCondition.Active && oldValue == GameStateCondition.Suspended)
+				{
+					OnResume();
+				}
+				else if (value == GameStateCondition.Active && oldValue == GameStateCondition.Reloading)
+				{
+					OnReloaded();
+				}
+				else if (value == GameStateCondition.Reloading && oldValue == GameStateCondition.Active)
+				{
+					OnBeginReload();
+				}
+				else
+				{
+					_condition = oldValue;
+					throw new ArgumentException("Can't change state from " + oldValue + " to " + value);
+				}
 
 				if (value == GameStateCondition.Active)
 					OnActivate();
 			}
 		}
 
-        public virtual void Update(float elapsedTime) {}
-		public virtual void InstallBindings(DiContainer container) {}
+		public virtual void Update(float elapsedTime) { }
+		public virtual void InstallBindings(DiContainer container) { }
 
 		protected virtual void OnLoad() { }
-        protected virtual void OnUnload() { }
-        protected virtual void OnSuspend() { }
-        protected virtual void OnResume() { }
+		protected virtual void OnUnload() { }
+		protected virtual void OnSuspend() { }
+		protected virtual void OnResume() { }
 		protected virtual void OnActivate() { }
+		protected virtual void OnDeactivate() { }
+		protected virtual void OnBeginReload() { }
+		protected virtual void OnReloaded() { }
 
 		protected void Unload()
 		{
@@ -87,7 +107,7 @@ namespace GameStateMachine.States
 		{
 			if (Condition != GameStateCondition.Active)
 			{
-				UnityEngine.Debug.Log($"{Type}.Reload(): State is not active");
+				_reloadWhenPossible = true;
 				return;
 			}
 
@@ -120,6 +140,7 @@ namespace GameStateMachine.States
 
 		private GameStateCondition _condition = GameStateCondition.NotLoaded;
 
+		private bool _reloadWhenPossible;
         private readonly IStateMachine _stateMachine;
         private readonly GameStateFactory _stateFactory;
     }

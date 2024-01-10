@@ -3,13 +3,12 @@ using System.Linq;
 using GameDatabase;
 using GameServices.GameManager;
 using GameServices.Gui;
-using GameServices.Settings;
+using Services.Settings;
 using Services.Localization;
 using Services.Messenger;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using Database = GameDatabase.Database;
 
 namespace Gui.MainMenu
 {
@@ -18,10 +17,10 @@ namespace Gui.MainMenu
         [Inject] private readonly IGameDataManager _gameDataManager;
         [Inject] private readonly IDatabase _database;
         [Inject] private readonly ILocalization _localization;
-        [Inject] private readonly GuiHelper _guiHelper;
-        [Inject] private readonly GameSettings _settings;
+        [Inject] private readonly IGameSettings _settings;
+		[InjectOptional] private readonly GuiHelper _guiHelper;
 
-        [SerializeField] private LayoutGroup _modsGroup;
+		[SerializeField] private LayoutGroup _modsGroup;
 
         [Inject]
         private void Initialize(IMessenger messenger)

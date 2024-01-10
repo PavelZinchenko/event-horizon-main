@@ -1,4 +1,4 @@
-﻿using GameServices.Settings;
+﻿using Services.Settings;
 using GameStateMachine.States;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +12,7 @@ namespace Gui.MainMenu
         [SerializeField] Toggle _centerOnPlayerToggle;
         [SerializeField] Toggle _showDamageToogle;
 
-        [Inject] private readonly GameSettings _gameSettings;
+        [Inject] private readonly IGameSettings _gameSettings;
         [Inject] private readonly ConfigureControlsSignal.Trigger _configureControlsTrigger;
 
         public void SetCameraZoom(float value)

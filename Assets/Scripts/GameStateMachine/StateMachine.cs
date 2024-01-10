@@ -83,8 +83,11 @@ namespace GameStateMachine
 			if (!_states.TryPeek(out var state))
 				return;
 
-			UnloadState();
-			LoadStateAdditive(state);
+			var lastState = _states.Pop();
+			lastState.Condition = GameStateCondition.Reloading;
+			LoadRequiredScenes();
+			_states.Push(lastState);
+			LoadRequiredScenes();
 		}
 
 		private void UnloadState()

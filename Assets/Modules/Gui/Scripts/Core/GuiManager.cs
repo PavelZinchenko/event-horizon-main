@@ -118,6 +118,8 @@ namespace Services.Gui
 
             foreach (var item in _activeWindows)
             {
+				if (item == window) continue;
+
                 if (window.Class.CantBeOpenedDueTo(item.Class))
                 {
                     //UnityEngine.Debug.Log("Window cant be opened: " + window.Id + " due to " + item.Id);
@@ -279,31 +281,29 @@ namespace Services.Gui
             }
         }
 
-        private IEnumerable<IWindow> GetWindowsInScene(GameScene scene)
+        private IEnumerable<IWindow> GetWindowsInScene(GameScene scene) => GetWindowsInScene(SceneManager.GetSceneByName(scene.ToSceneName()));
+
+		private IEnumerable<IWindow> GetWindowsInScene(Scene scene)
+		{
+			if (!scene.IsValid() || !scene.isLoaded) yield break;
+
+			var windows = new List<IWindow>();
+			foreach (var gameObject in scene.GetRootGameObjects())
+			{
+				gameObject.GetComponentsInChildren<IWindow>(true, windows);
+				foreach (var window in windows)
+					yield return window;
+			}
+		}
+
+		private IEnumerable<IWindow> GetAllWindows()
         {
-            var sceneObject = SceneManager.GetSceneByName(scene.ToSceneName());
-            if (!sceneObject.IsValid() || !sceneObject.isLoaded)
-                yield break;
-
-            var windows = new List<IWindow>();
-            foreach (var gameObject in sceneObject.GetRootGameObjects())
-            {
-                gameObject.GetComponentsInChildren<IWindow>(true, windows);
-                foreach (var window in windows)
-                    yield return window;
-            }
-        }
-
-        private IEnumerable<IWindow> GetAllWindows()
-        {
-			foreach (var item in UnityEngine.Resources.FindObjectsOfTypeAll<GameObject>())
-            {
-                var window = item.GetComponent<IWindow>();
-                if (window == null)
-                    continue;
-
-                yield return window;
-            }
+			for (int i = 0; i < SceneManager.sceneCount; i++)
+			{
+				var scene = SceneManager.GetSceneAt(i);
+				foreach (var window in GetWindowsInScene(scene))
+					yield return window;
+			}
         }
 
         private void OnWindowDestroyed(IWindow window)

@@ -43,20 +43,19 @@ namespace Gui.Windows
             if (!_isOpen)
                 _initiallyOpen = _isOpen = true;
 
-            if (gameObject.activeSelf)
-                StartAnimation();
+            StartAnimation();
         }
 
         private void StartAnimation()
         {
             Animator.SetBool(IsVisibleKey, _isOpen);
 
-            if (!_isRunning && gameObject.activeSelf)
-                StartCoroutine(WaitAnimationDone());
-            else if (_isOpen)
-                OnWindowOpened();
-            else
-                OnWindowClosed();
+			if (!_isRunning && gameObject.activeInHierarchy)
+				StartCoroutine(WaitAnimationDone());
+			else if (_isOpen)
+				OnWindowOpened();
+			else
+				OnWindowClosed();
         }
 
         private IEnumerator WaitAnimationDone()

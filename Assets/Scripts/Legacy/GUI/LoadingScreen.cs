@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 using GameDatabase;
 using GameDatabase.Query;
@@ -16,11 +17,15 @@ public class LoadingScreen : MonoBehaviour
     [SerializeField] private Image _shipIcon;
     [SerializeField] private Image _background;
 	[SerializeField] private Text _loadingText;
+	[SerializeField] private float _delay = 0.1f;
 
 	[Inject] private readonly IResourceLocator _resourceLocator;
     [Inject] private readonly IDatabase _database;
 	[Inject] private readonly ILocalization _localization;
 	[Inject] private readonly IGameSettings _settings;
+
+	private bool _active;
+	private bool _coroutineRunning;
 
 	[Inject]
     private void Initialize(SceneManagerStateChangedSignal sceneManagerStateChangedSignal)
@@ -41,10 +46,25 @@ public class LoadingScreen : MonoBehaviour
 
 	private void OnSceneManagerStateChanged(State state)
 	{
-		if (state == State.Loading)
+		_active = state == State.Loading;
+
+		if (_active && _firstTime)
+			Show();
+		else if (!_coroutineRunning)
+			StartCoroutine(UpdateVisibility(_delay));
+	}
+
+	private IEnumerator UpdateVisibility(float delay)
+	{
+		_coroutineRunning = true;
+		yield return new WaitForSecondsRealtime(delay);
+
+		if (_active)
 			Show();
 		else
 			Hide();
+
+		_coroutineRunning = false;
 	}
 
 	private void Show()

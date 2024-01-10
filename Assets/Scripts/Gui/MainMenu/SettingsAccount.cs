@@ -1,6 +1,4 @@
-﻿using GameServices.GameManager;
-using GameServices.Settings;
-using Services.Account;
+﻿using Services.Account;
 using Services.Messenger;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,9 +17,7 @@ namespace Gui.MainMenu
         [SerializeField] Text _notConnectedText;
         [SerializeField] private GameObject[] _controls;
 
-        [Inject] private readonly GameSettings _gameSettings;
         [Inject] private readonly IAccount _account;
-        [Inject] private readonly IGameDataManager _gameDataManager;
 
         [Inject]
         private void Initialize(IMessenger messenger)

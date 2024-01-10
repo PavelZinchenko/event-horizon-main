@@ -9,11 +9,11 @@ namespace Gui.MainMenu
 {
     public class SettingsPurchases : MonoBehaviour
     {
-        [Inject] private readonly IGameDataManager _gameDataManager;
         [Inject] private readonly IInAppPurchasing _iap;
         [Inject] private readonly IAccount _account;
+		[InjectOptional] private readonly IGameDataManager _gameDataManager;
 
-        [Inject]
+		[Inject]
         private void Initialize(IMessenger messenger)
         {
             messenger.AddListener<Status>(EventType.AccountStatusChanged, OnAccountStatusChanged);

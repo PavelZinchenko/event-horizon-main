@@ -30,7 +30,7 @@ namespace GameStateMachine.States
             _guiManager = guiManager;
 
             _reloadUiSignal = reloadGuiSignal;
-            _reloadUiSignal.Event += OnReloadGui;
+            _reloadUiSignal.Event += OnReloadUi;
         }
 
         public override StateType Type => StateType.ModalDialog;
@@ -40,25 +40,15 @@ namespace GameStateMachine.States
         protected override void OnLoad()
         {
 			_application.Pause(this);
-			UnityEngine.Debug.LogError("OnLoad");
-			_guiManager.OpenWindow(_windowName, OnWindowClosed);
+			OpenWindow();
         }
 
-        protected override void OnUnload()
-        {
-			_application.Resume(this);
-        }
+		protected override void OnReloaded() =>OpenWindow();
+		protected override void OnUnload() => _application.Resume(this);
 
-        private void OnReloadGui()
-        {
-			Reload();
-        }
-
-        private void OnWindowClosed(WindowExitCode exitCode)
-        {
-			UnityEngine.Debug.LogError("OnWindowClosed");
-			Unload();
-        }
+		private void OnReloadUi() => Reload();
+		private void OpenWindow() => _guiManager.OpenWindow(_windowName, OnWindowClosed);
+		private void OnWindowClosed(WindowExitCode exitCode) => Unload();
 
         public class Factory : Zenject.Factory<string, IEnumerable<GameScene>, ModalDialogState> { }
     }

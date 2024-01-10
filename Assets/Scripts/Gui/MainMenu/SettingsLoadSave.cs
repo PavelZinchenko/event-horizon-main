@@ -17,7 +17,7 @@ namespace Gui.MainMenu
         [Inject] private readonly ILocalization _localization;
         [Inject] private readonly IGameDataManager _manager;
         [Inject] private readonly IDatabase _database;
-        [Inject] private readonly GuiHelper _guiHelper;
+        [InjectOptional] private readonly GuiHelper _guiHelper;
 
         [SerializeField] private LayoutGroup _gamesGroup;
         [SerializeField] private ToggleGroup _gamesToggleGroup;

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using GameDatabase;
 using GameServices.GameManager;
 using GameServices.Gui;
-using GameServices.Settings;
 using GameStateMachine.States;
+using Services.Settings;
 using Services.Audio;
 using Services.Localization;
 using Services.Messenger;
@@ -31,12 +31,12 @@ namespace Gui.MainMenu
         [Inject] private readonly ISoundPlayer _soundPlayer;
         [Inject] private readonly IMusicPlayer _musicPlayer;
         [Inject] private readonly ILocalization _localization;
-        [Inject] private readonly GameSettings _gameSettings;
+        [Inject] private readonly IGameSettings _gameSettings;
         [Inject] private readonly ISessionData _session;
-        [Inject] private readonly GuiHelper _guiHelper;
         [Inject] private readonly IDatabase _database;
-        [Inject] private readonly IGameDataManager _gameDataManager;
+		[Inject] private readonly IGameDataManager _gameDataManager;
 		[Inject] private readonly ReloadUiSignal.Trigger _reloadGuiTrigger;
+		[InjectOptional] private readonly GuiHelper _guiHelper;
 
 		[Inject]
         private void Initialize(IMessenger messenger)

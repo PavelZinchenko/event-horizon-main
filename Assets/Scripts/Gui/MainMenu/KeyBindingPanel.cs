@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using Services.Audio;
-using System.Text;
-using GameServices.Settings;
+using Services.Settings;
 using Services.Localization;
 
 namespace Gui.MainMenu
@@ -13,7 +12,7 @@ namespace Gui.MainMenu
     public class KeyBindingPanel : MonoBehaviour
     {
         [Inject] private readonly ISoundPlayer _soundPlayer;
-        [Inject] private readonly GameSettings _settings;
+        [Inject] private readonly IGameSettings _settings;
         [Inject] private readonly IKeyNameLocalizer _localizer;
         [Inject] private readonly KeyBindingsChangedSignal.Trigger _keyBindingsChangedTrigger;
         [Inject] private readonly MouseEnabledSignal.Trigger _mouseEnabledTrigger;
