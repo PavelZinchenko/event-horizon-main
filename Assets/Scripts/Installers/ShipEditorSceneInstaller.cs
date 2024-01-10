@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using Zenject;
 using GameDatabase;
 using GameDatabase.Model;
@@ -28,6 +29,8 @@ namespace Installers
 		private IShipEditorContext CreateTestContext(InjectContext injectContext)
 		{
 			var shipBuild = _database.GetShipBuild(ItemId<ShipBuild>.Create(_testShipBuildId));
+			if (shipBuild == null) shipBuild = _database.ShipBuildList.First();
+
 			return new DatabaseEditorContext(_database, _lockTestShipModules ? new CommonShip(shipBuild) : new EditorModeShip(shipBuild, _database));
 		}
 	}
