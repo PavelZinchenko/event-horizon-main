@@ -92,9 +92,9 @@ namespace Constructor.Model
 
         public ImmutableCollection<Device> BuiltinDevices => BaseStats.BuiltinDevices;
 
-        public float ArmorPoints => ArmorPointsWithoutBonuses * Bonuses.ArmorPointsMultiplier.Value * BaseStats.ArmorMultiplier.Value;
+        public float ArmorPoints => ArmorPointsWithoutBonuses * ArmorMultiplier.Value;
 
-        private float ArmorPointsWithoutBonuses
+		private float ArmorPointsWithoutBonuses
         {
             get
             {
@@ -104,7 +104,7 @@ namespace Constructor.Model
             }
         }
 
-        public float EnergyPoints => (ShipSettings.BaseEnergyPoints + EquipmentStats.EnergyPoints) * BaseStats.EnergyMultiplier.Value * Bonuses.EnergyMultiplier.Value;
+		public float EnergyPoints => (ShipSettings.BaseEnergyPoints + EquipmentStats.EnergyPoints) * BaseStats.EnergyMultiplier.Value * Bonuses.EnergyMultiplier.Value;
         public float ShieldPoints => EquipmentStats.ShieldPoints * BaseStats.ShieldMultiplier.Value * Bonuses.ShieldPointsMultiplier.Value;
 
         public float EnergyRechargeRate => ShipSettings.BaseEnergyRechargeRate - EquipmentStats.EnergyConsumption +
@@ -125,8 +125,9 @@ namespace Constructor.Model
         {
             get
             {
-                var baseResistance = (_ship.Features.EnergyResistance + BaseStats.EnergyResistanceMultiplier.Bonus + Bonuses.ExtraEnergyResistance.Bonus) * ArmorPointsWithoutBonuses;
-                return Bonuses.ArmorPointsMultiplier.Value * BaseStats.ArmorMultiplier.Value * (EquipmentStats.EnergyResistance + baseResistance);
+				var resistanceBonus = _ship.Features.EnergyResistance + BaseStats.EnergyResistanceMultiplier.Bonus + Bonuses.ExtraEnergyResistance.Bonus;
+				var resistance = EquipmentStats.EnergyResistance * ArmorMultiplier.Value;
+				return resistance + (ArmorPoints + resistance) * resistanceBonus;
             }
         }
 
@@ -134,8 +135,9 @@ namespace Constructor.Model
         {
             get
             {
-                var baseResistance = (_ship.Features.KineticResistance + BaseStats.KineticResistanceMultiplier.Bonus + Bonuses.ExtraKineticResistance.Bonus) * ArmorPointsWithoutBonuses;
-                return Bonuses.ArmorPointsMultiplier.Value * BaseStats.ArmorMultiplier.Value * (EquipmentStats.KineticResistance + baseResistance);
+				var resistanceBonus = _ship.Features.KineticResistance + BaseStats.KineticResistanceMultiplier.Bonus + Bonuses.ExtraKineticResistance.Bonus;
+				var resistance = EquipmentStats.KineticResistance * ArmorMultiplier.Value;
+				return resistance + (ArmorPoints + resistance) * resistanceBonus;
             }
         }
 
@@ -143,8 +145,9 @@ namespace Constructor.Model
         {
             get
             {
-                var baseResistance = (_ship.Features.HeatResistance + BaseStats.HeatResistanceMultiplier.Bonus + Bonuses.ExtraHeatResistance.Bonus) * ArmorPointsWithoutBonuses;
-                return Bonuses.ArmorPointsMultiplier.Value * BaseStats.ArmorMultiplier.Value * (EquipmentStats.ThermalResistance + baseResistance);
+				var resistanceBonus = _ship.Features.HeatResistance + BaseStats.HeatResistanceMultiplier.Bonus + Bonuses.ExtraHeatResistance.Bonus;
+				var resistance = EquipmentStats.ThermalResistance * ArmorMultiplier.Value;
+				return resistance + (ArmorPoints + resistance) * resistanceBonus;
             }
         }
 
