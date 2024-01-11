@@ -19,10 +19,13 @@ namespace ShipEditor.UI
 
 		[SerializeField] private NameValueItem _armorPoints;
 		[SerializeField] private NameValueItem _repairRate;
+		[SerializeField] private NameValueItem _repairCooldown;
 		[SerializeField] private NameValueItem _energy;
 		[SerializeField] private NameValueItem _rechargeRate;
+		[SerializeField] private NameValueItem _rechargeCooldown;
 		[SerializeField] private NameValueItem _shield;
 		[SerializeField] private NameValueItem _shieldRechargeRate;
+		[SerializeField] private NameValueItem _shieldRechargeCooldown;
 		[SerializeField] private NameValueItem _weight;
 		[SerializeField] private NameValueItem _ramDamage;
 		[SerializeField] private NameValueItem _damageAbsorption;
@@ -51,6 +54,8 @@ namespace ShipEditor.UI
 		[SerializeField] private Text _energySummaryText;
 		[SerializeField] private Text _velocitySummaryText;
 		[SerializeField] private Text _turnRateSummaryText;
+
+		[SerializeField] private GameObject[] _hiddenForStarbases;
 
 		private void OnEnable()
 		{
@@ -89,6 +94,10 @@ namespace ShipEditor.UI
 			var stats = new ShipStatsCalculator(ship.OriginalShip, _database.ShipSettings);
 			stats.BaseStats = ship.Stats;
 
+			var isStarbase = ship.ShipType == GameDatabase.Enums.ShipType.Starbase;
+			foreach (var item in _hiddenForStarbases)
+				item.gameObject.SetActive(!isStarbase);
+
 			foreach (var item in _shipEditor.InstalledComponents)
 			{
 				var component = item.Info.CreateComponent(ship.Layout.CellCount);
@@ -113,22 +122,29 @@ namespace ShipEditor.UI
 
 		private void UpdateStats(IShipStats stats)
 		{
-            _armorPoints.gameObject.SetActive(!Mathf.Approximately(stats.ArmorPoints, 0));
+			_armorPoints.gameObject.SetActive(!Mathf.Approximately(stats.ArmorPoints, 0));
             _armorPoints.Value.text = stats.ArmorPoints.AsInteger();
             _armorPoints.Color = stats.ArmorPoints > 0 ? _normalColor : _errorColor;
 
             _repairRate.gameObject.SetActive(stats.ArmorRepairRate > 0);
 			_repairRate.Value.text = stats.ArmorRepairRate.AsDecimal();
+			_repairCooldown.gameObject.SetActive(stats.ArmorRepairRate > 0);
+			_repairCooldown.Value.text = stats.ArmorRepairCooldown.AsDecimal();
 
-            _shield.gameObject.SetActive(stats.ShieldPoints > 0);
+			_shield.gameObject.SetActive(stats.ShieldPoints > 0);
             _shield.Value.text = stats.ShieldPoints.AsInteger();
             _shieldRechargeRate.gameObject.SetActive(stats.ShieldPoints > 0);
             _shieldRechargeRate.Value.text = stats.ShieldRechargeRate.AsDecimal();
+			_shieldRechargeCooldown.gameObject.SetActive(stats.ShieldPoints > 0 && stats.ShieldRechargeRate > 0);
+			_shieldRechargeCooldown.Value.text = stats.ShieldRechargeCooldown.AsDecimal();
 
-            _energy.Value.text = stats.EnergyPoints.AsInteger();
-			_weight.Value.text = Mathf.RoundToInt(stats.Weight*1000).ToString();
+			_weight.Value.text = Mathf.RoundToInt(stats.Weight * 1000).ToString();
+			_energy.Value.text = stats.EnergyPoints.AsInteger();
 			_rechargeRate.Value.text = stats.EnergyRechargeRate.AsDecimal();
 			_rechargeRate.Color = stats.EnergyRechargeRate > 0 ? _normalColor : _errorColor;
+			_rechargeCooldown.gameObject.SetActive(stats.EnergyRechargeRate > 0);
+			_rechargeCooldown.Value.text = stats.EnergyRechargeCooldown.AsDecimal();
+
 			_velocity.Color = stats.EnginePower > 0 ? _normalColor : _errorColor;
 			_velocity.Value.text = stats.EnginePower.AsDecimal();
 			_turnRate.Color = stats.TurnRate > 0 ? _normalColor : _errorColor;

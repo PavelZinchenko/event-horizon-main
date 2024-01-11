@@ -22,8 +22,11 @@
     <string name="Shield">Shield</string>
     <string name="ShieldPoints">Shield Points</string>
     <string name="ShieldRechargeRate">Recharge rate</string>
+    <string name="ShieldRechargeCooldown">Recharge cooldown</string>
     <string name="RepairRate">Repair rate</string>
+    <string name="RepairCooldown">Repair cooldown</string>
     <string name="RechargeRate">Recharge rate</string>
+    <string name="RechargeCooldown">Recharge cooldown</string>
     <string name="Weight">Mass</string>
     <string name="EquipmentWeight">Equipment Mass</string>
     <string name="RamDamage">Ramming damage</string>

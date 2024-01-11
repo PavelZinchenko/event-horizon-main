@@ -22,8 +22,11 @@
     <string name="Shield">Щит</string>
     <string name="ShieldPoints">Щит</string>
     <string name="ShieldRechargeRate">Перезарядка щита</string>
+    <string name="ShieldRechargeCooldown">Время восстановления</string>
     <string name="RepairRate">Ремонт</string>
+    <string name="RepairCooldown">Время восстановления</string>
     <string name="RechargeRate">Перезарядка</string>
+    <string name="RechargeCooldown">Время восстановления</string>
     <string name="Weight">Масса</string>
     <string name="EquipmentWeight">Масса оборудования</string>
     <string name="RamDamage">Урон от тарана</string>
