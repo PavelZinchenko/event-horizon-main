@@ -246,8 +246,11 @@ namespace ShipEditor.Model
 		private ISatellite SaveSatellite(SatelliteLocation location)
 		{
 			var satellite = _satellite[location];
-			if (satellite != null) 
+			if (satellite != null && _layout[location].DataChanged)
+			{
 				satellite.Components.Assign(ExportComponents(_layout[location]));
+				_layout[location].DataChanged = false;
+			}
 
 			return satellite;
 		}
@@ -256,10 +259,15 @@ namespace ShipEditor.Model
 		{
 			if (ship == null) return;
 
-			Ship.Components.Assign(ExportComponents(_layout[ShipElementType.Ship]));
-
 			if (!string.IsNullOrEmpty(_shipName))
 				Ship.Name = _shipName;
+
+			var shipLayout = _layout[ShipElementType.Ship];
+			if (shipLayout.DataChanged)
+			{
+				Ship.Components.Assign(ExportComponents(shipLayout));
+				shipLayout.DataChanged = false;
+			}
 
 			_ship.FirstSatellite = SaveSatellite(SatelliteLocation.Left);
 			_ship.SecondSatellite = SaveSatellite(SatelliteLocation.Right);
@@ -306,6 +314,8 @@ namespace ShipEditor.Model
 				layout.InstallComponent(component.X, component.Y, component.Info,
 					new ComponentSettings(component.KeyBinding, component.Behaviour, component.Locked));
 			}
+
+			layout.DataChanged = false;
 		}
 
 		private void InitializeSatellite(SatelliteLocation location, ISatellite satellite)

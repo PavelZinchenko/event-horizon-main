@@ -28,6 +28,8 @@ namespace ShipEditor.Model
 		private readonly ShipElementType _elementType;
 		private readonly Layout _layout;
 
+		public bool DataChanged { get; set; }
+
 		public int Width => _layout.Size;
 		public int Height => _layout.Size;
 
@@ -83,6 +85,7 @@ namespace ShipEditor.Model
 
 				_components.Clear();
 				_filledCells.Clear();
+				DataChanged = true;
 				return;
 			}
 
@@ -108,6 +111,7 @@ namespace ShipEditor.Model
 			var model = _components[component.Id];
 			model.Settings = settings;
 
+			DataChanged = true;
 			_tracker.OnKeyBindingChanged(component.Data, settings.KeyBinding);
 		}
 
@@ -127,6 +131,7 @@ namespace ShipEditor.Model
 				last.Id = id;
 			}
 
+			DataChanged = true;
 			_components.RemoveAt(lastId);
 			_tracker.OnComponentRemoved(component.Data);
 		}
@@ -140,6 +145,7 @@ namespace ShipEditor.Model
 			_components.Add(model);
 			_tracker.OnComponentAdded(component.Data);
 			_tracker.OnKeyBindingChanged(component.Data, settings.KeyBinding);
+			DataChanged = true;
 			return model;
 		}
 
