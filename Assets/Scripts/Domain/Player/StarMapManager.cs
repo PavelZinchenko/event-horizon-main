@@ -7,7 +7,6 @@ using GameServices;
 using GameServices.Player;
 using Services.Messenger;
 using Session;
-using Session.Content;
 using Zenject;
 
 namespace Domain.Player

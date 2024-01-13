@@ -14,7 +14,6 @@ using Domain.Quests;
 using Game.Exploration;
 using GameDatabase.DataModel;
 using GameModel.Quests;
-using Session.Content;
 using UniRx;
 
 namespace GameStateMachine.States

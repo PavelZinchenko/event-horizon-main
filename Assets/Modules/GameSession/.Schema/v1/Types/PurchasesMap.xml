@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="PurchasesMap" type="struct">
+    <member name="Purchases" type="map" key="string" value="PurchaseInfo" />
+</data>

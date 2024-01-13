@@ -13,6 +13,6 @@ namespace Domain.Quests
             _session = session;
         }
 
-        public int GetQuantity(ItemId<QuestItem> id) => _session.Resources.Resources.GetQuantity(id.Value);
+        public int GetQuantity(ItemId<QuestItem> id) => _session.Resources.Resources[id.Value];
     }
 }

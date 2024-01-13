@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Constructor.Ships;
 using GameDatabase;
-using Session.Content;
+using Session.ContentObsolete;
 using Ionic.Zlib;
 using Helpers = GameModel.Serialization.Helpers;
 

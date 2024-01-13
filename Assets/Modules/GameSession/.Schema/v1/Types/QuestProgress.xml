@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="QuestProgress" type="struct">
+    <member name="Seed" type="int" />
+    <member name="ActiveNode" type="int" />
+    <member name="StartTime" type="long" />
+</data>

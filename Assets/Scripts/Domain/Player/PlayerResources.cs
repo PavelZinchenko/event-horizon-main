@@ -30,8 +30,8 @@ namespace GameServices.Player
 
         public Money Stars
         {
-            get { return _session.Resources.Stars + _session.Purchases.ExtraStarCount; }
-            set { _session.Resources.Stars = (long)value - _session.Purchases.ExtraStarCount; }
+            get { return _session.Resources.Stars; }
+            set { _session.Resources.Stars = (long)value; }
         }
 
         public int Tokens
@@ -42,8 +42,8 @@ namespace GameServices.Player
 
         public int Snowflakes
         {
-            get { return _session.Resources.Resources.GetQuantity((int)SpecialResources.Snowflakes); }
-            set { _session.Resources.Resources[(int)SpecialResources.Snowflakes] = Clamp(value); }
+            get { return _session.Resources.Resources[(int)SpecialResources.Snowflakes]; }
+            set { _session.Resources.Resources.SetValue((int)SpecialResources.Snowflakes, Clamp(value)); }
         }
 
         public int Fuel
@@ -56,7 +56,7 @@ namespace GameServices.Player
 
         public int GetResource(ItemId<QuestItem> id)
         {
-            return _session.Resources.Resources.GetQuantity(id.Value);
+            return _session.Resources.Resources[id.Value];
         }
 
         public void AddResource(ItemId<QuestItem> id, int amount)

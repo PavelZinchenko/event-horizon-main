@@ -28,29 +28,29 @@ namespace Galaxy.StarContent
 
         public bool IsExists(int starId)
         {
-            return _session.StarMap.GetEnemy(starId) != StarMapData.Occupant.Empty;
+            return _session.StarMap.GetEnemy(starId) != IStarMapData.Occupant.Empty;
         }
 
         public bool CanBeAggressive(int starId)
         {
             var enemy = _session.StarMap.GetEnemy(starId);
-            return enemy == StarMapData.Occupant.Agressive || enemy == StarMapData.Occupant.Unknown;
+            return enemy == IStarMapData.Occupant.Agressive || enemy == IStarMapData.Occupant.Unknown;
         }
 
         public void Suppress(int starId, bool destroy)
         {
             var enemy = _session.StarMap.GetEnemy(starId);
-            if (enemy == StarMapData.Occupant.Empty) return;
-            if (enemy == StarMapData.Occupant.Passive && !destroy) return;
+            if (enemy == IStarMapData.Occupant.Empty) return;
+            if (enemy == IStarMapData.Occupant.Passive && !destroy) return;
 
             if (destroy)
             {
-                _session.StarMap.SetEnemy(starId, StarMapData.Occupant.Empty);
+                _session.StarMap.SetEnemy(starId, IStarMapData.Occupant.Empty);
                 _regionMap.GetStarRegion(starId).OnFleetDefeated();
             }
             else
             {
-                _session.StarMap.SetEnemy(starId, StarMapData.Occupant.Passive);
+                _session.StarMap.SetEnemy(starId, IStarMapData.Occupant.Passive);
             }
 
             _starContentChangedTrigger.Fire(starId);
@@ -69,7 +69,7 @@ namespace Galaxy.StarContent
             var enemyFleet = CreateFleet(starId);
             if (Maths.Threat.GetLevel(_playerFleet.Power, enemyFleet.Power) <= Maths.Threat.Level.VeryEasy)
             {
-                _session.StarMap.SetEnemy(starId, StarMapData.Occupant.Passive);
+                _session.StarMap.SetEnemy(starId, IStarMapData.Occupant.Passive);
                 return false;
             }
 

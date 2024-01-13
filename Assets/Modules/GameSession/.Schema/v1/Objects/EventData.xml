@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="EventData" type="object">
+    <member name="CompletedTime" type="map" key="int" value="long" />
+</data>

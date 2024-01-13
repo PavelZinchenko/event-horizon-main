@@ -98,7 +98,7 @@ namespace GameModel
 
 				foreach (var value in BitConverter.GetBytes(bytes.Length))
 					yield return value;
-				foreach (var value in System.Text.Encoding.UTF8.GetBytes(data))
+				foreach (var value in bytes)
 					yield return value;
             }
 

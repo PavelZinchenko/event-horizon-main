@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="UpgradesData" type="object">
+    <member name="ResetCounter" type="int" options="encrypted" />
+    <member name="PlayerExperience" type="long" options="encrypted" />
+    <member name="Skills" type="set" value="int" />
+</data>

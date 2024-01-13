@@ -3,15 +3,12 @@ using System.Linq;
 using Constructor;
 using GameServices.GameManager;
 using Session;
-using Session.Content;
+using Session.Model;
 using Zenject;
 using Constructor.Ships;
-using Database.Legacy;
 using Diagnostics;
 using GameDatabase;
-using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameDatabase.Model;
 using UnityEngine.Assertions;
 using CommonComponents.Utils;
 using Services.InAppPurchasing;
@@ -85,8 +82,6 @@ namespace GameServices.Player
         {
             DataChanged = true;
             _activeShips.Remove(ship);
-            //foreach (var group in _shipGroups)
-            //    group.Remove(ship);
         }
 
         public float Power { get { return ActiveShipGroup.Ships.Sum(ship => Maths.Threat.GetShipPower(ship)); } }
@@ -104,37 +99,41 @@ namespace GameServices.Player
                 var debug = _debugManager.CreateLog(ship.Name);
                 var ignoreWeaponClass = ship.Model.Stats.IgnoreWeaponClass;
                 var empty = Enumerable.Empty<IntegratedComponent>();
-                CheckShipComponents(new ShipLayout(ship.Model.Layout, ship.Model.Barrels, empty, ignoreWeaponClass, debug), ship.Components, components);
-                ship.Components.Assign(components);
+                if (TryRemoveInvalidComponents(new ShipLayout(ship.Model.Layout, ship.Model.Barrels, empty, ignoreWeaponClass, debug), ship.Components, components))
+	                ship.Components.Assign(components);
 
                 if (ship.FirstSatellite != null)
                 {
-                    CheckShipComponents(new ShipLayout(ship.FirstSatellite.Information.Layout, ship.FirstSatellite.Information.Barrels, 
-                        empty, ignoreWeaponClass, debug), ship.FirstSatellite.Components, components);
-                    ship.FirstSatellite.Components.Assign(components);
+                    if (TryRemoveInvalidComponents(new ShipLayout(ship.FirstSatellite.Information.Layout, ship.FirstSatellite.Information.Barrels, 
+                        empty, ignoreWeaponClass, debug), ship.FirstSatellite.Components, components))
+	                    ship.FirstSatellite.Components.Assign(components);
                 }
 
                 if (ship.SecondSatellite != null)
                 {
-                    CheckShipComponents(new ShipLayout(ship.SecondSatellite.Information.Layout, ship.SecondSatellite.Information.Barrels,
-                        empty, ignoreWeaponClass, debug), ship.SecondSatellite.Components, components);
-                    ship.SecondSatellite.Components.Assign(components);
+                    if (TryRemoveInvalidComponents(new ShipLayout(ship.SecondSatellite.Information.Layout, ship.SecondSatellite.Information.Barrels,
+                        empty, ignoreWeaponClass, debug), ship.SecondSatellite.Components, components))
+	                    ship.SecondSatellite.Components.Assign(components);
                 }
             }
 
             _activeShips.CheckIfValid(_playerSkills, true);
         }
 
-        private void CheckShipComponents(ShipLayout layout, IEnumerable<IntegratedComponent> components, IList<IntegratedComponent> validComponents)
+        private bool TryRemoveInvalidComponents(ShipLayout layout, IEnumerable<IntegratedComponent> components, IList<IntegratedComponent> validComponents)
         {
             validComponents.Clear();
             var random = new System.Random(_session.Game.Seed);
+			var result = false;
 
             foreach (var item in components)
             {
                 IntegratedComponent component = item;
-                if (!component.Info)
-                    continue;
+				if (!component.Info)
+				{
+					result = true;
+					continue;
+				}
 
                 if (!item.Info.IsValidModification)
                 {
@@ -143,14 +142,19 @@ namespace GameServices.Player
                 }
 
                 var id = layout.InstallComponent(component.Info, component.X, component.Y);
-                if (id >= 0)
-                    validComponents.Add(component);
-                else
-                    _inventory.Components.Add(component.Info);
+				if (id >= 0)
+					validComponents.Add(component);
+				else
+				{
+					result = true;
+					_inventory.Components.Add(component.Info);
+				}
             }
-        }
 
-        private void OnPlayerSkillsReset()
+			return result;
+		}
+
+		private void OnPlayerSkillsReset()
         {
             _activeShips.CheckIfValid(_playerSkills, true);
         }
@@ -160,11 +164,12 @@ namespace GameServices.Player
             Clear();
 
             var ships = new List<IShip>();
-            foreach (var item in _session.Fleet.Ships)
+
+			foreach (var item in _session.Fleet.Ships.Items)
             {
                 try
                 {
-                    ships.Add(ShipDataExtensions.FromShipData(_database, item));
+					ships.Add(item.ToShip(_database));
                 }
                 catch (System.Exception e)
                 {
@@ -177,7 +182,7 @@ namespace GameServices.Player
             _ships.Assign(ships.Where(ship => ship != null));
 
             _activeShips.Clear();
-            foreach (var item in _session.Fleet.Hangar)
+			foreach (var item in _session.Fleet.Hangar.Items)
             {
                 UnityEngine.Debug.Log("group:" + item.Index + " ship:" + item.ShipId);
                 _activeShips[item.Index] = ships[item.ShipId];
@@ -200,7 +205,7 @@ namespace GameServices.Player
             var index = 0;
             foreach (var ship in _ships)
             {
-                var info = ship.ToShipData();
+				var info = _session.Fleet.CreateShipInfo(ship);
                 _session.Fleet.Ships.Add(info);
                 shipIndices.Add(ship, index++);
             }
@@ -215,7 +220,7 @@ namespace GameServices.Player
                 if (!shipIndices.TryGetValue(ship, out var id))
                     continue;
 
-                _session.Fleet.Hangar.Add(new FleetData.HangarSlotInfo { ShipId = id, Index = j });
+                _session.Fleet.Hangar.Add(new HangarSlotInfo(j, id));
             }
 
             if (_explorationShip != null && shipIndices.TryGetValue(_explorationShip, out var explorationShipId))
@@ -237,10 +242,8 @@ namespace GameServices.Player
 
         private void OnSessionAboutToSave()
         {
-            UnityEngine.Debug.Log("PlayerFleet.OnSessionAboutToSave");
-
-            if (DataChanged)
-                SaveShips();
+			if (DataChanged)
+				SaveShips();
         }
 
         private void Clear()
@@ -258,7 +261,7 @@ namespace GameServices.Player
             set
             {
                 _dataChanged = value;
-                if (_dataChanged)
+				if (_dataChanged)
                     return;
 
                 _activeShips.IsChanged = false;

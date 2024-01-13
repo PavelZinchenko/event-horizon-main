@@ -148,7 +148,7 @@ namespace Galaxy
             //foreach (var item in _customStarObjects)
             //    _session.StarMap.SetEnemy(item.Key, StarMapData.Occupant.Empty);
 
-            _session.StarMap.SetEnemy(0, StarMapData.Occupant.Empty);
+            _session.StarMap.SetEnemy(0, IStarMapData.Occupant.Empty);
             SetVisited(0);
         }
 

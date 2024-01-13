@@ -7,7 +7,6 @@ using GameServices.Multiplayer;
 using GameServices.Player;
 using GameServices.Quests;
 using Session;
-using Session.Content;
 using Services.Account;
 using Services.Advertisements;
 using Services.Gui;
@@ -172,9 +171,9 @@ namespace Services.Messenger
             _messenger.Broadcast<Money>(EventType.MoneyValueChanged, value);
         }
 
-        private void OnStarsValueChanged()
+		private void OnStarsValueChanged(long value)
         {
-            _messenger.Broadcast<Money>(EventType.StarsValueChanged, _session.Resources.Stars + _session.Purchases.ExtraStarCount);
+            _messenger.Broadcast<Money>(EventType.StarsValueChanged, value);
         }
 
         private void OnTokensValueChanged(int value)

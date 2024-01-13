@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="SaveGameData" type="object">
+    <member name="Game" type="GameData" />
+    <member name="Achievements" type="Achievements" />
+    <member name="Bosses" type="BossData" />
+    <member name="Common" type="CommonObjectData" />
+    <member name="Events" type="EventData" />
+    <member name="Fleet" type="FleetData" />
+    <member name="Iap" type="IapData" />
+    <member name="Pvp" type="PvpData" />
+    <member name="Inventory" type="Inventory" />
+    <member name="Quests" type="QuestData" />
+    <member name="Regions" type="RegionData" />
+    <member name="Research" type="ResearchData" />
+    <member name="Resources" type="ResourcesData" />
+    <member name="Shop" type="ShopData" />
+    <member name="Social" type="SocialData" />
+    <member name="StarMap" type="StarMapData" />
+    <member name="Statistics" type="Statistics" />
+    <member name="Upgrades" type="UpgradesData" />
+    <member name="Wormholes" type="WormholeData" />
+</data>

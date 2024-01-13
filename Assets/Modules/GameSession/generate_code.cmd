@@ -1,0 +1,1 @@
+.CodeGenerator\CodeGenerator\bin\Release\CodeGenerator.exe .Schema\versions.xml Scripts

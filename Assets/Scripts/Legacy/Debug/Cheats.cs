@@ -28,7 +28,7 @@ using GameDatabase.Enums;
 using GameDatabase.Model;
 using GameDatabase.Extensions;
 using GameDatabase.Query;
-using Session.Content;
+using Session.ContentObsolete;
 using Helpers = GameModel.Serialization.Helpers;
 
 public class Cheats
