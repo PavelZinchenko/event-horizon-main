@@ -59,8 +59,8 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_firstDailyRewardDate, EncodingType.EliasGamma);
-				writer.WriteInt(_lastDailyRewardDate, EncodingType.EliasGamma);
+			writer.WriteInt(_firstDailyRewardDate, EncodingType.EliasGamma);
+			writer.WriteInt(_lastDailyRewardDate, EncodingType.EliasGamma);
 			DataChanged = false;
 		}
 

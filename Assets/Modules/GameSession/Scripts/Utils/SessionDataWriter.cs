@@ -10,6 +10,8 @@ namespace Session.Utils
 
 	public class SessionDataWriter : IDisposable
 	{
+		private const int _eliasSectionSize = 4;
+
 		private readonly IWriterStream _writer;
 		private readonly EliasGammaEncoder _eliasEncoder;
 		private EncodingType _encoding;
@@ -17,7 +19,7 @@ namespace Session.Utils
 		public SessionDataWriter(IWriterStream writer)
 		{
 			_writer = writer;
-			_eliasEncoder = new EliasGammaEncoder(writer);
+			_eliasEncoder = new EliasGammaEncoder(writer, _eliasSectionSize);
 		}
 
 		public void Dispose()

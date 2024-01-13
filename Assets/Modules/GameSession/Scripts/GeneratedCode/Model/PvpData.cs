@@ -72,9 +72,9 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_arenaFightsFromTimerStart, EncodingType.EliasGamma);
-				writer.WriteLong(_arenaLastFightTime, EncodingType.EliasGamma);
-				writer.WriteLong(_arenaTimerStartTime, EncodingType.EliasGamma);
+			writer.WriteInt(_arenaFightsFromTimerStart, EncodingType.EliasGamma);
+			writer.WriteLong(_arenaLastFightTime, EncodingType.EliasGamma);
+			writer.WriteLong(_arenaTimerStartTime, EncodingType.EliasGamma);
 			DataChanged = false;
 		}
 

@@ -59,17 +59,17 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_technologies.Count, EncodingType.EliasGamma);
-				foreach (var item in _technologies.Items)
-				{
-					writer.WriteInt(item, EncodingType.EliasGamma);
-				}
-				writer.WriteInt(_researchPoints.Count, EncodingType.EliasGamma);
-				foreach (var item in _researchPoints.Items)
-				{
-					writer.WriteInt(item.Key, EncodingType.EliasGamma);
-					writer.WriteInt(item.Value, EncodingType.EliasGamma);
-				}
+			writer.WriteInt(_technologies.Count, EncodingType.EliasGamma);
+			foreach (var item in _technologies.Items)
+			{
+				writer.WriteInt(item, EncodingType.EliasGamma);
+			}
+			writer.WriteInt(_researchPoints.Count, EncodingType.EliasGamma);
+			foreach (var item in _researchPoints.Items)
+			{
+				writer.WriteInt(item.Key, EncodingType.EliasGamma);
+				writer.WriteInt(item.Value, EncodingType.EliasGamma);
+			}
 			DataChanged = false;
 		}
 

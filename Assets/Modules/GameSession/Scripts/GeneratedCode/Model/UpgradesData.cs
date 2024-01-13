@@ -71,13 +71,13 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_resetCounter, EncodingType.EliasGamma);
-				writer.WriteLong(_playerExperience, EncodingType.EliasGamma);
-				writer.WriteInt(_skills.Count, EncodingType.EliasGamma);
-				foreach (var item in _skills.Items)
-				{
-					writer.WriteInt(item, EncodingType.EliasGamma);
-				}
+			writer.WriteInt(_resetCounter, EncodingType.EliasGamma);
+			writer.WriteLong(_playerExperience, EncodingType.EliasGamma);
+			writer.WriteInt(_skills.Count, EncodingType.EliasGamma);
+			foreach (var item in _skills.Items)
+			{
+				writer.WriteInt(item, EncodingType.EliasGamma);
+			}
 			DataChanged = false;
 		}
 

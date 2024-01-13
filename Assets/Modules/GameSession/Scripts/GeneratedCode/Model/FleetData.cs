@@ -70,17 +70,17 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_explorationShipId, EncodingType.EliasGamma);
-				writer.WriteInt(_ships.Count, EncodingType.EliasGamma);
-				for (int i = 0; i < _ships.Count; ++i)
-				{
-					_ships[i].Serialize(writer);
-				}
-				writer.WriteInt(_hangarSlots.Count, EncodingType.EliasGamma);
-				for (int i = 0; i < _hangarSlots.Count; ++i)
-				{
-					_hangarSlots[i].Serialize(writer);
-				}
+			writer.WriteInt(_explorationShipId, EncodingType.EliasGamma);
+			writer.WriteInt(_ships.Count, EncodingType.EliasGamma);
+			for (int i = 0; i < _ships.Count; ++i)
+			{
+				_ships[i].Serialize(writer);
+			}
+			writer.WriteInt(_hangarSlots.Count, EncodingType.EliasGamma);
+			for (int i = 0; i < _hangarSlots.Count; ++i)
+			{
+				_hangarSlots[i].Serialize(writer);
+			}
 			DataChanged = false;
 		}
 

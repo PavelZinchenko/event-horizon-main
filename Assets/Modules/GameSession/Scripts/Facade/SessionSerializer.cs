@@ -129,16 +129,16 @@ namespace Session
 
 		private void TransferStarMapData(ContentObsolete.StarMapData oldData, StarMapData newData)
 		{
-			newData.PlayerPosition = oldData.PlayerPosition;
+			newData.PlayerPosition = (uint)oldData.PlayerPosition;
 			newData.MapModeZoom = oldData.MapScaleFactor;
 			newData.StarModeZoom = oldData.StarScaleFactor;
 
 			foreach (var item in oldData._bookmarks)
-				newData.Bookmarks.Add(item.Key, item.Value);
+				newData.Bookmarks.Add((uint)item.Key, item.Value);
 			foreach (var item in oldData._planetdata)
-				newData.PlanetData.Add(item.Key, item.Value);
+				newData.PlanetData.Add((ulong)item.Key, (uint)item.Value);
 			foreach (var item in oldData._stardata)
-				newData.StarData.Add(item.Key, item.Value);
+				newData.StarData.Add((uint)item.Key, (uint)item.Value);
 		}
 
 		private void TransferInventoryData(ContentObsolete.InventoryData oldData, Inventory newData)

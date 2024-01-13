@@ -45,11 +45,11 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_gained.Count, EncodingType.EliasGamma);
-				foreach (var item in _gained.Items)
-				{
-					writer.WriteInt(item, EncodingType.EliasGamma);
-				}
+			writer.WriteInt(_gained.Count, EncodingType.EliasGamma);
+			foreach (var item in _gained.Items)
+			{
+				writer.WriteInt(item, EncodingType.EliasGamma);
+			}
 			DataChanged = false;
 		}
 

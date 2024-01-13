@@ -89,30 +89,30 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_factionRelations.Count, EncodingType.EliasGamma);
-				foreach (var item in _factionRelations.Items)
-				{
-					writer.WriteInt(item.Key, EncodingType.EliasGamma);
-					writer.WriteInt(item.Value, EncodingType.EliasGamma);
-				}
-				writer.WriteInt(_characterRelations.Count, EncodingType.EliasGamma);
-				foreach (var item in _characterRelations.Items)
-				{
-					writer.WriteInt(item.Key, EncodingType.EliasGamma);
-					writer.WriteInt(item.Value, EncodingType.EliasGamma);
-				}
-				writer.WriteInt(_statistics.Count, EncodingType.EliasGamma);
-				foreach (var item in _statistics.Items)
-				{
-					writer.WriteInt(item.Key, EncodingType.EliasGamma);
-					item.Value.Serialize(writer);
-				}
-				writer.WriteInt(_progress.Count, EncodingType.EliasGamma);
-				foreach (var item in _progress.Items)
-				{
-					writer.WriteInt(item.Key, EncodingType.EliasGamma);
-					item.Value.Serialize(writer);
-				}
+			writer.WriteInt(_factionRelations.Count, EncodingType.EliasGamma);
+			foreach (var item in _factionRelations.Items)
+			{
+				writer.WriteInt(item.Key, EncodingType.EliasGamma);
+				writer.WriteInt(item.Value, EncodingType.EliasGamma);
+			}
+			writer.WriteInt(_characterRelations.Count, EncodingType.EliasGamma);
+			foreach (var item in _characterRelations.Items)
+			{
+				writer.WriteInt(item.Key, EncodingType.EliasGamma);
+				writer.WriteInt(item.Value, EncodingType.EliasGamma);
+			}
+			writer.WriteInt(_statistics.Count, EncodingType.EliasGamma);
+			foreach (var item in _statistics.Items)
+			{
+				writer.WriteInt(item.Key, EncodingType.EliasGamma);
+				item.Value.Serialize(writer);
+			}
+			writer.WriteInt(_progress.Count, EncodingType.EliasGamma);
+			foreach (var item in _progress.Items)
+			{
+				writer.WriteInt(item.Key, EncodingType.EliasGamma);
+				item.Value.Serialize(writer);
+			}
 			DataChanged = false;
 		}
 

@@ -72,9 +72,9 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteBool(_removeAds, EncodingType.EliasGamma);
-				writer.WriteBool(_supporterPack, EncodingType.EliasGamma);
-				writer.WriteInt(_stars, EncodingType.EliasGamma);
+			writer.WriteBool(_removeAds, EncodingType.EliasGamma);
+			writer.WriteBool(_supporterPack, EncodingType.EliasGamma);
+			writer.WriteInt(_stars, EncodingType.EliasGamma);
 			DataChanged = false;
 		}
 

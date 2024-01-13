@@ -109,25 +109,25 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				_game.Serialize(writer);
-				_achievements.Serialize(writer);
-				_bosses.Serialize(writer);
-				_common.Serialize(writer);
-				_events.Serialize(writer);
-				_fleet.Serialize(writer);
-				_iap.Serialize(writer);
-				_pvp.Serialize(writer);
-				_inventory.Serialize(writer);
-				_quests.Serialize(writer);
-				_regions.Serialize(writer);
-				_research.Serialize(writer);
-				_resources.Serialize(writer);
-				_shop.Serialize(writer);
-				_social.Serialize(writer);
-				_starMap.Serialize(writer);
-				_statistics.Serialize(writer);
-				_upgrades.Serialize(writer);
-				_wormholes.Serialize(writer);
+			_game.Serialize(writer);
+			_achievements.Serialize(writer);
+			_bosses.Serialize(writer);
+			_common.Serialize(writer);
+			_events.Serialize(writer);
+			_fleet.Serialize(writer);
+			_iap.Serialize(writer);
+			_pvp.Serialize(writer);
+			_inventory.Serialize(writer);
+			_quests.Serialize(writer);
+			_regions.Serialize(writer);
+			_research.Serialize(writer);
+			_resources.Serialize(writer);
+			_shop.Serialize(writer);
+			_social.Serialize(writer);
+			_starMap.Serialize(writer);
+			_statistics.Serialize(writer);
+			_upgrades.Serialize(writer);
+			_wormholes.Serialize(writer);
 			DataChanged = false;
 		}
 

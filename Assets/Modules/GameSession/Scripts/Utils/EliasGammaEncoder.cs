@@ -5,12 +5,15 @@ namespace Session.Utils
 	public class EliasGammaEncoder : IDisposable
 	{
 		private readonly IWriterStream _writer;
-		private readonly int _sectionSize;
+		private readonly uint _sectionSize;
 		private byte _data;
 		private int _index;
 
-		public EliasGammaEncoder(IWriterStream writer, int sectionSize = 4)
+		public EliasGammaEncoder(IWriterStream writer, uint sectionSize = 4)
 		{
+			if (sectionSize == 0)
+				throw new ArgumentException();
+
 			_writer = writer;
 			_sectionSize = sectionSize;
 		}
@@ -29,26 +32,36 @@ namespace Session.Utils
 
 		public void WriteSigned(long value)
 		{
+			if (value == 0) { WriteBit(false); return; }
+
+			ulong unsignedValue = value > 0 ? (ulong)value : (ulong)(-value);
+			uint sections = (NumberOfBits(unsignedValue) + _sectionSize - 1) / _sectionSize;
+			uint numberOfBits = sections * _sectionSize;
+
+			WriteUnary(sections);
 			WriteBit(value < 0);
-			WriteUnsigned(value < 0 ? (ulong)(-value) : (ulong)value);
+			WriteBinary(unsignedValue, numberOfBits);
 		}
 
 		public void WriteUnsigned(ulong value)
 		{
-			if (value == 0)
-			{
-				WriteBit(false);
-				return;
-			}
+			if (value == 0) { WriteBit(false); return; }
 
-			var sections = (NumberOfBits(value) + _sectionSize - 1) / _sectionSize;
-			var numberOfBits = sections * _sectionSize;
+			uint sections = (NumberOfBits(value) + _sectionSize - 1) / _sectionSize;
+			uint numberOfBits = sections * _sectionSize;
+			WriteUnary(sections);
+			WriteBinary(value, numberOfBits);
+		}
 
-			for (int i = 0; i < sections; ++i) WriteBit(true);
+		private void WriteUnary(uint numberOfBits)
+		{
+			for (uint i = 0; i < numberOfBits; ++i) WriteBit(true);
 			WriteBit(false);
+		}
 
-			ulong oldValue = value;
-			for (int i = 0; i < numberOfBits; ++i)
+		private void WriteBinary(ulong value, uint numberOfBits)
+		{
+			for (uint i = 0; i < numberOfBits; ++i)
 			{
 				WriteBit((value & 1) != 0);
 				value >>= 1;
@@ -70,9 +83,9 @@ namespace Session.Utils
 			}
 		}
 
-		private static int NumberOfBits(ulong value)
+		private static uint NumberOfBits(ulong value)
 		{
-			int index = 0;
+			uint index = 0;
 			while (value != 0)
 			{
 				value >>= 1;

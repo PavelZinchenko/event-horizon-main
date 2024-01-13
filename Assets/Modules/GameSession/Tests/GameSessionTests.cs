@@ -21,7 +21,7 @@ namespace Session.Tests
 		}
 
 		[Test]
-		public void TestEliasEncoder()
+		public void TestEliasGammaEncoder()
 		{
 			var writer = new MemoryWriterStream(_buffer);
 			var reader = new MemoryReaderStream(_buffer);
@@ -32,7 +32,7 @@ namespace Session.Tests
 				encoder.WriteSigned(-12345);
 				encoder.WriteUnsigned(0);
 				encoder.WriteUnsigned(12345);
-				encoder.WriteSigned(0);
+				encoder.WriteSigned(1);
 				encoder.WriteSigned(1234567890);
 			}
 
@@ -41,7 +41,7 @@ namespace Session.Tests
 			Assert.AreEqual(-12345, decoder.ReadSigned());
 			Assert.AreEqual(0, decoder.ReadUnsigned());
 			Assert.AreEqual(12345, decoder.ReadUnsigned());
-			Assert.AreEqual(0, decoder.ReadSigned());
+			Assert.AreEqual(1, decoder.ReadSigned());
 			Assert.AreEqual(1234567890, decoder.ReadSigned());
 		}
 

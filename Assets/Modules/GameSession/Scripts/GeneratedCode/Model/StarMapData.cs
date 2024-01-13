@@ -13,12 +13,12 @@ namespace Session.Model
 	public class StarMapData : IDataChangedCallback
 	{
 		private readonly IDataChangedCallback _parent;
-		private int _playerPosition;
+		private uint _playerPosition;
 		private float _mapModeZoom;
 		private float _starModeZoom;
-		private ObservableMap<int, int> _starData;
-		private ObservableMap<long, int> _planetData;
-		private ObservableMap<int, string> _bookmarks;
+		private ObservableMap<uint, uint> _starData;
+		private ObservableMap<ulong, uint> _planetData;
+		private ObservableMap<uint, string> _bookmarks;
 
 		public const int VersionMinor = 0;
 		public const int VersionMajor = 1;
@@ -28,49 +28,49 @@ namespace Session.Model
 		public StarMapData(IDataChangedCallback parent)
 		{
 			_parent = parent;
-			_playerPosition = default(int);
+			_playerPosition = default(uint);
 			_mapModeZoom = default(float);
 			_starModeZoom = default(float);
-			_starData = new ObservableMap<int, int>(this);
-			_planetData = new ObservableMap<long, int>(this);
-			_bookmarks = new ObservableMap<int, string>(this);
+			_starData = new ObservableMap<uint, uint>(this);
+			_planetData = new ObservableMap<ulong, uint>(this);
+			_bookmarks = new ObservableMap<uint, string>(this);
 		}
 
 		public StarMapData(SessionDataReader reader, IDataChangedCallback parent)
 		{
-			_playerPosition = reader.ReadInt(EncodingType.EliasGamma);
+			_playerPosition = reader.ReadUint(EncodingType.EliasGamma);
 			_mapModeZoom = reader.ReadFloat(EncodingType.EliasGamma);
 			_starModeZoom = reader.ReadFloat(EncodingType.EliasGamma);
 			int starDataItemCount;
 			starDataItemCount = reader.ReadInt(EncodingType.EliasGamma);
-			_starData = new ObservableMap<int, int>(this);
+			_starData = new ObservableMap<uint, uint>(this);
 			for (int i = 0; i < starDataItemCount; ++i)
 			{
-				int key;
-				int value;
-				key = reader.ReadInt(EncodingType.EliasGamma);
-				value = reader.ReadInt(EncodingType.EliasGamma);
+				uint key;
+				uint value;
+				key = reader.ReadUint(EncodingType.EliasGamma);
+				value = reader.ReadUint(EncodingType.EliasGamma);
 				_starData.Add(key,value);
 			}
 			int planetDataItemCount;
-			planetDataItemCount = reader.ReadInt(EncodingType.Plain);
-			_planetData = new ObservableMap<long, int>(this);
+			planetDataItemCount = reader.ReadInt(EncodingType.EliasGamma);
+			_planetData = new ObservableMap<ulong, uint>(this);
 			for (int i = 0; i < planetDataItemCount; ++i)
 			{
-				long key;
-				int value;
-				key = reader.ReadLong(EncodingType.Plain);
-				value = reader.ReadInt(EncodingType.Plain);
+				ulong key;
+				uint value;
+				key = reader.ReadUlong(EncodingType.EliasGamma);
+				value = reader.ReadUint(EncodingType.EliasGamma);
 				_planetData.Add(key,value);
 			}
 			int bookmarksItemCount;
 			bookmarksItemCount = reader.ReadInt(EncodingType.EliasGamma);
-			_bookmarks = new ObservableMap<int, string>(this);
+			_bookmarks = new ObservableMap<uint, string>(this);
 			for (int i = 0; i < bookmarksItemCount; ++i)
 			{
-				int key;
+				uint key;
 				string value;
-				key = reader.ReadInt(EncodingType.EliasGamma);
+				key = reader.ReadUint(EncodingType.EliasGamma);
 				value = reader.ReadString(EncodingType.EliasGamma);
 				_bookmarks.Add(key,value);
 			}
@@ -78,7 +78,7 @@ namespace Session.Model
 			DataChanged = false;
 		}
 
-		public int PlayerPosition
+		public uint PlayerPosition
 		{
 			get => _playerPosition;
 			set
@@ -106,33 +106,33 @@ namespace Session.Model
 				_starModeZoom = value;
 			}
 		}
-		public ObservableMap<int, int> StarData => _starData;
-		public ObservableMap<long, int> PlanetData => _planetData;
-		public ObservableMap<int, string> Bookmarks => _bookmarks;
+		public ObservableMap<uint, uint> StarData => _starData;
+		public ObservableMap<ulong, uint> PlanetData => _planetData;
+		public ObservableMap<uint, string> Bookmarks => _bookmarks;
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_playerPosition, EncodingType.EliasGamma);
-				writer.WriteFloat(_mapModeZoom, EncodingType.EliasGamma);
-				writer.WriteFloat(_starModeZoom, EncodingType.EliasGamma);
-				writer.WriteInt(_starData.Count, EncodingType.EliasGamma);
-				foreach (var item in _starData.Items)
-				{
-					writer.WriteInt(item.Key, EncodingType.EliasGamma);
-					writer.WriteInt(item.Value, EncodingType.EliasGamma);
-				}
-				writer.WriteInt(_planetData.Count, EncodingType.Plain);
-				foreach (var item in _planetData.Items)
-				{
-					writer.WriteLong(item.Key, EncodingType.Plain);
-					writer.WriteInt(item.Value, EncodingType.Plain);
-				}
-				writer.WriteInt(_bookmarks.Count, EncodingType.EliasGamma);
-				foreach (var item in _bookmarks.Items)
-				{
-					writer.WriteInt(item.Key, EncodingType.EliasGamma);
-					writer.WriteString(item.Value, EncodingType.EliasGamma);
-				}
+			writer.WriteUint(_playerPosition, EncodingType.EliasGamma);
+			writer.WriteFloat(_mapModeZoom, EncodingType.EliasGamma);
+			writer.WriteFloat(_starModeZoom, EncodingType.EliasGamma);
+			writer.WriteInt(_starData.Count, EncodingType.EliasGamma);
+			foreach (var item in _starData.Items)
+			{
+				writer.WriteUint(item.Key, EncodingType.EliasGamma);
+				writer.WriteUint(item.Value, EncodingType.EliasGamma);
+			}
+			writer.WriteInt(_planetData.Count, EncodingType.EliasGamma);
+			foreach (var item in _planetData.Items)
+			{
+				writer.WriteUlong(item.Key, EncodingType.EliasGamma);
+				writer.WriteUint(item.Value, EncodingType.EliasGamma);
+			}
+			writer.WriteInt(_bookmarks.Count, EncodingType.EliasGamma);
+			foreach (var item in _bookmarks.Items)
+			{
+				writer.WriteUint(item.Key, EncodingType.EliasGamma);
+				writer.WriteString(item.Value, EncodingType.EliasGamma);
+			}
 			DataChanged = false;
 		}
 

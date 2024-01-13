@@ -47,12 +47,12 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_completedTime.Count, EncodingType.EliasGamma);
-				foreach (var item in _completedTime.Items)
-				{
-					writer.WriteInt(item.Key, EncodingType.EliasGamma);
-					writer.WriteLong(item.Value, EncodingType.EliasGamma);
-				}
+			writer.WriteInt(_completedTime.Count, EncodingType.EliasGamma);
+			foreach (var item in _completedTime.Items)
+			{
+				writer.WriteInt(item.Key, EncodingType.EliasGamma);
+				writer.WriteLong(item.Value, EncodingType.EliasGamma);
+			}
 			DataChanged = false;
 		}
 

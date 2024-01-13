@@ -110,12 +110,12 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteString(_gameId, EncodingType.EliasGamma);
-				writer.WriteInt(_seed, EncodingType.EliasGamma);
-				writer.WriteLong(_startTime, EncodingType.EliasGamma);
-				writer.WriteLong(_totalPlayTime, EncodingType.EliasGamma);
-				writer.WriteLong(_supplyShipStartTime, EncodingType.EliasGamma);
-				writer.WriteInt(_counter, EncodingType.EliasGamma);
+			writer.WriteString(_gameId, EncodingType.EliasGamma);
+			writer.WriteInt(_seed, EncodingType.EliasGamma);
+			writer.WriteLong(_startTime, EncodingType.EliasGamma);
+			writer.WriteLong(_totalPlayTime, EncodingType.EliasGamma);
+			writer.WriteLong(_supplyShipStartTime, EncodingType.EliasGamma);
+			writer.WriteInt(_counter, EncodingType.EliasGamma);
 			DataChanged = false;
 		}
 

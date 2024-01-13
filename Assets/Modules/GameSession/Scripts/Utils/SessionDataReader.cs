@@ -2,6 +2,8 @@
 {
 	public class SessionDataReader
 	{
+		private const int _eliasSectionSize = 4;
+
 		private readonly IReaderStream _reader;
 		private readonly EliasGammaDecoder _eliasDecoder;
 		private EncodingType _encoding;
@@ -9,7 +11,7 @@
 		public SessionDataReader(IReaderStream reader)
 		{
 			_reader = reader;
-			_eliasDecoder = new EliasGammaDecoder(reader);
+			_eliasDecoder = new EliasGammaDecoder(reader, _eliasSectionSize);
 		}
 
 		public bool ReadBool(EncodingType encoding)
