@@ -65,7 +65,7 @@ namespace Session
 			_contentFactory = contentFactory;
 			_sessionCreatedTrigger = sesionCreatedTrigger;
 			_dataLoadedTrigger = dataLoadedTrigger;
-			_serializer = new SessionSerializer(_contentFactory.GetObsoleteContentFactory(), this);
+			_serializer = new SessionSerializer(_contentFactory.GetObsoleteContentFactory());
 		}
 
 		public long GameId { get; private set; }
@@ -167,6 +167,7 @@ namespace Session
 			_upgradesData = _contentFactory.CreateUpgradesData(data);
 			_socialData = _contentFactory.CreateSocialData(data);
 			_questData = _contentFactory.CreateQuestData(data);
+			_content.Parent = this;
 		}
 
 		public void OnDataChanged()

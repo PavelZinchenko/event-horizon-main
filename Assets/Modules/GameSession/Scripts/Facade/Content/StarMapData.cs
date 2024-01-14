@@ -58,14 +58,14 @@ namespace Session.Content
 
 		public int PlayerPosition 
 		{
-			get => (int)_data.StarMap.PlayerPosition; 
+			get => _data.StarMap.PlayerPosition; 
 			set
 			{
 				if (value == _data.StarMap.PlayerPosition)
 					return;
 
 				LastPlayerPosition = PlayerPosition;
-				_data.StarMap.PlayerPosition = (uint)value;
+				_data.StarMap.PlayerPosition = value;
 				SetVisited(value);
 
 				_playerPositionChangedTrigger.Fire(value);
@@ -75,27 +75,27 @@ namespace Session.Content
 		public int LastPlayerPosition { get; private set; }
 		public float MapScaleFactor { get => _data.StarMap.MapModeZoom; set => _data.StarMap.MapModeZoom = value; }
 		public float StarScaleFactor { get => _data.StarMap.StarModeZoom; set => _data.StarMap.StarModeZoom = value; }
-		public bool IsVisited(int starId) => _data.StarMap.StarData.ContainsKey((uint)starId);
+		public bool IsVisited(int starId) => _data.StarMap.StarData.ContainsKey(starId);
 		public int VisitedStarsCount => _data.StarMap.StarData.Count;
 		public int FurthestVisitedStar => (int)_data.StarMap.StarData.Keys.Max();
 		
 		public uint GetPlanetData(int starId, int planetId)
 		{
 			var key = (((long)starId) << 32) + planetId;
-			return _data.StarMap.PlanetData.TryGetValue((ulong)key, out var value) ? (uint)value : 0;
+			return _data.StarMap.PlanetData.TryGetValue(key, out var value) ? (uint)value : 0;
 		}
 
 		public void SetPlanetData(int starId, int planetId, uint value)
 		{
 			var key = (((long)starId) << 32) + planetId;
-			_data.StarMap.PlanetData.SetValue((uint)key, value);
+			_data.StarMap.PlanetData.SetValue(key, (int)value);
 		}
 
-		public void SetVisited(int starId) => _data.StarMap.StarData.TryAdd((uint)starId, 0);
+		public void SetVisited(int starId) => _data.StarMap.StarData.TryAdd(starId, 0);
 
 		public IStarMapData.Occupant GetEnemy(int starId)
 		{
-			if (!_data.StarMap.StarData.TryGetValue((uint)starId, out var value))
+			if (!_data.StarMap.StarData.TryGetValue(starId, out var value))
 				return IStarMapData.Occupant.Unknown;
 
 			return (IStarMapData.Occupant)value;
@@ -103,25 +103,25 @@ namespace Session.Content
 
 		public void SetEnemy(int starId, IStarMapData.Occupant enemy)
 		{
-			if (_data.StarMap.StarData.TryGetValue((uint)starId, out var oldValue) && oldValue == (int)enemy)
+			if (_data.StarMap.StarData.TryGetValue(starId, out var oldValue) && oldValue == (int)enemy)
 				return;
 
-			_data.StarMap.StarData.SetValue((uint)starId, (uint)enemy);
+			_data.StarMap.StarData.SetValue(starId, (int)enemy);
 
 			if (oldValue == (int)IStarMapData.Occupant.Agressive || oldValue == (int)IStarMapData.Occupant.Unknown)
 				if (enemy == IStarMapData.Occupant.Empty || enemy == IStarMapData.Occupant.Passive)
 					_newStarSecuredTrigger.Fire(starId);
 		}
 
-		public string GetBookmark(int starId) => _data.StarMap.Bookmarks.TryGetValue((uint)starId, out var value) ? value : string.Empty;
-		public bool HasBookmark(int starId) => _data.StarMap.Bookmarks.ContainsKey((uint)starId);
+		public string GetBookmark(int starId) => _data.StarMap.Bookmarks.TryGetValue(starId, out var value) ? value : string.Empty;
+		public bool HasBookmark(int starId) => _data.StarMap.Bookmarks.ContainsKey(starId);
 
 		public void SetBookmark(int starId, string value)
 		{
 			if (string.IsNullOrEmpty(value))
-				_data.StarMap.Bookmarks.Remove((uint)starId);
+				_data.StarMap.Bookmarks.Remove(starId);
 			else
-				_data.StarMap.Bookmarks.SetValue((uint)starId, value);
+				_data.StarMap.Bookmarks.SetValue(starId, value);
 		}
 	}
 }

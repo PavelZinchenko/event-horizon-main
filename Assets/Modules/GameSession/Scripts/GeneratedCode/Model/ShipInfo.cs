@@ -16,11 +16,11 @@ namespace Session.Model
 		private readonly string _name;
 		private readonly long _colorScheme;
 		private readonly ObscuredLong _experience;
-		private readonly ObservableList<ShipComponentInfo> _components;
+		private readonly ObservableList<Model.ShipComponentInfo> _components;
 		private readonly ObservableList<byte> _layoutModifications;
 		private readonly ObservableList<long> _modifications;
-		private readonly SatelliteInfo _satellite1;
-		private readonly SatelliteInfo _satellite2;
+		private readonly Model.SatelliteInfo _satellite1;
+		private readonly Model.SatelliteInfo _satellite2;
 
 		public ShipInfo(IDataChangedCallback parent)
 		{
@@ -28,11 +28,11 @@ namespace Session.Model
 			_name = string.Empty;
 			_colorScheme = default(long);
 			_experience = default(long);
-			_components = new ObservableList<ShipComponentInfo>(parent);
+			_components = new ObservableList<Model.ShipComponentInfo>(parent);
 			_layoutModifications = new ObservableList<byte>(parent);
 			_modifications = new ObservableList<long>(parent);
-			_satellite1 = new SatelliteInfo(parent);
-			_satellite2 = new SatelliteInfo(parent);
+			_satellite1 = new Model.SatelliteInfo(parent);
+			_satellite2 = new Model.SatelliteInfo(parent);
 		}
 
 		public ShipInfo(SessionDataReader reader, IDataChangedCallback parent)
@@ -43,11 +43,11 @@ namespace Session.Model
 			_experience = reader.ReadLong(EncodingType.EliasGamma);
 			int componentsItemCount;
 			componentsItemCount = reader.ReadInt(EncodingType.EliasGamma);
-			_components = new ObservableList<ShipComponentInfo>(componentsItemCount, parent);
+			_components = new ObservableList<Model.ShipComponentInfo>(componentsItemCount, parent);
 			for (int i = 0; i < componentsItemCount; ++i)
 			{
-				ShipComponentInfo item;
-				item = new ShipComponentInfo(reader, parent);
+				Model.ShipComponentInfo item;
+				item = new Model.ShipComponentInfo(reader, parent);
 				_components.Add(item);
 			}
 			int layoutModificationsItemCount;
@@ -68,19 +68,19 @@ namespace Session.Model
 				item = reader.ReadLong(EncodingType.EliasGamma);
 				_modifications.Add(item);
 			}
-			_satellite1 = new SatelliteInfo(reader, parent);
-			_satellite2 = new SatelliteInfo(reader, parent);
+			_satellite1 = new Model.SatelliteInfo(reader, parent);
+			_satellite2 = new Model.SatelliteInfo(reader, parent);
 		}
 
 		public int Id => _id;
 		public string Name => _name;
 		public long ColorScheme => _colorScheme;
 		public long Experience => _experience;
-		public ObservableList<ShipComponentInfo> Components => _components;
+		public ObservableList<Model.ShipComponentInfo> Components => _components;
 		public ObservableList<byte> LayoutModifications => _layoutModifications;
 		public ObservableList<long> Modifications => _modifications;
-		public SatelliteInfo Satellite1 => _satellite1;
-		public SatelliteInfo Satellite2 => _satellite2;
+		public Model.SatelliteInfo Satellite1 => _satellite1;
+		public Model.SatelliteInfo Satellite2 => _satellite2;
 
 		public void Serialize(SessionDataWriter writer)
 		{

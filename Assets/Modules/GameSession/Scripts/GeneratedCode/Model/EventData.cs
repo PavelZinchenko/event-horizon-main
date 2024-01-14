@@ -12,13 +12,16 @@ namespace Session.Model
 {
 	public class EventData : IDataChangedCallback
 	{
-		private readonly IDataChangedCallback _parent;
+		private IDataChangedCallback _parent;
+
 		private ObservableMap<int, long> _completedTime;
 
 		public const int VersionMinor = 0;
 		public const int VersionMajor = 1;
 
 		public bool DataChanged { get; private set; }
+
+		internal IDataChangedCallback Parent { get => _parent; set => _parent = value; }
 
 		public EventData(IDataChangedCallback parent)
 		{

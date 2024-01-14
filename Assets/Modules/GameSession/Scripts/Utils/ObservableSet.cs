@@ -11,6 +11,13 @@ namespace Session.Utils
 
 		public IEnumerable<T> Items => _hashset;
 
+		public void Assign(ObservableSet<T> other)
+		{
+			_hashset.Clear();
+			_hashset.UnionWith(other._hashset);
+			_callback?.OnDataChanged();
+		}
+
 		public ObservableSet(IDataChangedCallback callback)
 		{
 			_callback = callback;

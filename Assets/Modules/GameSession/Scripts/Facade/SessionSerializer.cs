@@ -12,11 +12,9 @@ namespace Session
 		private const int _format = 1;
 
 		private readonly ContentFactoryObsolete _contentFactoryObsolete;
-		private readonly IDataChangedCallback _callback;
 
-		public SessionSerializer(ContentFactoryObsolete contentFactoryObsolete, IDataChangedCallback callback)
+		public SessionSerializer(ContentFactoryObsolete contentFactoryObsolete)
 		{
-			_callback = callback;
 			_contentFactoryObsolete = contentFactoryObsolete;
 		}
 
@@ -37,8 +35,10 @@ namespace Session
 				}
 
 				var version = reader.ReadInt();
+				var versionMinor = version & 0xffff;
+				var versionMajor = version >> 16;
 
-				content = new SaveGameData(new SessionDataReader(reader), _callback);
+				content = new SessionLoader().Load(new SessionDataReader(reader), versionMajor, versionMinor);
 				return true;
 			}
 			catch (Exception e)
@@ -80,28 +80,28 @@ namespace Session
 					return false;
 				}
 
-				content = new SaveGameData(_callback);
+				var temp = new /*v1.*/SaveGameData(null);
+				TransferAchievementData(obsoleteData.Achievements, temp.Achievements);
+				TransferGameData(obsoleteData.Game, temp.Game);
+				TransferStarMapData(obsoleteData.Starmap, temp.StarMap);
+				TransferInventoryData(obsoleteData.Inventory, temp.Inventory);
+				TransferFleetData(obsoleteData.Fleet, temp.Fleet);
+				TransferShopData(obsoleteData.Shop, temp.Shop);
+				TransferEventsData(obsoleteData.Events, temp.Events);
+				TransferBossData(obsoleteData.Bosses, temp.Bosses);
+				TransferRegionData(obsoleteData.Regions, temp.Regions);
+				TransferInAppPurchasesData(obsoleteData.Purchases, temp.Iap);
+				TransferWormholeData(obsoleteData.Wormholes, temp.Wormholes);
+				TransferCommonObjectData(obsoleteData.CommonObjects, temp.Common);
+				TransferResearchData(obsoleteData.Research, temp.Research);
+				TransferStatisticsData(obsoleteData.Statistics, temp.Statistics);
+				TransferResourcesData(obsoleteData.Resources, temp.Resources);
+				TransferUpgradesData(obsoleteData.Upgrades, temp.Upgrades);
+				TransferPvpData(obsoleteData.Pvp, temp.Pvp);
+				TransferSocialData(obsoleteData.Social, temp.Social);
+				TransferQuestData(obsoleteData.Quests, temp.Quests);
 
-				TransferAchievementData(obsoleteData.Achievements, content.Achievements);
-				TransferGameData(obsoleteData.Game, content.Game);
-				TransferStarMapData(obsoleteData.Starmap, content.StarMap);
-				TransferInventoryData(obsoleteData.Inventory, content.Inventory);
-				TransferFleetData(obsoleteData.Fleet, content.Fleet);
-				TransferShopData(obsoleteData.Shop, content.Shop);
-				TransferEventsData(obsoleteData.Events, content.Events);
-				TransferBossData(obsoleteData.Bosses, content.Bosses);
-				TransferRegionData(obsoleteData.Regions, content.Regions);
-				TransferInAppPurchasesData(obsoleteData.Purchases, content.Iap);
-				TransferWormholeData(obsoleteData.Wormholes, content.Wormholes);
-				TransferCommonObjectData(obsoleteData.CommonObjects, content.Common);
-				TransferResearchData(obsoleteData.Research, content.Research);
-				TransferStatisticsData(obsoleteData.Statistics, content.Statistics);
-				TransferResourcesData(obsoleteData.Resources, content.Resources);
-				TransferUpgradesData(obsoleteData.Upgrades, content.Upgrades);
-				TransferPvpData(obsoleteData.Pvp, content.Pvp);
-				TransferSocialData(obsoleteData.Social, content.Social);
-				TransferQuestData(obsoleteData.Quests, content.Quests);
-
+				content = new SessionLoader().Convert(temp);
 				return true;
 			}
 			catch (Exception e)
@@ -129,16 +129,16 @@ namespace Session
 
 		private void TransferStarMapData(ContentObsolete.StarMapData oldData, StarMapData newData)
 		{
-			newData.PlayerPosition = (uint)oldData.PlayerPosition;
+			newData.PlayerPosition = oldData.PlayerPosition;
 			newData.MapModeZoom = oldData.MapScaleFactor;
 			newData.StarModeZoom = oldData.StarScaleFactor;
 
 			foreach (var item in oldData._bookmarks)
-				newData.Bookmarks.Add((uint)item.Key, item.Value);
+				newData.Bookmarks.Add(item.Key, item.Value);
 			foreach (var item in oldData._planetdata)
-				newData.PlanetData.Add((ulong)item.Key, (uint)item.Value);
+				newData.PlanetData.Add(item.Key, item.Value);
 			foreach (var item in oldData._stardata)
-				newData.StarData.Add((uint)item.Key, (uint)item.Value);
+				newData.StarData.Add(item.Key, item.Value);
 		}
 
 		private void TransferInventoryData(ContentObsolete.InventoryData oldData, Inventory newData)

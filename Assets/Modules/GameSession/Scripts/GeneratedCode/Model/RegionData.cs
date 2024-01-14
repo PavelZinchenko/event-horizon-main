@@ -12,7 +12,8 @@ namespace Session.Model
 {
 	public class RegionData : IDataChangedCallback
 	{
-		private readonly IDataChangedCallback _parent;
+		private IDataChangedCallback _parent;
+
 		private ObservableMap<int, int> _defeatedFleetCount;
 		private ObservableMap<int, int> _factions;
 
@@ -20,6 +21,8 @@ namespace Session.Model
 		public const int VersionMajor = 1;
 
 		public bool DataChanged { get; private set; }
+
+		internal IDataChangedCallback Parent { get => _parent; set => _parent = value; }
 
 		public RegionData(IDataChangedCallback parent)
 		{

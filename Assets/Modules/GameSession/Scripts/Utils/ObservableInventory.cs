@@ -46,6 +46,14 @@ namespace Session.Utils
 			_callback?.OnDataChanged();
 		}
 
+		public void Assign(ObservableInventory<T> other)
+		{
+			_items.Clear();
+			foreach (var item in other._items)
+				_items.Add(item.Key, item.Value);
+			_callback?.OnDataChanged();
+		}
+
 		public IEnumerable<KeyValuePair<T, ObscuredInt>> Items => _items;
 		public IEnumerable<T> Keys => _items.Keys;
 		public IEnumerable<ObscuredInt> Values => _items.Values;

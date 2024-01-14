@@ -19,6 +19,13 @@ namespace Session.Utils
 			}
 		}
 
+		public void Assign(ObservableList<T> other)
+		{
+			_list.Clear();
+			_list.AddRange(other._list);
+			_callback?.OnDataChanged();
+		}
+
 		public IEnumerable<T> Items => _list;
 		public T[] ToArray() => _list.ToArray();
 

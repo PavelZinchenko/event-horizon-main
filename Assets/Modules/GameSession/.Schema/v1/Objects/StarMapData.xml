@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data name="StarMapData" type="object">
-    <member name="PlayerPosition" type="uint" />
+    <member name="PlayerPosition" type="int" />
     <member name="MapModeZoom" type="single" options="notimportant" />
     <member name="StarModeZoom" type="single" options="notimportant" />
-    <member name="StarData" type="map" key="uint" value="uint" />
-    <member name="PlanetData" type="map" key="ulong" value="uint" />
-    <member name="Bookmarks" type="map" key="uint" value="string" />
+    <member name="StarData" type="map" key="int" value="int" />
+    <member name="PlanetData" type="map" key="long" value="int" />
+    <member name="Bookmarks" type="map" key="int" value="string" />
 </data>

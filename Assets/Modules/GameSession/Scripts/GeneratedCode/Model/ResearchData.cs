@@ -12,7 +12,8 @@ namespace Session.Model
 {
 	public class ResearchData : IDataChangedCallback
 	{
-		private readonly IDataChangedCallback _parent;
+		private IDataChangedCallback _parent;
+
 		private ObservableSet<int> _technologies;
 		private ObservableMap<int, int> _researchPoints;
 
@@ -20,6 +21,8 @@ namespace Session.Model
 		public const int VersionMajor = 1;
 
 		public bool DataChanged { get; private set; }
+
+		internal IDataChangedCallback Parent { get => _parent; set => _parent = value; }
 
 		public ResearchData(IDataChangedCallback parent)
 		{

@@ -21,6 +21,14 @@ namespace Session.Utils
 			_callback?.OnDataChanged();
 		}
 
+		public void Assign(ObservableMap<TKey, TValue> other)
+		{
+			_dictionary.Clear();
+			foreach (var item in other._dictionary)
+				_dictionary.Add(item.Key, item.Value);
+			_callback?.OnDataChanged();
+		}
+
 		public IEnumerable<KeyValuePair<TKey, TValue>> Items => _dictionary;
 		public IEnumerable<TKey> Keys => _dictionary.Keys;
 		public IEnumerable<TValue> Values => _dictionary.Values;

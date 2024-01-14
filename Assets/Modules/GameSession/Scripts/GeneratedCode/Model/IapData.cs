@@ -12,7 +12,8 @@ namespace Session.Model
 {
 	public class IapData : IDataChangedCallback
 	{
-		private readonly IDataChangedCallback _parent;
+		private IDataChangedCallback _parent;
+
 		private bool _removeAds;
 		private bool _supporterPack;
 		private ObscuredInt _stars;
@@ -21,6 +22,8 @@ namespace Session.Model
 		public const int VersionMajor = 1;
 
 		public bool DataChanged { get; private set; }
+
+		internal IDataChangedCallback Parent { get => _parent; set => _parent = value; }
 
 		public IapData(IDataChangedCallback parent)
 		{

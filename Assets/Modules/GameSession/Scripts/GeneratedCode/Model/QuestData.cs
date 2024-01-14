@@ -12,24 +12,27 @@ namespace Session.Model
 {
 	public class QuestData : IDataChangedCallback
 	{
-		private readonly IDataChangedCallback _parent;
+		private IDataChangedCallback _parent;
+
 		private ObservableMap<int, int> _factionRelations;
 		private ObservableMap<int, int> _characterRelations;
-		private ObservableMap<int, QuestStatistics> _statistics;
-		private ObservableMap<int, StarQuestMap> _progress;
+		private ObservableMap<int, Model.QuestStatistics> _statistics;
+		private ObservableMap<int, Model.StarQuestMap> _progress;
 
 		public const int VersionMinor = 0;
 		public const int VersionMajor = 1;
 
 		public bool DataChanged { get; private set; }
 
+		internal IDataChangedCallback Parent { get => _parent; set => _parent = value; }
+
 		public QuestData(IDataChangedCallback parent)
 		{
 			_parent = parent;
 			_factionRelations = new ObservableMap<int, int>(this);
 			_characterRelations = new ObservableMap<int, int>(this);
-			_statistics = new ObservableMap<int, QuestStatistics>(this);
-			_progress = new ObservableMap<int, StarQuestMap>(this);
+			_statistics = new ObservableMap<int, Model.QuestStatistics>(this);
+			_progress = new ObservableMap<int, Model.StarQuestMap>(this);
 		}
 
 		public QuestData(SessionDataReader reader, IDataChangedCallback parent)
@@ -58,24 +61,24 @@ namespace Session.Model
 			}
 			int statisticsItemCount;
 			statisticsItemCount = reader.ReadInt(EncodingType.EliasGamma);
-			_statistics = new ObservableMap<int, QuestStatistics>(this);
+			_statistics = new ObservableMap<int, Model.QuestStatistics>(this);
 			for (int i = 0; i < statisticsItemCount; ++i)
 			{
 				int key;
-				QuestStatistics value;
+				Model.QuestStatistics value;
 				key = reader.ReadInt(EncodingType.EliasGamma);
-				value = new QuestStatistics(reader, this);
+				value = new Model.QuestStatistics(reader, this);
 				_statistics.Add(key,value);
 			}
 			int progressItemCount;
 			progressItemCount = reader.ReadInt(EncodingType.EliasGamma);
-			_progress = new ObservableMap<int, StarQuestMap>(this);
+			_progress = new ObservableMap<int, Model.StarQuestMap>(this);
 			for (int i = 0; i < progressItemCount; ++i)
 			{
 				int key;
-				StarQuestMap value;
+				Model.StarQuestMap value;
 				key = reader.ReadInt(EncodingType.EliasGamma);
-				value = new StarQuestMap(reader, this);
+				value = new Model.StarQuestMap(reader, this);
 				_progress.Add(key,value);
 			}
 			_parent = parent;
@@ -84,8 +87,8 @@ namespace Session.Model
 
 		public ObservableMap<int, int> FactionRelations => _factionRelations;
 		public ObservableMap<int, int> CharacterRelations => _characterRelations;
-		public ObservableMap<int, QuestStatistics> Statistics => _statistics;
-		public ObservableMap<int, StarQuestMap> Progress => _progress;
+		public ObservableMap<int, Model.QuestStatistics> Statistics => _statistics;
+		public ObservableMap<int, Model.StarQuestMap> Progress => _progress;
 
 		public void Serialize(SessionDataWriter writer)
 		{

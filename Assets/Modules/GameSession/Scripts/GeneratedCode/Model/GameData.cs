@@ -12,7 +12,8 @@ namespace Session.Model
 {
 	public class GameData : IDataChangedCallback
 	{
-		private readonly IDataChangedCallback _parent;
+		private IDataChangedCallback _parent;
+
 		private string _gameId;
 		private int _seed;
 		private long _startTime;
@@ -24,6 +25,8 @@ namespace Session.Model
 		public const int VersionMajor = 1;
 
 		public bool DataChanged { get; private set; }
+
+		internal IDataChangedCallback Parent { get => _parent; set => _parent = value; }
 
 		public GameData(IDataChangedCallback parent)
 		{

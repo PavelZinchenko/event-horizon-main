@@ -12,29 +12,29 @@ namespace Session.Model
 {
 	public readonly partial struct StarQuestMap
 	{
-		private readonly ObservableMap<int, QuestProgress> _starQuestsMap;
+		private readonly ObservableMap<int, Model.QuestProgress> _starQuestsMap;
 
 		public StarQuestMap(IDataChangedCallback parent)
 		{
-			_starQuestsMap = new ObservableMap<int, QuestProgress>(parent);
+			_starQuestsMap = new ObservableMap<int, Model.QuestProgress>(parent);
 		}
 
 		public StarQuestMap(SessionDataReader reader, IDataChangedCallback parent)
 		{
 			int starQuestsMapItemCount;
 			starQuestsMapItemCount = reader.ReadInt(EncodingType.EliasGamma);
-			_starQuestsMap = new ObservableMap<int, QuestProgress>(parent);
+			_starQuestsMap = new ObservableMap<int, Model.QuestProgress>(parent);
 			for (int i = 0; i < starQuestsMapItemCount; ++i)
 			{
 				int key;
-				QuestProgress value;
+				Model.QuestProgress value;
 				key = reader.ReadInt(EncodingType.EliasGamma);
-				value = new QuestProgress(reader, parent);
+				value = new Model.QuestProgress(reader, parent);
 				_starQuestsMap.Add(key,value);
 			}
 		}
 
-		public ObservableMap<int, QuestProgress> StarQuestsMap => _starQuestsMap;
+		public ObservableMap<int, Model.QuestProgress> StarQuestsMap => _starQuestsMap;
 
 		public void Serialize(SessionDataWriter writer)
 		{

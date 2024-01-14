@@ -12,7 +12,8 @@ namespace Session.Model
 {
 	public class CommonObjectData : IDataChangedCallback
 	{
-		private readonly IDataChangedCallback _parent;
+		private IDataChangedCallback _parent;
+
 		private ObservableMap<int, int> _intValues;
 		private ObservableMap<int, long> _longValues;
 
@@ -20,6 +21,8 @@ namespace Session.Model
 		public const int VersionMajor = 1;
 
 		public bool DataChanged { get; private set; }
+
+		internal IDataChangedCallback Parent { get => _parent; set => _parent = value; }
 
 		public CommonObjectData(IDataChangedCallback parent)
 		{
