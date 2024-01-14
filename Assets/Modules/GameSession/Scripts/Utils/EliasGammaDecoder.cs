@@ -27,6 +27,7 @@
 		public long ReadSigned()
 		{
 			var sections = ReadUnary();
+			if (sections == 0) return 0;
 			var numberOfBits = sections * _sectionSize;
 			var negative = ReadBit();
 			var value = (long)ReadBinary(numberOfBits);
