@@ -32,8 +32,8 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_index, EncodingType.EliasGamma);
-				writer.WriteInt(_shipId, EncodingType.EliasGamma);
+			writer.WriteInt(_index, EncodingType.EliasGamma);
+			writer.WriteInt(_shipId, EncodingType.EliasGamma);
 		}
 	}
 }

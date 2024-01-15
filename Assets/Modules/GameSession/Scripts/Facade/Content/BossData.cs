@@ -1,4 +1,5 @@
 ﻿using Session.Model;
+using Session.Extensions;
 
 namespace Session.Content
 {
@@ -15,12 +16,15 @@ namespace Session.Content
 
 		public BossData(SaveGameData sessionData) => _data = sessionData;
 
-		public long CompletedTime(int id) => _data.Bosses.Bosses.TryGetValue(id, out var info) ? info.LastDefeatTime : 0;
+		public long CompletedTime(int id) => _data.Bosses.Bosses.TryGetValue(id, out var info) ? 
+			_data.GameTimeToTicks(info.LastDefeatTime, TimeUnits.Hours) : 0;
+
 		public int DefeatCount(int id) => _data.Bosses.Bosses.TryGetValue(id, out var info) ? info.DefeatCount : 0;
 
 		public void SetCompleted(int id)
 		{
-			var time = System.DateTime.UtcNow.Ticks;
+			var time = _data.TicksToGameTime(System.DateTime.UtcNow.Ticks, TimeUnits.Hours);
+
 			if (!_data.Bosses.Bosses.TryGetValue(id, out var info))
 				_data.Bosses.Bosses.Add(id, new BossInfo(1, time));
 			else

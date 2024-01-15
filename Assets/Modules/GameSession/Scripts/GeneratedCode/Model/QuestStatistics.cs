@@ -40,10 +40,10 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_completionCount, EncodingType.EliasGamma);
-				writer.WriteInt(_failureCount, EncodingType.EliasGamma);
-				writer.WriteLong(_lastStartTime, EncodingType.EliasGamma);
-				writer.WriteLong(_lastCompletionTime, EncodingType.EliasGamma);
+			writer.WriteInt(_completionCount, EncodingType.EliasGamma);
+			writer.WriteInt(_failureCount, EncodingType.EliasGamma);
+			writer.WriteLong(_lastStartTime, EncodingType.EliasGamma);
+			writer.WriteLong(_lastCompletionTime, EncodingType.EliasGamma);
 		}
 	}
 }

@@ -38,12 +38,12 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_starQuestsMap.Count, EncodingType.EliasGamma);
-				foreach (var item in _starQuestsMap.Items)
-				{
-					writer.WriteInt(item.Key, EncodingType.EliasGamma);
-					item.Value.Serialize(writer);
-				}
+			writer.WriteInt(_starQuestsMap.Count, EncodingType.EliasGamma);
+			foreach (var item in _starQuestsMap.Items)
+			{
+				writer.WriteInt(item.Key, EncodingType.EliasGamma);
+				item.Value.Serialize(writer);
+			}
 		}
 	}
 }

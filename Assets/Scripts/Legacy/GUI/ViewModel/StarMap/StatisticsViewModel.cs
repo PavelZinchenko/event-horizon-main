@@ -12,7 +12,8 @@ namespace ViewModel
 
 		private void OnEnable()
 		{
-			VisitedStars.Value.text = _session.StarMap.VisitedStarsCount.ToString();
+			Debug.Break();
+			//VisitedStars.Value.text = _session.StarMap.VisitedStarsCount.ToString();
 		}
 	}
 }

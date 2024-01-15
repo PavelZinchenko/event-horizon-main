@@ -38,12 +38,12 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_purchases.Count, EncodingType.EliasGamma);
-				foreach (var item in _purchases.Items)
-				{
-					writer.WriteString(item.Key, EncodingType.EliasGamma);
-					item.Value.Serialize(writer);
-				}
+			writer.WriteInt(_purchases.Count, EncodingType.EliasGamma);
+			foreach (var item in _purchases.Items)
+			{
+				writer.WriteString(item.Key, EncodingType.EliasGamma);
+				item.Value.Serialize(writer);
+			}
 		}
 	}
 }

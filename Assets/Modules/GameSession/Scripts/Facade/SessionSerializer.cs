@@ -80,7 +80,7 @@ namespace Session
 					return false;
 				}
 
-				var temp = new /*v1.*/SaveGameData(null);
+				var temp = new v1.SaveGameData(null);
 				TransferAchievementData(obsoleteData.Achievements, temp.Achievements);
 				TransferGameData(obsoleteData.Game, temp.Game);
 				TransferStarMapData(obsoleteData.Starmap, temp.StarMap);
@@ -127,7 +127,7 @@ namespace Session
 			newData.TotalPlayTime = oldData.TotalPlayTime;
 		}
 
-		private void TransferStarMapData(ContentObsolete.StarMapData oldData, StarMapData newData)
+		private void TransferStarMapData(ContentObsolete.StarMapData oldData, v1.StarMapData newData)
 		{
 			newData.PlayerPosition = oldData.PlayerPosition;
 			newData.MapModeZoom = oldData.MapScaleFactor;
@@ -182,10 +182,10 @@ namespace Session
 				newData.CompletedTime.Add(item.Key, item.Value);
 		}
 
-		private void TransferBossData(ContentObsolete.BossData oldData, BossData newData)
+		private void TransferBossData(ContentObsolete.BossData oldData, v1.BossData newData)
 		{
 			foreach (var item in oldData._completedTime)
-				newData.Bosses.Add(item.Key, new BossInfo(item.Value.DefeatCount, item.Value.LastDefeatTime));
+				newData.Bosses.Add(item.Key, new v1.BossInfo(item.Value.DefeatCount, item.Value.LastDefeatTime));
 		}
 
 		private void TransferRegionData(ContentObsolete.RegionData oldData, RegionData newData)

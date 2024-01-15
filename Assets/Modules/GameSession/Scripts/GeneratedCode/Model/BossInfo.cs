@@ -13,27 +13,27 @@ namespace Session.Model
 	public readonly partial struct BossInfo
 	{
 		private readonly int _defeatCount;
-		private readonly long _lastDefeatTime;
+		private readonly int _lastDefeatTime;
 
 		public BossInfo(IDataChangedCallback parent)
 		{
 			_defeatCount = default(int);
-			_lastDefeatTime = default(long);
+			_lastDefeatTime = default(int);
 		}
 
 		public BossInfo(SessionDataReader reader, IDataChangedCallback parent)
 		{
 			_defeatCount = reader.ReadInt(EncodingType.EliasGamma);
-			_lastDefeatTime = reader.ReadLong(EncodingType.EliasGamma);
+			_lastDefeatTime = reader.ReadInt(EncodingType.EliasGamma);
 		}
 
 		public int DefeatCount => _defeatCount;
-		public long LastDefeatTime => _lastDefeatTime;
+		public int LastDefeatTime => _lastDefeatTime;
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_defeatCount, EncodingType.EliasGamma);
-				writer.WriteLong(_lastDefeatTime, EncodingType.EliasGamma);
+			writer.WriteInt(_defeatCount, EncodingType.EliasGamma);
+			writer.WriteInt(_lastDefeatTime, EncodingType.EliasGamma);
 		}
 	}
 }

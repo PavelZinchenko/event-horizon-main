@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Session.Model;
+﻿using Session.Model;
 
 namespace Session.Content
 {
@@ -7,10 +6,10 @@ namespace Session.Content
 	{
 		public enum Occupant : uint
 		{
-			Unknown = 0,
-			Empty,
-			Passive,
-			Agressive,
+			Unknown = 0, // !Secured && !Enemy
+			Empty,       // Secured && !Enemy
+			Passive,     // Secured && Enemy
+			Agressive,   // !Secured && Enemy
 		}
 
 		void Reset();
@@ -19,7 +18,6 @@ namespace Session.Content
 		float MapScaleFactor { get; set; }
 		float StarScaleFactor { get; set; }
 		bool IsVisited(int starId);
-		int VisitedStarsCount { get; }
 		int FurthestVisitedStar { get; }
 		uint GetPlanetData(int starId, int planetId);
 		void SetPlanetData(int starId, int planetId, uint value);
@@ -51,7 +49,8 @@ namespace Session.Content
 		{
 			_data.StarMap.PlayerPosition = 0;
 			LastPlayerPosition = 0;
-			_data.StarMap.StarData.Clear();
+			_data.StarMap.SecuredStars.Clear();
+			_data.StarMap.EnemiesOnStars.Clear();
 			_data.StarMap.Bookmarks.Clear();
 			_data.StarMap.PlanetData.Clear();
 		}
@@ -75,9 +74,8 @@ namespace Session.Content
 		public int LastPlayerPosition { get; private set; }
 		public float MapScaleFactor { get => _data.StarMap.MapModeZoom; set => _data.StarMap.MapModeZoom = value; }
 		public float StarScaleFactor { get => _data.StarMap.StarModeZoom; set => _data.StarMap.StarModeZoom = value; }
-		public bool IsVisited(int starId) => _data.StarMap.StarData.ContainsKey(starId);
-		public int VisitedStarsCount => _data.StarMap.StarData.Count;
-		public int FurthestVisitedStar => (int)_data.StarMap.StarData.Keys.Max();
+		public bool IsVisited(int starId) => _data.StarMap.DiscoveredStars.Get((uint)starId);
+		public int FurthestVisitedStar => _data.StarMap.DiscoveredStars.LastIndex;
 		
 		public uint GetPlanetData(int starId, int planetId)
 		{
@@ -91,24 +89,28 @@ namespace Session.Content
 			_data.StarMap.PlanetData.SetValue(key, (int)value);
 		}
 
-		public void SetVisited(int starId) => _data.StarMap.StarData.TryAdd(starId, 0);
+		public void SetVisited(int starId) => _data.StarMap.DiscoveredStars.Add((uint)starId);
 
 		public IStarMapData.Occupant GetEnemy(int starId)
 		{
-			if (!_data.StarMap.StarData.TryGetValue(starId, out var value))
-				return IStarMapData.Occupant.Unknown;
+			var secured = _data.StarMap.SecuredStars.Get((uint)starId);
+			var enemy = _data.StarMap.EnemiesOnStars.Get((uint)starId);
 
-			return (IStarMapData.Occupant)value;
+			if (secured)
+				return enemy ? IStarMapData.Occupant.Passive : IStarMapData.Occupant.Empty;
+			else
+				return enemy ? IStarMapData.Occupant.Agressive : IStarMapData.Occupant.Unknown;
 		}
 
 		public void SetEnemy(int starId, IStarMapData.Occupant enemy)
 		{
-			if (_data.StarMap.StarData.TryGetValue(starId, out var oldValue) && oldValue == (int)enemy)
-				return;
+			var oldValue = GetEnemy(starId);
+			if (oldValue == enemy) return;
 
-			_data.StarMap.StarData.SetValue(starId, (int)enemy);
+			_data.StarMap.SecuredStars.Set((uint)starId, enemy == IStarMapData.Occupant.Empty || enemy == IStarMapData.Occupant.Passive);
+			_data.StarMap.EnemiesOnStars.Set((uint)starId, enemy == IStarMapData.Occupant.Passive || enemy == IStarMapData.Occupant.Agressive);
 
-			if (oldValue == (int)IStarMapData.Occupant.Agressive || oldValue == (int)IStarMapData.Occupant.Unknown)
+			if (oldValue == IStarMapData.Occupant.Agressive || oldValue == IStarMapData.Occupant.Unknown)
 				if (enemy == IStarMapData.Occupant.Empty || enemy == IStarMapData.Occupant.Passive)
 					_newStarSecuredTrigger.Fire(starId);
 		}

@@ -22,6 +22,8 @@ namespace Session.Utils
 		private readonly byte[] _buffer;
 		private int _index;
 
+		public int Position => _index;
+
 		public MemoryWriterStream(byte[] buffer)
 		{
 			_buffer = buffer;

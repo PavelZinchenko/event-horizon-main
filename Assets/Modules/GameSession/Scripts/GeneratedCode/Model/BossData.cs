@@ -17,7 +17,7 @@ namespace Session.Model
 		private ObservableMap<int, Model.BossInfo> _bosses;
 
 		public const int VersionMinor = 0;
-		public const int VersionMajor = 1;
+		public const int VersionMajor = 2;
 
 		public bool DataChanged { get; private set; }
 

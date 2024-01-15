@@ -64,16 +64,16 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_id, EncodingType.EliasGamma);
-				writer.WriteSbyte(_quality, EncodingType.EliasGamma);
-				writer.WriteSbyte(_modification, EncodingType.EliasGamma);
-				writer.WriteSbyte(_upgradeLevel, EncodingType.EliasGamma);
-				writer.WriteShort(_x, EncodingType.EliasGamma);
-				writer.WriteShort(_y, EncodingType.EliasGamma);
-				writer.WriteSbyte(_barrelId, EncodingType.EliasGamma);
-				writer.WriteSbyte(_keyBinding, EncodingType.EliasGamma);
-				writer.WriteSbyte(_behaviour, EncodingType.EliasGamma);
-				writer.WriteBool(_locked, EncodingType.EliasGamma);
+			writer.WriteInt(_id, EncodingType.EliasGamma);
+			writer.WriteSbyte(_quality, EncodingType.EliasGamma);
+			writer.WriteSbyte(_modification, EncodingType.EliasGamma);
+			writer.WriteSbyte(_upgradeLevel, EncodingType.EliasGamma);
+			writer.WriteShort(_x, EncodingType.EliasGamma);
+			writer.WriteShort(_y, EncodingType.EliasGamma);
+			writer.WriteSbyte(_barrelId, EncodingType.EliasGamma);
+			writer.WriteSbyte(_keyBinding, EncodingType.EliasGamma);
+			writer.WriteSbyte(_behaviour, EncodingType.EliasGamma);
+			writer.WriteBool(_locked, EncodingType.EliasGamma);
 		}
 	}
 }

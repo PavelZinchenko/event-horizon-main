@@ -40,12 +40,12 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_id, EncodingType.EliasGamma);
-				writer.WriteInt(_components.Count, EncodingType.EliasGamma);
-				for (int i = 0; i < _components.Count; ++i)
-				{
-					_components[i].Serialize(writer);
-				}
+			writer.WriteInt(_id, EncodingType.EliasGamma);
+			writer.WriteInt(_components.Count, EncodingType.EliasGamma);
+			for (int i = 0; i < _components.Count; ++i)
+			{
+				_components[i].Serialize(writer);
+			}
 		}
 	}
 }

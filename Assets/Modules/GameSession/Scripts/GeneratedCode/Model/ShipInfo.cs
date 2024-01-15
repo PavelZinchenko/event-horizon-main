@@ -84,27 +84,27 @@ namespace Session.Model
 
 		public void Serialize(SessionDataWriter writer)
 		{
-				writer.WriteInt(_id, EncodingType.EliasGamma);
-				writer.WriteString(_name, EncodingType.EliasGamma);
-				writer.WriteLong(_colorScheme, EncodingType.EliasGamma);
-				writer.WriteLong(_experience, EncodingType.EliasGamma);
-				writer.WriteInt(_components.Count, EncodingType.EliasGamma);
-				for (int i = 0; i < _components.Count; ++i)
-				{
-					_components[i].Serialize(writer);
-				}
-				writer.WriteInt(_layoutModifications.Count, EncodingType.EliasGamma);
-				for (int i = 0; i < _layoutModifications.Count; ++i)
-				{
-					writer.WriteByte(_layoutModifications[i], EncodingType.EliasGamma);
-				}
-				writer.WriteInt(_modifications.Count, EncodingType.EliasGamma);
-				for (int i = 0; i < _modifications.Count; ++i)
-				{
-					writer.WriteLong(_modifications[i], EncodingType.EliasGamma);
-				}
-				_satellite1.Serialize(writer);
-				_satellite2.Serialize(writer);
+			writer.WriteInt(_id, EncodingType.EliasGamma);
+			writer.WriteString(_name, EncodingType.EliasGamma);
+			writer.WriteLong(_colorScheme, EncodingType.EliasGamma);
+			writer.WriteLong(_experience, EncodingType.EliasGamma);
+			writer.WriteInt(_components.Count, EncodingType.EliasGamma);
+			for (int i = 0; i < _components.Count; ++i)
+			{
+				_components[i].Serialize(writer);
+			}
+			writer.WriteInt(_layoutModifications.Count, EncodingType.EliasGamma);
+			for (int i = 0; i < _layoutModifications.Count; ++i)
+			{
+				writer.WriteByte(_layoutModifications[i], EncodingType.EliasGamma);
+			}
+			writer.WriteInt(_modifications.Count, EncodingType.EliasGamma);
+			for (int i = 0; i < _modifications.Count; ++i)
+			{
+				writer.WriteLong(_modifications[i], EncodingType.EliasGamma);
+			}
+			_satellite1.Serialize(writer);
+			_satellite2.Serialize(writer);
 		}
 	}
 }

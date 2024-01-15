@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="RegionData" type="object">
+    <member name="DefeatedFleetCount" type="map" key="int" value="int" />
+    <member name="Factions" type="map" key="int" value="int" />
+</data>

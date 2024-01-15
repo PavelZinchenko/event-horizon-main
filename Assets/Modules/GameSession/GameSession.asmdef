@@ -2,6 +2,7 @@
     "name": "GameSession",
     "rootNamespace": "",
     "references": [
+        "Diagnostics",
         "Zenject",
         "CommonComponents",
         "Database",
