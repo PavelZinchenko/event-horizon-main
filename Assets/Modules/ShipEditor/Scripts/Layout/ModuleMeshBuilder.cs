@@ -151,6 +151,9 @@ namespace ShipEditor
 						if (i > ymax) ymax = i;
 					}
 				}
+
+				if (xmin > xmax) xmin = xmax = 0;
+				if (ymin > ymax) ymin = ymax = 0;
 			}
 		}
 	}
