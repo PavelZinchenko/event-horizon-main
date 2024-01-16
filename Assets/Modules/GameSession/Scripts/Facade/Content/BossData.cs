@@ -23,7 +23,7 @@ namespace Session.Content
 
 		public void SetCompleted(int id)
 		{
-			var time = _data.TicksToGameTime(System.DateTime.UtcNow.Ticks, TimeUnits.Hours);
+			var time = _data.CurrentGameTime(TimeUnits.Hours);
 
 			if (!_data.Bosses.Bosses.TryGetValue(id, out var info))
 				_data.Bosses.Bosses.Add(id, new BossInfo(1, time));

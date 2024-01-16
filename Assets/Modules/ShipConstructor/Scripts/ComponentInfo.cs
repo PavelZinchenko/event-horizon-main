@@ -207,6 +207,7 @@ namespace Constructor
         }
 
         public ModificationQuality ModificationQuality { get { return _quality; } }
+		public int Level => _level;
 
         public Economy.ItemType.ItemQuality ItemQuality
         {

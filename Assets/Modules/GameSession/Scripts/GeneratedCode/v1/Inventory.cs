@@ -8,17 +8,17 @@
 
 using Session.Utils;
 
-namespace Session.Model
+namespace Session.v1
 {
 	public class Inventory : IDataChangedCallback
 	{
 		private IDataChangedCallback _parent;
 
-		private ObservableInventory<Model.InventoryComponentInfo> _components;
+		private ObservableInventory<long> _components;
 		private ObservableInventory<int> _satellites;
 
 		public const int VersionMinor = 0;
-		public const int VersionMajor = 2;
+		public const int VersionMajor = 1;
 
 		public bool DataChanged { get; private set; }
 
@@ -27,7 +27,7 @@ namespace Session.Model
 		public Inventory(IDataChangedCallback parent)
 		{
 			_parent = parent;
-			_components = new ObservableInventory<Model.InventoryComponentInfo>(this);
+			_components = new ObservableInventory<long>(this);
 			_satellites = new ObservableInventory<int>(this);
 		}
 
@@ -35,12 +35,12 @@ namespace Session.Model
 		{
 			int componentsItemCount;
 			componentsItemCount = reader.ReadInt(EncodingType.EliasGamma);
-			_components = new ObservableInventory<Model.InventoryComponentInfo>(this);
+			_components = new ObservableInventory<long>(this);
 			for (int i = 0; i < componentsItemCount; ++i)
 			{
-				Model.InventoryComponentInfo value;
+				long value;
 				int quantity;
-				value = new Model.InventoryComponentInfo(reader, this);
+				value = reader.ReadLong(EncodingType.EliasGamma);
 				quantity = reader.ReadInt(EncodingType.EliasGamma);
 				_components.Add(value,quantity);
 			}
@@ -59,25 +59,8 @@ namespace Session.Model
 			DataChanged = false;
 		}
 
-		public ObservableInventory<Model.InventoryComponentInfo> Components => _components;
+		public ObservableInventory<long> Components => _components;
 		public ObservableInventory<int> Satellites => _satellites;
-
-		public void Serialize(SessionDataWriter writer)
-		{
-			writer.WriteInt(_components.Count, EncodingType.EliasGamma);
-			foreach (var item in _components.Items)
-			{
-				item.Key.Serialize(writer);
-				writer.WriteInt(item.Value, EncodingType.EliasGamma);
-			}
-			writer.WriteInt(_satellites.Count, EncodingType.EliasGamma);
-			foreach (var item in _satellites.Items)
-			{
-				writer.WriteInt(item.Key, EncodingType.EliasGamma);
-				writer.WriteInt(item.Value, EncodingType.EliasGamma);
-			}
-			DataChanged = false;
-		}
 
 		public void OnDataChanged()
 		{

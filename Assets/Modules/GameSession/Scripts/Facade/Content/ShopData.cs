@@ -1,4 +1,5 @@
 ﻿using Session.Model;
+using Session.Extensions;
 
 namespace Session.Content
 {
@@ -6,6 +7,7 @@ namespace Session.Content
 	{
 		PurchaseInfo GetPurchase(int starId, string itemId);
 		void SetPurchase(int starId, string itemId, int quantity);
+		int NumberOfPurchasedItems(PurchaseInfo purchase, long renewalTime);
 	}
 
 	public class ShopData : IShopData, ISessionDataContent
@@ -34,7 +36,20 @@ namespace Session.Content
 				_data.Shop.Purchases.Add(starId, purchases);
 			}
 
-			purchases.Purchases.Add(itemId, new PurchaseInfo(quantity, System.DateTime.UtcNow.Ticks));
+			purchases.Purchases.Add(itemId, new PurchaseInfo(quantity, _data.CurrentGameTime(TimeUnits.Hours)));
+		}
+
+		public int NumberOfPurchasedItems(PurchaseInfo purchase, long renewalTime)
+		{
+			if (renewalTime <= 0)
+			{
+				return purchase.Quantity;
+			}
+			else
+			{
+				var count = (System.DateTime.UtcNow.Ticks - _data.GameTimeToTicks(purchase.Time, TimeUnits.Hours)) / renewalTime;
+				return (int)System.Math.Max(0L, purchase.Quantity - count);
+			}
 		}
 	}
 }

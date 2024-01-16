@@ -1,4 +1,5 @@
 ﻿using Session.Model;
+using Session.Extensions;
 
 namespace Session.Content
 {
@@ -14,7 +15,7 @@ namespace Session.Content
 
 		public EventData(SaveGameData sessionData) => _data = sessionData;
 
-		public long CompletedTime(int starId) => _data.Events.CompletedTime.TryGetValue(starId, out var value) ? value : 0;
-		public void Complete(int starId) => _data.Events.CompletedTime.SetValue(starId, System.DateTime.UtcNow.Ticks);
+		public long CompletedTime(int starId) => _data.Events.CompletedTime.TryGetValue(starId, out var value) ? _data.GameTimeToTicks(value, TimeUnits.Hours) : 0;
+		public void Complete(int starId) => _data.Events.CompletedTime.SetValue(starId, _data.CurrentGameTime(TimeUnits.Hours));
 	}
 }

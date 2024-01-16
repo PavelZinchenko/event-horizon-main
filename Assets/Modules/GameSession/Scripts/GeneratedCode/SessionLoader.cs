@@ -15,6 +15,9 @@ namespace Session
 		/// <summary>
 		/// These items must be transferred manually:
 		/// copy oldData.Bosses.Bosses to newData.Bosses.Bosses;
+		/// type was changed - oldData.Events.CompletedTime;
+		/// type was changed - oldData.Inventory.Components;
+		/// copy oldData.Shop.Purchases to newData.Shop.Purchases;
 		/// property was removed - oldData.StarMap.StarData;
 		/// property was added - newData.StarMap.DiscoveredStars;
 		/// property was added - newData.StarMap.SecuredStars;
@@ -54,16 +57,14 @@ namespace Session
 			newData.Game = oldData.Game;
 			newData.Achievements = oldData.Achievements;
 			newData.Common = oldData.Common;
-			newData.Events = oldData.Events;
 			newData.Fleet = oldData.Fleet;
 			newData.Iap = oldData.Iap;
 			newData.Pvp = oldData.Pvp;
-			newData.Inventory = oldData.Inventory;
+			newData.Inventory.Satellites.Assign(oldData.Inventory.Satellites);
 			newData.Quests = oldData.Quests;
 			newData.Regions = oldData.Regions;
 			newData.Research = oldData.Research;
 			newData.Resources = oldData.Resources;
-			newData.Shop = oldData.Shop;
 			newData.Social = oldData.Social;
 			newData.StarMap.PlayerPosition = oldData.StarMap.PlayerPosition;
 			newData.StarMap.MapModeZoom = oldData.StarMap.MapModeZoom;

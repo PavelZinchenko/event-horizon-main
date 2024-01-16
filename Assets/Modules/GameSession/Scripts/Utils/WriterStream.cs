@@ -7,6 +7,8 @@ namespace Session.Utils
 	{
 		private readonly Stream _stream;
 
+		public long Position => _stream.Position;
+
 		public WriterStream(Stream stream)
 		{
 			_stream = stream;
@@ -22,7 +24,7 @@ namespace Session.Utils
 		private readonly byte[] _buffer;
 		private int _index;
 
-		public int Position => _index;
+		public long Position => _index;
 
 		public MemoryWriterStream(byte[] buffer)
 		{

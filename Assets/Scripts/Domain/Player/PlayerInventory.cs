@@ -46,7 +46,7 @@ namespace GameServices.Player
             var random = new System.Random(_session.Game.Seed);
             foreach (var item in _session.Inventory.Components.Items)
             {
-                var componentInfo = ComponentInfo.FromInt64(_database, item.Key);
+                var componentInfo = item.Key.ToComponentInfo(_database);
                 if (!componentInfo)
                 {
                     debug.Write("Unknown module id - " + item.Key);
@@ -75,7 +75,7 @@ namespace GameServices.Player
             {
                 _session.Inventory.Components.Clear();
                 foreach (var item in _components.Items)
-                    _session.Inventory.Components.Add(item.Key.SerializeToInt64(), item.Value);
+                    _session.Inventory.Components.Add(new Session.Model.InventoryComponentInfo(item.Key), item.Value);
 
                 _components.IsDirty = false;
             }

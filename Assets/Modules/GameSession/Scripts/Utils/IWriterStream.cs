@@ -7,6 +7,7 @@ namespace Session.Utils
 		void WriteByte(byte value);
 		void Write(ReadOnlySpan<byte> buffer);
 		void Write(byte[] buffer, int offset, int count);
+		long Position { get; }
 	}
 
 	public static class WriterStreamExtensions

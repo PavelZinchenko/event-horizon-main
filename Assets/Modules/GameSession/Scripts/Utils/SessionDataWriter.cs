@@ -16,6 +16,8 @@ namespace Session.Utils
 		private readonly EliasGammaEncoder _eliasEncoder;
 		private EncodingType _encoding;
 
+		public long Position => _writer.Position;
+
 		public SessionDataWriter(IWriterStream writer)
 		{
 			_writer = writer;

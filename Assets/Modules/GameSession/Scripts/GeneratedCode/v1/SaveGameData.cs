@@ -18,16 +18,16 @@ namespace Session.v1
 		private Model.Achievements _achievements;
 		private v1.BossData _bosses;
 		private Model.CommonObjectData _common;
-		private Model.EventData _events;
+		private v1.EventData _events;
 		private Model.FleetData _fleet;
 		private Model.IapData _iap;
 		private Model.PvpData _pvp;
-		private Model.Inventory _inventory;
+		private v1.Inventory _inventory;
 		private Model.QuestData _quests;
 		private Model.RegionData _regions;
 		private Model.ResearchData _research;
 		private Model.ResourcesData _resources;
-		private Model.ShopData _shop;
+		private v1.ShopData _shop;
 		private Model.SocialData _social;
 		private v1.StarMapData _starMap;
 		private Model.Statistics _statistics;
@@ -48,16 +48,16 @@ namespace Session.v1
 			_achievements = new Model.Achievements(this);
 			_bosses = new v1.BossData(this);
 			_common = new Model.CommonObjectData(this);
-			_events = new Model.EventData(this);
+			_events = new v1.EventData(this);
 			_fleet = new Model.FleetData(this);
 			_iap = new Model.IapData(this);
 			_pvp = new Model.PvpData(this);
-			_inventory = new Model.Inventory(this);
+			_inventory = new v1.Inventory(this);
 			_quests = new Model.QuestData(this);
 			_regions = new Model.RegionData(this);
 			_research = new Model.ResearchData(this);
 			_resources = new Model.ResourcesData(this);
-			_shop = new Model.ShopData(this);
+			_shop = new v1.ShopData(this);
 			_social = new Model.SocialData(this);
 			_starMap = new v1.StarMapData(this);
 			_statistics = new Model.Statistics(this);
@@ -71,16 +71,16 @@ namespace Session.v1
 			_achievements = new Model.Achievements(reader, this);
 			_bosses = new v1.BossData(reader, this);
 			_common = new Model.CommonObjectData(reader, this);
-			_events = new Model.EventData(reader, this);
+			_events = new v1.EventData(reader, this);
 			_fleet = new Model.FleetData(reader, this);
 			_iap = new Model.IapData(reader, this);
 			_pvp = new Model.PvpData(reader, this);
-			_inventory = new Model.Inventory(reader, this);
+			_inventory = new v1.Inventory(reader, this);
 			_quests = new Model.QuestData(reader, this);
 			_regions = new Model.RegionData(reader, this);
 			_research = new Model.ResearchData(reader, this);
 			_resources = new Model.ResourcesData(reader, this);
-			_shop = new Model.ShopData(reader, this);
+			_shop = new v1.ShopData(reader, this);
 			_social = new Model.SocialData(reader, this);
 			_starMap = new v1.StarMapData(reader, this);
 			_statistics = new Model.Statistics(reader, this);
@@ -134,7 +134,7 @@ namespace Session.v1
 				OnDataChanged();
 			}
 		}
-		public Model.EventData Events
+		public v1.EventData Events
 		{
 			get => _events;
 			set
@@ -178,7 +178,7 @@ namespace Session.v1
 				OnDataChanged();
 			}
 		}
-		public Model.Inventory Inventory
+		public v1.Inventory Inventory
 		{
 			get => _inventory;
 			set
@@ -233,7 +233,7 @@ namespace Session.v1
 				OnDataChanged();
 			}
 		}
-		public Model.ShopData Shop
+		public v1.ShopData Shop
 		{
 			get => _shop;
 			set

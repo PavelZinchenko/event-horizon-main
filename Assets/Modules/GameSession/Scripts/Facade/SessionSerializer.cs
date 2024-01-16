@@ -141,7 +141,7 @@ namespace Session
 				newData.StarData.Add(item.Key, item.Value);
 		}
 
-		private void TransferInventoryData(ContentObsolete.InventoryData oldData, Inventory newData)
+		private void TransferInventoryData(ContentObsolete.InventoryData oldData, v1.Inventory newData)
 		{
 			foreach (var item in oldData._components.Items)
 				newData.Components.Add(item.Key, item.Value);
@@ -164,19 +164,19 @@ namespace Session
 			}
 		}
 
-		private void TransferShopData(ContentObsolete.ShopData oldData, ShopData newData)
+		private void TransferShopData(ContentObsolete.ShopData oldData, v1.ShopData newData)
 		{
 			foreach (var purchases in oldData._purchases)
 			{
-				var purchasesMap = new PurchasesMap(newData);
+				var purchasesMap = new v1.PurchasesMap(newData);
 				foreach (var item in purchases.Value)
-					purchasesMap.Purchases.Add(item.Key, new PurchaseInfo(item.Value.Quantity, item.Value.Time));
+					purchasesMap.Purchases.Add(item.Key, new v1.PurchaseInfo(item.Value.Quantity, item.Value.Time));
 
 				newData.Purchases.Add(purchases.Key, purchasesMap);
 			}
 		}
 
-		private void TransferEventsData(ContentObsolete.EventData oldData, EventData newData)
+		private void TransferEventsData(ContentObsolete.EventData oldData, v1.EventData newData)
 		{
 			foreach (var item in oldData._completedTime)
 				newData.CompletedTime.Add(item.Key, item.Value);

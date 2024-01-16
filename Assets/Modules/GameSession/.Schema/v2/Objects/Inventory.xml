@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data name="Inventory" type="object">
-    <member name="Components" type="inventory" value="long" />
+    <member name="Components" type="inventory" value="InventoryComponentInfo" />
     <member name="Satellites" type="inventory" value="int" />
 </data>

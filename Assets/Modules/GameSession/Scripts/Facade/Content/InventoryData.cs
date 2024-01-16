@@ -5,7 +5,7 @@ namespace Session.Content
 {
 	public interface IInventoryData
 	{
-		ObservableInventory<long> Components { get; }
+		ObservableInventory<InventoryComponentInfo> Components { get; }
 		ObservableInventory<int> Satellites { get; }
 	}
 
@@ -15,7 +15,7 @@ namespace Session.Content
 
 		public InventoryData(SaveGameData sessionData) => _data = sessionData;
 
-		public ObservableInventory<long> Components => _data.Inventory.Components;
+		public ObservableInventory<InventoryComponentInfo> Components => _data.Inventory.Components;
 		public ObservableInventory<int> Satellites => _data.Inventory.Satellites;
 	}
 }

@@ -72,7 +72,7 @@ namespace Economy.Products
             _priceScale = priceScale;
 
             var purchase = _session.Shop.GetPurchase(marketId, _itemId);
-            Quantity = 1 - purchase.CalculateQuantity(renewalTime, System.DateTime.UtcNow.Ticks);
+            Quantity = 1 - _session.Shop.NumberOfPurchasedItems(purchase, renewalTime);
 
             var random = new System.Random(marketId + 123456789 * itemId + (int)purchase.Time);
             _type = _factory.CreateComponentItem(Constructor.ComponentInfo.CreateRandom(database, itemLevel, itemFaction, random, allowRare, maxQuality), premium);
@@ -208,8 +208,8 @@ namespace Economy.Products
             Type = type;
             _session = session;
             _marketId = marketId;
-            var purchase = session.Shop.GetPurchase(marketId, type.Id);
-            _purchasedCount = purchase.CalculateQuantity(renewalTime, System.DateTime.UtcNow.Ticks);
+			var purchase = session.Shop.GetPurchase(marketId, type.Id);
+			_purchasedCount = session.Shop.NumberOfPurchasedItems(purchase, renewalTime);
         }
 
         public IItemType Type { get; private set; }
