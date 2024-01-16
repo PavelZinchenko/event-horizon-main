@@ -28,8 +28,9 @@ namespace Combat.Component.Systems.Devices
                 InvokeTriggers(ConditionType.OnActivate);
 
                 _ship.Body.Move(_ship.Body.Position + RotationHelpers.Direction(_ship.Body.Rotation)*_range);
-                _ship.Body.ApplyAcceleration(-_ship.Body.Velocity);
-                TimeFromLastUse = 0;
+				_ship.Body.ApplyAcceleration(-_ship.Body.Velocity);
+				_ship.Body.ApplyAngularAcceleration(-_ship.Body.AngularVelocity);
+				TimeFromLastUse = 0;
 
                 InvokeTriggers(ConditionType.OnDeactivate);
             }
