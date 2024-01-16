@@ -36,7 +36,7 @@ namespace Session.Content
 				_data.Shop.Purchases.Add(starId, purchases);
 			}
 
-			purchases.Purchases.Add(itemId, new PurchaseInfo(quantity, _data.CurrentGameTime(TimeUnits.Hours)));
+			purchases.Purchases.SetValue(itemId, new PurchaseInfo(quantity, _data.CurrentGameTime(TimeUnits.Hours)));
 		}
 
 		public int NumberOfPurchasedItems(PurchaseInfo purchase, long renewalTime)
