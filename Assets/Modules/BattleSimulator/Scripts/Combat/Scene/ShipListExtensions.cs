@@ -14,10 +14,10 @@ namespace Combat.Scene
 
         public bool IgnoreDrones;
         public bool UsePriority;
-        public bool UseDroneCamouflage;
-        public bool UseMissileCamouflage;
+		public bool UseDroneCamouflage;
+		public bool UseMissileCamouflage;
 
-        public int IgnoreDecoyChance;
+		public int IgnoreDecoyChance;
         public int TakeDecoyChance;
 
         //public int Seed;
@@ -31,9 +31,9 @@ namespace Combat.Scene
 
                 IgnoreDrones = false,
                 UsePriority = false,
-                UseDroneCamouflage = true,
+				UseDroneCamouflage = true,
 
-                MaxDistance = maxDistance,
+				MaxDistance = maxDistance,
 
                 //Seed = seed,
             };
@@ -84,12 +84,12 @@ namespace Combat.Scene
         public static IShip GetEnemy(this IUnitList<IShip> shipList, IUnit unit, EnemyMatchingOptions options, float rotation = 0, float maxDeviation = 180, float maxRange = float.MaxValue)
         {
             IShip enemy = null;
-            var random = new LazyRandom();
-            float minRange = float.MaxValue;
-            var ignoreDecoy = options.IgnoreDecoyChance >= 100 || options.IgnoreDecoyChance > 0 && random.Random.Percentage(options.IgnoreDecoyChance);
-            var takeDecoy = options.TakeDecoyChance >= 100 || options.TakeDecoyChance > 0 && random.Random.Percentage(options.TakeDecoyChance);
+			var random = new LazyRandom();
+			float minRange = float.MaxValue;
+			var ignoreDecoy = options.IgnoreDecoyChance >= 100 || options.IgnoreDecoyChance > 0 && random.Random.Percentage(options.IgnoreDecoyChance);
+			var takeDecoy = options.TakeDecoyChance >= 100 || options.TakeDecoyChance > 0 && random.Random.Percentage(options.TakeDecoyChance);
 
-            lock (shipList.LockObject)
+			lock (shipList.LockObject)
             {
                 foreach (var ship in shipList.Items)
                 {
@@ -99,10 +99,10 @@ namespace Combat.Scene
                         continue;
                     if (ignoreDecoy && ship.Type.Class == UnitClass.Decoy)
                         continue;
-                    if (options.UseDroneCamouflage && ship.Features.ChanceToAvoidDrone > 0f && random.Random.Percentage(ship.Features.ChanceToAvoidDrone))
-                        continue;
+					if (options.UseDroneCamouflage && ship.Features.ChanceToAvoidDrone > 0f && random.Random.Percentage(ship.Features.ChanceToAvoidDrone))
+						continue;
 
-                    var dir = unit.Body.Position.Direction(ship.Body.Position);
+					var dir = unit.Body.Position.Direction(ship.Body.Position);
                     var range = dir.magnitude;
 
                     if (options.MaxDistance > 0)
@@ -172,11 +172,11 @@ namespace Combat.Scene
                     if (targetPriority == TargetPriority.None && !trueVision)
                         continue;
 
-                    var chanceToAvoidMissile = ship.Features.ChanceToAvoidMissile;
-                    if (chanceToAvoidMissile > 0f && !trueVision && new System.Random().Percentage(chanceToAvoidMissile))
-                        continue;
+					var chanceToAvoidMissile = ship.Features.ChanceToAvoidMissile;
+					if (chanceToAvoidMissile > 0f && !trueVision && new System.Random().Percentage(chanceToAvoidMissile))
+						continue;
 
-                    if (ignoreDrones && ship.Type.Class == UnitClass.Drone)
+					if (ignoreDrones && ship.Type.Class == UnitClass.Drone)
                         continue;
 
                     var dir = unit.Body.Position.Direction(ship.Body.Position);
@@ -239,6 +239,13 @@ namespace Combat.Scene
             }
         }
 
+        /// <summary>
+        /// Returns list of all objects WITHOUT PARENTS within a specified radius around the center point
+        /// </summary>
+        /// <param name="unitList">list to fetch units from</param>
+        /// <param name="targetList">list to write targets to</param>
+        /// <param name="center">center point</param>
+        /// <param name="radius">max radius around the center point</param>
         public static void GetObjectsInRange(this IUnitList<IUnit> unitList, IList<IUnit> targetList, Vector2 center, float radius)
         {
             lock (unitList.LockObject)
@@ -253,6 +260,42 @@ namespace Combat.Scene
                     var unit = units[i];
                     if (unit.Body.Parent != null)
                         continue;
+                    if (unit.Body.Position.SqrDistance(center) < sqrRadius)
+                        targetList.Add(unit);
+                }
+            }
+        }
+        
+
+        /// <summary>
+        /// Functionally identical to GetObjectsInRange, but also returns objects with parents as a separate list and
+        /// with its separate max tracking range
+        /// </summary>
+        /// <param name="unitList">list to fetch units from</param>
+        /// <param name="targetList">list to write targets without parents to</param>
+        /// <param name="parentedTargetsList">list to write targets with parents to</param>
+        /// <param name="center">center point</param>
+        /// <param name="radius">max radius around the center point</param>
+        /// <param name="parentedRadius">max radius around the center point for objects with parents</param>
+        public static void GetObjectsInRange(this IUnitList<IUnit> unitList, IList<IUnit> targetList, IList<IUnit> parentedTargetsList, Vector2 center, float radius, float parentedRadius)
+        {
+            lock (unitList.LockObject)
+            {
+                var units = unitList.Items;
+                var count = units.Count;
+                targetList.Clear();
+                var sqrRadius = radius*radius;
+                var sqrParRadius = parentedRadius*parentedRadius;
+
+                for (var i = 0; i < count; ++i)
+                {
+                    var unit = units[i];
+                    if (unit.Body.Parent != null)
+                    {
+                        if (unit.Body.Position.SqrDistance(center) < sqrParRadius)
+                            parentedTargetsList?.Add(unit);
+                        continue;
+                    }
                     if (unit.Body.Position.SqrDistance(center) < sqrRadius)
                         targetList.Add(unit);
                 }
