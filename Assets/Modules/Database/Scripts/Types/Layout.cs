@@ -15,6 +15,9 @@ namespace GameDatabase.Model
 			_cache = null;
 
             Data = data;
+
+			if (_cellcount == 0) 
+				Data = _defaultLayout;
         }
 
         public string Data
@@ -98,5 +101,6 @@ namespace GameDatabase.Model
 	
 		public const CellType CustomizableCell = (CellType)'*';
 		public const CellType CustomWeaponCell = (CellType)'X';
+		private const string _defaultLayout = "1";
 	}
 }
