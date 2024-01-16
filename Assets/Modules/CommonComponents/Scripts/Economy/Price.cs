@@ -61,7 +61,7 @@ namespace Economy
 			if (price._amount <= 0)
 				return new Price(0, price._currency);
 
-			return new Price(price._amount / multiplier, price._currency);
+			return new Price(price._amount / multiplier, price._currency).Min(1);
 		}
 
 		public override string ToString()
