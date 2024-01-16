@@ -2,18 +2,18 @@
 
 namespace Domain.Quests
 {
-    public class EnemiesWantFightRequirements : IRequirements
+    public class OccupantsAttackingRequirements : IRequirements
     {
-        public EnemiesWantFightRequirements(IPlayerDataProvider playerData)
+        public OccupantsAttackingRequirements(IPlayerDataProvider playerData)
         {
             _playerData = playerData;
         }
 
         public bool IsMet => !_playerData.CurrentStar.IsSecured;
-        public bool CanStart(int starId, int seed) { return IsMet; }
+        public bool CanStart(int starId, int seed) => IsMet;
 
-        public string GetDescription(ILocalization localization) { return string.Empty; }
-        public int BeaconPosition { get { return -1; } }
+        public string GetDescription(ILocalization localization) => string.Empty;
+        public int BeaconPosition => -1;
 
         private readonly IPlayerDataProvider _playerData;
     }

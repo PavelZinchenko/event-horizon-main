@@ -11,6 +11,7 @@
     <member name="MinValue" type="int" case="HaveQuestItem" minvalue="1" maxvalue="1000000" alias="Amount" />
     <member name="MinValue" type="int" case="TimeSinceQuestStart,TimeSinceLastCompletion" minvalue="0" maxvalue="999999" alias="Minutes" />
     <member name="MaxValue" type="int" case="TimeSinceQuestStart,TimeSinceLastCompletion" minvalue="0" maxvalue="999999" alias="Hours" />
+    <member name="BoolValue" type="bool" case="PlayerPosition,RandomStarSystem,ComeToOrigin" alias="AllowUnsafeStars" />
     <member name="Character" type="object" typeid="Character" case="CharacterRelations" />
     <member name="Faction" type="object" typeid="Faction" case="Faction" />
     <member name="Loot" type="struct" typeid="LootContent" case="HaveItem" />

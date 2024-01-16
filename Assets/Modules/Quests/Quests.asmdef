@@ -5,7 +5,8 @@
         "Zenject",
         "CommonComponents",
         "Database",
-        "Localization"
+        "Localization",
+        "Diagnostics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

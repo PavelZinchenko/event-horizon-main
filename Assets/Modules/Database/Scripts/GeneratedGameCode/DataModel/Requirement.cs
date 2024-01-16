@@ -184,6 +184,7 @@ namespace GameDatabase.DataModel
         {
 			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0, 10000);
 			MaxValue = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0, 10000);
+			AllowUnsafeStars = serializable.BoolValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -195,6 +196,7 @@ namespace GameDatabase.DataModel
 
 		public int MinValue { get; private set; }
 		public int MaxValue { get; private set; }
+		public bool AllowUnsafeStars { get; private set; }
     }
     public partial class Requirement_RandomStarSystem : Requirement
     {
@@ -205,6 +207,7 @@ namespace GameDatabase.DataModel
         {
 			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0, 10000);
 			MaxValue = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0, 10000);
+			AllowUnsafeStars = serializable.BoolValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -216,6 +219,7 @@ namespace GameDatabase.DataModel
 
 		public int MinValue { get; private set; }
 		public int MaxValue { get; private set; }
+		public bool AllowUnsafeStars { get; private set; }
     }
     public partial class Requirement_AggressiveOccupants : Requirement
     {
@@ -418,6 +422,7 @@ namespace GameDatabase.DataModel
   		public Requirement_ComeToOrigin(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
+			AllowUnsafeStars = serializable.BoolValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -427,6 +432,7 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+		public bool AllowUnsafeStars { get; private set; }
     }
     public partial class Requirement_TimeSinceQuestStart : Requirement
     {

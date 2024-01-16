@@ -4,11 +4,12 @@ namespace Domain.Quests
 {
     public class CurrentStarRequirements : IRequirements
     {
-        public CurrentStarRequirements(int minDistance, int maxDistance, IPlayerDataProvider playerData)
+        public CurrentStarRequirements(int minDistance, int maxDistance, bool allowUnsafe, IPlayerDataProvider playerData)
         {
             _playerData = playerData;
 
-            _minDistance = minDistance;
+			_allowUnsafe = allowUnsafe;
+			_minDistance = minDistance;
             _maxDistance = maxDistance;
         }
 
@@ -18,12 +19,12 @@ namespace Domain.Quests
             {
                 var star = _playerData.CurrentStar;
                 var level = star.Level;
-                if (level < _minDistance || level > _maxDistance) return false;
-                return star.IsSecured;
+				if (level < _minDistance || level > _maxDistance) return false;
+                return _allowUnsafe || star.IsSecured;
             }
         }
 
-        public bool CanStart(int starId, int seed) { return IsMet; }
+        public bool CanStart(int starId, int seed) => IsMet;
 
         public string GetDescription(ILocalization localization)
         {
@@ -34,8 +35,9 @@ namespace Domain.Quests
 #endif
         }
 
-        public int BeaconPosition { get { return -1; } }
+        public int BeaconPosition => -1;
 
+		private readonly bool _allowUnsafe;
         private readonly int _minDistance;
         private readonly int _maxDistance;
         private readonly IPlayerDataProvider _playerData;

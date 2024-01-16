@@ -46,7 +46,7 @@ namespace Domain.Quests
             var minDistance = UnityEngine.Mathf.Clamp(content.MinValue, 0, 1000);
             var maxDistance = content.MaxValue >= minDistance ? content.MaxValue : int.MaxValue;
 
-            return new CurrentStarRequirements(minDistance, maxDistance, _context.PlayerDataProvider);
+            return new CurrentStarRequirements(minDistance, maxDistance, content.AllowUnsafeStars, _context.PlayerDataProvider);
         }
 
         public IRequirements Create(Requirement_RandomStarSystem content)
@@ -56,12 +56,12 @@ namespace Domain.Quests
             var maxDistance = UnityEngine.Mathf.Clamp(content.MaxValue, minDistance, 1000);
             var distance = maxDistance > minDistance ? minDistance + random.Next(maxDistance - minDistance + 1) : minDistance;
             var starId = _context.StarMapDataProvider.RandomStarAtDistance(_questInfo.StarId, distance, random);
-            return new StarRequirements(starId, _context.PlayerDataProvider);
+            return new StarRequirements(starId, content.AllowUnsafeStars, _context.PlayerDataProvider);
         }
 
         public IRequirements Create(Requirement_AggressiveOccupants content)
         {
-            return new EnemiesWantFightRequirements(_context.PlayerDataProvider);
+            return new OccupantsAttackingRequirements(_context.PlayerDataProvider);
         }
 
         public IRequirements Create(Requirement_QuestCompleted content)
@@ -121,7 +121,7 @@ namespace Domain.Quests
 
         public IRequirements Create(Requirement_ComeToOrigin content)
         {
-            return new StarRequirements(_questInfo.StarId, _context.PlayerDataProvider);
+            return new StarRequirements(_questInfo.StarId, content.AllowUnsafeStars, _context.PlayerDataProvider);
         }
 
         private IRequirements Boolean(IEnumerable<Requirement> requirements, BooleanRequirements.Operation operation)
