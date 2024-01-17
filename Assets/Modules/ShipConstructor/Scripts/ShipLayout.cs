@@ -10,12 +10,11 @@ namespace Constructor
 {
 	public class ShipLayout
 	{
-		public ShipLayout(Layout layout, IEnumerable<Barrel> barrels, IEnumerable<IntegratedComponent> predefinedComponents, bool ignoreWeaponClass, IDebugLog debugLog = null)
+		public ShipLayout(Layout layout, IEnumerable<Barrel> barrels, IEnumerable<IntegratedComponent> predefinedComponents, IDebugLog debugLog = null)
 		{
 			_layout = layout.Data.Select(item => new LayoutElement((CellType)item)).ToArray();
 		    Size = layout.Size;
 		    CellCount = layout.CellCount;
-			_ignoreWeaponClass = ignoreWeaponClass;
 
             UpdateBarrelData(barrels);
 
@@ -199,7 +198,7 @@ namespace Constructor
 	        {
 	            var item = _layout[barrel.PositionInLayout];
 	            item.BarrelId = index++;
-	            item.WeaponClass = _ignoreWeaponClass ? string.Empty : barrel.WeaponClass;
+	            item.WeaponClass = barrel.WeaponClass;
 	            _layout[barrel.PositionInLayout] = item;
 	        }
 
@@ -256,7 +255,6 @@ namespace Constructor
 			return false;
 		}
 
-		private readonly bool _ignoreWeaponClass;
 		private readonly List<IntegratedComponent> _components = new List<IntegratedComponent>();
         private readonly LayoutElement[] _layout;
 

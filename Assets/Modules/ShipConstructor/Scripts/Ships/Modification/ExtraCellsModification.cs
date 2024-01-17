@@ -59,7 +59,8 @@ namespace Constructor.Ships.Modification
         }
 
         public int Seed { get; }
+		public bool ChangesBarrels => false;
 
-        private static bool IsSuitableCell(char cell) { return cell == (char)CellType.Inner || cell == (char)CellType.Outer || cell == (char)CellType.InnerOuter; }
+		private static bool IsSuitableCell(char cell) { return cell == (char)CellType.Inner || cell == (char)CellType.Outer || cell == (char)CellType.InnerOuter; }
     }
 }

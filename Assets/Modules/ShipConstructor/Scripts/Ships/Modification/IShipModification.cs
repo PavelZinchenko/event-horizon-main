@@ -10,6 +10,7 @@ namespace Constructor.Ships.Modification
 
         void Apply(ref ShipBaseStats stats);
 
-        int Seed { get; }
+		bool ChangesBarrels { get; }
+		int Seed { get; }
     }
 }

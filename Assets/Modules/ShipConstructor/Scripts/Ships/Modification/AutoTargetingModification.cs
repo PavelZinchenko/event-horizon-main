@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Constructor.Model;
 using GameDatabase.DataModel;
-using GameDatabase.Enums;
 using Services.Localization;
 
 namespace Constructor.Ships.Modification
@@ -22,9 +21,16 @@ namespace Constructor.Ships.Modification
 
         public void Apply(ref ShipBaseStats stats)
         {
-            stats.AutoTargeting = true;
-        }
+			for (int i = 0; i < stats.Barrels.Count; ++i)
+			{
+				var barrel = stats.Barrels[i];
+				if (barrel.AutoAimingArc < _autoAiming)
+					barrel.SetAutoAimingArc(_autoAiming);
+			}
+		}
 
-        public int Seed => 0;
+		public bool ChangesBarrels => true;
+		public int Seed => 0;
+		private const float _autoAiming = 20f;
     }
 }

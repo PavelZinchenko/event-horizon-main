@@ -110,7 +110,7 @@ namespace Constructor.Ships
 
         public int RemoveInvalidComponents(IGameItemCollection<ComponentInfo> inventory)
         {
-            var layout = new ShipLayout(Model.Layout, Model.Barrels, Enumerable.Empty<IntegratedComponent>(), Model.Stats.IgnoreWeaponClass);
+            var layout = new ShipLayout(Model.Layout, Model.Barrels, Enumerable.Empty<IntegratedComponent>());
             var index = 0;
             var components = Components;
             var count = 0;

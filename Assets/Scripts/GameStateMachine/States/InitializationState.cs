@@ -92,7 +92,7 @@ namespace GameStateMachine.States
 		            // TODO: move to database
 		            var ship = new CommonShip(item);
 		            var debug = _debugManager.CreateLog(item.Id.ToString());
-		            var layout = new Constructor.ShipLayout(item.Ship.Layout, item.Ship.Barrels, ship.Components, false, debug);
+		            var layout = new Constructor.ShipLayout(item.Ship.Layout, item.Ship.Barrels, ship.Components, debug);
 		            if (layout.Components.Count() != ship.Components.Count)
 		            {
 		                Debug.LogError("invalid ship layout: " + item.Id);
@@ -113,7 +113,7 @@ namespace GameStateMachine.States
 		            var debug = _debugManager.CreateLog(item.Id.ToString());
 		            var components = item.Components
 		                .Select<InstalledComponent, IntegratedComponent>(ComponentExtensions.FromDatabase).ToArray();
-		            var layout = new ShipLayout(item.Satellite.Layout, item.Satellite.Barrels, components, false, debug);
+		            var layout = new ShipLayout(item.Satellite.Layout, item.Satellite.Barrels, components, debug);
 		            if (layout.Components.Count() != components.Length)
 		            {
 		                Debug.LogError("invalid companion layout: " + item.Id);

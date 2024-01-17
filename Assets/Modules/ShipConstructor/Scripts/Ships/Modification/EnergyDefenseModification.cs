@@ -24,7 +24,8 @@ namespace Constructor.Ships.Modification
         }
 
         public int Seed { get; }
+		public bool ChangesBarrels => false;
 
-        private readonly float _value;
+		private readonly float _value;
     }
 }

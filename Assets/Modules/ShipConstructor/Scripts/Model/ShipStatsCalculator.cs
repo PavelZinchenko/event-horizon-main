@@ -56,7 +56,6 @@ namespace Constructor.Model
         float ThermalResistancePercentage { get; }
 
         bool Autopilot { get; }
-        bool TargetingSystem { get; }
 
         float DroneBuildSpeed { get; }
         float DroneBuildTime { get; }
@@ -193,7 +192,6 @@ namespace Constructor.Model
         }
 
         public bool Autopilot => EquipmentStats.Autopilot;
-        public bool TargetingSystem => BaseStats.AutoTargeting;
 
         public StatMultiplier WeaponDamageMultiplier => EquipmentStats.WeaponDamageMultiplier * Bonuses.DamageMultiplier.Value * BaseStats.DamageMultiplier.Value;
         public StatMultiplier WeaponFireRateMultiplier => EquipmentStats.WeaponFireRateMultiplier;

@@ -97,22 +97,21 @@ namespace GameServices.Player
             foreach (var ship in _ships)
             {
                 var debug = _debugManager.CreateLog(ship.Name);
-                var ignoreWeaponClass = ship.Model.Stats.IgnoreWeaponClass;
                 var empty = Enumerable.Empty<IntegratedComponent>();
-                if (TryRemoveInvalidComponents(new ShipLayout(ship.Model.Layout, ship.Model.Barrels, empty, ignoreWeaponClass, debug), ship.Components, components))
+                if (TryRemoveInvalidComponents(new ShipLayout(ship.Model.Layout, ship.Model.Barrels, empty, debug), ship.Components, components))
 	                ship.Components.Assign(components);
 
                 if (ship.FirstSatellite != null)
                 {
                     if (TryRemoveInvalidComponents(new ShipLayout(ship.FirstSatellite.Information.Layout, ship.FirstSatellite.Information.Barrels, 
-                        empty, ignoreWeaponClass, debug), ship.FirstSatellite.Components, components))
+                        empty, debug), ship.FirstSatellite.Components, components))
 	                    ship.FirstSatellite.Components.Assign(components);
                 }
 
                 if (ship.SecondSatellite != null)
                 {
                     if (TryRemoveInvalidComponents(new ShipLayout(ship.SecondSatellite.Information.Layout, ship.SecondSatellite.Information.Barrels,
-                        empty, ignoreWeaponClass, debug), ship.SecondSatellite.Components, components))
+                        empty, debug), ship.SecondSatellite.Components, components))
 	                    ship.SecondSatellite.Components.Assign(components);
                 }
             }

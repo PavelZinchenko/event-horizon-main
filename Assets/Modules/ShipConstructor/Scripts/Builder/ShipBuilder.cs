@@ -68,7 +68,7 @@ namespace Constructor
 
             data.Stats = stats;
 			data.Info = new ShipInfo(_ship.Id, _shipClass, _shipLevel, size);
-			data._platforms.AddRange(GetPlatforms(stats, settings));
+			data._platforms.AddRange(GetPlatforms(settings));
 
 		    foreach (var item in stats.BuiltinDevices)
 		        data._devices.Add(new DeviceData(item.Stats, item.Stats.ActivationType == ActivationType.Manual ? 5 : -1));
@@ -140,13 +140,12 @@ namespace Constructor
 			}
 		}
 
-		private IEnumerable<WeaponPlatform> GetPlatforms(IShipStats stats, ShipSettings settings)
+		private IEnumerable<WeaponPlatform> GetPlatforms(ShipSettings settings)
 		{
 			var id = 0;
 		    foreach (var barrel in _ship.Barrels)
 		    {
 		        var platform = new WeaponPlatform(barrel) { BarrelId = id++ };
-                if (stats.TargetingSystem) platform.ChangeAutoAimingArc(20); // TODO: move angle value to database
 		        yield return platform;
 		    }
 

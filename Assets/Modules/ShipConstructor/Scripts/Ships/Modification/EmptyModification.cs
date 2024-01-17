@@ -9,5 +9,6 @@ namespace Constructor.Ships.Modification
         public string GetDescription(ILocalization localization) { return localization.GetString("$Ship_EmptySlot"); }
         public void Apply(ref ShipBaseStats stats) {}
         public int Seed => 0;
-    }
+		public bool ChangesBarrels => false;
+	}
 }

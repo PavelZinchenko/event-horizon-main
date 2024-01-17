@@ -45,7 +45,7 @@ namespace Constructor.Ships
         public string OriginalName => _ship.Name;
         public Faction Faction { get; set; }
         public Layout Layout => _stats.Layout;
-        public ImmutableCollection<Barrel> Barrels => _ship.Barrels;
+        public ImmutableCollection<Barrel> Barrels => _stats.Barrels;
         public SpriteId ModelImage => _ship.ModelImage;
         public SpriteId IconImage => _ship.IconImage;
         public float ModelScale => _ship.ModelScale;
@@ -72,26 +72,36 @@ namespace Constructor.Ships
 
         private void OnModificationsChanged()
         {
-            _stats = new ShipBaseStats
-            {
-                ShipWeightMultiplier = new StatMultiplier(_ship.Features.ShipWeightBonus),
-                EquipmentWeightMultiplier = new StatMultiplier(_ship.Features.EquipmentWeightBonus),
-                VelocityMultiplier = new StatMultiplier(_ship.Features.VelocityBonus),
-                TurnRateMultiplier = new StatMultiplier(_ship.Features.TurnRateBonus),
-                ShieldMultiplier = new StatMultiplier(_ship.Features.ShieldBonus),
-                ArmorMultiplier = new StatMultiplier(_ship.Features.ArmorBonus),
-                EnergyMultiplier = new StatMultiplier(_ship.Features.EnergyBonus),
-                Layout = _layoutModifications.BuildLayout(),
-                BuiltinDevices = _ship.Features.BuiltinDevices
+			_stats = new ShipBaseStats
+			{
+				ShipWeightMultiplier = new StatMultiplier(_ship.Features.ShipWeightBonus),
+				EquipmentWeightMultiplier = new StatMultiplier(_ship.Features.EquipmentWeightBonus),
+				VelocityMultiplier = new StatMultiplier(_ship.Features.VelocityBonus),
+				TurnRateMultiplier = new StatMultiplier(_ship.Features.TurnRateBonus),
+				ShieldMultiplier = new StatMultiplier(_ship.Features.ShieldBonus),
+				ArmorMultiplier = new StatMultiplier(_ship.Features.ArmorBonus),
+				EnergyMultiplier = new StatMultiplier(_ship.Features.EnergyBonus),
+				Layout = _layoutModifications.BuildLayout(),
+				BuiltinDevices = _ship.Features.BuiltinDevices,
+				Barrels = _ship.Barrels,
             };
 
-            foreach (var modification in _modifications)
-                modification.Apply(ref _stats);
+			bool barrelsCopied = false;
+			foreach (var modification in _modifications)
+			{
+				if (modification.ChangesBarrels && !barrelsCopied)
+				{
+					_stats.Barrels = new ImmutableCollection<Barrel>(_ship.Barrels.Select(Barrel.Clone));
+					barrelsCopied = true;
+				}
+
+				modification.Apply(ref _stats);
+			}
 
             DataChanged = true;
         }
 
-        private readonly Ship _ship;
+		private readonly Ship _ship;
         private ShipBaseStats _stats;
         private readonly LayoutModifications _layoutModifications;
         private readonly ObservableCollection<IShipModification> _modifications;

@@ -185,8 +185,6 @@ namespace Combat.Component.Systems.Devices
 
             public bool Autopilot => false;
 
-            public bool TargetingSystem => _stats.TargetingSystem;
-
             public float DroneBuildSpeed => _stats.DroneBuildSpeed;
 
             public float DroneBuildTime => _stats.DroneBuildTime;

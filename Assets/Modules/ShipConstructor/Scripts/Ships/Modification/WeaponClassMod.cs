@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Constructor.Model;
+using GameDatabase.Model;
 using GameDatabase.DataModel;
 using Services.Localization;
 
@@ -26,11 +27,14 @@ namespace Constructor.Ships.Modification
 
         public void Apply(ref ShipBaseStats stats)
         {
-            stats.IgnoreWeaponClass = true;
-            stats.DamageMultiplier *= 1f - _attackReduction;
+			for (int i = 0; i < stats.Barrels.Count; ++i)
+				stats.Barrels[i].SetWeaponClass(string.Empty);
+
+			stats.DamageMultiplier *= 1f - _attackReduction;
         }
 
-        public int Seed => 0;
+		public bool ChangesBarrels => true;
+		public int Seed => 0;
         private float _attackReduction;
     }
 }

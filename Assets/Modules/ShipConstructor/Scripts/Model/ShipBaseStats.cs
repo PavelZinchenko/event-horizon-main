@@ -17,10 +17,8 @@ namespace Constructor.Model
         public StatMultiplier HeatResistanceMultiplier;
         public StatMultiplier KineticResistanceMultiplier;
         public float RegenerationRate;
-        public bool AutoTargeting;
-        public bool IgnoreWeaponClass;
-        //public bool UnlimitedRespawn;
         public Layout Layout;
         public ImmutableCollection<Device> BuiltinDevices;
+		public ImmutableCollection<Barrel> Barrels;
     }
 }
