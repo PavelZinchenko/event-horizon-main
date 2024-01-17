@@ -26,6 +26,7 @@ namespace GameDatabase.DataModel
 		{
 			Type = serializable.Type;
 			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 1000f);
+			Length = UnityEngine.Mathf.Clamp(serializable.Length, 0f, 1000f);
 			Velocity = UnityEngine.Mathf.Clamp(serializable.Velocity, 0f, 1000f);
 			Range = UnityEngine.Mathf.Clamp(serializable.Range, 0f, 1E+09f);
 			Lifetime = UnityEngine.Mathf.Clamp(serializable.Lifetime, 0f, 1E+09f);
@@ -42,6 +43,7 @@ namespace GameDatabase.DataModel
 
 		public BulletType Type { get; private set; }
 		public float Size { get; private set; }
+		public float Length { get; private set; }
 		public float Velocity { get; private set; }
 		public float Range { get; private set; }
 		public float Lifetime { get; private set; }

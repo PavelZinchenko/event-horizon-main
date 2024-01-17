@@ -21,7 +21,7 @@ namespace Combat.Component.View
             _colorMode = colorMode;
         }
 
-        public override void Dispose() {}
+		public override void Dispose() {}
 
         public float BorderSize { get { return _borderSize; } set { _borderSize = value; } }
         public float Thickness { get { return _thickness; } set { _thickness = value; } }
@@ -37,7 +37,7 @@ namespace Combat.Component.View
 
         protected override void UpdateLife(float life)
         {
-            Opacity = Life;
+            Opacity = 1f - (1f - Life)*(1f - Life);
         }
 
         protected override void UpdatePosition(Vector2 position) {}
@@ -45,7 +45,7 @@ namespace Combat.Component.View
 
         protected override void UpdateSize(float size)
         {
-            var scale = transform.localScale.z;
+			var scale = transform.localScale.z;
             UpdateLine(size/scale, _thickness*scale);
         }
 

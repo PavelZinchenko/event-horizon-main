@@ -120,6 +120,7 @@
   <string name="ship_10">Pilgrim</string>
   <string name="ship_11">Needle</string>
   <string name="ship_12">Scarab</string>
+  <string name="ship_13">Priest</string>
   <string name="Companion_1s">Pot M1</string>
   <string name="Companion_1m">Pot M2</string>
   <string name="Companion_1l">Pot M3</string>
@@ -356,4 +357,5 @@
   <string name="Wormtail">Tail</string>
   <string name="Parasite">Parasite Spawner</string>
   <string name="ParasiteL">Large Parasite Spawner</string>
+  <string name="HeavyPlasmaEmitter">Heavy Plasma Emitter</string>
 </resources>

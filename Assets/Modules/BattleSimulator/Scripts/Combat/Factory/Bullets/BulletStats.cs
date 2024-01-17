@@ -112,7 +112,8 @@ namespace Combat.Factory
             } 
         }
 
-        public float Range { get { return _ammunition.Body.Range * RangeMultiplier; } }
+		public float Length => _ammunition.Body.Length * SizeMultiplier;
+		public float Range { get { return _ammunition.Body.Range * RangeMultiplier; } }
         public float HitPoints { get { return _ammunition.Body.HitPoints * HitPointsMultiplier * _statModifier.HitPointsMultiplier.Value; } }
         public float DamageMultiplier { get { return PowerLevel * _statModifier.DamageMultiplier.Value; } }
 

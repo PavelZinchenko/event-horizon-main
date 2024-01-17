@@ -82,52 +82,71 @@ namespace Services.Audio
 			while (Dequeue() != null);
 		}
 
-		void Update()
+		private AudioSourceData FindAudioSource(int audioClipId)
+		{
+			foreach (var item in _audioSources)
+				if (item.id == audioClipId) return item;
+
+			return null;
+		}
+
+		private void StopImmediately(int id)
+		{
+			var audioSource = FindAudioSource(id);
+			if (audioSource != null)
+			{
+				audioSource.id = 0;
+				audioSource.audioSource.Stop();
+				return;
+			}
+
+			lock (_lockObject)
+			{
+				foreach (var item in _objects)
+					if (item.Id == id)
+						item.AudioClip = null;
+			}
+		}
+
+		private bool IsPlaying(int id)
+		{
+			var audioSource = FindAudioSource(id);
+			return audioSource != null && audioSource.audioSource.isPlaying;
+		}
+
+		private void Update()
 		{
 			AudioData data;
 			while ((data = Dequeue()) != null)
 			{
-				if (data.AudioClip == null)
+				if (data.AudioClip == null && data.Id != 0)
 				{
-					if (data.Id != 0)
-					{
-						var audioSource = _audioSources.FirstOrDefault(item => item.id == data.Id);
-						if (audioSource != null)
-						{
-							audioSource.id = 0;
-							audioSource.audioSource.Stop();
-						}
-						else
-						{
-							lock (_lockObject)
-							{
-								foreach (var item in _objects)
-								    if (item.Id == data.Id)
-								        item.AudioClip = null;
-							}
-						}
-					}
+					StopImmediately(data.Id);
+					continue;
 				}
-				else if (data.AudioClip.loadState == AudioDataLoadState.Loading)
+
+				if (data.Id != 0 && IsPlaying(data.Id))
+					continue;
+				
+				if (data.AudioClip.loadState == AudioDataLoadState.Loading)
 				{
                     _loadingObjects.Add(data);
+					continue;
 				}
+
+				AudioSourceData audioSource;
+				if (data.Id != 0)
+					audioSource = _audioSources.FirstOrDefault(item => item.id == data.Id) ?? GetAudioSource();
 				else
-				{
-					AudioSourceData audioSource;
-					if (data.Id != 0)
-						audioSource = _audioSources.FirstOrDefault(item => item.id == data.Id) ?? GetAudioSource();
-					else
-						audioSource = GetAudioSource();
+					audioSource = GetAudioSource();
 
-	                if (audioSource == null)
-	                    continue;
+	            if (audioSource == null)
+	                continue;
 
-					audioSource.audioSource.clip = data.AudioClip;
-					audioSource.audioSource.loop = data.Loop;
-					audioSource.audioSource.Play();
-					audioSource.id = data.Id;
-				}
+				audioSource.audioSource.clip = data.AudioClip;
+				audioSource.audioSource.loop = data.Loop;
+				audioSource.audioSource.Play();
+				audioSource.id = data.Id;
 	        }
 
 		    _timeFromLastLoadAttempt += Time.unscaledDeltaTime;

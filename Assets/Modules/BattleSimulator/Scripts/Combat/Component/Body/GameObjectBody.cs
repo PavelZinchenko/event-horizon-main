@@ -4,6 +4,8 @@ namespace Combat.Component.Body
 {
     public class GameObjectBody : MonoBehaviour, IBodyComponent
     {
+		[SerializeField] private bool _interpolation = true;
+
         public void Initialize(IBody parent, Vector2 position, float rotation, float scale, Vector2 velocity, float angularVelocity, float weight)
         {
             if (parent != null)
@@ -43,32 +45,32 @@ namespace Combat.Component.Body
             }
         }
 
-        public Vector2 Position
-        {
-            get { return _position; }
-            set
-            {
-                _position = value;
-                if (this && transform)
-                    gameObject.Move(Parent == null ? value : Parent.ChildPosition(value));
-            }
-        }
+		public Vector2 Position
+		{
+			get { return _position; }
+			set
+			{
+				_position = value;
+				if (this && transform)
+					gameObject.Move(Parent == null ? value : Parent.ChildPosition(value));
+			}
+		}
 
-        public float Rotation
-        {
-            get
-            {
-                return _rotation;
-            }
-            set
-            {
-                _rotation = value;
-                if (this && transform)
-                    transform.localEulerAngles = new Vector3(0, 0, Mathf.Repeat(value, 360));
-            }
-        }
+		public float Rotation
+		{
+			get
+			{
+				return _rotation;
+			}
+			set
+			{
+				_rotation = value;
+				if (this && transform)
+					transform.localEulerAngles = new Vector3(0, 0, Mathf.Repeat(value, 360));
+			}
+		}
 
-        public float Offset { get; set; }
+		public float Offset { get; set; }
         public Vector2 Velocity { get; set; }
         public float AngularVelocity { get; set; }
         public float Weight { get; set; }
@@ -84,9 +86,8 @@ namespace Combat.Component.Body
             }
         }
 
-        public void ApplyAcceleration(Vector2 acceleration) {}
-
-        public void ApplyAngularAcceleration(float acceleration) {}
+		public void ApplyAcceleration(Vector2 acceleration) => Velocity += acceleration;
+		public void ApplyAngularAcceleration(float acceleration) => AngularVelocity += acceleration;
 
         public void ApplyForce(Vector2 position, Vector2 force)
         {
@@ -115,35 +116,45 @@ namespace Combat.Component.Body
 
         public void UpdatePhysics(float elapsedTime)
         {
-            if (Parent != null)
+			if (Parent != null)
                 return;
 
             Position += Velocity * elapsedTime;
             Rotation += AngularVelocity * elapsedTime * Mathf.Rad2Deg;
-        }
+		}
 
-        public void UpdateView(float elapsedTime) {}
+		public void UpdateView(float elapsedTime) 
+		{
+			if (!_interpolation) return;
+			if (Parent != null) return;
+			if (!this || !transform) return;
 
-        public void AddChild(Transform child)
+			var deltaTime = (float)(Time.timeAsDouble - Time.fixedTimeAsDouble);
+			transform.localEulerAngles = new Vector3(0, 0, Mathf.Repeat(_rotation + AngularVelocity*deltaTime, 360));
+			var position = _position + Velocity * deltaTime;
+			gameObject.Move(Parent == null ? position : Parent.ChildPosition(position));
+		}
+
+		public void AddChild(Transform child)
         {
             child.parent = transform;
         }
 
-        //private void Awake()
-        //{
-        //    _position = transform.localPosition;
-        //    _rotation = transform.localEulerAngles.z;
-        //    _scale = transform.localScale.z;
-        //}
+		//private void Awake()
+		//{
+		//    _position = transform.localPosition;
+		//    _rotation = transform.localEulerAngles.z;
+		//    _scale = transform.localScale.z;
+		//}
 
-        //private void Update()
-        //{
-        //    if (Parent == null || transform.parent != null)
-        //        return;
+		//private void Update()
+		//{
+		//    if (Parent == null || transform.parent != null)
+		//        return;
 
-        //    transform.localPosition = this.WorldPosition();
-        //    transform.localEulerAngles = new Vector3(0, 0, this.WorldRotation());
-        //}
+		//    transform.localPosition = this.WorldPosition();
+		//    transform.localEulerAngles = new Vector3(0, 0, this.WorldRotation());
+		//}
 
         private Vector2 _position;
         private float _rotation;

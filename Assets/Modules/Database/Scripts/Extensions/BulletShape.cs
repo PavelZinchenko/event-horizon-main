@@ -21,5 +21,18 @@ namespace GameDatabase.Extensions
                     return true;
             }
         }
-    }
+
+		public static bool IsBeam(this BulletShape shape)
+		{
+			switch (shape)
+			{
+				case BulletShape.LaserBeam:
+				case BulletShape.EnergyBeam:
+				case BulletShape.LightningBolt:
+					return true;
+				default:
+					return false;
+			}
+		}
+	}
 }

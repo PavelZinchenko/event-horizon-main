@@ -191,6 +191,9 @@ namespace Combat.Factory
             view.Life = 0;
             view.Color = color;
 
+			if (_ammunition.Body.BulletPrefab.Shape.IsBeam())
+				view.Size = 0;
+
             view.UpdateView(0);
             return view;
         }
@@ -202,12 +205,7 @@ namespace Combat.Factory
             if (_ammunition.Body.Type == BulletType.Continuous)
                 collider.MaxRange = _stats.Range;
 
-            //if (_stats.AmmunitionClass == AmmunitionClassObsolete.IonBeam)
-            //    collider.MaxRange = _stats.Velocity / 10;
-
-            //collider.IsTrigger = !_stats.AmmunitionClass.IsBeam();
-
-            return collider;
+			return collider;
         }
 
         private IDamageHandler CreateDamageHandler(Bullet bullet)
@@ -235,18 +233,24 @@ namespace Combat.Factory
             var range = _stats.Range;
             var weight = _stats.Weight;
 
+			IController controller = null;
             if (_ammunition.Body.Type == BulletType.Homing)
-                return new HomingController(bullet, bulletSpeed, 120f * WeightToAcceleration(weight),
+                controller = new HomingController(bullet, bulletSpeed, 120f * WeightToAcceleration(weight),
                     0.5f * bulletSpeed / (0.2f + weight * 2), range, _scene);
-            if (_ammunition.Body.Type == BulletType.Magnetic)
-            {
-                var hasDirection = _ammunition.Body.BulletPrefab.Shape.HasDirection();
-                return new MagneticController(bullet, bulletSpeed, bulletSpeed * WeightToAcceleration(weight), range, hasDirection, _scene);
-            }
-            else if (_ammunition.Body.Type == BulletType.Continuous && !parent.IsTemporary)
-                return new BeamController(bullet, spread, rotationOffset);
+			else if (_ammunition.Body.Type == BulletType.Magnetic)
+                controller = new MagneticController(bullet, bulletSpeed, bulletSpeed * WeightToAcceleration(weight), range, 
+					_ammunition.Body.BulletPrefab.Shape.HasDirection(), _scene);            
+			else if (_ammunition.Body.Type == BulletType.Continuous && !parent.IsTemporary)
+                controller = new BeamController(bullet, spread, rotationOffset);
 
-            return null;
+			if (_ammunition.Body.Type != BulletType.Continuous && _ammunition.Body.BulletPrefab.Shape.IsBeam())
+			{
+				var length = _ammunition.Body.Length > 0 ? _stats.Length : _stats.BodySize;
+				var velocity = _ammunition.Body.Type == BulletType.Static ? Vector2.zero : parent.Body.WorldVelocity();
+				controller = new MovingBeamController(bullet, length, bulletSpeed, velocity, controller);
+			}
+
+            return controller;
         }
 
         private BulletFactory CreateFactory(Ammunition ammunition, WeaponStatModifier stats)
@@ -370,7 +374,7 @@ namespace Combat.Factory
             {
                 var condition = FromTriggerCondition(trigger.Condition);
                 CreateSoundEffect(_bullet, trigger.AudioClip, condition);
-                CreateStaticVisualEffect(_bullet, _collisionBehaviour, condition, trigger);
+                CreateStaticVisualEffect(_bullet, condition, trigger);
                 return Result.Ok;
             }
 
@@ -407,7 +411,7 @@ namespace Combat.Factory
             {
                 if (!audioClip) return;
 
-                if (condition == ConditionType.None && !audioClip.Loop)
+				if (condition == ConditionType.None && !audioClip.Loop)
                     _factory._soundPlayer.Play(audioClip);
                 else
                     bullet.AddAction(new PlaySoundAction(_factory._soundPlayer, audioClip, condition));
@@ -429,8 +433,7 @@ namespace Combat.Factory
                         trigger.Lifetime, condition));
             }
 
-            private void CreateStaticVisualEffect(Bullet bullet, BulletCollisionBehaviour collisionBehaviour,
-                ConditionType condition, BulletTrigger_SpawnStaticSfx trigger)
+            private void CreateStaticVisualEffect(Bullet bullet, ConditionType condition, BulletTrigger_SpawnStaticSfx trigger)
             {
                 if (trigger.VisualEffect == null) return;
 

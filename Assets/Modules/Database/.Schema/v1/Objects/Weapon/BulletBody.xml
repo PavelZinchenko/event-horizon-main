@@ -2,6 +2,7 @@
 <data name="BulletBody" type="struct" >
     <member name="Type" type="enum" typeid="BulletType" />
     <member name="Size" type="float" minvalue="0" maxvalue="1000" />
+    <member name="Length" type="float" minvalue="0" maxvalue="1000" />
     <member name="Velocity" type="float" minvalue="0" maxvalue="1000" />
     <member name="Range" type="float" minvalue="0" maxvalue="999999999" />
     <member name="Lifetime" type="float" minvalue="0" maxvalue="999999999" />

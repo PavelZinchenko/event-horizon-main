@@ -17,6 +17,7 @@ namespace DatabaseMigration.v1.Serializable
 	{
 		public BulletType Type;
 		public float Size;
+		public float Length;
 		public float Velocity;
 		public float Range;
 		public float Lifetime;
