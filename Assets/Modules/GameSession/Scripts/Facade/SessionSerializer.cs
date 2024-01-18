@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Generic;
 using Session.Utils;
 using Session.Model;
 
@@ -9,7 +7,9 @@ namespace Session
 	public class SessionSerializer
 	{
 		private const uint _header = 0x5AFE5AFE;
-		private const int _format = 1;
+		private const uint _eofMarker = 0xDEADC0DE;
+		private const int _formatMin = 1;
+		private const int _format = 2;
 
 		private readonly ContentFactoryObsolete _contentFactoryObsolete;
 
@@ -25,21 +25,10 @@ namespace Session
 				var reader = new MemoryReaderStream(data, startIndex);
 				var header = reader.ReadUint();
 				if (header != _header)
-					return TryDeserializeOldData(data, startIndex, out content);
+					return new LegacyDataLoader(_contentFactoryObsolete).TryDeserializeOldData(data, startIndex, out content);
 
 				var format = reader.ReadInt();
-				if (format != _format)
-				{
-					content = null;
-					return false;
-				}
-
-				var version = reader.ReadInt();
-				var versionMinor = version & 0xffff;
-				var versionMajor = version >> 16;
-
-				content = new SessionLoader().Load(new SessionDataReader(reader), versionMajor, versionMinor);
-				return true;
+				return TryDeserializeContent(reader, format, out content);
 			}
 			catch (Exception e)
 			{
@@ -58,6 +47,8 @@ namespace Session
 
 			using (var sessionDataWriter = new SessionDataWriter(writer))
 				data.Serialize(sessionDataWriter);
+
+			writer.WriteUint(_eofMarker);
 		}
 
 		public byte[] Serialize(SaveGameData data)
@@ -69,231 +60,30 @@ namespace Session
 			}
 		}
 
-		private bool TryDeserializeOldData(byte[] data, int startIndex, out SaveGameData content)
+		private bool TryDeserializeContent(IReaderStream reader, int format, out SaveGameData content)
 		{
-			try
+			if (format < _formatMin || format > _format)
 			{
-				var obsoleteData = DatabaseContentObsolete.TryDeserialize(data, startIndex, _contentFactoryObsolete);
-				if (obsoleteData == null)
-				{
-					content = null;
-					return false;
-				}
-
-				var temp = new v1.SaveGameData(null);
-				TransferAchievementData(obsoleteData.Achievements, temp.Achievements);
-				TransferGameData(obsoleteData.Game, temp.Game);
-				TransferStarMapData(obsoleteData.Starmap, temp.StarMap);
-				TransferInventoryData(obsoleteData.Inventory, temp.Inventory);
-				TransferFleetData(obsoleteData.Fleet, temp.Fleet);
-				TransferShopData(obsoleteData.Shop, temp.Shop);
-				TransferEventsData(obsoleteData.Events, temp.Events);
-				TransferBossData(obsoleteData.Bosses, temp.Bosses);
-				TransferRegionData(obsoleteData.Regions, temp.Regions);
-				TransferInAppPurchasesData(obsoleteData.Purchases, temp.Iap);
-				TransferWormholeData(obsoleteData.Wormholes, temp.Wormholes);
-				TransferCommonObjectData(obsoleteData.CommonObjects, temp.Common);
-				TransferResearchData(obsoleteData.Research, temp.Research);
-				TransferStatisticsData(obsoleteData.Statistics, temp.Statistics);
-				TransferResourcesData(obsoleteData.Resources, temp.Resources);
-				TransferUpgradesData(obsoleteData.Upgrades, temp.Upgrades);
-				TransferPvpData(obsoleteData.Pvp, temp.Pvp);
-				TransferSocialData(obsoleteData.Social, temp.Social);
-				TransferQuestData(obsoleteData.Quests, temp.Quests);
-
-				content = new SessionLoader().Convert(temp);
-				return true;
-			}
-			catch (Exception e)
-			{
-				UnityEngine.Debug.LogException(e);
+				GameDiagnostics.Trace.LogError($"{nameof(SessionSerializer)}: savegame format is not supported - {format}");
 				content = null;
 				return false;
 			}
-		}
 
-		private void TransferAchievementData(ContentObsolete.AchievementData oldData, Achievements newData)
-		{
-			foreach (var id in oldData._unlockedAchievements)
-				newData.Gained.Add(id);
-		}
+			bool checkEof = format > 1;
 
-		private void TransferGameData(ContentObsolete.GameData oldData, GameData newData)
-		{
-			newData.Counter = oldData.Counter;
-			newData.Seed = oldData.Seed;
-			newData.StartTime = oldData.GameStartTime;
-			newData.SupplyShipStartTime = oldData.SupplyShipStartTime;
-			newData.TotalPlayTime = oldData.TotalPlayTime;
-		}
+			var version = reader.ReadInt();
+			var versionMinor = version & 0xffff;
+			var versionMajor = version >> 16;
 
-		private void TransferStarMapData(ContentObsolete.StarMapData oldData, v1.StarMapData newData)
-		{
-			newData.PlayerPosition = oldData.PlayerPosition;
-			newData.MapModeZoom = oldData.MapScaleFactor;
-			newData.StarModeZoom = oldData.StarScaleFactor;
+			content = new SessionLoader().Load(new SessionDataReader(reader), versionMajor, versionMinor);
 
-			foreach (var item in oldData._bookmarks)
-				newData.Bookmarks.Add(item.Key, item.Value);
-			foreach (var item in oldData._planetdata)
-				newData.PlanetData.Add(item.Key, item.Value);
-			foreach (var item in oldData._stardata)
-				newData.StarData.Add(item.Key, item.Value);
-		}
-
-		private void TransferInventoryData(ContentObsolete.InventoryData oldData, v1.Inventory newData)
-		{
-			foreach (var item in oldData._components.Items)
-				newData.Components.Add(item.Key, item.Value);
-			foreach (var item in oldData._satellites.Items)
-				newData.Satellites.Add(item.Key, item.Value);
-		}
-
-		private void TransferFleetData(ContentObsolete.FleetData oldData, FleetData newData)
-		{
-			foreach (var item in oldData._hangarSlots)
-				newData.HangarSlots.Add(new HangarSlotInfo(item.Index, item.ShipId));
-			foreach (var oldShip in oldData._ships)
+			if (checkEof && reader.ReadUint() != _eofMarker)
 			{
-				var components = TransferComponentsData(oldShip.Components);
-				var satellite1 = new SatelliteInfo(oldShip.Satellite1.Id, TransferComponentsData(oldShip.Satellite1.Components), newData);
-				var satellite2 = new SatelliteInfo(oldShip.Satellite2.Id, TransferComponentsData(oldShip.Satellite2.Components), newData);
-
-				newData.Ships.Add(new ShipInfo(oldShip.Id, oldShip.Name, oldShip.ColorScheme, oldShip.Experience, components,
-					oldShip.Modifications.Layout, oldShip.Modifications.Modifications, satellite1, satellite2, newData));
+				GameDiagnostics.Trace.LogError($"{nameof(SessionSerializer)}: EoF marker was not found");
+				return false;
 			}
-		}
 
-		private void TransferShopData(ContentObsolete.ShopData oldData, v1.ShopData newData)
-		{
-			foreach (var purchases in oldData._purchases)
-			{
-				var purchasesMap = new v1.PurchasesMap(newData);
-				foreach (var item in purchases.Value)
-					purchasesMap.Purchases.Add(item.Key, new v1.PurchaseInfo(item.Value.Quantity, item.Value.Time));
-
-				newData.Purchases.Add(purchases.Key, purchasesMap);
-			}
-		}
-
-		private void TransferEventsData(ContentObsolete.EventData oldData, v1.EventData newData)
-		{
-			foreach (var item in oldData._completedTime)
-				newData.CompletedTime.Add(item.Key, item.Value);
-		}
-
-		private void TransferBossData(ContentObsolete.BossData oldData, v1.BossData newData)
-		{
-			foreach (var item in oldData._completedTime)
-				newData.Bosses.Add(item.Key, new v1.BossInfo(item.Value.DefeatCount, item.Value.LastDefeatTime));
-		}
-
-		private void TransferRegionData(ContentObsolete.RegionData oldData, RegionData newData)
-		{
-			foreach (var item in oldData._defeatedFleetCount)
-				newData.DefeatedFleetCount.Add(item.Key, item.Value);
-			foreach (var item in oldData._factions)
-				newData.Factions.Add(item.Key, item.Value);
-		}
-
-		private void TransferInAppPurchasesData(ContentObsolete.InAppPurchasesData oldData, IapData newData)
-		{
-			newData.RemoveAds = oldData.RemoveAds;
-			newData.SupporterPack = oldData.SupporterPack;
-			newData.Stars = oldData.PurchasedStars;
-		}
-
-		private void TransferWormholeData(ContentObsolete.WormholeData oldData, WormholeData newData)
-		{
-			foreach (var item in oldData._routes)
-				newData.Routes.Add(item.Key, item.Value);
-		}
-
-		private void TransferCommonObjectData(ContentObsolete.CommonObjectData oldData, CommonObjectData newData)
-		{
-			foreach (var item in oldData._intValues)
-				newData.IntValues.Add(item.Key, item.Value);
-			foreach (var item in oldData._usedTime)
-				newData.LongValues.Add(item.Key, item.Value);
-		}
-
-		private void TransferResearchData(ContentObsolete.ResearchData oldData, ResearchData newData)
-		{
-			foreach (var item in oldData._technologies)
-				newData.Technologies.Add(item);
-			foreach (var item in oldData._researchPoints)
-				newData.ResearchPoints.Add(item.Key, item.Value);
-		}
-
-		private void TransferStatisticsData(ContentObsolete.StatisticsData oldData, Statistics newData)
-		{
-			newData.DefeatedEnemies = oldData.DefeatedEnemies;
-			foreach (var item in oldData._unlockedShips)
-				newData.UnlockedShips.Add(item);
-		}
-
-		private void TransferResourcesData(ContentObsolete.ResourcesData oldData, ResourcesData newData)
-		{
-			newData.Money = oldData.Money;
-			newData.Stars = oldData.Stars;
-			newData.Tokens = oldData.Tokens;
-			newData.Fuel = oldData.Fuel;
-
-			foreach (var item in oldData._resources.Items)
-				newData.Resources.Add(item.Key, item.Value);
-		}
-
-		private void TransferUpgradesData(ContentObsolete.UpgradesData oldData, UpgradesData newData)
-		{
-			newData.ResetCounter = oldData.ResetCounter;
-			newData.PlayerExperience = oldData.PlayerExperience;
-
-			foreach (var item in oldData.Skills)
-				newData.Skills.Add(item);
-		}
-
-		private void TransferPvpData(ContentObsolete.PvpData oldData, PvpData newData)
-		{
-			newData.ArenaFightsFromTimerStart = oldData.FightsFromTimerStart;
-			newData.ArenaLastFightTime = oldData.LastFightTime;
-			newData.ArenaTimerStartTime = oldData.TimerStartTime;
-		}
-
-		private void TransferSocialData(ContentObsolete.SocialData oldData, SocialData newData)
-		{
-			newData.FirstDailyRewardDate = oldData.FirstDailyRewardDate;
-			newData.LastDailyRewardDate = oldData.LastDailyRewardDate;
-		}
-
-		private void TransferQuestData(ContentObsolete.QuestData oldData, QuestData newData)
-		{
-			foreach (var item in oldData._factionRelations)
-				newData.FactionRelations.Add(item.Key, item.Value);
-			foreach (var item in oldData._characterRelations)
-				newData.CharacterRelations.Add(item.Key, item.Value);
-
-			foreach (var item in oldData._statistics)
-				newData.Statistics.Add(item.Key, new QuestStatistics(
-					item.Value.CompletionCount, item.Value.FailureCount, item.Value.LastStartTime, item.Value.CompletionCount));
-
-			foreach (var progress in oldData._progress)
-			{
-				var progressMap = new StarQuestMap(newData);
-				foreach (var item in progress.Value)
-					progressMap.StarQuestsMap.Add(item.Key, new QuestProgress(item.Value.Seed, item.Value.ActiveNode, item.Value.StartTime));
-
-				newData.Progress.Add(progress.Key, progressMap);
-			}
-		}
-
-		private static IEnumerable<ShipComponentInfo> TransferComponentsData(ContentObsolete.ShipComponentsData oldData)
-		{
-			if (oldData.Components == null) 
-				return Enumerable.Empty<ShipComponentInfo>();
-
-			return oldData.Components.Select(item => new ShipComponentInfo(
-				item.Id, item.Quality, item.Modification, item.UpgradeLevel, item.X, item.Y,
-				item.BarrelId, item.KeyBinding, item.Behaviour, item.Locked));
+			return true;
 		}
 	}
 }
