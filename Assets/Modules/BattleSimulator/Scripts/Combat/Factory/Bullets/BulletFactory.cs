@@ -186,12 +186,12 @@ namespace Combat.Factory
             return body;
         }
 
-        private IView ConfigureView(IView view, Color color)
+		private IView ConfigureView(IView view, Color color)
         {
             view.Life = 0;
             view.Color = color;
 
-			if (_ammunition.Body.BulletPrefab.Shape.IsBeam())
+			if (BulletShape.IsBeam())
 				view.Size = 0;
 
             view.UpdateView(0);
@@ -239,11 +239,11 @@ namespace Combat.Factory
                     0.5f * bulletSpeed / (0.2f + weight * 2), range, _scene);
 			else if (_ammunition.Body.Type == BulletType.Magnetic)
                 controller = new MagneticController(bullet, bulletSpeed, bulletSpeed * WeightToAcceleration(weight), range, 
-					_ammunition.Body.BulletPrefab.Shape.HasDirection(), _scene);            
+					BulletShape.HasDirection(), _scene);            
 			else if (_ammunition.Body.Type == BulletType.Continuous && !parent.IsTemporary)
                 controller = new BeamController(bullet, spread, rotationOffset);
 
-			if (_ammunition.Body.Type != BulletType.Continuous && _ammunition.Body.BulletPrefab.Shape.IsBeam())
+			if (_ammunition.Body.Type != BulletType.Continuous && BulletShape.IsBeam())
 			{
 				var length = _ammunition.Body.Length > 0 ? _stats.Length : _stats.BodySize;
 				var velocity = _ammunition.Body.Type == BulletType.Static ? Vector2.zero : parent.Body.WorldVelocity();
@@ -266,7 +266,9 @@ namespace Combat.Factory
             return factory;
         }
 
-        private int _nestingLevel;
+		private BulletShape BulletShape => _ammunition.Body.BulletPrefab == null ? BulletShape.Mine : _ammunition.Body.BulletPrefab.Shape;
+
+		private int _nestingLevel;
         private readonly Lazy<GameObject> _prefab;
         private readonly BulletStats _stats;
         private readonly Ammunition _ammunition;
