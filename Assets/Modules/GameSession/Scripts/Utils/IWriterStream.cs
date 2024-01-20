@@ -73,7 +73,7 @@ namespace Session.Utils
 			}
 
 			var bytes = System.Text.Encoding.UTF8.GetBytes(value);
-			writer.WriteInt(value.Length);
+			writer.WriteInt(bytes.Length);
 			writer.Write(bytes, 0, bytes.Length);
 		}
 	}
