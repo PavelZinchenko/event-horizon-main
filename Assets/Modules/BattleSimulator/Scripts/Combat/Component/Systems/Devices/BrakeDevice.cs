@@ -11,13 +11,15 @@ namespace Combat.Component.Systems.Devices
         public BrakeDevice(IShip ship, DeviceStats deviceSpec, float shipWeight)
             : base(-1, SpriteId.Empty)
         {
+			DeviceClass = deviceSpec.DeviceClass;
             _power = deviceSpec.Power / Mathf.Sqrt(shipWeight);
             _ship = ship;
         }
 
         public override bool CanBeActivated { get { return false; } }
+		public GameDatabase.Enums.DeviceClass DeviceClass { get; }
 
-        public override IEngineModification EngineModification { get { return this; } }
+		public override IEngineModification EngineModification { get { return this; } }
 
         public bool TryApplyModification(ref EngineData data)
         {

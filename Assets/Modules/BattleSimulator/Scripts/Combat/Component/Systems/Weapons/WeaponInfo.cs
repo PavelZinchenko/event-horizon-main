@@ -21,6 +21,15 @@ namespace Combat.Component.Systems.Weapons
         AreaOfEffect,
     }
 
+	[System.Flags]
+	public enum WeaponCapability
+	{
+		None = 0,
+		DamageEnemy = 1,
+		RepairAlly = 2,
+		CaptureDrone = 4,
+	}
+
     public enum BulletEffectType
     {
         Common,
@@ -42,18 +51,24 @@ namespace Combat.Component.Systems.Weapons
                 Recoil = _bulletFactory.Stats.Recoil / platform.Body.TotalWeight();
         }
 
-        public WeaponType WeaponType { get { return _weaponType; } }
-        public BulletType BulletType { get { return _bulletFactory.Stats.Type; } }
-        public BulletEffectType BulletEffectType { get { return _bulletFactory.Stats.EffectType; } }
-        public float Range { get { return _bulletFactory.Stats.BulletHitRange; } }
-        public float Spread { get { return _spread; } }
-        public bool IsRelativeVelocity { get { return !_bulletFactory.Stats.IgnoresShipSpeed; } }
-        public float BulletSpeed { get { return _bulletFactory.Stats.BulletSpeed; } }
-        public float EnergyCost { get { return _bulletFactory.Stats.EnergyCost; } }
-        public float Recoil { get; private set; }
+		public WeaponType WeaponType => _weaponType;
+		public BulletType BulletType => _bulletFactory.Stats.Type;
+		public WeaponCapability Capability => _bulletFactory.Stats.Capability;
+		[System.Obsolete] public BulletEffectType BulletEffectType => _bulletFactory.Stats.EffectType;
+		public float Range => _bulletFactory.Stats.BulletHitRange;
+		public float Spread => _spread;
+		public bool IsRelativeVelocity => !_bulletFactory.Stats.IgnoresShipSpeed;
+		public float BulletSpeed => _bulletFactory.Stats.BulletSpeed;
+		public float EnergyCost => _bulletFactory.Stats.EnergyCost;
+		public float Recoil { get; private set; }
 
         private readonly float _spread;
         private readonly WeaponType _weaponType;
         private readonly IBulletFactory _bulletFactory;
     }
+
+	public static class WeaponCapabilityExtensions
+	{
+		public static bool HasCapability(this WeaponCapability caps, WeaponCapability flag) => (caps & flag) == flag;
+	}
 }

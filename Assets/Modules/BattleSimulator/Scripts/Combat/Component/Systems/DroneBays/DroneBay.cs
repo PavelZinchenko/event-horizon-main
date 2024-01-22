@@ -4,7 +4,6 @@ using Combat.Component.Platform;
 using Combat.Component.Ship;
 using Combat.Component.Triggers;
 using Combat.Factory;
-using Combat.Scene;
 using Combat.Unit;
 using Constructor;
 using GameDatabase.DataModel;
@@ -31,8 +30,9 @@ namespace Combat.Component.Systems.DroneBays
             _range = stats.Range;
             _behaviour = data.Behaviour;
             _improvedAi = data.DroneBay.ImprovedAi;
+			_droneBehavior = _behaviour == DroneBehaviour.Defensive ? data.DroneBay.DefensiveDroneAI : data.DroneBay.OffensiveDroneAI;
 
-            var random = new System.Random();
+			var random = new System.Random();
             var builder = new ShipBuilder(data.Drone);
             builder.Bonuses.ArmorPointsMultiplier = StatMultiplier.FromValue(stats.DefenseMultiplier);
             builder.Bonuses.ShieldPointsMultiplier = StatMultiplier.FromValue(stats.DefenseMultiplier);
@@ -60,8 +60,10 @@ namespace Combat.Component.Systems.DroneBays
         }
 
         public float Range { get { return _range; } }
+		public int DronesInHangar => _dronesLeft;
+		public int ActiveDrones => _drones.Count;
 
-        protected override void OnUpdatePhysics(float elapsedTime)
+		protected override void OnUpdatePhysics(float elapsedTime)
         {
             if (Active && CanBeActivated && _platform.EnergyPoints.TryGet(_energyCost))
             {
@@ -106,13 +108,14 @@ namespace Combat.Component.Systems.DroneBays
             if (_dronesLeft > 0)
                 _dronesLeft--;
 
-            var model = _shipFactory.CreateDrone(_shipSpec, _mothership, _range, _platform.Body.WorldPosition(), _platform.Body.WorldRotation(), _behaviour, _improvedAi);
+            var model = _shipFactory.CreateDrone(_shipSpec, _mothership, _range, _platform.Body.WorldPosition(), _platform.Body.WorldRotation(), _behaviour, _improvedAi, _droneBehavior);
             _drones.Add(model);
         }
 
         private int _remainingBuildCycles;
         private int _dronesLeft;
         private float _refreshCooldown;
+		private readonly BehaviorTreeModel _droneBehavior;
         private readonly int _totalBuildCycles;
         private readonly bool _improvedAi;
         private readonly float _energyCost;

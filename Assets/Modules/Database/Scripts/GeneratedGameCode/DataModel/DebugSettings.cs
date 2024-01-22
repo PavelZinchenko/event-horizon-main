@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static DebugSettings Create(DebugSettingsSerializable serializable, Database.Loader loader)
 		{
-			return new DebugSettings(serializable, loader);
+			return serializable == null ? DefaultValue : new DebugSettings(serializable, loader);
 		}
 
 		private DebugSettings(DebugSettingsSerializable serializable, Database.Loader loader)

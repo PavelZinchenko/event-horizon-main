@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static ShipBuild Create(ShipBuildSerializable serializable, Database.Loader loader)
 		{
-			return new ShipBuild(serializable, loader);
+			return serializable == null ? DefaultValue : new ShipBuild(serializable, loader);
 		}
 
 		private ShipBuild(ShipBuildSerializable serializable, Database.Loader loader)
@@ -27,13 +27,13 @@ namespace GameDatabase.DataModel
 			Id = new ItemId<ShipBuild>(serializable.Id);
 			loader.AddShipBuild(serializable.Id, this);
 
-			Ship = loader.GetShip(new ItemId<Ship>(serializable.ShipId));
-			if (Ship == null)
-			    throw new DatabaseException(this.GetType().Name + ".Ship cannot be null - " + serializable.ShipId);
+			Ship = loader?.GetShip(new ItemId<Ship>(serializable.ShipId)) ?? Ship.DefaultValue;
+			if (loader != null && Ship == null)
+			    throw new DatabaseException("ObjectTemplate.Ship cannot be null - " + serializable.ShipId);
 			AvailableForPlayer = serializable.AvailableForPlayer;
 			AvailableForEnemy = serializable.AvailableForEnemy;
 			DifficultyClass = serializable.DifficultyClass;
-			BuildFaction = loader.GetFaction(new ItemId<Faction>(serializable.BuildFaction));
+			BuildFaction = loader?.GetFaction(new ItemId<Faction>(serializable.BuildFaction)) ?? Faction.DefaultValue;
 			Components = new ImmutableCollection<InstalledComponent>(serializable.Components?.Select(item => InstalledComponent.Create(item, loader)));
 
 			OnDataDeserialized(serializable, loader);

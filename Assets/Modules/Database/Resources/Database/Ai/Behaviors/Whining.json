@@ -1,0 +1,35 @@
+{
+  "ItemType": 28,
+  "Id": 108,
+  "RootNode": {
+    "Type": 9,
+    "Nodes": [
+      {
+        "Type": 300,
+        "Text": "$Whining1"
+      },
+      {
+        "Type": 300,
+        "Text": "$Whining2"
+      },
+      {
+        "Type": 300,
+        "Text": "$Whining3"
+      },
+      {
+        "Type": 300,
+        "Text": "$Whining4"
+      },
+      {
+        "Type": 300,
+        "Text": "$Whining5"
+      },
+      {},
+      {},
+      {},
+      {},
+      {}
+    ],
+    "Cooldown": 15.0
+  }
+}

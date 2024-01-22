@@ -13,7 +13,7 @@ using DatabaseMigration.v1.Enums;
 namespace DatabaseMigration.v1.Serializable
 {
 	[Serializable]
-	public struct FactionFilterSerializable
+	public class FactionFilterSerializable
 	{
 		public FactionFilterType Type;
 		public int[] List;

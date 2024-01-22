@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct ShipFeaturesSerializable
+	public class ShipFeaturesSerializable
 	{
 		public float EnergyResistance;
 		public float KineticResistance;

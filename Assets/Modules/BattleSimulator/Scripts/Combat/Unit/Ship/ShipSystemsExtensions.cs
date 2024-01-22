@@ -9,7 +9,7 @@ namespace Combat.Component.Ship
 {
     public static class ShipSystemsExtensions
     {
-        public static List<List<int>> GetKeyBindings(this IList<ISystem> shipSystems)
+        public static List<List<int>> GetKeyBindings(this IReadOnlyList<ISystem> shipSystems)
         {
             var keys = new Dictionary<int, List<int>>();
             for (var i = 0; i < shipSystems.Count; ++i)
@@ -30,7 +30,7 @@ namespace Combat.Component.Ship
             return keys.OrderBy(item => item.Key).Select(item => item.Value).ToList();
         }
 
-        public static IEnumerable<int> GetDroneBayIndices(this IList<ISystem> shipSystems)
+        public static IEnumerable<int> GetDroneBayIndices(this IReadOnlyList<ISystem> shipSystems)
         {
             for (var i = 0; i < shipSystems.Count; ++i)
             {
@@ -43,19 +43,50 @@ namespace Combat.Component.Ship
             yield break;
         }
 
-        public static IWeapon Weapon(this IList<ISystem> shipSystems, int id)
+        public static IWeapon Weapon(this IReadOnlyList<ISystem> shipSystems, int id)
         {
             return shipSystems[id] as IWeapon;
         }
 
-        public static IDroneBay DroneBay(this IList<ISystem> shipSystems, int id)
+        public static IDroneBay DroneBay(this IReadOnlyList<ISystem> shipSystems, int id)
         {
             return shipSystems[id] as IDroneBay;
         }
 
-        public static IDevice Device(this IList<ISystem> shipSystems, int id)
+        public static IDevice Device(this IReadOnlyList<ISystem> shipSystems, int id)
         {
             return shipSystems[id] as IDevice;
         }
-    }
+
+		public static int FindFirstDevice(this IReadOnlyList<ISystem> shipSystems, GameDatabase.Enums.DeviceClass deviceClass)
+		{
+			for (int i = 0; i < shipSystems.Count; ++i)
+				if (shipSystems[i] is IDevice device && device.DeviceClass == deviceClass)
+					return i;
+
+			return -1;
+		}
+
+		public static int FindFirst<T>(this IReadOnlyList<ISystem> shipSystems) where T : ISystem
+		{
+			for (int i = 0; i < shipSystems.Count; ++i)
+				if (shipSystems[i] is T)
+					return i;
+
+			return -1;
+		}
+
+		public static int FindFirst<T>(this IReadOnlyList<ISystem> shipSystems, out T system) where T : class, ISystem
+		{
+			for (int i = 0; i < shipSystems.Count; ++i)
+			{
+				if (shipSystems[i] is not T item) continue;
+				system = item;
+				return i;
+			}
+
+			system = null;
+			return -1;
+		}
+	}
 }

@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data type="enum" name="NodeType">
-    <item name="Undefined">0</item>
-    <item name="ComingSoon">1</item>
+    <item name="Undefined" value="0" />
+    <item name="ComingSoon" value="1" />
     
-    <item name="ShowDialog">10</item>
-    <item name="OpenShipyard">11</item>
-    <item name="OpenWorkshop">12</item>
+    <item name="ShowDialog" value="10" />
+    <item name="OpenShipyard" value="11" />
+    <item name="OpenWorkshop" value="12" />
     
-    <item name="Switch">15</item>
-    <item name="Random">16</item>
-    <item name="Condition">17</item>
+    <item name="Switch" value="15" />
+    <item name="Random" value="16" />
+    <item name="Condition" value="17" />
     
-    <item name="AttackFleet">20</item>
-    <item name="AttackOccupants">21</item>
-    <item name="AttackStarbase">22</item>
+    <item name="AttackFleet" value="20" />
+    <item name="AttackOccupants" value="21" />
+    <item name="AttackStarbase" value="22" />
     
-    <item name="DestroyOccupants">25</item>
-    <item name="SuppressOccupants">26</item>
+    <item name="DestroyOccupants" value="25" />
+    <item name="SuppressOccupants" value="26" />
     
-    <item name="Retreat">30</item>
+    <item name="Retreat" value="30" />
 
-    <item name="ReceiveItem">35</item>
-    <item name="RemoveItem">36</item>
-    <item name="Trade">37</item>
+    <item name="ReceiveItem" value="35" />
+    <item name="RemoveItem" value="36" />
+    <item name="Trade" value="37" />
 
-    <item name="CompleteQuest">40</item>
-    <item name="FailQuest">41</item>
-    <item name="CancelQuest">42</item>
-    <item name="StartQuest">43</item>
+    <item name="CompleteQuest" value="40" />
+    <item name="FailQuest" value="41" />
+    <item name="CancelQuest" value="42" />
+    <item name="StartQuest" value="43" />
 
-    <item name="SetCharacterRelations">50</item>
-    <item name="SetFactionRelations">51</item>
-    <item name="ChangeCharacterRelations">55</item>
-    <item name="ChangeFactionRelations">56</item>
+    <item name="SetCharacterRelations" value="50" />
+    <item name="SetFactionRelations" value="51" />
+    <item name="ChangeCharacterRelations" value="55" />
+    <item name="ChangeFactionRelations" value="56" />
 
-    <item name="CaptureStarBase">60</item>
-    <item name="LiberateStarBase">61</item>
-    <item name="ChangeFaction">62</item>
+    <item name="CaptureStarBase" value="60" />
+    <item name="LiberateStarBase" value="61" />
+    <item name="ChangeFaction" value="62" />
 </data>

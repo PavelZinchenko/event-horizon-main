@@ -19,29 +19,29 @@ namespace GameDatabase.DataModel
 
 		public static FrontierSettings Create(FrontierSettingsSerializable serializable, Database.Loader loader)
 		{
-			return new FrontierSettings(serializable, loader);
+			return serializable == null ? DefaultValue : new FrontierSettings(serializable, loader);
 		}
 
 		private FrontierSettings(FrontierSettingsSerializable serializable, Database.Loader loader)
 		{
 			BaseCommandPoints = UnityEngine.Mathf.Clamp(serializable.BaseCommandPoints, 0, 2147483647);
 			MaxExtraCommandPoints = UnityEngine.Mathf.Clamp(serializable.MaxExtraCommandPoints, 0, 2147483647);
-			SupporterPackShip = loader.GetShip(new ItemId<Ship>(serializable.SupporterPackShip));
-			FalconPackShip = loader.GetShip(new ItemId<Ship>(serializable.FalconPackShip));
-			BigBossEasyBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.BigBossEasyBuild));
-			BigBossNormalBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.BigBossNormalBuild));
-			BigBossHardBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.BigBossHardBuild));
-			DemoSceneStarbaseBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.DemoSceneStarbaseBuild));
-			TutorialStarbaseBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.TutorialStarbaseBuild));
-			DefaultStarbaseBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.DefaultStarbaseBuild));
-			ExplorationStarbase = loader.GetShip(new ItemId<Ship>(serializable.ExplorationStarbase));
-			MerchantShipBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.MerchantShipBuild));
-			SmugglerShipBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.SmugglerShipBuild));
-			EngineerShipBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.EngineerShipBuild));
-			MercenaryShipBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.MercenaryShipBuild));
-			ShipyardShipBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.ShipyardShipBuild));
-			SantaShipBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.SantaShipBuild));
-			SalvageDroneBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.SalvageDroneBuild));
+			SupporterPackShip = loader?.GetShip(new ItemId<Ship>(serializable.SupporterPackShip)) ?? Ship.DefaultValue;
+			FalconPackShip = loader?.GetShip(new ItemId<Ship>(serializable.FalconPackShip)) ?? Ship.DefaultValue;
+			BigBossEasyBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.BigBossEasyBuild)) ?? ShipBuild.DefaultValue;
+			BigBossNormalBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.BigBossNormalBuild)) ?? ShipBuild.DefaultValue;
+			BigBossHardBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.BigBossHardBuild)) ?? ShipBuild.DefaultValue;
+			DemoSceneStarbaseBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.DemoSceneStarbaseBuild)) ?? ShipBuild.DefaultValue;
+			TutorialStarbaseBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.TutorialStarbaseBuild)) ?? ShipBuild.DefaultValue;
+			DefaultStarbaseBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.DefaultStarbaseBuild)) ?? ShipBuild.DefaultValue;
+			ExplorationStarbase = loader?.GetShip(new ItemId<Ship>(serializable.ExplorationStarbase)) ?? Ship.DefaultValue;
+			MerchantShipBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.MerchantShipBuild)) ?? ShipBuild.DefaultValue;
+			SmugglerShipBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.SmugglerShipBuild)) ?? ShipBuild.DefaultValue;
+			EngineerShipBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.EngineerShipBuild)) ?? ShipBuild.DefaultValue;
+			MercenaryShipBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.MercenaryShipBuild)) ?? ShipBuild.DefaultValue;
+			ShipyardShipBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.ShipyardShipBuild)) ?? ShipBuild.DefaultValue;
+			SantaShipBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.SantaShipBuild)) ?? ShipBuild.DefaultValue;
+			SalvageDroneBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.SalvageDroneBuild)) ?? ShipBuild.DefaultValue;
 			CustomShipLevels = new ImmutableCollection<ShipToValue>(serializable.CustomShipLevels?.Select(item => ShipToValue.Create(item, loader)));
 			CustomShipPrices = new ImmutableCollection<ShipToValue>(serializable.CustomShipPrices?.Select(item => ShipToValue.Create(item, loader)));
 			ExplorationShips = new ImmutableCollection<Ship>(serializable.ExplorationShips?.Select(item => loader.GetShip(new ItemId<Ship>(item), true)));

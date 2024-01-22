@@ -9,13 +9,15 @@ namespace Combat.Component.Systems.Devices
         public FrontalShieldDevice(IShip ship, DeviceStats deviceSpec, int keyBinding)
             : base(keyBinding, deviceSpec.ControlButtonIcon)
         {
+			DeviceClass = deviceSpec.DeviceClass;
             MaxCooldown = deviceSpec.Cooldown;
 
             _ship = ship;
             _energyCost = deviceSpec.EnergyConsumption;
         }
 
-        public override bool CanBeActivated { get { return base.CanBeActivated && (_isEnabled || _ship.Stats.Energy.Value >= _energyCost); } }
+		public GameDatabase.Enums.DeviceClass DeviceClass { get; }
+		public override bool CanBeActivated { get { return base.CanBeActivated && (_isEnabled || _ship.Stats.Energy.Value >= _energyCost); } }
 
         public void Deactivate()
         {

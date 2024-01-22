@@ -20,7 +20,7 @@ namespace GameDatabase.DataModel
 
 		public static SpecialEventSettings Create(SpecialEventSettingsSerializable serializable, Database.Loader loader)
 		{
-			return new SpecialEventSettings(serializable, loader);
+			return serializable == null ? DefaultValue : new SpecialEventSettings(serializable, loader);
 		}
 
 		private SpecialEventSettings(SpecialEventSettingsSerializable serializable, Database.Loader loader)
@@ -29,17 +29,17 @@ namespace GameDatabase.DataModel
 			EnableXmasEvent = serializable.EnableXmasEvent;
 			XmasDaysBefore = UnityEngine.Mathf.Clamp(serializable.XmasDaysBefore, 0, 30);
 			XmasDaysAfter = UnityEngine.Mathf.Clamp(serializable.XmasDaysAfter, 0, 30);
-			XmasQuest = loader.GetQuest(new ItemId<QuestModel>(serializable.XmasQuest));
+			XmasQuest = loader?.GetQuest(new ItemId<QuestModel>(serializable.XmasQuest)) ?? QuestModel.DefaultValue;
 			_convertCreditsToSnowflakes = new Expressions.IntToInt(serializable.ConvertCreditsToSnowflakes, 1, 2147483647, variableResolver) { ParamName1 = "credits" };
 			ConvertCreditsToSnowflakes = _convertCreditsToSnowflakes.Evaluate;
 			EnableEasterEvent = serializable.EnableEasterEvent;
 			EasterDaysBefore = UnityEngine.Mathf.Clamp(serializable.EasterDaysBefore, 0, 30);
 			EasterDaysAfter = UnityEngine.Mathf.Clamp(serializable.EasterDaysAfter, 0, 30);
-			EasterQuest = loader.GetQuest(new ItemId<QuestModel>(serializable.EasterQuest));
+			EasterQuest = loader?.GetQuest(new ItemId<QuestModel>(serializable.EasterQuest)) ?? QuestModel.DefaultValue;
 			EnableHalloweenEvent = serializable.EnableHalloweenEvent;
 			HalloweenDaysBefore = UnityEngine.Mathf.Clamp(serializable.HalloweenDaysBefore, 0, 30);
 			HalloweenDaysAfter = UnityEngine.Mathf.Clamp(serializable.HalloweenDaysAfter, 0, 30);
-			HalloweenQuest = loader.GetQuest(new ItemId<QuestModel>(serializable.HalloweenQuest));
+			HalloweenQuest = loader?.GetQuest(new ItemId<QuestModel>(serializable.HalloweenQuest)) ?? QuestModel.DefaultValue;
 
 			OnDataDeserialized(serializable, loader);
 		}

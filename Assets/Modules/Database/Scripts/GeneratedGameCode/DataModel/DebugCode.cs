@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static DebugCode Create(DebugCodeSerializable serializable, Database.Loader loader)
 		{
-			return new DebugCode(serializable, loader);
+			return serializable == null ? DefaultValue : new DebugCode(serializable, loader);
 		}
 
 		private DebugCode(DebugCodeSerializable serializable, Database.Loader loader)
@@ -33,6 +33,6 @@ namespace GameDatabase.DataModel
 		public int Code { get; private set; }
 		public LootContent Loot { get; private set; }
 
-		public static DebugCode DefaultValue { get; private set; }
+		public static DebugCode DefaultValue { get; private set; }= new(new(), null);
 	}
 }

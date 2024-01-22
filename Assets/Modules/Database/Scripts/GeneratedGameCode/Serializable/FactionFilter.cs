@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct FactionFilterSerializable
+	public class FactionFilterSerializable
 	{
 		public FactionFilterType Type;
 		public int[] List;

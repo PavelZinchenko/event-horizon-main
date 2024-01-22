@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct LootItemSerializable
+	public class LootItemSerializable
 	{
 		public float Weight;
 		public LootContentSerializable Loot;

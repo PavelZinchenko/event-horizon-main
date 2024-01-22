@@ -11,6 +11,7 @@ namespace Combat.Component.Systems.Devices
         public InfinityStone(IShip ship, DeviceStats deviceSpec, int keyBinding)
             : base(keyBinding, deviceSpec.ControlButtonIcon)
         {
+			DeviceClass = deviceSpec.DeviceClass;
             MaxCooldown = deviceSpec.Cooldown;
 
             _ship = ship;
@@ -18,7 +19,8 @@ namespace Combat.Component.Systems.Devices
             _lifetime = deviceSpec.Lifetime;
         }
 
-        public void Deactivate() { }
+		public GameDatabase.Enums.DeviceClass DeviceClass { get; }
+		public void Deactivate() { }
 
         public override IFeaturesModification FeaturesModification { get { return this; } }
         

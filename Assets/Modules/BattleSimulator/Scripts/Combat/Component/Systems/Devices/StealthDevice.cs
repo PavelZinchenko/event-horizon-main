@@ -14,6 +14,7 @@ namespace Combat.Component.Systems.Devices
         public StealthDevice(IShip ship, DeviceStats deviceSpec, int keyBinding, bool invulnerability)
             : base(keyBinding, deviceSpec.ControlButtonIcon)
         {
+			DeviceClass = deviceSpec.DeviceClass;
             MaxCooldown = deviceSpec.Cooldown;
 
             _ship = ship;
@@ -21,7 +22,8 @@ namespace Combat.Component.Systems.Devices
             _invulnerability = invulnerability;
         }
 
-        public override float ActivationCost { get { return _energyCost; } }
+		public GameDatabase.Enums.DeviceClass DeviceClass { get; }
+		public override float ActivationCost { get { return _energyCost; } }
         public override bool CanBeActivated { get { return base.CanBeActivated && _ship.Stats.Energy.Value >= _energyCost; } }
         
         public override IFeaturesModification FeaturesModification { get { return this; } }

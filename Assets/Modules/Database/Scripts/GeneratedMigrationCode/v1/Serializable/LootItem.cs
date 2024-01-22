@@ -13,7 +13,7 @@ using DatabaseMigration.v1.Enums;
 namespace DatabaseMigration.v1.Serializable
 {
 	[Serializable]
-	public struct LootItemSerializable
+	public class LootItemSerializable
 	{
 		public float Weight;
 		public LootContentSerializable Loot;

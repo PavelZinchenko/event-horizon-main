@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static Character Create(CharacterSerializable serializable, Database.Loader loader)
 		{
-			return new Character(serializable, loader);
+			return serializable == null ? DefaultValue : new Character(serializable, loader);
 		}
 
 		private Character(CharacterSerializable serializable, Database.Loader loader)
@@ -29,9 +29,9 @@ namespace GameDatabase.DataModel
 
 			Name = serializable.Name;
 			AvatarIcon = new SpriteId(serializable.AvatarIcon, SpriteId.Type.AvatarIcon);
-			Faction = loader.GetFaction(new ItemId<Faction>(serializable.Faction));
-			Inventory = loader.GetLoot(new ItemId<LootModel>(serializable.Inventory));
-			Fleet = loader.GetFleet(new ItemId<Fleet>(serializable.Fleet));
+			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
+			Inventory = loader?.GetLoot(new ItemId<LootModel>(serializable.Inventory)) ?? LootModel.DefaultValue;
+			Fleet = loader?.GetFleet(new ItemId<Fleet>(serializable.Fleet)) ?? Fleet.DefaultValue;
 			Relations = UnityEngine.Mathf.Clamp(serializable.Relations, -100, 100);
 			IsUnique = serializable.IsUnique;
 

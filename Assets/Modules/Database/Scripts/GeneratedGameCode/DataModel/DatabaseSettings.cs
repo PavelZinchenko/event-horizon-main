@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static DatabaseSettings Create(DatabaseSettingsSerializable serializable, Database.Loader loader)
 		{
-			return new DatabaseSettings(serializable, loader);
+			return serializable == null ? DefaultValue : new DatabaseSettings(serializable, loader);
 		}
 
 		private DatabaseSettings(DatabaseSettingsSerializable serializable, Database.Loader loader)

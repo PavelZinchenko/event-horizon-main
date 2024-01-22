@@ -125,6 +125,7 @@ namespace Combat.Domain
             public void AddPlatform(IWeaponPlatform platform) { }
             public void AddSystem(ISystem system) { }
             public void AddEffect(IShipEffect shipEffect) { }
-        }
+			public void Broadcast(string message, Color color) {}
+		}
     }
 }

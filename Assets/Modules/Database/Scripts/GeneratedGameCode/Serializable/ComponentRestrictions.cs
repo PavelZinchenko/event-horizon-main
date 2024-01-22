@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct ComponentRestrictionsSerializable
+	public class ComponentRestrictionsSerializable
 	{
 		public SizeClass[] ShipSizes;
 		public bool NotForOrganicShips;

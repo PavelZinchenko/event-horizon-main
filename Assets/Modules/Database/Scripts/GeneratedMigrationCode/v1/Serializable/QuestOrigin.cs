@@ -13,7 +13,7 @@ using DatabaseMigration.v1.Enums;
 namespace DatabaseMigration.v1.Serializable
 {
 	[Serializable]
-	public struct QuestOriginSerializable
+	public class QuestOriginSerializable
 	{
 		public QuestOriginType Type;
 		public FactionFilterSerializable Factions;

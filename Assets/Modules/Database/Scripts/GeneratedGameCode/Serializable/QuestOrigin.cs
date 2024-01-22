@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct QuestOriginSerializable
+	public class QuestOriginSerializable
 	{
 		public QuestOriginType Type;
 		public FactionFilterSerializable Factions;

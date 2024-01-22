@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static QuestOrigin Create(QuestOriginSerializable serializable, Database.Loader loader)
 		{
-			return new QuestOrigin(serializable, loader);
+			return serializable == null ? DefaultValue : new QuestOrigin(serializable, loader);
 		}
 
 		private QuestOrigin(QuestOriginSerializable serializable, Database.Loader loader)
@@ -41,6 +41,6 @@ namespace GameDatabase.DataModel
 		public int MinRelations { get; private set; }
 		public int MaxRelations { get; private set; }
 
-		public static QuestOrigin DefaultValue { get; private set; }
+		public static QuestOrigin DefaultValue { get; private set; }= new(new(), null);
 	}
 }

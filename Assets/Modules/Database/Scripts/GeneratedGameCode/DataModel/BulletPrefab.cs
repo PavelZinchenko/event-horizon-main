@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static BulletPrefab Create(BulletPrefabSerializable serializable, Database.Loader loader)
 		{
-			return new BulletPrefab(serializable, loader);
+			return serializable == null ? DefaultValue : new BulletPrefab(serializable, loader);
 		}
 
 		private BulletPrefab(BulletPrefabSerializable serializable, Database.Loader loader)

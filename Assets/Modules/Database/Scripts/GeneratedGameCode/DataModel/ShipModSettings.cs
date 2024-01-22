@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static ShipModSettings Create(ShipModSettingsSerializable serializable, Database.Loader loader)
 		{
-			return new ShipModSettings(serializable, loader);
+			return serializable == null ? DefaultValue : new ShipModSettings(serializable, loader);
 		}
 
 		private ShipModSettings(ShipModSettingsSerializable serializable, Database.Loader loader)

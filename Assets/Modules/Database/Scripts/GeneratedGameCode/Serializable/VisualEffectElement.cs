@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct VisualEffectElementSerializable
+	public class VisualEffectElementSerializable
 	{
 		public VisualEffectType Type;
 		public string Image;

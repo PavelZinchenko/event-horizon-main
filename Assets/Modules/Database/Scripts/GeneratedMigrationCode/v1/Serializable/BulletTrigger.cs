@@ -13,7 +13,7 @@ using DatabaseMigration.v1.Enums;
 namespace DatabaseMigration.v1.Serializable
 {
 	[Serializable]
-	public struct BulletTriggerSerializable
+	public class BulletTriggerSerializable
 	{
 		public BulletTriggerCondition Condition;
 		public BulletEffectType EffectType;

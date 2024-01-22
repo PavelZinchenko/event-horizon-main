@@ -1,4 +1,5 @@
 ﻿using Combat.Component.Features;
+using GameDatabase.Enums;
 using GameDatabase.Model;
 
 namespace Combat.Component.Systems.Devices
@@ -11,7 +12,8 @@ namespace Combat.Component.Systems.Devices
             _targetPriority = targetPriority;
         }
 
-        public override bool CanBeActivated => false;
+		public DeviceClass DeviceClass => DeviceClass.Jammer;
+		public override bool CanBeActivated => false;
         public override IFeaturesModification FeaturesModification => this;
         public bool TryApplyModification(ref FeaturesData data)
         {

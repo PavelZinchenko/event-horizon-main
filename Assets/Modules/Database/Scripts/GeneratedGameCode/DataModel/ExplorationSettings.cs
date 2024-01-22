@@ -20,16 +20,16 @@ namespace GameDatabase.DataModel
 
 		public static ExplorationSettings Create(ExplorationSettingsSerializable serializable, Database.Loader loader)
 		{
-			return new ExplorationSettings(serializable, loader);
+			return serializable == null ? DefaultValue : new ExplorationSettings(serializable, loader);
 		}
 
 		private ExplorationSettings(ExplorationSettingsSerializable serializable, Database.Loader loader)
 		{
 			var variableResolver = new VariableResolver(this);
-			OutpostShip = loader.GetShip(new ItemId<Ship>(serializable.OutpostShip));
-			TurretShip = loader.GetShip(new ItemId<Ship>(serializable.TurretShip));
-			InfectedPlanetFaction = loader.GetFaction(new ItemId<Faction>(serializable.InfectedPlanetFaction));
-			HiveShipBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.HiveShipBuild));
+			OutpostShip = loader?.GetShip(new ItemId<Ship>(serializable.OutpostShip)) ?? Ship.DefaultValue;
+			TurretShip = loader?.GetShip(new ItemId<Ship>(serializable.TurretShip)) ?? Ship.DefaultValue;
+			InfectedPlanetFaction = loader?.GetFaction(new ItemId<Faction>(serializable.InfectedPlanetFaction)) ?? Faction.DefaultValue;
+			HiveShipBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.HiveShipBuild)) ?? ShipBuild.DefaultValue;
 			_gasCloudDPS = new Expressions.IntToFloat(serializable.GasCloudDPS, 1, 2147483647, variableResolver) { ParamName1 = "level" };
 			GasCloudDPS = _gasCloudDPS.Evaluate;
 

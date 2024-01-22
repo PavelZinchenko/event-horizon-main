@@ -19,14 +19,14 @@ namespace GameDatabase.DataModel
 
 		public static InstalledComponent Create(InstalledComponentSerializable serializable, Database.Loader loader)
 		{
-			return new InstalledComponent(serializable, loader);
+			return serializable == null ? DefaultValue : new InstalledComponent(serializable, loader);
 		}
 
 		private InstalledComponent(InstalledComponentSerializable serializable, Database.Loader loader)
 		{
-			Component = loader.GetComponent(new ItemId<Component>(serializable.ComponentId));
-			if (Component == null)
-			    throw new DatabaseException(this.GetType().Name + ".Component cannot be null - " + serializable.ComponentId);
+			Component = loader?.GetComponent(new ItemId<Component>(serializable.ComponentId)) ?? Component.DefaultValue;
+			if (loader != null && Component == null)
+			    throw new DatabaseException("ObjectTemplate.Component cannot be null - " + serializable.ComponentId);
 			Modification = serializable.Modification;
 			Quality = serializable.Quality;
 			X = UnityEngine.Mathf.Clamp(serializable.X, -32768, 32767);
@@ -47,6 +47,6 @@ namespace GameDatabase.DataModel
 		public int Behaviour { get; private set; }
 		public int KeyBinding { get; private set; }
 
-		public static InstalledComponent DefaultValue { get; private set; }
+		public static InstalledComponent DefaultValue { get; private set; }= new(new(), null);
 	}
 }

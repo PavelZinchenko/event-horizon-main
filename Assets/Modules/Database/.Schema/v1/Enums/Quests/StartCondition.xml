@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data type="enum" name="StartCondition">
-    <item name="Manual">0</item>
-    <item name="Beacon">1</item>
-    <item name="LocalEncounter">2</item>
-    <item name="FactionMission">3</item>
-    <item name="GameStart">4</item>
-    <item name="NewStarExplored">5</item>
-    <item name="ArrivedAtStar">6</item>
-    <item name="Daily">7</item>
+    <item name="Manual" value="0" />
+    <item name="Beacon" value="1" />
+    <item name="LocalEncounter" value="2" />
+    <item name="FactionMission" value="3" />
+    <item name="GameStart" value="4" />
+    <item name="NewStarExplored" value="5" />
+    <item name="ArrivedAtStar" value="6" />
+    <item name="Daily" value="7" />
 </data>

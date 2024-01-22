@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static Satellite Create(SatelliteSerializable serializable, Database.Loader loader)
 		{
-			return new Satellite(serializable, loader);
+			return serializable == null ? DefaultValue : new Satellite(serializable, loader);
 		}
 
 		private Satellite(SatelliteSerializable serializable, Database.Loader loader)

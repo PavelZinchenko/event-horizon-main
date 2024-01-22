@@ -13,7 +13,7 @@ using DatabaseMigration.v1.Enums;
 namespace DatabaseMigration.v1.Serializable
 {
 	[Serializable]
-	public struct ShipFeaturesSerializable
+	public class ShipFeaturesSerializable
 	{
 		public float EnergyResistance;
 		public float KineticResistance;

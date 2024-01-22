@@ -56,6 +56,7 @@ namespace Combat.Manager
         [Inject] private readonly IKeyboard _keyboard;
         [Inject] private readonly IMouse _mouse;
         [Inject] private readonly ICombatModel _combatModel;
+		[Inject] private readonly Ai.BehaviorTree.BehaviorTreeBuilder _behaviorTreeBuilder;
 
         public void Initialize()
         {
@@ -138,7 +139,14 @@ namespace Combat.Manager
         {
             var position = _scene.FindFreePlace(40, ship.Side);
 
-            var controllerFactory = ship.Side == UnitSide.Player ? (IControllerFactory)new KeyboardController.Factory(_keyboard, _mouse) : new Computer.Factory(_scene, _combatModel.EnemyFleet.Level);
+			IControllerFactory controllerFactory;
+			if (ship.Side == UnitSide.Player)
+				controllerFactory = new KeyboardController.Factory(_keyboard, _mouse);
+			else if (_database.CombatSettings.EnemyAI != null)
+				controllerFactory = new BehaviorTreeController.Factory(_database.CombatSettings.EnemyAI, 
+					_scene, Ai.BehaviorTree.AiSettings.FromAiLevel(_combatModel.EnemyFleet.Level), _behaviorTreeBuilder);
+			else
+				controllerFactory = new Computer.Factory(_scene, _combatModel.EnemyFleet.Level);
 
             ship.Create(_shipFactory, controllerFactory, position);
             //UnityEngine.Debug.Log("CreateShip.start - " + ship.Name);

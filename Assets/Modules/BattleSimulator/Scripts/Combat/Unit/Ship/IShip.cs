@@ -21,6 +21,8 @@ namespace Combat.Component.Ship
         IShipEffects Effects { get; }
         IShipSpecification Specification { get; }
 
+		void Broadcast(string message, UnityEngine.Color color);
+
         void Affect(Impact impact);
         void AddPlatform(IWeaponPlatform platform);
         void AddSystem(ISystem system);

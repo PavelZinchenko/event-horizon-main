@@ -20,23 +20,23 @@ namespace GameDatabase.DataModel
 
 		public static GalaxySettings Create(GalaxySettingsSerializable serializable, Database.Loader loader)
 		{
-			return new GalaxySettings(serializable, loader);
+			return serializable == null ? DefaultValue : new GalaxySettings(serializable, loader);
 		}
 
 		private GalaxySettings(GalaxySettingsSerializable serializable, Database.Loader loader)
 		{
 			var variableResolver = new VariableResolver(this);
-			AbandonedStarbaseFaction = loader.GetFaction(new ItemId<Faction>(serializable.AbandonedStarbaseFaction));
+			AbandonedStarbaseFaction = loader?.GetFaction(new ItemId<Faction>(serializable.AbandonedStarbaseFaction)) ?? Faction.DefaultValue;
 			StartingShipBuilds = new ImmutableCollection<ShipBuild>(serializable.StartingShipBuilds?.Select(item => loader.GetShipBuild(new ItemId<ShipBuild>(item), true)));
-			StartingInventory = loader.GetLoot(new ItemId<LootModel>(serializable.StartingInventory));
-			SupporterPackShip = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.SupporterPackShip));
-			DefaultStarbaseBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.DefaultStarbaseBuild));
+			StartingInventory = loader?.GetLoot(new ItemId<LootModel>(serializable.StartingInventory)) ?? LootModel.DefaultValue;
+			SupporterPackShip = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.SupporterPackShip)) ?? ShipBuild.DefaultValue;
+			DefaultStarbaseBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.DefaultStarbaseBuild)) ?? ShipBuild.DefaultValue;
 			MaxEnemyShipsLevel = UnityEngine.Mathf.Clamp(serializable.MaxEnemyShipsLevel, 100, 500);
 			_enemyLevel = new Expressions.IntToInt(serializable.EnemyLevel, 0, 500, variableResolver) { ParamName1 = "distance" };
 			EnemyLevel = _enemyLevel.Evaluate;
 			_shipMinSpawnDistance = new Expressions.SizeClassToInt(serializable.ShipMinSpawnDistance, 0, 1000, variableResolver) { ParamName1 = "size" };
 			ShipMinSpawnDistance = _shipMinSpawnDistance.Evaluate;
-			CaptureStarbaseQuest = loader.GetQuest(new ItemId<QuestModel>(serializable.CaptureStarbaseQuest));
+			CaptureStarbaseQuest = loader?.GetQuest(new ItemId<QuestModel>(serializable.CaptureStarbaseQuest)) ?? QuestModel.DefaultValue;
 
 			OnDataDeserialized(serializable, loader);
 		}

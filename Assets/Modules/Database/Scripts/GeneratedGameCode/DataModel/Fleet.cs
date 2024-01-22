@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static Fleet Create(FleetSerializable serializable, Database.Loader loader)
 		{
-			return new Fleet(serializable, loader);
+			return serializable == null ? DefaultValue : new Fleet(serializable, loader);
 		}
 
 		private Fleet(FleetSerializable serializable, Database.Loader loader)

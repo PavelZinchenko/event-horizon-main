@@ -25,8 +25,6 @@ namespace Installers
         [SerializeField] private TrailRendererPool _trailRendererPool;
         [SerializeField] private Camera _camera;
 
-        [Inject] private readonly GameStateMachine.IStateMachine _stateMachine;
-
         public override void InstallBindings()
         {
 			Container.BindInterfacesTo<Messenger>().AsSingle().WithArguments(GameScene.Exploration);
@@ -54,6 +52,8 @@ namespace Installers
 			Container.Bind<IGameObjectFactory>().To<GameObjectFactory>().AsCached();
 			Container.BindInterfacesTo<InputSystemMouse>().AsSingle().WithArguments(_camera);
             Container.BindInterfacesTo<InputSystemKeyboard>().AsSingle();
-        }
-    }
+			Container.Bind<Combat.Ai.BehaviorTree.BehaviorTreeBuilder>().AsSingle();
+			Container.BindInterfacesAndSelfTo<Combat.Helpers.RadioTransmitter>().AsSingle();
+		}
+	}
 }

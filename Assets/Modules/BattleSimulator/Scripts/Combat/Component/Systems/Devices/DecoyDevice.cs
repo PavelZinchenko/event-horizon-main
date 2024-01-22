@@ -12,6 +12,7 @@ namespace Combat.Component.Systems.Devices
             : base(keyBinding, deviceSpec.ControlButtonIcon)
         {
             MaxCooldown = deviceSpec.Cooldown;
+			DeviceClass = deviceSpec.DeviceClass;
 
             _ship = ship;
             _energyCost = deviceSpec.EnergyConsumption;
@@ -23,7 +24,8 @@ namespace Combat.Component.Systems.Devices
             _range = deviceSpec.Range;
         }
 
-        public override float ActivationCost { get { return _energyCost; } }
+		public GameDatabase.Enums.DeviceClass DeviceClass { get; }
+		public override float ActivationCost { get { return _energyCost; } }
         public override bool CanBeActivated { get { return base.CanBeActivated && _ship.Stats.Energy.Value >= _energyCost; } }
 
         public void Deactivate() {}

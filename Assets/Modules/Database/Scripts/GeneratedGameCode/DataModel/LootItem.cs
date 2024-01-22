@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static LootItem Create(LootItemSerializable serializable, Database.Loader loader)
 		{
-			return new LootItem(serializable, loader);
+			return serializable == null ? DefaultValue : new LootItem(serializable, loader);
 		}
 
 		private LootItem(LootItemSerializable serializable, Database.Loader loader)
@@ -33,6 +33,6 @@ namespace GameDatabase.DataModel
 		public float Weight { get; private set; }
 		public LootContent Loot { get; private set; }
 
-		public static LootItem DefaultValue { get; private set; }
+		public static LootItem DefaultValue { get; private set; }= new(new(), null);
 	}
 }

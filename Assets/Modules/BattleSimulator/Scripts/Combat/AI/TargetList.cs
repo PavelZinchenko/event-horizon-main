@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Combat.Component.Ship;
-using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Scene;
 using Combat.Unit;
@@ -9,34 +9,49 @@ namespace Combat.Ai
 {
     public class TargetList
     {
-        public TargetList(IScene scene, bool lookForLoot = false)
+		private float _cooldown;
+		private IShip _primaryTarget;
+		private const float UpdateInterval = 1.0f;
+		private readonly List<IShip> _targets;
+		private readonly IReadOnlyList<IShip> _targetsReadOnly;
+		//private readonly List<IUnit> _loot;
+		private readonly IScene _scene;
+		
+		public TargetList(IScene scene, bool lookForLoot = false)
         {
             _scene = scene;
-            if (lookForLoot)
-                _loot = new List<IUnit>();
-        }
+			_targets = new List<IShip>();
+			_targetsReadOnly = _targets.AsReadOnly();
 
-        public System.Collections.ObjectModel.ReadOnlyCollection<IShip> Items { get { return _targets.AsReadOnly(); } }
-        public System.Collections.ObjectModel.ReadOnlyCollection<IUnit> Loot { get { return _loot != null ? _loot.AsReadOnly() : null; } }
+			//if (lookForLoot)
+			//    _loot = new List<IUnit>();
+		}
 
-        public void Update(float elapsedTime, IShip ship, IShip enemy)
-        {
-            _cooldown -= elapsedTime;
-            if (_cooldown > 0)
-                return;
+		public IReadOnlyList<IShip> Items => _targetsReadOnly;
+		//public System.Collections.ObjectModel.ReadOnlyCollection<IUnit> Loot { get { return _loot != null ? _loot.AsReadOnly() : null; } }
 
-            _cooldown = UpdateInterval;
+		[Obsolete] public void Update(float elapsedTime, IShip ship, IShip enemy)
+		{
+			_cooldown -= elapsedTime;
+			if (_cooldown > 0)
+				return;
 
-            if (!ship.IsActive())
-                return;
+			_cooldown = UpdateInterval;
+			Update(ship, enemy);
+		}
+
+		public void Update(IShip ship, IShip enemy)
+		{
+			if (!ship.IsActive())
+	            return;
 
             _scene.Ships.GetEnemyShips(_targets, ship.Type.Side);
             _primaryTarget = enemy;
 
             _targets.RemoveAll(IsBadTarget);
 
-            if (_loot != null && _targets.Count == 0)
-                LookForLoot();
+            //if (_loot != null && _targets.Count == 0)
+            //    LookForLoot();
 
             if (_targets.Count < 5)
                 return;
@@ -79,30 +94,23 @@ namespace Combat.Ai
             _targets[index2] = ship;
         }
 
-        private void LookForLoot()
-        {
-            _loot.Clear();
-            lock (_scene.Units.LockObject)
-            {
-                foreach (var item in _scene.Units.Items)
-                {
-                    if (item.Type.Class != UnitClass.Loot)
-                        continue;
-                    _loot.Add(item);
-                }
-            }
-        }
+        //private void LookForLoot()
+        //{
+        //    _loot.Clear();
+        //    lock (_scene.Units.LockObject)
+        //    {
+        //        foreach (var item in _scene.Units.Items)
+        //        {
+        //            if (item.Type.Class != UnitClass.Loot)
+        //                continue;
+        //            _loot.Add(item);
+        //        }
+        //    }
+        //}
 
         private static float Distance(IShip ship1, IShip ship2)
         {
             return ship1.Body.Position.Direction(ship2.Body.Position).sqrMagnitude;
         }
-
-        private float _cooldown;
-        private IShip _primaryTarget;
-        private const float UpdateInterval = 1.0f;
-        private readonly List<IShip> _targets = new List<IShip>();
-        private readonly List<IUnit> _loot;
-        private readonly IScene _scene;
     }
 }

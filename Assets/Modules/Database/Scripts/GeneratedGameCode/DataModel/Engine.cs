@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static Engine Create(EngineSerializable serializable, Database.Loader loader)
 		{
-			return new Engine(serializable, loader);
+			return serializable == null ? DefaultValue : new Engine(serializable, loader);
 		}
 
 		private Engine(EngineSerializable serializable, Database.Loader loader)
@@ -33,6 +33,6 @@ namespace GameDatabase.DataModel
 		public UnityEngine.Vector2 Position { get; private set; }
 		public float Size { get; private set; }
 
-		public static Engine DefaultValue { get; private set; }
+		public static Engine DefaultValue { get; private set; }= new(new(), null);
 	}
 }

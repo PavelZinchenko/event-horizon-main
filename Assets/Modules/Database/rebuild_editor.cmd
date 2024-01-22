@@ -1,3 +1,2 @@
-.CodeGenerator\DatabaseCodeGenerator\bin\Release\DatabaseCodeGenerator.exe .Schema\versions.xml .Editor\Analyzer\GameDatabase editor
-.CodeGenerator\DatabaseCodeGenerator\bin\Release\DatabaseCodeGenerator.exe .Schema\versions.xml .Editor\GameDatabase\GameDatabase editor upgrade_editor
+.CodeGenerator\DatabaseCodeGenerator\bin\Release\DatabaseCodeGenerator.exe .Schema\versions.xml .Editor\DatabaseModel\DatabaseModel editor upgrade_editor
 "D:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" .Editor\GameDatabase.sln /property:Configuration=Release

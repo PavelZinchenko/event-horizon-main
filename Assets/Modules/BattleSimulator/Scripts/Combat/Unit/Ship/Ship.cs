@@ -53,8 +53,11 @@ namespace Combat.Component.Ship
         public IFeatures Features { get; }
         public IShipSystems Systems => _systems;
         public IShipEffects Effects => _effects;
+		public Combat.Helpers.RadioTransmitter RadioTransmitter { get; set; }
 
-        public override float DefenseMultiplier => Stats.HitPointsMultiplier;
+		public void Broadcast(string message, UnityEngine.Color color) => RadioTransmitter?.Broadcast(this, message, color);
+
+		public override float DefenseMultiplier => Stats.HitPointsMultiplier;
 
         public override ICollisionBehaviour CollisionBehaviour { get; }
 

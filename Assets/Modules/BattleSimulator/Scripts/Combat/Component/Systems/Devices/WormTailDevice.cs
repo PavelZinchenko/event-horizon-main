@@ -12,11 +12,13 @@ namespace Combat.Component.Systems.Devices
         public WormTailDevice(DeviceStats deviceSpec, IEnumerable<WormSegment> wormTail)
             : base(-1, SpriteId.Empty)
         {
+			DeviceClass = deviceSpec.DeviceClass;
             _units = new List<WormSegment>(wormTail);
             _size = _units.Count;
         }
 
-        public override float ActivationCost { get { return 0f; } }
+		public GameDatabase.Enums.DeviceClass DeviceClass { get; }
+		public override float ActivationCost { get { return 0f; } }
         public override bool CanBeActivated { get { return false; } }
 
         public override IStatsModification StatsModification { get { return this; } }

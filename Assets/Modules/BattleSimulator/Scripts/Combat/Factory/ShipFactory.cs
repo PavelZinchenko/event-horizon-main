@@ -35,20 +35,24 @@ namespace Combat.Factory
 {
     public class ShipFactory
     {
-        [Inject] private readonly IResourceLocator _resourceLocator;
-        [Inject] private readonly IAiManager _aiManager;
-        [Inject] private readonly IScene _scene;
-        [Inject] private readonly ISoundPlayer _soundPlayer;
-        [Inject] private readonly IDatabase _database;
-        [Inject] private readonly IObjectPool _objectPool;
-        [Inject] private readonly WeaponFactory _weaponFactory;
-        [Inject] private readonly DeviceFactory _deviceFactory;
-        [Inject] private readonly DroneBayFactory _droneBayFactory;
-        [Inject] private readonly SatelliteFactory _satelliteFactory;
-        [Inject] private readonly EffectFactory _effectFactory;
-        [Inject] private readonly PrefabCache _prefabCache;
+		[Inject] private readonly IResourceLocator _resourceLocator;
+		[Inject] private readonly IAiManager _aiManager;
+		[Inject] private readonly IScene _scene;
+		[Inject] private readonly ISoundPlayer _soundPlayer;
+		[Inject] private readonly IDatabase _database;
+		[Inject] private readonly IObjectPool _objectPool;
+		[Inject] private readonly WeaponFactory _weaponFactory;
+		[Inject] private readonly DeviceFactory _deviceFactory;
+		[Inject] private readonly DroneBayFactory _droneBayFactory;
+		[Inject] private readonly SatelliteFactory _satelliteFactory;
+		[Inject] private readonly PrefabCache _prefabCache;
+		[Inject] private readonly EffectFactory _effectFactory;
+		[Inject] private readonly RadioTransmitter _radioTransmitter;
+		[Inject] private readonly Ai.BehaviorTree.BehaviorTreeBuilder _behaviorTreeBuilder;
+		private const float _droneBayPlatformCooldown = 0.4f;
+		private readonly Settings _settings;
 
-        public ShipFactory(Settings settings)
+		public ShipFactory(Settings settings)
         {
             _settings = settings;
         }
@@ -157,10 +161,12 @@ namespace Combat.Factory
             _scene.AddUnit(ship);
             _aiManager.Add(controllerFactory.Create(ship));
 
-            if (stats.Autopilot)
-                _aiManager.Add(new Computer.Factory(_scene, 100, true).Create(ship));
+			if (stats.Autopilot)
+				_aiManager.Add(CreateAutopilotController().Create(ship));
 
-            return ship;
+			ship.RadioTransmitter = _radioTransmitter;
+
+			return ship;
         }
 
         private IWeaponPlatform CreateDroneBayPlatform(IShip ship)
@@ -170,14 +176,14 @@ namespace Combat.Factory
             return droneBayPlatform;
         }
 
-        public Ship CreateEnemyShip(IShipSpecification spec, Vector2 position, float rotation, int aiLevel)
+		public Ship CreateEnemyShip(IShipSpecification spec, Vector2 position, float rotation, int aiLevel)
         {
-            return CreateShip(spec, new Computer.Factory(_scene, aiLevel), UnitSide.Enemy, position, rotation);
+            return CreateShip(spec, CreateDefaultAiController(aiLevel), UnitSide.Enemy, position, rotation);
         }
 
         public Ship CreateClone(IShipSpecification spec, Vector2 position, float rotation, IShip motherShip)
         {
-            return CreateShip(spec, new Clone.Factory(_scene), position, rotation, motherShip, UnitSide.Undefined, _settings.Shadows);
+            return CreateShip(spec, CreateCloneController(), position, rotation, motherShip, UnitSide.Undefined, _settings.Shadows);
         }
 
         public Ship CreateShip(IShipSpecification spec, IControllerFactory controllerFactory, UnitSide side, Vector2 position, float rotation)
@@ -185,9 +191,9 @@ namespace Combat.Factory
             return CreateShip(spec, controllerFactory, position, rotation, null, side, _settings.Shadows);
         }
 
-        public IShip CreateDrone(IShipSpecification spec, IShip motherShip, float range, Vector2 position, float rotation, DroneBehaviour behaviour, bool improvedAi)
+        public IShip CreateDrone(IShipSpecification spec, IShip motherShip, float range, Vector2 position, float rotation, DroneBehaviour behaviour, bool improvedAi, BehaviorTreeModel behaviorTree)
         {
-            return CreateShip(spec, new Drone.Factory(_scene, range, behaviour, improvedAi), position, rotation, motherShip, UnitSide.Undefined, _settings.Shadows);
+            return CreateShip(spec, CreateDroneController(behaviour, range, improvedAi, behaviorTree), position, rotation, motherShip, UnitSide.Undefined, _settings.Shadows);
         }
 
         public Ship CreateStarbase(IShipSpecification spec, Vector2 position, float rotation, UnitSide unitSide)
@@ -354,8 +360,48 @@ namespace Combat.Factory
             return platform;
         }
 
-        private readonly Settings _settings;
-        private const float _droneBayPlatformCooldown = 0.4f;
+		private IControllerFactory CreateDefaultAiController(int aiLevel)
+		{
+			if (_database.CombatSettings.EnemyAI != null)
+				return new BehaviorTreeController.Factory(_database.CombatSettings.EnemyAI, _scene, 
+					Ai.BehaviorTree.AiSettings.FromAiLevel(aiLevel), _behaviorTreeBuilder);
+
+			return new Computer.Factory(_scene, aiLevel);
+		}
+
+		private IControllerFactory CreateCloneController()
+		{
+			if (_database.CombatSettings.CloneAI != null)
+				return new BehaviorTreeController.Factory(_database.CombatSettings.CloneAI, _scene, 
+					Ai.BehaviorTree.AiSettings.Default, _behaviorTreeBuilder);
+
+			return new Clone.Factory(_scene);
+		}
+
+		private IControllerFactory CreateDroneController(DroneBehaviour behaviour, float range, bool improvedAi, BehaviorTreeModel behaviorTree)
+		{
+			if (behaviorTree == null)
+			{
+				if (behaviour == DroneBehaviour.Aggressive)
+					behaviorTree = improvedAi ? _database.CombatSettings.ImprovedOffensiveDroneAI : _database.CombatSettings.OffensiveDroneAI;
+				else
+					behaviorTree = improvedAi ? _database.CombatSettings.ImprovedDefensiveDroneAI : _database.CombatSettings.DefensiveDroneAI;
+			}
+
+			if (behaviorTree != null)
+				return new BehaviorTreeController.Factory(behaviorTree, _scene, Ai.BehaviorTree.AiSettings.ForDrone(range), _behaviorTreeBuilder);
+
+			return new Drone.Factory(_scene, range, behaviour, improvedAi);
+		}
+
+		private IControllerFactory CreateAutopilotController()
+		{
+			if (_database.CombatSettings.AutopilotAI != null)
+				return new BehaviorTreeController.Factory(_database.CombatSettings.AutopilotAI,
+					_scene, Ai.BehaviorTree.AiSettings.Default, _behaviorTreeBuilder);
+
+			return new Computer.Factory(_scene, 100, true);
+		}
 
         public struct Settings
         {

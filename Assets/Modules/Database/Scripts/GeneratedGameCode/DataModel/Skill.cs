@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static Skill Create(SkillSerializable serializable, Database.Loader loader)
 		{
-			return new Skill(serializable, loader);
+			return serializable == null ? DefaultValue : new Skill(serializable, loader);
 		}
 
 		private Skill(SkillSerializable serializable, Database.Loader loader)

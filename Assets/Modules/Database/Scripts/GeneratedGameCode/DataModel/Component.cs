@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static Component Create(ComponentSerializable serializable, Database.Loader loader)
 		{
-			return new Component(serializable, loader);
+			return serializable == null ? DefaultValue : new Component(serializable, loader);
 		}
 
 		private Component(ComponentSerializable serializable, Database.Loader loader)
@@ -31,20 +31,20 @@ namespace GameDatabase.DataModel
 			Description = serializable.Description;
 			DisplayCategory = serializable.DisplayCategory;
 			Availability = serializable.Availability;
-			Stats = loader.GetComponentStats(new ItemId<ComponentStats>(serializable.ComponentStatsId));
-			if (Stats == null)
-			    throw new DatabaseException(this.GetType().Name + ".Stats cannot be null - " + serializable.ComponentStatsId);
-			Faction = loader.GetFaction(new ItemId<Faction>(serializable.Faction));
+			Stats = loader?.GetComponentStats(new ItemId<ComponentStats>(serializable.ComponentStatsId)) ?? ComponentStats.DefaultValue;
+			if (loader != null && Stats == null)
+			    throw new DatabaseException("ObjectTemplate.Stats cannot be null - " + serializable.ComponentStatsId);
+			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 			Level = UnityEngine.Mathf.Clamp(serializable.Level, 0, 2147483647);
 			Icon = new SpriteId(serializable.Icon, SpriteId.Type.Component);
 			Color = new ColorData(serializable.Color);
 			Layout = new Layout(serializable.Layout);
-			Device = loader.GetDevice(new ItemId<Device>(serializable.DeviceId));
-			Weapon = loader.GetWeapon(new ItemId<Weapon>(serializable.WeaponId));
-			Ammunition = loader.GetAmmunition(new ItemId<Ammunition>(serializable.AmmunitionId));
-			AmmunitionObsolete = loader.GetAmmunitionObsolete(new ItemId<AmmunitionObsolete>(serializable.AmmunitionId));
-			DroneBay = loader.GetDroneBay(new ItemId<DroneBay>(serializable.DroneBayId));
-			Drone = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.DroneId));
+			Device = loader?.GetDevice(new ItemId<Device>(serializable.DeviceId)) ?? Device.DefaultValue;
+			Weapon = loader?.GetWeapon(new ItemId<Weapon>(serializable.WeaponId)) ?? Weapon.DefaultValue;
+			Ammunition = loader?.GetAmmunition(new ItemId<Ammunition>(serializable.AmmunitionId)) ?? Ammunition.DefaultValue;
+			AmmunitionObsolete = loader?.GetAmmunitionObsolete(new ItemId<AmmunitionObsolete>(serializable.AmmunitionId)) ?? AmmunitionObsolete.DefaultValue;
+			DroneBay = loader?.GetDroneBay(new ItemId<DroneBay>(serializable.DroneBayId)) ?? DroneBay.DefaultValue;
+			Drone = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.DroneId)) ?? ShipBuild.DefaultValue;
 			Restrictions = ComponentRestrictions.Create(serializable.Restrictions, loader);
 			PossibleModifications = new ImmutableCollection<ComponentMod>(serializable.PossibleModifications?.Select(item => loader.GetComponentMod(new ItemId<ComponentMod>(item), true)));
 

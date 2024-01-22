@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data type="enum" name="LootItemType">
-    <item name="None">0</item>
-    <item name="SomeMoney">1</item>
-    <item name="Fuel">2</item>
-    <item name="Money">3</item>
-    <item name="Stars">4</item>
+    <item name="None" value="0" />
+    <item name="SomeMoney" value="1" />
+    <item name="Fuel" value="2" />
+    <item name="Money" value="3" />
+    <item name="Stars" value="4" />
     
-    <item name="StarMap">5</item>
-    <item name="RandomComponents">10</item>
+    <item name="StarMap" value="5" />
+    <item name="RandomComponents" value="10" />
     
-    <item name="RandomItems">20</item>
-    <item name="AllItems">21</item>
-    <item name="ItemsWithChance">22</item>
+    <item name="RandomItems" value="20" />
+    <item name="AllItems" value="21" />
+    <item name="ItemsWithChance" value="22" />
 
-    <item name="QuestItem">25</item>
+    <item name="QuestItem" value="25" />
 
-    <item name="Ship">30</item>
-    <item name="EmptyShip">31</item>
+    <item name="Ship" value="30" />
+    <item name="EmptyShip" value="31" />
 
-    <item name="Component">35</item>
+    <item name="Component" value="35" />
 
-    <item name="Blueprint">40</item>
-    <item name="ResearchPoints">41</item>
+    <item name="Blueprint" value="40" />
+    <item name="ResearchPoints" value="41" />
 
-    <item name="Satellite">45</item>
+    <item name="Satellite" value="45" />
 </data>

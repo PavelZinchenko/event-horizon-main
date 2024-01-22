@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct BulletTriggerSerializable
+	public class BulletTriggerSerializable
 	{
 		public BulletTriggerCondition Condition;
 		public BulletEffectType EffectType;

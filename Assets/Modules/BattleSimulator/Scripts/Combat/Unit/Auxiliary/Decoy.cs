@@ -96,8 +96,10 @@ namespace Combat.Component.Unit
             _elapsedTime = _lifetime;
             InvokeTriggers(ConditionType.OnDestroy);
         }
-    
-        private float _elapsedTime;
+
+		public void Broadcast(string message, Color color) {}
+
+		private float _elapsedTime;
         private float _hitPoints;
         private readonly float _lifetime;
         private readonly IFeatures _features;

@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static RequiredFactions Create(FactionFilterSerializable serializable, Database.Loader loader)
 		{
-			return new RequiredFactions(serializable, loader);
+			return serializable == null ? DefaultValue : new RequiredFactions(serializable, loader);
 		}
 
 		private RequiredFactions(FactionFilterSerializable serializable, Database.Loader loader)
@@ -33,6 +33,6 @@ namespace GameDatabase.DataModel
 		public FactionFilterType Type { get; private set; }
 		public ImmutableCollection<Faction> List { get; private set; }
 
-		public static RequiredFactions DefaultValue { get; private set; }
+		public static RequiredFactions DefaultValue { get; private set; }= new(new(), null);
 	}
 }

@@ -13,7 +13,7 @@ using DatabaseMigration.v1.Enums;
 namespace DatabaseMigration.v1.Serializable
 {
 	[Serializable]
-	public struct NodeSerializable
+	public class NodeSerializable
 	{
 		public int Id;
 		public NodeType Type;

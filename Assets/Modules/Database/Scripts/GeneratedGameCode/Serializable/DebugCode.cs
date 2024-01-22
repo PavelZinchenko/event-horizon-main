@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct DebugCodeSerializable
+	public class DebugCodeSerializable
 	{
 		public int Code;
 		public LootContentSerializable Loot;

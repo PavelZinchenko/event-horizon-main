@@ -41,7 +41,8 @@ namespace Installers
             Container.BindInterfacesTo<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = 200, AreaHeight = 200 }).NonLazy();
             Container.BindInterfacesTo<CollisionManager>().AsSingle();
             Container.BindInterfacesTo<AiManager>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<CombatTimer>().AsSingle().NonLazy();
+			Container.Bind<Combat.Ai.BehaviorTree.BehaviorTreeBuilder>().AsSingle();
+			Container.BindInterfacesAndSelfTo<CombatTimer>().AsSingle().NonLazy();
             Container.Bind<ShipStatsPanel>().FromInstance(_playerStatsPanel).When(context => context.MemberName.Contains("player"));
             Container.Bind<ShipStatsPanel>().FromInstance(_enemyStatsPanel).When(context => context.MemberName.Contains("enemy"));
             Container.Bind<ShipControlsPanel>().FromInstance(_shipControlsPanel);
@@ -57,8 +58,9 @@ namespace Installers
             Container.Bind<DeviceFactory>().AsSingle();
             Container.Bind<DroneBayFactory>().AsSingle();
             Container.Bind<SatelliteFactory>().AsSingle();
-            Container.Bind<EffectFactory>().AsSingle();
-            Container.BindInterfacesAndSelfTo<GameObjectPool>().AsSingle();
+			Container.Bind<EffectFactory>().AsSingle();
+			Container.BindInterfacesAndSelfTo<Combat.Helpers.RadioTransmitter>().AsSingle();
+			Container.BindInterfacesAndSelfTo<GameObjectPool>().AsSingle();
             Container.Bind<TrailRendererPool>().FromInstance(_trailRendererPool);
             Container.Bind<IGameObjectFactory>().To<GameObjectFactory>().AsCached();
             Container.BindInterfacesTo<InputSystemMouse>().AsSingle().WithArguments(_camera);

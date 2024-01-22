@@ -47,7 +47,7 @@ namespace GameDatabase.DataModel
 			ShotSound = new AudioClipId(serializable.ShotSound);
 			ChargeSound = new AudioClipId(serializable.ChargeSound);
 			ShotEffectPrefab = new PrefabId(serializable.ShotEffectPrefab, PrefabId.Type.Effect);
-			VisualEffect = loader.GetVisualEffect(new ItemId<VisualEffect>(serializable.VisualEffect));
+			VisualEffect = loader?.GetVisualEffect(new ItemId<VisualEffect>(serializable.VisualEffect)) ?? VisualEffect.DefaultValue;
 			EffectSize = UnityEngine.Mathf.Clamp(serializable.EffectSize, 0f, 100f);
 			ControlButtonIcon = new SpriteId(serializable.ControlButtonIcon, SpriteId.Type.ActionButton);
 

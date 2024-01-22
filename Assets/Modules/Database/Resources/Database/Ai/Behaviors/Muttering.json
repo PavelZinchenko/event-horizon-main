@@ -1,0 +1,35 @@
+{
+  "ItemType": 28,
+  "Id": 107,
+  "RootNode": {
+    "Type": 9,
+    "Nodes": [
+      {
+        "Type": 300,
+        "Text": "$Muttering1"
+      },
+      {
+        "Type": 300,
+        "Text": "$Muttering2"
+      },
+      {
+        "Type": 300,
+        "Text": "$Muttering3"
+      },
+      {
+        "Type": 300,
+        "Text": "$Muttering4"
+      },
+      {
+        "Type": 300,
+        "Text": "$Muttering5"
+      },
+      {},
+      {},
+      {},
+      {},
+      {}
+    ],
+    "Cooldown": 5.0
+  }
+}

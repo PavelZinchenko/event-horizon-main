@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static LootModel Create(LootSerializable serializable, Database.Loader loader)
 		{
-			return new LootModel(serializable, loader);
+			return serializable == null ? DefaultValue : new LootModel(serializable, loader);
 		}
 
 		private LootModel(LootSerializable serializable, Database.Loader loader)

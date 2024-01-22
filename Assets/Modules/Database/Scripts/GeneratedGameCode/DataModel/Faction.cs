@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static Faction Create(FactionSerializable serializable, Database.Loader loader)
 		{
-			return new Faction(serializable, loader);
+			return serializable == null ? DefaultValue : new Faction(serializable, loader);
 		}
 
 		private Faction(FactionSerializable serializable, Database.Loader loader)

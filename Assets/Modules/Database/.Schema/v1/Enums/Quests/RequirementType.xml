@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data type="enum" name="RequirementType">
-    <item name="Empty">0</item>
-    <item name="Any">1</item>
-    <item name="All">2</item>
-    <item name="None">3</item>
+    <item name="Empty" value="0" />
+    <item name="Any" value="1" />
+    <item name="All" value="2" />
+    <item name="None" value="3" />
     
-    <item name="PlayerPosition">6</item>
-    <item name="RandomStarSystem">7</item>
-    <item name="AggressiveOccupants">8</item>
+    <item name="PlayerPosition" value="6" />
+    <item name="RandomStarSystem" value="7" />
+    <item name="AggressiveOccupants" value="8" />
     
-    <item name="QuestCompleted">9</item>
-    <item name="QuestActive">10</item>
+    <item name="QuestCompleted" value="9" />
+    <item name="QuestActive" value="10" />
     
-    <item name="CharacterRelations">15</item>
-    <item name="FactionRelations">16</item>
-    <item name="StarbaseCaptured">17</item>
+    <item name="CharacterRelations" value="15" />
+    <item name="FactionRelations" value="16" />
+    <item name="StarbaseCaptured" value="17" />
     
-    <item name="Faction">20</item>
+    <item name="Faction" value="20" />
     
-    <item name="HaveQuestItem">25</item>
-    <item name="HaveItem">26</item>
-    <item name="HaveItemById">27</item>
+    <item name="HaveQuestItem" value="25" />
+    <item name="HaveItem" value="26" />
+    <item name="HaveItemById" value="27" />
     
-    <item name="ComeToOrigin">30</item>
+    <item name="ComeToOrigin" value="30" />
 
-    <item name="TimeSinceQuestStart">40</item>
-    <item name="TimeSinceLastCompletion">41</item>
+    <item name="TimeSinceQuestStart" value="40" />
+    <item name="TimeSinceLastCompletion" value="41" />
 </data>

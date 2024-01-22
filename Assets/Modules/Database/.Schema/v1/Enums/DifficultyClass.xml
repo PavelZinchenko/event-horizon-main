@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data type="enum" name="DifficultyClass">
-    <item name="Default">0</item>
-    <item name="Class1">1</item>
-    <item name="Class2">2</item>
+    <item name="Default" value="0" />
+    <item name="Class1" value="1" />
+    <item name="Class2" value="2" />
 </data>

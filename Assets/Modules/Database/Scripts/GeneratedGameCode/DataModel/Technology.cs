@@ -19,6 +19,8 @@ namespace GameDatabase.DataModel
 
 		public static Technology Create(TechnologySerializable serializable, Database.Loader loader)
 		{
+			if (serializable == null) return DefaultValue;
+
 			switch (serializable.Type)
 		    {
 				case TechType.Component:
@@ -73,10 +75,10 @@ namespace GameDatabase.DataModel
   		public Technology_Component(TechnologySerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Component = loader.GetComponent(new ItemId<Component>(serializable.ItemId));
-			if (Component == null)
-			    throw new DatabaseException(this.GetType().Name + ".Component cannot be null - " + serializable.ItemId);
-			Faction = loader.GetFaction(new ItemId<Faction>(serializable.Faction));
+			Component = loader?.GetComponent(new ItemId<Component>(serializable.ItemId)) ?? Component.DefaultValue;
+			if (loader != null && Component == null)
+			    throw new DatabaseException("MutableObjectTemplate.Component cannot be null - " + serializable.ItemId);
+			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -96,9 +98,9 @@ namespace GameDatabase.DataModel
   		public Technology_Ship(TechnologySerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Ship = loader.GetShip(new ItemId<Ship>(serializable.ItemId));
-			if (Ship == null)
-			    throw new DatabaseException(this.GetType().Name + ".Ship cannot be null - " + serializable.ItemId);
+			Ship = loader?.GetShip(new ItemId<Ship>(serializable.ItemId)) ?? Ship.DefaultValue;
+			if (loader != null && Ship == null)
+			    throw new DatabaseException("MutableObjectTemplate.Ship cannot be null - " + serializable.ItemId);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -117,10 +119,10 @@ namespace GameDatabase.DataModel
   		public Technology_Satellite(TechnologySerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Satellite = loader.GetSatellite(new ItemId<Satellite>(serializable.ItemId));
-			if (Satellite == null)
-			    throw new DatabaseException(this.GetType().Name + ".Satellite cannot be null - " + serializable.ItemId);
-			Faction = loader.GetFaction(new ItemId<Faction>(serializable.Faction));
+			Satellite = loader?.GetSatellite(new ItemId<Satellite>(serializable.ItemId)) ?? Satellite.DefaultValue;
+			if (loader != null && Satellite == null)
+			    throw new DatabaseException("MutableObjectTemplate.Satellite cannot be null - " + serializable.ItemId);
+			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }

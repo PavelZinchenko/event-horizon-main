@@ -13,27 +13,40 @@ namespace Combat.Ai
 {
     public class ThreatList
     {
-        public ThreatList(IScene scene)
+		private float _timeToHit = 1000f;
+		private float _cooldown;
+		private const float UpdateInterval = 0.1f;
+		private readonly IScene _scene;
+		private readonly List<IUnit> _threats;
+		private readonly IReadOnlyList<IUnit> _threatsReadOnly;
+
+		public ThreatList(IScene scene)
         {
             _scene = scene;
+			_threats = new List<IUnit>();
+			_threatsReadOnly = _threats.AsReadOnly();
         }
 
-        public System.Collections.ObjectModel.ReadOnlyCollection<IUnit> Units => _threats.AsReadOnly();
+        public IReadOnlyList<IUnit> Units => _threatsReadOnly;
         public float TimeToHit => _timeToHit;
 
-        public void Update(float elapsedTime, IShip ship, IStrategy strategy)
-        {
-            _cooldown -= elapsedTime;
-            if (_cooldown > 0)
-                return;
+		[Obsolete] public void Update(float elapsedTime, IShip ship, IThreatAnalyzer analyzer)
+		{
+			_cooldown -= elapsedTime;
+			if (_cooldown > 0)
+				return;
 
+			_cooldown = UpdateInterval;
+			Update(ship, analyzer);
+		}
+
+		public void Update(IShip ship, IThreatAnalyzer analyzer)
+        {
             _threats.Clear();
             _timeToHit = 1000f;
 
-            if (!ship.IsActive() || strategy == null)
+            if (!ship.IsActive() || analyzer == null)
                 return;
-
-            _cooldown = UpdateInterval;
 
             var parentedObjects = new List<IUnit>();
 
@@ -58,7 +71,7 @@ namespace Combat.Ai
                 if (item.Type.Side.IsAlly(ship.Type.Side))
                     continue;
 
-                if (!strategy.IsThreat(ship, item))
+                if (!analyzer.IsThreat(ship, item))
                     continue;
 
                 {
@@ -94,7 +107,7 @@ namespace Combat.Ai
                 if (item.Type.Side.IsAlly(ship.Type.Side))
                     continue;
 
-                if (!strategy.IsThreat(ship, item))
+                if (!analyzer.IsThreat(ship, item))
                     continue;
 
                 var collider = item.Collider;
@@ -133,11 +146,5 @@ namespace Combat.Ai
             if (count > 0)
                 _threats.RemoveRange(index, count);
         }
-
-        private float _timeToHit = 1000f;
-        private float _cooldown;
-        private const float UpdateInterval = 0.1f;
-        private readonly IScene _scene;
-        private readonly List<IUnit> _threats = new List<IUnit>();
     }
 }

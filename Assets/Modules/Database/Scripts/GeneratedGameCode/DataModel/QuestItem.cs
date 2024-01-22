@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static QuestItem Create(QuestItemSerializable serializable, Database.Loader loader)
 		{
-			return new QuestItem(serializable, loader);
+			return serializable == null ? DefaultValue : new QuestItem(serializable, loader);
 		}
 
 		private QuestItem(QuestItemSerializable serializable, Database.Loader loader)

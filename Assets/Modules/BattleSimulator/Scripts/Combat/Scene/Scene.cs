@@ -5,7 +5,6 @@ using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Unit;
 using Services.Settings;
-using ModestTree;
 using UnityEngine;
 using Zenject;
 
@@ -20,7 +19,6 @@ namespace Combat.Scene
         public Scene(IGameSettings gameSettings, SceneSettings settings, IViewRect viewRect)
         {
             _viewRect = viewRect;
-            Assert.That(settings.AreaWidth >= _viewRect.MaxWidth && settings.AreaHeight >= _viewRect.MaxHeight);
 
             if (gameSettings.CenterOnPlayer)
                 settings.PlayerAlwaysInCenter = true;

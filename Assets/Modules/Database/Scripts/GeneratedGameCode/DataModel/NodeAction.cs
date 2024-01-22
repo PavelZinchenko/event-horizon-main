@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static NodeAction Create(NodeActionSerializable serializable, Database.Loader loader)
 		{
-			return new NodeAction(serializable, loader);
+			return serializable == null ? DefaultValue : new NodeAction(serializable, loader);
 		}
 
 		private NodeAction(NodeActionSerializable serializable, Database.Loader loader)
@@ -35,6 +35,6 @@ namespace GameDatabase.DataModel
 		public Requirement Requirement { get; private set; }
 		public string ButtonText { get; private set; }
 
-		public static NodeAction DefaultValue { get; private set; }
+		public static NodeAction DefaultValue { get; private set; }= new(new(), null);
 	}
 }

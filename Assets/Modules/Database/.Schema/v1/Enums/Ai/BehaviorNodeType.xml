@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="BehaviorNodeType">
+    <item name="Undefined" value="0">Always returs SUCCESS</item>
+    <item name="SubTree" value="1" />
+    <item name="Selector" value="2">Executes nodes sequentially, stopping when the first node succeeds</item>
+    <item name="Sequence" value="3">Executes nodes sequentially, stopping when the first node fails</item>
+    <item name="Parallel" value="4">Executes nodes simultaneously. Returns SUCCESS if all succeed, FAILURE if all fail, RUNNING otherwise</item>
+    <item name="RandomSelector" value="5">Executes random node, selects another after 'Cooldown' sec</item>
+    <item name="Invertor" value="6">Executes node, swaps SUCCESS and FAILURE</item>
+    <item name="ConstantResult" value="7">Executes node, returns 'Result'</item>
+    <item name="CompleteOnce" value="8">Executes node until it succeeds. Returns 'Result' after that</item>
+    <item name="RandomExecutor" value="9">Executes random node, stops after it succeeds, selects another after 'Cooldown' sec</item>
+
+    <item name="HaveEnoughEnergy" value="50" />
+    <item name="IsLowOnHp" value="51" />
+    <item name="IsControledByPlayer" value="52">true if player did any action this frame</item>
+    <item name="HaveIncomingThreat" value="53">Requires threat list</item>
+
+    <item name="FindEnemy" value="100">Looks for nearest enemy. Changes target every MaxCooldown sec if it's defined. SUCCESS if found, FAILURE otherwise</item>
+    <item name="MoveToAttackRange" value="101">Moves towards target until inside attack radius. Requires main target. Uses attack range of selected weapons. SUCCESS if inside attack range, FAILURE if any error, RUNNING otherwise</item>
+    <item name="Attack" value="102">Requires main target. Uses selected weapons. Return SUCCESS when activates any weapon, FAILURE otherwise</item>
+    <item name="SelectWeapon" value="103">Returns SUCCESS if any weapon found, FAILURE otherwise. If no weapon selected all weapons will be used</item>
+    <item name="SpawnDrones" value="104">Spawns drones and clones. Returns RUNNING until there are no more drones left to spawn, then returns SUCCESS if any drones active, FAILURE otherwise</item>
+    <item name="Ram" value="105">Tries to ram the target, can use Afterburner and Fortification. Returns FAILURE if there is no target or it's moving too fast, RUNNING otherwise</item>
+    <item name="DetonateShip" value="106" />
+    <item name="Vanish" value="107">Makes ship disappear completely, without a trace</item>
+    <item name="MaintainAttackRange" value="108">Keeps ship at required distance. Requires main target. Uses attack range of selected weapons. SUCCESS if inside valid range, FAILURE if any error, RUNNING otherwise</item>
+    <item name="Wait" value="109" />
+    <item name="LookAtTarget" value="110" />
+    <item name="LookForSecondaryTargets" value="111">Updates the list of enemies other than the main target. Returns SUCCESS if any found, FAILURE otherwise</item>
+    <item name="LookForThreats" value="112">Updates threat list. Returns SUCCESS if any found, FAILURE otherwise</item>
+    <item name="AttackSecondaryTargets" value="113">Attacks any secondary target with selected weapons if possible. Return SUCCESS when activates any weapon, FAILURE otherwise</item>
+    <item name="ActivateDevice" value="114">Activates device. Returns SUCCESS if activated, FAILURE otherwise</item>
+    <item name="RechargeEnergy" value="115">If energy level drops below FailIfLess, enters recharging state and returns FAILURE until energy level reaches RestoreUntil, otherwise returns SUCCESS</item>
+    <item name="SustainAim" value="116">If any directional weapon active, maintain focus on target and returns RUNNING. Returns FAILURE otherwise</item>
+    <item name="ChargeWeapons" value="117">Charges all selected weapons that requires charging. Returns FAILURE if no such weapons, SUCCESS if fully charged, RUNNING otherwise</item>
+    <item name="Chase" value="118">Follows the target. Returns FAILURE if there is no target, RUNNING otherwise</item>
+    <item name="AvoidThreats" value="119">Changes the ship's trajectory to avoid collision. Requires threat list. Returns SUCCESS if there are no threats, RUNNING otherwise</item>
+    <item name="Stop" value="120">Makes ship stop moving. Returns SUCCESS if standing still, RUNNING otherwise</item>
+    <item name="UseRecoil" value="121">Activates weapons with high recoil to get impulse. Returns FAILURE if doesn't have such weapons, RUNNING otherwise</item>
+    <item name="DefendWithFronalShield" value="122">Turns ship towards threats and activates shield. Returns FAILURE if there are no shields or threats, RUNNING otherwise</item>
+
+    <item name="IsWithinAttackRange" value="150" />
+
+    <item name="MotherShipRetreated" value="200" />
+    <item name="MotherShipDestroyed" value="201" />
+    <item name="FlyAroundMothership" value="202" />
+    <item name="GoBerserk" value="203">Detaches from the mothership. Starts treating all ships as enemies. Returns SUCCESS once activated, FAILURE after that</item>
+    <item name="TargetMothership" value="204">Sets the mothership as a main target. Returns FAILURE if it's absent, otherwise SUCCESS</item>
+    <item name="MothershipLowHp" value="205" />
+
+    <item name="ShowMessage" value="300">Spawns text over the ship sprite that disappears shortly. Retruns SUCCESS</item>
+    <item name="DebugLog" value="301">Writes message to the log file (https://docs.unity3d.com/Manual/LogFiles.html). Retruns SUCCESS</item>
+</data>

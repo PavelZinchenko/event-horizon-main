@@ -7,10 +7,12 @@
     <member name="DefenseMultiplier" type="float" minvalue="0.01" maxvalue="1000" />
     <member name="SpeedMultiplier" type="float" minvalue="0.01" maxvalue="1000" />
     <member name="BuildExtraCycles" type="int" minvalue="0" maxvalue="100" />
-    <member name="ImprovedAi" type="bool" />
+    <member name="ImprovedAi" type="bool" options="obsolete" />
     <member name="Capacity" type="int" minvalue="1" maxvalue="1000" />
     <member name="ActivationType" type="enum" typeid="ActivationType" />
     <member name="LaunchSound" type="audioclip" />
     <member name="LaunchEffectPrefab" type="prefab" typeid="Effect" />
     <member name="ControlButtonIcon" type="image" typeid="ActionButton" />
+    <member name="DefensiveDroneAI" type="object" typeid="BehaviorTree" />
+    <member name="OffensiveDroneAI" type="object" typeid="BehaviorTree" />
 </data>

@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct InstalledComponentSerializable
+	public class InstalledComponentSerializable
 	{
 		public int ComponentId;
 		public ComponentModType Modification;

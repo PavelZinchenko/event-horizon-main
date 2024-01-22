@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static QuestModel Create(QuestSerializable serializable, Database.Loader loader)
 		{
-			return new QuestModel(serializable, loader);
+			return serializable == null ? DefaultValue : new QuestModel(serializable, loader);
 		}
 
 		private QuestModel(QuestSerializable serializable, Database.Loader loader)

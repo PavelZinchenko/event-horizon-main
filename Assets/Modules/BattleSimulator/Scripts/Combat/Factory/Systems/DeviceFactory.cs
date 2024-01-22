@@ -139,10 +139,10 @@ namespace Combat.Factory
                     device = new JammerDevice(TargetPriority.High);
                     break;
                 case DeviceClass.DroneCamouflage:
-                    device = new CamouflageDevice(stats.Power, 0f);
+                    device = new CamouflageDevice(stats.Power, 0f, stats.DeviceClass);
                     break;
                 case DeviceClass.MissileCamouflage:
-                    device = new CamouflageDevice(0f, stats.Power);
+                    device = new CamouflageDevice(0f, stats.Power, stats.DeviceClass);
                     break;
                 default:
                     return null;

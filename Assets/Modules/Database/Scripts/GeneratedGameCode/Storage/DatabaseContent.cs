@@ -202,6 +202,19 @@ namespace GameDatabase.Storage
                 if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate Technology ID - " + item.Id + " (" + name + ")");
             }
+            else if (type == ItemType.BehaviorTree)
+            {
+			    if (!_behaviorTreeMap.ContainsKey(item.Id))
+                {
+                    var data = _serializer.FromJson<BehaviorTreeSerializable>(content);
+                    data.FileName = name;
+                    _behaviorTreeMap.Add(data.Id, data);
+                    return;
+                }
+
+                if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate BehaviorTree ID - " + item.Id + " (" + name + ")");
+            }
             else if (type == ItemType.Character)
             {
 			    if (!_characterMap.ContainsKey(item.Id))
@@ -318,6 +331,19 @@ namespace GameDatabase.Storage
 
                 if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate Weapon ID - " + item.Id + " (" + name + ")");
+            }
+            else if (type == ItemType.CombatSettings)
+            {
+                if (CombatSettings == null)
+                {
+                    var data = _serializer.FromJson<CombatSettingsSerializable>(content);
+                    data.FileName = name;
+                    CombatSettings = data;
+                    return;
+                }
+
+				if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate CombatSettings file found - " + name);
             }
             else if (type == ItemType.DatabaseSettings)
             {
@@ -457,6 +483,7 @@ namespace GameDatabase.Storage
             _audioClips.Add(name, audioClip);
         }
 
+		public CombatSettingsSerializable CombatSettings { get; private set; }
 		public DatabaseSettingsSerializable DatabaseSettings { get; private set; }
 		public DebugSettingsSerializable DebugSettings { get; private set; }
 		public ExplorationSettingsSerializable ExplorationSettings { get; private set; }
@@ -480,6 +507,7 @@ namespace GameDatabase.Storage
 		public IEnumerable<ShipBuildSerializable> ShipBuildList => _shipBuildMap.Values;
 		public IEnumerable<SkillSerializable> SkillList => _skillMap.Values;
 		public IEnumerable<TechnologySerializable> TechnologyList => _technologyMap.Values;
+		public IEnumerable<BehaviorTreeSerializable> BehaviorTreeList => _behaviorTreeMap.Values;
 		public IEnumerable<CharacterSerializable> CharacterList => _characterMap.Values;
 		public IEnumerable<FleetSerializable> FleetList => _fleetMap.Values;
 		public IEnumerable<LootSerializable> LootList => _lootMap.Values;
@@ -503,6 +531,7 @@ namespace GameDatabase.Storage
 		public ShipBuildSerializable GetShipBuild(int id) { return _shipBuildMap.TryGetValue(id, out var item) ? item : null; }
 		public SkillSerializable GetSkill(int id) { return _skillMap.TryGetValue(id, out var item) ? item : null; }
 		public TechnologySerializable GetTechnology(int id) { return _technologyMap.TryGetValue(id, out var item) ? item : null; }
+		public BehaviorTreeSerializable GetBehaviorTree(int id) { return _behaviorTreeMap.TryGetValue(id, out var item) ? item : null; }
 		public CharacterSerializable GetCharacter(int id) { return _characterMap.TryGetValue(id, out var item) ? item : null; }
 		public FleetSerializable GetFleet(int id) { return _fleetMap.TryGetValue(id, out var item) ? item : null; }
 		public LootSerializable GetLoot(int id) { return _lootMap.TryGetValue(id, out var item) ? item : null; }
@@ -533,6 +562,7 @@ namespace GameDatabase.Storage
 		private readonly Dictionary<int, ShipBuildSerializable> _shipBuildMap = new();
 		private readonly Dictionary<int, SkillSerializable> _skillMap = new();
 		private readonly Dictionary<int, TechnologySerializable> _technologyMap = new();
+		private readonly Dictionary<int, BehaviorTreeSerializable> _behaviorTreeMap = new();
 		private readonly Dictionary<int, CharacterSerializable> _characterMap = new();
 		private readonly Dictionary<int, FleetSerializable> _fleetMap = new();
 		private readonly Dictionary<int, LootSerializable> _lootMap = new();

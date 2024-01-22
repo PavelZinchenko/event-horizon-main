@@ -1,36 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data type="enum" name="ItemType">
-    <item name="Undefined">0</item>
-    <item name="Component">1</item>
-    <item name="Device">2</item>
-    <item name="Weapon">3</item>
-    <item name="AmmunitionObsolete">4</item>
-    <item name="DroneBay">5</item>
-    <item name="Ship">6</item>
-    <item name="Satellite">7</item>
-    <item name="ShipBuild">8</item>
-    <item name="SatelliteBuild">9</item>
-    <item name="Technology">10</item>
-    <item name="ComponentStats">11</item>
-    <item name="ComponentMod">12</item>
-    <item name="Skill">13</item>
-    <item name="Faction">14</item>
-    <item name="Quest">15</item>
-    <item name="Loot">16</item>
-    <item name="Fleet">18</item>
-    <item name="Character">19</item>
-    <item name="QuestItem">20</item>
-    <item name="Ammunition">25</item>
-    <item name="VisualEffect">26</item>
-    <item name="BulletPrefab">27</item>
+    <item name="Undefined" value="0" />
+    <item name="Component" value="1" />
+    <item name="Device" value="2" />
+    <item name="Weapon" value="3" />
+    <item name="AmmunitionObsolete" value="4" />
+    <item name="DroneBay" value="5" />
+    <item name="Ship" value="6" />
+    <item name="Satellite" value="7" />
+    <item name="ShipBuild" value="8" />
+    <item name="SatelliteBuild" value="9" />
+    <item name="Technology" value="10" />
+    <item name="ComponentStats" value="11" />
+    <item name="ComponentMod" value="12" />
+    <item name="Skill" value="13" />
+    <item name="Faction" value="14" />
+    <item name="Quest" value="15" />
+    <item name="Loot" value="16" />
+    <item name="Fleet" value="18" />
+    <item name="Character" value="19" />
+    <item name="QuestItem" value="20" />
+    <item name="Ammunition" value="25" />
+    <item name="VisualEffect" value="26" />
+    <item name="BulletPrefab" value="27" />
+    <item name="BehaviorTree" value="28" />
 
-    <item name="ShipSettings">100</item>
-    <item name="GalaxySettings">101</item>
-    <item name="DatabaseSettings">102</item>
-    <item name="ExplorationSettings">103</item>
-    <item name="FrontierSettings">104</item>
-    <item name="ShipModSettings">105</item>
-    <item name="SpecialEventSettings">106</item>
-    <item name="SkillSettings">107</item>
-    <item name="DebugSettings">108</item>
+    <item name="ShipSettings" value="100" />
+    <item name="GalaxySettings" value="101" />
+    <item name="DatabaseSettings" value="102" />
+    <item name="ExplorationSettings" value="103" />
+    <item name="FrontierSettings" value="104" />
+    <item name="ShipModSettings" value="105" />
+    <item name="SpecialEventSettings"  value="106" />
+    <item name="SkillSettings" value="107" />
+    <item name="DebugSettings" value="108" />
+    <item name="CombatSettings" value="109" />
 </data>

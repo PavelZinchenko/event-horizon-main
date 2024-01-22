@@ -9,13 +9,16 @@ namespace Combat.Component.Systems.Devices
         public RepairSystem(IShip ship, DeviceStats deviceSpec, int keyBinding)
             : base(keyBinding, deviceSpec.ControlButtonIcon)
         {
+			DeviceClass = deviceSpec.DeviceClass;
             MaxCooldown = deviceSpec.Cooldown;
 
             _ship = ship;
             _energyCost = deviceSpec.EnergyConsumption;
         }
 
-        public void Deactivate()
+		public GameDatabase.Enums.DeviceClass DeviceClass { get; }
+
+		public void Deactivate()
         {
             if (!_isActive)
                 return;

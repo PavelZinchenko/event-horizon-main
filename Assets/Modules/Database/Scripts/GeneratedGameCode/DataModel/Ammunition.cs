@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static Ammunition Create(AmmunitionSerializable serializable, Database.Loader loader)
 		{
-			return new Ammunition(serializable, loader);
+			return serializable == null ? DefaultValue : new Ammunition(serializable, loader);
 		}
 
 		private Ammunition(AmmunitionSerializable serializable, Database.Loader loader)

@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static ImpactEffect Create(ImpactEffectSerializable serializable, Database.Loader loader)
 		{
-			return new ImpactEffect(serializable, loader);
+			return serializable == null ? DefaultValue : new ImpactEffect(serializable, loader);
 		}
 
 		private ImpactEffect(ImpactEffectSerializable serializable, Database.Loader loader)
@@ -37,6 +37,6 @@ namespace GameDatabase.DataModel
 		public float Power { get; private set; }
 		public float Factor { get; private set; }
 
-		public static ImpactEffect DefaultValue { get; private set; }
+		public static ImpactEffect DefaultValue { get; private set; }= new(new(), null);
 	}
 }

@@ -118,6 +118,12 @@ namespace DatabaseMigration.v1.Storage
                 data.FileName = name;
                 TechnologyList.Add(data);
             }
+            else if (type == ItemType.BehaviorTree)
+            {
+                var data = _serializer.FromJson<BehaviorTreeSerializable>(content);
+                data.FileName = name;
+                BehaviorTreeList.Add(data);
+            }
             else if (type == ItemType.Character)
             {
                 var data = _serializer.FromJson<CharacterSerializable>(content);
@@ -171,6 +177,12 @@ namespace DatabaseMigration.v1.Storage
                 var data = _serializer.FromJson<WeaponSerializable>(content);
                 data.FileName = name;
                 WeaponList.Add(data);
+            }
+            else if (type == ItemType.CombatSettings)
+            {
+                var data = _serializer.FromJson<CombatSettingsSerializable>(content);
+                data.FileName = name;
+                CombatSettings = data;
             }
             else if (type == ItemType.DatabaseSettings)
             {
@@ -260,6 +272,8 @@ namespace DatabaseMigration.v1.Storage
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
             foreach (var item in TechnologyList)
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
+            foreach (var item in BehaviorTreeList)
+                contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
             foreach (var item in CharacterList)
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
             foreach (var item in FleetList)
@@ -278,6 +292,8 @@ namespace DatabaseMigration.v1.Storage
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
             foreach (var item in WeaponList)
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
+            if (CombatSettings != null)
+                contentLoader.LoadJson(CombatSettings.FileName, _serializer.ToJson(CombatSettings));
             if (DatabaseSettings != null)
                 contentLoader.LoadJson(DatabaseSettings.FileName, _serializer.ToJson(DatabaseSettings));
             if (DebugSettings != null)
@@ -319,6 +335,7 @@ namespace DatabaseMigration.v1.Storage
             _audioClips.Add(name, audioClip);
         }
 
+		public CombatSettingsSerializable CombatSettings { get; private set; }
 		public DatabaseSettingsSerializable DatabaseSettings { get; private set; }
 		public DebugSettingsSerializable DebugSettings { get; private set; }
 		public ExplorationSettingsSerializable ExplorationSettings { get; private set; }
@@ -329,6 +346,7 @@ namespace DatabaseMigration.v1.Storage
 		public SkillSettingsSerializable SkillSettings { get; private set; }
 		public SpecialEventSettingsSerializable SpecialEventSettings { get; private set; }
 
+		public CombatSettingsSerializable CreateCombatSettings() => CombatSettings ?? (CombatSettings = new CombatSettingsSerializable());
 		public DatabaseSettingsSerializable CreateDatabaseSettings() => DatabaseSettings ?? (DatabaseSettings = new DatabaseSettingsSerializable());
 		public DebugSettingsSerializable CreateDebugSettings() => DebugSettings ?? (DebugSettings = new DebugSettingsSerializable());
 		public ExplorationSettingsSerializable CreateExplorationSettings() => ExplorationSettings ?? (ExplorationSettings = new ExplorationSettingsSerializable());
@@ -352,6 +370,7 @@ namespace DatabaseMigration.v1.Storage
 		public List<ShipBuildSerializable> ShipBuildList { get; } = new List<ShipBuildSerializable>();
 		public List<SkillSerializable> SkillList { get; } = new List<SkillSerializable>();
 		public List<TechnologySerializable> TechnologyList { get; } = new List<TechnologySerializable>();
+		public List<BehaviorTreeSerializable> BehaviorTreeList { get; } = new List<BehaviorTreeSerializable>();
 		public List<CharacterSerializable> CharacterList { get; } = new List<CharacterSerializable>();
 		public List<FleetSerializable> FleetList { get; } = new List<FleetSerializable>();
 		public List<LootSerializable> LootList { get; } = new List<LootSerializable>();

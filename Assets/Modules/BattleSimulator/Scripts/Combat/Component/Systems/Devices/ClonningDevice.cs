@@ -30,10 +30,14 @@ namespace Combat.Component.Systems.Devices
             _shipSpec = new ShipSpecDecorator(shipSpec, 0.9f, 0.9f, 0.9f);
  
             _energyCost = stats.EnergyConsumption;
+			DeviceClass = stats.DeviceClass;
         }
 
-        public override bool CanBeActivated => _clone == null && base.CanBeActivated;
+		public DeviceClass DeviceClass { get; }
+		public override bool CanBeActivated => _clone == null && base.CanBeActivated;
         public override float Cooldown => _clone == null ? base.Cooldown : 1.0f;
+
+		public IShip Clone => _clone;
 
         protected override void OnUpdatePhysics(float elapsedTime)
         {

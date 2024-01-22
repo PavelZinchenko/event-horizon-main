@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct RequirementSerializable
+	public class RequirementSerializable
 	{
 		public RequirementType Type;
 		public int ItemId;

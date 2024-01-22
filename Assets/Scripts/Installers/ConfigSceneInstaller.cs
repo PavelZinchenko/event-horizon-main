@@ -29,7 +29,7 @@ namespace Installers
             Container.BindInterfacesTo<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = 200, AreaHeight = 200 }).NonLazy();
             Container.BindInterfacesTo<CollisionManager>().AsSingle();
             Container.BindInterfacesTo<AiManager>().AsSingle().NonLazy();
-            Container.Bind<ShipControlsPanel>().FromInstance(_shipControlsPanel);
+			Container.Bind<ShipControlsPanel>().FromInstance(_shipControlsPanel);
             Container.Bind<WeaponFactory>().AsSingle();
             Container.Bind<ShipFactory>().AsSingle().WithArguments(new ShipFactory.Settings());
             Container.Bind<SpaceObjectFactory>().AsSingle();
@@ -42,6 +42,8 @@ namespace Installers
 			Container.Bind<IGameObjectFactory>().To<GameObjectFactory>().AsCached();
 			Container.BindInterfacesTo<InputSystemMouse>().AsSingle().WithArguments(_camera);
             Container.BindInterfacesTo<InputSystemKeyboard>().AsSingle();
-        }
-    }
+			Container.Bind<Combat.Ai.BehaviorTree.BehaviorTreeBuilder>().AsSingle();
+			Container.BindInterfacesAndSelfTo<Combat.Helpers.RadioTransmitter>().AsSingle();
+		}
+	}
 }

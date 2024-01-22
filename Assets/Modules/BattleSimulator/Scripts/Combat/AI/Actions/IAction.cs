@@ -14,6 +14,13 @@ namespace Combat.Ai
 			ship.Controls.Throttle = _thrust;
 			ship.Controls.Course = _course;
 			ship.Controls.Systems.Assign(_systems);
+			Reset();
+		}
+
+		public void Reset()
+		{
+			_course = null;
+			_thrust = 0;
 			_courseLocked = false;
 			_thrustLocked = false;
 			_systems.Clear();

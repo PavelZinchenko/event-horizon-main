@@ -1,0 +1,87 @@
+{
+  "ItemType": 28,
+  "Id": 111,
+  "RootNode": {
+    "Type": 3,
+    "Nodes": [
+      {
+        "Type": 112,
+        "Cooldown": 0.1
+      },
+      {
+        "Type": 50,
+        "MinValue": 0.5
+      },
+      {
+        "Type": 4,
+        "Nodes": [
+          {
+            "Type": 3,
+            "Requirement": {
+              "Type": 14
+            },
+            "Nodes": [
+              {
+                "Type": 53,
+                "Cooldown": 0.8
+              },
+              {
+                "Type": 121
+              }
+            ]
+          },
+          {
+            "Type": 3,
+            "Requirement": {
+              "Type": 10,
+              "DeviceClass": 5
+            },
+            "Nodes": [
+              {
+                "Type": 53,
+                "Cooldown": 0.5
+              },
+              {
+                "Type": 122
+              }
+            ]
+          },
+          {
+            "Type": 3,
+            "Nodes": [
+              {
+                "Type": 53,
+                "Cooldown": 0.4
+              },
+              {
+                "Type": 2,
+                "Nodes": [
+                  {
+                    "Type": 114,
+                    "DeviceClass": 10
+                  },
+                  {
+                    "Type": 114,
+                    "DeviceClass": 6
+                  },
+                  {
+                    "Type": 114,
+                    "DeviceClass": 2
+                  },
+                  {
+                    "Type": 114,
+                    "DeviceClass": 13
+                  },
+                  {
+                    "Type": 114,
+                    "DeviceClass": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

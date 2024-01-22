@@ -166,7 +166,9 @@ namespace Combat.Component.Unit
             InvokeTriggers(ConditionType.OnDestroy);
         }
 
-        private IDamageIndicator _damageIndicator;
+		public void Broadcast(string message, Color color) {}
+
+		private IDamageIndicator _damageIndicator;
         private bool _ownDamageIndicator;
 
         private bool _isActive = true;

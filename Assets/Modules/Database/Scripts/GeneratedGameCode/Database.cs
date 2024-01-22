@@ -16,6 +16,7 @@ namespace GameDatabase
 {
 	public partial interface IDatabase
 	{
+		CombatSettings CombatSettings { get; }
 		DatabaseSettings DatabaseSettings { get; }
 		DebugSettings DebugSettings { get; }
 		ExplorationSettings ExplorationSettings { get; }
@@ -39,6 +40,7 @@ namespace GameDatabase
 		IEnumerable<ShipBuild> ShipBuildList { get; }
 		IEnumerable<Skill> SkillList { get; }
 		IEnumerable<Technology> TechnologyList { get; }
+		IEnumerable<BehaviorTreeModel> BehaviorTreeList { get; }
 		IEnumerable<Character> CharacterList { get; }
 		IEnumerable<Fleet> FleetList { get; }
 		IEnumerable<LootModel> LootList { get; }
@@ -62,6 +64,7 @@ namespace GameDatabase
 		ShipBuild GetShipBuild(ItemId<ShipBuild> id);
 		Skill GetSkill(ItemId<Skill> id);
 		Technology GetTechnology(ItemId<Technology> id);
+		BehaviorTreeModel GetBehaviorTree(ItemId<BehaviorTreeModel> id);
 		Character GetCharacter(ItemId<Character> id);
 		Fleet GetFleet(ItemId<Fleet> id);
 		LootModel GetLoot(ItemId<LootModel> id);
@@ -82,6 +85,7 @@ namespace GameDatabase
 		public const int VersionMajor = 1;
 		public const int VersionMinor = 3;
 
+		public CombatSettings CombatSettings { get; private set; }
 		public DatabaseSettings DatabaseSettings { get; private set; }
 		public DebugSettings DebugSettings { get; private set; }
 		public ExplorationSettings ExplorationSettings { get; private set; }
@@ -105,6 +109,7 @@ namespace GameDatabase
 		public IEnumerable<ShipBuild> ShipBuildList => _shipBuildMap.Values;
 		public IEnumerable<Skill> SkillList => _skillMap.Values;
 		public IEnumerable<Technology> TechnologyList => _technologyMap.Values;
+		public IEnumerable<BehaviorTreeModel> BehaviorTreeList => _behaviorTreeMap.Values;
 		public IEnumerable<Character> CharacterList => _characterMap.Values;
 		public IEnumerable<Fleet> FleetList => _fleetMap.Values;
 		public IEnumerable<LootModel> LootList => _lootMap.Values;
@@ -128,6 +133,7 @@ namespace GameDatabase
 		public ShipBuild GetShipBuild(ItemId<ShipBuild> id) { return (_shipBuildMap.TryGetValue(id.Value, out var item)) ? item : ShipBuild.DefaultValue; }
 		public Skill GetSkill(ItemId<Skill> id) { return (_skillMap.TryGetValue(id.Value, out var item)) ? item : Skill.DefaultValue; }
 		public Technology GetTechnology(ItemId<Technology> id) { return (_technologyMap.TryGetValue(id.Value, out var item)) ? item : Technology.DefaultValue; }
+		public BehaviorTreeModel GetBehaviorTree(ItemId<BehaviorTreeModel> id) { return (_behaviorTreeMap.TryGetValue(id.Value, out var item)) ? item : BehaviorTreeModel.DefaultValue; }
 		public Character GetCharacter(ItemId<Character> id) { return (_characterMap.TryGetValue(id.Value, out var item)) ? item : Character.DefaultValue; }
 		public Fleet GetFleet(ItemId<Fleet> id) { return (_fleetMap.TryGetValue(id.Value, out var item)) ? item : Fleet.DefaultValue; }
 		public LootModel GetLoot(ItemId<LootModel> id) { return (_lootMap.TryGetValue(id.Value, out var item)) ? item : LootModel.DefaultValue; }
@@ -157,6 +163,7 @@ namespace GameDatabase
 			_shipBuildMap.Clear();
 			_skillMap.Clear();
 			_technologyMap.Clear();
+			_behaviorTreeMap.Clear();
 			_characterMap.Clear();
 			_fleetMap.Clear();
 			_lootMap.Clear();
@@ -167,6 +174,7 @@ namespace GameDatabase
 			_visualEffectMap.Clear();
 			_weaponMap.Clear();
 
+			CombatSettings = null;
 			DatabaseSettings = null;
 			DebugSettings = null;
 			ExplorationSettings = null;
@@ -195,6 +203,7 @@ namespace GameDatabase
 		private readonly Dictionary<int, ShipBuild> _shipBuildMap = new();
 		private readonly Dictionary<int, Skill> _skillMap = new();
 		private readonly Dictionary<int, Technology> _technologyMap = new();
+		private readonly Dictionary<int, BehaviorTreeModel> _behaviorTreeMap = new();
 		private readonly Dictionary<int, Character> _characterMap = new();
 		private readonly Dictionary<int, Fleet> _fleetMap = new();
 		private readonly Dictionary<int, LootModel> _lootMap = new();
@@ -264,6 +273,9 @@ namespace GameDatabase
 				foreach (var item in _content.TechnologyList)
 					if (!item.Disabled && !_database._technologyMap.ContainsKey(item.Id))
 						Technology.Create(item, this);
+				foreach (var item in _content.BehaviorTreeList)
+					if (!item.Disabled && !_database._behaviorTreeMap.ContainsKey(item.Id))
+						BehaviorTreeModel.Create(item, this);
 				foreach (var item in _content.CharacterList)
 					if (!item.Disabled && !_database._characterMap.ContainsKey(item.Id))
 						Character.Create(item, this);
@@ -304,6 +316,8 @@ namespace GameDatabase
                     if (!_database._localizations.ContainsKey(item.Key))
                         _database._localizations.Add(item.Key, item.Value);
 
+				if (_database.CombatSettings == null)
+					_database.CombatSettings = CombatSettings.Create(_content.CombatSettings ?? new Serializable.CombatSettingsSerializable { ItemType = Enums.ItemType.CombatSettings }, this);
 				if (_database.DatabaseSettings == null)
 					_database.DatabaseSettings = DatabaseSettings.Create(_content.DatabaseSettings ?? new Serializable.DatabaseSettingsSerializable { ItemType = Enums.ItemType.DatabaseSettings }, this);
 				if (_database.DebugSettings == null)
@@ -454,6 +468,16 @@ namespace GameDatabase
 				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
                 return value;
 			}
+			public BehaviorTreeModel GetBehaviorTree(ItemId<BehaviorTreeModel> id, bool notNull = false)
+			{
+				if (_database._behaviorTreeMap.TryGetValue(id.Value, out var item)) return item;
+                var serializable = _content.GetBehaviorTree(id.Value);
+                if (serializable != null && !serializable.Disabled) return BehaviorTreeModel.Create(serializable, this);
+
+				var value = BehaviorTreeModel.DefaultValue;
+				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
+                return value;
+			}
 			public Character GetCharacter(ItemId<Character> id, bool notNull = false)
 			{
 				if (_database._characterMap.TryGetValue(id.Value, out var item)) return item;
@@ -559,6 +583,7 @@ namespace GameDatabase
 			public void AddShipBuild(int id, ShipBuild item) { _database._shipBuildMap.Add(id, item); }
 			public void AddSkill(int id, Skill item) { _database._skillMap.Add(id, item); }
 			public void AddTechnology(int id, Technology item) { _database._technologyMap.Add(id, item); }
+			public void AddBehaviorTree(int id, BehaviorTreeModel item) { _database._behaviorTreeMap.Add(id, item); }
 			public void AddCharacter(int id, Character item) { _database._characterMap.Add(id, item); }
 			public void AddFleet(int id, Fleet item) { _database._fleetMap.Add(id, item); }
 			public void AddLoot(int id, LootModel item) { _database._lootMap.Add(id, item); }

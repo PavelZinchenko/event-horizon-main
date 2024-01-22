@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="AiWeaponCategory">
+    <item name="All" value="0" />
+    <item name="Repair" value="1" />
+    <item name="Damage" value="2" />
+    <item name="CaptureDrone" value="3" />
+</data>

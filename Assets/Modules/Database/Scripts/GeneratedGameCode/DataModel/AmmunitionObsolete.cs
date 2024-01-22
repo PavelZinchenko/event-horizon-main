@@ -53,7 +53,7 @@ namespace GameDatabase.DataModel
 			HitPoints = UnityEngine.Mathf.Clamp(serializable.HitPoints, 0, 999999999);
 			IgnoresShipVelocity = serializable.IgnoresShipVelocity;
 			EnergyCost = UnityEngine.Mathf.Clamp(serializable.EnergyCost, 0f, 1E+09f);
-			CoupledAmmunition = loader.GetAmmunitionObsolete(new ItemId<AmmunitionObsolete>(serializable.CoupledAmmunitionId));
+			CoupledAmmunition = loader?.GetAmmunitionObsolete(new ItemId<AmmunitionObsolete>(serializable.CoupledAmmunitionId)) ?? AmmunitionObsolete.DefaultValue;
 			Color = new ColorData(serializable.Color);
 			FireSound = new AudioClipId(serializable.FireSound);
 			HitSound = new AudioClipId(serializable.HitSound);

@@ -38,6 +38,8 @@ namespace Installers
 			Container.BindInterfacesAndSelfTo<GameObjectPool>().AsSingle();
 			Container.Bind<TrailRendererPool>().FromInstance(_trailRendererPool);
 			Container.Bind<IGameObjectFactory>().To<GameObjectFactory>().AsCached();
+			Container.Bind<Combat.Ai.BehaviorTree.BehaviorTreeBuilder>().AsSingle();
+			Container.BindInterfacesAndSelfTo<Combat.Helpers.RadioTransmitter>().AsSingle();
 		}
 	}
 }

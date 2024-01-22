@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static NodeTransition Create(NodeTransitionSerializable serializable, Database.Loader loader)
 		{
-			return new NodeTransition(serializable, loader);
+			return serializable == null ? DefaultValue : new NodeTransition(serializable, loader);
 		}
 
 		private NodeTransition(NodeTransitionSerializable serializable, Database.Loader loader)
@@ -35,6 +35,6 @@ namespace GameDatabase.DataModel
 		public Requirement Requirement { get; private set; }
 		public float Weight { get; private set; }
 
-		public static NodeTransition DefaultValue { get; private set; }
+		public static NodeTransition DefaultValue { get; private set; }= new(new(), null);
 	}
 }

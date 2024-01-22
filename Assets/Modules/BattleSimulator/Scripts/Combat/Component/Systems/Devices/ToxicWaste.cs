@@ -15,6 +15,7 @@ namespace Combat.Component.Systems.Devices
         public ToxicWaste(IUnit unit, DeviceStats deviceSpec, SpaceObjectFactory objectFactory, float damageMultiplier)
             : base(-1, SpriteId.Empty)
         {
+			DeviceClass = deviceSpec.DeviceClass;
             _unit = unit;
             _color = deviceSpec.Color;
             _damage = deviceSpec.Power*damageMultiplier;
@@ -23,7 +24,8 @@ namespace Combat.Component.Systems.Devices
             _objectFactory = objectFactory;
         }
 
-        public override bool CanBeActivated { get { return false; } }
+		public GameDatabase.Enums.DeviceClass DeviceClass { get; }
+		public override bool CanBeActivated { get { return false; } }
 
         public override IUnitAction UnitAction { get { return this; } }
         public ConditionType TriggerCondition { get { return ConditionType.OnDestroy; } }

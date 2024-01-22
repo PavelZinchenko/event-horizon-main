@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static VisualEffect Create(VisualEffectSerializable serializable, Database.Loader loader)
 		{
-			return new VisualEffect(serializable, loader);
+			return serializable == null ? DefaultValue : new VisualEffect(serializable, loader);
 		}
 
 		private VisualEffect(VisualEffectSerializable serializable, Database.Loader loader)

@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct BulletBodySerializable
+	public class BulletBodySerializable
 	{
 		public BulletType Type;
 		public float Size;

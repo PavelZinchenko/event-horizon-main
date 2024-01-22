@@ -1,0 +1,39 @@
+{
+  "ItemType": 28,
+  "Id": 105,
+  "RootNode": {
+    "Type": 3,
+    "Requirement": {
+      "Type": 2,
+      "Requirements": [
+        {
+          "Type": 50
+        },
+        {
+          "Type": 13
+        }
+      ]
+    },
+    "Nodes": [
+      {
+        "Type": 205,
+        "MinValue": 0.99
+      },
+      {
+        "Type": 50,
+        "MinValue": 0.0
+      },
+      {
+        "Type": 204
+      },
+      {
+        "Type": 103,
+        "WeaponType": 1
+      },
+      {
+        "Type": 1,
+        "ItemId": 106
+      }
+    ]
+  }
+}

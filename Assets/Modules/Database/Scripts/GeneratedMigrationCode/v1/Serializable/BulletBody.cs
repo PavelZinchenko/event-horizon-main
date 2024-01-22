@@ -13,7 +13,7 @@ using DatabaseMigration.v1.Enums;
 namespace DatabaseMigration.v1.Serializable
 {
 	[Serializable]
-	public struct BulletBodySerializable
+	public class BulletBodySerializable
 	{
 		public BulletType Type;
 		public float Size;

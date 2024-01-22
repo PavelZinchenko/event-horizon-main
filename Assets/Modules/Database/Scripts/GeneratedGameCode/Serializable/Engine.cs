@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct EngineSerializable
+	public class EngineSerializable
 	{
 		public UnityEngine.Vector2 Position;
 		public float Size;

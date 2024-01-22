@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="CombatSettings" type="settings" typeid="CombatSettings">
+    <member name="EnemyAI" type="object" typeid="BehaviorTree" />
+    <member name="AutopilotAI" type="object" typeid="BehaviorTree" />
+    <member name="CloneAI" type="object" typeid="BehaviorTree" />
+    <member name="DefensiveDroneAI" type="object" typeid="BehaviorTree" />
+    <member name="ImprovedDefensiveDroneAI" type="object" typeid="BehaviorTree" />
+    <member name="OffensiveDroneAI" type="object" typeid="BehaviorTree" />
+    <member name="ImprovedOffensiveDroneAI" type="object" typeid="BehaviorTree" />
+</data>

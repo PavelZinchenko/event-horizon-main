@@ -1,0 +1,20 @@
+{
+  "ItemType": 28,
+  "Id": 110,
+  "RootNode": {
+    "Type": 3,
+    "Nodes": [
+      {
+        "Type": 112,
+        "Cooldown": 0.1
+      },
+      {
+        "Type": 53,
+        "Cooldown": 5.0
+      },
+      {
+        "Type": 119
+      }
+    ]
+  }
+}

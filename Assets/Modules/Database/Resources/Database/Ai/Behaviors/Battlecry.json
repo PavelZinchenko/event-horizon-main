@@ -1,0 +1,30 @@
+{
+  "ItemType": 28,
+  "Id": 109,
+  "RootNode": {
+    "Type": 9,
+    "Nodes": [
+      {
+        "Type": 300,
+        "Text": "$Battlecry1"
+      },
+      {
+        "Type": 300,
+        "Text": "$Battlecry2"
+      },
+      {
+        "Type": 300,
+        "Text": "$Battlecry3"
+      },
+      {
+        "Type": 300,
+        "Text": "$Battlecry4"
+      },
+      {
+        "Type": 300,
+        "Text": "$Battlecry5"
+      }
+    ],
+    "Cooldown": 20.0
+  }
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="BehaviorTreeNode" type="struct" switch="Type" >
+    <member name="Type" type="enum" typeid="BehaviorNodeType" />
+    <member name="Requirement" type="struct" typeid="BehaviorNodeRequirement" />
+
+    <member name="Nodes" type="struct_list" typeid="BehaviorTreeNode" case="Selector,Sequence,Parallel,RandomSelector,RandomExecutor" />
+    <member name="Node" type="struct" typeid="BehaviorTreeNode" case="Invertor,ConstantResult,CompleteOnce" />
+    <member name="ItemId" type="object" typeid="BehaviorTree" case="SubTree" alias="BehaviourTree" />
+    <member name="WeaponType" type="enum" typeid="AiWeaponCategory" case="SelectWeapon" />
+    <member name="Result" type="bool" case="ConstantResult,CompleteOnce" />
+
+    <member name="MinValue" type="float" case="HaveEnoughEnergy,RechargeEnergy" alias="FailIfLess" minvalue="0" maxvalue="1" default="0.1" />
+    <member name="MaxValue" type="float" case="RechargeEnergy" alias="RestoreUntil" minvalue="0" maxvalue="1" default="0.9" />
+    <member name="MinValue" type="float" case="IsLowOnHp,MothershipLowHp" minvalue="0" maxvalue="1" />
+
+    <member name="Cooldown" type="float" case="RandomSelector,RandomExecutor,Wait" minvalue="0" />
+    <member name="Cooldown" type="float" case="LookForSecondaryTargets,LookForThreats" alias="Cooldown" minvalue="0.1" />
+    <member name="Cooldown" type="float" case="HaveIncomingThreat" alias="TimeToCollision" minvalue="0" default="5" />
+    <member name="MinValue" type="float" case="FindEnemy" alias="MinCooldown" minvalue="0.5" />
+    <member name="MaxValue" type="float" case="FindEnemy" alias="MaxCooldown" minvalue="0" default="5" />
+    <member name="InRange" type="bool" case="FindEnemy,DetonateShip" alias="InAttackRange" />
+    <member name="InRange" type="bool" case="Wait" alias="ResetIfInterrupted" />
+    <member name="NoDrones" type="bool" case="FindEnemy" alias="IgnoreDrones" />
+    <member name="UseSystems" type="bool" case="Ram" alias="UseShipSystems" />
+    <member name="MinValue" type="float" case="MoveToAttackRange, MaintainAttackRange, IsWithinAttackRange" alias="MinMaxLerp" minvalue="0" maxvalue="1" default="1">Linear interpolation between shortest and longest weapon ranges</member>
+    <member name="MaxValue" type="float" case="MoveToAttackRange" alias="Multiplier" minvalue="0" maxvalue="1" default="1" />
+    <member name="MaxValue" type="float" case="MaintainAttackRange" alias="Tolerance" minvalue="0" maxvalue="1" default="0.2">A valid distance between ships will be [range*(1-tolerance) .. range]</member>
+    <member name="MinValue" type="float" case="FlyAroundMothership" alias="MinDistance" minvalue="0" maxvalue="10" default="2.5" />
+    <member name="MaxValue" type="float" case="FlyAroundMothership" alias="MaxDistance" minvalue="0" maxvalue="10" default="3.5" />
+    <member name="DeviceClass" type="enum" typeid="DeviceClass" case="ActivateDevice" />
+
+    <member name="Text" type="string" case="ShowMessage,DebugLog" />
+    <member name="Color" type="color" case="ShowMessage" />
+</data>

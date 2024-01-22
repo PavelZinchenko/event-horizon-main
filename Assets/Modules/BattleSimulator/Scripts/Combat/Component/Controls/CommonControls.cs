@@ -15,7 +15,7 @@
             get { return _throttle; }
             set
             {
-                _throttle = value;
+				_throttle = value < 0 ? 0 : value > 1 ? 1 : value;
                 DataChanged = true;
             }
         }

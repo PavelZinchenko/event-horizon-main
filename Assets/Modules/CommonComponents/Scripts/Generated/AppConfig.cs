@@ -1,9 +1,9 @@
 public static class AppConfig
 {
     public const string bundleIdentifier = "com.ZipasGames.EventHorizon";
-    public const string version = "1.10.3";
-    public const int versionCode = 110302;
-    public const int buildNumber = 1536;
+    public const string version = "1.10.4";
+    public const int versionCode = 110400;
+    public const int buildNumber = 1591;
     public const string localizationFile = "Languages";
     public const bool testMode = false;
     public const bool enableCheats = true;

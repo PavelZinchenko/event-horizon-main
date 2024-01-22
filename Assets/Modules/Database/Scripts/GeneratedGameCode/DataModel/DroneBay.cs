@@ -52,6 +52,8 @@ namespace GameDatabase.DataModel
 			LaunchSound = new AudioClipId(serializable.LaunchSound);
 			LaunchEffectPrefab = new PrefabId(serializable.LaunchEffectPrefab, PrefabId.Type.Effect);
 			ControlButtonIcon = new SpriteId(serializable.ControlButtonIcon, SpriteId.Type.ActionButton);
+			DefensiveDroneAI = loader?.GetBehaviorTree(new ItemId<BehaviorTreeModel>(serializable.DefensiveDroneAI)) ?? BehaviorTreeModel.DefaultValue;
+			OffensiveDroneAI = loader?.GetBehaviorTree(new ItemId<BehaviorTreeModel>(serializable.OffensiveDroneAI)) ?? BehaviorTreeModel.DefaultValue;
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -69,5 +71,7 @@ namespace GameDatabase.DataModel
 		public AudioClipId LaunchSound;
 		public PrefabId LaunchEffectPrefab;
 		public SpriteId ControlButtonIcon;
+		public BehaviorTreeModel DefensiveDroneAI;
+		public BehaviorTreeModel OffensiveDroneAI;
 	}
 }

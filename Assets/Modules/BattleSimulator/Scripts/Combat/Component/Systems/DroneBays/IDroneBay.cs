@@ -4,5 +4,7 @@
     {
         bool TryRestoreDrone();
         float Range { get; }
-    }
+		int DronesInHangar { get; }
+		int ActiveDrones { get; }
+	}
 }

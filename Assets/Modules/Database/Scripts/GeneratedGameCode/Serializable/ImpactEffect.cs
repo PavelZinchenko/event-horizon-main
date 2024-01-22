@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct ImpactEffectSerializable
+	public class ImpactEffectSerializable
 	{
 		public ImpactEffectType Type;
 		public DamageType DamageType;

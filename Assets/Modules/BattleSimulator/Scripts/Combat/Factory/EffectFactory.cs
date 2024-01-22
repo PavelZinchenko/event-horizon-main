@@ -58,28 +58,35 @@ namespace Combat.Factory
 
         public IEffect CreateDamageTextEffect(float damage, Color color, Vector2 position, Vector2 velocity, IBody parent = null)
         {
-            var gameObject = CreateGameObject("DamageText");
+			var gameObject = CreateGameObject("DamageText");
 
-            var direction = RotationHelpers.Direction(Random.Range(0f, 360f));
+			var direction = RotationHelpers.Direction(Random.Range(0f, 360f));
 
-            string damageText;
-            if (damage < 1e3f)
-                damageText = ((int)damage).ToString();
-            else if (damage < 1e6f)
-                damageText = (int)(damage / 1e3f) + "K";
-            else
-                damageText = (int)(damage / 1e6f) + "M";
+			string damageText;
+			if (damage < 1e3f)
+				damageText = ((int)damage).ToString();
+			else if (damage < 1e6f)
+				damageText = (int)(damage / 1e3f) + "K";
+			else
+				damageText = (int)(damage / 1e6f) + "M";
 
-            gameObject.Name = damageText;
-            var effect = CreateEffect(gameObject, parent);
-            effect.Position = position;
-            effect.Color = color;
-            effect.Run(2.0f, velocity + direction, 0);
+			gameObject.Name = damageText;
+			var effect = CreateEffect(gameObject, parent);
+			effect.Position = position;
+			effect.Color = color;
+			effect.Run(2.0f, velocity + direction, 0);
+			return effect;
+		}
 
-            return effect;
-        }
+		public IEffect CreateTextEffect(string message, IBody parent = null)
+		{
+			var gameObject = CreateGameObject("MessageText");
+			gameObject.Name = message;
+			var effect = CreateEffect(gameObject, parent);
+			return effect;
+		}
 
-        public void CreateDisturbance(Vector2 position, float power)
+		public void CreateDisturbance(Vector2 position, float power)
         {
             var distance = Vector2.Distance(position, _scene.ViewPoint) + 20;
             _scene.Shake(Mathf.Min(2.0f * power / Mathf.Sqrt(distance), 5f));

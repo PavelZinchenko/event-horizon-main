@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static ComponentStats Create(ComponentStatsSerializable serializable, Database.Loader loader)
 		{
-			return new ComponentStats(serializable, loader);
+			return serializable == null ? DefaultValue : new ComponentStats(serializable, loader);
 		}
 
 		private ComponentStats(ComponentStatsSerializable serializable, Database.Loader loader)

@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static Ship Create(ShipSerializable serializable, Database.Loader loader)
 		{
-			return new Ship(serializable, loader);
+			return serializable == null ? DefaultValue : new Ship(serializable, loader);
 		}
 
 		private Ship(ShipSerializable serializable, Database.Loader loader)
@@ -31,7 +31,7 @@ namespace GameDatabase.DataModel
 			ShipRarity = serializable.ShipRarity;
 			SizeClass = serializable.SizeClass;
 			Name = serializable.Name;
-			Faction = loader.GetFaction(new ItemId<Faction>(serializable.Faction));
+			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 			IconImage = new SpriteId(serializable.IconImage, SpriteId.Type.ShipIcon);
 			IconScale = UnityEngine.Mathf.Clamp(serializable.IconScale, 0.1f, 100f);
 			ModelImage = new SpriteId(serializable.ModelImage, SpriteId.Type.Ship);

@@ -5,7 +5,7 @@ namespace Combat.Component.Systems
 {
     public interface IShipSystems : IDisposable
     {
-        IList<ISystem> All { get; }
+		IReadOnlyList<ISystem> All { get; }
 
         SystemsModifications Modifications { get; }
 

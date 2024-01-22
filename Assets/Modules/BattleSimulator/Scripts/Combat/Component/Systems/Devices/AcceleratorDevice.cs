@@ -11,12 +11,14 @@ namespace Combat.Component.Systems.Devices
             : base(keyBinding, deviceSpec.ControlButtonIcon)
         {
             MaxCooldown = deviceSpec.Cooldown;
+			DeviceClass = deviceSpec.DeviceClass;
 
             _ship = ship;
             _energyCost = deviceSpec.EnergyConsumption;
         }
 
         public override IEngineModification EngineModification { get { return this; } }
+		public GameDatabase.Enums.DeviceClass DeviceClass { get; }
 
         public bool TryApplyModification(ref EngineData data)
         {

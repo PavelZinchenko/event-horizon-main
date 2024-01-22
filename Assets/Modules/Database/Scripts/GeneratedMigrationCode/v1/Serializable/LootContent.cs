@@ -13,7 +13,7 @@ using DatabaseMigration.v1.Enums;
 namespace DatabaseMigration.v1.Serializable
 {
 	[Serializable]
-	public struct LootContentSerializable
+	public class LootContentSerializable
 	{
 		public LootItemType Type;
 		public int ItemId;

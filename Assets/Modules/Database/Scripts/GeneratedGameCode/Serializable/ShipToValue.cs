@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct ShipToValueSerializable
+	public class ShipToValueSerializable
 	{
 		public int Ship;
 		public int Value;

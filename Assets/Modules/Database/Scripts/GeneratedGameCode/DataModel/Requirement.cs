@@ -19,6 +19,8 @@ namespace GameDatabase.DataModel
 
 		public static Requirement Create(RequirementSerializable serializable, Database.Loader loader)
 		{
+			if (serializable == null) return DefaultValue;
+
 			switch (serializable.Type)
 		    {
 				case RequirementType.Empty:
@@ -75,7 +77,7 @@ namespace GameDatabase.DataModel
 
 		public RequirementType Type { get; private set; }
 
-		public static Requirement DefaultValue { get; private set; }
+		public static Requirement DefaultValue { get; private set; } = Create(new(), null);
 	}
 
 	public interface IRequirementFactory<T>
@@ -245,7 +247,7 @@ namespace GameDatabase.DataModel
   		public Requirement_QuestCompleted(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Quest = loader.GetQuest(new ItemId<QuestModel>(serializable.ItemId));
+			Quest = loader?.GetQuest(new ItemId<QuestModel>(serializable.ItemId)) ?? QuestModel.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -264,7 +266,7 @@ namespace GameDatabase.DataModel
   		public Requirement_QuestActive(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Quest = loader.GetQuest(new ItemId<QuestModel>(serializable.ItemId));
+			Quest = loader?.GetQuest(new ItemId<QuestModel>(serializable.ItemId)) ?? QuestModel.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -285,7 +287,7 @@ namespace GameDatabase.DataModel
         {
 			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, -100, 100);
 			MaxValue = UnityEngine.Mathf.Clamp(serializable.MaxValue, -100, 100);
-			Character = loader.GetCharacter(new ItemId<Character>(serializable.Character));
+			Character = loader?.GetCharacter(new ItemId<Character>(serializable.Character)) ?? Character.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -344,7 +346,7 @@ namespace GameDatabase.DataModel
   		public Requirement_Faction(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Faction = loader.GetFaction(new ItemId<Faction>(serializable.Faction));
+			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -363,7 +365,7 @@ namespace GameDatabase.DataModel
   		public Requirement_HaveQuestItem(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			QuestItem = loader.GetQuestItem(new ItemId<QuestItem>(serializable.ItemId));
+			QuestItem = loader?.GetQuestItem(new ItemId<QuestItem>(serializable.ItemId)) ?? QuestItem.DefaultValue;
 			Amount = UnityEngine.Mathf.Clamp(serializable.MinValue, 1, 1000000);
 
             OnDataDeserialized(serializable, loader);
@@ -403,7 +405,7 @@ namespace GameDatabase.DataModel
   		public Requirement_HaveItemById(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Loot = loader.GetLoot(new ItemId<LootModel>(serializable.ItemId));
+			Loot = loader?.GetLoot(new ItemId<LootModel>(serializable.ItemId)) ?? LootModel.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }

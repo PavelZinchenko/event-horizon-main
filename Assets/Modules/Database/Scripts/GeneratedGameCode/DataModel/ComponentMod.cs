@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static ComponentMod Create(ComponentModSerializable serializable, Database.Loader loader)
 		{
-			return new ComponentMod(serializable, loader);
+			return serializable == null ? DefaultValue : new ComponentMod(serializable, loader);
 		}
 
 		private ComponentMod(ComponentModSerializable serializable, Database.Loader loader)

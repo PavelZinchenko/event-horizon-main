@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="AiDifficultyLevel">
+    <item name="Easy" value="0">Early-game enemy</item>
+    <item name="Medium" value="1">Mid-game enemy</item>
+    <item name="Hard" value="2">Late-game enemy</item>
+</data>

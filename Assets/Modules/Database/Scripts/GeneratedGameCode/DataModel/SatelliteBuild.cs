@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static SatelliteBuild Create(SatelliteBuildSerializable serializable, Database.Loader loader)
 		{
-			return new SatelliteBuild(serializable, loader);
+			return serializable == null ? DefaultValue : new SatelliteBuild(serializable, loader);
 		}
 
 		private SatelliteBuild(SatelliteBuildSerializable serializable, Database.Loader loader)
@@ -27,9 +27,9 @@ namespace GameDatabase.DataModel
 			Id = new ItemId<SatelliteBuild>(serializable.Id);
 			loader.AddSatelliteBuild(serializable.Id, this);
 
-			Satellite = loader.GetSatellite(new ItemId<Satellite>(serializable.SatelliteId));
-			if (Satellite == null)
-			    throw new DatabaseException(this.GetType().Name + ".Satellite cannot be null - " + serializable.SatelliteId);
+			Satellite = loader?.GetSatellite(new ItemId<Satellite>(serializable.SatelliteId)) ?? Satellite.DefaultValue;
+			if (loader != null && Satellite == null)
+			    throw new DatabaseException("ObjectTemplate.Satellite cannot be null - " + serializable.SatelliteId);
 			NotAvailableInGame = serializable.NotAvailableInGame;
 			DifficultyClass = serializable.DifficultyClass;
 			Components = new ImmutableCollection<InstalledComponent>(serializable.Components?.Select(item => InstalledComponent.Create(item, loader)));

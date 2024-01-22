@@ -9,7 +9,9 @@
         "ShipConstructor",
         "Unity.InputSystem",
         "ServicesFacade",
-        "GameServices"
+        "GameServices",
+        "Diagnostics",
+        "Localization"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

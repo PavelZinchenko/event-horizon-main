@@ -19,6 +19,8 @@ namespace GameDatabase.DataModel
 
 		public static Node Create(NodeSerializable serializable, Database.Loader loader)
 		{
+			if (serializable == null) return DefaultValue;
+
 			switch (serializable.Type)
 		    {
 				case NodeType.Undefined:
@@ -95,7 +97,7 @@ namespace GameDatabase.DataModel
 		public int Id { get; private set; }
 		public NodeType Type { get; private set; }
 
-		public static Node DefaultValue { get; private set; }
+		public static Node DefaultValue { get; private set; } = Create(new(), null);
 	}
 
 	public interface INodeFactory<T>
@@ -173,9 +175,9 @@ namespace GameDatabase.DataModel
         {
 			RequiredView = serializable.RequiredView;
 			Message = serializable.Message;
-			Enemy = loader.GetFleet(new ItemId<Fleet>(serializable.Enemy));
-			Loot = loader.GetLoot(new ItemId<LootModel>(serializable.Loot));
-			Character = loader.GetCharacter(new ItemId<Character>(serializable.Character));
+			Enemy = loader?.GetFleet(new ItemId<Fleet>(serializable.Enemy)) ?? Fleet.DefaultValue;
+			Loot = loader?.GetLoot(new ItemId<LootModel>(serializable.Loot)) ?? LootModel.DefaultValue;
+			Character = loader?.GetCharacter(new ItemId<Character>(serializable.Character)) ?? Character.DefaultValue;
 			Actions = new ImmutableCollection<NodeAction>(serializable.Actions?.Select(item => NodeAction.Create(item, loader)));
 
             OnDataDeserialized(serializable, loader);
@@ -201,7 +203,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
-			Faction = loader.GetFaction(new ItemId<Faction>(serializable.Faction));
+			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 			Level = UnityEngine.Mathf.Clamp(serializable.Value, 0, 10000);
 
             OnDataDeserialized(serializable, loader);
@@ -224,7 +226,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
-			Faction = loader.GetFaction(new ItemId<Faction>(serializable.Faction));
+			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 			Level = UnityEngine.Mathf.Clamp(serializable.Value, 0, 10000);
 
             OnDataDeserialized(serializable, loader);
@@ -315,8 +317,8 @@ namespace GameDatabase.DataModel
         {
 			VictoryTransition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 			FailureTransition = UnityEngine.Mathf.Clamp(serializable.FailureTransition, 1, 999999);
-			Enemy = loader.GetFleet(new ItemId<Fleet>(serializable.Enemy));
-			Loot = loader.GetLoot(new ItemId<LootModel>(serializable.Loot));
+			Enemy = loader?.GetFleet(new ItemId<Fleet>(serializable.Enemy)) ?? Fleet.DefaultValue;
+			Loot = loader?.GetLoot(new ItemId<LootModel>(serializable.Loot)) ?? LootModel.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -438,7 +440,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
-			Loot = loader.GetLoot(new ItemId<LootModel>(serializable.Loot));
+			Loot = loader?.GetLoot(new ItemId<LootModel>(serializable.Loot)) ?? LootModel.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -459,7 +461,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
-			Loot = loader.GetLoot(new ItemId<LootModel>(serializable.Loot));
+			Loot = loader?.GetLoot(new ItemId<LootModel>(serializable.Loot)) ?? LootModel.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -480,7 +482,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
-			Loot = loader.GetLoot(new ItemId<LootModel>(serializable.Loot));
+			Loot = loader?.GetLoot(new ItemId<LootModel>(serializable.Loot)) ?? LootModel.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -552,7 +554,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
-			Quest = loader.GetQuest(new ItemId<QuestModel>(serializable.Quest));
+			Quest = loader?.GetQuest(new ItemId<QuestModel>(serializable.Quest)) ?? QuestModel.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -573,7 +575,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
-			Character = loader.GetCharacter(new ItemId<Character>(serializable.Character));
+			Character = loader?.GetCharacter(new ItemId<Character>(serializable.Character)) ?? Character.DefaultValue;
 			Value = UnityEngine.Mathf.Clamp(serializable.Value, -100, 100);
 
             OnDataDeserialized(serializable, loader);
@@ -617,7 +619,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
-			Character = loader.GetCharacter(new ItemId<Character>(serializable.Character));
+			Character = loader?.GetCharacter(new ItemId<Character>(serializable.Character)) ?? Character.DefaultValue;
 			Value = UnityEngine.Mathf.Clamp(serializable.Value, -100, 100);
 
             OnDataDeserialized(serializable, loader);
@@ -699,7 +701,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
-			Faction = loader.GetFaction(new ItemId<Faction>(serializable.Faction));
+			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
         }

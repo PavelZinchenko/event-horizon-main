@@ -19,6 +19,8 @@ namespace GameDatabase.DataModel
 
 		public static LootContent Create(LootContentSerializable serializable, Database.Loader loader)
 		{
+			if (serializable == null) return DefaultValue;
+
 			switch (serializable.Type)
 		    {
 				case LootItemType.None:
@@ -71,7 +73,7 @@ namespace GameDatabase.DataModel
 
 		public LootItemType Type { get; private set; }
 
-		public static LootContent DefaultValue { get; private set; }
+		public static LootContent DefaultValue { get; private set; } = Create(new(), null);
 	}
 
 	public interface ILootContentFactory<T>
@@ -304,9 +306,9 @@ namespace GameDatabase.DataModel
   		public LootContent_QuestItem(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			QuestItem = loader.GetQuestItem(new ItemId<QuestItem>(serializable.ItemId));
-			if (QuestItem == null)
-			    throw new DatabaseException(this.GetType().Name + ".QuestItem cannot be null - " + serializable.ItemId);
+			QuestItem = loader?.GetQuestItem(new ItemId<QuestItem>(serializable.ItemId)) ?? QuestItem.DefaultValue;
+			if (loader != null && QuestItem == null)
+			    throw new DatabaseException("MutableObjectTemplate.QuestItem cannot be null - " + serializable.ItemId);
 			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
 			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
 
@@ -329,9 +331,9 @@ namespace GameDatabase.DataModel
   		public LootContent_Ship(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			ShipBuild = loader.GetShipBuild(new ItemId<ShipBuild>(serializable.ItemId));
-			if (ShipBuild == null)
-			    throw new DatabaseException(this.GetType().Name + ".ShipBuild cannot be null - " + serializable.ItemId);
+			ShipBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.ItemId)) ?? ShipBuild.DefaultValue;
+			if (loader != null && ShipBuild == null)
+			    throw new DatabaseException("MutableObjectTemplate.ShipBuild cannot be null - " + serializable.ItemId);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -350,9 +352,9 @@ namespace GameDatabase.DataModel
   		public LootContent_EmptyShip(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Ship = loader.GetShip(new ItemId<Ship>(serializable.ItemId));
-			if (Ship == null)
-			    throw new DatabaseException(this.GetType().Name + ".Ship cannot be null - " + serializable.ItemId);
+			Ship = loader?.GetShip(new ItemId<Ship>(serializable.ItemId)) ?? Ship.DefaultValue;
+			if (loader != null && Ship == null)
+			    throw new DatabaseException("MutableObjectTemplate.Ship cannot be null - " + serializable.ItemId);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -371,9 +373,9 @@ namespace GameDatabase.DataModel
   		public LootContent_Component(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Component = loader.GetComponent(new ItemId<Component>(serializable.ItemId));
-			if (Component == null)
-			    throw new DatabaseException(this.GetType().Name + ".Component cannot be null - " + serializable.ItemId);
+			Component = loader?.GetComponent(new ItemId<Component>(serializable.ItemId)) ?? Component.DefaultValue;
+			if (loader != null && Component == null)
+			    throw new DatabaseException("MutableObjectTemplate.Component cannot be null - " + serializable.ItemId);
 			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
 			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
 
@@ -396,9 +398,9 @@ namespace GameDatabase.DataModel
   		public LootContent_Blueprint(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Blueprint = loader.GetTechnology(new ItemId<Technology>(serializable.ItemId));
-			if (Blueprint == null)
-			    throw new DatabaseException(this.GetType().Name + ".Blueprint cannot be null - " + serializable.ItemId);
+			Blueprint = loader?.GetTechnology(new ItemId<Technology>(serializable.ItemId)) ?? Technology.DefaultValue;
+			if (loader != null && Blueprint == null)
+			    throw new DatabaseException("MutableObjectTemplate.Blueprint cannot be null - " + serializable.ItemId);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -440,9 +442,9 @@ namespace GameDatabase.DataModel
   		public LootContent_Satellite(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Satellite = loader.GetSatellite(new ItemId<Satellite>(serializable.ItemId));
-			if (Satellite == null)
-			    throw new DatabaseException(this.GetType().Name + ".Satellite cannot be null - " + serializable.ItemId);
+			Satellite = loader?.GetSatellite(new ItemId<Satellite>(serializable.ItemId)) ?? Satellite.DefaultValue;
+			if (loader != null && Satellite == null)
+			    throw new DatabaseException("MutableObjectTemplate.Satellite cannot be null - " + serializable.ItemId);
 			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
 			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
 

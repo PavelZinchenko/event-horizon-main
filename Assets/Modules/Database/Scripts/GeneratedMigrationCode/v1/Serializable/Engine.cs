@@ -13,7 +13,7 @@ using DatabaseMigration.v1.Enums;
 namespace DatabaseMigration.v1.Serializable
 {
 	[Serializable]
-	public struct EngineSerializable
+	public class EngineSerializable
 	{
 		public UnityEngine.Vector2 Position;
 		public float Size;

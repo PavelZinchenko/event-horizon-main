@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static VisualEffectElement Create(VisualEffectElementSerializable serializable, Database.Loader loader)
 		{
-			return new VisualEffectElement(serializable, loader);
+			return serializable == null ? DefaultValue : new VisualEffectElement(serializable, loader);
 		}
 
 		private VisualEffectElement(VisualEffectElementSerializable serializable, Database.Loader loader)
@@ -47,6 +47,6 @@ namespace GameDatabase.DataModel
 		public float StartTime { get; private set; }
 		public float Lifetime { get; private set; }
 
-		public static VisualEffectElement DefaultValue { get; private set; }
+		public static VisualEffectElement DefaultValue { get; private set; }= new(new(), null);
 	}
 }

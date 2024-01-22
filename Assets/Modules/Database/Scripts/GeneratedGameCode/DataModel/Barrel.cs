@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static Barrel Create(BarrelSerializable serializable, Database.Loader loader)
 		{
-			return new Barrel(serializable, loader);
+			return serializable == null ? DefaultValue : new Barrel(serializable, loader);
 		}
 
 		private Barrel(BarrelSerializable serializable, Database.Loader loader)
@@ -45,6 +45,6 @@ namespace GameDatabase.DataModel
 		public SpriteId Image { get; private set; }
 		public float Size { get; private set; }
 
-		public static Barrel DefaultValue { get; private set; }
+		public static Barrel DefaultValue { get; private set; }= new(new(), null);
 	}
 }

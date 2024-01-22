@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static ShipFeatures Create(ShipFeaturesSerializable serializable, Database.Loader loader)
 		{
-			return new ShipFeatures(serializable, loader);
+			return serializable == null ? DefaultValue : new ShipFeatures(serializable, loader);
 		}
 
 		private ShipFeatures(ShipFeaturesSerializable serializable, Database.Loader loader)
@@ -53,6 +53,6 @@ namespace GameDatabase.DataModel
 		public bool Regeneration { get; private set; }
 		public ImmutableCollection<Device> BuiltinDevices { get; private set; }
 
-		public static ShipFeatures DefaultValue { get; private set; }
+		public static ShipFeatures DefaultValue { get; private set; }= new(new(), null);
 	}
 }

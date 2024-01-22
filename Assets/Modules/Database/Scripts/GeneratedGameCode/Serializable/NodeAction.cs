@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct NodeActionSerializable
+	public class NodeActionSerializable
 	{
 		public int TargetNode;
 		public RequirementSerializable Requirement;

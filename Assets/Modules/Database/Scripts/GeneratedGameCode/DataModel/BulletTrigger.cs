@@ -19,6 +19,8 @@ namespace GameDatabase.DataModel
 
 		public static BulletTrigger Create(BulletTriggerSerializable serializable, Database.Loader loader)
 		{
+			if (serializable == null) return DefaultValue;
+
 			switch (serializable.EffectType)
 		    {
 				case BulletEffectType.None:
@@ -51,7 +53,7 @@ namespace GameDatabase.DataModel
 		public BulletTriggerCondition Condition { get; private set; }
 		public BulletEffectType EffectType { get; private set; }
 
-		public static BulletTrigger DefaultValue { get; private set; }
+		public static BulletTrigger DefaultValue { get; private set; } = Create(new(), null);
 	}
 
 	public interface IBulletTriggerFactory<T>
@@ -88,7 +90,7 @@ namespace GameDatabase.DataModel
   		public BulletTrigger_PlaySfx(BulletTriggerSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			VisualEffect = loader.GetVisualEffect(new ItemId<VisualEffect>(serializable.VisualEffect));
+			VisualEffect = loader?.GetVisualEffect(new ItemId<VisualEffect>(serializable.VisualEffect)) ?? VisualEffect.DefaultValue;
 			AudioClip = new AudioClipId(serializable.AudioClip);
 			Color = new ColorData(serializable.Color);
 			ColorMode = serializable.ColorMode;
@@ -118,7 +120,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			AudioClip = new AudioClipId(serializable.AudioClip);
-			Ammunition = loader.GetAmmunition(new ItemId<Ammunition>(serializable.Ammunition));
+			Ammunition = loader?.GetAmmunition(new ItemId<Ammunition>(serializable.Ammunition)) ?? Ammunition.DefaultValue;
 			Color = new ColorData(serializable.Color);
 			ColorMode = serializable.ColorMode;
 			Quantity = UnityEngine.Mathf.Clamp(serializable.Quantity, 0, 1000);
@@ -171,7 +173,7 @@ namespace GameDatabase.DataModel
   		public BulletTrigger_SpawnStaticSfx(BulletTriggerSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			VisualEffect = loader.GetVisualEffect(new ItemId<VisualEffect>(serializable.VisualEffect));
+			VisualEffect = loader?.GetVisualEffect(new ItemId<VisualEffect>(serializable.VisualEffect)) ?? VisualEffect.DefaultValue;
 			AudioClip = new AudioClipId(serializable.AudioClip);
 			Color = new ColorData(serializable.Color);
 			ColorMode = serializable.ColorMode;

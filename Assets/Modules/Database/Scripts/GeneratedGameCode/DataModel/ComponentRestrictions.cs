@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static ComponentRestrictions Create(ComponentRestrictionsSerializable serializable, Database.Loader loader)
 		{
-			return new ComponentRestrictions(serializable, loader);
+			return serializable == null ? DefaultValue : new ComponentRestrictions(serializable, loader);
 		}
 
 		private ComponentRestrictions(ComponentRestrictionsSerializable serializable, Database.Loader loader)
@@ -37,6 +37,6 @@ namespace GameDatabase.DataModel
 		public bool NotForMechanicShips { get; private set; }
 		public string UniqueComponentTag { get; private set; }
 
-		public static ComponentRestrictions DefaultValue { get; private set; }
+		public static ComponentRestrictions DefaultValue { get; private set; }= new(new(), null);
 	}
 }

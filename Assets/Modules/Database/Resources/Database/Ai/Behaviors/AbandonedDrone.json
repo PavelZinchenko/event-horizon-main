@@ -1,0 +1,18 @@
+{
+  "ItemType": 28,
+  "Id": 103,
+  "RootNode": {
+    "Type": 3,
+    "Requirement": {
+      "Type": 50
+    },
+    "Nodes": [
+      {
+        "Type": 200
+      },
+      {
+        "Type": 107
+      }
+    ]
+  }
+}

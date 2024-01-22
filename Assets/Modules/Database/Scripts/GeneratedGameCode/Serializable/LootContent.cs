@@ -13,7 +13,7 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public struct LootContentSerializable
+	public class LootContentSerializable
 	{
 		public LootItemType Type;
 		public int ItemId;

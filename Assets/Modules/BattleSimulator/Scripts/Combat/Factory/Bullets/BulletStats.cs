@@ -3,13 +3,16 @@ using Constructor;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using UnityEngine;
+using WeaponCapability = Combat.Component.Systems.Weapons.WeaponCapability;
 
 namespace Combat.Factory
 {
     public interface IBulletStats
     {
         Component.Systems.Weapons.BulletType Type { get; }
-        Component.Systems.Weapons.BulletEffectType EffectType { get; }
+        [System.Obsolete] Component.Systems.Weapons.BulletEffectType EffectType { get; }
+
+		WeaponCapability Capability { get; }
 
         float FlashSize { get; }
         Color FlashColor { get; }
@@ -59,11 +62,37 @@ namespace Combat.Factory
             }
         }
 
+		public WeaponCapability Capability
+		{
+			get
+			{
+				WeaponCapability capability = 0;
+				for (int i = 0; i < _ammunition.Effects.Count; ++i)
+				{
+					switch (_ammunition.Effects[i].Type)
+					{
+						case ImpactEffectType.Damage:
+						case ImpactEffectType.SiphonHitPoints:
+							capability |= WeaponCapability.DamageEnemy;
+							break;
+						case ImpactEffectType.Repair:
+							capability |= WeaponCapability.RepairAlly;
+							break;
+						case ImpactEffectType.CaptureDrones:
+							capability |= WeaponCapability.CaptureDrone;
+							break;
+					}
+				}
+
+				return capability;
+			}
+		}
+
         public Component.Systems.Weapons.BulletEffectType EffectType
         {
             get
             {
-                switch (_ammunition.ImpactType)
+				switch (_ammunition.ImpactType)
                 {
                     case BulletImpactType.HitFirstTarget:
                     case BulletImpactType.HitAllTargets:
@@ -175,7 +204,26 @@ namespace Combat.Factory
         public Component.Systems.Weapons.BulletType Type { get; private set; }
         public Component.Systems.Weapons.BulletEffectType EffectType { get; private set; }
 
-        public float FlashSize { get { return _stats.Size * SizeMultiplier; } }
+		public WeaponCapability Capability
+		{
+			get
+			{
+				switch (EffectType)
+				{
+					case Component.Systems.Weapons.BulletEffectType.Common:
+					case Component.Systems.Weapons.BulletEffectType.DamageOverTime:
+						return WeaponCapability.DamageEnemy;
+					case Component.Systems.Weapons.BulletEffectType.Repair:
+						return WeaponCapability.DamageEnemy | WeaponCapability.RepairAlly;
+					case Component.Systems.Weapons.BulletEffectType.ForDronesOnly:
+						return WeaponCapability.CaptureDrone;
+					default:
+						return WeaponCapability.None;
+				}
+			}
+		}
+
+		public float FlashSize { get { return _stats.Size * SizeMultiplier; } }
         public Color FlashColor { get { return Color; } }
         public float FlashTime { get { return _stats.AmmunitionClass.IsBeam() ? Mathf.Max(0.2f, _stats.LifeTime * LifetimeMultiplier) : 0.2f; } }
 
@@ -206,5 +254,5 @@ namespace Combat.Factory
 		public bool IsBoundToCannon => _stats.AmmunitionClass.IsBoundToCannon();
 
 		private readonly AmmunitionObsoleteStats _stats;
-    }
+	}
 }

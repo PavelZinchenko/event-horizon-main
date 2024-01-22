@@ -34,5 +34,7 @@ namespace DatabaseMigration.v1.Serializable
 		public string LaunchSound;
 		public string LaunchEffectPrefab;
 		public string ControlButtonIcon;
+		public int DefensiveDroneAI;
+		public int OffensiveDroneAI;
 	}
 }

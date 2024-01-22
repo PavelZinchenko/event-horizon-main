@@ -19,7 +19,7 @@ namespace GameDatabase.DataModel
 
 		public static BulletBody Create(BulletBodySerializable serializable, Database.Loader loader)
 		{
-			return new BulletBody(serializable, loader);
+			return serializable == null ? DefaultValue : new BulletBody(serializable, loader);
 		}
 
 		private BulletBody(BulletBodySerializable serializable, Database.Loader loader)
@@ -33,7 +33,7 @@ namespace GameDatabase.DataModel
 			Weight = UnityEngine.Mathf.Clamp(serializable.Weight, 0f, 1E+09f);
 			HitPoints = UnityEngine.Mathf.Clamp(serializable.HitPoints, 0, 999999999);
 			Color = new ColorData(serializable.Color);
-			BulletPrefab = loader.GetBulletPrefab(new ItemId<BulletPrefab>(serializable.BulletPrefab));
+			BulletPrefab = loader?.GetBulletPrefab(new ItemId<BulletPrefab>(serializable.BulletPrefab)) ?? BulletPrefab.DefaultValue;
 			EnergyCost = UnityEngine.Mathf.Clamp(serializable.EnergyCost, 0f, 1E+09f);
 			CanBeDisarmed = serializable.CanBeDisarmed;
 			FriendlyFire = serializable.FriendlyFire;
@@ -55,6 +55,6 @@ namespace GameDatabase.DataModel
 		public bool CanBeDisarmed { get; private set; }
 		public bool FriendlyFire { get; private set; }
 
-		public static BulletBody DefaultValue { get; private set; }
+		public static BulletBody DefaultValue { get; private set; }= new(new(), null);
 	}
 }

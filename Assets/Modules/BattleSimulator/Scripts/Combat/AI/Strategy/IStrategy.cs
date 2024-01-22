@@ -3,9 +3,13 @@ using Combat.Component.Unit;
 
 namespace Combat.Ai
 {
-	public interface IStrategy 
+	public interface IThreatAnalyzer
 	{
 		bool IsThreat(IShip ship, IUnit unit);
+	}
+
+	public interface IStrategy : IThreatAnalyzer
+	{
 		void Apply(Context context, ShipControls controls);
 	}
 }
