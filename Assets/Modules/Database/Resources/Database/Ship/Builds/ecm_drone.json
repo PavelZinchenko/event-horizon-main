@@ -2,6 +2,7 @@
   "ItemType": 8,
   "Id": 290,
   "ShipId": 125,
+  "CustomAI": 9,
   "Components": [
     {
       "ComponentId": 73,

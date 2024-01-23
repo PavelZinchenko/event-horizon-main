@@ -8,7 +8,7 @@ namespace Constructor.Ships
     public class EnemyShip : BaseShip
     {
         public EnemyShip(ShipBuild data) 
-            : base(new ShipModel(data.Ship, data.BuildFaction))
+            : base(new ShipModel(data.Ship, data.BuildFaction), data.CustomAI)
         {
             
             _components.Assign(data.Components.Select<InstalledComponent,IntegratedComponent>(ComponentExtensions.FromDatabase));

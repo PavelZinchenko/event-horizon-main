@@ -100,8 +100,9 @@ namespace Combat.Component.Systems.Devices
             public IEnumerable<IWeaponPlatformData> Platforms => _spec.Platforms;
             public IEnumerable<IDeviceData> Devices => _spec.Devices;
             public IEnumerable<IDroneBayData> DroneBays => Enumerable.Empty<IDroneBayData>();
+			public BehaviorTreeModel CustomAi => _spec.CustomAi;
 
-            private readonly IShipStats _stats;
+			private readonly IShipStats _stats;
             private readonly IShipSpecification _spec;
         }
 

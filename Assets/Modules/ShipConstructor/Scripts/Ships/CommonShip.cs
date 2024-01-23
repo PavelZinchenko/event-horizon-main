@@ -23,7 +23,7 @@ namespace Constructor.Ships
         }
 
         public CommonShip(ShipBuild data, params IShipModification[] modifications)
-            : base(new ShipModel(data.Ship, modifications, data.BuildFaction))
+            : base(new ShipModel(data.Ship, modifications, data.BuildFaction), data.CustomAI)
         {
             _components.Assign(data.Components.Select<InstalledComponent,IntegratedComponent>(ComponentExtensions.FromDatabase));
             _components.DataChangedEvent += OnDataChanged;

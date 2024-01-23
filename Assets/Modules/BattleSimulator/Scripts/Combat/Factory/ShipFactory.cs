@@ -178,12 +178,12 @@ namespace Combat.Factory
 
 		public Ship CreateEnemyShip(IShipSpecification spec, Vector2 position, float rotation, int aiLevel)
         {
-            return CreateShip(spec, CreateDefaultAiController(aiLevel), UnitSide.Enemy, position, rotation);
+            return CreateShip(spec, CreateDefaultAiController(aiLevel, spec.CustomAi), UnitSide.Enemy, position, rotation);
         }
 
         public Ship CreateClone(IShipSpecification spec, Vector2 position, float rotation, IShip motherShip)
         {
-            return CreateShip(spec, CreateCloneController(), position, rotation, motherShip, UnitSide.Undefined, _settings.Shadows);
+            return CreateShip(spec, CreateCloneController(spec.CustomAi), position, rotation, motherShip, UnitSide.Undefined, _settings.Shadows);
         }
 
         public Ship CreateShip(IShipSpecification spec, IControllerFactory controllerFactory, UnitSide side, Vector2 position, float rotation)
@@ -360,18 +360,20 @@ namespace Combat.Factory
             return platform;
         }
 
-		private IControllerFactory CreateDefaultAiController(int aiLevel)
+		private IControllerFactory CreateDefaultAiController(int aiLevel, BehaviorTreeModel customAi)
 		{
-			if (_database.CombatSettings.EnemyAI != null)
+			var aiModel = customAi ?? _database.CombatSettings.EnemyAI;
+			if (aiModel != null)
 				return new BehaviorTreeController.Factory(_database.CombatSettings.EnemyAI, _scene, 
 					Ai.BehaviorTree.AiSettings.FromAiLevel(aiLevel), _behaviorTreeBuilder);
 
 			return new Computer.Factory(_scene, aiLevel);
 		}
 
-		private IControllerFactory CreateCloneController()
+		private IControllerFactory CreateCloneController(BehaviorTreeModel customAi)
 		{
-			if (_database.CombatSettings.CloneAI != null)
+			var aiModel = customAi ?? _database.CombatSettings.CloneAI;
+			if (aiModel != null)
 				return new BehaviorTreeController.Factory(_database.CombatSettings.CloneAI, _scene, 
 					Ai.BehaviorTree.AiSettings.Default, _behaviorTreeBuilder);
 

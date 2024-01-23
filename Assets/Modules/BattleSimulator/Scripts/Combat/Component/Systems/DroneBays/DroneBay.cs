@@ -30,7 +30,7 @@ namespace Combat.Component.Systems.DroneBays
             _range = stats.Range;
             _behaviour = data.Behaviour;
             _improvedAi = data.DroneBay.ImprovedAi;
-			_droneBehavior = _behaviour == DroneBehaviour.Defensive ? data.DroneBay.DefensiveDroneAI : data.DroneBay.OffensiveDroneAI;
+			_droneBehavior = (_behaviour == DroneBehaviour.Defensive ? data.DroneBay.DefensiveDroneAI : data.DroneBay.OffensiveDroneAI) ?? data.Drone.CustomAI;
 
 			var random = new System.Random();
             var builder = new ShipBuilder(data.Drone);

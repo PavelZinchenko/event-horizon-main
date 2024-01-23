@@ -5,7 +5,7 @@
     <member name="AvailableForEnemy" type="bool" default="true" />
     <member name="DifficultyClass" type="enum" typeid="DifficultyClass" />
     <member name="BuildFaction" type="object" typeid="Faction" />
+    <member name="CustomAI" type="object" typeid="BehaviorTree" />
     <member name="Components" type="struct_list" typeid="InstalledComponent" />
-
     <member name="NotAvailableInGame" type="bool" options="obsolete" />
 </data>

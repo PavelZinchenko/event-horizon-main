@@ -20,6 +20,7 @@ namespace GameDatabase.Serializable
 		public bool AvailableForEnemy = true;
 		public DifficultyClass DifficultyClass;
 		public int BuildFaction;
+		public int CustomAI;
 		public InstalledComponentSerializable[] Components;
 		public bool NotAvailableInGame;
 	}

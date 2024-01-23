@@ -13,9 +13,10 @@ namespace Constructor
 		IEnumerable<IWeaponPlatformData> Platforms { get; }
 		IEnumerable<IDeviceData> Devices { get; }
 		IEnumerable<IDroneBayData> DroneBays { get; }
+		BehaviorTreeModel CustomAi { get; }
 	}
 
-    public struct ShipInfo
+	public struct ShipInfo
     {
         public ShipInfo(ItemId<Ship> id, DifficultyClass shipClass, int level, int size)
         {

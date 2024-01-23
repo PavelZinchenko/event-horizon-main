@@ -24,6 +24,7 @@ namespace Constructor
             Bonuses.ShieldPointsMultiplier *= boost;
 		    //Bonuses.RammingDamageMultiplier *= boost;
             _shipClass = ship.DifficultyClass;
+			CustomAi = ship.CustomAI;
 		}
 
 	    public ShipBuilder(IShipModel model, IEnumerable<IntegratedComponent> components)
@@ -37,6 +38,7 @@ namespace Constructor
 		{
 		    _shipLevel = ship.Experience.Level;
 		    _shipClass = ship.ExtraThreatLevel;
+			CustomAi = ship.CustomAi;
             TurretColor = ShipColor = new ColorScheme(ship.ColorScheme.Color, ship.ColorScheme.Hue, ship.ColorScheme.Saturation);
 		}
 
@@ -44,10 +46,11 @@ namespace Constructor
 	    public ColorScheme ShipColor;
 	    public ColorScheme TurretColor;
 		public StatMultiplier SizeMultiplier;
+		public BehaviorTreeModel CustomAi { get; set; }
 
-        //public List<IntegratedComponent> ShipComponents { get { return _shipComponents; } }
+		//public List<IntegratedComponent> ShipComponents { get { return _shipComponents; } }
 
-        public IComponentConverter Converter { get { return _converter; } set { _converter = value ?? DefaultComponentConverter.Instance; } }
+		public IComponentConverter Converter { get { return _converter; } set { _converter = value ?? DefaultComponentConverter.Instance; } }
 
 		public void AddSatellite(ISatellite spec, CompanionLocation location)
 		{
@@ -68,6 +71,7 @@ namespace Constructor
 
             data.Stats = stats;
 			data.Info = new ShipInfo(_ship.Id, _shipClass, _shipLevel, size);
+			data.CustomAi = CustomAi;
 			data._platforms.AddRange(GetPlatforms(settings));
 
 		    foreach (var item in stats.BuiltinDevices)
@@ -428,8 +432,10 @@ namespace Constructor
 			public readonly List<WeaponPlatform> _platforms = new List<WeaponPlatform>();
 			public readonly List<DeviceData> _devices = new List<DeviceData>();
 			public readonly List<DroneBayData> _droneBays = new List<DroneBayData>();
+
+			public BehaviorTreeModel CustomAi { get; set; }
 		}
-		
+
 		public class CompanionSpec : ICompanionData
 		{
 			public CompanionSpec(Satellite satellite, CompanionLocation location, ShipSettings settings)

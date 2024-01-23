@@ -34,6 +34,7 @@ namespace GameDatabase.DataModel
 			AvailableForEnemy = serializable.AvailableForEnemy;
 			DifficultyClass = serializable.DifficultyClass;
 			BuildFaction = loader?.GetFaction(new ItemId<Faction>(serializable.BuildFaction)) ?? Faction.DefaultValue;
+			CustomAI = loader?.GetBehaviorTree(new ItemId<BehaviorTreeModel>(serializable.CustomAI)) ?? BehaviorTreeModel.DefaultValue;
 			Components = new ImmutableCollection<InstalledComponent>(serializable.Components?.Select(item => InstalledComponent.Create(item, loader)));
 
 			OnDataDeserialized(serializable, loader);
@@ -46,6 +47,7 @@ namespace GameDatabase.DataModel
 		public bool AvailableForEnemy { get; private set; }
 		public DifficultyClass DifficultyClass { get; private set; }
 		public Faction BuildFaction { get; private set; }
+		public BehaviorTreeModel CustomAI { get; private set; }
 		public ImmutableCollection<InstalledComponent> Components { get; private set; }
 
 		public static ShipBuild DefaultValue { get; private set; }

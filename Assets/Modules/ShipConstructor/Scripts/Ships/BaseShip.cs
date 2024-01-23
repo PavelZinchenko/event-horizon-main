@@ -11,10 +11,11 @@ namespace Constructor.Ships
 {
     public abstract class BaseShip : IShip
     {
-        protected BaseShip(IShipModel model)
+        protected BaseShip(IShipModel model, BehaviorTreeModel customAi = null)
         {
             _model = model ?? throw new System.ArgumentException("ShipWrapper is null");
             _experience = 0;
+			CustomAi = customAi;
         }
 
         public ItemId<Ship> Id => _model.Id;
@@ -47,8 +48,9 @@ namespace Constructor.Ships
         }
 
         public virtual DifficultyClass ExtraThreatLevel => DifficultyClass.Default;
+		public BehaviorTreeModel CustomAi { get; }
 
-        public Experience Experience
+		public Experience Experience
         {
             get => _experience;
             set
@@ -108,7 +110,7 @@ namespace Constructor.Ships
             }
         }
 
-        public int RemoveInvalidComponents(IGameItemCollection<ComponentInfo> inventory)
+		public int RemoveInvalidComponents(IGameItemCollection<ComponentInfo> inventory)
         {
             var layout = new ShipLayout(Model.Layout, Model.Barrels, Enumerable.Empty<IntegratedComponent>());
             var index = 0;

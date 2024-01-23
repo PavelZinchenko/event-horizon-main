@@ -18,9 +18,10 @@ namespace Constructor.Ships
         ISatellite FirstSatellite { get; set; }
         ISatellite SecondSatellite { get; set; }
 
-        DifficultyClass ExtraThreatLevel { get; }
+		DifficultyClass ExtraThreatLevel { get; }
+		BehaviorTreeModel CustomAi { get; }
 
-        Maths.Experience Experience { get; set; }
+		Maths.Experience Experience { get; set; }
 
         ShipBuilder CreateBuilder();
 
