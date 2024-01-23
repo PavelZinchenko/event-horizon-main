@@ -18,7 +18,7 @@
 
     <item name="FindEnemy" value="100">Looks for nearest enemy. Changes target every MaxCooldown sec if it's defined. SUCCESS if found, FAILURE otherwise</item>
     <item name="MoveToAttackRange" value="101">Moves towards target until inside attack radius. Requires main target. Uses attack range of selected weapons. SUCCESS if inside attack range, FAILURE if any error, RUNNING otherwise</item>
-    <item name="Attack" value="102">Requires main target. Uses selected weapons. Return SUCCESS when activates any weapon, FAILURE otherwise</item>
+    <item name="Attack" value="102">Attacks all targets using selected weapons. Return SUCCESS when activates any weapon, FAILURE otherwise</item>
     <item name="SelectWeapon" value="103">Returns SUCCESS if any weapon found, FAILURE otherwise. If no weapon selected all weapons will be used</item>
     <item name="SpawnDrones" value="104">Spawns drones and clones. Returns RUNNING until there are no more drones left to spawn, then returns SUCCESS if any drones active, FAILURE otherwise</item>
     <item name="Ram" value="105">Tries to ram the target, can use Afterburner and Fortification. Returns FAILURE if there is no target or it's moving too fast, RUNNING otherwise</item>
@@ -29,7 +29,7 @@
     <item name="LookAtTarget" value="110" />
     <item name="LookForSecondaryTargets" value="111">Updates the list of enemies other than the main target. Returns SUCCESS if any found, FAILURE otherwise</item>
     <item name="LookForThreats" value="112">Updates threat list. Returns SUCCESS if any found, FAILURE otherwise</item>
-    <item name="AttackSecondaryTargets" value="113">Attacks any secondary target with selected weapons if possible. Return SUCCESS when activates any weapon, FAILURE otherwise</item>
+
     <item name="ActivateDevice" value="114">Activates device. Returns SUCCESS if activated, FAILURE otherwise</item>
     <item name="RechargeEnergy" value="115">If energy level drops below FailIfLess, enters recharging state and returns FAILURE until energy level reaches RestoreUntil, otherwise returns SUCCESS</item>
     <item name="SustainAim" value="116">If any directional weapon active, maintain focus on target and returns RUNNING. Returns FAILURE otherwise</item>

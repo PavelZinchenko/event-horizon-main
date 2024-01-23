@@ -37,7 +37,6 @@ namespace GameDatabase.Enums
 		LookAtTarget = 110,
 		LookForSecondaryTargets = 111,
 		LookForThreats = 112,
-		AttackSecondaryTargets = 113,
 		ActivateDevice = 114,
 		RechargeEnergy = 115,
 		SustainAim = 116,

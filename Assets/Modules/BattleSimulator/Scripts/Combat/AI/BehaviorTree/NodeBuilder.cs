@@ -156,7 +156,6 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_LookAtTarget content) => new LookAtTargetNode();
 			public INode Create(BehaviorTreeNode_LookForSecondaryTargets content) => new UpdateSecondaryTargets(content.Cooldown);
 			public INode Create(BehaviorTreeNode_LookForThreats content) => new UpdateThreats(content.Cooldown);
-			public INode Create(BehaviorTreeNode_AttackSecondaryTargets content) => new AttackSecondaryTargetsNode(Settings.AiLevel);
 			public INode Create(BehaviorTreeNode_ActivateDevice content) => ActivateDeviceNode.Create(Ship, content.DeviceClass);
 			public INode Create(BehaviorTreeNode_RechargeEnergy content) => new RechargeEnergy(content.FailIfLess, content.RestoreUntil);
 			public INode Create(BehaviorTreeNode_SustainAim content) => new SustainAimNode(false);

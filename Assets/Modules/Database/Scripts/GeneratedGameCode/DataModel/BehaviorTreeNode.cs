@@ -77,8 +77,6 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_LookForSecondaryTargets(serializable, loader);
 				case BehaviorNodeType.LookForThreats:
 					return new BehaviorTreeNode_LookForThreats(serializable, loader);
-				case BehaviorNodeType.AttackSecondaryTargets:
-					return new BehaviorTreeNode_AttackSecondaryTargets(serializable, loader);
 				case BehaviorNodeType.ActivateDevice:
 					return new BehaviorTreeNode_ActivateDevice(serializable, loader);
 				case BehaviorNodeType.RechargeEnergy:
@@ -167,7 +165,6 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_LookAtTarget content);
 	    T Create(BehaviorTreeNode_LookForSecondaryTargets content);
 	    T Create(BehaviorTreeNode_LookForThreats content);
-	    T Create(BehaviorTreeNode_AttackSecondaryTargets content);
 	    T Create(BehaviorTreeNode_ActivateDevice content);
 	    T Create(BehaviorTreeNode_RechargeEnergy content);
 	    T Create(BehaviorTreeNode_SustainAim content);
@@ -709,23 +706,6 @@ namespace GameDatabase.DataModel
         }
 
 		public float Cooldown { get; private set; }
-    }
-    public partial class BehaviorTreeNode_AttackSecondaryTargets : BehaviorTreeNode
-    {
-		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
-
-  		public BehaviorTreeNode_AttackSecondaryTargets(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
-            : base(serializable, loader)
-        {
-
-            OnDataDeserialized(serializable, loader);
-        }
-
-        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
-        {
-            return factory.Create(this);
-        }
-
     }
     public partial class BehaviorTreeNode_ActivateDevice : BehaviorTreeNode
     {

@@ -16,20 +16,12 @@
         "ItemId": 100
       },
       {
-        "Type": 3,
+        "Type": 111,
         "Requirement": {
           "Type": 6,
           "DifficultyLevel": 1
         },
-        "Nodes": [
-          {
-            "Type": 111,
-            "Cooldown": 0.1
-          },
-          {
-            "Type": 113
-          }
-        ]
+        "Cooldown": 0.1
       },
       {
         "Type": 1,
