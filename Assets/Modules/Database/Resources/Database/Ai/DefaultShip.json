@@ -40,6 +40,14 @@
         "ItemId": 111
       },
       {
+        "Type": 1,
+        "Requirement": {
+          "Type": 6,
+          "DifficultyLevel": 1
+        },
+        "ItemId": 113
+      },
+      {
         "Type": 3,
         "Requirement": {
           "Type": 3,
