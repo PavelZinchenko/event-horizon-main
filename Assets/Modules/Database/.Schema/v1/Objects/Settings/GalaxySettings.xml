@@ -9,7 +9,7 @@
     <member name="EnemyLevel" type="expression" typeid="IntToInt" arguments="distance" minvalue="0" maxvalue="500"
         default="MIN(3*distance/5 - 5, MaxEnemyShipsLevel)" />
     <member name="ShipMinSpawnDistance" type="expression" typeid="SizeClassToInt" arguments="size" minvalue="0" maxvalue="1000"
-        default="IF(size == Destroyer, 5, size == Cruiser, 15, size == Battleship, 50, 0)" />
+        default="IF(size == Destroyer, 5, size == Cruiser, 15, size == Battleship, 50, size == Titan, 100, 0)" />
     <member name="CaptureStarbaseQuest" type="object" typeid="Quest" />
 
     <member name="StartingInvenory" type="object" typeid="Loot" options="obsolete" />

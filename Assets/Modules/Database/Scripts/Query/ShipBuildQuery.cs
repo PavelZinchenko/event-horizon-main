@@ -70,7 +70,7 @@ namespace GameDatabase.Query
 		public ShipBuildQuery WithDifficulty(DifficultyClass min, DifficultyClass max) =>
 			new(_database, _shipBuilds.Where(build => IsValueInRange((int)build.DifficultyClass, (int)min, (int)max)));
 		public ShipBuildQuery WithMinDifficulty(DifficultyClass min) =>
-			new(_database, _shipBuilds.Where(build => build.DifficultyClass > min));
+			new(_database, _shipBuilds.Where(build => build.DifficultyClass >= min));
 		public ShipBuildQuery WithBestAvailableClass(DifficultyClass shipClassMax) =>
 			new ShipBuildQuery(_database, ShipsWithBestAvailableClass(_shipBuilds, shipClassMax));
 
