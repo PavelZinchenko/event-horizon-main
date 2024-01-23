@@ -19,12 +19,6 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			return new TrackControllableAmmo(weapons, secondaryTargets);
 		}
 
-		private TrackControllableAmmo(ShipSystemList<IWeapon> weapons, bool secondaryTargets)
-		{
-			_weapons = weapons;
-			_secondaryTargets = secondaryTargets;
-		}
-
 		public NodeState Evaluate(Context context)
 		{
 			var enemy = context.TargetShip;
@@ -70,6 +64,12 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			var delta = Vector2.Dot(bullet.Body.WorldVelocity(), dir) - Vector2.Dot(enemy.Body.WorldVelocity(), dir);
 
 			return delta >= 0;
+		}
+
+		private TrackControllableAmmo(ShipSystemList<IWeapon> weapons, bool secondaryTargets)
+		{
+			_weapons = weapons;
+			_secondaryTargets = secondaryTargets;
 		}
 	}
 }

@@ -22,5 +22,6 @@ namespace GameDatabase.Serializable
 		public int ImprovedDefensiveDroneAI;
 		public int OffensiveDroneAI;
 		public int ImprovedOffensiveDroneAI;
+		public int StarbaseAI;
 	}
 }

@@ -13,7 +13,7 @@
 
 		public NodeState Evaluate(Context context)
 		{
-			var energy = context.Ship.Stats.Energy.Percentage;
+			var energy = context.EnergyLevelPercentage;
 			var restoring = context.RestoringEnergy;
 
 			if (restoring && energy >= _successIfMore)

@@ -35,8 +35,11 @@ namespace Combat.Ai.BehaviorTree
 
 		public int FrameId { get; private set; }
 		public float DeltaTime { get; private set; }
+		public float LockedEnergy { get; set; }
 		public float Time => _elapsedTime;
 		public float TimeSinceTargetUpdate => _elapsedTime - _targetUpdateTime;
+		public float EnergyLevelPercentage => UnityEngine.Mathf.Clamp01((_ship.Stats.Energy.Value - LockedEnergy) / _ship.Stats.Energy.MaxValue);
+		public float EnergyLevel => UnityEngine.Mathf.Max(0, _ship.Stats.Energy.Value - LockedEnergy);
 
 		public bool RestoringEnergy { get; set; }
 		public ShipWeaponList SelectedWeapons { get => _selectedWeapons ?? _allWeapons; set => _selectedWeapons = value; }
@@ -53,6 +56,7 @@ namespace Combat.Ai.BehaviorTree
 			_elapsedTime += deltaTime;
 			DeltaTime = deltaTime;
 			FrameId++;
+			LockedEnergy = 0;
 		}
 
 		public void UpdateTarget(IShip enemyShip)

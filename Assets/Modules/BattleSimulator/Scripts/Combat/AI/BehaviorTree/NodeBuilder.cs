@@ -160,7 +160,7 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_ActivateDevice content) => ActivateDeviceNode.Create(Ship, content.DeviceClass);
 			public INode Create(BehaviorTreeNode_RechargeEnergy content) => new RechargeEnergy(content.FailIfLess, content.RestoreUntil);
 			public INode Create(BehaviorTreeNode_SustainAim content) => new SustainAimNode(false);
-			public INode Create(BehaviorTreeNode_ChargeWeapons content) => new ChargeWeaponsNode();
+			public INode Create(BehaviorTreeNode_ChargeWeapons content) => ChargeWeaponsNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_ShowMessage content) => new ShowMessageNode(Localization.Localize(content.Text), content.Color);
 			public INode Create(BehaviorTreeNode_DebugLog content) => new DebugLogNode(content.Text);
 			public INode Create(BehaviorTreeNode_Chase content) => new ChaseNode();

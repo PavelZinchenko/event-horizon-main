@@ -11,8 +11,7 @@
 
 		public NodeState Evaluate(Context context)
 		{
-			var energy = context.Ship.Stats.Energy.Percentage;
-			return energy < _failIfLess ? NodeState.Failure : NodeState.Success;
+			return context.EnergyLevelPercentage < _failIfLess ? NodeState.Failure : NodeState.Success;
 		}
 	}
 }

@@ -6,5 +6,6 @@
   "DefensiveDroneAI": 3,
   "ImprovedDefensiveDroneAI": 6,
   "OffensiveDroneAI": 2,
-  "ImprovedOffensiveDroneAI": 5
+  "ImprovedOffensiveDroneAI": 5,
+  "StarbaseAI": 10
 }

@@ -198,14 +198,14 @@ namespace Combat.Factory
 
         public Ship CreateStarbase(IShipSpecification spec, Vector2 position, float rotation, UnitSide unitSide)
         {
-            var ship = CreateShip(spec, new Starbase.Factory(_scene, true), position, rotation, null, unitSide, _settings.Shadows);
+            var ship = CreateShip(spec, CreateStarbaseController(spec.CustomAi, true), position, rotation, null, unitSide, _settings.Shadows);
             ship.Engine = new StarbaseEngine(10f);
             return ship;
         }
 
         public Ship CreateTurret(IShipSpecification spec, Vector2 position, float rotation, UnitSide side)
         {
-            var ship = CreateShip(spec, new Starbase.Factory(_scene, true), position, rotation, null, side, false);
+            var ship = CreateShip(spec, CreateStarbaseController(spec.CustomAi, true), position, rotation, null, side, false);
             ship.Engine = new NullEngine();
             return ship;
         }
@@ -364,7 +364,7 @@ namespace Combat.Factory
 		{
 			var aiModel = customAi ?? _database.CombatSettings.EnemyAI;
 			if (aiModel != null)
-				return new BehaviorTreeController.Factory(_database.CombatSettings.EnemyAI, _scene, 
+				return new BehaviorTreeController.Factory(aiModel, _scene, 
 					Ai.BehaviorTree.AiSettings.FromAiLevel(aiLevel), _behaviorTreeBuilder);
 
 			return new Computer.Factory(_scene, aiLevel);
@@ -374,10 +374,20 @@ namespace Combat.Factory
 		{
 			var aiModel = customAi ?? _database.CombatSettings.CloneAI;
 			if (aiModel != null)
-				return new BehaviorTreeController.Factory(_database.CombatSettings.CloneAI, _scene, 
+				return new BehaviorTreeController.Factory(aiModel, _scene, 
 					Ai.BehaviorTree.AiSettings.Default, _behaviorTreeBuilder);
 
 			return new Clone.Factory(_scene);
+		}
+
+		private IControllerFactory CreateStarbaseController(BehaviorTreeModel customAi, bool combatMode)
+		{
+			var aiModel = customAi ?? _database.CombatSettings.StarbaseAI;
+			if (aiModel != null)
+				return new BehaviorTreeController.Factory(aiModel, _scene,
+					Ai.BehaviorTree.AiSettings.Default, _behaviorTreeBuilder);
+
+			return new Starbase.Factory(_scene, combatMode);
 		}
 
 		private IControllerFactory CreateDroneController(DroneBehaviour behaviour, float range, bool improvedAi, BehaviorTreeModel behaviorTree)

@@ -28,5 +28,6 @@ namespace DatabaseMigration.v1.Serializable
 		public int ImprovedDefensiveDroneAI;
 		public int OffensiveDroneAI;
 		public int ImprovedOffensiveDroneAI;
+		public int StarbaseAI;
 	}
 }

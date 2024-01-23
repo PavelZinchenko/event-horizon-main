@@ -33,7 +33,7 @@
     <item name="ActivateDevice" value="114">Activates device. Returns SUCCESS if activated, FAILURE otherwise</item>
     <item name="RechargeEnergy" value="115">If energy level drops below FailIfLess, enters recharging state and returns FAILURE until energy level reaches RestoreUntil, otherwise returns SUCCESS</item>
     <item name="SustainAim" value="116">If any directional weapon active, maintain focus on target and returns RUNNING. Returns FAILURE otherwise</item>
-    <item name="ChargeWeapons" value="117">Charges all selected weapons that requires charging. Returns FAILURE if no such weapons, SUCCESS if fully charged, RUNNING otherwise</item>
+    <item name="ChargeWeapons" value="117">Charges all weapons that require charging, reserves energy needed to fully charge. Returns FAILURE if not possible, SUCCESS if fully charged, RUNNING otherwise</item>
     <item name="Chase" value="118">Follows the target. Returns FAILURE if there is no target, RUNNING otherwise</item>
     <item name="AvoidThreats" value="119">Changes the ship's trajectory to avoid collision. Requires threat list. Returns SUCCESS if there are no threats, RUNNING otherwise</item>
     <item name="Stop" value="120">Makes ship stop moving. Returns SUCCESS if standing still, RUNNING otherwise</item>
