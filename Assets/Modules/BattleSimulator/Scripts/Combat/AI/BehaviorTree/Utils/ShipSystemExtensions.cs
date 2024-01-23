@@ -17,6 +17,16 @@ namespace Combat.Ai.BehaviorTree.Utils
 			return systems;
 		}
 
+		public static ShipSystemList<IWeapon> FindWeaponsByType(this IReadOnlyList<ISystem> shipSystems, WeaponType weaponType)
+		{
+			var systems = new ShipSystemList<IWeapon>();
+			for (int i = 0; i < shipSystems.Count; ++i)
+				if (shipSystems[i] is IWeapon weapon && weapon.Info.WeaponType == weaponType)
+					systems.Add(weapon, i);
+
+			return systems;
+		}
+
 		public static bool HasWeapon(this IReadOnlyList<ISystem> systems, WeaponCapability capability = WeaponCapability.None)
 		{
 			foreach (var item in systems)

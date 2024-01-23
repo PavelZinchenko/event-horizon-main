@@ -39,6 +39,7 @@
     <item name="Stop" value="120">Makes ship stop moving. Returns SUCCESS if standing still, RUNNING otherwise</item>
     <item name="UseRecoil" value="121">Activates weapons with high recoil to get impulse. Returns FAILURE if doesn't have such weapons, RUNNING otherwise</item>
     <item name="DefendWithFronalShield" value="122">Turns ship towards threats and activates shield. Returns FAILURE if there are no shields or threats, RUNNING otherwise</item>
+    <item name="TrackControllableAmmo" value="123">Tracks controllable bullets. Detonates them if near the target. Returns FAILURE if there are no bullets left. RUNNING otherwise</item>
 
     <item name="IsWithinAttackRange" value="150" />
 

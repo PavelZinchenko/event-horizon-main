@@ -47,6 +47,7 @@ namespace GameDatabase.Enums
 		Stop = 120,
 		UseRecoil = 121,
 		DefendWithFronalShield = 122,
+		TrackControllableAmmo = 123,
 		IsWithinAttackRange = 150,
 		MotherShipRetreated = 200,
 		MotherShipDestroyed = 201,

@@ -97,6 +97,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_UseRecoil(serializable, loader);
 				case BehaviorNodeType.DefendWithFronalShield:
 					return new BehaviorTreeNode_DefendWithFronalShield(serializable, loader);
+				case BehaviorNodeType.TrackControllableAmmo:
+					return new BehaviorTreeNode_TrackControllableAmmo(serializable, loader);
 				case BehaviorNodeType.IsWithinAttackRange:
 					return new BehaviorTreeNode_IsWithinAttackRange(serializable, loader);
 				case BehaviorNodeType.MotherShipRetreated:
@@ -175,6 +177,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_Stop content);
 	    T Create(BehaviorTreeNode_UseRecoil content);
 	    T Create(BehaviorTreeNode_DefendWithFronalShield content);
+	    T Create(BehaviorTreeNode_TrackControllableAmmo content);
 	    T Create(BehaviorTreeNode_IsWithinAttackRange content);
 	    T Create(BehaviorTreeNode_MotherShipRetreated content);
 	    T Create(BehaviorTreeNode_MotherShipDestroyed content);
@@ -871,6 +874,23 @@ namespace GameDatabase.DataModel
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
   		public BehaviorTreeNode_DefendWithFronalShield(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+    }
+    public partial class BehaviorTreeNode_TrackControllableAmmo : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_TrackControllableAmmo(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 

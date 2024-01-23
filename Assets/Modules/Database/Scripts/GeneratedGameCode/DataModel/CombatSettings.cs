@@ -31,6 +31,7 @@ namespace GameDatabase.DataModel
 			ImprovedDefensiveDroneAI = loader?.GetBehaviorTree(new ItemId<BehaviorTreeModel>(serializable.ImprovedDefensiveDroneAI)) ?? BehaviorTreeModel.DefaultValue;
 			OffensiveDroneAI = loader?.GetBehaviorTree(new ItemId<BehaviorTreeModel>(serializable.OffensiveDroneAI)) ?? BehaviorTreeModel.DefaultValue;
 			ImprovedOffensiveDroneAI = loader?.GetBehaviorTree(new ItemId<BehaviorTreeModel>(serializable.ImprovedOffensiveDroneAI)) ?? BehaviorTreeModel.DefaultValue;
+			StarbaseAI = loader?.GetBehaviorTree(new ItemId<BehaviorTreeModel>(serializable.StarbaseAI)) ?? BehaviorTreeModel.DefaultValue;
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -42,6 +43,7 @@ namespace GameDatabase.DataModel
 		public BehaviorTreeModel ImprovedDefensiveDroneAI { get; private set; }
 		public BehaviorTreeModel OffensiveDroneAI { get; private set; }
 		public BehaviorTreeModel ImprovedOffensiveDroneAI { get; private set; }
+		public BehaviorTreeModel StarbaseAI { get; private set; }
 
 		public static CombatSettings DefaultValue { get; private set; }
 	}
