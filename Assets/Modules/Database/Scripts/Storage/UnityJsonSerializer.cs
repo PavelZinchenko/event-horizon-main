@@ -9,7 +9,7 @@ namespace GameDatabase.Storage
         public T FromJson<T>(string data)
         {
 			// Temporary workaround: Unity JsonUtility seems to have troubles deserializing recursive classes, using NewtonJson instead
-			if (typeof(T) == typeof(Serializable.BehaviorTreeNodeSerializable))
+			if (typeof(T) == typeof(Serializable.BehaviorTreeSerializable))
 				return (_newtonJsonSerializer ??= new()).FromJson<T>(data);
 
             return JsonUtility.FromJson<T>(data);
