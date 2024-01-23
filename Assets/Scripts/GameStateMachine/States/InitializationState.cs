@@ -55,10 +55,8 @@ namespace GameStateMachine.States
 
 #if UNITY_STANDALONE
             Application.runInBackground = _settings.RunInBackground;
-            QualitySettings.SetQualityLevel(1);
-#else
-            QualitySettings.SetQualityLevel(_settings.QualityMode < 0 ? 0 : 1);
 #endif
+            QualitySettings.SetQualityLevel(_settings.QualityMode < 0 ? 0 : 1);
 
             Debug.Log (SystemInfo.operatingSystem);
             Debug.Log (SystemInfo.deviceModel);
