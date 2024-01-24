@@ -1,6 +1,6 @@
 {
   "ItemType": 28,
-  "Id": 103,
+  "Id": 115,
   "RootNode": {
     "Type": 3,
     "Requirement": {
@@ -8,10 +8,9 @@
     },
     "Nodes": [
       {
-        "Type": 200
-      },
-      {
-        "Type": 107
+        "Type": 202,
+        "MinValue": 2.0,
+        "MaxValue": 4.0
       }
     ]
   }

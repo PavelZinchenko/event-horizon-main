@@ -20,8 +20,7 @@
         "MinValue": 0.99
       },
       {
-        "Type": 50,
-        "MinValue": 0.0
+        "Type": 115
       },
       {
         "Type": 204
@@ -32,7 +31,7 @@
       },
       {
         "Type": 1,
-        "ItemId": 106
+        "ItemId": 104
       }
     ]
   }

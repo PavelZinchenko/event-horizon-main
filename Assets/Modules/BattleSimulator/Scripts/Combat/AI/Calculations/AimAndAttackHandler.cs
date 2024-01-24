@@ -8,12 +8,22 @@ namespace Combat.Ai.Calculations
 {
 	public static class AimAndAttackHandler
 	{
-		public static int AttackWithAllWeapons(IShip ship, IShip enemy, bool directAttacksOnly, ShipWeaponList weaponList, ShipControls controls)
+		[System.Flags]
+		public enum State
+		{
+			Failed = 0,
+			Aiming = 1,
+			Attacking = 2,
+		}
+
+		public static State AttackWithAllWeapons(IShip ship, IShip enemy, bool directAttacksOnly, ShipWeaponList weaponList, ShipControls controls)
 		{
 			var targetAngle = 0f;
 			var targetDeltaAngle = 10000f;
 			var setCourse = false;
-			var count = 0;
+
+			var aiming = 0;
+			var activated = 0;
 
 			for (int i = 0; i < weaponList.Count; ++i)
 			{
@@ -27,6 +37,7 @@ namespace Combat.Ai.Calculations
 				if (!AttackHelpers.TryGetTarget(weapon, ship, enemy, weapon.Info.BulletType == BulletType.Projectile && directAttacksOnly ? BulletType.Direct : weapon.Info.BulletType, out target))
 					continue;
 
+				aiming++;
 				var shotImmediately = weapon.Info.BulletType == BulletType.Homing || weapon.Info.BulletType == BulletType.AreaOfEffect;
 				var shouldTrackTarget = weapon.Info.BulletType != BulletType.AreaOfEffect;
 
@@ -36,7 +47,7 @@ namespace Combat.Ai.Calculations
 
 				if (delta < spread + 1 || shotImmediately)
 				{
-					count++;
+					activated++;
 					controls.ActivateSystem(id, weapon.Info.WeaponType != WeaponType.RequiredCharging);
 				}
 
@@ -51,7 +62,7 @@ namespace Combat.Ai.Calculations
 			if (setCourse)
 				controls.Course = targetAngle;
 
-			return count;
+			return activated > 0 ? State.Attacking : aiming > 0 ? State.Aiming : State.Failed;
 		}
 	}
 }

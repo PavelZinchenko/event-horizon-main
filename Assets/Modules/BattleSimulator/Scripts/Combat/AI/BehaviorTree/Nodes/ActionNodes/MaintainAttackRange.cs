@@ -27,7 +27,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			var ship = context.Ship;
 			var target = context.TargetShip;
 
-			if (ShipNavigationHandler.KeepDistance(ship, target, minDistance, maxDistance, 0, context.Controls))
+			if (ShipNavigationHandler.FlyAround(ship, target, minDistance, maxDistance, 0, context.Controls))
 				return NodeState.Success;
 
 			return NodeState.Running;

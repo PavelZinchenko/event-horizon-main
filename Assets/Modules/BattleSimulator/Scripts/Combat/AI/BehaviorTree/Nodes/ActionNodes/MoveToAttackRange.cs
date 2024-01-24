@@ -26,8 +26,10 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			if (distance <= 0) 
 				return NodeState.Failure;
 
-			var currentDistance = ShipNavigationHandler.ShortenDistance(context.Ship, context.TargetShip, distance, context.Controls);
-			return currentDistance > distance ? NodeState.Running : NodeState.Success;
+			if (ShipNavigationHandler.KeepDistance(context.Ship, context.TargetShip, 0, distance, context.Controls))
+				return NodeState.Success;
+
+			return NodeState.Running;
 		}
 	}
 }

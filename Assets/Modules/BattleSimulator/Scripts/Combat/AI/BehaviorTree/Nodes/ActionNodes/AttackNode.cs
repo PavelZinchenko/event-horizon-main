@@ -14,17 +14,21 @@ namespace Combat.Ai.BehaviorTree.Nodes
 
 		public NodeState Evaluate(Context context)
 		{
-			int activatedWeaponCount = 0;
+			var result = AimAndAttackHandler.State.Failed;
 
 			if (context.TargetShip != null)
-				activatedWeaponCount += AimAndAttackHandler.AttackWithAllWeapons(context.Ship, context.TargetShip,
+				result |= AimAndAttackHandler.AttackWithAllWeapons(context.Ship, context.TargetShip,
 					_directOnly, context.SelectedWeapons, context.Controls);
 
 			for (int i = 0; i < context.SecondaryTargets.Count; ++i)
-				activatedWeaponCount += AimAndAttackHandler.AttackWithAllWeapons(context.Ship, context.SecondaryTargets[i],
+				result |= AimAndAttackHandler.AttackWithAllWeapons(context.Ship, context.SecondaryTargets[i],
 					_directOnly, context.SelectedWeapons, context.Controls);
 
-			return activatedWeaponCount > 0 ? NodeState.Running : NodeState.Failure;
+			if (HasFlag(result, AimAndAttackHandler.State.Attacking)) return NodeState.Success;
+			if (HasFlag(result, AimAndAttackHandler.State.Aiming)) return NodeState.Running;
+			return NodeState.Failure;
 		}
+
+		private static bool HasFlag(AimAndAttackHandler.State state, AimAndAttackHandler.State flag) => (state & flag) == flag;
 	}
 }

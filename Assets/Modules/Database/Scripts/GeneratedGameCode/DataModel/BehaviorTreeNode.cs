@@ -43,6 +43,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_CompleteOnce(serializable, loader);
 				case BehaviorNodeType.RandomExecutor:
 					return new BehaviorTreeNode_RandomExecutor(serializable, loader);
+				case BehaviorNodeType.ParallelSequence:
+					return new BehaviorTreeNode_ParallelSequence(serializable, loader);
 				case BehaviorNodeType.HaveEnoughEnergy:
 					return new BehaviorTreeNode_HaveEnoughEnergy(serializable, loader);
 				case BehaviorNodeType.IsLowOnHp:
@@ -51,6 +53,10 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_IsControledByPlayer(serializable, loader);
 				case BehaviorNodeType.HaveIncomingThreat:
 					return new BehaviorTreeNode_HaveIncomingThreat(serializable, loader);
+				case BehaviorNodeType.HaveTarget:
+					return new BehaviorTreeNode_HaveTarget(serializable, loader);
+				case BehaviorNodeType.IsFasterThanTarget:
+					return new BehaviorTreeNode_IsFasterThanTarget(serializable, loader);
 				case BehaviorNodeType.FindEnemy:
 					return new BehaviorTreeNode_FindEnemy(serializable, loader);
 				case BehaviorNodeType.MoveToAttackRange:
@@ -77,6 +83,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_LookForSecondaryTargets(serializable, loader);
 				case BehaviorNodeType.LookForThreats:
 					return new BehaviorTreeNode_LookForThreats(serializable, loader);
+				case BehaviorNodeType.MatchVelocityWithTarget:
+					return new BehaviorTreeNode_MatchVelocityWithTarget(serializable, loader);
 				case BehaviorNodeType.ActivateDevice:
 					return new BehaviorTreeNode_ActivateDevice(serializable, loader);
 				case BehaviorNodeType.RechargeEnergy:
@@ -89,14 +97,16 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_Chase(serializable, loader);
 				case BehaviorNodeType.AvoidThreats:
 					return new BehaviorTreeNode_AvoidThreats(serializable, loader);
-				case BehaviorNodeType.Stop:
-					return new BehaviorTreeNode_Stop(serializable, loader);
+				case BehaviorNodeType.SlowDown:
+					return new BehaviorTreeNode_SlowDown(serializable, loader);
 				case BehaviorNodeType.UseRecoil:
 					return new BehaviorTreeNode_UseRecoil(serializable, loader);
 				case BehaviorNodeType.DefendWithFronalShield:
 					return new BehaviorTreeNode_DefendWithFronalShield(serializable, loader);
 				case BehaviorNodeType.TrackControllableAmmo:
 					return new BehaviorTreeNode_TrackControllableAmmo(serializable, loader);
+				case BehaviorNodeType.KeepDistance:
+					return new BehaviorTreeNode_KeepDistance(serializable, loader);
 				case BehaviorNodeType.IsWithinAttackRange:
 					return new BehaviorTreeNode_IsWithinAttackRange(serializable, loader);
 				case BehaviorNodeType.MotherShipRetreated:
@@ -111,6 +121,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_TargetMothership(serializable, loader);
 				case BehaviorNodeType.MothershipLowHp:
 					return new BehaviorTreeNode_MothershipLowHp(serializable, loader);
+				case BehaviorNodeType.DroneBayRangeExceeded:
+					return new BehaviorTreeNode_DroneBayRangeExceeded(serializable, loader);
 				case BehaviorNodeType.ShowMessage:
 					return new BehaviorTreeNode_ShowMessage(serializable, loader);
 				case BehaviorNodeType.DebugLog:
@@ -148,10 +160,13 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_ConstantResult content);
 	    T Create(BehaviorTreeNode_CompleteOnce content);
 	    T Create(BehaviorTreeNode_RandomExecutor content);
+	    T Create(BehaviorTreeNode_ParallelSequence content);
 	    T Create(BehaviorTreeNode_HaveEnoughEnergy content);
 	    T Create(BehaviorTreeNode_IsLowOnHp content);
 	    T Create(BehaviorTreeNode_IsControledByPlayer content);
 	    T Create(BehaviorTreeNode_HaveIncomingThreat content);
+	    T Create(BehaviorTreeNode_HaveTarget content);
+	    T Create(BehaviorTreeNode_IsFasterThanTarget content);
 	    T Create(BehaviorTreeNode_FindEnemy content);
 	    T Create(BehaviorTreeNode_MoveToAttackRange content);
 	    T Create(BehaviorTreeNode_Attack content);
@@ -165,16 +180,18 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_LookAtTarget content);
 	    T Create(BehaviorTreeNode_LookForSecondaryTargets content);
 	    T Create(BehaviorTreeNode_LookForThreats content);
+	    T Create(BehaviorTreeNode_MatchVelocityWithTarget content);
 	    T Create(BehaviorTreeNode_ActivateDevice content);
 	    T Create(BehaviorTreeNode_RechargeEnergy content);
 	    T Create(BehaviorTreeNode_SustainAim content);
 	    T Create(BehaviorTreeNode_ChargeWeapons content);
 	    T Create(BehaviorTreeNode_Chase content);
 	    T Create(BehaviorTreeNode_AvoidThreats content);
-	    T Create(BehaviorTreeNode_Stop content);
+	    T Create(BehaviorTreeNode_SlowDown content);
 	    T Create(BehaviorTreeNode_UseRecoil content);
 	    T Create(BehaviorTreeNode_DefendWithFronalShield content);
 	    T Create(BehaviorTreeNode_TrackControllableAmmo content);
+	    T Create(BehaviorTreeNode_KeepDistance content);
 	    T Create(BehaviorTreeNode_IsWithinAttackRange content);
 	    T Create(BehaviorTreeNode_MotherShipRetreated content);
 	    T Create(BehaviorTreeNode_MotherShipDestroyed content);
@@ -182,6 +199,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_GoBerserk content);
 	    T Create(BehaviorTreeNode_TargetMothership content);
 	    T Create(BehaviorTreeNode_MothershipLowHp content);
+	    T Create(BehaviorTreeNode_DroneBayRangeExceeded content);
 	    T Create(BehaviorTreeNode_ShowMessage content);
 	    T Create(BehaviorTreeNode_DebugLog content);
     }
@@ -382,6 +400,25 @@ namespace GameDatabase.DataModel
 		public ImmutableCollection<BehaviorTreeNode> Nodes { get; private set; }
 		public float Cooldown { get; private set; }
     }
+    public partial class BehaviorTreeNode_ParallelSequence : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_ParallelSequence(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Nodes = new ImmutableCollection<BehaviorTreeNode>(serializable.Nodes?.Select(item => BehaviorTreeNode.Create(item, loader)));
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public ImmutableCollection<BehaviorTreeNode> Nodes { get; private set; }
+    }
     public partial class BehaviorTreeNode_HaveEnoughEnergy : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
@@ -455,6 +492,40 @@ namespace GameDatabase.DataModel
         }
 
 		public float TimeToCollision { get; private set; }
+    }
+    public partial class BehaviorTreeNode_HaveTarget : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_HaveTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+    }
+    public partial class BehaviorTreeNode_IsFasterThanTarget : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_IsFasterThanTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
     }
     public partial class BehaviorTreeNode_FindEnemy : BehaviorTreeNode
     {
@@ -707,6 +778,25 @@ namespace GameDatabase.DataModel
 
 		public float Cooldown { get; private set; }
     }
+    public partial class BehaviorTreeNode_MatchVelocityWithTarget : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_MatchVelocityWithTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Tolerance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 1f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public float Tolerance { get; private set; }
+    }
     public partial class BehaviorTreeNode_ActivateDevice : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
@@ -815,13 +905,14 @@ namespace GameDatabase.DataModel
         }
 
     }
-    public partial class BehaviorTreeNode_Stop : BehaviorTreeNode
+    public partial class BehaviorTreeNode_SlowDown : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
-  		public BehaviorTreeNode_Stop(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+  		public BehaviorTreeNode_SlowDown(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
+			Tolerance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -831,6 +922,7 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+		public float Tolerance { get; private set; }
     }
     public partial class BehaviorTreeNode_UseRecoil : BehaviorTreeNode
     {
@@ -882,6 +974,27 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+    }
+    public partial class BehaviorTreeNode_KeepDistance : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_KeepDistance(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			MinDistance = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 10f);
+			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 10f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public float MinDistance { get; private set; }
+		public float MaxDistance { get; private set; }
     }
     public partial class BehaviorTreeNode_IsWithinAttackRange : BehaviorTreeNode
     {
@@ -1009,6 +1122,23 @@ namespace GameDatabase.DataModel
         }
 
 		public float MinValue { get; private set; }
+    }
+    public partial class BehaviorTreeNode_DroneBayRangeExceeded : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_DroneBayRangeExceeded(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
     }
     public partial class BehaviorTreeNode_ShowMessage : BehaviorTreeNode
     {

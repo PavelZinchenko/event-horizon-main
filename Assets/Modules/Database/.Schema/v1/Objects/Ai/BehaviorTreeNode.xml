@@ -3,7 +3,7 @@
     <member name="Type" type="enum" typeid="BehaviorNodeType" />
     <member name="Requirement" type="struct" typeid="BehaviorNodeRequirement" />
 
-    <member name="Nodes" type="struct_list" typeid="BehaviorTreeNode" case="Selector,Sequence,Parallel,RandomSelector,RandomExecutor" />
+    <member name="Nodes" type="struct_list" typeid="BehaviorTreeNode" case="Selector,Sequence,Parallel,RandomSelector,RandomExecutor,ParallelSequence" />
     <member name="Node" type="struct" typeid="BehaviorTreeNode" case="Invertor,ConstantResult,CompleteOnce" />
     <member name="ItemId" type="object" typeid="BehaviorTree" case="SubTree" alias="BehaviourTree" />
     <member name="WeaponType" type="enum" typeid="AiWeaponCategory" case="SelectWeapon" />
@@ -25,8 +25,9 @@
     <member name="MinValue" type="float" case="MoveToAttackRange, MaintainAttackRange, IsWithinAttackRange" alias="MinMaxLerp" minvalue="0" maxvalue="1" default="1">Linear interpolation between shortest and longest weapon ranges</member>
     <member name="MaxValue" type="float" case="MoveToAttackRange" alias="Multiplier" minvalue="0" maxvalue="1" default="1" />
     <member name="MaxValue" type="float" case="MaintainAttackRange" alias="Tolerance" minvalue="0" maxvalue="1" default="0.2">A valid distance between ships will be [range*(1-tolerance) .. range]</member>
-    <member name="MinValue" type="float" case="FlyAroundMothership" alias="MinDistance" minvalue="0" maxvalue="10" default="2.5" />
-    <member name="MaxValue" type="float" case="FlyAroundMothership" alias="MaxDistance" minvalue="0" maxvalue="10" default="3.5" />
+    <member name="MaxValue" type="float" case="SlowDown,MatchVelocityWithTarget" alias="Tolerance" minvalue="0" maxvalue="1" default="0.2">Acceptable speed deviation</member>
+    <member name="MinValue" type="float" case="FlyAroundMothership,KeepDistance" alias="MinDistance" minvalue="0" maxvalue="10" default="2.5" />
+    <member name="MaxValue" type="float" case="FlyAroundMothership,KeepDistance" alias="MaxDistance" minvalue="0" maxvalue="10" default="3.5" />
     <member name="DeviceClass" type="enum" typeid="DeviceClass" case="ActivateDevice" />
 
     <member name="Text" type="string" case="ShowMessage,DebugLog" />

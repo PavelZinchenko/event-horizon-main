@@ -28,12 +28,12 @@ namespace Combat.Ai.BehaviorTree.Nodes
 				}
 			}
 
-			if (completed == 0 && running == 0 && failed > 0)
-				return NodeState.Failure;
-			if (running == 0 && failed == 0)
+			if (completed > 0) 
 				return NodeState.Success;
+			if (running > 0)
+				return NodeState.Running;
 
-			return NodeState.Running;
+			return NodeState.Failure;
 		}
 	}
 }

@@ -5,21 +5,19 @@
     "Type": 2,
     "Nodes": [
       {
-        "Type": 3,
+        "Type": 10,
         "Nodes": [
           {
-            "Type": 150,
-            "MinValue": 1.0
+            "Type": 102
           },
           {
-            "Type": 102
+            "Type": 113,
+            "MaxValue": 0.1
           }
         ]
       },
       {
-        "Type": 108,
-        "MinValue": 0.0,
-        "MaxValue": 0.5
+        "Type": 118
       }
     ]
   }

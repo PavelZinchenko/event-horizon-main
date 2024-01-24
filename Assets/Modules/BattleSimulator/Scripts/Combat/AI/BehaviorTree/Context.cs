@@ -8,24 +8,29 @@ namespace Combat.Ai.BehaviorTree
 {
 	public class Context
 	{
+		private const float _initialTime = -60;
+
 		private readonly IScene _scene;
 		private readonly IShip _ship;
 		private readonly ShipWeaponList _allWeapons;
 
 		private IShip _targetShip;
 		private float _elapsedTime;
-		private float _targetUpdateTime = -60;
 		private ShipWeaponList _selectedWeapons;
 		private TargetList _targetList;
 		private ThreatList _threatList;
-		private float _targetListUpdateTime = -60;
-		private float _threatListUpdateTime = -60;
+		private float _targetListUpdateTime = _initialTime;
+		private float _threatListUpdateTime = _initialTime;
 
 		public IScene Scene => _scene;
 		public IShip Ship => _ship;
-		public IShip TargetShip => _targetShip;
 		public ShipControls Controls { get; } = new();
+
+		public IShip TargetShip { get; set; }
+		public float LastTargetUpdateTime { get; set; } = _initialTime;
+
 		public IReadOnlyList<IShip> SecondaryTargets => _targetList?.Items ?? EmptyList<IShip>.Instance;
+
 		public IReadOnlyList<IUnit> Threats => _threatList?.Units ?? EmptyList<IUnit>.Instance;
 		public float TimeToCollision => _threatList != null ? _threatList.TimeToHit : float.MaxValue;
 
@@ -37,7 +42,6 @@ namespace Combat.Ai.BehaviorTree
 		public float DeltaTime { get; private set; }
 		public float LockedEnergy { get; set; }
 		public float Time => _elapsedTime;
-		public float TimeSinceTargetUpdate => _elapsedTime - _targetUpdateTime;
 		public float EnergyLevelPercentage => UnityEngine.Mathf.Clamp01((_ship.Stats.Energy.Value - LockedEnergy) / _ship.Stats.Energy.MaxValue);
 		public float EnergyLevel => UnityEngine.Mathf.Max(0, _ship.Stats.Energy.Value - LockedEnergy);
 
@@ -57,12 +61,6 @@ namespace Combat.Ai.BehaviorTree
 			DeltaTime = deltaTime;
 			FrameId++;
 			LockedEnergy = 0;
-		}
-
-		public void UpdateTarget(IShip enemyShip)
-		{
-			_targetShip = enemyShip;
-			_targetUpdateTime = _elapsedTime;
 		}
 
 		public void UpdateTargetList(float cooldown)

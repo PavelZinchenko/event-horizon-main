@@ -3,8 +3,15 @@ using Combat.Unit;
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
-	public class TargetMothershipNode : INode
+	public class DroneBayRangeExceeded : INode
 	{
+		private readonly float _maxRange;
+
+		public DroneBayRangeExceeded(float maxRange)
+		{
+			_maxRange = maxRange;
+		}
+
 		public NodeState Evaluate(Context context)
 		{
 			if (context.Ship.Type.Class != UnitClass.Drone)
@@ -14,8 +21,8 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			if (!mothership.IsActive()) 
 				return NodeState.Failure;
 
-			context.TargetShip = mothership;
-			return NodeState.Success;
+			var currentDistance = Helpers.Distance(context.Ship, mothership);
+			return currentDistance > _maxRange ? NodeState.Success : NodeState.Failure;
 		}
 	}
 }

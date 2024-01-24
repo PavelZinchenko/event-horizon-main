@@ -103,7 +103,7 @@ namespace Combat.Scene
 						continue;
 
 					var dir = unit.Body.Position.Direction(ship.Body.Position);
-                    var range = dir.magnitude;
+                    var range = dir.magnitude - unit.Body.Scale/2 - ship.Body.Scale/2;
 
                     if (options.MaxDistance > 0)
                     {
@@ -180,7 +180,7 @@ namespace Combat.Scene
                         continue;
 
                     var dir = unit.Body.Position.Direction(ship.Body.Position);
-                    var range = dir.magnitude;
+                    var range = dir.magnitude - unit.Body.Scale / 2 - ship.Body.Scale / 2;
                     var deviation =
                         Mathf.Abs(Mathf.DeltaAngle(RotationHelpers.Angle(dir), unit.Body.Rotation + rotation));
 

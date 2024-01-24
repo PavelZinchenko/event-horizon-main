@@ -86,19 +86,34 @@ namespace Combat.Ai.BehaviorTree
 				return sequence;
 			}
 
+			public INode Create(BehaviorTreeNode_ParallelSequence content)
+			{
+				var sequence = new ParallelSequenceNode();
+				for (int i = 0; i < content.Nodes.Count; ++i)
+				{
+					var node = _builder.Build(content.Nodes[i]);
+					if (node == EmptyNode.Success) continue;
+					sequence.Nodes.Add(node);
+					if (node == EmptyNode.Failure) break;
+				}
+
+				if (sequence.Nodes.Count == 0) return EmptyNode.Success;
+				if (sequence.Nodes.Count == 1) return sequence.Nodes[0];
+				return sequence;
+			}
+
 			public INode Create(BehaviorTreeNode_Parallel content)
 			{
-				if (content.Nodes.Count == 0) return EmptyNode.Success;
-				if (content.Nodes.Count == 1) return _builder.Build(content.Nodes[0]);
-
-				// TODO: optimize
 				var parallel = new ParallelNode();
 				for (int i = 0; i < content.Nodes.Count; ++i)
 				{
 					var node = _builder.Build(content.Nodes[i]);
+					if (node == EmptyNode.Failure) continue;
 					parallel.Nodes.Add(node);
 				}
 
+				if (parallel.Nodes.Count == 0) return EmptyNode.Failure;
+				if (parallel.Nodes.Count == 1) return parallel.Nodes[0];
 				return parallel;
 			}
 
@@ -127,11 +142,13 @@ namespace Combat.Ai.BehaviorTree
 
 			public INode Create(BehaviorTreeNode_FindEnemy content)
 			{
-				if (_builder._settings.DroneRange > 0)
-					return new FindEnemyForDrone(content.MinCooldown, content.MaxCooldown,
-						Settings.DroneRange, content.InAttackRange, content.IgnoreDrones);
+				if (_builder._settings.DroneRange <= 0)
+					return new FindEnemyForShip(content.MinCooldown, content.MaxCooldown, content.InAttackRange, content.IgnoreDrones);
 
-				return new FindEnemyForShip(content.MinCooldown, content.MaxCooldown, content.InAttackRange, content.IgnoreDrones);
+				if (content.InAttackRange)
+					return new FindEnemyForDefensiveDrone(content.MinCooldown, content.MaxCooldown, Settings.DroneRange, content.IgnoreDrones);
+
+				return new FindEnemyForDrone(content.MinCooldown, content.MaxCooldown, Settings.DroneRange, content.InAttackRange);
 			}
 
 			public INode Create(BehaviorTreeNode_MoveToAttackRange content) => new MoveToAttackRange(content.MinMaxLerp, content.Multiplier > 0 ? content.Multiplier : 1.0f);
@@ -165,10 +182,15 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_Chase content) => new ChaseNode();
 			public INode Create(BehaviorTreeNode_AvoidThreats content) => new AvoidThreatsNode();
 			public INode Create(BehaviorTreeNode_HaveIncomingThreat content) => new HasIncomingThreatNode(content.TimeToCollision);
-			public INode Create(BehaviorTreeNode_Stop content) => new StopShipNode();
+			public INode Create(BehaviorTreeNode_SlowDown content) => new SlowDownNode(content.Tolerance);
 			public INode Create(BehaviorTreeNode_UseRecoil content) => RecoilNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_DefendWithFronalShield content) => FrontalShieldNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_TrackControllableAmmo content) => TrackControllableAmmo.Create(Ship, true);
+			public INode Create(BehaviorTreeNode_HaveTarget content) => new HasTargetNode(false);
+			public INode Create(BehaviorTreeNode_DroneBayRangeExceeded content) => new DroneBayRangeExceeded(Settings.DroneRange);
+			public INode Create(BehaviorTreeNode_IsFasterThanTarget content) => new IsFaterThanTarget(1.0f);
+			public INode Create(BehaviorTreeNode_MatchVelocityWithTarget content) => new MatchVelocityNode(content.Tolerance);
+			public INode Create(BehaviorTreeNode_KeepDistance content) => new KeepDistanceNode(content.MinDistance, content.MaxDistance);
 		}
 	}
 }

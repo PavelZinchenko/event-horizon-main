@@ -5,7 +5,7 @@ namespace Combat.Ai.Calculations
 {
 	public static class ShipNavigationHandler
 	{
-		public static bool KeepDistance(IShip ship, IShip target, float min, float max, int spin, ShipControls controls)
+		public static bool FlyAround(IShip ship, IShip target, float min, float max, int spin, ShipControls controls)
 		{
 			var minDistance = min + ship.Body.Scale/2 + target.Body.Scale/2;
 			var maxDistance = minDistance - min + max;
@@ -20,7 +20,7 @@ namespace Combat.Ai.Calculations
 			if (controls.MovementLocked)
 				return false;
 
-			var delta = 0f;
+			float delta;
 			if (distance > maxDistance)
 			{
 				var sina = minDistance / distance;
@@ -50,24 +50,42 @@ namespace Combat.Ai.Calculations
 			return false;
 		}
 
-		public static float ShortenDistance(IShip ship, IShip target, float distance, ShipControls controls)
+		public static bool KeepDistance(IShip ship, IShip target, float min, float max, ShipControls controls)
 		{
-			var currentDistance = Helpers.Distance(ship, target);
-			if (currentDistance <= distance) return currentDistance;
+			var maxVelocity = ship.Engine.MaxVelocity;
+
+			var minDistance = min + ship.Body.Scale / 2 + target.Body.Scale / 2;
+			var maxDistance = minDistance - min + max;
+
+			var direction = ship.Body.Position.Direction(target.Body.Position);
+			var distance = direction.magnitude;
+			if (distance >= minDistance && distance <= maxDistance)
+				return true;
 
 			if (controls.MovementLocked)
-				return currentDistance;
+				return false;
 
-			var direction = ship.Body.Position.Direction(target.Body.Position).normalized;
-			var course = RotationHelpers.Angle(direction);
-			if (Vector2.Dot(ship.Body.Velocity, direction) < ship.Engine.MaxVelocity * 0.95f)
+			Vector2 requiredVelocity;
+			float excess;
+			if (distance < minDistance)
 			{
-				controls.Course = course;
-				if (Mathf.Abs(Mathf.DeltaAngle(course, ship.Body.Rotation)) < 30)
-					controls.Thrust = 1;
+				excess = 0.1f + (minDistance - distance) / maxDistance;
+				requiredVelocity = -direction.normalized * excess * maxVelocity;
+			}
+			else
+			{
+				excess = 0.1f + (distance - maxDistance) / maxDistance;
+				requiredVelocity = direction.normalized * excess * maxVelocity;
 			}
 
-			return currentDistance;
+			var newVelocity = requiredVelocity - ship.Body.Velocity;
+			var course = RotationHelpers.Angle(newVelocity);
+
+			controls.Course = course;
+			if (Mathf.Abs(Mathf.DeltaAngle(course, ship.Body.Rotation)) < 10)
+				controls.Thrust = newVelocity.magnitude / maxVelocity;
+
+			return false;
 		}
 
 		public enum Status
@@ -84,22 +102,7 @@ namespace Combat.Ai.Calculations
 			if (AttackHelpers.CantDetectTarget(ship, enemy)) return Status.NoTarget;
 			if (controls.MovementLocked) return Status.Chasing;
 
-			var enemyVelocity = enemy.Body.Velocity;
-			var enemyPosition = enemy.Body.Position;
-			var shipPosition = ship.Body.Position;
-			var maxVelocity = Mathf.Max(ship.Body.Velocity.magnitude, ship.Engine.MaxVelocity);
-
-			var canHit = Geometry.GetTargetPosition(
-				enemyPosition,
-				enemyVelocity,
-				shipPosition,
-				maxVelocity,
-				out var target,
-				out var timeInterval);
-
-			if (!canHit)
-				target = enemyPosition + enemyVelocity;
-
+			var canHit = TryInterceptTarget(ship, enemy, out var target, out var timeToHit);
 			var status = canHit ? Status.Chasing : Status.Following;
 
 			var direction = ship.Body.Position.Direction(target);
@@ -112,10 +115,58 @@ namespace Combat.Ai.Calculations
 				controls.Thrust = 1.0f;
 			}
 
-			if (timeInterval < 1f)
+			if (timeToHit < 1f)
 				status = Status.AboutToHit;
 
 			return status;
+		}
+
+		public static bool TryReachVelocity(IShip ship, Vector2 desiredVelocity, float speedThreshold, ShipControls controls)
+		{
+			const float maxDeltaAngle = 60;
+
+			var velocity = ship.Body.Velocity;
+			var relativeVelocity = velocity - desiredVelocity;
+
+			var speed = relativeVelocity.magnitude;
+			if (speed <= speedThreshold)
+				return true;
+
+			if (controls.MovementLocked)
+				return false;
+
+			var course = RotationHelpers.Angle(-relativeVelocity);
+			controls.Course = course;
+
+			var deltaAngle = Mathf.Abs(Mathf.DeltaAngle(ship.Body.Rotation, course));
+			if (deltaAngle < maxDeltaAngle)
+				controls.Thrust = speed / ship.Engine.MaxVelocity;
+
+			return false;
+		}
+
+		private static bool TryInterceptTarget(IShip ship, IShip enemy, out Vector2 target, out float timeToHit)
+		{
+			var enemyVelocity = enemy.Body.Velocity;
+			var enemyPosition = enemy.Body.Position;
+			var shipPosition = ship.Body.Position;
+			var maxVelocity = Mathf.Max(ship.Body.Velocity.magnitude, ship.Engine.MaxVelocity);
+
+			var canHit = Geometry.GetTargetPosition(
+				enemyPosition,
+				enemyVelocity,
+				shipPosition,
+				maxVelocity,
+				out target,
+				out timeToHit);
+
+			if (!canHit)
+			{
+				target = enemyPosition + enemyVelocity;
+				timeToHit = 60f;
+			}
+
+			return canHit;
 		}
 	}
 }
