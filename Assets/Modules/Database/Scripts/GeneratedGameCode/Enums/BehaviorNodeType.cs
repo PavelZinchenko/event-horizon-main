@@ -62,5 +62,7 @@ namespace GameDatabase.Enums
 		DroneBayRangeExceeded = 206,
 		ShowMessage = 300,
 		DebugLog = 301,
+		SetValue = 302,
+		GetValue = 303,
 	}
 }

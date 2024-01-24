@@ -191,6 +191,8 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_IsFasterThanTarget content) => new IsFaterThanTarget(1.0f);
 			public INode Create(BehaviorTreeNode_MatchVelocityWithTarget content) => new MatchVelocityNode(content.Tolerance);
 			public INode Create(BehaviorTreeNode_KeepDistance content) => new KeepDistanceNode(content.MinDistance, content.MaxDistance);
+			public INode Create(BehaviorTreeNode_SetValue content) => new SetValueNode(content.Name, content.Value);
+			public INode Create(BehaviorTreeNode_GetValue content) => new GetValueNode(content.Name);
 		}
 	}
 }

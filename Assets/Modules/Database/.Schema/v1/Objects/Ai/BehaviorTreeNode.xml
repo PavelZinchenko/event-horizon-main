@@ -8,6 +8,7 @@
     <member name="ItemId" type="object" typeid="BehaviorTree" case="SubTree" alias="BehaviourTree" />
     <member name="WeaponType" type="enum" typeid="AiWeaponCategory" case="SelectWeapon" />
     <member name="Result" type="bool" case="ConstantResult,CompleteOnce" />
+    <member name="Result" type="bool" case="SetValue" alias="Value" />
 
     <member name="MinValue" type="float" case="HaveEnoughEnergy,RechargeEnergy" alias="FailIfLess" minvalue="0" maxvalue="1" default="0.1" />
     <member name="MaxValue" type="float" case="RechargeEnergy" alias="RestoreUntil" minvalue="0" maxvalue="1" default="0.9" />
@@ -31,5 +32,6 @@
     <member name="DeviceClass" type="enum" typeid="DeviceClass" case="ActivateDevice" />
 
     <member name="Text" type="string" case="ShowMessage,DebugLog" />
+    <member name="Text" type="string" case="SetValue,GetValue" alias="Name" />
     <member name="Color" type="color" case="ShowMessage" />
 </data>

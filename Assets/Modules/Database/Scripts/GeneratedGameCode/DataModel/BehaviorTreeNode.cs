@@ -127,6 +127,10 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_ShowMessage(serializable, loader);
 				case BehaviorNodeType.DebugLog:
 					return new BehaviorTreeNode_DebugLog(serializable, loader);
+				case BehaviorNodeType.SetValue:
+					return new BehaviorTreeNode_SetValue(serializable, loader);
+				case BehaviorNodeType.GetValue:
+					return new BehaviorTreeNode_GetValue(serializable, loader);
 				default:
                     throw new DatabaseException("BehaviorTreeNode: Invalid content type - " + serializable.Type);
 			}
@@ -202,6 +206,8 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_DroneBayRangeExceeded content);
 	    T Create(BehaviorTreeNode_ShowMessage content);
 	    T Create(BehaviorTreeNode_DebugLog content);
+	    T Create(BehaviorTreeNode_SetValue content);
+	    T Create(BehaviorTreeNode_GetValue content);
     }
 
     public partial class BehaviorTreeNode_Undefined : BehaviorTreeNode
@@ -1179,6 +1185,46 @@ namespace GameDatabase.DataModel
         }
 
 		public string Text { get; private set; }
+    }
+    public partial class BehaviorTreeNode_SetValue : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_SetValue(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Value = serializable.Result;
+			Name = serializable.Text;
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public bool Value { get; private set; }
+		public string Name { get; private set; }
+    }
+    public partial class BehaviorTreeNode_GetValue : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_GetValue(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Name = serializable.Text;
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public string Name { get; private set; }
     }
 
 }

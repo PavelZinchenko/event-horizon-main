@@ -57,4 +57,6 @@
 
     <item name="ShowMessage" value="300">Spawns text over the ship sprite that disappears shortly. Retruns SUCCESS</item>
     <item name="DebugLog" value="301">Writes message to the log file (https://docs.unity3d.com/Manual/LogFiles.html). Retruns SUCCESS</item>
+    <item name="SetValue" value="302">Sets a boolean variable for this ship. Returns SUCCESS if the variable's value changes, and FAILURE if the value remains unchanged</item>
+    <item name="GetValue" value="303">Verifies the state of the variable. Returns SUCCESS if the variable is set, and FAILURE if not set or undefined</item>
 </data>

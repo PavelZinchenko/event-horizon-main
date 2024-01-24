@@ -19,6 +19,7 @@ namespace Combat.Ai.BehaviorTree
 		private ShipWeaponList _selectedWeapons;
 		private TargetList _targetList;
 		private ThreatList _threatList;
+		private HashSet<string> _variables;
 		private float _targetListUpdateTime = _initialTime;
 		private float _threatListUpdateTime = _initialTime;
 
@@ -81,6 +82,29 @@ namespace Combat.Ai.BehaviorTree
 			if (_elapsedTime - _threatListUpdateTime < cooldown) return;
 			_threatListUpdateTime = _elapsedTime;
 			_threatList.Update(_ship, threatAnalyzer);
+		}
+
+		public bool TrySetValue(string name, bool value)
+		{
+			if (value)
+			{
+				if (_variables == null)
+					_variables = new();
+
+				return _variables.Add(name);
+			}
+			else
+			{
+				if (_variables == null)
+					return false;
+
+				return _variables.Remove(name);
+			}
+		}
+
+		public bool GetValue(string name)
+		{
+			return _variables != null && _variables.Contains(name);
 		}
 	}
 }
