@@ -2,16 +2,16 @@
 {
 	public class GetValueNode : INode
 	{
-		private readonly string _name;
+		private readonly int _id;
 
-		public GetValueNode(string name)
+		public GetValueNode(int id)
 		{
-			_name = name;
+			_id = id;
 		}
 
 		public NodeState Evaluate(Context context)
 		{
-			return context.GetValue(_name) ? NodeState.Success : NodeState.Failure;
+			return context.GetValue(_id) ? NodeState.Success : NodeState.Failure;
 		}
 	}
 }

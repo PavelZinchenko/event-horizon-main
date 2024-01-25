@@ -45,6 +45,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_RandomExecutor(serializable, loader);
 				case BehaviorNodeType.ParallelSequence:
 					return new BehaviorTreeNode_ParallelSequence(serializable, loader);
+				case BehaviorNodeType.Cooldown:
+					return new BehaviorTreeNode_Cooldown(serializable, loader);
 				case BehaviorNodeType.HaveEnoughEnergy:
 					return new BehaviorTreeNode_HaveEnoughEnergy(serializable, loader);
 				case BehaviorNodeType.IsLowOnHp:
@@ -57,6 +59,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_HaveTarget(serializable, loader);
 				case BehaviorNodeType.IsFasterThanTarget:
 					return new BehaviorTreeNode_IsFasterThanTarget(serializable, loader);
+				case BehaviorNodeType.TargetLost:
+					return new BehaviorTreeNode_TargetLost(serializable, loader);
 				case BehaviorNodeType.FindEnemy:
 					return new BehaviorTreeNode_FindEnemy(serializable, loader);
 				case BehaviorNodeType.MoveToAttackRange:
@@ -131,6 +135,12 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_SetValue(serializable, loader);
 				case BehaviorNodeType.GetValue:
 					return new BehaviorTreeNode_GetValue(serializable, loader);
+				case BehaviorNodeType.SendMessage:
+					return new BehaviorTreeNode_SendMessage(serializable, loader);
+				case BehaviorNodeType.MessageReceived:
+					return new BehaviorTreeNode_MessageReceived(serializable, loader);
+				case BehaviorNodeType.TargetMessageSender:
+					return new BehaviorTreeNode_TargetMessageSender(serializable, loader);
 				default:
                     throw new DatabaseException("BehaviorTreeNode: Invalid content type - " + serializable.Type);
 			}
@@ -165,12 +175,14 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_CompleteOnce content);
 	    T Create(BehaviorTreeNode_RandomExecutor content);
 	    T Create(BehaviorTreeNode_ParallelSequence content);
+	    T Create(BehaviorTreeNode_Cooldown content);
 	    T Create(BehaviorTreeNode_HaveEnoughEnergy content);
 	    T Create(BehaviorTreeNode_IsLowOnHp content);
 	    T Create(BehaviorTreeNode_IsControledByPlayer content);
 	    T Create(BehaviorTreeNode_HaveIncomingThreat content);
 	    T Create(BehaviorTreeNode_HaveTarget content);
 	    T Create(BehaviorTreeNode_IsFasterThanTarget content);
+	    T Create(BehaviorTreeNode_TargetLost content);
 	    T Create(BehaviorTreeNode_FindEnemy content);
 	    T Create(BehaviorTreeNode_MoveToAttackRange content);
 	    T Create(BehaviorTreeNode_Attack content);
@@ -208,6 +220,9 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_DebugLog content);
 	    T Create(BehaviorTreeNode_SetValue content);
 	    T Create(BehaviorTreeNode_GetValue content);
+	    T Create(BehaviorTreeNode_SendMessage content);
+	    T Create(BehaviorTreeNode_MessageReceived content);
+	    T Create(BehaviorTreeNode_TargetMessageSender content);
     }
 
     public partial class BehaviorTreeNode_Undefined : BehaviorTreeNode
@@ -425,6 +440,27 @@ namespace GameDatabase.DataModel
 
 		public ImmutableCollection<BehaviorTreeNode> Nodes { get; private set; }
     }
+    public partial class BehaviorTreeNode_Cooldown : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_Cooldown(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Node = BehaviorTreeNode.Create(serializable.Node, loader);
+			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0f, 3.402823E+38f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public BehaviorTreeNode Node { get; private set; }
+		public float Cooldown { get; private set; }
+    }
     public partial class BehaviorTreeNode_HaveEnoughEnergy : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
@@ -521,6 +557,23 @@ namespace GameDatabase.DataModel
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
   		public BehaviorTreeNode_IsFasterThanTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+    }
+    public partial class BehaviorTreeNode_TargetLost : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_TargetLost(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 
@@ -1225,6 +1278,61 @@ namespace GameDatabase.DataModel
         }
 
 		public string Name { get; private set; }
+    }
+    public partial class BehaviorTreeNode_SendMessage : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_SendMessage(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Name = serializable.Text;
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public string Name { get; private set; }
+    }
+    public partial class BehaviorTreeNode_MessageReceived : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_MessageReceived(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Name = serializable.Text;
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public string Name { get; private set; }
+    }
+    public partial class BehaviorTreeNode_TargetMessageSender : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_TargetMessageSender(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
     }
 
 }

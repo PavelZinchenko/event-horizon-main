@@ -4,7 +4,7 @@
     <member name="Requirement" type="struct" typeid="BehaviorNodeRequirement" />
 
     <member name="Nodes" type="struct_list" typeid="BehaviorTreeNode" case="Selector,Sequence,Parallel,RandomSelector,RandomExecutor,ParallelSequence" />
-    <member name="Node" type="struct" typeid="BehaviorTreeNode" case="Invertor,ConstantResult,CompleteOnce" />
+    <member name="Node" type="struct" typeid="BehaviorTreeNode" case="Invertor,ConstantResult,CompleteOnce,Cooldown" />
     <member name="ItemId" type="object" typeid="BehaviorTree" case="SubTree" alias="BehaviourTree" />
     <member name="WeaponType" type="enum" typeid="AiWeaponCategory" case="SelectWeapon" />
     <member name="Result" type="bool" case="ConstantResult,CompleteOnce" />
@@ -14,7 +14,7 @@
     <member name="MaxValue" type="float" case="RechargeEnergy" alias="RestoreUntil" minvalue="0" maxvalue="1" default="0.9" />
     <member name="MinValue" type="float" case="IsLowOnHp,MothershipLowHp" minvalue="0" maxvalue="1" />
 
-    <member name="Cooldown" type="float" case="RandomSelector,RandomExecutor,Wait" minvalue="0" />
+    <member name="Cooldown" type="float" case="RandomSelector,RandomExecutor,Wait,Cooldown" minvalue="0" />
     <member name="Cooldown" type="float" case="LookForSecondaryTargets,LookForThreats" alias="Cooldown" minvalue="0.1" />
     <member name="Cooldown" type="float" case="HaveIncomingThreat" alias="TimeToCollision" minvalue="0" default="5" />
     <member name="MinValue" type="float" case="FindEnemy" alias="MinCooldown" minvalue="0.5" />
@@ -32,6 +32,6 @@
     <member name="DeviceClass" type="enum" typeid="DeviceClass" case="ActivateDevice" />
 
     <member name="Text" type="string" case="ShowMessage,DebugLog" />
-    <member name="Text" type="string" case="SetValue,GetValue" alias="Name" />
+    <member name="Text" type="string" case="SetValue,GetValue,SendMessage,MessageReceived" alias="Name" />
     <member name="Color" type="color" case="ShowMessage" />
 </data>

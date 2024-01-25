@@ -322,6 +322,8 @@ namespace Combat.Ai
         {
             if (enemy == null)
                 return true;
+			if (ship.Type.Side.IsAlly(enemy.Type.Side))
+				return false;
             if (enemy.Features.TargetPriority != TargetPriority.None)
                 return false;
 

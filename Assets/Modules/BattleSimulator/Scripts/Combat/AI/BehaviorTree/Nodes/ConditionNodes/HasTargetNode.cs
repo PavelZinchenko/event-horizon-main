@@ -11,7 +11,7 @@
 
 		public NodeState Evaluate(Context context)
 		{
-			if (context.TargetShip == null)
+			if (context.TargetShip == null || context.TargetShip.State != Unit.UnitState.Active)
 				if (_ignoreSecondary || context.SecondaryTargets.Count > 0)
 					return NodeState.Failure;
 

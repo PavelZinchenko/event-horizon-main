@@ -19,7 +19,7 @@ namespace Combat.Ai.BehaviorTree
 		private ShipWeaponList _selectedWeapons;
 		private TargetList _targetList;
 		private ThreatList _threatList;
-		private HashSet<string> _variables;
+		private HashSet<int> _variables;
 		private float _targetListUpdateTime = _initialTime;
 		private float _threatListUpdateTime = _initialTime;
 
@@ -28,6 +28,7 @@ namespace Combat.Ai.BehaviorTree
 		public ShipControls Controls { get; } = new();
 
 		public IShip TargetShip { get; set; }
+		public IShip LastMessageSender { get; set; }
 		public float LastTargetUpdateTime { get; set; } = _initialTime;
 
 		public IReadOnlyList<IShip> SecondaryTargets => _targetList?.Items ?? EmptyList<IShip>.Instance;
@@ -84,27 +85,27 @@ namespace Combat.Ai.BehaviorTree
 			_threatList.Update(_ship, threatAnalyzer);
 		}
 
-		public bool TrySetValue(string name, bool value)
+		public bool TrySetValue(int id, bool value)
 		{
 			if (value)
 			{
 				if (_variables == null)
 					_variables = new();
 
-				return _variables.Add(name);
+				return _variables.Add(id);
 			}
 			else
 			{
 				if (_variables == null)
 					return false;
 
-				return _variables.Remove(name);
+				return _variables.Remove(id);
 			}
 		}
 
-		public bool GetValue(string name)
+		public bool GetValue(int id)
 		{
-			return _variables != null && _variables.Contains(name);
+			return _variables != null && _variables.Contains(id);
 		}
 	}
 }

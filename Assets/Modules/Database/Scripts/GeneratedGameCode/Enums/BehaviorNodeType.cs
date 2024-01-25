@@ -21,12 +21,14 @@ namespace GameDatabase.Enums
 		CompleteOnce = 8,
 		RandomExecutor = 9,
 		ParallelSequence = 10,
+		Cooldown = 11,
 		HaveEnoughEnergy = 50,
 		IsLowOnHp = 51,
 		IsControledByPlayer = 52,
 		HaveIncomingThreat = 53,
 		HaveTarget = 54,
 		IsFasterThanTarget = 55,
+		TargetLost = 56,
 		FindEnemy = 100,
 		MoveToAttackRange = 101,
 		Attack = 102,
@@ -64,5 +66,8 @@ namespace GameDatabase.Enums
 		DebugLog = 301,
 		SetValue = 302,
 		GetValue = 303,
+		SendMessage = 304,
+		MessageReceived = 305,
+		TargetMessageSender = 306,
 	}
 }

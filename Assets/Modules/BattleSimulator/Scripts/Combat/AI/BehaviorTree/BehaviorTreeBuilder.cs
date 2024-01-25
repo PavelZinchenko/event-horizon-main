@@ -3,6 +3,7 @@ using GameDatabase.Enums;
 using Services.Localization;
 using Combat.Component.Ship;
 using Combat.Scene;
+using Combat.Ai.BehaviorTree.Utils;
 
 namespace Combat.Ai.BehaviorTree
 {
@@ -10,16 +11,18 @@ namespace Combat.Ai.BehaviorTree
 	{
 		private readonly IScene _scene;
 		private readonly ILocalization _localization;
+		private readonly MessageHub _messageHub;
 
 		public BehaviorTreeBuilder(IScene scene, ILocalization localization)
 		{
 			_scene = scene;
 			_localization = localization;
+			_messageHub = new MessageHub();
 		}
 
 		public ShipBehaviorTree Build(IShip ship, BehaviorTreeModel model, AiSettings settings)
 		{
-			var builder = new NodeBuilder(ship, settings, _localization);
+			var builder = new NodeBuilder(ship, settings, _messageHub, _localization);
 			return new ShipBehaviorTree(ship, _scene, builder.Build(model.RootNode));
 		}
 	}

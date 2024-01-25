@@ -2,6 +2,7 @@
 using Services.Localization;
 using Combat.Ai.BehaviorTree.Nodes;
 using Combat.Component.Ship;
+using Combat.Ai.BehaviorTree.Utils;
 
 namespace Combat.Ai.BehaviorTree
 {
@@ -10,13 +11,15 @@ namespace Combat.Ai.BehaviorTree
 		private readonly NodeFactory _factory;
 		private readonly RequirementChecker _requirementChecker;
 		private readonly ILocalization _localization;
+		private readonly MessageHub _messageHub;
 		private readonly AiSettings _settings;
 		private readonly IShip _ship;
 
-		public NodeBuilder(IShip ship, AiSettings settings, ILocalization localization)
+		public NodeBuilder(IShip ship, AiSettings settings, MessageHub messageHub, ILocalization localization)
 		{
 			_ship = ship;
 			_settings = settings;
+			_messageHub = messageHub;
 			_localization = localization;
 			_requirementChecker = new RequirementChecker(ship, settings);
 			_factory = new NodeFactory(this);
@@ -37,6 +40,7 @@ namespace Combat.Ai.BehaviorTree
 			private System.Random _random;
 			private IShip Ship => _builder._ship;
 			private AiSettings Settings => _builder._settings;
+			private MessageHub MessageHub => _builder._messageHub;
 			private ILocalization Localization => _builder._localization;
 			private System.Random Random => _random ??= new();
 			private float RandomValue => (float)Random.NextDouble();
@@ -53,6 +57,7 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_Invertor content) => InvertorNode.Create(_builder.Build(content.Node));
 			public INode Create(BehaviorTreeNode_ConstantResult content) => ConstantResultNode.Create(_builder.Build(content.Node), content.Result);
 			public INode Create(BehaviorTreeNode_CompleteOnce content) => CompleteOnceNode.Create(_builder.Build(content.Node), content.Result);
+			public INode Create(BehaviorTreeNode_Cooldown content) => CooldownNode.Create(_builder.Build(content.Node), content.Cooldown);
 
 			public INode Create(BehaviorTreeNode_Selector content)
 			{
@@ -177,8 +182,6 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_RechargeEnergy content) => new RechargeEnergy(content.FailIfLess, content.RestoreUntil);
 			public INode Create(BehaviorTreeNode_SustainAim content) => new SustainAimNode(false);
 			public INode Create(BehaviorTreeNode_ChargeWeapons content) => ChargeWeaponsNode.Create(Ship);
-			public INode Create(BehaviorTreeNode_ShowMessage content) => new ShowMessageNode(Localization.Localize(content.Text), content.Color);
-			public INode Create(BehaviorTreeNode_DebugLog content) => new DebugLogNode(content.Text);
 			public INode Create(BehaviorTreeNode_Chase content) => new ChaseNode();
 			public INode Create(BehaviorTreeNode_AvoidThreats content) => new AvoidThreatsNode();
 			public INode Create(BehaviorTreeNode_HaveIncomingThreat content) => new HasIncomingThreatNode(content.TimeToCollision);
@@ -191,8 +194,16 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_IsFasterThanTarget content) => new IsFaterThanTarget(1.0f);
 			public INode Create(BehaviorTreeNode_MatchVelocityWithTarget content) => new MatchVelocityNode(content.Tolerance);
 			public INode Create(BehaviorTreeNode_KeepDistance content) => new KeepDistanceNode(content.MinDistance, content.MaxDistance);
-			public INode Create(BehaviorTreeNode_SetValue content) => new SetValueNode(content.Name, content.Value);
-			public INode Create(BehaviorTreeNode_GetValue content) => new GetValueNode(content.Name);
+			public INode Create(BehaviorTreeNode_TargetLost content) => InvertorNode.Create(new HasTargetNode(true));
+
+			public INode Create(BehaviorTreeNode_ShowMessage content) => new ShowMessageNode(Localization.Localize(content.Text), content.Color);
+			public INode Create(BehaviorTreeNode_DebugLog content) => new DebugLogNode(content.Text);
+
+			public INode Create(BehaviorTreeNode_SetValue content) => new SetValueNode(MessageHub.GetMessageId(content.Name), content.Value);
+			public INode Create(BehaviorTreeNode_GetValue content) => new GetValueNode(MessageHub.GetMessageId(content.Name));
+			public INode Create(BehaviorTreeNode_SendMessage content) => new SendMessageNode(MessageHub, content.Name);
+			public INode Create(BehaviorTreeNode_MessageReceived content) => new SubscribeToMessageNode(MessageHub, content.Name);
+			public INode Create(BehaviorTreeNode_TargetMessageSender content) => new TargetMessageSenderNode();
 		}
 	}
 }

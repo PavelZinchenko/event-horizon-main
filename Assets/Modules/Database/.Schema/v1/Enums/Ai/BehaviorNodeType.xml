@@ -11,6 +11,7 @@
     <item name="CompleteOnce" value="8">Executes node until it succeeds. Returns 'Result' after that</item>
     <item name="RandomExecutor" value="9">Executes random node, stops after it succeeds, selects another after 'Cooldown' sec</item>
     <item name="ParallelSequence" value="10">Executes nodes sequentially, stops when the first node returns FAILURE</item>
+    <item name="Cooldown" value="11">Executes node until it succeeds, then waits a specific amount of time, returning FAILURE, repeats</item>
 
     <item name="HaveEnoughEnergy" value="50" />
     <item name="IsLowOnHp" value="51" />
@@ -18,6 +19,7 @@
     <item name="HaveIncomingThreat" value="53">Requires threat list. Returns SUCCESS if time to collision less than value</item>
     <item name="HaveTarget" value="54">Returns SUCCESS if has either main or secondary target</item>
     <item name="IsFasterThanTarget" value="55" />
+    <item name="TargetLost" value="56">Returns SUCCESS if there is no main target or it's destroyed</item>
 
     <item name="FindEnemy" value="100">Looks for nearest enemy. Changes target every MaxCooldown sec if it's defined. SUCCESS if found, FAILURE otherwise</item>
     <item name="MoveToAttackRange" value="101">Moves towards target until inside attack radius. Requires main target. Uses attack range of selected weapons. SUCCESS if inside attack range, FAILURE if any error, RUNNING otherwise</item>
@@ -59,4 +61,7 @@
     <item name="DebugLog" value="301">Writes message to the log file (https://docs.unity3d.com/Manual/LogFiles.html). Retruns SUCCESS</item>
     <item name="SetValue" value="302">Sets a boolean variable for this ship. Returns SUCCESS if the variable's value changes, and FAILURE if the value remains unchanged</item>
     <item name="GetValue" value="303">Verifies the state of the variable. Returns SUCCESS if the variable is set, and FAILURE if not set or undefined</item>
+    <item name="SendMessage" value="304">Sends a message to all allies, returning SUCCESS if any ally receives it</item>
+    <item name="MessageReceived" value="305">Monitors the radio, waiting for a specific message. Remembers message sender. If received returns SUCCESS, otherwise FAILURE</item>
+    <item name="TargetMessageSender" value="306">Targets the sender of the last received message. Returns SUCCESS if it's still alive, otherwise FAILURE</item>
 </data>

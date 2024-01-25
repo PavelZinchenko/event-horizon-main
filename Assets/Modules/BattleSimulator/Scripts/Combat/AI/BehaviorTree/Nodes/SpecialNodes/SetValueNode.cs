@@ -2,18 +2,18 @@
 {
 	public class SetValueNode : INode
 	{
-		private readonly string _name;
+		private readonly int _id;
 		private readonly bool _value;
 
-		public SetValueNode(string name, bool value)
+		public SetValueNode(int id, bool value)
 		{
-			_name = name;
+			_id = id;
 			_value = value;
 		}
 
 		public NodeState Evaluate(Context context)
 		{
-			return context.TrySetValue(_name, _value) ? NodeState.Success : NodeState.Failure;
+			return context.TrySetValue(_id, _value) ? NodeState.Success : NodeState.Failure;
 		}
 	}
 }
