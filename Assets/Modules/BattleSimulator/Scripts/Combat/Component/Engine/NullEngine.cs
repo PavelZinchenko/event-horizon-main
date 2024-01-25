@@ -5,17 +5,18 @@ namespace Combat.Component.Engine
 {
     public class NullEngine : IEngine
     {
-        public float MaxVelocity { get { return 0; } }
-        public float MaxAngularVelocity { get { return 0; } }
-        public float Propulsion { get { return 0; } }
-        public float TurnRate { get { return 0; } }
+		public float MaxVelocity => 0;
+		public float MaxAngularVelocity => 0;
+		public float Propulsion => 0;
+		public float TurnRate => 0;
 
-        public float? Course { get { return null; } set { } }
-        public float Throttle { get { return 0; } set { } }
+		public float? Course { get => null; set { } }
+        public float Throttle { get => 0; set { } }
+		public float ForwardAcceleration => 0f;
 
-        public Modifications<EngineData> Modifications { get { return _modifications; } }
+		public Modifications<EngineData> Modifications => _modifications;
 
-        public void Update(float elapsedTime, IBody body)
+		public void Update(float elapsedTime, IBody body)
         {
             ApplyDeceleration(body, elapsedTime);
             ApplyAngularDeceleration(body, elapsedTime);

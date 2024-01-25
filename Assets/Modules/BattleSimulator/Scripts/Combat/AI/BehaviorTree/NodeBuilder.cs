@@ -173,7 +173,7 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_GoBerserk content) => new GoBerserkNode();
 			public INode Create(BehaviorTreeNode_TargetMothership content) => new TargetMothershipNode();
 			public INode Create(BehaviorTreeNode_MaintainAttackRange content) => new MaintainAttackRange(content.MinMaxLerp, content.Tolerance);
-			public INode Create(BehaviorTreeNode_IsWithinAttackRange content) => new IsWithinAttackRange(content.MinMaxLerp);
+			public INode Create(BehaviorTreeNode_MainTargetWithinAttackRange content) => new IsWithinAttackRange(content.MinMaxLerp);
 			public INode Create(BehaviorTreeNode_MothershipLowHp content) => new MothershipLowHpNode(content.MinValue);
 			public INode Create(BehaviorTreeNode_IsControledByPlayer content) => new IsPlayerControlled();
 			public INode Create(BehaviorTreeNode_Wait content) => new WaitNode(content.Cooldown, content.ResetIfInterrupted);
@@ -200,15 +200,14 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_MainTargetIsAlly content) => new TargetIsAllyNode();
 			public INode Create(BehaviorTreeNode_MainTargetIsEnemy content) => new TargetIsEnemyNode();
 			public INode Create(BehaviorTreeNode_MainTargetLowHp content) => new TargetLowHpNode(content.MinValue);
+			public INode Create(BehaviorTreeNode_EnginePropulsionForce content) => new PropulsionForceNode(content.MinValue);
 			public INode Create(BehaviorTreeNode_ShowMessage content) => new ShowMessageNode(Localization.Localize(content.Text), content.Color);
 			public INode Create(BehaviorTreeNode_DebugLog content) => new DebugLogNode(content.Text);
-
 			public INode Create(BehaviorTreeNode_SetValue content) => new SetValueNode(StrinToId(content.Name), content.Value);
 			public INode Create(BehaviorTreeNode_GetValue content) => new GetValueNode(StrinToId(content.Name));
 			public INode Create(BehaviorTreeNode_SendMessage content) => new SendMessageNode(MessageHub, content.Name);
 			public INode Create(BehaviorTreeNode_MessageReceived content) => new SubscribeToMessageNode(MessageHub, content.Name);
 			public INode Create(BehaviorTreeNode_TargetMessageSender content) => new TargetMessageSenderNode();
-
 			public INode Create(BehaviorTreeNode_SaveTarget content) => new SaveTargetNode(StrinToId(content.Name));
 			public INode Create(BehaviorTreeNode_LoadTarget content) => new LoadTargetNode(StrinToId(content.Name));
 		}

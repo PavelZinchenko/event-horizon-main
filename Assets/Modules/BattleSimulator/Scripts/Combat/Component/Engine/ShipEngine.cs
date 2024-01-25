@@ -22,7 +22,9 @@ namespace Combat.Component.Engine
         public float Propulsion { get { return _engineData.Propulsion; } }
         public float TurnRate { get { return _engineData.TurnRate; } }
 
-        public float? Course
+		public float ForwardAcceleration { get; private set; }
+
+		public float? Course
         {
             get
             {
@@ -52,8 +54,8 @@ namespace Combat.Component.Engine
         {
             UpdateData();
 
-            if (Throttle > 0.01f)
-                ApplyAcceleration(body, elapsedTime);
+			ForwardAcceleration = Throttle > 0.01f ? ApplyAcceleration(body, elapsedTime) : 0f;
+
             if (_engineData.Deceleration > 0)
                 ApplyDeceleration(body, elapsedTime);
 
@@ -79,7 +81,7 @@ namespace Combat.Component.Engine
                 _engineData.AngularVelocity = _maxAngularVelocity;
         }
 
-        private void ApplyAcceleration(IBody body, float elapsedTime)
+        private float ApplyAcceleration(IBody body, float elapsedTime)
         {
             var forward = RotationHelpers.Direction(body.Rotation);
             var side = new Vector2(forward.y, -forward.x);
@@ -93,7 +95,7 @@ namespace Combat.Component.Engine
             var sideAcceleration = Mathf.Clamp(-sideVelocity, -maxPropulsion, maxPropulsion) * Throttle;
 
             if (forwardAcceleration < 0.01f && sideAcceleration < 0.01f && sideAcceleration > -0.01f)
-                return;
+                return 0f;
 
             var sqrMagnitude = (forwardAcceleration*forwardAcceleration + sideAcceleration*sideAcceleration) / (maxPropulsion*maxPropulsion);
             if (sqrMagnitude > 1.0f)
@@ -104,6 +106,7 @@ namespace Combat.Component.Engine
             }
 
             body.ApplyAcceleration(elapsedTime*forwardAcceleration*forward + elapsedTime*sideAcceleration*side);
+			return forwardAcceleration;
         }
 
         private void ApplyDeceleration(IBody body, float elapsedTime)

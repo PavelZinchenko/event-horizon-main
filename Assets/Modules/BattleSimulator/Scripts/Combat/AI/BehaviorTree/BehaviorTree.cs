@@ -21,7 +21,7 @@ namespace Combat.Ai.BehaviorTree
 		public void Update(float deltaTime)
 		{
 			_context.Update(deltaTime);
-			var result = _rootNode.Evaluate(_context) == NodeState.Success;
+			var result = _rootNode.Evaluate(_context) != NodeState.Failure;
 			if (result)
 			{
 				_context.Controls.Apply(_ship);

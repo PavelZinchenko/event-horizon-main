@@ -67,6 +67,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_MainTargetIsEnemy(serializable, loader);
 				case BehaviorNodeType.MainTargetLowHp:
 					return new BehaviorTreeNode_MainTargetLowHp(serializable, loader);
+				case BehaviorNodeType.MainTargetWithinAttackRange:
+					return new BehaviorTreeNode_MainTargetWithinAttackRange(serializable, loader);
 				case BehaviorNodeType.FindEnemy:
 					return new BehaviorTreeNode_FindEnemy(serializable, loader);
 				case BehaviorNodeType.MoveToAttackRange:
@@ -117,8 +119,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_TrackControllableAmmo(serializable, loader);
 				case BehaviorNodeType.KeepDistance:
 					return new BehaviorTreeNode_KeepDistance(serializable, loader);
-				case BehaviorNodeType.IsWithinAttackRange:
-					return new BehaviorTreeNode_IsWithinAttackRange(serializable, loader);
+				case BehaviorNodeType.EnginePropulsionForce:
+					return new BehaviorTreeNode_EnginePropulsionForce(serializable, loader);
 				case BehaviorNodeType.MotherShipRetreated:
 					return new BehaviorTreeNode_MotherShipRetreated(serializable, loader);
 				case BehaviorNodeType.MotherShipDestroyed:
@@ -196,6 +198,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_MainTargetIsAlly content);
 	    T Create(BehaviorTreeNode_MainTargetIsEnemy content);
 	    T Create(BehaviorTreeNode_MainTargetLowHp content);
+	    T Create(BehaviorTreeNode_MainTargetWithinAttackRange content);
 	    T Create(BehaviorTreeNode_FindEnemy content);
 	    T Create(BehaviorTreeNode_MoveToAttackRange content);
 	    T Create(BehaviorTreeNode_Attack content);
@@ -221,7 +224,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_DefendWithFronalShield content);
 	    T Create(BehaviorTreeNode_TrackControllableAmmo content);
 	    T Create(BehaviorTreeNode_KeepDistance content);
-	    T Create(BehaviorTreeNode_IsWithinAttackRange content);
+	    T Create(BehaviorTreeNode_EnginePropulsionForce content);
 	    T Create(BehaviorTreeNode_MotherShipRetreated content);
 	    T Create(BehaviorTreeNode_MotherShipDestroyed content);
 	    T Create(BehaviorTreeNode_FlyAroundMothership content);
@@ -653,6 +656,25 @@ namespace GameDatabase.DataModel
         }
 
 		public float MinValue { get; private set; }
+    }
+    public partial class BehaviorTreeNode_MainTargetWithinAttackRange : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_MainTargetWithinAttackRange(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			MinMaxLerp = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public float MinMaxLerp { get; private set; }
     }
     public partial class BehaviorTreeNode_FindEnemy : BehaviorTreeNode
     {
@@ -1123,14 +1145,14 @@ namespace GameDatabase.DataModel
 		public float MinDistance { get; private set; }
 		public float MaxDistance { get; private set; }
     }
-    public partial class BehaviorTreeNode_IsWithinAttackRange : BehaviorTreeNode
+    public partial class BehaviorTreeNode_EnginePropulsionForce : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
-  		public BehaviorTreeNode_IsWithinAttackRange(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+  		public BehaviorTreeNode_EnginePropulsionForce(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinMaxLerp = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
+			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1140,7 +1162,7 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
-		public float MinMaxLerp { get; private set; }
+		public float MinValue { get; private set; }
     }
     public partial class BehaviorTreeNode_MotherShipRetreated : BehaviorTreeNode
     {

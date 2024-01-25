@@ -11,17 +11,18 @@ namespace Combat.Component.Engine
             _angularVelocity = angularVelocity;
         }
 
-        public float MaxVelocity { get { return 0; } }
-        public float MaxAngularVelocity { get { return _angularVelocity > 0 ? _angularVelocity : -_angularVelocity; } }
-        public float Propulsion { get { return 0; } }
-        public float TurnRate { get { return 0; } }
+		public float MaxVelocity => 0;
+		public float MaxAngularVelocity => _angularVelocity > 0 ? _angularVelocity : -_angularVelocity;
+		public float Propulsion => 0;
+		public float TurnRate => 0;
 
-        public float? Course { get { return null; } set {} }
+		public float? Course { get { return null; } set {} }
         public float Throttle { get { return 0; } set {} }
+		public float ForwardAcceleration => 0f;
 
-        public Modifications<EngineData> Modifications { get { return _modifications; } }
+		public Modifications<EngineData> Modifications => _modifications;
 
-        public void Update(float elapsedTime, IBody body)
+		public void Update(float elapsedTime, IBody body)
         {
             ApplyDeceleration(body, elapsedTime);
             ApplyAngularAcceleration(body, elapsedTime);

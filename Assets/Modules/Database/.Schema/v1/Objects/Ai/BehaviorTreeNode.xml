@@ -12,7 +12,7 @@
 
     <member name="MinValue" type="float" case="HasEnoughEnergy,RechargeEnergy" alias="FailIfLess" minvalue="0" maxvalue="1" default="0.1" />
     <member name="MaxValue" type="float" case="RechargeEnergy" alias="RestoreUntil" minvalue="0" maxvalue="1" default="0.9" />
-    <member name="MinValue" type="float" case="IsLowOnHp,MothershipLowHp,MainTargetLowHp" minvalue="0" maxvalue="1" />
+    <member name="MinValue" type="float" case="IsLowOnHp,MothershipLowHp,MainTargetLowHp,EnginePropulsionForce" minvalue="0" maxvalue="1" />
 
     <member name="Cooldown" type="float" case="RandomSelector,RandomExecutor,Wait,Cooldown" minvalue="0" />
     <member name="Cooldown" type="float" case="LookForSecondaryTargets,LookForThreats" alias="Cooldown" minvalue="0.1" />
@@ -23,7 +23,7 @@
     <member name="InRange" type="bool" case="Wait" alias="ResetIfInterrupted" />
     <member name="NoDrones" type="bool" case="FindEnemy" alias="IgnoreDrones" />
     <member name="UseSystems" type="bool" case="Ram" alias="UseShipSystems" />
-    <member name="MinValue" type="float" case="MoveToAttackRange, MaintainAttackRange, IsWithinAttackRange" alias="MinMaxLerp" minvalue="0" maxvalue="1" default="1">Linear interpolation between shortest and longest weapon ranges</member>
+    <member name="MinValue" type="float" case="MoveToAttackRange, MaintainAttackRange, MainTargetWithinAttackRange" alias="MinMaxLerp" minvalue="0" maxvalue="1" default="1">Linear interpolation between shortest and longest weapon ranges</member>
     <member name="MaxValue" type="float" case="MoveToAttackRange" alias="Multiplier" minvalue="0" maxvalue="1" default="1" />
     <member name="MaxValue" type="float" case="MaintainAttackRange" alias="Tolerance" minvalue="0" maxvalue="1" default="0.2">A valid distance between ships will be [range*(1-tolerance) .. range]</member>
     <member name="MaxValue" type="float" case="SlowDown,MatchVelocityWithTarget" alias="Tolerance" minvalue="0" maxvalue="1" default="0.2">Acceptable speed deviation</member>

@@ -24,6 +24,7 @@
     <item name="MainTargetIsAlly" value="57" />
     <item name="MainTargetIsEnemy" value="58" />
     <item name="MainTargetLowHp" value="59" />
+    <item name="MainTargetWithinAttackRange" value="60" />
 
     <item name="FindEnemy" value="100">Looks for nearest enemy. Changes target every MaxCooldown sec if it's defined. SUCCESS if found, FAILURE otherwise</item>
     <item name="MoveToAttackRange" value="101">Moves towards target until inside attack radius. Requires main target. Uses attack range of selected weapons. SUCCESS if inside attack range, FAILURE if any error, RUNNING otherwise</item>
@@ -51,7 +52,7 @@
     <item name="TrackControllableAmmo" value="123">Tracks controllable bullets. Detonates them if near the target. Returns FAILURE if there are no bullets left. RUNNING otherwise</item>
     <item name="KeepDistance" value="124">Keeps ship within a specified distance from main target. Returns SUCCESS if inside valid range, FAILURE if any error, RUNNING otherwise</item>
 
-    <item name="IsWithinAttackRange" value="150" />
+    <item name="EnginePropulsionForce" value="150">Returns SUCCESS when [forward acceleration]/[max acceleration] > MinValue</item>
 
     <item name="MotherShipRetreated" value="200" />
     <item name="MotherShipDestroyed" value="201" />

@@ -13,6 +13,8 @@ namespace Combat.Component.Engine
         float? Course { get; set; }
         float Throttle { get; set; }
 
+		float ForwardAcceleration { get; }
+
         Modifications<EngineData> Modifications { get; }
 
         void Update(float elapsedTime, IBody body);
