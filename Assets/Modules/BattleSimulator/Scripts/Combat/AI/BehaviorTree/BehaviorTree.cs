@@ -9,6 +9,7 @@ namespace Combat.Ai.BehaviorTree
 		private readonly Context _context;
 		private readonly INode _rootNode;
 		private readonly IShip _ship;
+		private bool _lastResult;
 
 		public ShipBehaviorTree(IShip ship, IScene scene, INode rootNode)
 		{
@@ -20,10 +21,19 @@ namespace Combat.Ai.BehaviorTree
 		public void Update(float deltaTime)
 		{
 			_context.Update(deltaTime);
-			if (_rootNode.Evaluate(_context) == NodeState.Failure)
-				_context.Controls.Reset();
-			else
+			var result = _rootNode.Evaluate(_context) == NodeState.Success;
+			if (result)
+			{
 				_context.Controls.Apply(_ship);
+			}
+			else
+			{
+				_context.Controls.Reset();
+				if (_lastResult)
+					_context.Controls.Apply(_ship);
+			}
+
+			_lastResult = result;
 		}
 	}
 }

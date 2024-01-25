@@ -14,6 +14,7 @@ namespace Combat.Ai.BehaviorTree
 		private readonly MessageHub _messageHub;
 		private readonly AiSettings _settings;
 		private readonly IShip _ship;
+		private readonly IdentifiersMap _identifiersMap = new();
 
 		public NodeBuilder(IShip ship, AiSettings settings, MessageHub messageHub, ILocalization localization)
 		{
@@ -23,7 +24,6 @@ namespace Combat.Ai.BehaviorTree
 			_localization = localization;
 			_requirementChecker = new RequirementChecker(ship, settings);
 			_factory = new NodeFactory(this);
-			
 		}
 
 		public INode Build(BehaviorTreeNode model)
@@ -45,6 +45,8 @@ namespace Combat.Ai.BehaviorTree
 			private System.Random Random => _random ??= new();
 			private float RandomValue => (float)Random.NextDouble();
 			private float RandomRange(float min, float max) => min + (max - min) * RandomValue;
+
+			private int StrinToId(string name) => _builder._identifiersMap.GetMessageId(name);
 
 			public NodeFactory(NodeBuilder builder)
 			{
@@ -159,7 +161,7 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_MoveToAttackRange content) => new MoveToAttackRange(content.MinMaxLerp, content.Multiplier > 0 ? content.Multiplier : 1.0f);
 			public INode Create(BehaviorTreeNode_Attack content) => new AttackNode(Settings.AiLevel);
 			public INode Create(BehaviorTreeNode_FlyAroundMothership content) => new FlyAroundMothership(RandomRange(content.MinDistance, content.MaxDistance));
-			public INode Create(BehaviorTreeNode_HaveEnoughEnergy content) => new HaveEnoughEnergy(content.FailIfLess);
+			public INode Create(BehaviorTreeNode_HasEnoughEnergy content) => new HaveEnoughEnergy(content.FailIfLess);
 			public INode Create(BehaviorTreeNode_SelectWeapon content) => SelectWeaponNode.Create(Ship, content.WeaponType);
 			public INode Create(BehaviorTreeNode_SpawnDrones content) => new SpawnDronesNode(Ship);
 			public INode Create(BehaviorTreeNode_Ram content) => new RamNode(Ship, content.UseShipSystems);
@@ -184,26 +186,31 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_ChargeWeapons content) => ChargeWeaponsNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_Chase content) => new ChaseNode();
 			public INode Create(BehaviorTreeNode_AvoidThreats content) => new AvoidThreatsNode();
-			public INode Create(BehaviorTreeNode_HaveIncomingThreat content) => new HasIncomingThreatNode(content.TimeToCollision);
+			public INode Create(BehaviorTreeNode_HasIncomingThreat content) => new HasIncomingThreatNode(content.TimeToCollision);
 			public INode Create(BehaviorTreeNode_SlowDown content) => new SlowDownNode(content.Tolerance);
 			public INode Create(BehaviorTreeNode_UseRecoil content) => RecoilNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_DefendWithFronalShield content) => FrontalShieldNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_TrackControllableAmmo content) => TrackControllableAmmo.Create(Ship, true);
-			public INode Create(BehaviorTreeNode_HaveTarget content) => new HasTargetNode(false);
+			public INode Create(BehaviorTreeNode_HasAnyTarget content) => new HasTargetNode(false);
 			public INode Create(BehaviorTreeNode_DroneBayRangeExceeded content) => new DroneBayRangeExceeded(Settings.DroneRange);
 			public INode Create(BehaviorTreeNode_IsFasterThanTarget content) => new IsFaterThanTarget(1.0f);
 			public INode Create(BehaviorTreeNode_MatchVelocityWithTarget content) => new MatchVelocityNode(content.Tolerance);
 			public INode Create(BehaviorTreeNode_KeepDistance content) => new KeepDistanceNode(content.MinDistance, content.MaxDistance);
-			public INode Create(BehaviorTreeNode_TargetLost content) => InvertorNode.Create(new HasTargetNode(true));
-
+			public INode Create(BehaviorTreeNode_HasMainTarget content) => new HasTargetNode(true);
+			public INode Create(BehaviorTreeNode_MainTargetIsAlly content) => new TargetIsAllyNode();
+			public INode Create(BehaviorTreeNode_MainTargetIsEnemy content) => new TargetIsEnemyNode();
+			public INode Create(BehaviorTreeNode_MainTargetLowHp content) => new TargetLowHpNode(content.MinValue);
 			public INode Create(BehaviorTreeNode_ShowMessage content) => new ShowMessageNode(Localization.Localize(content.Text), content.Color);
 			public INode Create(BehaviorTreeNode_DebugLog content) => new DebugLogNode(content.Text);
 
-			public INode Create(BehaviorTreeNode_SetValue content) => new SetValueNode(MessageHub.GetMessageId(content.Name), content.Value);
-			public INode Create(BehaviorTreeNode_GetValue content) => new GetValueNode(MessageHub.GetMessageId(content.Name));
+			public INode Create(BehaviorTreeNode_SetValue content) => new SetValueNode(StrinToId(content.Name), content.Value);
+			public INode Create(BehaviorTreeNode_GetValue content) => new GetValueNode(StrinToId(content.Name));
 			public INode Create(BehaviorTreeNode_SendMessage content) => new SendMessageNode(MessageHub, content.Name);
 			public INode Create(BehaviorTreeNode_MessageReceived content) => new SubscribeToMessageNode(MessageHub, content.Name);
 			public INode Create(BehaviorTreeNode_TargetMessageSender content) => new TargetMessageSenderNode();
+
+			public INode Create(BehaviorTreeNode_SaveTarget content) => new SaveTargetNode(StrinToId(content.Name));
+			public INode Create(BehaviorTreeNode_LoadTarget content) => new LoadTargetNode(StrinToId(content.Name));
 		}
 	}
 }

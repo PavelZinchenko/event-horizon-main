@@ -46,5 +46,15 @@ namespace Combat.Ai.BehaviorTree.Utils
 
 			return false;
 		}
+
+		public static bool HasDevice(this IReadOnlyList<ISystem> shipSystems, GameDatabase.Enums.DeviceClass deviceClass)
+		{
+			var systems = new ShipSystemList<IDevice>();
+			for (int i = 0; i < shipSystems.Count; ++i)
+				if (shipSystems[i] is IDevice device && device.DeviceClass == deviceClass)
+					return true;
+
+			return false;
+		}
 	}
 }

@@ -19,9 +19,11 @@ namespace Combat.Ai.BehaviorTree
 		private ShipWeaponList _selectedWeapons;
 		private TargetList _targetList;
 		private ThreatList _threatList;
-		private HashSet<int> _variables;
 		private float _targetListUpdateTime = _initialTime;
 		private float _threatListUpdateTime = _initialTime;
+
+		private AutoExpandingList<IShip> _savedTargets;
+		private BitArray64 _savedFlags;
 
 		public IScene Scene => _scene;
 		public IShip Ship => _ship;
@@ -87,25 +89,29 @@ namespace Combat.Ai.BehaviorTree
 
 		public bool TrySetValue(int id, bool value)
 		{
-			if (value)
-			{
-				if (_variables == null)
-					_variables = new();
+			var currentValue = _savedFlags[id];
+			if (currentValue == value)
+				return false;
 
-				return _variables.Add(id);
-			}
-			else
-			{
-				if (_variables == null)
-					return false;
-
-				return _variables.Remove(id);
-			}
+			_savedFlags[id] = value;
+			return true;
 		}
 
-		public bool GetValue(int id)
+		public bool GetValue(int id) => _savedFlags[id];
+
+		public bool TrySaveTarget(int id)
 		{
-			return _variables != null && _variables.Contains(id);
+			if (_savedTargets[id] == TargetShip) 
+				return false;
+
+			_savedTargets[id] = TargetShip;
+			return true;
+		}
+
+		public bool LoadTarget(int id)
+		{
+			_targetShip = _savedTargets[id];
+			return _targetShip != null && _targetShip.State == Unit.UnitState.Active;
 		}
 	}
 }

@@ -35,12 +35,14 @@ namespace GameDatabase.DataModel
 					return new BehaviorNodeRequirement_AiLevel(serializable, loader);
 				case BehaviorRequirementType.MinAiLevel:
 					return new BehaviorNodeRequirement_MinAiLevel(serializable, loader);
+				case BehaviorRequirementType.SizeClass:
+					return new BehaviorNodeRequirement_SizeClass(serializable, loader);
 				case BehaviorRequirementType.HasDevice:
 					return new BehaviorNodeRequirement_HasDevice(serializable, loader);
-				case BehaviorRequirementType.HasAnyWeapon:
-					return new BehaviorNodeRequirement_HasAnyWeapon(serializable, loader);
 				case BehaviorRequirementType.HasDrones:
 					return new BehaviorNodeRequirement_HasDrones(serializable, loader);
+				case BehaviorRequirementType.HasAnyWeapon:
+					return new BehaviorNodeRequirement_HasAnyWeapon(serializable, loader);
 				case BehaviorRequirementType.CanRepairAllies:
 					return new BehaviorNodeRequirement_CanRepairAllies(serializable, loader);
 				case BehaviorRequirementType.HasHighRecoilWeapon:
@@ -51,6 +53,10 @@ namespace GameDatabase.DataModel
 					return new BehaviorNodeRequirement_HasRemotelyControlledWeapon(serializable, loader);
 				case BehaviorRequirementType.IsDrone:
 					return new BehaviorNodeRequirement_IsDrone(serializable, loader);
+				case BehaviorRequirementType.IsReinforcedForRamming:
+					return new BehaviorNodeRequirement_IsReinforcedForRamming(serializable, loader);
+				case BehaviorRequirementType.HasHighManeuverability:
+					return new BehaviorNodeRequirement_HasHighManeuverability(serializable, loader);
 				default:
                     throw new DatabaseException("BehaviorNodeRequirement: Invalid content type - " + serializable.Type);
 			}
@@ -78,14 +84,17 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorNodeRequirement_None content);
 	    T Create(BehaviorNodeRequirement_AiLevel content);
 	    T Create(BehaviorNodeRequirement_MinAiLevel content);
+	    T Create(BehaviorNodeRequirement_SizeClass content);
 	    T Create(BehaviorNodeRequirement_HasDevice content);
-	    T Create(BehaviorNodeRequirement_HasAnyWeapon content);
 	    T Create(BehaviorNodeRequirement_HasDrones content);
+	    T Create(BehaviorNodeRequirement_HasAnyWeapon content);
 	    T Create(BehaviorNodeRequirement_CanRepairAllies content);
 	    T Create(BehaviorNodeRequirement_HasHighRecoilWeapon content);
 	    T Create(BehaviorNodeRequirement_HasChargeableWeapon content);
 	    T Create(BehaviorNodeRequirement_HasRemotelyControlledWeapon content);
 	    T Create(BehaviorNodeRequirement_IsDrone content);
+	    T Create(BehaviorNodeRequirement_IsReinforcedForRamming content);
+	    T Create(BehaviorNodeRequirement_HasHighManeuverability content);
     }
 
     public partial class BehaviorNodeRequirement_Empty : BehaviorNodeRequirement
@@ -200,6 +209,25 @@ namespace GameDatabase.DataModel
 
 		public AiDifficultyLevel DifficultyLevel { get; private set; }
     }
+    public partial class BehaviorNodeRequirement_SizeClass : BehaviorNodeRequirement
+    {
+		partial void OnDataDeserialized(BehaviorNodeRequirementSerializable serializable, Database.Loader loader);
+
+  		public BehaviorNodeRequirement_SizeClass(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			SizeClass = serializable.SizeClass;
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorNodeRequirementFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public SizeClass SizeClass { get; private set; }
+    }
     public partial class BehaviorNodeRequirement_HasDevice : BehaviorNodeRequirement
     {
 		partial void OnDataDeserialized(BehaviorNodeRequirementSerializable serializable, Database.Loader loader);
@@ -219,11 +247,11 @@ namespace GameDatabase.DataModel
 
 		public DeviceClass DeviceClass { get; private set; }
     }
-    public partial class BehaviorNodeRequirement_HasAnyWeapon : BehaviorNodeRequirement
+    public partial class BehaviorNodeRequirement_HasDrones : BehaviorNodeRequirement
     {
 		partial void OnDataDeserialized(BehaviorNodeRequirementSerializable serializable, Database.Loader loader);
 
-  		public BehaviorNodeRequirement_HasAnyWeapon(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
+  		public BehaviorNodeRequirement_HasDrones(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 
@@ -236,11 +264,11 @@ namespace GameDatabase.DataModel
         }
 
     }
-    public partial class BehaviorNodeRequirement_HasDrones : BehaviorNodeRequirement
+    public partial class BehaviorNodeRequirement_HasAnyWeapon : BehaviorNodeRequirement
     {
 		partial void OnDataDeserialized(BehaviorNodeRequirementSerializable serializable, Database.Loader loader);
 
-  		public BehaviorNodeRequirement_HasDrones(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
+  		public BehaviorNodeRequirement_HasAnyWeapon(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 
@@ -337,6 +365,42 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+    }
+    public partial class BehaviorNodeRequirement_IsReinforcedForRamming : BehaviorNodeRequirement
+    {
+		partial void OnDataDeserialized(BehaviorNodeRequirementSerializable serializable, Database.Loader loader);
+
+  		public BehaviorNodeRequirement_IsReinforcedForRamming(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorNodeRequirementFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+    }
+    public partial class BehaviorNodeRequirement_HasHighManeuverability : BehaviorNodeRequirement
+    {
+		partial void OnDataDeserialized(BehaviorNodeRequirementSerializable serializable, Database.Loader loader);
+
+  		public BehaviorNodeRequirement_HasHighManeuverability(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Value = UnityEngine.Mathf.Clamp(serializable.Value, 0f, 3.402823E+38f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorNodeRequirementFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public float Value { get; private set; }
     }
 
 }

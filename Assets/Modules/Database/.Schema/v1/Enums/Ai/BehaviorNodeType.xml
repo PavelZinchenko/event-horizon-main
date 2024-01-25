@@ -13,13 +13,17 @@
     <item name="ParallelSequence" value="10">Executes nodes sequentially, stops when the first node returns FAILURE</item>
     <item name="Cooldown" value="11">Executes node until it succeeds, then waits a specific amount of time, returning FAILURE, repeats</item>
 
-    <item name="HaveEnoughEnergy" value="50" />
+    <item name="HasEnoughEnergy" value="50" />
     <item name="IsLowOnHp" value="51" />
     <item name="IsControledByPlayer" value="52">SUCCESS if player did any action this frame</item>
-    <item name="HaveIncomingThreat" value="53">Requires threat list. Returns SUCCESS if time to collision less than value</item>
-    <item name="HaveTarget" value="54">Returns SUCCESS if has either main or secondary target</item>
+    <item name="HasIncomingThreat" value="53">Requires threat list. Returns SUCCESS if time to collision less than value</item>
+    <item name="HasAnyTarget" value="54">Returns SUCCESS if has either main or secondary target</item>
+
     <item name="IsFasterThanTarget" value="55" />
-    <item name="TargetLost" value="56">Returns SUCCESS if there is no main target or it's destroyed</item>
+    <item name="HasMainTarget" value="56">Returns SUCCESS if the main is selected and alive</item>
+    <item name="MainTargetIsAlly" value="57" />
+    <item name="MainTargetIsEnemy" value="58" />
+    <item name="MainTargetLowHp" value="59" />
 
     <item name="FindEnemy" value="100">Looks for nearest enemy. Changes target every MaxCooldown sec if it's defined. SUCCESS if found, FAILURE otherwise</item>
     <item name="MoveToAttackRange" value="101">Moves towards target until inside attack radius. Requires main target. Uses attack range of selected weapons. SUCCESS if inside attack range, FAILURE if any error, RUNNING otherwise</item>
@@ -64,4 +68,6 @@
     <item name="SendMessage" value="304">Sends a message to all allies, returning SUCCESS if any ally receives it</item>
     <item name="MessageReceived" value="305">Monitors the radio, waiting for a specific message. Remembers message sender. If received returns SUCCESS, otherwise FAILURE</item>
     <item name="TargetMessageSender" value="306">Targets the sender of the last received message. Returns SUCCESS if it's still alive, otherwise FAILURE</item>
+    <item name="SaveTarget" value="307">Saves the main target for this ship. It returns SUCCESS if the target is successfully updated, and FAILURE if the new target is identical to the previously saved target</item>
+    <item name="LoadTarget" value="308">Loads saved target. Returns SUCCESS if it exists and alive, otherwise FAILURE</item>
 </data>

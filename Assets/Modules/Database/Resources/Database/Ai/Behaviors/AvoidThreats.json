@@ -3,6 +3,10 @@
   "Id": 110,
   "RootNode": {
     "Type": 3,
+    "Requirement": {
+      "Type": 101,
+      "Value": 4.0
+    },
     "Nodes": [
       {
         "Type": 112,

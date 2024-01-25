@@ -5,16 +5,21 @@
     <item name="All" value="2" />
     <item name="None" value="3" />
     
-    <item name="AiLevel" value="5">Satisfied if enemy AI level equals to this value</item>
-    <item name="MinAiLevel" value="6">Satisfied if enemy AI level is equals or higher than this value</item>
+    <item name="AiLevel" value="5">Condition met if AI level equals to this value</item>
+    <item name="MinAiLevel" value="6">Condition met if AI level is equals or higher than this value</item>
+    <item name="SizeClass" value="7" />
 
     <item name="HasDevice" value="10" />
-    <item name="HasAnyWeapon" value="11" />
     <item name="HasDrones" value="12" />
+    <item name="HasAnyWeapon" value="11" />
     <item name="CanRepairAllies" value="13" />
     <item name="HasHighRecoilWeapon" value="14" />
     <item name="HasChargeableWeapon" value="15" />
     <item name="HasRemotelyControlledWeapon" value="16" />
 
     <item name="IsDrone" value="50" />
+
+    <item name="IsReinforcedForRamming" value="100" />
+    <item name="HasHighManeuverability" value="101">Condition met when EnginePower/sqrt(Mass) > Value</item>
+
 </data>

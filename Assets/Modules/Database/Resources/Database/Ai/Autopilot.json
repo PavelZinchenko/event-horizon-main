@@ -5,7 +5,10 @@
     "Type": 3,
     "Nodes": [
       {
-        "Type": 52
+        "Type": 6,
+        "Node": {
+          "Type": 52
+        }
       },
       {
         "Type": 109,

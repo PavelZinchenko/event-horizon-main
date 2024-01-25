@@ -374,7 +374,8 @@ namespace Combat.Factory
             var body = gameObject.GetComponent<IBodyComponent>();
             body.Initialize(null, position, 0f, 2 * radius, velocity, 0f, 1.0f);
             var collider = gameObject.GetComponent<ICollider>();
-            var unit = new ShortLivedObject(body, new EmptyView(), collider, lifetime, new UnitType(UnitClass.AreaOfEffect, owner.Type.Side, owner));
+			var side = owner == null ? UnitSide.Undefined : owner.Type.Side;
+            var unit = new ShortLivedObject(body, new EmptyView(), collider, lifetime, new UnitType(UnitClass.AreaOfEffect, side, owner));
             unit.AddResource(gameObject);
             gameObject.IsActive = true;
 

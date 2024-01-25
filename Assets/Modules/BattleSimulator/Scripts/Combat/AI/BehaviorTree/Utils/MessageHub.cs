@@ -14,17 +14,9 @@ namespace Combat.Ai.BehaviorTree.Utils
 	public class MessageHub
 	{
 		private readonly Dictionary<int, List<IMessageListener>> _messageListeners = new();
-		private readonly Dictionary<string, int> _messageIds = new();
+		private readonly IdentifiersMap _messageIds;
 
-		public int GetMessageId(string name)
-		{
-			if (_messageIds.TryGetValue(name, out int id))
-				return id;
-
-			var lastId = _messageIds.Count;
-			_messageIds.Add(name, lastId);
-			return lastId;
-		}
+		public int GetMessageId(string name) => _messageIds.GetMessageId(name);
 
 		public void Subscribe(int id, IMessageListener messageListener)
 		{
