@@ -21,6 +21,7 @@ namespace Combat.Component.Bullet.Action
         }
 
         public ConditionType Condition { get; private set; }
+        public float Cooldown { get; set; }
 
         public void Dispose() { }
 

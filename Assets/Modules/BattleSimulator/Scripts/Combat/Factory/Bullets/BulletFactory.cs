@@ -367,7 +367,7 @@ namespace Combat.Factory
             public Result Create(BulletTrigger_PlaySfx trigger)
             {
                 var condition = FromTriggerCondition(trigger.Condition);
-                CreateSoundEffect(_bullet, trigger.AudioClip, condition);
+                CreateSoundEffect(_bullet, trigger.AudioClip, condition, trigger.Cooldown);
                 CreateVisualEffect(_bullet, _collisionBehaviour, condition, trigger);
                 return Result.Ok;
             }
@@ -375,7 +375,7 @@ namespace Combat.Factory
             public Result Create(BulletTrigger_SpawnStaticSfx trigger)
             {
                 var condition = FromTriggerCondition(trigger.Condition);
-                CreateSoundEffect(_bullet, trigger.AudioClip, condition);
+                CreateSoundEffect(_bullet, trigger.AudioClip, condition, trigger.Cooldown);
                 CreateStaticVisualEffect(_bullet, condition, trigger);
                 return Result.Ok;
             }
@@ -409,14 +409,14 @@ namespace Combat.Factory
                 return Result.Ok;
             }
 
-            private void CreateSoundEffect(Bullet bullet, AudioClipId audioClip, ConditionType condition)
+            private void CreateSoundEffect(Bullet bullet, AudioClipId audioClip, ConditionType condition, float cooldown)
             {
                 if (!audioClip) return;
 
 				if (condition == ConditionType.None && !audioClip.Loop)
                     _factory._soundPlayer.Play(audioClip);
                 else
-                    bullet.AddAction(new PlaySoundAction(_factory._soundPlayer, audioClip, condition));
+                    bullet.AddAction(new PlaySoundAction(_factory._soundPlayer, cooldown, audioClip, condition));
             }
 
             private void CreateVisualEffect(Bullet bullet, BulletCollisionBehaviour collisionBehaviour,
@@ -431,7 +431,7 @@ namespace Combat.Factory
                     collisionBehaviour.AddAction(new ShowHitEffectAction(_factory._effectFactory, trigger.VisualEffect, color,
                         size * _factory._stats.BodySize, trigger.Lifetime));
                 else
-                    bullet.AddAction(new PlayEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, size,
+                    bullet.AddAction(new PlayEffectAction(bullet, _factory._effectFactory, trigger.Cooldown, trigger.VisualEffect, color, size,
                         trigger.Lifetime, condition));
             }
 
@@ -441,7 +441,7 @@ namespace Combat.Factory
 
                 var color = trigger.ColorMode.Apply(trigger.Color, _factory._stats.Color);
 
-                bullet.AddAction(new SpawnEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, trigger.Size,
+                bullet.AddAction(new SpawnEffectAction(bullet, _factory._effectFactory, trigger.Cooldown, trigger.VisualEffect, color, trigger.Size,
                     trigger.Lifetime, condition));
             }
 

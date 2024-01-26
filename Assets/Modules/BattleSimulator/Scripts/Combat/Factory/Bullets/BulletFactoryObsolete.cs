@@ -96,7 +96,7 @@ namespace Combat.Factory
             if (_stats.FireSound)
             {
                 if (_stats.FireSound.Loop)
-                    bullet.AddAction(new PlaySoundAction(_soundPlayer, _stats.FireSound, ConditionType.None));
+                    bullet.AddAction(new PlaySoundAction(_soundPlayer, 0, _stats.FireSound, ConditionType.None));
                 else
                     _soundPlayer.Play(_stats.FireSound);
             }
@@ -256,7 +256,7 @@ namespace Combat.Factory
         {
             var explodeCondition = _stats.AmmunitionClass.DetonateIfExpired() ? ConditionType.OnExpire | ConditionType.OnDetonate : ConditionType.OnDetonate;
             if (_stats.HitSound)
-                bullet.AddAction(new PlaySoundAction(_soundPlayer, _stats.HitSound, explodeCondition));
+                bullet.AddAction(new PlaySoundAction(_soundPlayer, 0, _stats.HitSound, explodeCondition));
 
             if (_stats.AmmunitionClass.ExplodeIfDetonated(_stats))
                 if (_stats.DamageType == DamageType.Impact)

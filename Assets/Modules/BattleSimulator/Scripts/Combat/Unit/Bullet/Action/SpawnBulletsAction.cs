@@ -14,13 +14,13 @@ namespace Combat.Component.Bullet.Action
 {
     public class SpawnBulletsAction : IAction, IWeaponPlatform
     {
-        public SpawnBulletsAction(IBulletFactory factory, int magazine, float initialOffset, float rechargeTime, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
+        public SpawnBulletsAction(IBulletFactory factory, int magazine, float initialOffset, float cooldown, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
         {
             Type = parent.Type;
             _body = new BodyWrapper(parent.Body);
             _factory = factory;
             _magazine = magazine;
-            _rechargeTime = rechargeTime > 0 ? rechargeTime : float.MaxValue;
+            Cooldown = cooldown;
             _offset = initialOffset;
             _soundPlayer = soundPlayer;
             _audioClipId = audioClip;
@@ -29,12 +29,13 @@ namespace Combat.Component.Bullet.Action
         }
 
         public ConditionType Condition { get; private set; }
+        public float Cooldown { get; set; }
 
         public CollisionEffect Invoke()
         {
             var time = Time.fixedTime;
 
-            if (_lastSpawnTime > 0 && time - _lastSpawnTime < _rechargeTime)
+            if (time < _nextActivation)
                 return CollisionEffect.None;
 
             if (_magazine <= 1)
@@ -47,7 +48,7 @@ namespace Combat.Component.Bullet.Action
 
             if (_audioClipId) _soundPlayer.Play(_audioClipId, GetHashCode());
 
-            _lastSpawnTime = time;
+            _nextActivation = time + Cooldown;
             return CollisionEffect.None;
         }
 
@@ -62,7 +63,6 @@ namespace Combat.Component.Bullet.Action
         public bool IsTemporary { get { return true; } }
         public float FixedRotation { get { return 0; } }
         public bool IsReady { get { return true; } }
-        public float Cooldown { get { return 0; } }
         public float AutoAimingAngle { get { return 0; } }
         public void Aim(float bulletVelocity, float weaponRange, bool relative) {}
         public void OnShot() {}
@@ -71,10 +71,9 @@ namespace Combat.Component.Bullet.Action
         public void UpdatePhysics(float elapsedTime) {}
         public void UpdateView(float elapsedTime) {}
 
-        private float _lastSpawnTime;
+        private float _nextActivation;
         private readonly AudioClipId _audioClipId;
         private readonly IBulletFactory _factory;
-        private readonly float _rechargeTime;
         private readonly float _offset;
         private readonly int _magazine;
         private readonly BodyWrapper _body;
