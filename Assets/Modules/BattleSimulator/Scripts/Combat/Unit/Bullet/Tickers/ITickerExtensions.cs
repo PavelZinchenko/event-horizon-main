@@ -1,3 +1,5 @@
+using GameDiagnostics;
+
 namespace Combat.Component.Bullet.Tickers
 {
     public static class ITickerExtensions
@@ -15,7 +17,7 @@ namespace Combat.Component.Bullet.Tickers
         public static void Update(this ITicker ticker, float time)
         {
             // If the next activation time is not yet reached, return without activating.
-            if (ticker.NextActivation < time) return;
+            if (time < ticker.NextActivation) return;
 
             // Activate the ticker and set the next activation time.
             ticker.Activate();
