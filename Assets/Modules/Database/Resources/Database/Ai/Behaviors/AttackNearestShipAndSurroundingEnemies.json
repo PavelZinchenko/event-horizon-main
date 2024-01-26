@@ -11,14 +11,23 @@
         "Type": 103
       },
       {
-        "Type": 100,
-        "MinValue": 0.5,
-        "MaxValue": 5.0,
-        "NoDrones": true
-      },
-      {
-        "Type": 111,
-        "Cooldown": 0.1
+        "Type": 4,
+        "Nodes": [
+          {
+            "Type": 100,
+            "MinValue": 0.5,
+            "MaxValue": 5.0,
+            "NoDrones": true
+          },
+          {
+            "Type": 111,
+            "Requirement": {
+              "Type": 6,
+              "DifficultyLevel": 1
+            },
+            "Cooldown": 0.1
+          }
+        ]
       },
       {
         "Type": 4,

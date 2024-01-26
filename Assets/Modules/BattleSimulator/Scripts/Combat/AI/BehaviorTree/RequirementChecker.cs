@@ -79,22 +79,7 @@ namespace Combat.Ai.BehaviorTree
 		public bool Create(BehaviorNodeRequirement_HasChargeableWeapon content) => _ship.Systems.All.HasWeapon(WeaponType.RequiredCharging);
 		public bool Create(BehaviorNodeRequirement_HasRemotelyControlledWeapon content) => _ship.Systems.All.HasWeapon(WeaponType.Manageable);
 		public bool Create(BehaviorNodeRequirement_SizeClass content) => _ship.Specification.Stats.ShipModel.SizeClass == content.SizeClass;
-
-		public bool Create(BehaviorNodeRequirement_IsReinforcedForRamming content)
-		{
-			if (_ship.Stats.RammingDamageMultiplier >= 1.5f)
-				return true;
-			if (_ship.Stats.Resistance.Kinetic >= 0.5f)
-				return true;
-			if (_ship.Systems.All.HasDevice(GameDatabase.Enums.DeviceClass.Fortification))
-				return true;
-
-			return false;
-		}
-
-		public bool Create(BehaviorNodeRequirement_HasHighManeuverability content)
-		{
-			return _ship.Engine.Propulsion > content.Value;
-		}
+		public bool Create(BehaviorNodeRequirement_HasKineticResistance content) => _ship.Stats.Resistance.Kinetic >= content.Value;
+		public bool Create(BehaviorNodeRequirement_HasHighManeuverability content) => _ship.Engine.Propulsion > content.Value;
 	}
 }

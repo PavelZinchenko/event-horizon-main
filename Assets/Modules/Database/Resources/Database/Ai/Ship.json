@@ -2,76 +2,65 @@
   "ItemType": 28,
   "Id": 1,
   "RootNode": {
-    "Type": 4,
+    "Type": 2,
     "Nodes": [
       {
-        "Type": 104
-      },
-      {
-        "Type": 1,
-        "ItemId": 102
-      },
-      {
-        "Type": 1,
-        "ItemId": 100
-      },
-      {
-        "Type": 111,
-        "Requirement": {
-          "Type": 6,
-          "DifficultyLevel": 1
-        },
-        "Cooldown": 0.1
-      },
-      {
         "Type": 1,
         "Requirement": {
-          "Type": 6,
-          "DifficultyLevel": 2
-        },
-        "ItemId": 110
-      },
-      {
-        "Type": 1,
-        "Requirement": {
-          "Type": 6,
-          "DifficultyLevel": 1
-        },
-        "ItemId": 111
-      },
-      {
-        "Type": 1,
-        "Requirement": {
-          "Type": 6,
-          "DifficultyLevel": 1
-        },
-        "ItemId": 113
-      },
-      {
-        "Type": 1,
-        "ItemId": 118
-      },
-      {
-        "Type": 3,
-        "Requirement": {
-          "Type": 3,
+          "Type": 2,
           "Requirements": [
             {
-              "Type": 10,
-              "DeviceClass": 8
+              "Type": 13
+            },
+            {
+              "Type": 101,
+              "Value": 5.0
             }
           ]
         },
-        "Nodes": [
-          {
-            "Type": 51,
-            "MinValue": 0.2
-          },
-          {
-            "Type": 1,
-            "ItemId": 108
-          }
-        ]
+        "ItemId": 12
+      },
+      {
+        "Type": 1,
+        "Requirement": {
+          "Type": 2,
+          "Requirements": [
+            {
+              "Type": 1,
+              "Requirements": [
+                {
+                  "Type": 100,
+                  "Value": 0.5
+                },
+                {
+                  "Type": 10,
+                  "DeviceClass": 13
+                }
+              ]
+            },
+            {
+              "Type": 1,
+              "Requirements": [
+                {
+                  "Type": 101,
+                  "Value": 8.0
+                },
+                {
+                  "Type": 10
+                }
+              ]
+            }
+          ]
+        },
+        "ItemId": 13
+      },
+      {
+        "Type": 1,
+        "ItemId": 11
+      },
+      {
+        "Type": 1,
+        "ItemId": 14
       }
     ]
   }

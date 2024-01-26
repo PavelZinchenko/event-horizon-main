@@ -19,12 +19,17 @@
         "NoDrones": true
       },
       {
+        "Type": 7,
+        "Node": {
+          "Type": 1,
+          "ItemId": 109
+        },
+        "Result": true,
+        "Cooldown": 20.0
+      },
+      {
         "Type": 2,
         "Nodes": [
-          {
-            "Type": 1,
-            "ItemId": 109
-          },
           {
             "Type": 106,
             "InRange": true

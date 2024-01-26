@@ -1,35 +1,47 @@
-﻿namespace Combat.Ai.BehaviorTree.Nodes
+﻿using GameDatabase.Enums;
+using Combat.Ai.BehaviorTree.Utils;
+
+namespace Combat.Ai.BehaviorTree.Nodes
 {
 	public class CooldownNode : INode
 	{
 		private readonly INode _node;
+		private readonly NodeExecutionMode _mode;
+		private readonly NodeState _result;
 		private readonly float _cooldown;
+		private float _lastExecutionTime;
 
-		private float _lastExecuteTime;
-
-		public static INode Create(INode node, float cooldown)
+		public static INode Create(INode node, NodeExecutionMode mode, float cooldown, NodeState result)
 		{
-			if (node == EmptyNode.Failure) return EmptyNode.Failure;
-			return new CooldownNode(node, cooldown);
+			if (node.IsEmpty())
+			{
+				var nodeResult = node.Evaluate(null);
+				if (!mode.IsConditionMet(nodeResult) || result == nodeResult)
+					return node;
+			}
+
+			return new CooldownNode(node, mode, result, cooldown);
 		}
 
 		public NodeState Evaluate(Context context)
 		{
-			if (context.Time - _lastExecuteTime < _cooldown)
-				return NodeState.Failure;
+			if (context.Time - _lastExecutionTime < _cooldown)
+				return _result;
 
 			var result = _node.Evaluate(context);
-			if (result == NodeState.Success)
-				_lastExecuteTime = context.Time;
+			if (_mode.IsConditionMet(result))
+				_lastExecutionTime = context.Time;
 
 			return result;
 		}
 
-		private CooldownNode(INode node, float cooldown)
+		private CooldownNode(INode node, NodeExecutionMode mode, NodeState cooldownState, float cooldown)
 		{
 			_node = node;
+			_mode = mode;
+			_result = cooldownState;
 			_cooldown = cooldown;
-			_lastExecuteTime = -_cooldown;
+			_lastExecutionTime = -_cooldown;
 		}
 	}
 }

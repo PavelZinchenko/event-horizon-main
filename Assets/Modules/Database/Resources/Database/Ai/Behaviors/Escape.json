@@ -1,0 +1,18 @@
+{
+  "ItemType": 28,
+  "Id": 123,
+  "RootNode": {
+    "Type": 3,
+    "Nodes": [
+      {
+        "Type": 100,
+        "MinValue": 0.5,
+        "MaxValue": 5.0,
+        "NoDrones": true
+      },
+      {
+        "Type": 126
+      }
+    ]
+  }
+}

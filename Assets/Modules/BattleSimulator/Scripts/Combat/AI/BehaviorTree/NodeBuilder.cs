@@ -57,9 +57,10 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_Undefined content) => EmptyNode.Success;
 			public INode Create(BehaviorTreeNode_SubTree content) => _builder.Build(content.BehaviourTree?.RootNode);
 			public INode Create(BehaviorTreeNode_Invertor content) => InvertorNode.Create(_builder.Build(content.Node));
-			public INode Create(BehaviorTreeNode_ConstantResult content) => ConstantResultNode.Create(_builder.Build(content.Node), content.Result);
-			public INode Create(BehaviorTreeNode_CompleteOnce content) => CompleteOnceNode.Create(_builder.Build(content.Node), content.Result);
-			public INode Create(BehaviorTreeNode_Cooldown content) => CooldownNode.Create(_builder.Build(content.Node), content.Cooldown);
+			public INode Create(BehaviorTreeNode_Cooldown content) => CooldownNode.Create(_builder.Build(content.Node),
+				content.ExecutionMode, content.Cooldown, content.Result ? NodeState.Success : NodeState.Failure);
+			public INode Create(BehaviorTreeNode_Execute content) => ExecuteNode.Create(_builder.Build(content.Node),
+				content.ExecutionMode, content.Result ? NodeState.Success : NodeState.Failure);
 
 			public INode Create(BehaviorTreeNode_Selector content)
 			{
@@ -129,18 +130,7 @@ namespace Combat.Ai.BehaviorTree
 				if (content.Nodes.Count == 0) return EmptyNode.Failure;
 				if (content.Nodes.Count == 1) return _builder.Build(content.Nodes[0]);
 
-				var random = new RandomSelectorNode(content.Cooldown, false);
-				foreach (var child in content.Nodes)
-					random.Add(_builder.Build(child));
-
-				return random;
-			}
-
-			public INode Create(BehaviorTreeNode_RandomExecutor content)
-			{
-				if (content.Nodes.Count == 0) return EmptyNode.Failure;
-
-				var random = new RandomSelectorNode(content.Cooldown, true);
+				var random = new RandomSelectorNode(content.Cooldown);
 				foreach (var child in content.Nodes)
 					random.Add(_builder.Build(child));
 
@@ -159,7 +149,6 @@ namespace Combat.Ai.BehaviorTree
 			}
 
 			public INode Create(BehaviorTreeNode_MoveToAttackRange content) => new MoveToAttackRange(content.MinMaxLerp, content.Multiplier > 0 ? content.Multiplier : 1.0f);
-			public INode Create(BehaviorTreeNode_Attack content) => new AttackNode(Settings.AiLevel);
 			public INode Create(BehaviorTreeNode_FlyAroundMothership content) => new FlyAroundMothership(RandomRange(content.MinDistance, content.MaxDistance));
 			public INode Create(BehaviorTreeNode_HasEnoughEnergy content) => new HaveEnoughEnergy(content.FailIfLess);
 			public INode Create(BehaviorTreeNode_SelectWeapon content) => SelectWeaponNode.Create(Ship, content.WeaponType);
@@ -178,7 +167,7 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_IsControledByPlayer content) => new IsPlayerControlled();
 			public INode Create(BehaviorTreeNode_Wait content) => new WaitNode(content.Cooldown, content.ResetIfInterrupted);
 			public INode Create(BehaviorTreeNode_LookAtTarget content) => new LookAtTargetNode();
-			public INode Create(BehaviorTreeNode_LookForSecondaryTargets content) => new UpdateSecondaryTargets(content.Cooldown);
+			public INode Create(BehaviorTreeNode_LookForAdditionalTargets content) => new UpdateSecondaryTargets(content.Cooldown);
 			public INode Create(BehaviorTreeNode_LookForThreats content) => new UpdateThreats(content.Cooldown);
 			public INode Create(BehaviorTreeNode_ActivateDevice content) => ActivateDeviceNode.Create(Ship, content.DeviceClass);
 			public INode Create(BehaviorTreeNode_RechargeEnergy content) => new RechargeEnergy(content.FailIfLess, content.RestoreUntil);
@@ -191,12 +180,11 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_UseRecoil content) => RecoilNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_DefendWithFronalShield content) => FrontalShieldNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_TrackControllableAmmo content) => TrackControllableAmmo.Create(Ship, true);
-			public INode Create(BehaviorTreeNode_HasAnyTarget content) => new HasTargetNode(false);
 			public INode Create(BehaviorTreeNode_DroneBayRangeExceeded content) => new DroneBayRangeExceeded(Settings.DroneRange);
 			public INode Create(BehaviorTreeNode_IsFasterThanTarget content) => new IsFaterThanTarget(1.0f);
 			public INode Create(BehaviorTreeNode_MatchVelocityWithTarget content) => new MatchVelocityNode(content.Tolerance);
 			public INode Create(BehaviorTreeNode_KeepDistance content) => new KeepDistanceNode(content.MinDistance, content.MaxDistance);
-			public INode Create(BehaviorTreeNode_HasMainTarget content) => new HasTargetNode(true);
+			public INode Create(BehaviorTreeNode_HasMainTarget content) => new HasTargetNode();
 			public INode Create(BehaviorTreeNode_MainTargetIsAlly content) => new TargetIsAllyNode();
 			public INode Create(BehaviorTreeNode_MainTargetIsEnemy content) => new TargetIsEnemyNode();
 			public INode Create(BehaviorTreeNode_MainTargetLowHp content) => new TargetLowHpNode(content.MinValue);
@@ -210,6 +198,13 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_TargetMessageSender content) => new TargetMessageSenderNode();
 			public INode Create(BehaviorTreeNode_SaveTarget content) => new SaveTargetNode(StrinToId(content.Name));
 			public INode Create(BehaviorTreeNode_LoadTarget content) => new LoadTargetNode(StrinToId(content.Name));
+			public INode Create(BehaviorTreeNode_ForgetMainTarget content) => new ForgetTargetNode();
+			public INode Create(BehaviorTreeNode_HasSavedTarget content) => new HasTargetNode(StrinToId(content.Name));
+			public INode Create(BehaviorTreeNode_ForgetSavedTarget content) => new ForgetTargetNode(StrinToId(content.Name));
+			public INode Create(BehaviorTreeNode_EscapeTargetAttackRadius content) => new EscapeAttackRadiusNode();
+			public INode Create(BehaviorTreeNode_HasAdditionalTargets content) => new HasSecondaryTargetsNode();
+			public INode Create(BehaviorTreeNode_AttackMainTarget content) => new AttackMainTargetNode(Settings.AiLevel);
+			public INode Create(BehaviorTreeNode_AttackAdditionalTargets content) => new AttackSecondaryTargetsNode(Settings.AiLevel);
 		}
 	}
 }

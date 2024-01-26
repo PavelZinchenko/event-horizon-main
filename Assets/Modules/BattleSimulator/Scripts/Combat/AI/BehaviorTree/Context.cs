@@ -29,9 +29,11 @@ namespace Combat.Ai.BehaviorTree
 		public IShip Ship => _ship;
 		public ShipControls Controls { get; } = new();
 
-		public IShip TargetShip { get; set; }
+		public IShip TargetShip { get => _targetShip; set => _targetShip = value; }
+
 		public IShip LastMessageSender { get; set; }
 		public float LastTargetUpdateTime { get; set; } = _initialTime;
+		public float LastTextMessageTime { get; set; } = _initialTime;
 
 		public IReadOnlyList<IShip> SecondaryTargets => _targetList?.Items ?? EmptyList<IShip>.Instance;
 
@@ -99,19 +101,19 @@ namespace Combat.Ai.BehaviorTree
 
 		public bool GetValue(int id) => _savedFlags[id];
 
-		public bool TrySaveTarget(int id)
+		public bool TrySaveTarget(int id, IShip target)
 		{
-			if (_savedTargets[id] == TargetShip) 
+			if (_savedTargets[id] == target)
 				return false;
 
-			_savedTargets[id] = TargetShip;
+			_savedTargets[id] = target;
 			return true;
 		}
 
-		public bool LoadTarget(int id)
+		public IShip LoadTarget(int id)
 		{
-			_targetShip = _savedTargets[id];
-			return _targetShip != null && _targetShip.State == Unit.UnitState.Active;
+			var target = _savedTargets[id];
+			return target != null && target.State == Unit.UnitState.Active ? target : null;
 		}
 	}
 }

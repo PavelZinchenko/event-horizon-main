@@ -11,7 +11,7 @@
 
 		public NodeState Evaluate(Context context)
 		{
-			return context.TrySaveTarget(_id) ? NodeState.Success : NodeState.Failure;
+			return context.TrySaveTarget(_id, context.TargetShip) ? NodeState.Success : NodeState.Failure;
 		}
 	}
 }

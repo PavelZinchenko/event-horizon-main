@@ -1,0 +1,39 @@
+{
+  "ItemType": 28,
+  "Id": 127,
+  "RootNode": {
+    "Type": 2,
+    "Requirement": {
+      "Type": 13
+    },
+    "Nodes": [
+      {
+        "Type": 1,
+        "ItemId": 126
+      },
+      {
+        "Type": 3,
+        "Nodes": [
+          {
+            "Type": 305,
+            "Text": "need_repair"
+          },
+          {
+            "Type": 306
+          }
+        ]
+      },
+      {
+        "Type": 3,
+        "Nodes": [
+          {
+            "Type": 57
+          },
+          {
+            "Type": 125
+          }
+        ]
+      }
+    ]
+  }
+}

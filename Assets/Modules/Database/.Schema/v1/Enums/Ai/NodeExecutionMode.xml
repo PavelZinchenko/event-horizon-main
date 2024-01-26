@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="NodeExecutionMode">
+    <item name="UntilSucceeds" value="0" />
+    <item name="UntilFails" value="1" />
+    <item name="UntilFinishes" value="2" />
+    <item name="Infinitely" value="3" />
+    <item name="OneTime" value="4" />
+</data>

@@ -19,7 +19,7 @@
 
     <item name="IsDrone" value="50" />
 
-    <item name="IsReinforcedForRamming" value="100" />
+    <item name="HasKineticResistance" value="100" />
     <item name="HasHighManeuverability" value="101">Condition met when EnginePower/sqrt(Mass) > Value</item>
 
 </data>

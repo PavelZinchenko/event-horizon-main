@@ -95,8 +95,8 @@ namespace Combat.Ai
             if (parentedObjects.Count > 0)
             {
                 var requestedCount = parentedObjects.Count + index;
-                if(requestedCount > _threats.Capacity)
-                    _threats.Capacity = requestedCount;
+				for (int i = _threats.Count; i < requestedCount; ++i)
+					_threats.Add(null);
             }
             // For objects with parent, we don't consider them moving, so only check for overlap
             for (var i = 0; i < parentedObjects.Count; i++)
@@ -121,6 +121,12 @@ namespace Combat.Ai
                         Geometry.Point2VectorDistance(item.Body.WorldPosition().Direction(ship.Body.Position), vector);
                     if (distance <= ship.Body.Scale / 2)
                     {
+						if (index < 0 || index >= _threats.Count)
+						{
+							Debug.LogError($"Index out of range: {index} / {_threats.Count}");
+							Debug.Break();
+						}
+
                         _threats[index++] = item;
                         _timeToHit = 0;
                     }

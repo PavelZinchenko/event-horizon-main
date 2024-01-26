@@ -3,19 +3,20 @@
     <member name="Type" type="enum" typeid="BehaviorNodeType" />
     <member name="Requirement" type="struct" typeid="BehaviorNodeRequirement" />
 
-    <member name="Nodes" type="struct_list" typeid="BehaviorTreeNode" case="Selector,Sequence,Parallel,RandomSelector,RandomExecutor,ParallelSequence" />
-    <member name="Node" type="struct" typeid="BehaviorTreeNode" case="Invertor,ConstantResult,CompleteOnce,Cooldown" />
+    <member name="Nodes" type="struct_list" typeid="BehaviorTreeNode" case="Selector,Sequence,Parallel,RandomSelector,ParallelSequence" />
+    <member name="Node" type="struct" typeid="BehaviorTreeNode" case="Invertor,Cooldown,Execute" />
     <member name="ItemId" type="object" typeid="BehaviorTree" case="SubTree" alias="BehaviourTree" />
     <member name="WeaponType" type="enum" typeid="AiWeaponCategory" case="SelectWeapon" />
-    <member name="Result" type="bool" case="ConstantResult,CompleteOnce" />
+    <member name="ExecutionMode" type="enum" typeid="NodeExecutionMode" case="Execute,Cooldown" />
+    <member name="Result" type="bool" alias="Result" case="Execute,Cooldown" />
     <member name="Result" type="bool" case="SetValue" alias="Value" />
 
     <member name="MinValue" type="float" case="HasEnoughEnergy,RechargeEnergy" alias="FailIfLess" minvalue="0" maxvalue="1" default="0.1" />
     <member name="MaxValue" type="float" case="RechargeEnergy" alias="RestoreUntil" minvalue="0" maxvalue="1" default="0.9" />
     <member name="MinValue" type="float" case="IsLowOnHp,MothershipLowHp,MainTargetLowHp,EnginePropulsionForce" minvalue="0" maxvalue="1" />
 
-    <member name="Cooldown" type="float" case="RandomSelector,RandomExecutor,Wait,Cooldown" minvalue="0" />
-    <member name="Cooldown" type="float" case="LookForSecondaryTargets,LookForThreats" alias="Cooldown" minvalue="0.1" />
+    <member name="Cooldown" type="float" case="RandomSelector,Wait,Cooldown" minvalue="0" />
+    <member name="Cooldown" type="float" case="LookForAdditionalTargets,LookForThreats" alias="Cooldown" minvalue="0.1" />
     <member name="Cooldown" type="float" case="HasIncomingThreat" alias="TimeToCollision" minvalue="0" default="5" />
     <member name="MinValue" type="float" case="FindEnemy" alias="MinCooldown" minvalue="0.5" />
     <member name="MaxValue" type="float" case="FindEnemy" alias="MaxCooldown" minvalue="0" default="5" />
@@ -32,6 +33,6 @@
     <member name="DeviceClass" type="enum" typeid="DeviceClass" case="ActivateDevice" />
 
     <member name="Text" type="string" case="ShowMessage,DebugLog" />
-    <member name="Text" type="string" case="SetValue,GetValue,SaveTarget,LoadTarget,SendMessage,MessageReceived" alias="Name" />
+    <member name="Text" type="string" case="SetValue,GetValue,SaveTarget,LoadTarget,SendMessage,MessageReceived,HasSavedTarget,ForgetSavedTarget" alias="Name" />
     <member name="Color" type="color" case="ShowMessage" />
 </data>

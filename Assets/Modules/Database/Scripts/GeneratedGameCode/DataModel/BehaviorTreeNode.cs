@@ -37,16 +37,12 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_RandomSelector(serializable, loader);
 				case BehaviorNodeType.Invertor:
 					return new BehaviorTreeNode_Invertor(serializable, loader);
-				case BehaviorNodeType.ConstantResult:
-					return new BehaviorTreeNode_ConstantResult(serializable, loader);
-				case BehaviorNodeType.CompleteOnce:
-					return new BehaviorTreeNode_CompleteOnce(serializable, loader);
-				case BehaviorNodeType.RandomExecutor:
-					return new BehaviorTreeNode_RandomExecutor(serializable, loader);
-				case BehaviorNodeType.ParallelSequence:
-					return new BehaviorTreeNode_ParallelSequence(serializable, loader);
 				case BehaviorNodeType.Cooldown:
 					return new BehaviorTreeNode_Cooldown(serializable, loader);
+				case BehaviorNodeType.Execute:
+					return new BehaviorTreeNode_Execute(serializable, loader);
+				case BehaviorNodeType.ParallelSequence:
+					return new BehaviorTreeNode_ParallelSequence(serializable, loader);
 				case BehaviorNodeType.HasEnoughEnergy:
 					return new BehaviorTreeNode_HasEnoughEnergy(serializable, loader);
 				case BehaviorNodeType.IsLowOnHp:
@@ -55,8 +51,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_IsControledByPlayer(serializable, loader);
 				case BehaviorNodeType.HasIncomingThreat:
 					return new BehaviorTreeNode_HasIncomingThreat(serializable, loader);
-				case BehaviorNodeType.HasAnyTarget:
-					return new BehaviorTreeNode_HasAnyTarget(serializable, loader);
+				case BehaviorNodeType.HasAdditionalTargets:
+					return new BehaviorTreeNode_HasAdditionalTargets(serializable, loader);
 				case BehaviorNodeType.IsFasterThanTarget:
 					return new BehaviorTreeNode_IsFasterThanTarget(serializable, loader);
 				case BehaviorNodeType.HasMainTarget:
@@ -73,8 +69,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_FindEnemy(serializable, loader);
 				case BehaviorNodeType.MoveToAttackRange:
 					return new BehaviorTreeNode_MoveToAttackRange(serializable, loader);
-				case BehaviorNodeType.Attack:
-					return new BehaviorTreeNode_Attack(serializable, loader);
+				case BehaviorNodeType.AttackMainTarget:
+					return new BehaviorTreeNode_AttackMainTarget(serializable, loader);
 				case BehaviorNodeType.SelectWeapon:
 					return new BehaviorTreeNode_SelectWeapon(serializable, loader);
 				case BehaviorNodeType.SpawnDrones:
@@ -91,8 +87,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_Wait(serializable, loader);
 				case BehaviorNodeType.LookAtTarget:
 					return new BehaviorTreeNode_LookAtTarget(serializable, loader);
-				case BehaviorNodeType.LookForSecondaryTargets:
-					return new BehaviorTreeNode_LookForSecondaryTargets(serializable, loader);
+				case BehaviorNodeType.LookForAdditionalTargets:
+					return new BehaviorTreeNode_LookForAdditionalTargets(serializable, loader);
 				case BehaviorNodeType.LookForThreats:
 					return new BehaviorTreeNode_LookForThreats(serializable, loader);
 				case BehaviorNodeType.MatchVelocityWithTarget:
@@ -119,6 +115,12 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_TrackControllableAmmo(serializable, loader);
 				case BehaviorNodeType.KeepDistance:
 					return new BehaviorTreeNode_KeepDistance(serializable, loader);
+				case BehaviorNodeType.ForgetMainTarget:
+					return new BehaviorTreeNode_ForgetMainTarget(serializable, loader);
+				case BehaviorNodeType.EscapeTargetAttackRadius:
+					return new BehaviorTreeNode_EscapeTargetAttackRadius(serializable, loader);
+				case BehaviorNodeType.AttackAdditionalTargets:
+					return new BehaviorTreeNode_AttackAdditionalTargets(serializable, loader);
 				case BehaviorNodeType.EnginePropulsionForce:
 					return new BehaviorTreeNode_EnginePropulsionForce(serializable, loader);
 				case BehaviorNodeType.MotherShipRetreated:
@@ -153,6 +155,10 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_SaveTarget(serializable, loader);
 				case BehaviorNodeType.LoadTarget:
 					return new BehaviorTreeNode_LoadTarget(serializable, loader);
+				case BehaviorNodeType.HasSavedTarget:
+					return new BehaviorTreeNode_HasSavedTarget(serializable, loader);
+				case BehaviorNodeType.ForgetSavedTarget:
+					return new BehaviorTreeNode_ForgetSavedTarget(serializable, loader);
 				default:
                     throw new DatabaseException("BehaviorTreeNode: Invalid content type - " + serializable.Type);
 			}
@@ -183,16 +189,14 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_Parallel content);
 	    T Create(BehaviorTreeNode_RandomSelector content);
 	    T Create(BehaviorTreeNode_Invertor content);
-	    T Create(BehaviorTreeNode_ConstantResult content);
-	    T Create(BehaviorTreeNode_CompleteOnce content);
-	    T Create(BehaviorTreeNode_RandomExecutor content);
-	    T Create(BehaviorTreeNode_ParallelSequence content);
 	    T Create(BehaviorTreeNode_Cooldown content);
+	    T Create(BehaviorTreeNode_Execute content);
+	    T Create(BehaviorTreeNode_ParallelSequence content);
 	    T Create(BehaviorTreeNode_HasEnoughEnergy content);
 	    T Create(BehaviorTreeNode_IsLowOnHp content);
 	    T Create(BehaviorTreeNode_IsControledByPlayer content);
 	    T Create(BehaviorTreeNode_HasIncomingThreat content);
-	    T Create(BehaviorTreeNode_HasAnyTarget content);
+	    T Create(BehaviorTreeNode_HasAdditionalTargets content);
 	    T Create(BehaviorTreeNode_IsFasterThanTarget content);
 	    T Create(BehaviorTreeNode_HasMainTarget content);
 	    T Create(BehaviorTreeNode_MainTargetIsAlly content);
@@ -201,7 +205,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_MainTargetWithinAttackRange content);
 	    T Create(BehaviorTreeNode_FindEnemy content);
 	    T Create(BehaviorTreeNode_MoveToAttackRange content);
-	    T Create(BehaviorTreeNode_Attack content);
+	    T Create(BehaviorTreeNode_AttackMainTarget content);
 	    T Create(BehaviorTreeNode_SelectWeapon content);
 	    T Create(BehaviorTreeNode_SpawnDrones content);
 	    T Create(BehaviorTreeNode_Ram content);
@@ -210,7 +214,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_MaintainAttackRange content);
 	    T Create(BehaviorTreeNode_Wait content);
 	    T Create(BehaviorTreeNode_LookAtTarget content);
-	    T Create(BehaviorTreeNode_LookForSecondaryTargets content);
+	    T Create(BehaviorTreeNode_LookForAdditionalTargets content);
 	    T Create(BehaviorTreeNode_LookForThreats content);
 	    T Create(BehaviorTreeNode_MatchVelocityWithTarget content);
 	    T Create(BehaviorTreeNode_ActivateDevice content);
@@ -224,6 +228,9 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_DefendWithFronalShield content);
 	    T Create(BehaviorTreeNode_TrackControllableAmmo content);
 	    T Create(BehaviorTreeNode_KeepDistance content);
+	    T Create(BehaviorTreeNode_ForgetMainTarget content);
+	    T Create(BehaviorTreeNode_EscapeTargetAttackRadius content);
+	    T Create(BehaviorTreeNode_AttackAdditionalTargets content);
 	    T Create(BehaviorTreeNode_EnginePropulsionForce content);
 	    T Create(BehaviorTreeNode_MotherShipRetreated content);
 	    T Create(BehaviorTreeNode_MotherShipDestroyed content);
@@ -241,6 +248,8 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_TargetMessageSender content);
 	    T Create(BehaviorTreeNode_SaveTarget content);
 	    T Create(BehaviorTreeNode_LoadTarget content);
+	    T Create(BehaviorTreeNode_HasSavedTarget content);
+	    T Create(BehaviorTreeNode_ForgetSavedTarget content);
     }
 
     public partial class BehaviorTreeNode_Undefined : BehaviorTreeNode
@@ -376,56 +385,16 @@ namespace GameDatabase.DataModel
 
 		public BehaviorTreeNode Node { get; private set; }
     }
-    public partial class BehaviorTreeNode_ConstantResult : BehaviorTreeNode
+    public partial class BehaviorTreeNode_Cooldown : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
-  		public BehaviorTreeNode_ConstantResult(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+  		public BehaviorTreeNode_Cooldown(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 			Node = BehaviorTreeNode.Create(serializable.Node, loader);
+			ExecutionMode = serializable.ExecutionMode;
 			Result = serializable.Result;
-
-            OnDataDeserialized(serializable, loader);
-        }
-
-        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
-        {
-            return factory.Create(this);
-        }
-
-		public BehaviorTreeNode Node { get; private set; }
-		public bool Result { get; private set; }
-    }
-    public partial class BehaviorTreeNode_CompleteOnce : BehaviorTreeNode
-    {
-		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
-
-  		public BehaviorTreeNode_CompleteOnce(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
-            : base(serializable, loader)
-        {
-			Node = BehaviorTreeNode.Create(serializable.Node, loader);
-			Result = serializable.Result;
-
-            OnDataDeserialized(serializable, loader);
-        }
-
-        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
-        {
-            return factory.Create(this);
-        }
-
-		public BehaviorTreeNode Node { get; private set; }
-		public bool Result { get; private set; }
-    }
-    public partial class BehaviorTreeNode_RandomExecutor : BehaviorTreeNode
-    {
-		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
-
-  		public BehaviorTreeNode_RandomExecutor(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
-            : base(serializable, loader)
-        {
-			Nodes = new ImmutableCollection<BehaviorTreeNode>(serializable.Nodes?.Select(item => BehaviorTreeNode.Create(item, loader)));
 			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
@@ -436,8 +405,33 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
-		public ImmutableCollection<BehaviorTreeNode> Nodes { get; private set; }
+		public BehaviorTreeNode Node { get; private set; }
+		public NodeExecutionMode ExecutionMode { get; private set; }
+		public bool Result { get; private set; }
 		public float Cooldown { get; private set; }
+    }
+    public partial class BehaviorTreeNode_Execute : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_Execute(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Node = BehaviorTreeNode.Create(serializable.Node, loader);
+			ExecutionMode = serializable.ExecutionMode;
+			Result = serializable.Result;
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public BehaviorTreeNode Node { get; private set; }
+		public NodeExecutionMode ExecutionMode { get; private set; }
+		public bool Result { get; private set; }
     }
     public partial class BehaviorTreeNode_ParallelSequence : BehaviorTreeNode
     {
@@ -457,27 +451,6 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<BehaviorTreeNode> Nodes { get; private set; }
-    }
-    public partial class BehaviorTreeNode_Cooldown : BehaviorTreeNode
-    {
-		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
-
-  		public BehaviorTreeNode_Cooldown(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
-            : base(serializable, loader)
-        {
-			Node = BehaviorTreeNode.Create(serializable.Node, loader);
-			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0f, 3.402823E+38f);
-
-            OnDataDeserialized(serializable, loader);
-        }
-
-        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
-        {
-            return factory.Create(this);
-        }
-
-		public BehaviorTreeNode Node { get; private set; }
-		public float Cooldown { get; private set; }
     }
     public partial class BehaviorTreeNode_HasEnoughEnergy : BehaviorTreeNode
     {
@@ -553,11 +526,11 @@ namespace GameDatabase.DataModel
 
 		public float TimeToCollision { get; private set; }
     }
-    public partial class BehaviorTreeNode_HasAnyTarget : BehaviorTreeNode
+    public partial class BehaviorTreeNode_HasAdditionalTargets : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
-  		public BehaviorTreeNode_HasAnyTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+  		public BehaviorTreeNode_HasAdditionalTargets(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 
@@ -722,11 +695,11 @@ namespace GameDatabase.DataModel
 		public float MinMaxLerp { get; private set; }
 		public float Multiplier { get; private set; }
     }
-    public partial class BehaviorTreeNode_Attack : BehaviorTreeNode
+    public partial class BehaviorTreeNode_AttackMainTarget : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
-  		public BehaviorTreeNode_Attack(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+  		public BehaviorTreeNode_AttackMainTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 
@@ -889,11 +862,11 @@ namespace GameDatabase.DataModel
         }
 
     }
-    public partial class BehaviorTreeNode_LookForSecondaryTargets : BehaviorTreeNode
+    public partial class BehaviorTreeNode_LookForAdditionalTargets : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
-  		public BehaviorTreeNode_LookForSecondaryTargets(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+  		public BehaviorTreeNode_LookForAdditionalTargets(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0.1f, 3.402823E+38f);
@@ -1144,6 +1117,57 @@ namespace GameDatabase.DataModel
 
 		public float MinDistance { get; private set; }
 		public float MaxDistance { get; private set; }
+    }
+    public partial class BehaviorTreeNode_ForgetMainTarget : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_ForgetMainTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+    }
+    public partial class BehaviorTreeNode_EscapeTargetAttackRadius : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_EscapeTargetAttackRadius(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+    }
+    public partial class BehaviorTreeNode_AttackAdditionalTargets : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_AttackAdditionalTargets(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
     }
     public partial class BehaviorTreeNode_EnginePropulsionForce : BehaviorTreeNode
     {
@@ -1448,6 +1472,44 @@ namespace GameDatabase.DataModel
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
   		public BehaviorTreeNode_LoadTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Name = serializable.Text;
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public string Name { get; private set; }
+    }
+    public partial class BehaviorTreeNode_HasSavedTarget : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_HasSavedTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Name = serializable.Text;
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public string Name { get; private set; }
+    }
+    public partial class BehaviorTreeNode_ForgetSavedTarget : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_ForgetSavedTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 			Name = serializable.Text;

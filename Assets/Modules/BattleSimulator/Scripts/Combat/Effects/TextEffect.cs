@@ -15,6 +15,7 @@ namespace Combat.Effects
 
         protected override void OnBeforeUpdate()
         {
+			if (!Camera.main) return;
 			var scale = Camera.main.orthographicSize;
 			if (_fading) scale *= 1f - (1f - Life) * (1f - Life) * (1f - Life);
 			Scale = scale;

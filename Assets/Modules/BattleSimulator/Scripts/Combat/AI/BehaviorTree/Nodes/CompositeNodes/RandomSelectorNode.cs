@@ -7,17 +7,15 @@ namespace Combat.Ai.BehaviorTree.Nodes
 		private readonly float _cooldown;
 		private readonly System.Random _random;
 		private readonly List<INode> _children = new();
-		private readonly bool _executeOnce;
 
 		private INode _selected;
 		private float _elapsedTime;
 
-		public RandomSelectorNode(float cooldown, bool executeOnce)
+		public RandomSelectorNode(float cooldown)
 		{
 			_random = new System.Random();
 			_cooldown = cooldown;
 			_elapsedTime = cooldown;
-			_executeOnce = executeOnce;
 		}
 
 		public void Add(INode child) => _children.Add(child);
@@ -28,6 +26,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			_elapsedTime += context.DeltaTime;
 			if (_elapsedTime >= _cooldown)
 			{
+				_selected = null;
 				_children.Shuffle(_random);
 				_elapsedTime = 0;
 
@@ -43,9 +42,6 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			{
 				result = _selected.Evaluate(context);
 			}
-
-			if (_executeOnce && result == NodeState.Success)
-				_selected = null;
 
 			return result;
 		}

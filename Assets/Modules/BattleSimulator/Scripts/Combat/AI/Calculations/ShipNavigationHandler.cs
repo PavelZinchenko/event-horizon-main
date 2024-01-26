@@ -40,7 +40,7 @@ namespace Combat.Ai.Calculations
 			else
 				alpha -= delta;
 
-			if (Vector2.Dot(ship.Body.Velocity, RotationHelpers.Direction(alpha)) < ship.Engine.MaxVelocity * 0.95f)
+			//if (Vector2.Dot(ship.Body.Velocity, RotationHelpers.Direction(alpha)) < ship.Engine.MaxVelocity * 0.95f)
 			{
 				controls.Course = alpha;
 				if (Mathf.Abs(Mathf.DeltaAngle(alpha, ship.Body.Rotation)) < 30)
@@ -66,15 +66,14 @@ namespace Combat.Ai.Calculations
 				return false;
 
 			Vector2 requiredVelocity;
-			float excess;
 			if (distance < minDistance)
 			{
-				excess = 0.1f + (minDistance - distance) / maxDistance;
+				var excess = (1 + minDistance - distance) / (1 + minDistance);
 				requiredVelocity = -direction.normalized * excess * maxVelocity;
 			}
 			else
 			{
-				excess = 0.1f + (distance - maxDistance) / maxDistance;
+				var excess = (1 + distance - maxDistance) / (1 + maxDistance);
 				requiredVelocity = direction.normalized * excess * maxVelocity;
 			}
 

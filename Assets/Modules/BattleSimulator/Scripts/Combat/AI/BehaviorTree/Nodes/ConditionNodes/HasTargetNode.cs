@@ -2,20 +2,19 @@
 {
 	public class HasTargetNode : INode
 	{
-		private bool _ignoreSecondary;
+		private int _targetId = -1;
 
-		public HasTargetNode(bool ignoreSecondary)
+		public HasTargetNode(int targetId)
 		{
-			_ignoreSecondary = ignoreSecondary;
+			_targetId = targetId;
 		}
+
+		public HasTargetNode() {}
 
 		public NodeState Evaluate(Context context)
 		{
-			if (context.TargetShip == null || context.TargetShip.State != Unit.UnitState.Active)
-				if (_ignoreSecondary || context.SecondaryTargets.Count > 0)
-					return NodeState.Failure;
-
-			return NodeState.Success;
+			var mainTarget = _targetId >= 0 ? context.LoadTarget(_targetId) : context.TargetShip;
+			return mainTarget == null || mainTarget.State != Unit.UnitState.Active ? NodeState.Failure : NodeState.Success;
 		}
 	}
 }

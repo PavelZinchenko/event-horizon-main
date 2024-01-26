@@ -11,7 +11,8 @@
 
 		public NodeState Evaluate(Context context)
 		{
-			return context.LoadTarget(_id) ? NodeState.Success : NodeState.Failure;
+			context.TargetShip = context.LoadTarget(_id);
+			return context.TargetShip != null ? NodeState.Success : NodeState.Failure;
 		}
 	}
 }

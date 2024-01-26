@@ -3,6 +3,7 @@ using Combat.Component.Ship;
 using Combat.Component.Systems.Weapons;
 using Combat.Component.Unit.Classification;
 using Combat.Ai.BehaviorTree.Utils;
+using Combat.Component.Body;
 
 namespace Combat.Ai.Calculations
 {
@@ -28,13 +29,14 @@ namespace Combat.Ai.Calculations
 			for (int i = 0; i < weaponList.Count; ++i)
 			{
 				var id = weaponList.Ids[i];
-				var weapon = weaponList.GetWeaponById(i);
+				var weapon = weaponList.GetWeaponById(id);
 				if (!weapon.CanBeActivated) continue;
-				//if (ship.Type.Class == UnitClass.Drone && weapon.Info.WeaponType == WeaponType.RequiredCharging) continue;
-				if (weapon.Info.BulletEffectType == BulletEffectType.ForDronesOnly && enemy.Type.Class != UnitClass.Drone) continue;
 
-				Vector2 target;
-				if (!AttackHelpers.TryGetTarget(weapon, ship, enemy, weapon.Info.BulletType == BulletType.Projectile && directAttacksOnly ? BulletType.Direct : weapon.Info.BulletType, out target))
+				var caps = weapon.Info.Capability;
+				if (caps.HasCapability(WeaponCapability.CaptureDrone) && enemy.Type.Class != UnitClass.Drone) continue;
+
+				var bulletType = weapon.Info.BulletType == BulletType.Projectile && directAttacksOnly ? BulletType.Direct : weapon.Info.BulletType;
+				if (!AttackHelpers.TryGetTarget(weapon, ship, enemy, bulletType, out var target))
 					continue;
 
 				aiming++;

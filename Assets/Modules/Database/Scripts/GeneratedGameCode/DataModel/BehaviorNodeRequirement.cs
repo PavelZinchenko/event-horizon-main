@@ -53,8 +53,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorNodeRequirement_HasRemotelyControlledWeapon(serializable, loader);
 				case BehaviorRequirementType.IsDrone:
 					return new BehaviorNodeRequirement_IsDrone(serializable, loader);
-				case BehaviorRequirementType.IsReinforcedForRamming:
-					return new BehaviorNodeRequirement_IsReinforcedForRamming(serializable, loader);
+				case BehaviorRequirementType.HasKineticResistance:
+					return new BehaviorNodeRequirement_HasKineticResistance(serializable, loader);
 				case BehaviorRequirementType.HasHighManeuverability:
 					return new BehaviorNodeRequirement_HasHighManeuverability(serializable, loader);
 				default:
@@ -93,7 +93,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorNodeRequirement_HasChargeableWeapon content);
 	    T Create(BehaviorNodeRequirement_HasRemotelyControlledWeapon content);
 	    T Create(BehaviorNodeRequirement_IsDrone content);
-	    T Create(BehaviorNodeRequirement_IsReinforcedForRamming content);
+	    T Create(BehaviorNodeRequirement_HasKineticResistance content);
 	    T Create(BehaviorNodeRequirement_HasHighManeuverability content);
     }
 
@@ -366,13 +366,14 @@ namespace GameDatabase.DataModel
         }
 
     }
-    public partial class BehaviorNodeRequirement_IsReinforcedForRamming : BehaviorNodeRequirement
+    public partial class BehaviorNodeRequirement_HasKineticResistance : BehaviorNodeRequirement
     {
 		partial void OnDataDeserialized(BehaviorNodeRequirementSerializable serializable, Database.Loader loader);
 
-  		public BehaviorNodeRequirement_IsReinforcedForRamming(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
+  		public BehaviorNodeRequirement_HasKineticResistance(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
+			Value = UnityEngine.Mathf.Clamp(serializable.Value, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -382,6 +383,7 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+		public float Value { get; private set; }
     }
     public partial class BehaviorNodeRequirement_HasHighManeuverability : BehaviorNodeRequirement
     {

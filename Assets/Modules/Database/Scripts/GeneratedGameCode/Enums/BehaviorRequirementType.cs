@@ -25,7 +25,7 @@ namespace GameDatabase.Enums
 		HasChargeableWeapon = 15,
 		HasRemotelyControlledWeapon = 16,
 		IsDrone = 50,
-		IsReinforcedForRamming = 100,
+		HasKineticResistance = 100,
 		HasHighManeuverability = 101,
 	}
 }

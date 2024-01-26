@@ -3,11 +3,11 @@ using Combat.Ai.Calculations;
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
-	public class AttackNode : INode
+	public class AttackSecondaryTargetsNode : INode
 	{
 		private readonly bool _directOnly;
 
-		public AttackNode(AiDifficultyLevel aiLevel)
+		public AttackSecondaryTargetsNode(AiDifficultyLevel aiLevel)
 		{
 			_directOnly = aiLevel < AiDifficultyLevel.Hard;
 		}
@@ -15,10 +15,6 @@ namespace Combat.Ai.BehaviorTree.Nodes
 		public NodeState Evaluate(Context context)
 		{
 			var result = AimAndAttackHandler.State.Failed;
-
-			if (context.TargetShip != null)
-				result |= AimAndAttackHandler.AttackWithAllWeapons(context.Ship, context.TargetShip,
-					_directOnly, context.SelectedWeapons, context.Controls);
 
 			for (int i = 0; i < context.SecondaryTargets.Count; ++i)
 				result |= AimAndAttackHandler.AttackWithAllWeapons(context.Ship, context.SecondaryTargets[i],
