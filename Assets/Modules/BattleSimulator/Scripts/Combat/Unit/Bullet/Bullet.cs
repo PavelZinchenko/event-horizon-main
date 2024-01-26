@@ -6,6 +6,7 @@ using Combat.Collision.Manager;
 using Combat.Component.Body;
 using Combat.Component.Bullet.Action;
 using Combat.Component.Bullet.Lifetime;
+using Combat.Component.Bullet.Tickers;
 using Combat.Component.Collider;
 using Combat.Component.Controller;
 using Combat.Component.DamageHandler;
@@ -14,6 +15,7 @@ using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Component.View;
 using Combat.Unit;
+using UnityEngine;
 
 namespace Combat.Component.Bullet
 {
@@ -74,6 +76,14 @@ namespace Combat.Component.Bullet
 
             if (Lifetime.IsExpired)
                 Expire();
+            else
+            {
+                var time = Time.fixedTime;
+                foreach (var ticker in _tickers)
+                {
+                    ticker.Update(time);
+                }
+            }
         }
 
         public void UpdateView(float elapsedTime)
@@ -111,13 +121,23 @@ namespace Combat.Component.Bullet
 
         public void AddAction(IAction action)
         {
-            if (action.Condition != ConditionType.None)
-                _actions.Add(action);
-
-            AddResource(action);
-
-            if (action.Condition == ConditionType.None)
-                action.Invoke();
+            switch (action.Condition)
+            {
+                case ConditionType.None:
+                    AddResource(action);
+                    action.Invoke();
+                    break;
+                case ConditionType.OnCooldown:
+                    var ticker = new ActionTicker(action.Cooldown, Time.fixedTime, action);
+                    action.Cooldown = 0;
+                    _tickers.Add(ticker);
+                    AddResource(ticker); // action is disposed by the ticker
+                    break;
+                default:
+                    _actions.Add(action);
+                    AddResource(action);
+                    break;
+            }
         }
 
         public void AddResource(IDisposable resource)
@@ -179,6 +199,7 @@ namespace Combat.Component.Bullet
         private readonly IBody _body;
         private readonly IView _view;
         private readonly List<IAction> _actions = new List<IAction>();
+        private readonly List<ITicker> _tickers = new List<ITicker>();
         private readonly List<IDisposable> _resources = new List<IDisposable>();
     }
 }

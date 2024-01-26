@@ -11,6 +11,7 @@ namespace Combat.Component.Bullet.Action
         OnExpire    = 4,
         OnDisarm    = 8,
         OnDestroy   = 16,
+        OnCooldown  = 32,
     }
 
     public static class ConditionTypeExtensions

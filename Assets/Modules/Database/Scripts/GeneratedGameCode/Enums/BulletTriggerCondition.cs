@@ -18,5 +18,6 @@ namespace GameDatabase.Enums
 		Expired,
 		Detonated,
 		OutOfAmmo,
+		Cooldown,
 	}
 }

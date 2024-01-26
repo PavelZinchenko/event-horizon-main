@@ -357,6 +357,8 @@ namespace Combat.Factory
                         return ConditionType.OnExpire;
                     case BulletTriggerCondition.Detonated:
                         return ConditionType.OnDetonate;
+                    case BulletTriggerCondition.Cooldown:
+                        return ConditionType.OnCooldown;
                     default:
                         return ConditionType.None;
                 }
