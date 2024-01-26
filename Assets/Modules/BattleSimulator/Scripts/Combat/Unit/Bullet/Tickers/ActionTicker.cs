@@ -1,4 +1,5 @@
 using Combat.Component.Bullet.Tickers;
+using UnityEngine;
 
 namespace Combat.Component.Bullet.Action
 {
@@ -18,6 +19,7 @@ namespace Combat.Component.Bullet.Action
         {
             Cooldown = cooldown;
             NextActivation = time + cooldown;
+            _action = action;
         }
 
         public void Dispose()
