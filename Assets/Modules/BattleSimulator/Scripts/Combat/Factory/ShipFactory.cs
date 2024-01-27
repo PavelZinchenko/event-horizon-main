@@ -392,13 +392,10 @@ namespace Combat.Factory
 
 		private IControllerFactory CreateDroneController(DroneBehaviour behaviour, float range, bool improvedAi, BehaviorTreeModel behaviorTree)
 		{
-			if (behaviorTree == null)
-			{
-				if (behaviour == DroneBehaviour.Aggressive)
-					behaviorTree = improvedAi ? _database.CombatSettings.ImprovedOffensiveDroneAI : _database.CombatSettings.OffensiveDroneAI;
-				else
-					behaviorTree = improvedAi ? _database.CombatSettings.ImprovedDefensiveDroneAI : _database.CombatSettings.DefensiveDroneAI;
-			}
+			if (behaviorTree == null && !improvedAi)
+				behaviorTree = behaviour == DroneBehaviour.Aggressive ? 
+					_database.CombatSettings.OffensiveDroneAI : 
+					_database.CombatSettings.DefensiveDroneAI;
 
 			if (behaviorTree != null)
 				return new BehaviorTreeController.Factory(behaviorTree, _scene, Ai.BehaviorTree.AiSettings.ForDrone(range), _behaviorTreeBuilder);
