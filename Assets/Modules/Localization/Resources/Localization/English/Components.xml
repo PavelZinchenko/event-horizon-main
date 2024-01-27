@@ -320,6 +320,8 @@
   <string name="ChargedLaser_L_3">Death Ray</string>
   <string name="FortificationSystem">Fortification Module</string>
   <string name="RepairBeam_S_1">Small Repair Ray</string>
+  <string name="RepairBeam_M_1">Repair Ray</string>
+  <string name="RepairBeam_L_1">Heavy Repair Ray</string>
   <string name="PlasmaWeb_S_1">Small Plasma Web</string>
   <string name="PlasmaWeb_M_1">Plasma Web</string>
   <string name="RocketLauncher_M_1">Rocket Launcher</string>

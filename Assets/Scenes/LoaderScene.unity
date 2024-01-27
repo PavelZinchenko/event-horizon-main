@@ -312,6 +312,7 @@ MonoBehaviour:
   _shipIcon: {fileID: 1455831498}
   _background: {fileID: 48123533}
   _loadingText: {fileID: 1637357181}
+  _delay: 0.1
 --- !u!114 &150034824
 MonoBehaviour:
   m_ObjectHideFlags: 0

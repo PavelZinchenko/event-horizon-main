@@ -7,7 +7,7 @@
   "Faction": 7,
   "Level": 25,
   "Icon": "afterburner1",
-  "Color": "#FFFFC0",
+  "Color": "#000000",
   "Layout": "100100100",
   "CellType": "5",
   "DeviceId": 1,

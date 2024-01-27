@@ -110,7 +110,7 @@ namespace Combat.Factory
                 else if (effect.Type == ImpactEffectType.CaptureDrones)
                     collisionBehaviour.AddAction(new CaptureDroneAction(impactType));
                 else if (effect.Type == ImpactEffectType.Repair)
-                    collisionBehaviour.AddAction(new RepairAction(effect.Power * _stats.DamageMultiplier, impactType, effect.DamageType, effect.Factor));
+                    collisionBehaviour.AddAction(new RepairAction(effect.Power*_stats.DamageMultiplier, impactType, effect.DamageType, effect.Factor, _owner.Type.Side));
                 else if (effect.Type == ImpactEffectType.Teleport)
                     collisionBehaviour.AddAction(new TeleportAction(effect.Power));
                 else if (effect.Type == ImpactEffectType.Devour)

@@ -1,0 +1,12 @@
+{
+  "ItemType": 25,
+  "Id": 105,
+  "Body": {
+    "Size": 0.5,
+    "Velocity": 15.0,
+    "Range": 1.0,
+    "Color": "#FFFF00",
+    "BulletPrefab": 7
+  },
+  "ImpactType": 2
+}
