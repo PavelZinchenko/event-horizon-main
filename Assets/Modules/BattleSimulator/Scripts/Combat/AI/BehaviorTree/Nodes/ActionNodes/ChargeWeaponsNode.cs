@@ -29,7 +29,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 				if (context.EnergyLevel < energyCost && context.EnergyLevelPercentage < 0.99f)
 					continue;
 
-				context.Controls.ActivateSystem(context.SelectedWeapons.Ids[i]);
+				context.Controls.ActivateSystem(weapon.Id);
 				if (powerlevel < 1)
 				{
 					context.LockedEnergy += energyCost;
