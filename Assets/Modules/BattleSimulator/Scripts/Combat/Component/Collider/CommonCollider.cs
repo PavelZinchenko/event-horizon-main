@@ -34,7 +34,9 @@ namespace Combat.Component.Collider
             }
         }
 
-        public IUnit Unit
+		public IUnit Source { get; set; }
+
+		public IUnit Unit
         {
             get { return _unit; }
             set
@@ -80,6 +82,7 @@ namespace Combat.Component.Collider
         public void Dispose()
         {
             Unit = null;
+			Source = null;
             _activeCollision = null;
             _cachedColliders = null;
             _recentTrigger = null;
@@ -223,7 +226,7 @@ namespace Combat.Component.Collider
 
         private bool TryAddActiveCollision(IUnit unit)
         {
-            if (unit == null || unit == _unit.Type.Owner || _activeCollisions.ContainsKey(unit))
+            if (unit == null || unit == Source || unit.Type.Owner == Source || _activeCollisions.ContainsKey(unit))
                 return false;
 
             _activeCollision = unit;
@@ -234,7 +237,7 @@ namespace Combat.Component.Collider
 
         private bool TryUpdateActiveCollision(IUnit unit)
         {
-            if (unit == _unit.Type.Owner)
+            if (unit == null || unit == Source || unit.Type.Owner == Source)
                 return false;
 
             int frameId;

@@ -16,9 +16,10 @@ namespace Combat.Component.Collider
 
         public bool Enabled { get { return _enabled; } set { _enabled = value; } }
 
-        public IUnit Unit { get; set; }
+		public IUnit Source { get; set; }
+		public IUnit Unit { get; set; }
 
-        public float MaxRange
+		public float MaxRange
         {
             get { return _maxRange; }
             set
@@ -63,12 +64,26 @@ namespace Combat.Component.Collider
             //}
             //else
             {
-                var hit = Physics2D.Raycast(position, direction, MaxRange, Unit.Type.CollisionMask);
+                var hits = Physics2D.RaycastNonAlloc(position, direction, _buffer, MaxRange, Unit.Type.CollisionMask);
 
-                if (hit.collider != null)
+				var point = Vector2.zero;
+				ICollider other = null;
+				for (int i = 0; i < hits; ++i)
+				{
+					var collider = _buffer[i].collider;
+					if (collider == null) continue;
+					var target = collider.GetComponent<ICollider>();
+					if (target.Unit == Source || target.Unit.Type.Owner == Source)
+						continue;
+
+					other = target;
+					point = _buffer[i].point;
+					break;
+				}
+
+                if (other != null)
                 {
-                    var other = hit.collider.GetComponent<ICollider>();
-                    var distance = Vector2.Distance(position, hit.point);
+                    var distance = Vector2.Distance(position, point);
 
                     if (other.Unit == Unit.Type.Owner)
                     {
@@ -80,10 +95,10 @@ namespace Combat.Component.Collider
 
                     var isNew = ActiveCollision != other.Unit;
                     ActiveCollision = other.Unit;
-                    LastContactPoint = hit.point;
+                    LastContactPoint = point;
                     _view.Size = distance;
                     if (_body != null) _body.Offset = distance;
-                    _collisionManager.OnCollision(Unit, other.Unit, CollisionData.FromRaycastHit2D(hit, isNew, elapsedTime));
+                    _collisionManager.OnCollision(Unit, other.Unit, CollisionData.FromRaycastHit2D(point, isNew, elapsedTime));
                 }
                 else if (ActiveCollision != null || _needUpdateView)
                 {
@@ -98,12 +113,13 @@ namespace Combat.Component.Collider
         public void Dispose()
         {
             Unit = null;
+			Source = null;
             ActiveCollision = null;
             MaxRange = 0;
             _enabled = true;
         }
 
-        //private RaycastHit2D[] _hitsBuffer;
+        private RaycastHit2D[] _buffer = new RaycastHit2D[4];
         private float _maxRange;
         private bool _needUpdateView;
         private bool _enabled = true;

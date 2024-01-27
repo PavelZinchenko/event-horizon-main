@@ -14,9 +14,10 @@ namespace Combat.Component.Collider
 
         public bool Enabled { get { return _enabled; } set { _enabled = value; } }
 
-        public IUnit Unit { get; set; }
+		public IUnit Unit { get; set; }
+		public IUnit Source { get; set; }
 
-        public float MaxRange { get; set; }
+		public float MaxRange { get; set; }
 
         public IUnit ActiveCollision { get; private set; }
         public Vector2 LastContactPoint { get; private set; }
@@ -42,8 +43,10 @@ namespace Combat.Component.Collider
             {
                 var collider = _buffer[i];
                 var other = collider.GetComponent<ICollider>();
+				if (other.Unit == Source || other.Unit.Type.Owner == Source)
+					continue;
 
-                var target = other.Unit;
+				var target = other.Unit;
                 ActiveCollision = target;
                 LastContactPoint = target.Body.WorldPosition();
                 _activeCollisions.Add(target);
@@ -55,6 +58,7 @@ namespace Combat.Component.Collider
         public void Dispose()
         {
             Unit = null;
+			Source = null;
             ActiveCollision = null;
             _activeCollisions.Clear();
             MaxRange = 0;

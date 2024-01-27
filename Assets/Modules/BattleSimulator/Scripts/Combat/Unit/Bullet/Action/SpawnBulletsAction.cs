@@ -14,13 +14,34 @@ namespace Combat.Component.Bullet.Action
 {
     public class SpawnBulletsAction : IAction, IWeaponPlatform
     {
-        public SpawnBulletsAction(IBulletFactory factory, int magazine, float initialOffset, float rechargeTime, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
+		public class SpawnCooldown
+		{
+			public SpawnCooldown(float cooldown)
+			{
+				_cooldown = cooldown > 0 ? cooldown : float.MaxValue;
+			}
+
+			public bool TryUpdate()
+			{
+				var time = Time.fixedTime;
+				if (_lastUpdateTime > 0 && time - _lastUpdateTime < _cooldown)
+					return false;
+
+				_lastUpdateTime = time;
+				return true;
+			}
+
+			private float _lastUpdateTime;
+			private readonly float _cooldown;
+		}
+
+        public SpawnBulletsAction(IBulletFactory factory, int magazine, float initialOffset, SpawnCooldown cooldown, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
         {
             Type = parent.Type;
             _body = new BodyWrapper(parent.Body);
             _factory = factory;
             _magazine = magazine;
-            _rechargeTime = rechargeTime > 0 ? rechargeTime : float.MaxValue;
+			_cooldown = cooldown;
             _offset = initialOffset;
             _soundPlayer = soundPlayer;
             _audioClipId = audioClip;
@@ -32,9 +53,7 @@ namespace Combat.Component.Bullet.Action
 
         public CollisionEffect Invoke()
         {
-            var time = Time.fixedTime;
-
-            if (_lastSpawnTime > 0 && time - _lastSpawnTime < _rechargeTime)
+			if (_cooldown != null && !_cooldown.TryUpdate())
                 return CollisionEffect.None;
 
             if (_magazine <= 1)
@@ -47,7 +66,6 @@ namespace Combat.Component.Bullet.Action
 
             if (_audioClipId) _soundPlayer.Play(_audioClipId, GetHashCode());
 
-            _lastSpawnTime = time;
             return CollisionEffect.None;
         }
 
@@ -71,12 +89,12 @@ namespace Combat.Component.Bullet.Action
         public void UpdatePhysics(float elapsedTime) {}
         public void UpdateView(float elapsedTime) {}
 
-        private float _lastSpawnTime;
         private readonly AudioClipId _audioClipId;
         private readonly IBulletFactory _factory;
         private readonly float _rechargeTime;
         private readonly float _offset;
         private readonly int _magazine;
+		private readonly SpawnCooldown _cooldown;
         private readonly BodyWrapper _body;
         private readonly ISoundPlayer _soundPlayer;
     }

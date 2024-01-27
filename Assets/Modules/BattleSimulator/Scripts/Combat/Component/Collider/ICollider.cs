@@ -8,6 +8,7 @@ namespace Combat.Component.Collider
     {
         bool Enabled { get; set; }
 
+		IUnit Source { get; set; }
         IUnit Unit { get; set; }
         float MaxRange { get; set; }
         //bool IsTrigger { get; set; }

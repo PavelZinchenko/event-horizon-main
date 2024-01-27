@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Combat.Collision.Behaviour;
 using Combat.Collision.Behaviour.Action;
 using Combat.Component.Body;
@@ -109,7 +110,7 @@ namespace Combat.Factory
                 else if (effect.Type == ImpactEffectType.CaptureDrones)
                     collisionBehaviour.AddAction(new CaptureDroneAction(impactType));
                 else if (effect.Type == ImpactEffectType.Repair)
-                    collisionBehaviour.AddAction(new RepairAction(effect.Power * _stats.DamageMultiplier, impactType));
+                    collisionBehaviour.AddAction(new RepairAction(effect.Power * _stats.DamageMultiplier, impactType, effect.DamageType, effect.Factor));
                 else if (effect.Type == ImpactEffectType.Teleport)
                     collisionBehaviour.AddAction(new TeleportAction(effect.Power));
                 else if (effect.Type == ImpactEffectType.Devour)
@@ -201,6 +202,7 @@ namespace Combat.Factory
         private ICollider ConfigureCollider(ICollider collider, IUnit unit)
         {
             collider.Unit = unit;
+			collider.Source = _owner;
 
             if (_ammunition.Body.Type == BulletType.Continuous)
                 collider.MaxRange = _stats.Range;
@@ -266,10 +268,23 @@ namespace Combat.Factory
             return factory;
         }
 
+		private SpawnBulletsAction.SpawnCooldown GetCooldown(BulletTrigger_SpawnBullet trigget)
+		{
+			if (_cooldownMap == null) _cooldownMap = new();
+
+			if (_cooldownMap.TryGetValue(trigget, out var cooldown))
+				return cooldown;
+
+			cooldown = new SpawnBulletsAction.SpawnCooldown(trigget.Cooldown);
+			_cooldownMap.Add(trigget, cooldown);
+			return cooldown;
+		}
+
 		private BulletShape BulletShape => _ammunition.Body.BulletPrefab == null ? BulletShape.Mine : _ammunition.Body.BulletPrefab.Shape;
 
 		private int _nestingLevel;
-        private readonly Lazy<GameObject> _prefab;
+		private Dictionary<BulletTrigger_SpawnBullet, SpawnBulletsAction.SpawnCooldown> _cooldownMap;
+		private readonly Lazy<GameObject> _prefab;
         private readonly BulletStats _stats;
         private readonly Ammunition _ammunition;
         private readonly WeaponStatModifier _statModifier;
@@ -389,7 +404,7 @@ namespace Combat.Factory
 
                 var factory = CreateFactory(trigger.Ammunition, trigger);
                 var magazine = Math.Max(trigger.Quantity, 1);
-                _bullet.AddAction(new SpawnBulletsAction(factory, magazine, factory._stats.BodySize / 2, trigger.Cooldown,
+                _bullet.AddAction(new SpawnBulletsAction(factory, magazine, factory._stats.BodySize / 2, _factory.GetCooldown(trigger),
                     _bullet, factory._soundPlayer, trigger.AudioClip, _condition));
 
                 return Result.Ok;

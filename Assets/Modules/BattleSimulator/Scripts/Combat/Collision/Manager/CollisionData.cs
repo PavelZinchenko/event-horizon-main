@@ -17,12 +17,12 @@ namespace Combat.Collision.Manager
             };
         }
 
-        public static CollisionData FromRaycastHit2D(RaycastHit2D hit, bool isNew, float timeInterval)
+        public static CollisionData FromRaycastHit2D(Vector2 point, bool isNew, float timeInterval)
         {
             return new CollisionData
             {
                 IsNew = isNew,
-                Position = hit.point,
+                Position = point,
                 TimeInterval = timeInterval,
                 RelativeVelocity = Vector2.zero,
             };
