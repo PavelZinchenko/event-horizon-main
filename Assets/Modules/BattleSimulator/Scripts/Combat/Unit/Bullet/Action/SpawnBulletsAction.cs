@@ -18,7 +18,7 @@ namespace Combat.Component.Bullet.Action
 		{
 			public SpawnCooldown(float cooldown)
 			{
-				_cooldown = cooldown > 0 ? cooldown : float.MaxValue;
+				_cooldown = cooldown;
 			}
 
 			public bool TryUpdate()
