@@ -183,7 +183,7 @@ namespace Combat.Ai
 
 		public virtual void Perform(Context context, ShipControls controls)
 		{
-			if (controls.IsSystemLocked(_weaponId) || AttackHelpers.CantDetectTarget(context.Ship, context.Enemy))
+			if (AttackHelpers.CantDetectTarget(context.Ship, context.Enemy))
 				return;
 
             var ship = context.Ship;
@@ -219,9 +219,6 @@ namespace Combat.Ai
 		
 		public void Perform(Context context, ShipControls controls)
 		{
-            if (controls.IsSystemLocked(_weaponId))
-                return;
-
             var ship = context.Ship;
             var enemy = context.Enemy;
 
@@ -268,7 +265,7 @@ namespace Combat.Ai
 		
 		public void Perform(Context context, ShipControls controls)
 		{
-			if (controls.IsSystemLocked(_weaponId) || AttackHelpers.CantDetectTarget(context.Ship, context.Enemy))
+			if (AttackHelpers.CantDetectTarget(context.Ship, context.Enemy))
 				return;
 
 			var ship = context.Ship;
@@ -299,9 +296,6 @@ namespace Combat.Ai
 		
 		public void Perform(Context context, ShipControls controls)
 		{
-			if (controls.IsSystemLocked(_weaponId))
-				return;
-
 			var ship = context.Ship;
 			var enemy = context.Enemy;
 

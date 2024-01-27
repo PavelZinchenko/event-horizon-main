@@ -24,7 +24,6 @@ namespace Combat.Ai
 			_courseLocked = false;
 			_thrustLocked = false;
 			_systems.Clear();
-			_systemsMask.Clear();
 		}
 
 		public float Course
@@ -55,13 +54,9 @@ namespace Combat.Ai
 			}
 		}
 
-		public bool IsSystemLocked(int id) => _systemsMask[id];
-
 	    public void ActivateSystem(int index, bool active = true)
 	    {
-			if (_systemsMask[index]) return;
 			_systems[index] = active;
-			_systemsMask[index] = true;
 	    }
 
 		private bool _thrustLocked;
@@ -69,7 +64,6 @@ namespace Combat.Ai
 		private bool _courseLocked;
 		private float? _course;
 		private SystemsState _systems = SystemsState.Create();
-		private SystemsState _systemsMask = SystemsState.Create();
     }
 
     public struct Context
