@@ -8,4 +8,5 @@
     <item name="Expired" />
     <item name="Detonated" />
     <item name="OutOfAmmo" />
+    <item name="Cooldown" />
 </data>
