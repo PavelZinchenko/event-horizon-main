@@ -52,13 +52,21 @@ namespace Combat.Component.Controller
             return _ship.Body.WorldPosition() + RotationHelpers.Transform(_position, _ship.Body.WorldRotation());
         }
 
-        private float GetTargetCourse()
+
+		public IUnit ActiveTarget
+		{
+			get => _target;
+			set
+			{
+				_target = value;
+				_timeFromTargetUpdate = 0;
+			}
+		}
+
+		private float GetTargetCourse()
         {
             if (_timeFromTargetUpdate > _targetUpdateCooldown || (_timeFromTargetUpdate > _targetFindCooldown && !_target.IsActive()))
-            {
-                _target = _scene.Ships.GetEnemy(_ship, EnemyMatchingOptions.EnemyForTurret(), _defaultRotation + (_maxAngle - _minAngle) / 2, _maxAngle - _minAngle, _weaponRange);
-                _timeFromTargetUpdate = 0;
-            }
+                ActiveTarget = _scene.Ships.GetEnemy(_ship, EnemyMatchingOptions.EnemyForTurret(), _defaultRotation + (_maxAngle - _minAngle) / 2, _maxAngle - _minAngle, _weaponRange);
 
             if (!_target.IsActive())
                 return _defaultRotation;
@@ -117,5 +125,5 @@ namespace Combat.Component.Controller
         private const float _targetFindCooldown = 0.1f;
         private const float _velocityFactor = 0.75f;
         private const float _angularVelocityFactor = 3.0f;
-    }
+	}
 }

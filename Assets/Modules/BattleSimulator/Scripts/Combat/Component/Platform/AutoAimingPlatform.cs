@@ -29,7 +29,9 @@ namespace Combat.Component.Platform
         public float FixedRotation { get { return _body.FixedRotation; } }
         public float AutoAimingAngle { get { return _body.AutoAimingAngle; } }
 
-        public void SetView(IView view, UnityEngine.Color color)
+		public IUnit ActiveTarget { get => _body.ActiveTarget; set => _body.ActiveTarget = value; }
+
+		public void SetView(IView view, UnityEngine.Color color)
         {
             _view = view;
             _color = color;

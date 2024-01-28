@@ -30,6 +30,7 @@ namespace Combat.Component.Systems.Weapons
 		CaptureDrone = 4,
 	}
 
+	[System.Obsolete]
     public enum BulletEffectType
     {
         Common,

@@ -66,22 +66,37 @@ namespace Combat.Component.Platform
             child.parent = transform;
         }
 
-        public void Aim(float bulletVelocity, float weaponRange, bool relative)
+		public IUnit ActiveTarget 
+		{
+			get => _target; 
+			set
+			{
+				_target = value;
+				_timeFromTargetUpdate = 0f;
+			} 
+		}
+
+		public void Aim(float bulletVelocity, float weaponRange, bool relative)
         {
             _bulletVelocity = bulletVelocity;
             _weaponRange = weaponRange;
             _isRelativeVelocity = relative;
 
-            var ship = _target as IShip;
-            if (ship != null && ship.Features.TargetPriority == TargetPriority.None)
+            if (!IsValidTarget(_target))
                 _target = null;
 
             if (_timeFromTargetUpdate > _targetUpdateCooldown || (_timeFromTargetUpdate > _targetFindCooldown && !_target.IsActive()))
-            {
-                _target = _scene.Ships.GetEnemy(_parent, EnemyMatchingOptions.EnemyForTurret(), _initialRotation, _maxAngle, _weaponRange);
-                _timeFromTargetUpdate = 0;
-            }
+				ActiveTarget = _scene.Ships.GetEnemy(_parent, EnemyMatchingOptions.EnemyForTurret(), _initialRotation, _maxAngle, _weaponRange);
         }
+
+		private bool IsValidTarget(IUnit target)
+		{
+			if (target == null) return false;
+			if (target.Type.Side.IsAlly(_parent.Type.Side)) return true;
+			if (target is not IShip ship) return true;
+			if (ship.Features.TargetPriority == TargetPriority.None) return false;
+			return true;
+		}
 
         private void Initialize(IScene scene, IUnit parent, Vector2 position, float rotation, float offset, float maxAngle, float rotationSpeed)
         {

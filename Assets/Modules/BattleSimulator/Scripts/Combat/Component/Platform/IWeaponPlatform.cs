@@ -1,9 +1,9 @@
 ﻿using System;
 using Combat.Component.Body;
+using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Component.View;
 using Combat.Unit.HitPoints;
-using Constructor.Model;
 
 namespace Combat.Component.Platform
 {
@@ -19,8 +19,9 @@ namespace Combat.Component.Platform
         bool IsReady { get; }
         float Cooldown { get; }
         float AutoAimingAngle { get; }
+		IUnit ActiveTarget { get; set; }
 
-        void Aim(float bulletVelocity, float weaponRange, bool relative);
+		void Aim(float bulletVelocity, float weaponRange, bool relative);
         void OnShot();
         void SetView(IView view, UnityEngine.Color color);
 

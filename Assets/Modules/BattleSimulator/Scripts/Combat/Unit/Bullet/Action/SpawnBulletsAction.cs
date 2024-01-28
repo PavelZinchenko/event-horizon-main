@@ -82,7 +82,9 @@ namespace Combat.Component.Bullet.Action
         public bool IsReady { get { return true; } }
         public float Cooldown { get { return 0; } }
         public float AutoAimingAngle { get { return 0; } }
-        public void Aim(float bulletVelocity, float weaponRange, bool relative) {}
+		public IUnit ActiveTarget { get => null; set {} }
+
+		public void Aim(float bulletVelocity, float weaponRange, bool relative) {}
         public void OnShot() {}
         public void SetView(IView view, Color color) { }
 
@@ -91,7 +93,6 @@ namespace Combat.Component.Bullet.Action
 
         private readonly AudioClipId _audioClipId;
         private readonly IBulletFactory _factory;
-        private readonly float _rechargeTime;
         private readonly float _offset;
         private readonly int _magazine;
 		private readonly SpawnCooldown _cooldown;

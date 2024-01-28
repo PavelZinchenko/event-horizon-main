@@ -1,7 +1,10 @@
-﻿namespace Combat.Component.Platform
+﻿using Combat.Component.Unit;
+
+namespace Combat.Component.Platform
 {
     public interface IAimingSystem
     {
-        void Aim(float bulletVelocity, float weaponRange, bool relative);
+		IUnit ActiveTarget { get; set; }
+		void Aim(float bulletVelocity, float weaponRange, bool relative);
     }
 }

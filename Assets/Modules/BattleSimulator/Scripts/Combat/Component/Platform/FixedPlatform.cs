@@ -1,5 +1,6 @@
 ﻿using Combat.Component.Body;
 using Combat.Component.Ship;
+using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Component.View;
 using Combat.Unit.HitPoints;
@@ -28,7 +29,17 @@ namespace Combat.Component.Platform
         public float FixedRotation { get { return _body.WorldRotation(); } }
         public float AutoAimingAngle { get { return 0; } }
 
-        public void SetView(IView view, UnityEngine.Color color)
+		public IUnit ActiveTarget
+		{
+			get => _aimingSystem?.ActiveTarget;
+			set
+			{
+				if (_aimingSystem != null)
+					_aimingSystem.ActiveTarget = value;
+			}
+		}
+
+		public void SetView(IView view, UnityEngine.Color color)
         {
             _view = view;
             _color = color;
