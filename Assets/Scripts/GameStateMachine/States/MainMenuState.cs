@@ -89,7 +89,11 @@ namespace GameStateMachine.States
 
         private void OnConfigureControls()
         {
-			LoadState(StateFactory.CreateTestingState());
+			var state = StateFactory.CreateTestingState();
+			if (Condition == GameStateCondition.Active)
+				LoadState(state);
+			else
+				_loadOnResume = state;
         }
 
 		private void OnOpenShipEditor(IShip ship)
@@ -108,6 +112,15 @@ namespace GameStateMachine.States
 			LoadStateAdditive(StateFactory.CreateEchopediaState());
         }
 
+		protected override void OnResume()
+		{
+			if (_loadOnResume != null)
+			{
+				LoadState(_loadOnResume);
+				_loadOnResume = null;
+			}
+		}
+
 		private void OnReloadUi()
 		{
 			Reload();
@@ -118,7 +131,8 @@ namespace GameStateMachine.States
 			Unload();
         }
 
-        private readonly IMusicPlayer _musicPlayer;
+		private IGameState _loadOnResume;
+		private readonly IMusicPlayer _musicPlayer;
 		private readonly ReloadUiSignal _reloadUiSignal;
 		private readonly StartGameSignal _startGameSignal;
         private readonly StartQuickBattleSignal _startQuickBattleSignal;
