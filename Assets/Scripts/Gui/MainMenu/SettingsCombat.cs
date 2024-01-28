@@ -10,9 +10,10 @@ namespace Gui.MainMenu
     {
         [SerializeField] Slider _cameraZoomSlider;
         [SerializeField] Toggle _centerOnPlayerToggle;
-        [SerializeField] Toggle _showDamageToogle;
+		[SerializeField] Toggle _showDamageToogle;
+		[SerializeField] Toggle _enemyTransmissions;
 
-        [Inject] private readonly IGameSettings _gameSettings;
+		[Inject] private readonly IGameSettings _gameSettings;
         [Inject] private readonly ConfigureControlsSignal.Trigger _configureControlsTrigger;
 
         public void SetCameraZoom(float value)
@@ -30,6 +31,11 @@ namespace Gui.MainMenu
             _gameSettings.CenterOnPlayer = enabled;
         }
 
+		public void ShowEnemyTransmissions(bool enabled)
+		{
+			_gameSettings.ShowEnemyMessages = enabled;
+		}
+
         public void SetShowDamage(bool enabled)
         {
             _gameSettings.ShowDamage = enabled;
@@ -40,6 +46,7 @@ namespace Gui.MainMenu
             _cameraZoomSlider.value = _gameSettings.CameraZoom;
             _centerOnPlayerToggle.isOn = _gameSettings.CenterOnPlayer;
             _showDamageToogle.isOn = _gameSettings.ShowDamage;
+			_enemyTransmissions.isOn = _gameSettings.ShowEnemyMessages;
         }
 
     }

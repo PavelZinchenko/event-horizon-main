@@ -24,7 +24,8 @@ namespace GameServices.Settings
             _startCounter = new IntDataItem("startCounter");
             _centerOnPlayer = new BoolDataItem("centerOnPlayer");
             _showDamage = new BoolDataItem("showDamage", true);
-            _autosave = new BoolDataItem("autosave");
+			_showEnemyMessages = new BoolDataItem("enemyComms", true);
+			_autosave = new BoolDataItem("autosave");
             _guid = new StringDataItem("guid");
             _lastFacebookPostDate = new IntDataItem("fpost");
             _lastDailyRewardDate = new IntDataItem("rdata");
@@ -135,7 +136,13 @@ namespace GameServices.Settings
             set => _showDamage.Write(value);
         }
 
-        public bool AutoSave
+		public bool ShowEnemyMessages 
+		{
+			get => _showDamage.Read();
+			set => _showDamage.Write(value);
+		}
+
+		public bool AutoSave
         {
             get => _autosave.Read();
             set => _autosave.Write(value);
@@ -201,7 +208,7 @@ namespace GameServices.Settings
             }
         }
 
-        public void Dispose()
+		public void Dispose()
         {
             PlayerPrefs.Save();
         }
@@ -220,8 +227,9 @@ namespace GameServices.Settings
         private readonly BoolDataItem _runInBackground;
         private readonly IntDataItem _startCounter;
         private readonly BoolDataItem _centerOnPlayer;
-        private readonly BoolDataItem _showDamage;
-        private readonly BoolDataItem _autosave;
+		private readonly BoolDataItem _showDamage;
+		private readonly BoolDataItem _showEnemyMessages;
+		private readonly BoolDataItem _autosave;
         private readonly StringDataItem _guid;
         private readonly StringDataItem _editorText;
         private string _uniqueId;

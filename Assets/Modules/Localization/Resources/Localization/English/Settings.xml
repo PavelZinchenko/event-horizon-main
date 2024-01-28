@@ -21,6 +21,7 @@
     <string name="CenterOnPlayer">Center on player</string>
     <string name="CameraZoom">Zoom</string>
     <string name="ShowDamageNumbers">Show Damage Numbers</string>
+    <string name="ShowEnemyTransmissions">Show Enemy Transmissions</string>
     <string name="NotSignedIn">Not Signed In</string>
     <string name="LastSaveTime">Modified:</string>
     <string name="CreateNewSavedGame">Create new saved game</string>

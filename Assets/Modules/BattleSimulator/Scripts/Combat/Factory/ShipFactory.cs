@@ -164,7 +164,8 @@ namespace Combat.Factory
 			if (stats.Autopilot)
 				_aiManager.Add(CreateAutopilotController().Create(ship));
 
-			ship.RadioTransmitter = _radioTransmitter;
+			if (!_settings.NoEnemyMessages)
+				ship.RadioTransmitter = _radioTransmitter;
 
 			return ship;
         }
@@ -417,6 +418,7 @@ namespace Combat.Factory
             public bool Shadows;
             public bool StaticWrecks;
             public bool NoDamageIndicator;
+			public bool NoEnemyMessages;
         }
     }
 }

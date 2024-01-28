@@ -34,6 +34,12 @@ namespace Installers
 
         public override void InstallBindings()
         {
+			var settings = new ShipFactory.Settings()
+			{
+				NoDamageIndicator = !_gameSettings.ShowDamage,
+				NoEnemyMessages = !_gameSettings.ShowEnemyMessages,
+			};
+
 			Container.BindInterfacesTo<Messenger>().AsSingle().WithArguments(GameScene.Combat);
 
 			Container.BindInterfacesAndSelfTo<CombatManager>().AsSingle().NonLazy();
@@ -53,7 +59,7 @@ namespace Installers
             Container.Bind<TimerPanel>().FromInstance(_timerPanel);
             Container.Bind<Settings>().FromInstance(_settings);
             Container.Bind<WeaponFactory>().AsSingle();
-            Container.Bind<ShipFactory>().AsSingle().WithArguments(new ShipFactory.Settings() { NoDamageIndicator = !_gameSettings.ShowDamage });
+            Container.Bind<ShipFactory>().AsSingle().WithArguments(settings);
             Container.Bind<SpaceObjectFactory>().AsSingle();
             Container.Bind<DeviceFactory>().AsSingle();
             Container.Bind<DroneBayFactory>().AsSingle();

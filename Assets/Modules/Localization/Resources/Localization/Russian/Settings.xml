@@ -21,6 +21,7 @@
     <string name="CenterOnPlayer">Игрок всегда в центре</string>
     <string name="CameraZoom">Масштаб</string>
     <string name="ShowDamageNumbers">Показывать урон</string>
+    <string name="ShowEnemyTransmissions">Показывать сообщения врагов</string>
     <string name="NotSignedIn">Вход не выполнен</string>
     <string name="LastSaveTime">Изменена:</string>
     <string name="CreateNewSavedGame">Создать новое сохранение</string>
