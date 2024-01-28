@@ -6,7 +6,7 @@
   "ComponentStatsId": 1,
   "Faction": 11,
   "Icon": "laser3",
-  "Color": "#C2FFC0",
+  "Color": "#808080",
   "Layout": "010010010",
   "CellType": "4",
   "WeaponId": 71,
