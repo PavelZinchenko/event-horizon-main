@@ -71,6 +71,11 @@ namespace Combat.Component.Bullet
             Body.UpdatePhysics(elapsedTime);
             Lifetime.Take(elapsedTime);
             Collider.UpdatePhysics(elapsedTime);
+            
+            foreach (var action in _cooldownActions)
+            {
+                action.Invoke();
+            }
 
             if (Lifetime.IsExpired)
                 Expire();
@@ -111,7 +116,9 @@ namespace Combat.Component.Bullet
 
         public void AddAction(IAction action)
         {
-            if (action.Condition != ConditionType.None)
+            if(action.Condition == ConditionType.OnCooldown)
+                _cooldownActions.Add(action);
+            else if (action.Condition != ConditionType.None)
                 _actions.Add(action);
 
             AddResource(action);
@@ -179,6 +186,7 @@ namespace Combat.Component.Bullet
         private readonly IBody _body;
         private readonly IView _view;
         private readonly List<IAction> _actions = new List<IAction>();
+        private readonly List<IAction> _cooldownActions = new List<IAction>();
         private readonly List<IDisposable> _resources = new List<IDisposable>();
     }
 }

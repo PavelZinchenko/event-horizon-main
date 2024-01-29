@@ -14,34 +14,12 @@ namespace Combat.Component.Bullet.Action
 {
     public class SpawnBulletsAction : IAction, IWeaponPlatform
     {
-		public class SpawnCooldown
-		{
-			public SpawnCooldown(float cooldown)
-			{
-				_cooldown = cooldown;
-			}
-
-			public bool TryUpdate()
-			{
-				var time = Time.fixedTime;
-				if (_lastUpdateTime > 0 && time - _lastUpdateTime < _cooldown)
-					return false;
-
-				_lastUpdateTime = time;
-				return true;
-			}
-
-			private float _lastUpdateTime;
-			private readonly float _cooldown;
-		}
-
-        public SpawnBulletsAction(IBulletFactory factory, int magazine, float initialOffset, SpawnCooldown cooldown, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
+	    public SpawnBulletsAction(IBulletFactory factory, int magazine, float initialOffset, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
         {
             Type = parent.Type;
             _body = new BodyWrapper(parent.Body);
             _factory = factory;
             _magazine = magazine;
-			_cooldown = cooldown;
             _offset = initialOffset;
             _soundPlayer = soundPlayer;
             _audioClipId = audioClip;
@@ -53,9 +31,6 @@ namespace Combat.Component.Bullet.Action
 
         public CollisionEffect Invoke()
         {
-			if (_cooldown != null && !_cooldown.TryUpdate())
-                return CollisionEffect.None;
-
             if (_magazine <= 1)
                 _factory.Create(this, 0, 0, /*TODO: _offset*/0);
             else
@@ -95,7 +70,6 @@ namespace Combat.Component.Bullet.Action
         private readonly IBulletFactory _factory;
         private readonly float _offset;
         private readonly int _magazine;
-		private readonly SpawnCooldown _cooldown;
         private readonly BodyWrapper _body;
         private readonly ISoundPlayer _soundPlayer;
     }

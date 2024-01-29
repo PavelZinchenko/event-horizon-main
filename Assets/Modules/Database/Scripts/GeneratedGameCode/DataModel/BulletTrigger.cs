@@ -46,12 +46,14 @@ namespace GameDatabase.DataModel
 		{
 			Condition = serializable.Condition;
 			EffectType = serializable.EffectType;
+			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0f, 1000f);
 
 			OnDataDeserialized(serializable, loader);
 		}
 
 		public BulletTriggerCondition Condition { get; private set; }
 		public BulletEffectType EffectType { get; private set; }
+		public float Cooldown { get; private set; }
 
 		public static BulletTrigger DefaultValue { get; private set; } = Create(new(), null);
 	}
@@ -125,7 +127,6 @@ namespace GameDatabase.DataModel
 			ColorMode = serializable.ColorMode;
 			Quantity = UnityEngine.Mathf.Clamp(serializable.Quantity, 0, 1000);
 			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 100f);
-			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0f, 1000f);
 			RandomFactor = UnityEngine.Mathf.Clamp(serializable.RandomFactor, 0f, 1f);
 			PowerMultiplier = UnityEngine.Mathf.Clamp(serializable.PowerMultiplier, 0f, 1000f);
 			MaxNestingLevel = UnityEngine.Mathf.Clamp(serializable.MaxNestingLevel, 0, 100);
@@ -144,7 +145,6 @@ namespace GameDatabase.DataModel
 		public ColorMode ColorMode { get; private set; }
 		public int Quantity { get; private set; }
 		public float Size { get; private set; }
-		public float Cooldown { get; private set; }
 		public float RandomFactor { get; private set; }
 		public float PowerMultiplier { get; private set; }
 		public int MaxNestingLevel { get; private set; }

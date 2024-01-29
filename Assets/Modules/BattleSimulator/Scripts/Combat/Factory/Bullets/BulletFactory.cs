@@ -5,6 +5,7 @@ using Combat.Collision.Behaviour.Action;
 using Combat.Component.Body;
 using Combat.Component.Bullet;
 using Combat.Component.Bullet.Action;
+using Combat.Component.Bullet.Cooldown;
 using Combat.Component.Bullet.Lifetime;
 using Combat.Component.Collider;
 using Combat.Component.Controller;
@@ -268,14 +269,19 @@ namespace Combat.Factory
             return factory;
         }
 
-		private SpawnBulletsAction.SpawnCooldown GetCooldown(BulletTrigger_SpawnBullet trigget)
-		{
+		private Cooldown GetSpawnBulletCooldown(BulletTrigger_SpawnBullet trigget)
+        {
+            // When the Cooldown condition is used, the user likely wants for trigger to activate
+            // consistently every `Cooldown` seconds, and the shared SpawnBullet cooldown will likely mess
+            // with that. Additionally, there are possible floating point issues when trying to synchronize
+            // two independent timers 
+            if (trigget.Condition == BulletTriggerCondition.Cooldown) return null;
 			if (_cooldownMap == null) _cooldownMap = new();
 
 			if (_cooldownMap.TryGetValue(trigget, out var cooldown))
 				return cooldown;
 
-			cooldown = new SpawnBulletsAction.SpawnCooldown(trigget.Cooldown);
+			cooldown = new Cooldown(trigget.Cooldown);
 			_cooldownMap.Add(trigget, cooldown);
 			return cooldown;
 		}
@@ -283,7 +289,7 @@ namespace Combat.Factory
 		private BulletShape BulletShape => _ammunition.Body.BulletPrefab == null ? BulletShape.Mine : _ammunition.Body.BulletPrefab.Shape;
 
 		private int _nestingLevel;
-		private Dictionary<BulletTrigger_SpawnBullet, SpawnBulletsAction.SpawnCooldown> _cooldownMap;
+		private Dictionary<BulletTrigger_SpawnBullet, Cooldown> _cooldownMap;
 		private readonly Lazy<GameObject> _prefab;
         private readonly BulletStats _stats;
         private readonly Ammunition _ammunition;
@@ -372,6 +378,8 @@ namespace Combat.Factory
                         return ConditionType.OnExpire;
                     case BulletTriggerCondition.Detonated:
                         return ConditionType.OnDetonate;
+                    case BulletTriggerCondition.Cooldown:
+                        return ConditionType.OnCooldown;
                     default:
                         return ConditionType.None;
                 }
@@ -382,7 +390,7 @@ namespace Combat.Factory
             public Result Create(BulletTrigger_PlaySfx trigger)
             {
                 var condition = FromTriggerCondition(trigger.Condition);
-                CreateSoundEffect(_bullet, trigger.AudioClip, condition);
+                CreateSoundEffect(_bullet, trigger.AudioClip, condition, trigger);
                 CreateVisualEffect(_bullet, _collisionBehaviour, condition, trigger);
                 return Result.Ok;
             }
@@ -390,7 +398,7 @@ namespace Combat.Factory
             public Result Create(BulletTrigger_SpawnStaticSfx trigger)
             {
                 var condition = FromTriggerCondition(trigger.Condition);
-                CreateSoundEffect(_bullet, trigger.AudioClip, condition);
+                CreateSoundEffect(_bullet, trigger.AudioClip, condition, trigger);
                 CreateStaticVisualEffect(_bullet, condition, trigger);
                 return Result.Ok;
             }
@@ -404,8 +412,8 @@ namespace Combat.Factory
 
                 var factory = CreateFactory(trigger.Ammunition, trigger);
                 var magazine = Math.Max(trigger.Quantity, 1);
-                _bullet.AddAction(new SpawnBulletsAction(factory, magazine, factory._stats.BodySize / 2, _factory.GetCooldown(trigger),
-                    _bullet, factory._soundPlayer, trigger.AudioClip, _condition));
+                AddAction(_bullet, trigger, new SpawnBulletsAction(factory, magazine, factory._stats.BodySize / 2,
+                    _bullet, factory._soundPlayer, trigger.AudioClip, _condition).WithCooldown(_factory.GetSpawnBulletCooldown(trigger)));
 
                 return Result.Ok;
             }
@@ -413,25 +421,25 @@ namespace Combat.Factory
             public Result Create(BulletTrigger_Detonate content)
             {
                 var condition = FromTriggerCondition(content.Condition);
-                _bullet.AddAction(new DetonateAction(condition));
+                AddAction(_bullet, content, new DetonateAction(condition));
                 return Result.Ok;
             }
 
             public Result Create(BulletTrigger_GravityField content)
             {
                 var condition = FromTriggerCondition(content.Condition);
-                _bullet.AddAction(new CreateGravitationAction(_bullet, _factory._spaceObjectFactory, content.Size, content.PowerMultiplier, condition));
+                AddAction(_bullet, content, new CreateGravitationAction(_bullet, _factory._spaceObjectFactory, content.Size, content.PowerMultiplier, condition));
                 return Result.Ok;
             }
 
-            private void CreateSoundEffect(Bullet bullet, AudioClipId audioClip, ConditionType condition)
+            private void CreateSoundEffect(Bullet bullet, AudioClipId audioClip, ConditionType condition, BulletTrigger trigger)
             {
                 if (!audioClip) return;
 
 				if (condition == ConditionType.None && !audioClip.Loop)
                     _factory._soundPlayer.Play(audioClip);
                 else
-                    bullet.AddAction(new PlaySoundAction(_factory._soundPlayer, audioClip, condition));
+                    AddAction(bullet, trigger, new PlaySoundAction(_factory._soundPlayer, audioClip, condition));
             }
 
             private void CreateVisualEffect(Bullet bullet, BulletCollisionBehaviour collisionBehaviour,
@@ -446,7 +454,7 @@ namespace Combat.Factory
                     collisionBehaviour.AddAction(new ShowHitEffectAction(_factory._effectFactory, trigger.VisualEffect, color,
                         size * _factory._stats.BodySize, trigger.Lifetime));
                 else
-                    bullet.AddAction(new PlayEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, size,
+                    AddAction(bullet, trigger, new PlayEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, size,
                         trigger.Lifetime, condition));
             }
 
@@ -456,7 +464,7 @@ namespace Combat.Factory
 
                 var color = trigger.ColorMode.Apply(trigger.Color, _factory._stats.Color);
 
-                bullet.AddAction(new SpawnEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, trigger.Size,
+                AddAction(bullet, trigger, new SpawnEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, trigger.Size,
                     trigger.Lifetime, condition));
             }
 
@@ -475,6 +483,13 @@ namespace Combat.Factory
                 var factory = _factory.CreateFactory(trigger.Ammunition, stats);
                 factory.Stats.RandomFactor = trigger.RandomFactor;
                 return factory;
+            }
+
+            private static void AddAction(Bullet bullet, BulletTrigger trigger, IAction action)
+            {
+                bullet.AddAction(action.Condition == ConditionType.OnCooldown
+                    ? action.WithCooldown(trigger.Cooldown)
+                    : action);
             }
 
             private ConditionType _condition;
