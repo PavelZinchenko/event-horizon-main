@@ -8,29 +8,12 @@
 
 namespace DatabaseMigration.v1.Enums
 {
-	public enum ComponentModType
+	public enum NodeExecutionMode
 	{
-		Empty,
-		Lightweight,
-		LowEnergyCost,
-		Fortified,
-		ExtraHitPoints,
-		Damage,
-		Cooldown,
-		Range,
-		BulletVelocity,
-		EnergyCapacity,
-		RepairRate,
-		EnginePower,
-		RechargeRate,
-		BulletVelocity2,
-		AreaOfEffect,
-		ShieldPower,
-		Damage2,
-		DroneDamage,
-		DroneDefense,
-		DroneSpeed,
-		DroneRange,
-		Recoil,
+		UntilSucceeds = 0,
+		UntilFails = 1,
+		UntilFinishes = 2,
+		Infinitely = 3,
+		OneTime = 4,
 	}
 }
