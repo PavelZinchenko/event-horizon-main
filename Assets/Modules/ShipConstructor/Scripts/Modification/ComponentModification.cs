@@ -61,11 +61,11 @@ namespace Constructor.Modification
 						break;
 					case StatModificationType.DroneSpeed:
 						if (stats.DroneSpeedMultiplier.HasValue)
-							stats.DroneSpeedMultiplier = stats.DroneDefenseMultiplier.AmplifyDelta(value);
+							stats.DroneSpeedMultiplier = stats.DroneSpeedMultiplier.AmplifyDelta(value);
 						break;
 					case StatModificationType.DroneRange:
 						if (stats.DroneRangeMultiplier.HasValue)
-							stats.DroneRangeMultiplier = stats.DroneDefenseMultiplier.AmplifyDelta(value);
+							stats.DroneRangeMultiplier = stats.DroneRangeMultiplier.AmplifyDelta(value);
 						break;
 					case StatModificationType.EnergyCapacity:
 						if (stats.EnergyPoints > 0)
