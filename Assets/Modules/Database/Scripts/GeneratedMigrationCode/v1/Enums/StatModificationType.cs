@@ -8,16 +8,33 @@
 
 namespace DatabaseMigration.v1.Enums
 {
-	public enum BulletTriggerCondition
+	public enum StatModificationType
 	{
-		Undefined,
-		Created,
-		Destroyed,
-		Hit,
-		Disarmed,
-		Expired,
-		Detonated,
-		OutOfAmmo,
-		Cooldown,
+		None = 0,
+		WeaponDamage = 1,
+		WeaponRange = 2,
+		WeaponFireRate = 3,
+		WeaponBulletSpeed = 4,
+		WeaponBulletMass = 5,
+		WeaponAoe = 6,
+		DroneAttack = 10,
+		DroneDefense = 11,
+		DroneSpeed = 12,
+		DroneRange = 13,
+		EnergyCapacity = 20,
+		EnergyRechargeRate = 21,
+		ShieldPoints = 22,
+		ShieldRechargeRate = 23,
+		ArmorPoints = 24,
+		ArmorRepairRate = 25,
+		Resistance = 30,
+		DeviceCooldown = 40,
+		DeviceRange = 41,
+		DevicePower = 42,
+		EnginePower = 50,
+		EngineTurnRate = 51,
+		Mass = 60,
+		EnergyCost = 61,
+		ExtraHitPoints = 62,
 	}
 }
