@@ -19,6 +19,6 @@ namespace GameDatabase.Serializable
 		public int TurretShip;
 		public int InfectedPlanetFaction;
 		public int HiveShipBuild;
-		public string GasCloudDPS = "level*2";
+		public string GasCloudDPS = "MIN(level*2,500)";
 	}
 }

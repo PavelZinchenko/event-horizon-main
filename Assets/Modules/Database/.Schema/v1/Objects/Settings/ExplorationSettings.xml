@@ -4,5 +4,5 @@
     <member name="TurretShip" type="object" typeid="Ship" />
     <member name="InfectedPlanetFaction" type="object" typeid="Faction" />
     <member name="HiveShipBuild" type="object" typeid="ShipBuild" />
-    <member name="GasCloudDPS" type="expression" typeid="IntToFloat" arguments="level" minvalue="1" default="level*2" />
+    <member name="GasCloudDPS" type="expression" typeid="IntToFloat" arguments="level" minvalue="1" default="MIN(level*2,500)" />
 </data>
