@@ -54,7 +54,7 @@ namespace Combat.Factory
             get { return _stats; }
         }
 
-        public IBullet Create(IWeaponPlatform parent, float spread, float rotation, float offset)
+        public IBullet Create(IWeaponPlatform parent, float spread, float rotation, Vector2 offset)
         {
             var bulletGameObject = new GameObjectHolder(_prefab, _objectPool);
             bulletGameObject.IsActive = true;
@@ -152,7 +152,7 @@ namespace Combat.Factory
         }
 
         private IBody ConfigureBody(IBodyComponent body, IWeaponPlatform parent, float bulletSpeed, float spread,
-            float deltaAngle, float offset)
+            float deltaAngle, Vector2 offset)
         {
             IBody parentBody = null;
             var position = Vector2.zero;
@@ -165,12 +165,12 @@ namespace Combat.Factory
             if (_ammunition.Body.Type == BulletType.Continuous && !parent.IsTemporary)
             {
                 parentBody = parent.Body;
-                position = new Vector2(offset, 0);
+                position = offset;
             }
             else
             {
                 rotation = parent.Body.WorldRotation() + (UnityEngine.Random.value - 0.5f) * spread + deltaAngle;
-                position = parent.Body.WorldPosition() + RotationHelpers.Direction(rotation) * offset;
+                position = parent.Body.WorldPosition() + RotationHelpers.Transform(offset, rotation);
             }
 
             if (_ammunition.Body.Type != BulletType.Continuous)

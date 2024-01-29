@@ -32,11 +32,11 @@ namespace Combat.Component.Bullet.Action
         public CollisionEffect Invoke()
         {
             if (_magazine <= 1)
-                _factory.Create(this, 0, 0, /*TODO: _offset*/0);
+                _factory.Create(this, 0, 0, /*TODO: _offset*/Vector2.zero);
             else
             {
                 for (var i = 0; i < _magazine; ++i)
-                    _factory.Create(this, 0, Random.Range(0, 360), _offset);
+                    _factory.Create(this, 0, Random.Range(0, 360), new Vector2(_offset, 0));
             }
 
             if (_audioClipId) _soundPlayer.Play(_audioClipId, GetHashCode());

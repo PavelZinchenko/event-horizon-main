@@ -70,7 +70,7 @@ namespace Combat.Factory
         //private float DamageMultiplier { get { return PowerLevel; } }
         //private float SizeMultiplier { get { return 0.5f + PowerLevel*0.5f; } }
 
-        public IBullet Create(IWeaponPlatform parent, float spread, float rotation, float offset)
+        public IBullet Create(IWeaponPlatform parent, float spread, float rotation, Vector2 offset)
         {
             var color = _stats.AmmunitionClass == AmmunitionClassObsolete.Fireworks ? Color.Lerp(_stats.Color, new Color(Random.value, Random.value, Random.value), 0.75f) : (UnityEngine.Color)_stats.Color;
             var velocity = GetVelocity();
@@ -139,7 +139,7 @@ namespace Combat.Factory
             return view;
         }
 
-        private IBody ConfigureBody(IBodyComponent body, IWeaponPlatform parent, float spread, float bulletVelocity, float deltaAngle, float offset)
+        private IBody ConfigureBody(IBodyComponent body, IWeaponPlatform parent, float spread, float bulletVelocity, float deltaAngle, Vector2 offset)
         {
             IBody parentBody = null;
             var position = Vector2.zero;
@@ -155,7 +155,7 @@ namespace Combat.Factory
             }
             else
             {
-                position = parent.Body.WorldPosition() + RotationHelpers.Direction(parent.Body.WorldRotation())*offset;
+                position = parent.Body.WorldPosition() + RotationHelpers.Transform(offset, parent.Body.WorldRotation());
                 rotation = parent.Body.WorldRotation() + deltaAngle + (Random.value - 0.5f)*spread;
             }
 
