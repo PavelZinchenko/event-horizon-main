@@ -14,4 +14,10 @@
     <member name="RandomFactor" type="float" minvalue="0" maxvalue="1" case="SpawnBullet" />
     <member name="PowerMultiplier" type="float" minvalue="0" maxvalue="1000" case="SpawnBullet,GravityField" />
     <member name="MaxNestingLevel" type="int" minvalue="0" maxvalue="100" case="SpawnBullet" />
+    <member name="Rotation" type="expression" typeid="IntToFloat" arguments="i"
+            default="IF(Quantity == 1, 0, RANDOM(0, 360))" case="SpawnBullet" />
+    <member name="OffsetX" type="expression" typeid="IntToFloat" arguments="i"
+            default="IF(Quantity == 1, 0, Size / 2)" case="SpawnBullet" />
+    <member name="OffsetY" type="expression" typeid="IntToFloat" arguments="i"
+            default="0" case="SpawnBullet" />
 </data>

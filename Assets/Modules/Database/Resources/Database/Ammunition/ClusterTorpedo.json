@@ -4,7 +4,7 @@
   "Body": {
     "Size": 1.0,
     "Velocity": 15.0,
-    "Range": 30.0,
+    "Range": 10.0,
     "Weight": 0.1,
     "Color": "#00C7FF",
     "BulletPrefab": 4,
@@ -27,8 +27,11 @@
       "Condition": 2,
       "EffectType": 2,
       "Ammunition": 100,
-      "Quantity": 7,
-      "RandomFactor": 1.0
+      "Quantity": 72,
+      "RandomFactor": 0.0,
+      "OffsetX": "i % 8 - 8",
+      "OffsetY": "i",
+      "Rotation": "(90 / Quantity) * i"
     }
   ]
 }

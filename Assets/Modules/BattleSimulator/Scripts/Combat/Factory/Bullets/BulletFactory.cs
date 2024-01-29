@@ -7,6 +7,7 @@ using Combat.Component.Bullet;
 using Combat.Component.Bullet.Action;
 using Combat.Component.Bullet.Cooldown;
 using Combat.Component.Bullet.Lifetime;
+using Combat.Component.Bullet.SpawnSettings;
 using Combat.Component.Collider;
 using Combat.Component.Controller;
 using Combat.Component.DamageHandler;
@@ -412,8 +413,13 @@ namespace Combat.Factory
 
                 var factory = CreateFactory(trigger.Ammunition, trigger);
                 var magazine = Math.Max(trigger.Quantity, 1);
-                AddAction(_bullet, trigger, new SpawnBulletsAction(factory, magazine, factory._stats.BodySize / 2,
-                    _bullet, factory._soundPlayer, trigger.AudioClip, _condition).WithCooldown(_factory.GetSpawnBulletCooldown(trigger)));
+                // TODO: previously, there was `factory._stats.BodySize / 2` bonus for "cluster"-type ammo (more than 1 magazine)
+                // This is currently not replicable with variables exposed to expressions
+                // May be resolved once member access is added, and expressions can do something like
+                // IF(quantity == 1, 0, Ammunition.Body.Size * Size / 2)
+                AddAction(_bullet, trigger, new SpawnBulletsAction(factory, magazine, trigger, _bullet,
+                        factory._soundPlayer, trigger.AudioClip, _condition)
+                    .WithCooldown(_factory.GetSpawnBulletCooldown(trigger)));
 
                 return Result.Ok;
             }
