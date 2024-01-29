@@ -112,7 +112,7 @@ namespace GameServices.Player
         public float MainEnginePower => _database.SkillSettings.FlightSpeed(GetSkillLevels()[SkillType.MainEnginePower]);
         public float MainFilghtRange => _database.SkillSettings.FlightRange(GetSkillLevels()[SkillType.MainEnginePower]);
         public bool HasRescueUnit => GetSkillLevels()[SkillType.MainRescueUnit] > 0;
-        public float PlanetaryScanner => _database.SkillSettings.ExplorationLootBonus(GetSkillLevels()[SkillType.PlanetaryScanner]);
+        public float PlanetaryScanner => 1.0f + _database.SkillSettings.ExplorationLootBonus(GetSkillLevels()[SkillType.PlanetaryScanner]);
         public int SpaceScanner => GetSkillLevels()[SkillType.SpaceScanner];
         public float HeatResistance => _database.SkillSettings.HeatResistance(GetSkillLevels()[SkillType.HeatDefense]);
         public float EnergyResistance => _database.SkillSettings.EnergyResistance(GetSkillLevels()[SkillType.EnergyDefense]);
