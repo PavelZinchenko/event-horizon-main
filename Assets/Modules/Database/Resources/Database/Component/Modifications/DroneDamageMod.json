@@ -1,5 +1,16 @@
 {
   "ItemType": 12,
   "Id": 17,
-  "Type": 17
+  "Description": "$DamageMod",
+  "Modifications": [
+    {
+      "Type": 10,
+      "Gray3": 0.5,
+      "Gray2": 0.7,
+      "Gray1": 0.8,
+      "Green": 1.3,
+      "Purple": 1.8,
+      "Gold": 2.5
+    }
+  ]
 }

@@ -1,5 +1,16 @@
 {
   "ItemType": 12,
   "Id": 1,
-  "Type": 1
+  "Description": "$WeightMod",
+  "Modifications": [
+    {
+      "Type": 60,
+      "Gray3": 2.0,
+      "Gray2": 1.5,
+      "Gray1": 1.2,
+      "Green": 0.8,
+      "Purple": 0.6,
+      "Gold": 0.5
+    }
+  ]
 }

@@ -7,7 +7,12 @@ namespace GameDatabase.Model
 {
     public struct ImmutableCollection<T> : IReadOnlyCollection<T>
     {
-        public ImmutableCollection(IEnumerable<T> items)
+		private readonly List<T> _items;
+
+		public static ImmutableCollection<T> Empty => new();
+		public int Count => _items?.Count ?? 0;
+
+		public ImmutableCollection(IEnumerable<T> items)
         {
             _items = items != null ? new List<T>(items) : null;
         }
@@ -82,9 +87,5 @@ namespace GameDatabase.Model
         {
             return GetEnumerator();
         }
-
-        public int Count => _items?.Count ?? 0;
-
-        private readonly List<T> _items;
     }
 }

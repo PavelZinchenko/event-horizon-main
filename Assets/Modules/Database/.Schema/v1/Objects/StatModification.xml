@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="StatModification" type="struct" >
+    <member name="Type" type="enum" typeid="StatModificationType" />
+    <member name="Gray3" type="float" />
+    <member name="Gray2" type="float" />
+    <member name="Gray1" type="float" />
+    <member name="Green" type="float" />
+    <member name="Purple" type="float" />
+    <member name="Gold" type="float" />
+</data>

@@ -5,6 +5,7 @@ using Constructor.Modification;
 using Constructor.Ships;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
+using GameDatabase.Model;
 
 namespace Constructor.Component
 {
@@ -20,6 +21,6 @@ namespace Constructor.Component
         public ActivationType ActivationType { get { return ActivationType.None; } }
         public int UpgradeLevel { get; set; }
         public IModification Modification { get; set; }
-        public IEnumerable<ComponentModType> SuitableModifications { get { yield break; } }
-    }
+		public ImmutableCollection<ComponentMod> SuitableModifications => ImmutableCollection<ComponentMod>.Empty;
+	}
 }

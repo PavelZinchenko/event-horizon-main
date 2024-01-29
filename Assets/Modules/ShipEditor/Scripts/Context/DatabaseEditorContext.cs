@@ -50,7 +50,7 @@ namespace ShipEditor.Context
 					_components.Add(common, 999);
 					foreach (var mod in item.PossibleModifications)
 					{
-						var component = new ComponentInfo(item, mod.Type, GameDatabase.Enums.ModificationQuality.P3);
+						var component = new ComponentInfo(item, mod, GameDatabase.Enums.ModificationQuality.P3);
 						_components.Add(component, 999);
 					}
 				}

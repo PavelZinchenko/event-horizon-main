@@ -1,5 +1,16 @@
 {
   "ItemType": 12,
   "Id": 8,
-  "Type": 8
+  "Description": "$BulletVelocityMod",
+  "Modifications": [
+    {
+      "Type": 4,
+      "Gray3": 0.5,
+      "Gray2": 0.7,
+      "Gray1": 0.8,
+      "Green": 1.1,
+      "Purple": 1.25,
+      "Gold": 1.5
+    }
+  ]
 }

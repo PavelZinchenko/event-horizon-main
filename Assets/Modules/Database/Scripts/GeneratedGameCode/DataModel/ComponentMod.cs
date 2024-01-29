@@ -27,14 +27,16 @@ namespace GameDatabase.DataModel
 			Id = new ItemId<ComponentMod>(serializable.Id);
 			loader.AddComponentMod(serializable.Id, this);
 
-			Type = serializable.Type;
+			Description = serializable.Description;
+			Modifications = new ImmutableCollection<StatModification>(serializable.Modifications?.Select(item => StatModification.Create(item, loader)));
 
 			OnDataDeserialized(serializable, loader);
 		}
 
 		public readonly ItemId<ComponentMod> Id;
 
-		public ComponentModType Type { get; private set; }
+		public string Description { get; private set; }
+		public ImmutableCollection<StatModification> Modifications { get; private set; }
 
 		public static ComponentMod DefaultValue { get; private set; }
 	}

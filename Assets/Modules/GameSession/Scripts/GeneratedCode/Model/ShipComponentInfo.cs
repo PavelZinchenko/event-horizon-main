@@ -14,7 +14,7 @@ namespace Session.Model
 	{
 		private readonly int _id;
 		private readonly sbyte _quality;
-		private readonly sbyte _modification;
+		private readonly int _modification;
 		private readonly sbyte _upgradeLevel;
 		private readonly short _x;
 		private readonly short _y;
@@ -27,7 +27,7 @@ namespace Session.Model
 		{
 			_id = default(int);
 			_quality = default(sbyte);
-			_modification = default(sbyte);
+			_modification = default(int);
 			_upgradeLevel = default(sbyte);
 			_x = default(short);
 			_y = default(short);
@@ -41,7 +41,7 @@ namespace Session.Model
 		{
 			_id = reader.ReadInt(EncodingType.EliasGamma);
 			_quality = reader.ReadSbyte(EncodingType.EliasGamma);
-			_modification = reader.ReadSbyte(EncodingType.EliasGamma);
+			_modification = reader.ReadInt(EncodingType.EliasGamma);
 			_upgradeLevel = reader.ReadSbyte(EncodingType.EliasGamma);
 			_x = reader.ReadShort(EncodingType.EliasGamma);
 			_y = reader.ReadShort(EncodingType.EliasGamma);
@@ -53,7 +53,7 @@ namespace Session.Model
 
 		public int Id => _id;
 		public sbyte Quality => _quality;
-		public sbyte Modification => _modification;
+		public int Modification => _modification;
 		public sbyte UpgradeLevel => _upgradeLevel;
 		public short X => _x;
 		public short Y => _y;
@@ -66,7 +66,7 @@ namespace Session.Model
 		{
 			writer.WriteInt(_id, EncodingType.EliasGamma);
 			writer.WriteSbyte(_quality, EncodingType.EliasGamma);
-			writer.WriteSbyte(_modification, EncodingType.EliasGamma);
+			writer.WriteInt(_modification, EncodingType.EliasGamma);
 			writer.WriteSbyte(_upgradeLevel, EncodingType.EliasGamma);
 			writer.WriteShort(_x, EncodingType.EliasGamma);
 			writer.WriteShort(_y, EncodingType.EliasGamma);

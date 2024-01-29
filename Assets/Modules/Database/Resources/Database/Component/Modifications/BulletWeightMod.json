@@ -1,5 +1,16 @@
 {
   "ItemType": 12,
   "Id": 21,
-  "Type": 21
+  "Description": "$RecoilMod",
+  "Modifications": [
+    {
+      "Type": 5,
+      "Gray3": 2.5,
+      "Gray2": 2.0,
+      "Gray1": 1.5,
+      "Green": 0.8,
+      "Purple": 0.5,
+      "Gold": 0.2
+    }
+  ]
 }

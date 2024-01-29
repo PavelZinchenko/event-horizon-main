@@ -1,5 +1,34 @@
 {
   "ItemType": 12,
   "Id": 3,
-  "Type": 3
+  "Description": "$DefenseMod",
+  "Modifications": [
+    {
+      "Type": 24,
+      "Gray3": 0.5,
+      "Gray2": 0.7,
+      "Gray1": 0.8,
+      "Green": 1.2,
+      "Purple": 1.5,
+      "Gold": 2.0
+    },
+    {
+      "Type": 30,
+      "Gray3": 0.5,
+      "Gray2": 0.7,
+      "Gray1": 0.8,
+      "Green": 1.2,
+      "Purple": 1.5,
+      "Gold": 2.0
+    },
+    {
+      "Type": 22,
+      "Gray3": 0.5,
+      "Gray2": 0.7,
+      "Gray1": 0.8,
+      "Green": 1.2,
+      "Purple": 1.5,
+      "Gold": 2.0
+    }
+  ]
 }

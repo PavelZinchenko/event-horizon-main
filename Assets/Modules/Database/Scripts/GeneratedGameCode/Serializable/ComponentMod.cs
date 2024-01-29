@@ -15,6 +15,7 @@ namespace GameDatabase.Serializable
 	[Serializable]
 	public class ComponentModSerializable : SerializableItem
 	{
-		public ComponentModType Type;
+		public string Description;
+		public StatModificationSerializable[] Modifications;
 	}
 }

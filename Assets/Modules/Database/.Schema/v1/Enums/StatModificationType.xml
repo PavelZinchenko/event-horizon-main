@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="StatModificationType">
+    <item name="None" value="0" />
+
+    <item name="WeaponDamage" value="1" />
+    <item name="WeaponRange" value="2" />
+    <item name="WeaponFireRate" value="3" />
+    <item name="WeaponBulletSpeed" value="4" />
+    <item name="WeaponBulletMass" value="5" />
+    <item name="WeaponAoe" value="6" />
+
+    <item name="DroneAttack" value="10" />
+    <item name="DroneDefense" value="11" />
+    <item name="DroneSpeed" value="12" />
+    <item name="DroneRange" value="13" />
+
+    <item name="EnergyCapacity" value="20" />
+    <item name="EnergyRechargeRate" value="21" />
+    <item name="ShieldPoints" value="22" />
+    <item name="ShieldRechargeRate" value="23" />
+    <item name="ArmorPoints" value="24" />
+    <item name="ArmorRepairRate" value="25" />
+
+    <item name="Resistance" value="30" />
+
+    <item name="DeviceCooldown" value="40" />
+    <item name="DeviceRange" value="41" />
+    <item name="DevicePower" value="42" />
+
+    <item name="EnginePower" value="50" />
+    <item name="EngineTurnRate" value="51" />
+
+    <item name="Mass" value="60" />
+    <item name="EnergyCost" value="61" />
+    <item name="ExtraHitPoints" value="62" />
+</data>

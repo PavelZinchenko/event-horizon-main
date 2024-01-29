@@ -27,7 +27,7 @@ namespace GameDatabase.DataModel
 			Component = loader?.GetComponent(new ItemId<Component>(serializable.ComponentId)) ?? Component.DefaultValue;
 			if (loader != null && Component == null)
 			    throw new DatabaseException("ObjectTemplate.Component cannot be null - " + serializable.ComponentId);
-			Modification = serializable.Modification;
+			Modification = loader?.GetComponentMod(new ItemId<ComponentMod>(serializable.Modification)) ?? ComponentMod.DefaultValue;
 			Quality = serializable.Quality;
 			X = UnityEngine.Mathf.Clamp(serializable.X, -32768, 32767);
 			Y = UnityEngine.Mathf.Clamp(serializable.Y, -32768, 32767);
@@ -39,7 +39,7 @@ namespace GameDatabase.DataModel
 		}
 
 		public Component Component { get; private set; }
-		public ComponentModType Modification { get; private set; }
+		public ComponentMod Modification { get; private set; }
 		public ModificationQuality Quality { get; private set; }
 		public int X { get; private set; }
 		public int Y { get; private set; }

@@ -2,7 +2,7 @@
 
 namespace GameDatabase.Model
 {
-    public struct StatMultiplier
+    public readonly struct StatMultiplier
     {
         public StatMultiplier(float valueMinusOne)
         {
@@ -19,48 +19,19 @@ namespace GameDatabase.Model
 
         public bool HasValue { get { return !Mathf.Approximately(_value, 0); } }
 
-        public static StatMultiplier operator +(StatMultiplier first, StatMultiplier second)
-        {
-            first._value += second._value;
-            return first;
-        }
+        public static StatMultiplier operator +(StatMultiplier first, StatMultiplier second) => new(first._value + second._value);
+        public static StatMultiplier operator -(StatMultiplier first, StatMultiplier second) => new(first._value - second._value);
+        public static StatMultiplier operator *(StatMultiplier first, StatMultiplier second) => new(first.Value*second.Value - 1f);
+		public static StatMultiplier operator +(StatMultiplier first, float modifier) => new(first._value + modifier);
+		public static StatMultiplier operator *(StatMultiplier first, float multiplier) => new(first.Value*multiplier - 1f);
+		public StatMultiplier AmplifyDelta(float multiplier) => new(_value * multiplier);
 
-        public static StatMultiplier operator -(StatMultiplier first, StatMultiplier second)
-        {
-            first._value -= second._value;
-            return first;
-        }
-
-        public static StatMultiplier operator *(StatMultiplier first, StatMultiplier second)
-        {
-            first._value = first.Value * second.Value - 1f;
-            return first;
-        }
-
-        public static StatMultiplier operator +(StatMultiplier first, float modifier)
-        {
-            first._value += modifier;
-            return first;
-        }
-
-        public static StatMultiplier operator *(StatMultiplier first, float multiplier)
-        {
-            first._value = first.Value*multiplier - 1f;
-            return first;
-        }
-
-        public static StatMultiplier operator %(StatMultiplier first, float multiplier)
-        {
-            first._value = (first.Value - 1f) * multiplier;
-            return first;
-        }
-
-        public override string ToString()
+		public override string ToString()
         {
             return (_value >= 0 ? "+" : "") + Mathf.RoundToInt(100*_value) + "%";
         }
 
-        private float _value;
+        private readonly float _value;
     }
 
 }

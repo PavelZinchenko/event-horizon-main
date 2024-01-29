@@ -25,7 +25,7 @@ namespace Session.ContentObsolete
                     continue;
                 }
 
-                var info = new ComponentInfo(component, (ComponentModType)item.Modification, (ModificationQuality)item.Quality, item.UpgradeLevel);
+                var info = new ComponentInfo(component, database.GetComponentMod(new(item.Modification)), (ModificationQuality)item.Quality, item.UpgradeLevel);
                 var x = item.X > -component.Layout.Size ? item.X : 256 + item.X;
                 var y = item.Y > -component.Layout.Size ? item.Y : 256 + item.Y;
                 yield return new IntegratedComponent(info, x, y, item.BarrelId, item.KeyBinding, item.Behaviour, item.Locked);
@@ -40,7 +40,7 @@ namespace Session.ContentObsolete
                 {
                     Id = item.Info.Data.Id.Value,
                     Quality = (int)item.Info.ModificationQuality,
-                    Modification = (int)item.Info.ModificationType,
+                    Modification = item.Info.ModificationType.Id.Value,
                     UpgradeLevel = 0,
                     X = item.X,
                     Y = item.Y,

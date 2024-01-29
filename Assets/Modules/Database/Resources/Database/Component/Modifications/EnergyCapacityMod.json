@@ -1,5 +1,16 @@
 {
   "ItemType": 12,
   "Id": 9,
-  "Type": 9
+  "Description": "$EnergyMod",
+  "Modifications": [
+    {
+      "Type": 20,
+      "Gray3": 0.5,
+      "Gray2": 0.7,
+      "Gray1": 0.8,
+      "Green": 1.2,
+      "Purple": 1.5,
+      "Gold": 2.0
+    }
+  ]
 }

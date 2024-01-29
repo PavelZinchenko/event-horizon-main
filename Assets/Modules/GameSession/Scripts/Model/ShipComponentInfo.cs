@@ -12,7 +12,7 @@ namespace Session.Model
 		{
 			_id = component.Info.Data.Id.Value;
 			_quality = (sbyte)component.Info.ModificationQuality;
-			_modification = (sbyte)component.Info.ModificationType;
+			_modification = component.Info.ModificationType.Id.Value;
 			_upgradeLevel = 0;//component.Info.Level;
 			_x = (short)component.X;
 			_y = (short)component.Y;
@@ -55,7 +55,7 @@ namespace Session.Model
 				return null;
 			}
 
-			var info = new ComponentInfo(component, (ComponentModType)_modification, (ModificationQuality)_quality, _upgradeLevel);			
+			var info = new ComponentInfo(component, database.GetComponentMod(new(_modification)), (ModificationQuality)_quality, _upgradeLevel);			
 			return new IntegratedComponent(info, _x, _y, _barrelId, _keyBinding, _behaviour, _locked);
 		}
 	}

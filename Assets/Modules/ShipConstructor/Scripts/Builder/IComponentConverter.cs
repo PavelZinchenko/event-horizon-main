@@ -1,4 +1,5 @@
-﻿using GameDatabase.Enums;
+﻿using GameDatabase.DataModel;
+using GameDatabase.Enums;
 using UnityEngine;
 
 namespace Constructor
@@ -53,7 +54,7 @@ namespace Constructor
             ComponentInfo info;
             if (quality <= 0 || component.Info.ModificationQuality >= ModificationQuality.N1 + quality)
                 info = component.Info;
-            else if (component.Info.ModificationType != ComponentModType.Empty)
+            else if (component.Info.ModificationType != ComponentMod.Empty)
                 info = new ComponentInfo(component.Info.Data, component.Info.ModificationType, ModificationQuality.N1 + quality);
             else
                 info = ComponentInfo.CreateRandomModification(component.Info.Data, _random, ModificationQuality.N1 + quality, ModificationQuality.N1 + quality);

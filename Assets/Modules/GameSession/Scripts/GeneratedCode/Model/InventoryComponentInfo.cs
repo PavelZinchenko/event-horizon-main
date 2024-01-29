@@ -14,14 +14,14 @@ namespace Session.Model
 	{
 		private readonly uint _id;
 		private readonly byte _quality;
-		private readonly byte _modification;
+		private readonly uint _modification;
 		private readonly byte _upgradeLevel;
 
 		public InventoryComponentInfo(IDataChangedCallback parent)
 		{
 			_id = default(uint);
 			_quality = default(byte);
-			_modification = default(byte);
+			_modification = default(uint);
 			_upgradeLevel = default(byte);
 		}
 
@@ -29,20 +29,20 @@ namespace Session.Model
 		{
 			_id = reader.ReadUint(EncodingType.EliasGamma);
 			_quality = reader.ReadByte(EncodingType.EliasGamma);
-			_modification = reader.ReadByte(EncodingType.EliasGamma);
+			_modification = reader.ReadUint(EncodingType.EliasGamma);
 			_upgradeLevel = reader.ReadByte(EncodingType.EliasGamma);
 		}
 
 		public uint Id => _id;
 		public byte Quality => _quality;
-		public byte Modification => _modification;
+		public uint Modification => _modification;
 		public byte UpgradeLevel => _upgradeLevel;
 
 		public void Serialize(SessionDataWriter writer)
 		{
 			writer.WriteUint(_id, EncodingType.EliasGamma);
 			writer.WriteByte(_quality, EncodingType.EliasGamma);
-			writer.WriteByte(_modification, EncodingType.EliasGamma);
+			writer.WriteUint(_modification, EncodingType.EliasGamma);
 			writer.WriteByte(_upgradeLevel, EncodingType.EliasGamma);
 		}
 	}

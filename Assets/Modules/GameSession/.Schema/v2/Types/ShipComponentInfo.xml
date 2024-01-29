@@ -2,7 +2,7 @@
 <data name="ShipComponentInfo" type="struct">
     <member name="Id" type="int" />
     <member name="Quality" type="sbyte" />
-    <member name="Modification" type="sbyte" />
+    <member name="Modification" type="int" />
     <member name="UpgradeLevel" type="sbyte" />
     <member name="X" type="short" />
     <member name="Y" type="short" />    

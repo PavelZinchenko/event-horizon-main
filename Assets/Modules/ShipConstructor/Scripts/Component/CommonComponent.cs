@@ -1,11 +1,11 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Constructor.Model;
 using Constructor.Modification;
 using Constructor.Ships;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Extensions;
+using GameDatabase.Model;
 
 namespace Constructor.Component
 {
@@ -139,7 +139,7 @@ namespace Constructor.Component
         public IModification Modification { get; set; }
         public int UpgradeLevel { get; set; }
 
-        public IEnumerable<ComponentModType> SuitableModifications { get { return _component.PossibleModifications.Select(item => item.Type); } }
+		public ImmutableCollection<ComponentMod> SuitableModifications => _component.PossibleModifications;
 
         private readonly int _shipSize;
         private readonly GameDatabase.DataModel.Component _component;

@@ -8,7 +8,7 @@ namespace GameDatabase.DataModel
     {
         public InstalledComponent(
             Component component, 
-            ComponentModType modType, 
+            ComponentMod modification, 
             ModificationQuality quality, 
             int x, 
             int y, 
@@ -17,7 +17,7 @@ namespace GameDatabase.DataModel
             int keyBinding)
         {
             Component = component;
-            Modification = modType;
+            Modification = modification;
             Quality = quality;
             X = x;
             Y = y;
@@ -31,7 +31,7 @@ namespace GameDatabase.DataModel
             return new InstalledComponentSerializable
             {
                 ComponentId = Component.Id.Value,
-                Modification = Modification,
+                Modification = Modification.Id.Value,
                 Quality = Quality,
                 X = X,
                 Y = Y,

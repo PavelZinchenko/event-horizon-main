@@ -4,6 +4,7 @@ using Constructor.Modification;
 using Constructor.Ships;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
+using GameDatabase.Model;
 
 namespace Constructor.Component
 {
@@ -26,7 +27,7 @@ namespace Constructor.Component
 
 	    int UpgradeLevel { get; set; }
 	    IModification Modification { get; set; }
-	    IEnumerable<ComponentModType> SuitableModifications { get; }
+		ImmutableCollection<ComponentMod> SuitableModifications { get; }
 	}
 
     public struct WeaponData

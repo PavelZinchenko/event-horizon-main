@@ -1,5 +1,25 @@
 {
   "ItemType": 12,
   "Id": 7,
-  "Type": 7
+  "Description": "$RangeMod",
+  "Modifications": [
+    {
+      "Type": 2,
+      "Gray3": 0.5,
+      "Gray2": 0.7,
+      "Gray1": 0.8,
+      "Green": 1.1,
+      "Purple": 1.25,
+      "Gold": 1.5
+    },
+    {
+      "Type": 41,
+      "Gray3": 0.5,
+      "Gray2": 0.7,
+      "Gray1": 0.8,
+      "Green": 1.1,
+      "Purple": 1.25,
+      "Gold": 1.5
+    }
+  ]
 }

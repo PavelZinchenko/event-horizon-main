@@ -1,5 +1,16 @@
 {
   "ItemType": 12,
   "Id": 14,
-  "Type": 14
+  "Description": "$AreaOfEffectMod",
+  "Modifications": [
+    {
+      "Type": 6,
+      "Gray3": 0.5,
+      "Gray2": 0.7,
+      "Gray1": 0.8,
+      "Green": 1.25,
+      "Purple": 1.6,
+      "Gold": 2.0
+    }
+  ]
 }

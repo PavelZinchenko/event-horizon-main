@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data name="ComponentMod" type="object" typeid="ComponentMod" >
-    <member name="Type" type="enum" typeid="ComponentModType" />
+    <member name="Description" type="string" />
+    <member name="Modifications" type="struct_list" typeid="StatModification" />
 </data>

@@ -23,7 +23,7 @@ namespace Session.Model
 		public InventoryComponentInfo(ComponentInfo componentInfo)
 		{
 			_id = (uint)componentInfo.Data.Id.Value;
-			_modification = (byte)componentInfo.ModificationType;
+			_modification = (uint)componentInfo.ModificationType.Id.Value;
 			_quality = (byte)componentInfo.ModificationQuality;
 			_upgradeLevel = (byte)componentInfo.Level;
 		}
@@ -37,7 +37,7 @@ namespace Session.Model
 				return ComponentInfo.Empty;
 			}
 
-			return new ComponentInfo(component, (ComponentModType)_modification, (ModificationQuality)_quality, _upgradeLevel);			
+			return new ComponentInfo(component, database.GetComponentMod(new((int)_modification)), (ModificationQuality)_quality, _upgradeLevel);			
 		}
 	}
 }
