@@ -12,16 +12,14 @@ using UnityEngine;
 
 namespace Combat.Component.Bullet.Action
 {
-    using Cooldown = Combat.Component.Bullet.Cooldown.Cooldown;
     public class SpawnBulletsAction : IAction, IWeaponPlatform
     {
-	    public SpawnBulletsAction(IBulletFactory factory, int magazine, float initialOffset, Cooldown cooldown, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
+	    public SpawnBulletsAction(IBulletFactory factory, int magazine, float initialOffset, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
         {
             Type = parent.Type;
             _body = new BodyWrapper(parent.Body);
             _factory = factory;
             _magazine = magazine;
-			_cooldown = cooldown;
             _offset = initialOffset;
             _soundPlayer = soundPlayer;
             _audioClipId = audioClip;
@@ -33,9 +31,6 @@ namespace Combat.Component.Bullet.Action
 
         public CollisionEffect Invoke()
         {
-			if (_cooldown != null && !_cooldown.TryUpdate())
-                return CollisionEffect.None;
-
             if (_magazine <= 1)
                 _factory.Create(this, 0, 0, /*TODO: _offset*/0);
             else
@@ -75,7 +70,6 @@ namespace Combat.Component.Bullet.Action
         private readonly IBulletFactory _factory;
         private readonly float _offset;
         private readonly int _magazine;
-		private readonly Cooldown _cooldown;
         private readonly BodyWrapper _body;
         private readonly ISoundPlayer _soundPlayer;
     }

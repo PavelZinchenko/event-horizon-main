@@ -286,7 +286,7 @@ namespace Combat.Factory
                 stats.Damage = _bulletStats.Damage;
                 stats.DamageType = _stats.DamageType;
                 var factory = new BulletFactoryObsolete(stats, _scene, _soundPlayer, _objectPool, _prefabCache, _spaceObjectFactory, _effectFactory, _owner);
-                bullet.AddAction(new SpawnBulletsAction(factory, 1, 0, null, bullet, _soundPlayer, AudioClipId.None, explodeCondition));
+                bullet.AddAction(new SpawnBulletsAction(factory, 1, 0, bullet, _soundPlayer, AudioClipId.None, explodeCondition));
             }
             if (_stats.AmmunitionClass.IsClusterBomb() && _stats.CoupledAmmunition != null)
             {
@@ -296,7 +296,7 @@ namespace Combat.Factory
                 stats.Range = _bulletStats.AreaOfEffect;
                 var factory = new BulletFactoryObsolete(stats, _scene, _soundPlayer, _objectPool, _prefabCache, _spaceObjectFactory, _effectFactory, _owner);
                 factory.Stats.RandomFactor = 0.75f;
-                bullet.AddAction(new SpawnBulletsAction(factory, 20, 0.5f, null, bullet, _soundPlayer, AudioClipId.None, explodeCondition));
+                bullet.AddAction(new SpawnBulletsAction(factory, 20, 0.5f, bullet, _soundPlayer, AudioClipId.None, explodeCondition));
             }
             if (_stats.AmmunitionClass.EmpIfDetonated())
             {

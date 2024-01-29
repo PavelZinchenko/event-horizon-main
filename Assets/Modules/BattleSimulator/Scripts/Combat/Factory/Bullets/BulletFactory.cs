@@ -412,8 +412,8 @@ namespace Combat.Factory
 
                 var factory = CreateFactory(trigger.Ammunition, trigger);
                 var magazine = Math.Max(trigger.Quantity, 1);
-                AddAction(_bullet, trigger, new SpawnBulletsAction(factory, magazine, factory._stats.BodySize / 2, _factory.GetSpawnBulletCooldown(trigger),
-                    _bullet, factory._soundPlayer, trigger.AudioClip, _condition));
+                AddAction(_bullet, trigger, new SpawnBulletsAction(factory, magazine, factory._stats.BodySize / 2,
+                    _bullet, factory._soundPlayer, trigger.AudioClip, _condition).WithCooldown(_factory.GetSpawnBulletCooldown(trigger)));
 
                 return Result.Ok;
             }
