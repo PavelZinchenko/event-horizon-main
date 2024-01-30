@@ -14,7 +14,7 @@ using CodeWriter.ExpressionParser;
 
 namespace GameDatabase.DataModel
 {
-	public partial class SpecialEventSettings
+	public partial class SpecialEventSettings : IDefaultVariablesResolver
 	{
 		partial void OnDataDeserialized(SpecialEventSettingsSerializable serializable, Database.Loader loader);
 
@@ -74,7 +74,7 @@ namespace GameDatabase.DataModel
 			public IFunction<Variant> ResolveFunction(string name)
             {
 				if (name == "ConvertCreditsToSnowflakes") return _context._convertCreditsToSnowflakes;
-				return null;
+				return ((IVariableResolver)_context).ResolveFunction(name);
 			}
 
 			public Expression<Variant> ResolveVariable(string name)
@@ -88,7 +88,7 @@ namespace GameDatabase.DataModel
 				if (name == "EnableHalloweenEvent") return GetEnableHalloweenEvent;
 				if (name == "HalloweenDaysBefore") return GetHalloweenDaysBefore;
 				if (name == "HalloweenDaysAfter") return GetHalloweenDaysAfter;
-				return null;
+				return ((IVariableResolver)_context).ResolveVariable(name);
 			}
 
 			private Variant GetEnableXmasEvent() => _context.EnableXmasEvent;

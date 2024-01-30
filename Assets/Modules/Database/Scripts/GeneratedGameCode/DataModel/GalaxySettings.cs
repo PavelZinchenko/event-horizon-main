@@ -14,7 +14,7 @@ using CodeWriter.ExpressionParser;
 
 namespace GameDatabase.DataModel
 {
-	public partial class GalaxySettings
+	public partial class GalaxySettings : IDefaultVariablesResolver
 	{
 		partial void OnDataDeserialized(GalaxySettingsSerializable serializable, Database.Loader loader);
 
@@ -70,13 +70,13 @@ namespace GameDatabase.DataModel
             {
 				if (name == "EnemyLevel") return _context._enemyLevel;
 				if (name == "ShipMinSpawnDistance") return _context._shipMinSpawnDistance;
-				return null;
+				return ((IVariableResolver)_context).ResolveFunction(name);
 			}
 
 			public Expression<Variant> ResolveVariable(string name)
 			{
 				if (name == "MaxEnemyShipsLevel") return GetMaxEnemyShipsLevel;
-				return null;
+				return ((IVariableResolver)_context).ResolveVariable(name);
 			}
 
 			private Variant GetMaxEnemyShipsLevel() => _context.MaxEnemyShipsLevel;

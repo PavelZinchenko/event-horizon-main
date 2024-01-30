@@ -14,7 +14,7 @@ using CodeWriter.ExpressionParser;
 
 namespace GameDatabase.DataModel
 {
-	public partial class SkillSettings
+	public partial class SkillSettings : IDefaultVariablesResolver
 	{
 		partial void OnDataDeserialized(SkillSettingsSerializable serializable, Database.Loader loader);
 
@@ -146,7 +146,7 @@ namespace GameDatabase.DataModel
 				if (name == "MerchantPriceFactor") return _context._merchantPriceFactor;
 				if (name == "CraftingPriceFactor") return _context._craftingPriceFactor;
 				if (name == "CraftingLevelReduction") return _context._craftingLevelReduction;
-				return null;
+				return ((IVariableResolver)_context).ResolveFunction(name);
 			}
 
 			public Expression<Variant> ResolveVariable(string name)
@@ -156,7 +156,7 @@ namespace GameDatabase.DataModel
 				if (name == "BaseFuelCapacity") return GetBaseFuelCapacity;
 				if (name == "BaseFlightRange") return GetBaseFlightRange;
 				if (name == "BaseFlightSpeed") return GetBaseFlightSpeed;
-				return null;
+				return ((IVariableResolver)_context).ResolveVariable(name);
 			}
 
 			private Variant GetDisableExceedTheLimits() => _context.DisableExceedTheLimits;
