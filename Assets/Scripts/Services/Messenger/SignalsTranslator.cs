@@ -44,7 +44,6 @@ namespace Services.Messenger
         private readonly StarContentChangedSignal _starContentChangedSignal;
         private readonly QuestListChangedSignal _questListChangedSignal;
         private readonly BaseCapturedSignal _baseCapturedSignal;
-        private readonly SupplyShipActivatedSignal _supplyShipActivatedSignal;
         private readonly InAppItemListUpdatedSignal _inAppItemListUpdatedSignal;
         private readonly LocalizationChangedSignal _localizationChangedSignal;
 
@@ -74,7 +73,6 @@ namespace Services.Messenger
             StarContentChangedSignal starContentChangedSignal,
             QuestListChangedSignal questListChangedSignal,
             BaseCapturedSignal baseCapturedSignal,
-            SupplyShipActivatedSignal supplyShipActivatedSignal,
             InAppItemListUpdatedSignal inAppItemListUpdatedSignal,
             LocalizationChangedSignal localizationChangedSignal)
         {
@@ -128,8 +126,6 @@ namespace Services.Messenger
             _questListChangedSignal.Event += OnQuestListChanged;
             _baseCapturedSignal = baseCapturedSignal;
             _baseCapturedSignal.Event += OnBaseCaptured;
-            _supplyShipActivatedSignal = supplyShipActivatedSignal;
-            _supplyShipActivatedSignal.Event += OnSupplyShipActivated;
             _inAppItemListUpdatedSignal = inAppItemListUpdatedSignal;
             _inAppItemListUpdatedSignal.Event += OnInAppItemListUpdated;
             _localizationChangedSignal = localizationChangedSignal;
@@ -259,11 +255,6 @@ namespace Services.Messenger
         private void OnBaseCaptured(Region region)
         {
             _messenger.Broadcast(EventType.StarMapContentChanged);
-        }
-
-        private void OnSupplyShipActivated(bool active)
-        {
-            _messenger.Broadcast(EventType.SupplyShipActivated, active);
         }
 
         private void OnInAppItemListUpdated()

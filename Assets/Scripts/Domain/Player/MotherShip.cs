@@ -14,7 +14,11 @@ namespace GameServices.Player
         [Inject] private readonly PlayerSkills _playerSkills;
         [Inject] private readonly IMessengerContext _messenger;
 
-        [Inject]
+		private const float _flightRangeWithoutFuel = 1.5f;
+		private const float _speedWithoutFuel = 0.1f;
+		private ViewMode _viewMode = ViewMode.StarMap;
+
+		[Inject]
         public MotherShip(SessionDataLoadedSignal dataLoadedSignal, SessionCreatedSignal sessionCreatedSignal)
             : base(dataLoadedSignal, sessionCreatedSignal)
         {
@@ -44,6 +48,10 @@ namespace GameServices.Player
 			}		
 		}
 
+		public bool IsOutOfFuel => _session.Resources.Fuel == 0;
+		public float FlightRange => IsOutOfFuel ? _flightRangeWithoutFuel : _playerSkills.MainFilghtRange;
+		public float FlightSpeed => IsOutOfFuel ? _speedWithoutFuel : _playerSkills.MainEnginePower;
+
         public int CalculateRequiredFuel(int star1, int star2)
         {
             var distance = _starMap.Distance(star1, star2);
@@ -52,7 +60,7 @@ namespace GameServices.Player
 
         public float CalculateFlightTime(int star1, int star2)
         {
-            return _starMap.Distance(star1, star2) / _playerSkills.MainEnginePower;
+            return _starMap.Distance(star1, star2) / FlightSpeed;
         }
 
         public bool IsStarReachable(int starId)
@@ -63,12 +71,10 @@ namespace GameServices.Player
             if (nearestStar < 0)
                 return false;
 
-            return _starMap.Distance(starId, nearestStar) <= _playerSkills.MainFilghtRange;
+            return _starMap.Distance(starId, nearestStar) <= FlightRange;
         }
 
         protected override void OnSessionDataLoaded() {}
         protected override void OnSessionCreated() {}
-
-        private ViewMode _viewMode = ViewMode.StarMap;
     }
 }

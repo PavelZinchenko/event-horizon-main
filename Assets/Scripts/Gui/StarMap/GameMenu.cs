@@ -14,7 +14,6 @@ namespace Gui.StarMap
     {
         [Inject] private readonly MotherShip _motherShip;
         [Inject] private readonly ExitSignal.Trigger _exitTrigger;
-        [Inject] private readonly SupplyShip _supplyShip;
         [Inject] private readonly Galaxy.StarMap _starMap;
         [Inject] private readonly HolidayManager _holidayManager;
         [Inject] private readonly IMessenger _messenger;
@@ -35,13 +34,11 @@ namespace Gui.StarMap
         public AnimatedWindow WormholePanel;
         public AnimatedWindow BlackMarketPanel;
         public AnimatedWindow ChallengePanel;
-        public AnimatedWindow OutOfFuelDialog;
         public AnimatedWindow IapStoreWindow;
         public AnimatedWindow QuestLogWindow;
 
         [SerializeField] private Button StarViewButton;
         [SerializeField] private Button GalaxyViewButton;
-        [SerializeField] private Button OutOfFuelButton;
         [SerializeField] private GameObject GalaxyButtonsGroup;
         [SerializeField] private GameObject FiltersGroup;
         [SerializeField] private Toggle BookmarkFilterToggle;
@@ -66,7 +63,6 @@ namespace Gui.StarMap
         public void ShowWormhole() { WormholePanel.Open(); }
         public void ShowBlackMarket() { BlackMarketPanel.Open(); }
         public void ShowChallenge() { ChallengePanel.Open(); }
-        public void ShowOutOfFuel() { OutOfFuelDialog.Open(); }
         public void ShowIapStore() { IapStoreWindow.Open(); }
         public void ShowQuestLog() { QuestLogWindow.Open(); }
 
@@ -91,7 +87,6 @@ namespace Gui.StarMap
             _messenger.AddListener<ViewMode>(EventType.ViewModeChanged, OnMapStateChanged);
             _messenger.AddListener<Galaxy.StarObjectType>(EventType.ArrivedToObject, OnArrivedToObject);
             _messenger.AddListener<int>(EventType.ArrivedToPlanet, OnArrivedToPlanet);
-            _messenger.AddListener<bool>(EventType.SupplyShipActivated, OnSupplyShipActivated);
 
             XmasFilterToggle.gameObject.SetActive(_holidayManager.IsChristmas);
 
@@ -117,13 +112,7 @@ namespace Gui.StarMap
             GalaxyViewButton.gameObject.SetActive(view == ViewMode.StarSystem || view == ViewMode.GalaxyMap);
             GalaxyButtonsGroup.SetActive(view == ViewMode.StarMap);
             FiltersGroup.gameObject.SetActive(view == ViewMode.GalaxyMap);
-            OutOfFuelButton.gameObject.SetActive(_supplyShip.IsActive);
             ShowInformation();
-        }
-
-        private void OnSupplyShipActivated(bool value)
-        {
-            OutOfFuelButton.gameObject.SetActive(value);
         }
 
         private void OnArrivedToObject(Galaxy.StarObjectType objectType)

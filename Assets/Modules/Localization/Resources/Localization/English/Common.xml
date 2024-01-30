@@ -152,7 +152,7 @@
     <string name="ResearchPointsAvailable">$1 ${1|point|points} available</string>
     <string name="AlreadyResearched">Already researched</string>
     <string name="PrivacyPolicy">Privacy policy</string>
-    <string name="OutOfFuelDescription">We have run out of fuel and cannot continue our journey. The next supply ship from the home star will arrive in</string>
+    <string name="OutOfFuelDescription">We're out of fuel, so we can't use the hyperdrives. Our speed and distance will be much lower until we get more fuel.</string>
     <string name="SpeedUp">Speed up</string>
     <string name="LoadDatabase">Load external database</string>
     <string name="RestoreDatabase">Restore database</string>

@@ -43,7 +43,7 @@ namespace GameStateMachine.States
             }
             else
             {
-                UnityEngine.Debug.Log("FlightState: Finished");
+				GameDiagnostics.Debug.Log("FlightState: Finished");
 
                 _session.StarMap.PlayerPosition = _destination;
                 Unload();
@@ -54,21 +54,20 @@ namespace GameStateMachine.States
 
 		protected override void OnLoad()
         {
-            UnityEngine.Debug.Log("FlightState: Started - " + _destination);
+            GameDiagnostics.Debug.Log("FlightState: Started - " + _destination);
 
-            var requiredFuel = _motherShip.CalculateRequiredFuel(_source, _destination);
+			_lifeTime = _motherShip.CalculateFlightTime(_source, _destination);
+			var requiredFuel = _motherShip.CalculateRequiredFuel(_source, _destination);
 
-            if (!_playerResources.TryConsumeFuel(requiredFuel))
+			if (!_playerResources.TryConsumeFuel(requiredFuel) && requiredFuel > 1)
             {
-				UnityEngine.Debug.Log("FlightState: not enough fuel");
+				GameDiagnostics.Debug.Log("FlightState: not enough fuel");
 				Unload();
                 return;
             }
 
-            _lifeTime = _motherShip.CalculateFlightTime(_source, _destination);
-
             _guiManager.AutoWindowsAllowed = false;
-            _guiManager.CloseAllWindows();
+            _guiManager.CloseAllWindows(window => window.Class != WindowClass.Balloon);
         }
 
         protected override void OnUnload()

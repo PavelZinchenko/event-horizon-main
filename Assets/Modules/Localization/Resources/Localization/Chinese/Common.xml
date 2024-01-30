@@ -153,7 +153,7 @@
     <string name="ResearchPointsAvailable">$1 ${1|技能点|技能点} 可用</string>
     <string name="AlreadyResearched">已研究</string>
     <string name="PrivacyPolicy">隐私政策</string>
-    <string name="OutOfFuelDescription">我们耗尽了燃料而不能继续航行了，下一艘从母星来的补给舰将到达于</string>
+    <string name="OutOfFuelDescription">我们的燃料用完了，无法使用超空间引擎。在我们补充燃料之前，我们的速度和航程会大大降低。</string>
     <string name="SpeedUp">加速</string>
     <string name="LoadDatabase">载入外部数据库</string>
     <string name="RestoreDatabase">还原数据库</string>

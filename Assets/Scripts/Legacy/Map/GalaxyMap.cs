@@ -18,6 +18,7 @@ public class GalaxyMap : MonoBehaviour
     [Inject] private readonly MotherShip _motherShip;
     [Inject] private readonly PlayerSkills _playerSkills;
 
+	[SerializeField] private Gui.Windows.AnimatedWindow _noFuelBalloon;
 	[SerializeField] private Map.MapScaler _mapScaler;
 	[SerializeField] private Map.MapNavigator _mapNavigator;
 	//[SerializeField] private Map.ScreenCenter _screenCenter;
@@ -37,7 +38,7 @@ public class GalaxyMap : MonoBehaviour
 	{
 		PlayerShipObject.MovedEvent += OnShipMoved;
 		StarSystem.MovedEvent += OnShipMoved;
-		Boundary.transform.localScale = Vector3.one * DistanceBetweenStars * _playerSkills.MainFilghtRange;
+		Boundary.transform.localScale = Vector3.one * DistanceBetweenStars * _motherShip.FlightRange;
 	}
 
 	private void Start()
@@ -78,7 +79,10 @@ public class GalaxyMap : MonoBehaviour
 				var starId = System.Convert.ToInt32(child.name);
 				if (starId == currentStarId)
 					continue;
-				
+
+				if (_motherShip.IsOutOfFuel)
+					_noFuelBalloon.Open();
+
 				if (!_motherShip.IsStarReachable(starId))
 					Boundary.Refresh();
 				else

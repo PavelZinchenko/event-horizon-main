@@ -93,14 +93,16 @@ namespace Services.Gui
             }
         }
 
-        public void CloseAllWindows()
+        public void CloseAllWindows(Func<IWindow, bool> predicate = null)
         {
             var temp = AutoWindowsAllowed;
 
             AutoWindowsAllowed = false;
 
-            while (_activeWindows.Any())
-                _activeWindows.First().Close();
+			var windows = _activeWindows.ToArray();
+			foreach (var window in windows)
+				if (predicate == null || predicate(window))
+					window.Close();
 
             AutoWindowsAllowed = temp;
         }

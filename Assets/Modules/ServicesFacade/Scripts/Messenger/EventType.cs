@@ -41,8 +41,6 @@ public enum EventType
     TokensValueChanged, // int
     SpecialResourcesChanged,
 
-    SupplyShipActivated, // bool
-
     TechResearched,
     TechPointsChanged,
 	CraftStarted,

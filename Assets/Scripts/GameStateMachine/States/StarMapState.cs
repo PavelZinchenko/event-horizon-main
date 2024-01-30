@@ -32,7 +32,6 @@ namespace GameStateMachine.States
 			StarData starData,
             QuestCombatModelFacctory questCombatModelFacctory,
             InventoryFactory inventoryFactory,
-            SupplyShip supplyShip,
             RetreatSignal retreatSignal,
             IMusicPlayer musicPlayer,
 			StartTravelSignal startTravelSignal, 
@@ -47,7 +46,6 @@ namespace GameStateMachine.States
             OpenEhopediaSignal openEhopediaSignal,
             StartExplorationSignal startExplorationSignal,
             PlayerPositionChangedSignal playerPositionChangedSignal,
-            SupplyShipActivatedSignal supplyShipActivatedSignal,
             ExitSignal exitSignal,
             EscapeKeyPressedSignal escapeKeyPressedSignal)
             : base(stateMachine, gameStateFactory)
@@ -60,7 +58,6 @@ namespace GameStateMachine.States
             _playerResources = playerResources;
             _inventoryFactory = inventoryFactory;
             _guiManager = guiManager;
-            _supplyShip = supplyShip;
             _musicPlayer = musicPlayer;
             _questCombatModelFacctory = questCombatModelFacctory;
             _retreatSignal = retreatSignal;
@@ -91,8 +88,6 @@ namespace GameStateMachine.States
             _startExplorationSignal.Event += OnStartExploration;
             _openEhopediaSignal = openEhopediaSignal;
             _openEhopediaSignal.Event += OnOpenEhopedia;
-            _supplyShipActivatedSignal = supplyShipActivatedSignal;
-            _supplyShipActivatedSignal.Event += OnSupplyShipActivated;
         }
 
 		public override StateType Type => StateType.StarMap;
@@ -123,7 +118,6 @@ namespace GameStateMachine.States
         {
             UpdateQuests();
             if (CheckStarGuardian()) return;
-            ShowOutOfFuelDialog();
         }
 
         private void OnRetreat()
@@ -134,18 +128,18 @@ namespace GameStateMachine.States
         private void OnStartTravel(int destination)
         {
             var requiredFuel = _motherShip.CalculateRequiredFuel(_motherShip.Position, destination);
-			if (_motherShip.ViewMode != ViewMode.GalaxyMap && requiredFuel < 3 && _playerResources.Fuel >= requiredFuel)
-			{
-				LoadStateAdditive(StateFactory.CreateTravelState(destination));
-			}
+			bool showConfirmation = _motherShip.ViewMode == ViewMode.GalaxyMap;
+			if (requiredFuel > 1 && _playerResources.Fuel < requiredFuel) showConfirmation = true;
+			if (requiredFuel >= 3) showConfirmation = true;
+			
+			if (showConfirmation)
+				LoadStateAdditive(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.FlightConfirmationDialog,
+					new WindowArgs(destination), code => OnFlightConfirmationDialogClosed(destination, code)));
 			else
-			{
-				LoadStateAdditive(StateFactory.CreateDialogState(Gui.StarMap.WindowNames.FlightConfirmationDialog, new WindowArgs(destination),
-					code => OnFlightConfirmationDialogClosed(destination, code)));
-			}
-        }
+				LoadStateAdditive(StateFactory.CreateTravelState(destination));
+		}
 
-        private void OnFlightConfirmationDialogClosed(int destination, WindowExitCode code)
+		private void OnFlightConfirmationDialogClosed(int destination, WindowExitCode code)
         {
             if (code == WindowExitCode.Ok)
                 LoadStateAdditive(StateFactory.CreateTravelState(destination));
@@ -310,31 +304,10 @@ namespace GameStateMachine.States
             OnOpenShop(_inventoryFactory.CreateQuestInventory(merchantItems), _inventoryFactory.CreatePlayerInventory());
         }
 
-        private void OnSupplyShipActivated(bool active)
-        {
-            _supplyShipStatusChanged = true;
-            ShowOutOfFuelDialog();
-        }
-
-        private void ShowOutOfFuelDialog()
-        {
-			if (Condition != GameStateCondition.Active)
-				return;
-
-            if (_supplyShipStatusChanged)
-            {
-                _supplyShipStatusChanged = false;
-                if (_supplyShip.IsActive)
-                    Observable.EveryUpdate().Skip(3).First().Subscribe(_ => _guiManager.OpenWindow(Gui.Common.WindowNames.OutOfFuelDialog));
-            }
-        }
-
 		private void StartCombat(ICombatModel model)
 		{
 			LoadState(StateFactory.CreateCombatState(model, value => _questEventTrigger.Fire(new CombatEventData(value.IsVictory()))));
 		}
-
-		private bool _supplyShipStatusChanged = true;
 
         private readonly IQuestManager _questManager;
 		private readonly ISessionData _session;
@@ -357,11 +330,9 @@ namespace GameStateMachine.States
         private readonly OpenShipyardSignal _openShipyardSignal;
         private readonly OpenEhopediaSignal _openEhopediaSignal;
         private readonly ExitSignal _exitSignal;
-        private readonly SupplyShip _supplyShip;
         private readonly EscapeKeyPressedSignal _escapeKeyPressedSignal;
         private readonly PlayerPositionChangedSignal _playerPositionChangedSignal;
         private readonly StartExplorationSignal _startExplorationSignal;
-        private readonly SupplyShipActivatedSignal _supplyShipActivatedSignal;
 
         private string DesiredWindowOnActivate { get; set; }
 

@@ -103,7 +103,6 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<PlayerResources>().AsSingle();
             Container.BindInterfacesAndSelfTo<MotherShip>().AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerInventory>().AsSingle();
-            Container.BindInterfacesAndSelfTo<SupplyShip>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<DailyReward>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<StarMapManager>().AsSingle().NonLazy();
         }
@@ -283,8 +282,6 @@ namespace Installers
             Container.BindTrigger<OpenShipyardSignal.Trigger>();
             Container.BindSignal<StartExplorationSignal>();
             Container.BindTrigger<StartExplorationSignal.Trigger>();
-            Container.BindSignal<SupplyShipActivatedSignal>();
-            Container.BindTrigger<SupplyShipActivatedSignal.Trigger>();
         }
 
         private void BindSignals()

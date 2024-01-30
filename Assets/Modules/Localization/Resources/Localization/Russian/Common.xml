@@ -154,7 +154,7 @@
     <string name="ResearchPointsAvailable">доступно $1 ${1|очко|очка|очков}</string>
     <string name="AlreadyResearched">Уже исследовано</string>
     <string name="PrivacyPolicy">Политика конфиденциальности</string>
-    <string name="OutOfFuelDescription">Наши запасы топлива исчерпаны и мы не можем продолжать путешествие. Следующий корабль снабжения с родной планеты прилетит через</string>
+    <string name="OutOfFuelDescription">У нас закончилось топливо, поэтому мы не можем использовать гипердвигатели. Наша скорость и дальность полета будут значительно снижены, пока мы не получим больше топлива.</string>
     <string name="SpeedUp">Ускорить</string>
     <string name="LoadDatabase">Загрузить дополнение</string>
     <string name="DailyReward">Ежедневная награда</string>
