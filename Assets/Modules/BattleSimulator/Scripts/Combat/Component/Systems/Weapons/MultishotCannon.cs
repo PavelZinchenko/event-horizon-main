@@ -54,7 +54,7 @@ namespace Combat.Component.Systems.Weapons
             _platform.Aim(Info.BulletSpeed, Info.Range, Info.IsRelativeVelocity);
 
             for (var i = 0; i < _magazine; ++i)
-                _bullets.Add(_bulletFactory.Create(Platform, _spread, 0, 0));
+                _bullets.Add(_bulletFactory.Create(Platform, _spread, 0, Vector2.zero));
 
             _platform.OnShot();
         }

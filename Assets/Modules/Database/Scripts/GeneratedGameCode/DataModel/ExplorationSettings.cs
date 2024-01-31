@@ -14,7 +14,7 @@ using CodeWriter.ExpressionParser;
 
 namespace GameDatabase.DataModel
 {
-	public partial class ExplorationSettings
+	public partial class ExplorationSettings : IDefaultVariablesResolver
 	{
 		partial void OnDataDeserialized(ExplorationSettingsSerializable serializable, Database.Loader loader);
 
@@ -58,12 +58,12 @@ namespace GameDatabase.DataModel
 			public IFunction<Variant> ResolveFunction(string name)
             {
 				if (name == "GasCloudDPS") return _context._gasCloudDPS;
-				return null;
+				return ((IVariableResolver)_context).ResolveFunction(name);
 			}
 
 			public Expression<Variant> ResolveVariable(string name)
 			{
-				return null;
+				return ((IVariableResolver)_context).ResolveVariable(name);
 			}
 
 		}

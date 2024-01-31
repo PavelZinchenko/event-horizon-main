@@ -14,13 +14,13 @@ namespace Combat.Component.Bullet.Action
 {
     public class SpawnBulletsAction : IAction, IWeaponPlatform
     {
-	    public SpawnBulletsAction(IBulletFactory factory, int magazine, float initialOffset, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
+	    public SpawnBulletsAction(IBulletFactory factory, int magazine, IBulletSpawnSettings spawnSettings, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
         {
             Type = parent.Type;
             _body = new BodyWrapper(parent.Body);
             _factory = factory;
             _magazine = magazine;
-            _offset = initialOffset;
+            _spawnSettings = spawnSettings;
             _soundPlayer = soundPlayer;
             _audioClipId = audioClip;
             Condition = condition;
@@ -31,12 +31,20 @@ namespace Combat.Component.Bullet.Action
 
         public CollisionEffect Invoke()
         {
-            if (_magazine <= 1)
-                _factory.Create(this, 0, 0, /*TODO: _offset*/0);
+            if(_spawnSettings == null)
+            {
+                if (_magazine <= 1)
+                    _factory.Create(this, 0, 0, Vector2.zero);
+                else
+                {
+                    for (var i = 0; i < _magazine; ++i)
+                        _factory.Create(this, 0, Random.Range(0, 360), Vector2.zero);
+                }
+            }
             else
             {
                 for (var i = 0; i < _magazine; ++i)
-                    _factory.Create(this, 0, Random.Range(0, 360), _offset);
+                    _factory.Create(this, 0, _spawnSettings.GetRotation(i), _spawnSettings.GetOffset(i));
             }
 
             if (_audioClipId) _soundPlayer.Play(_audioClipId, GetHashCode());
@@ -68,7 +76,7 @@ namespace Combat.Component.Bullet.Action
 
         private readonly AudioClipId _audioClipId;
         private readonly IBulletFactory _factory;
-        private readonly float _offset;
+        private readonly IBulletSpawnSettings _spawnSettings;
         private readonly int _magazine;
         private readonly BodyWrapper _body;
         private readonly ISoundPlayer _soundPlayer;

@@ -7,6 +7,7 @@ using Combat.Component.Bullet;
 using Combat.Component.Bullet.Action;
 using Combat.Component.Bullet.Cooldown;
 using Combat.Component.Bullet.Lifetime;
+using Combat.Component.Bullet.SpawnSettings;
 using Combat.Component.Collider;
 using Combat.Component.Controller;
 using Combat.Component.DamageHandler;
@@ -54,7 +55,7 @@ namespace Combat.Factory
             get { return _stats; }
         }
 
-        public IBullet Create(IWeaponPlatform parent, float spread, float rotation, float offset)
+        public IBullet Create(IWeaponPlatform parent, float spread, float rotation, Vector2 offset)
         {
             var bulletGameObject = new GameObjectHolder(_prefab, _objectPool);
             bulletGameObject.IsActive = true;
@@ -152,7 +153,7 @@ namespace Combat.Factory
         }
 
         private IBody ConfigureBody(IBodyComponent body, IWeaponPlatform parent, float bulletSpeed, float spread,
-            float deltaAngle, float offset)
+            float deltaAngle, Vector2 offset)
         {
             IBody parentBody = null;
             var position = Vector2.zero;
@@ -165,12 +166,12 @@ namespace Combat.Factory
             if (_ammunition.Body.Type == BulletType.Continuous && !parent.IsTemporary)
             {
                 parentBody = parent.Body;
-                position = new Vector2(offset, 0);
+                position = offset;
             }
             else
             {
                 rotation = parent.Body.WorldRotation() + (UnityEngine.Random.value - 0.5f) * spread + deltaAngle;
-                position = parent.Body.WorldPosition() + RotationHelpers.Direction(rotation) * offset;
+                position = parent.Body.WorldPosition() + RotationHelpers.Transform(offset, rotation);
             }
 
             if (_ammunition.Body.Type != BulletType.Continuous)
@@ -412,8 +413,13 @@ namespace Combat.Factory
 
                 var factory = CreateFactory(trigger.Ammunition, trigger);
                 var magazine = Math.Max(trigger.Quantity, 1);
-                AddAction(_bullet, trigger, new SpawnBulletsAction(factory, magazine, factory._stats.BodySize / 2,
-                    _bullet, factory._soundPlayer, trigger.AudioClip, _condition).WithCooldown(_factory.GetSpawnBulletCooldown(trigger)));
+                // TODO: previously, there was `factory._stats.BodySize / 2` bonus for "cluster"-type ammo (more than 1 magazine)
+                // This is currently not replicable with variables exposed to expressions
+                // May be resolved once member access is added, and expressions can do something like
+                // IF(quantity == 1, 0, Ammunition.Body.Size * Size / 2)
+                AddAction(_bullet, trigger, new SpawnBulletsAction(factory, magazine, trigger, _bullet,
+                        factory._soundPlayer, trigger.AudioClip, _condition)
+                    .WithCooldown(_factory.GetSpawnBulletCooldown(trigger)));
 
                 return Result.Ok;
             }

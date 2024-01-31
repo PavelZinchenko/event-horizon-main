@@ -67,7 +67,7 @@ namespace Combat.Component.Systems.Weapons
         {
             _platform.Aim(Info.BulletSpeed, Info.Range, Info.IsRelativeVelocity);
 
-            _activeBullet = _bulletFactory.Create(_platform, _spread, 0, 0);
+            _activeBullet = _bulletFactory.Create(_platform, _spread, 0, Vector2.zero);
             _activeBullet.Lifetime.Restore();
         }
 

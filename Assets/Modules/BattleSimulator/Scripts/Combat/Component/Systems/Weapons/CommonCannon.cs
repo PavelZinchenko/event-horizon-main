@@ -52,7 +52,7 @@ namespace Combat.Component.Systems.Weapons
         {
             _platform.Aim(Info.BulletSpeed, Info.Range, Info.IsRelativeVelocity);
             _platform.OnShot();
-            _bullets.Add(_bulletFactory.Create(_platform, _spread, 0, 0));
+            _bullets.Add(_bulletFactory.Create(_platform, _spread, 0, Vector2.zero));
         }
 
         private readonly float _spread;
