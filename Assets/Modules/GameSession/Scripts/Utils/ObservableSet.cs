@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 
 namespace Session.Utils
 {
-	public readonly struct ObservableSet<T>
-	{
+	public readonly struct ObservableSet<T> : IReadOnlyCollection<T>
+    {
 		private readonly IDataChangedCallback _callback;
 		private readonly HashSet<T> _hashset;
 
 		public int Count => _hashset.Count;
-
-		public IEnumerable<T> Items => _hashset;
 
 		public void Assign(ObservableSet<T> other)
 		{
@@ -40,10 +39,20 @@ namespace Session.Utils
 			return true;
 		}
 
-		public void Clear()
+        public bool Equals(ObservableSet<T> other, IEqualityComparer<T> equalityComparer)
+        {
+            if (_hashset == other._hashset) return true;
+            if (_hashset.Count != other._hashset.Count) return false;
+            return _hashset.SetEquals(other._hashset);
+        }
+
+        public void Clear()
 		{
 			_hashset.Clear();
 			_callback?.OnDataChanged();
 		}
-	}
+
+        public IEnumerator<T> GetEnumerator() => _hashset.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _hashset.GetEnumerator();
+    }
 }

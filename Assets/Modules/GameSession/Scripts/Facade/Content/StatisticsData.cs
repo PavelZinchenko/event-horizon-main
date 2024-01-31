@@ -20,7 +20,7 @@ namespace Session.Content
 		public StatisticsData(SaveGameData sessionData) => _data = sessionData;
 
 		public void UnlockShip(ItemId<Ship> id) => _data.Statistics.UnlockedShips.Add(id.Value);
-		public IEnumerable<ItemId<Ship>> UnlockedShips => _data.Statistics.UnlockedShips.Items.Select(id => new ItemId<Ship>(id));
+		public IEnumerable<ItemId<Ship>> UnlockedShips => _data.Statistics.UnlockedShips.Select(id => new ItemId<Ship>(id));
 
 		public int DefeatedEnemies
 		{

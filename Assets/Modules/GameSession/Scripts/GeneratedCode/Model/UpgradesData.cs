@@ -77,7 +77,7 @@ namespace Session.Model
 			writer.WriteInt(_resetCounter, EncodingType.EliasGamma);
 			writer.WriteLong(_playerExperience, EncodingType.EliasGamma);
 			writer.WriteInt(_skills.Count, EncodingType.EliasGamma);
-			foreach (var item in _skills.Items)
+			foreach (var item in _skills)
 			{
 				writer.WriteInt(item, EncodingType.EliasGamma);
 			}

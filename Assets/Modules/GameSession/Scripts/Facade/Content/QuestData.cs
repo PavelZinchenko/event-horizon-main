@@ -87,15 +87,15 @@ namespace Session.Content
 
 		public IEnumerable<QuestInformation> GetActiveQuests()
 		{
-			foreach (var progress in _data.Quests.Progress.Items)
-				foreach (var data in progress.Value.StarQuestsMap.Items)
+			foreach (var progress in _data.Quests.Progress)
+				foreach (var data in progress.Value.StarQuestsMap)
 					yield return new QuestInformation(progress.Key, data.Key, data.Value.Seed, data.Value.ActiveNode);
 		}
 
 		public IEnumerable<QuestInformation> GetQuestProgress(int questId)
 		{
 			if (!_data.Quests.Progress.TryGetValue(questId, out var progress)) return Enumerable.Empty<QuestInformation>();
-			return progress.StarQuestsMap.Items.Select(data => new QuestInformation(
+			return progress.StarQuestsMap.Select(data => new QuestInformation(
 				questId, data.Key, data.Value.Seed, data.Value.ActiveNode));
 		}
 

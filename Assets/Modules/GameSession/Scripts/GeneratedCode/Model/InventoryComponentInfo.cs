@@ -6,6 +6,7 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Session.Utils;
 
 namespace Session.Model
@@ -38,12 +39,27 @@ namespace Session.Model
 		public uint Modification => _modification;
 		public byte UpgradeLevel => _upgradeLevel;
 
-		public void Serialize(SessionDataWriter writer)
-		{
+        public void Serialize(SessionDataWriter writer)
+        {
 			writer.WriteUint(_id, EncodingType.EliasGamma);
 			writer.WriteByte(_quality, EncodingType.EliasGamma);
 			writer.WriteUint(_modification, EncodingType.EliasGamma);
 			writer.WriteByte(_upgradeLevel, EncodingType.EliasGamma);
-		}
+        }
+
+        public bool Equals(InventoryComponentInfo other)
+        {
+			if (Id != other.Id) return false;
+			if (Quality != other.Quality) return false;
+			if (Modification != other.Modification) return false;
+			if (UpgradeLevel != other.UpgradeLevel) return false;
+            return true;
+        }
+
+        public struct EqualityComparer : IEqualityComparer<InventoryComponentInfo>
+        {
+            public bool Equals(InventoryComponentInfo first, InventoryComponentInfo second) => first.Equals(second);
+            public int GetHashCode(InventoryComponentInfo obj) => obj.GetHashCode();
+        }
 	}
 }

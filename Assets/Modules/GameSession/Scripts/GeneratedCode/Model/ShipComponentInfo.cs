@@ -6,6 +6,7 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Session.Utils;
 
 namespace Session.Model
@@ -62,8 +63,8 @@ namespace Session.Model
 		public sbyte Behaviour => _behaviour;
 		public bool Locked => _locked;
 
-		public void Serialize(SessionDataWriter writer)
-		{
+        public void Serialize(SessionDataWriter writer)
+        {
 			writer.WriteInt(_id, EncodingType.EliasGamma);
 			writer.WriteSbyte(_quality, EncodingType.EliasGamma);
 			writer.WriteInt(_modification, EncodingType.EliasGamma);
@@ -74,6 +75,27 @@ namespace Session.Model
 			writer.WriteSbyte(_keyBinding, EncodingType.EliasGamma);
 			writer.WriteSbyte(_behaviour, EncodingType.EliasGamma);
 			writer.WriteBool(_locked, EncodingType.EliasGamma);
-		}
+        }
+
+        public bool Equals(ShipComponentInfo other)
+        {
+			if (Id != other.Id) return false;
+			if (Quality != other.Quality) return false;
+			if (Modification != other.Modification) return false;
+			if (UpgradeLevel != other.UpgradeLevel) return false;
+			if (X != other.X) return false;
+			if (Y != other.Y) return false;
+			if (BarrelId != other.BarrelId) return false;
+			if (KeyBinding != other.KeyBinding) return false;
+			if (Behaviour != other.Behaviour) return false;
+			if (Locked != other.Locked) return false;
+            return true;
+        }
+
+        public struct EqualityComparer : IEqualityComparer<ShipComponentInfo>
+        {
+            public bool Equals(ShipComponentInfo first, ShipComponentInfo second) => first.Equals(second);
+            public int GetHashCode(ShipComponentInfo obj) => obj.GetHashCode();
+        }
 	}
 }

@@ -65,13 +65,13 @@ namespace Session.Model
 		public void Serialize(SessionDataWriter writer)
 		{
 			writer.WriteInt(_defeatedFleetCount.Count, EncodingType.EliasGamma);
-			foreach (var item in _defeatedFleetCount.Items)
+			foreach (var item in _defeatedFleetCount)
 			{
 				writer.WriteInt(item.Key, EncodingType.EliasGamma);
 				writer.WriteInt(item.Value, EncodingType.EliasGamma);
 			}
 			writer.WriteInt(_factions.Count, EncodingType.EliasGamma);
-			foreach (var item in _factions.Items)
+			foreach (var item in _factions)
 			{
 				writer.WriteInt(item.Key, EncodingType.EliasGamma);
 				writer.WriteInt(item.Value, EncodingType.EliasGamma);

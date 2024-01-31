@@ -8,19 +8,19 @@ namespace Session
 		{
 			GameDiagnostics.Trace.LogWarning("Upgrading savegame from v1.0 to v2.0");
 
-			foreach(var item in oldData.Bosses.Bosses.Items)
+			foreach(var item in oldData.Bosses.Bosses)
 			{
 				var defeatTime = GameTimeExtensions.TicksToGameTime(item.Value.LastDefeatTime, oldData.Game.StartTime, TimeUnits.Hours);
 				newData.Bosses.Bosses.Add(item.Key, new Model.BossInfo(item.Value.DefeatCount, defeatTime));
 			}
 
-			foreach (var item in oldData.Events.CompletedTime.Items)
+			foreach (var item in oldData.Events.CompletedTime)
 			{
 				var time = GameTimeExtensions.TicksToGameTime(item.Value, oldData.Game.StartTime, TimeUnits.Hours);
 				newData.Events.CompletedTime.Add(item.Key, time);
 			}
 
-			foreach (var item in oldData.StarMap.StarData.Items)
+			foreach (var item in oldData.StarMap.StarData)
 			{
 				newData.StarMap.DiscoveredStars.Add((uint)item.Key);
 
@@ -30,17 +30,17 @@ namespace Session
 					newData.StarMap.EnemiesOnStars.Add((uint)item.Key);
 			}
 
-			foreach (var item in oldData.Shop.Purchases.Items)
+			foreach (var item in oldData.Shop.Purchases)
 			{
 				var map = new Model.PurchasesMap(newData);
-				foreach (var purchase in item.Value.Purchases.Items)
+				foreach (var purchase in item.Value.Purchases)
 					map.Purchases.Add(purchase.Key, new Model.PurchaseInfo(purchase.Value.Quantity, 
 						GameTimeExtensions.TicksToGameTime(purchase.Value.Time, oldData.Game.StartTime, TimeUnits.Hours)));
 
 				newData.Shop.Purchases.Add(item.Key, map);
 			}
 
-			foreach (var item in oldData.Inventory.Components.Items)
+			foreach (var item in oldData.Inventory.Components)
 				newData.Inventory.Components.Add(InventoryComponentFromInt64(item.Key), item.Value);
 		}
 

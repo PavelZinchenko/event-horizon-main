@@ -51,7 +51,7 @@ namespace Session.Model
 		public void Serialize(SessionDataWriter writer)
 		{
 			writer.WriteInt(_routes.Count, EncodingType.EliasGamma);
-			foreach (var item in _routes.Items)
+			foreach (var item in _routes)
 			{
 				writer.WriteInt(item.Key, EncodingType.EliasGamma);
 				writer.WriteInt(item.Value, EncodingType.EliasGamma);

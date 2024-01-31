@@ -107,7 +107,7 @@ namespace Session.Model
 			writer.WriteInt(_fuel, EncodingType.EliasGamma);
 			writer.WriteInt(_tokens, EncodingType.EliasGamma);
 			writer.WriteInt(_resources.Count, EncodingType.EliasGamma);
-			foreach (var item in _resources.Items)
+			foreach (var item in _resources)
 			{
 				writer.WriteInt(item.Key, EncodingType.EliasGamma);
 				writer.WriteInt(item.Value, EncodingType.EliasGamma);

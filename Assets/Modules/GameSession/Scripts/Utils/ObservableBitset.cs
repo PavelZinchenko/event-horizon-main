@@ -16,32 +16,33 @@ namespace Session.Utils
 			return value;
 		}
 
-		public void Set(uint key, bool value)
+		public bool Set(uint key, bool value)
 		{
-			if (value)
-				Add(key);
-			else 
-				Remove(key);
+            return value ? Add(key) : Remove(key);
 		}
 
-		public void Add(uint key)
+		public bool Add(uint key)
 		{
 			var group = FindGroup(key, out bool value);
-			if (value) return;
+			if (value) return false;
 
 			if (group == _indices.Count)
 				AddNewBit(key);
 			else
 				InvertBit(group, key);
+
+            return true;
 		}
 
-		public void Remove(uint key)
+		public bool Remove(uint key)
 		{
 			var group = FindGroup(key, out bool value);
-			if (!value) return;
+			if (!value) return false;
 
 			if (group <= _indices.Count)
 				InvertBit(group, key);
+
+            return true;
 		}
 
 		public void Clear() => _indices.Clear();
@@ -60,7 +61,19 @@ namespace Session.Utils
 			return sb.ToString();
 		}
 
-		private int FindGroup(uint key, out bool value)
+        public bool Equals(ObservableBitset other)
+        {
+            if (_indices == other._indices) return true;
+            if (_indices.Count != other._indices.Count) return false;
+
+            for (int i = 0; i < _indices.Count; ++i)
+                if (_indices[i] != other._indices[i])
+                    return false;
+
+            return true;
+        }
+
+        private int FindGroup(uint key, out bool value)
 		{
 			int size = _indices.Count;
 

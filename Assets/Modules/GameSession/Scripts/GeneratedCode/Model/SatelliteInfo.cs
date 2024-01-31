@@ -6,6 +6,7 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Session.Utils;
 
 namespace Session.Model
@@ -38,14 +39,27 @@ namespace Session.Model
 		public int Id => _id;
 		public ObservableList<Model.ShipComponentInfo> Components => _components;
 
-		public void Serialize(SessionDataWriter writer)
-		{
+        public void Serialize(SessionDataWriter writer)
+        {
 			writer.WriteInt(_id, EncodingType.EliasGamma);
 			writer.WriteInt(_components.Count, EncodingType.EliasGamma);
 			for (int i = 0; i < _components.Count; ++i)
 			{
 				_components[i].Serialize(writer);
 			}
-		}
+        }
+
+        public bool Equals(SatelliteInfo other)
+        {
+			if (Id != other.Id) return false;
+			if (!Components.Equals(other.Components, new Model.ShipComponentInfo.EqualityComparer())) return false;
+            return true;
+        }
+
+        public struct EqualityComparer : IEqualityComparer<SatelliteInfo>
+        {
+            public bool Equals(SatelliteInfo first, SatelliteInfo second) => first.Equals(second);
+            public int GetHashCode(SatelliteInfo obj) => obj.GetHashCode();
+        }
 	}
 }

@@ -6,6 +6,7 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Session.Utils;
 
 namespace Session.Model
@@ -30,10 +31,23 @@ namespace Session.Model
 		public int Index => _index;
 		public int ShipId => _shipId;
 
-		public void Serialize(SessionDataWriter writer)
-		{
+        public void Serialize(SessionDataWriter writer)
+        {
 			writer.WriteInt(_index, EncodingType.EliasGamma);
 			writer.WriteInt(_shipId, EncodingType.EliasGamma);
-		}
+        }
+
+        public bool Equals(HangarSlotInfo other)
+        {
+			if (Index != other.Index) return false;
+			if (ShipId != other.ShipId) return false;
+            return true;
+        }
+
+        public struct EqualityComparer : IEqualityComparer<HangarSlotInfo>
+        {
+            public bool Equals(HangarSlotInfo first, HangarSlotInfo second) => first.Equals(second);
+            public int GetHashCode(HangarSlotInfo obj) => obj.GetHashCode();
+        }
 	}
 }

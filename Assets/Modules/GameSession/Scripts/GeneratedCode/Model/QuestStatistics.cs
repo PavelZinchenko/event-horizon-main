@@ -6,6 +6,7 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Session.Utils;
 
 namespace Session.Model
@@ -38,12 +39,27 @@ namespace Session.Model
 		public long LastStartTime => _lastStartTime;
 		public long LastCompletionTime => _lastCompletionTime;
 
-		public void Serialize(SessionDataWriter writer)
-		{
+        public void Serialize(SessionDataWriter writer)
+        {
 			writer.WriteInt(_completionCount, EncodingType.EliasGamma);
 			writer.WriteInt(_failureCount, EncodingType.EliasGamma);
 			writer.WriteLong(_lastStartTime, EncodingType.EliasGamma);
 			writer.WriteLong(_lastCompletionTime, EncodingType.EliasGamma);
-		}
+        }
+
+        public bool Equals(QuestStatistics other)
+        {
+			if (CompletionCount != other.CompletionCount) return false;
+			if (FailureCount != other.FailureCount) return false;
+			if (LastStartTime != other.LastStartTime) return false;
+			if (LastCompletionTime != other.LastCompletionTime) return false;
+            return true;
+        }
+
+        public struct EqualityComparer : IEqualityComparer<QuestStatistics>
+        {
+            public bool Equals(QuestStatistics first, QuestStatistics second) => first.Equals(second);
+            public int GetHashCode(QuestStatistics obj) => obj.GetHashCode();
+        }
 	}
 }

@@ -55,9 +55,9 @@ namespace Session.Model
 
 			var shipModel = new ShipModel(shipData);
 			var factory = new ModificationFactory(database);
-			shipModel.Modifications.Assign(_modifications.Items.Select(item => ShipModificationExtensions.Deserialize(item, factory)));
+			shipModel.Modifications.Assign(_modifications.Select(item => ShipModificationExtensions.Deserialize(item, factory)));
 			shipModel.LayoutModifications.Deserialize(_layoutModifications.ToArray());
-			var components = _components.Items.Select(item => item.ToIntegratedComponent(database));
+			var components = _components.Select(item => item.ToIntegratedComponent(database));
 			var ship = new CommonShip(shipModel, components);
 
 			ship.FirstSatellite = _satellite1.ToSatellite(database);

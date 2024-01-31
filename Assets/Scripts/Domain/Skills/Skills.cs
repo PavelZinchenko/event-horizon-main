@@ -50,7 +50,7 @@ namespace GameServices.Database
 
             if (type == SkillType.RequierementMaxLevel)
             {
-                return _session.Fleet.Ships.Items.Any(item => item.Experience >= Maths.Experience.MaxPlayerExperience);
+                return _session.Fleet.Ships.Any(item => item.Experience >= Maths.Experience.MaxPlayerExperience);
             }
 
             if (type == SkillType.RequierementBeatAllEnemies)

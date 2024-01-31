@@ -93,25 +93,25 @@ namespace Session.Model
 		public void Serialize(SessionDataWriter writer)
 		{
 			writer.WriteInt(_factionRelations.Count, EncodingType.EliasGamma);
-			foreach (var item in _factionRelations.Items)
+			foreach (var item in _factionRelations)
 			{
 				writer.WriteInt(item.Key, EncodingType.EliasGamma);
 				writer.WriteInt(item.Value, EncodingType.EliasGamma);
 			}
 			writer.WriteInt(_characterRelations.Count, EncodingType.EliasGamma);
-			foreach (var item in _characterRelations.Items)
+			foreach (var item in _characterRelations)
 			{
 				writer.WriteInt(item.Key, EncodingType.EliasGamma);
 				writer.WriteInt(item.Value, EncodingType.EliasGamma);
 			}
 			writer.WriteInt(_statistics.Count, EncodingType.EliasGamma);
-			foreach (var item in _statistics.Items)
+			foreach (var item in _statistics)
 			{
 				writer.WriteInt(item.Key, EncodingType.EliasGamma);
 				item.Value.Serialize(writer);
 			}
 			writer.WriteInt(_progress.Count, EncodingType.EliasGamma);
-			foreach (var item in _progress.Items)
+			foreach (var item in _progress)
 			{
 				writer.WriteInt(item.Key, EncodingType.EliasGamma);
 				item.Value.Serialize(writer);

@@ -6,6 +6,7 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Session.Utils;
 
 namespace Session.Model
@@ -30,10 +31,23 @@ namespace Session.Model
 		public int Time => _time;
 		public int Quantity => _quantity;
 
-		public void Serialize(SessionDataWriter writer)
-		{
+        public void Serialize(SessionDataWriter writer)
+        {
 			writer.WriteInt(_time, EncodingType.EliasGamma);
 			writer.WriteInt(_quantity, EncodingType.EliasGamma);
-		}
+        }
+
+        public bool Equals(PurchaseInfo other)
+        {
+			if (Time != other.Time) return false;
+			if (Quantity != other.Quantity) return false;
+            return true;
+        }
+
+        public struct EqualityComparer : IEqualityComparer<PurchaseInfo>
+        {
+            public bool Equals(PurchaseInfo first, PurchaseInfo second) => first.Equals(second);
+            public int GetHashCode(PurchaseInfo obj) => obj.GetHashCode();
+        }
 	}
 }

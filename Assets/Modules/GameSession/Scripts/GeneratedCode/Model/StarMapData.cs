@@ -120,13 +120,13 @@ namespace Session.Model
 			_securedStars.Serialize(writer, EncodingType.EliasGamma);
 			_enemiesOnStars.Serialize(writer, EncodingType.EliasGamma);
 			writer.WriteInt(_planetData.Count, EncodingType.EliasGamma);
-			foreach (var item in _planetData.Items)
+			foreach (var item in _planetData)
 			{
 				writer.WriteLong(item.Key, EncodingType.EliasGamma);
 				writer.WriteInt(item.Value, EncodingType.EliasGamma);
 			}
 			writer.WriteInt(_bookmarks.Count, EncodingType.EliasGamma);
-			foreach (var item in _bookmarks.Items)
+			foreach (var item in _bookmarks)
 			{
 				writer.WriteInt(item.Key, EncodingType.EliasGamma);
 				writer.WriteString(item.Value, EncodingType.EliasGamma);

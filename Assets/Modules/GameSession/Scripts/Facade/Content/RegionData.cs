@@ -53,7 +53,7 @@ namespace Session.Content
 
 		public IEnumerable<ItemId<Faction>> GetCapturedFactions()
 		{
-			foreach (var item in _data.Regions.DefeatedFleetCount.Items)
+			foreach (var item in _data.Regions.DefeatedFleetCount)
 			{
 				if (item.Value >= 0) continue;
 				if (!_data.Regions.Factions.TryGetValue(item.Key, out var faction)) continue;

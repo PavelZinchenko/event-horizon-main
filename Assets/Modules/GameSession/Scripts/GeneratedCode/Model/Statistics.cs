@@ -62,7 +62,7 @@ namespace Session.Model
 		public void Serialize(SessionDataWriter writer)
 		{
 			writer.WriteInt(_unlockedShips.Count, EncodingType.EliasGamma);
-			foreach (var item in _unlockedShips.Items)
+			foreach (var item in _unlockedShips)
 			{
 				writer.WriteInt(item, EncodingType.EliasGamma);
 			}

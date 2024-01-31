@@ -20,7 +20,7 @@ namespace Session.Content
 
 		public ResearchData(SaveGameData sessionData) => _data = sessionData;
 
-		public IEnumerable<int> Technologies => _data.Research.Technologies.Items;
+		public IEnumerable<int> Technologies => _data.Research.Technologies;
 
 		public void AddTechnology(ItemId<Technology> id) => _data.Research.Technologies.Add(id.Value);
 		public void RemoveTechnology(ItemId<Technology> id) => _data.Research.Technologies.Remove(id.Value);

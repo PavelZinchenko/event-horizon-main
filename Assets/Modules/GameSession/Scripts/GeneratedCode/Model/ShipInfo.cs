@@ -6,6 +6,7 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Session.Utils;
 
 namespace Session.Model
@@ -82,8 +83,8 @@ namespace Session.Model
 		public Model.SatelliteInfo Satellite1 => _satellite1;
 		public Model.SatelliteInfo Satellite2 => _satellite2;
 
-		public void Serialize(SessionDataWriter writer)
-		{
+        public void Serialize(SessionDataWriter writer)
+        {
 			writer.WriteInt(_id, EncodingType.EliasGamma);
 			writer.WriteString(_name, EncodingType.EliasGamma);
 			writer.WriteLong(_colorScheme, EncodingType.EliasGamma);
@@ -105,6 +106,26 @@ namespace Session.Model
 			}
 			_satellite1.Serialize(writer);
 			_satellite2.Serialize(writer);
-		}
+        }
+
+        public bool Equals(ShipInfo other)
+        {
+			if (Id != other.Id) return false;
+			if (Name != other.Name) return false;
+			if (ColorScheme != other.ColorScheme) return false;
+			if (Experience != other.Experience) return false;
+			if (!Components.Equals(other.Components, new Model.ShipComponentInfo.EqualityComparer())) return false;
+			if (!LayoutModifications.Equals(other.LayoutModifications, EqualityComparer<byte>.Default)) return false;
+			if (!Modifications.Equals(other.Modifications, EqualityComparer<long>.Default)) return false;
+			if (!Satellite1.Equals(other.Satellite1)) return false;
+			if (!Satellite2.Equals(other.Satellite2)) return false;
+            return true;
+        }
+
+        public struct EqualityComparer : IEqualityComparer<ShipInfo>
+        {
+            public bool Equals(ShipInfo first, ShipInfo second) => first.Equals(second);
+            public int GetHashCode(ShipInfo obj) => obj.GetHashCode();
+        }
 	}
 }

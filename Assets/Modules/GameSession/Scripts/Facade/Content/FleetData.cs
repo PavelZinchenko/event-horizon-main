@@ -1,6 +1,8 @@
-﻿using Constructor.Ships;
+﻿using System.Linq;
+using Constructor.Ships;
 using Session.Model;
 using Session.Utils;
+using System.Collections.Generic;
 
 namespace Session.Content
 {
@@ -10,10 +12,10 @@ namespace Session.Content
 		ObservableList<ShipInfo> Ships { get; }
 		ObservableList<HangarSlotInfo> Hangar { get; }
 
-		ShipInfo CreateShipInfo(IShip ship); // TODO: make ShipInfo internal
-	}
+        void UpdateShips(IEnumerable<IShip> ships);
+    }
 
-	public class FleetData : IFleetData, ISessionDataContent
+    public class FleetData : IFleetData, ISessionDataContent
 	{
 		private readonly SaveGameData _data;
 
@@ -23,6 +25,9 @@ namespace Session.Content
 		public ObservableList<ShipInfo> Ships => _data.Fleet.Ships;
 		public ObservableList<HangarSlotInfo> Hangar => _data.Fleet.HangarSlots;
 
-		public ShipInfo CreateShipInfo(IShip ship) => new ShipInfo(ship, _data.Fleet);
-	}
+        public void UpdateShips(IEnumerable<IShip> ships)
+        {
+            _data.Fleet.Ships.Assign(ships.Select(item => new ShipInfo(item, _data.Fleet)), new ShipInfo.EqualityComparer());
+        }
+    }
 }

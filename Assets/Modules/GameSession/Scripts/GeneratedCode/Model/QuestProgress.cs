@@ -6,6 +6,7 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Session.Utils;
 
 namespace Session.Model
@@ -34,11 +35,25 @@ namespace Session.Model
 		public int ActiveNode => _activeNode;
 		public long StartTime => _startTime;
 
-		public void Serialize(SessionDataWriter writer)
-		{
+        public void Serialize(SessionDataWriter writer)
+        {
 			writer.WriteInt(_seed, EncodingType.EliasGamma);
 			writer.WriteInt(_activeNode, EncodingType.EliasGamma);
 			writer.WriteLong(_startTime, EncodingType.EliasGamma);
-		}
+        }
+
+        public bool Equals(QuestProgress other)
+        {
+			if (Seed != other.Seed) return false;
+			if (ActiveNode != other.ActiveNode) return false;
+			if (StartTime != other.StartTime) return false;
+            return true;
+        }
+
+        public struct EqualityComparer : IEqualityComparer<QuestProgress>
+        {
+            public bool Equals(QuestProgress first, QuestProgress second) => first.Equals(second);
+            public int GetHashCode(QuestProgress obj) => obj.GetHashCode();
+        }
 	}
 }

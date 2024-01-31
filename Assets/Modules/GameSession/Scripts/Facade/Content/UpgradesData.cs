@@ -45,6 +45,6 @@ namespace Session.Content
 			_playerSkillsResetTrigger.Fire();
 		}
 
-		public IEnumerable<int> Skills => _data.Upgrades.Skills.Items;
+		public IEnumerable<int> Skills => _data.Upgrades.Skills;
 	}
 }

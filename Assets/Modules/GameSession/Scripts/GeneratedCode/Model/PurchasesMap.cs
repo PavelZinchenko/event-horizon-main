@@ -6,6 +6,7 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Session.Utils;
 
 namespace Session.Model
@@ -36,14 +37,26 @@ namespace Session.Model
 
 		public ObservableMap<string, Model.PurchaseInfo> Purchases => _purchases;
 
-		public void Serialize(SessionDataWriter writer)
-		{
+        public void Serialize(SessionDataWriter writer)
+        {
 			writer.WriteInt(_purchases.Count, EncodingType.EliasGamma);
-			foreach (var item in _purchases.Items)
+			foreach (var item in _purchases)
 			{
 				writer.WriteString(item.Key, EncodingType.EliasGamma);
 				item.Value.Serialize(writer);
 			}
-		}
+        }
+
+        public bool Equals(PurchasesMap other)
+        {
+			if (!Purchases.Equals(other.Purchases, new Model.PurchaseInfo.EqualityComparer())) return false;
+            return true;
+        }
+
+        public struct EqualityComparer : IEqualityComparer<PurchasesMap>
+        {
+            public bool Equals(PurchasesMap first, PurchasesMap second) => first.Equals(second);
+            public int GetHashCode(PurchasesMap obj) => obj.GetHashCode();
+        }
 	}
 }

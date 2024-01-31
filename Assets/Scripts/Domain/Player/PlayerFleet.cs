@@ -164,7 +164,7 @@ namespace GameServices.Player
 
             var ships = new List<IShip>();
 
-			foreach (var item in _session.Fleet.Ships.Items)
+			foreach (var item in _session.Fleet.Ships)
             {
                 try
                 {
@@ -181,7 +181,7 @@ namespace GameServices.Player
             _ships.Assign(ships.Where(ship => ship != null));
 
             _activeShips.Clear();
-			foreach (var item in _session.Fleet.Hangar.Items)
+			foreach (var item in _session.Fleet.Hangar)
             {
                 UnityEngine.Debug.Log("group:" + item.Index + " ship:" + item.ShipId);
                 _activeShips[item.Index] = ships[item.ShipId];
@@ -198,16 +198,12 @@ namespace GameServices.Player
         {
             UnityEngine.Debug.Log("PlayerFleet.SaveShips - " + _ships.Count);
 
-            _session.Fleet.Ships.Clear();
+            _session.Fleet.UpdateShips(_ships);
 
             var shipIndices = new Dictionary<IShip, int>();
             var index = 0;
             foreach (var ship in _ships)
-            {
-				var info = _session.Fleet.CreateShipInfo(ship);
-                _session.Fleet.Ships.Add(info);
                 shipIndices.Add(ship, index++);
-            }
 
             _session.Fleet.Hangar.Clear();
             for (var j = 0; j < _activeShips.Count; ++j)

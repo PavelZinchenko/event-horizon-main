@@ -1,19 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace Session.Utils
 {
-	public readonly struct ObservableMap<TKey, TValue>
+	public readonly struct ObservableMap<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
 	{
 		private readonly IDataChangedCallback _callback;
 		private readonly Dictionary<TKey, TValue> _dictionary;
 
 		public int Count => _dictionary.Count;
 
-		public TValue this[TKey key]
-		{
-			get => _dictionary[key];
-			set => SetValue(key, value);
-		}
+		public TValue this[TKey key] => _dictionary[key];
 
 		public void SetValue(TKey key, TValue value)
 		{ 
@@ -21,7 +18,15 @@ namespace Session.Utils
 			_callback?.OnDataChanged();
 		}
 
-		public void Assign(ObservableMap<TKey, TValue> other)
+        public void SetValue(TKey key, TValue value, IEqualityComparer<TValue> valueComparer)
+        {
+            if (_dictionary.TryGetValue(key, out TValue oldValue) && valueComparer.Equals(value, oldValue)) return;
+
+            _dictionary[key] = value;
+            _callback?.OnDataChanged();
+        }
+
+        public void Assign(ObservableMap<TKey, TValue> other)
 		{
 			_dictionary.Clear();
 			foreach (var item in other._dictionary)
@@ -29,7 +34,6 @@ namespace Session.Utils
 			_callback?.OnDataChanged();
 		}
 
-		public IEnumerable<KeyValuePair<TKey, TValue>> Items => _dictionary;
 		public IEnumerable<TKey> Keys => _dictionary.Keys;
 		public IEnumerable<TValue> Values => _dictionary.Values;
 
@@ -71,8 +75,25 @@ namespace Session.Utils
 			_dictionary.Clear();
 			_callback?.OnDataChanged();
 		}
+        
+        public bool Equals(ObservableMap<TKey, TValue> other, IEqualityComparer<TValue> valueComparer)
+        {
+            if (_dictionary == other._dictionary) return true;
+            if (_dictionary.Count != other._dictionary.Count) return false;
+            
+            foreach (var item in _dictionary)
+            {
+                if (!other._dictionary.TryGetValue(item.Key, out TValue value)) return false;
+                if (!valueComparer.Equals(item.Value, value)) return false;
+            }
 
-		private ObservableMap(IDataChangedCallback callback, Dictionary<TKey, TValue> dictionary)
+            return true;
+        }
+
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _dictionary.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _dictionary.GetEnumerator();
+
+        private ObservableMap(IDataChangedCallback callback, Dictionary<TKey, TValue> dictionary)
 		{
 			_callback = callback;
 			_dictionary = dictionary;

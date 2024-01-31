@@ -156,7 +156,7 @@ namespace Installers
         private void BindDatabase()
         {
 #if EDITOR_MODE
-            Container.BindInterfacesAndSelfTo<SessionDataStub>()AsSingle();
+            Container.BindInterfacesAndSelfTo<SessionDataStub>().AsSingle();
 #else
             Container.BindInterfacesAndSelfTo<SessionData>().AsSingle();
 #endif

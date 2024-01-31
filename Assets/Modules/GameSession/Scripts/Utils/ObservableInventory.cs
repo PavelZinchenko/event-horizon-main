@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace Session.Utils
 {
-	public readonly struct ObservableInventory<T>
-	{
+	public readonly struct ObservableInventory<T> : IEnumerable<KeyValuePair<T, ObscuredInt>>
+    {
 		private readonly IDataChangedCallback _callback;
 		private readonly Dictionary<T, ObscuredInt> _items;
 
@@ -54,7 +55,21 @@ namespace Session.Utils
 			_callback?.OnDataChanged();
 		}
 
-		public IEnumerable<KeyValuePair<T, ObscuredInt>> Items => _items;
+        public bool Equals(ObservableInventory<T> other)
+        {
+            if (_items == other._items) return true;
+            if (_items.Count != other._items.Count) return false;
+
+            foreach (var item in _items)
+            {
+                if (!other._items.TryGetValue(item.Key, out var value)) return false;
+                if ((int)item.Value != (int)value) return false;
+            }
+
+            return true;
+        }
+
+        public IEnumerable<KeyValuePair<T, ObscuredInt>> Items => _items;
 		public IEnumerable<T> Keys => _items.Keys;
 		public IEnumerable<ObscuredInt> Values => _items.Values;
 
@@ -74,7 +89,10 @@ namespace Session.Utils
 			_callback?.OnDataChanged();
 		}
 
-		private ObservableInventory(IDataChangedCallback callback, Dictionary<T, ObscuredInt> dictionary)
+        public IEnumerator<KeyValuePair<T, ObscuredInt>> GetEnumerator() => _items.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
+
+        private ObservableInventory(IDataChangedCallback callback, Dictionary<T, ObscuredInt> dictionary)
 		{
 			_callback = callback;
 			_items = dictionary;

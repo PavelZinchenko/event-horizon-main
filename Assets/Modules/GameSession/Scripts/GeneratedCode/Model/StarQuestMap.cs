@@ -6,6 +6,7 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Session.Utils;
 
 namespace Session.Model
@@ -36,14 +37,26 @@ namespace Session.Model
 
 		public ObservableMap<int, Model.QuestProgress> StarQuestsMap => _starQuestsMap;
 
-		public void Serialize(SessionDataWriter writer)
-		{
+        public void Serialize(SessionDataWriter writer)
+        {
 			writer.WriteInt(_starQuestsMap.Count, EncodingType.EliasGamma);
-			foreach (var item in _starQuestsMap.Items)
+			foreach (var item in _starQuestsMap)
 			{
 				writer.WriteInt(item.Key, EncodingType.EliasGamma);
 				item.Value.Serialize(writer);
 			}
-		}
+        }
+
+        public bool Equals(StarQuestMap other)
+        {
+			if (!StarQuestsMap.Equals(other.StarQuestsMap, new Model.QuestProgress.EqualityComparer())) return false;
+            return true;
+        }
+
+        public struct EqualityComparer : IEqualityComparer<StarQuestMap>
+        {
+            public bool Equals(StarQuestMap first, StarQuestMap second) => first.Equals(second);
+            public int GetHashCode(StarQuestMap obj) => obj.GetHashCode();
+        }
 	}
 }
