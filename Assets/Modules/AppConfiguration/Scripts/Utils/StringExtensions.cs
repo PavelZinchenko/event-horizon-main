@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CommonComponents.Utils
+namespace AppConfiguration.Utils
 {
     internal static class StringExtensions
     {

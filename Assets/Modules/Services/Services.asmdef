@@ -2,8 +2,9 @@
     "name": "Services",
     "rootNamespace": "Services",
     "references": [
-        "ServicesFacade",
+        "AppConfiguration",
         "CommonComponents",
+        "ServicesFacade",
         "UniRx",
         "Zenject"
     ],

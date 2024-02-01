@@ -1,10 +1,7 @@
 {
-    "name": "CommonComponents",
+    "name": "AppConfiguration",
     "rootNamespace": "",
-    "references": [
-        "Zenject",
-        "AppConfiguration"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

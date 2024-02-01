@@ -2,6 +2,7 @@
     "name": "Localization",
     "rootNamespace": "",
     "references": [
+        "AppConfiguration",
         "CommonComponents",
         "Database",
         "Unity.InputSystem",

@@ -411,7 +411,7 @@ namespace EditorWindows
 #endif
 
         private const string AssetsDir = "Assets/";
-        private const string ConfigDir = "Modules/CommonComponents/Scripts/Generated";
+        private const string ConfigDir = "Modules/AppConfiguration/Scripts/Generated";
         private const string ClassName = "AppConfig";
 
 		private const string ProductNameDefault = "Event Horizon";

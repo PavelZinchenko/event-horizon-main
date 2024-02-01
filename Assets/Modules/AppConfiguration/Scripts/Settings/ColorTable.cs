@@ -1,6 +1,5 @@
 using System.IO;
 using UnityEngine;
-using CommonComponents.Utils;
 
 namespace AppConfiguration
 {
@@ -27,7 +26,7 @@ namespace AppConfiguration
         [ContextMenu("Ganerate Code")]
         private void GenerateScript()
         {
-            var code = new SettingsClassBuilder(nameof(ColorTable))
+            var code = new Utils.SettingsClassBuilder(nameof(ColorTable))
                 .SetNamespace(nameof(AppConfiguration))
                 .AddColor(nameof(_qualityPoor), _qualityPoor)
                 .AddColor(nameof(_qualityCommon), _qualityCommon)

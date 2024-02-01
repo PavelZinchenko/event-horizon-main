@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace CommonComponents.Utils
+namespace AppConfiguration.Utils
 {
     internal class SettingsClassBuilder
     {
