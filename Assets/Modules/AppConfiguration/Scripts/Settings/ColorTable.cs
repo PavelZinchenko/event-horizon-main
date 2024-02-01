@@ -19,6 +19,8 @@ namespace AppConfiguration
         [SerializeField] private Color _tokensColor;
         [SerializeField] private Color _snowflakesColor;
 
+        [SerializeField] private Color _componentTreeNodeColor;
+
 #if UNITY_EDITOR
         private const string _colorGetterName = "QualityColor";
         private const string _colorEnumName = "Quality";
@@ -39,6 +41,7 @@ namespace AppConfiguration
                 .AddColor(nameof(_premiumItemColor), _premiumItemColor)
                 .AddColor(nameof(_tokensColor), _tokensColor)
                 .AddColor(nameof(_snowflakesColor), _snowflakesColor)
+                .AddColor(nameof(_componentTreeNodeColor), _componentTreeNodeColor)
 
                 .AsPartial()
                 .Build();

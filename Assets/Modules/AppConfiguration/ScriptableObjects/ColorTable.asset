@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1dc7c5f0b9b0934dad0dc417e4a803a, type: 3}
   m_Name: ColorTable
   m_EditorClassIdentifier: AppConfig:AppConfiguration.Settings:UiColorScheme
-  _generatedFilePath: Modules/AppConfig/Scripts/Generated/ColorTable.cs
+  _generatedFilePath: Modules/AppConfiguration/Scripts/Generated/ColorTable.cs
   _qualityPoor: {r: 0.7411765, g: 0.7411765, b: 0.7411765, a: 1}
   _qualityCommon: {r: 0.5019608, g: 0.9411765, b: 0.9411765, a: 1}
   _qualityGood: {r: 0.5019608, g: 1, b: 0.5019608, a: 1}
@@ -22,3 +22,4 @@ MonoBehaviour:
   _premiumItemColor: {r: 1, g: 0.9411765, b: 0.627451, a: 1}
   _tokensColor: {r: 0.5019608, g: 0.5019608, b: 1, a: 1}
   _snowflakesColor: {r: 0.7529412, g: 1, b: 1, a: 1}
+  _componentTreeNodeColor: {r: 0.3137255, g: 0.7529412, b: 1, a: 1}

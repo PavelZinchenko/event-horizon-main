@@ -40,6 +40,7 @@ namespace AppConfiguration
         public static readonly Color PremiumItemColor = new(1f,0.9411765f,0.627451f,1f);
         public static readonly Color TokensColor = new(0.5019608f,0.5019608f,1f,1f);
         public static readonly Color SnowflakesColor = new(0.7529412f,1f,1f,1f);
+        public static readonly Color ComponentTreeNodeColor = new(0.3137255f,0.7529412f,1f,1f);
 
     }
 }
