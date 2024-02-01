@@ -13,3 +13,6 @@
 [submodule "Assets/Modules/GameSession/.CodeGenerator"]
 	path = Assets/Modules/GameSession/.CodeGenerator
 	url = https://github.com/PavelZinchenko/event-horizon-session-code-generator
+[submodule "Assets/ModulesShared"]
+	path = Assets/ModulesShared
+	url = https://github.com/PavelZinchenko/event-horizon-modules
