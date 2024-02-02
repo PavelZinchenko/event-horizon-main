@@ -26,6 +26,7 @@ namespace GameDatabase
 		ShipSettings ShipSettings { get; }
 		SkillSettings SkillSettings { get; }
 		SpecialEventSettings SpecialEventSettings { get; }
+		UiSettings UiSettings { get; }
 
 		IEnumerable<AmmunitionObsolete> AmmunitionObsoleteList { get; }
 		IEnumerable<Component> ComponentList { get; }
@@ -95,6 +96,7 @@ namespace GameDatabase
 		public ShipSettings ShipSettings { get; private set; }
 		public SkillSettings SkillSettings { get; private set; }
 		public SpecialEventSettings SpecialEventSettings { get; private set; }
+		public UiSettings UiSettings { get; private set; }
 
 		public IEnumerable<AmmunitionObsolete> AmmunitionObsoleteList => _ammunitionObsoleteMap.Values;
 		public IEnumerable<Component> ComponentList => _componentMap.Values;
@@ -184,6 +186,7 @@ namespace GameDatabase
 			ShipSettings = null;
 			SkillSettings = null;
 			SpecialEventSettings = null;
+			UiSettings = null;
 
 			_images.Clear();
 			_audioClips.Clear();
@@ -336,6 +339,8 @@ namespace GameDatabase
 					_database.SkillSettings = SkillSettings.Create(_content.SkillSettings ?? new Serializable.SkillSettingsSerializable { ItemType = Enums.ItemType.SkillSettings }, this);
 				if (_database.SpecialEventSettings == null)
 					_database.SpecialEventSettings = SpecialEventSettings.Create(_content.SpecialEventSettings ?? new Serializable.SpecialEventSettingsSerializable { ItemType = Enums.ItemType.SpecialEventSettings }, this);
+				if (_database.UiSettings == null)
+					_database.UiSettings = UiSettings.Create(_content.UiSettings ?? new Serializable.UiSettingsSerializable { ItemType = Enums.ItemType.UiSettings }, this);
 			}
 
 			public AmmunitionObsolete GetAmmunitionObsolete(ItemId<AmmunitionObsolete> id, bool notNull = false)

@@ -19,15 +19,19 @@ using Session;
 using Services.InAppPurchasing;
 using GameStateMachine.States;
 using GameServices.GameManager;
+using Gui.Theme;
 
 namespace Installers
 {
     public class TestSceneInstaller : MonoInstaller<TestSceneInstaller>
     {
-		[SerializeField] private ResourceLocator _resourceLocator;
+        [SerializeField] private ResourceLocator _resourceLocator;
+        [SerializeField] private UiTheme _uiTheme;
 
         public override void InstallBindings()
         {
+            UiTheme.Current = _uiTheme;
+
 			Container.Bind<IGameObjectFactory>().To<GameObjectFactory>().AsCached();
 			Container.Bind<IDatabase>().FromMethod(LoadDatabase).AsSingle();
 			Container.Bind<IResourceLocator>().FromInstance(_resourceLocator);

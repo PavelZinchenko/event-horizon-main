@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8ffd5f4c0cb56e4ca781d4aecc645e5, type: 3}
+  m_Name: UiTheme
+  m_EditorClassIdentifier: 
+  _windowColor: {r: 0.3137255, g: 0.7529412, b: 1, a: 1}
+  _scrollBarColor: {r: 0.3137255, g: 0.7529412, b: 1, a: 0.7529412}
+  _iconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
+  _innerPanelColor: {r: 0.3137255, g: 0.7529412, b: 1, a: 0.5019608}
+  _selectionColor: {r: 0.5019608, g: 1, b: 1, a: 1}
+  _buttonColor: {r: 0.3137255, g: 0.7529412, b: 1, a: 1}
+  _buttonFocusColor: {r: 0.3137255, g: 0.7529412, b: 1, a: 0.2509804}
+  _buttonTextColor: {r: 0.5019608, g: 1, b: 1, a: 1}
+  _buttonIconColor: {r: 0.3137255, g: 0.7529412, b: 1, a: 1}
+  _textColor: {r: 0.5019608, g: 1, b: 1, a: 1}
+  _headerTextColor: {r: 1, g: 1, b: 0.7529412, a: 1}
+  _paleTextColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
+  _brightTextColor: {r: 1, g: 1, b: 1, a: 1}
+  _itemLowQualityColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
+  _itemCommonQualityColor: {r: 0.5019608, g: 1, b: 1, a: 1}
+  _itemMediumQualityColor: {r: 0.5019608, g: 1, b: 0.5019608, a: 1}
+  _itemHighQualityColor: {r: 0.9411765, g: 0.62352943, b: 1, a: 1}
+  _itemPerfectQualityColor: {r: 1, g: 0.8745098, b: 0.31764707, a: 1}
+  _buttonTextFontSize: 24
+  _menuButtonTextFontSize: 38
+  _headerFontSize: 26
+  _normalTextFontSize: 24
+  _smallTextFontSize: 20
+  _compactTextFontSize: 22
+  _tinyTextFontSize: 18
+  _largeTextFontSize: 32
+  _font1:
+    Font: {fileID: 12800000, guid: 0331ea93716811747acff9f890a054ac, type: 3}
+    SizeMultiplier: 1
+  _font2:
+    Font: {fileID: 12800000, guid: b5e4db66e129d714aadaddfb86b16e7e, type: 3}
+    SizeMultiplier: 1.2
+  _font3:
+    Font: {fileID: 12800000, guid: 1f7c2b15b1c46c2438125d280e866dde, type: 3}
+    SizeMultiplier: 1.28

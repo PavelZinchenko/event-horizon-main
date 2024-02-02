@@ -1,3 +1,6 @@
+
+
+
 //-------------------------------------------------------------------------------
 //                                                                               
 //    This code was automatically generated.                                     
@@ -13,7 +16,7 @@ using GameDatabase.Model;
 
 namespace GameDatabase.DataModel
 {
-	public partial class VisualEffect
+	public partial class VisualEffect 
 	{
 		partial void OnDataDeserialized(VisualEffectSerializable serializable, Database.Loader loader);
 

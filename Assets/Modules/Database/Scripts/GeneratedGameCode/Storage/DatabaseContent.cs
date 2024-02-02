@@ -462,6 +462,19 @@ namespace GameDatabase.Storage
 				if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate SpecialEventSettings file found - " + name);
             }
+            else if (type == ItemType.UiSettings)
+            {
+                if (UiSettings == null)
+                {
+                    var data = _serializer.FromJson<UiSettingsSerializable>(content);
+                    data.FileName = name;
+                    UiSettings = data;
+                    return;
+                }
+
+				if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate UiSettings file found - " + name);
+            }
             else
             {
                 throw new DatabaseException("Unknown file type - " + type + "(" + name + ")");
@@ -493,6 +506,7 @@ namespace GameDatabase.Storage
 		public ShipSettingsSerializable ShipSettings { get; private set; }
 		public SkillSettingsSerializable SkillSettings { get; private set; }
 		public SpecialEventSettingsSerializable SpecialEventSettings { get; private set; }
+		public UiSettingsSerializable UiSettings { get; private set; }
 
 		public IEnumerable<AmmunitionObsoleteSerializable> AmmunitionObsoleteList => _ammunitionObsoleteMap.Values;
 		public IEnumerable<ComponentSerializable> ComponentList => _componentMap.Values;

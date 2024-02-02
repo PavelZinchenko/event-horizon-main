@@ -1,3 +1,6 @@
+
+
+
 //-------------------------------------------------------------------------------
 //                                                                               
 //    This code was automatically generated.                                     
@@ -13,7 +16,7 @@ using GameDatabase.Model;
 
 namespace GameDatabase.DataModel
 {
-	public partial class RequiredFactions
+	public partial class RequiredFactions 
 	{
 		partial void OnDataDeserialized(FactionFilterSerializable serializable, Database.Loader loader);
 

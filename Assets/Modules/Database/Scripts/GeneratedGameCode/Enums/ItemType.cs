@@ -44,5 +44,6 @@ namespace GameDatabase.Enums
 		SkillSettings = 107,
 		DebugSettings = 108,
 		CombatSettings = 109,
+		UiSettings = 110,
 	}
 }

@@ -1,3 +1,6 @@
+
+
+
 //-------------------------------------------------------------------------------
 //                                                                               
 //    This code was automatically generated.                                     
@@ -13,7 +16,7 @@ using GameDatabase.Model;
 
 namespace GameDatabase.DataModel
 {
-	public abstract partial class BehaviorNodeRequirement
+	public abstract partial class BehaviorNodeRequirement 
 	{
 		partial void OnDataDeserialized(BehaviorNodeRequirementSerializable serializable, Database.Loader loader);
 
@@ -71,6 +74,7 @@ namespace GameDatabase.DataModel
 			OnDataDeserialized(serializable, loader);
 		}
 
+
 		public BehaviorRequirementType Type { get; private set; }
 
 		public static BehaviorNodeRequirement DefaultValue { get; private set; } = Create(new(), null);
@@ -113,6 +117,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorNodeRequirement_Any : BehaviorNodeRequirement
     {
@@ -132,6 +138,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<BehaviorNodeRequirement> Requirements { get; private set; }
+
+
     }
     public partial class BehaviorNodeRequirement_All : BehaviorNodeRequirement
     {
@@ -151,6 +159,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<BehaviorNodeRequirement> Requirements { get; private set; }
+
+
     }
     public partial class BehaviorNodeRequirement_None : BehaviorNodeRequirement
     {
@@ -170,6 +180,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<BehaviorNodeRequirement> Requirements { get; private set; }
+
+
     }
     public partial class BehaviorNodeRequirement_AiLevel : BehaviorNodeRequirement
     {
@@ -189,6 +201,8 @@ namespace GameDatabase.DataModel
         }
 
 		public AiDifficultyLevel DifficultyLevel { get; private set; }
+
+
     }
     public partial class BehaviorNodeRequirement_MinAiLevel : BehaviorNodeRequirement
     {
@@ -208,6 +222,8 @@ namespace GameDatabase.DataModel
         }
 
 		public AiDifficultyLevel DifficultyLevel { get; private set; }
+
+
     }
     public partial class BehaviorNodeRequirement_SizeClass : BehaviorNodeRequirement
     {
@@ -227,6 +243,8 @@ namespace GameDatabase.DataModel
         }
 
 		public SizeClass SizeClass { get; private set; }
+
+
     }
     public partial class BehaviorNodeRequirement_HasDevice : BehaviorNodeRequirement
     {
@@ -246,6 +264,8 @@ namespace GameDatabase.DataModel
         }
 
 		public DeviceClass DeviceClass { get; private set; }
+
+
     }
     public partial class BehaviorNodeRequirement_HasDrones : BehaviorNodeRequirement
     {
@@ -262,6 +282,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorNodeRequirement_HasAnyWeapon : BehaviorNodeRequirement
@@ -280,6 +302,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorNodeRequirement_CanRepairAllies : BehaviorNodeRequirement
     {
@@ -296,6 +320,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorNodeRequirement_HasHighRecoilWeapon : BehaviorNodeRequirement
@@ -314,6 +340,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorNodeRequirement_HasChargeableWeapon : BehaviorNodeRequirement
     {
@@ -330,6 +358,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorNodeRequirement_HasRemotelyControlledWeapon : BehaviorNodeRequirement
@@ -348,6 +378,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorNodeRequirement_IsDrone : BehaviorNodeRequirement
     {
@@ -364,6 +396,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorNodeRequirement_HasKineticResistance : BehaviorNodeRequirement
@@ -384,6 +418,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float Value { get; private set; }
+
+
     }
     public partial class BehaviorNodeRequirement_HasHighManeuverability : BehaviorNodeRequirement
     {
@@ -403,6 +439,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float Value { get; private set; }
+
+
     }
 
 }

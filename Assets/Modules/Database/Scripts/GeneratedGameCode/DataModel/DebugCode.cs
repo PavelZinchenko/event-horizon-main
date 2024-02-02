@@ -1,3 +1,6 @@
+
+
+
 //-------------------------------------------------------------------------------
 //                                                                               
 //    This code was automatically generated.                                     
@@ -13,7 +16,7 @@ using GameDatabase.Model;
 
 namespace GameDatabase.DataModel
 {
-	public partial class DebugCode
+	public partial class DebugCode 
 	{
 		partial void OnDataDeserialized(DebugCodeSerializable serializable, Database.Loader loader);
 

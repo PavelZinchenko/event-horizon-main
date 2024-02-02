@@ -1,3 +1,6 @@
+
+
+
 //-------------------------------------------------------------------------------
 //                                                                               
 //    This code was automatically generated.                                     
@@ -13,7 +16,7 @@ using GameDatabase.Model;
 
 namespace GameDatabase.DataModel
 {
-	public abstract partial class Requirement
+	public abstract partial class Requirement 
 	{
 		partial void OnDataDeserialized(RequirementSerializable serializable, Database.Loader loader);
 
@@ -75,6 +78,7 @@ namespace GameDatabase.DataModel
 			OnDataDeserialized(serializable, loader);
 		}
 
+
 		public RequirementType Type { get; private set; }
 
 		public static Requirement DefaultValue { get; private set; } = Create(new(), null);
@@ -119,6 +123,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class Requirement_Any : Requirement
     {
@@ -138,6 +144,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<Requirement> Requirements { get; private set; }
+
+
     }
     public partial class Requirement_All : Requirement
     {
@@ -157,6 +165,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<Requirement> Requirements { get; private set; }
+
+
     }
     public partial class Requirement_None : Requirement
     {
@@ -176,6 +186,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<Requirement> Requirements { get; private set; }
+
+
     }
     public partial class Requirement_PlayerPosition : Requirement
     {
@@ -199,6 +211,8 @@ namespace GameDatabase.DataModel
 		public int MinValue { get; private set; }
 		public int MaxValue { get; private set; }
 		public bool AllowUnsafeStars { get; private set; }
+
+
     }
     public partial class Requirement_RandomStarSystem : Requirement
     {
@@ -222,6 +236,8 @@ namespace GameDatabase.DataModel
 		public int MinValue { get; private set; }
 		public int MaxValue { get; private set; }
 		public bool AllowUnsafeStars { get; private set; }
+
+
     }
     public partial class Requirement_AggressiveOccupants : Requirement
     {
@@ -238,6 +254,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class Requirement_QuestCompleted : Requirement
@@ -258,6 +276,8 @@ namespace GameDatabase.DataModel
         }
 
 		public QuestModel Quest { get; private set; }
+
+
     }
     public partial class Requirement_QuestActive : Requirement
     {
@@ -277,6 +297,8 @@ namespace GameDatabase.DataModel
         }
 
 		public QuestModel Quest { get; private set; }
+
+
     }
     public partial class Requirement_CharacterRelations : Requirement
     {
@@ -300,6 +322,8 @@ namespace GameDatabase.DataModel
 		public int MinValue { get; private set; }
 		public int MaxValue { get; private set; }
 		public Character Character { get; private set; }
+
+
     }
     public partial class Requirement_FactionRelations : Requirement
     {
@@ -321,6 +345,8 @@ namespace GameDatabase.DataModel
 
 		public int MinValue { get; private set; }
 		public int MaxValue { get; private set; }
+
+
     }
     public partial class Requirement_StarbaseCaptured : Requirement
     {
@@ -337,6 +363,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class Requirement_Faction : Requirement
@@ -357,6 +385,8 @@ namespace GameDatabase.DataModel
         }
 
 		public Faction Faction { get; private set; }
+
+
     }
     public partial class Requirement_HaveQuestItem : Requirement
     {
@@ -378,6 +408,8 @@ namespace GameDatabase.DataModel
 
 		public QuestItem QuestItem { get; private set; }
 		public int Amount { get; private set; }
+
+
     }
     public partial class Requirement_HaveItem : Requirement
     {
@@ -397,6 +429,8 @@ namespace GameDatabase.DataModel
         }
 
 		public LootContent Loot { get; private set; }
+
+
     }
     public partial class Requirement_HaveItemById : Requirement
     {
@@ -416,6 +450,8 @@ namespace GameDatabase.DataModel
         }
 
 		public LootModel Loot { get; private set; }
+
+
     }
     public partial class Requirement_ComeToOrigin : Requirement
     {
@@ -435,6 +471,8 @@ namespace GameDatabase.DataModel
         }
 
 		public bool AllowUnsafeStars { get; private set; }
+
+
     }
     public partial class Requirement_TimeSinceQuestStart : Requirement
     {
@@ -456,6 +494,8 @@ namespace GameDatabase.DataModel
 
 		public int Minutes { get; private set; }
 		public int Hours { get; private set; }
+
+
     }
     public partial class Requirement_TimeSinceLastCompletion : Requirement
     {
@@ -477,6 +517,8 @@ namespace GameDatabase.DataModel
 
 		public int Minutes { get; private set; }
 		public int Hours { get; private set; }
+
+
     }
 
 }

@@ -1,3 +1,6 @@
+
+
+
 //-------------------------------------------------------------------------------
 //                                                                               
 //    This code was automatically generated.                                     
@@ -13,7 +16,7 @@ using GameDatabase.Model;
 
 namespace GameDatabase.DataModel
 {
-	public abstract partial class Technology
+	public abstract partial class Technology 
 	{
 		partial void OnDataDeserialized(TechnologySerializable serializable, Database.Loader loader);
 
@@ -49,6 +52,7 @@ namespace GameDatabase.DataModel
 
 			OnDataDeserialized(serializable, loader);
 		}
+
 
 		public readonly ItemId<Technology> Id;
 
@@ -90,6 +94,8 @@ namespace GameDatabase.DataModel
 
 		public Component Component { get; private set; }
 		public Faction Faction { get; private set; }
+
+
     }
     public partial class Technology_Ship : Technology
     {
@@ -111,6 +117,8 @@ namespace GameDatabase.DataModel
         }
 
 		public Ship Ship { get; private set; }
+
+
     }
     public partial class Technology_Satellite : Technology
     {
@@ -134,6 +142,8 @@ namespace GameDatabase.DataModel
 
 		public Satellite Satellite { get; private set; }
 		public Faction Faction { get; private set; }
+
+
     }
 
 }

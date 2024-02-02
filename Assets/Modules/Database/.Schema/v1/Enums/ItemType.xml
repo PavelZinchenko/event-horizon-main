@@ -35,4 +35,5 @@
     <item name="SkillSettings" value="107" />
     <item name="DebugSettings" value="108" />
     <item name="CombatSettings" value="109" />
+    <item name="UiSettings" value="110" />
 </data>

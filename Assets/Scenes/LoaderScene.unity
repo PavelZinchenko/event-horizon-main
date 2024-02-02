@@ -730,6 +730,7 @@ MonoBehaviour:
   _musicPlayer: {fileID: 1171077219}
   _soundPlayer: {fileID: 1993476686}
   _resourceLocator: {fileID: 2127999406}
+  _defaultUiTheme: {fileID: 11400000, guid: 05a3bcf1256787645a0c298a72cf6993, type: 2}
 --- !u!4 &368924450
 Transform:
   m_ObjectHideFlags: 0

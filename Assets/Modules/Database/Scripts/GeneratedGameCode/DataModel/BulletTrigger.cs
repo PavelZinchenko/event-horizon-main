@@ -1,3 +1,6 @@
+
+
+
 //-------------------------------------------------------------------------------
 //                                                                               
 //    This code was automatically generated.                                     
@@ -52,6 +55,7 @@ namespace GameDatabase.DataModel
 
 			OnDataDeserialized(serializable, loader);
 		}
+
 		protected abstract IVariableResolver GetVariableResolver();
 
 		protected abstract class BaseVariableResolver : IVariableResolver
@@ -106,6 +110,7 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
 		private IVariableResolver _iVariableResolver;
 		protected override IVariableResolver GetVariableResolver() {
 			if(_iVariableResolver == null)
@@ -135,6 +140,7 @@ namespace GameDatabase.DataModel
 			}
 
 		}
+
     }
     public partial class BulletTrigger_PlaySfx : BulletTrigger
     {
@@ -165,6 +171,7 @@ namespace GameDatabase.DataModel
 		public ColorMode ColorMode { get; private set; }
 		public float Size { get; private set; }
 		public float Lifetime { get; private set; }
+
 		private IVariableResolver _iVariableResolver;
 		protected override IVariableResolver GetVariableResolver() {
 			if(_iVariableResolver == null)
@@ -198,6 +205,7 @@ namespace GameDatabase.DataModel
 			private Variant GetSize() => _context.Size;
 			private Variant GetLifetime() => _context.Lifetime;
 		}
+
     }
     public partial class BulletTrigger_SpawnBullet : BulletTrigger
     {
@@ -249,6 +257,7 @@ namespace GameDatabase.DataModel
 		private readonly Expressions.IntToFloat _offsetY;
 		public delegate float OffsetYDelegate(int i);
 		public OffsetYDelegate OffsetY { get; private set; }
+
 		private IVariableResolver _iVariableResolver;
 		protected override IVariableResolver GetVariableResolver() {
 			if(_iVariableResolver == null)
@@ -291,6 +300,7 @@ namespace GameDatabase.DataModel
 			private Variant GetPowerMultiplier() => _context.PowerMultiplier;
 			private Variant GetMaxNestingLevel() => _context.MaxNestingLevel;
 		}
+
     }
     public partial class BulletTrigger_Detonate : BulletTrigger
     {
@@ -308,6 +318,7 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
 
 		private IVariableResolver _iVariableResolver;
 		protected override IVariableResolver GetVariableResolver() {
@@ -338,6 +349,7 @@ namespace GameDatabase.DataModel
 			}
 
 		}
+
     }
     public partial class BulletTrigger_SpawnStaticSfx : BulletTrigger
     {
@@ -368,6 +380,7 @@ namespace GameDatabase.DataModel
 		public ColorMode ColorMode { get; private set; }
 		public float Size { get; private set; }
 		public float Lifetime { get; private set; }
+
 		private IVariableResolver _iVariableResolver;
 		protected override IVariableResolver GetVariableResolver() {
 			if(_iVariableResolver == null)
@@ -401,6 +414,7 @@ namespace GameDatabase.DataModel
 			private Variant GetSize() => _context.Size;
 			private Variant GetLifetime() => _context.Lifetime;
 		}
+
     }
     public partial class BulletTrigger_GravityField : BulletTrigger
     {
@@ -423,6 +437,7 @@ namespace GameDatabase.DataModel
 
 		public float Size { get; private set; }
 		public float PowerMultiplier { get; private set; }
+
 		private IVariableResolver _iVariableResolver;
 		protected override IVariableResolver GetVariableResolver() {
 			if(_iVariableResolver == null)
@@ -456,6 +471,7 @@ namespace GameDatabase.DataModel
 			private Variant GetSize() => _context.Size;
 			private Variant GetPowerMultiplier() => _context.PowerMultiplier;
 		}
+
     }
 
 }

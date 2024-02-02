@@ -1609,6 +1609,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _resourceLocator: {fileID: 2038478763}
+  _uiTheme: {fileID: 11400000, guid: 05a3bcf1256787645a0c298a72cf6993, type: 2}
 --- !u!4 &998790517
 Transform:
   m_ObjectHideFlags: 0

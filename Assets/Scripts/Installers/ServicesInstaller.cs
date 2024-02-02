@@ -28,6 +28,7 @@ namespace Installers
         [SerializeField] private MusicPlayer _musicPlayer;
         [SerializeField] private SoundPlayer _soundPlayer;
 		[SerializeField] private ResourceLocator _resourceLocator;
+        [SerializeField] private Gui.Theme.UiTheme _defaultUiTheme;
 
 		public override void InstallBindings()
         {
@@ -45,9 +46,11 @@ namespace Installers
 			Container.Bind<ILocalization>().To<LocalizationManager>().AsSingle();
             Container.BindInterfacesTo<KeyNameLocalizer>().AsSingle();
 
-//#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
-//            Container.BindAllInterfaces<DiscordController>().AsSingle().NonLazy();
-//#endif
+            //#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
+            //            Container.BindAllInterfaces<DiscordController>().AsSingle().NonLazy();
+            //#endif
+
+            Container.BindInterfacesTo<Gui.Theme.UiThemeLoader>().AsSingle().WithArguments(_defaultUiTheme);
 
             Container.Bind<ICoroutineManager>().To<CoroutineManager>().FromNewComponentOnNewGameObject().AsSingle();
             Container.BindInterfacesTo<ShaderTimeProvider>().AsSingle().NonLazy();

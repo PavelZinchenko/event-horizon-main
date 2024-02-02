@@ -1,3 +1,6 @@
+
+
+
 //-------------------------------------------------------------------------------
 //                                                                               
 //    This code was automatically generated.                                     
@@ -13,7 +16,7 @@ using GameDatabase.Model;
 
 namespace GameDatabase.DataModel
 {
-	public abstract partial class Node
+	public abstract partial class Node 
 	{
 		partial void OnDataDeserialized(NodeSerializable serializable, Database.Loader loader);
 
@@ -94,6 +97,7 @@ namespace GameDatabase.DataModel
 			OnDataDeserialized(serializable, loader);
 		}
 
+
 		public int Id { get; private set; }
 		public NodeType Type { get; private set; }
 
@@ -148,6 +152,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class Node_ComingSoon : Node
     {
@@ -164,6 +170,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class Node_ShowDialog : Node
@@ -194,6 +202,8 @@ namespace GameDatabase.DataModel
 		public LootModel Loot { get; private set; }
 		public Character Character { get; private set; }
 		public ImmutableCollection<NodeAction> Actions { get; private set; }
+
+
     }
     public partial class Node_OpenShipyard : Node
     {
@@ -217,6 +227,8 @@ namespace GameDatabase.DataModel
 		public int Transition { get; private set; }
 		public Faction Faction { get; private set; }
 		public int Level { get; private set; }
+
+
     }
     public partial class Node_OpenWorkshop : Node
     {
@@ -240,6 +252,8 @@ namespace GameDatabase.DataModel
 		public int Transition { get; private set; }
 		public Faction Faction { get; private set; }
 		public int Level { get; private set; }
+
+
     }
     public partial class Node_Switch : Node
     {
@@ -263,6 +277,8 @@ namespace GameDatabase.DataModel
 		public string Message { get; private set; }
 		public int DefaultTransition { get; private set; }
 		public ImmutableCollection<NodeTransition> Transitions { get; private set; }
+
+
     }
     public partial class Node_Random : Node
     {
@@ -286,6 +302,8 @@ namespace GameDatabase.DataModel
 		public string Message { get; private set; }
 		public int DefaultTransition { get; private set; }
 		public ImmutableCollection<NodeTransition> Transitions { get; private set; }
+
+
     }
     public partial class Node_Condition : Node
     {
@@ -307,6 +325,8 @@ namespace GameDatabase.DataModel
 
 		public string Message { get; private set; }
 		public ImmutableCollection<NodeTransition> Transitions { get; private set; }
+
+
     }
     public partial class Node_AttackFleet : Node
     {
@@ -332,6 +352,8 @@ namespace GameDatabase.DataModel
 		public int FailureTransition { get; private set; }
 		public Fleet Enemy { get; private set; }
 		public LootModel Loot { get; private set; }
+
+
     }
     public partial class Node_AttackOccupants : Node
     {
@@ -353,6 +375,8 @@ namespace GameDatabase.DataModel
 
 		public int VictoryTransition { get; private set; }
 		public int FailureTransition { get; private set; }
+
+
     }
     public partial class Node_AttackStarbase : Node
     {
@@ -374,6 +398,8 @@ namespace GameDatabase.DataModel
 
 		public int VictoryTransition { get; private set; }
 		public int FailureTransition { get; private set; }
+
+
     }
     public partial class Node_DestroyOccupants : Node
     {
@@ -393,6 +419,8 @@ namespace GameDatabase.DataModel
         }
 
 		public int Transition { get; private set; }
+
+
     }
     public partial class Node_SuppressOccupants : Node
     {
@@ -412,6 +440,8 @@ namespace GameDatabase.DataModel
         }
 
 		public int Transition { get; private set; }
+
+
     }
     public partial class Node_Retreat : Node
     {
@@ -431,6 +461,8 @@ namespace GameDatabase.DataModel
         }
 
 		public int Transition { get; private set; }
+
+
     }
     public partial class Node_ReceiveItem : Node
     {
@@ -452,6 +484,8 @@ namespace GameDatabase.DataModel
 
 		public int Transition { get; private set; }
 		public LootModel Loot { get; private set; }
+
+
     }
     public partial class Node_RemoveItem : Node
     {
@@ -473,6 +507,8 @@ namespace GameDatabase.DataModel
 
 		public int Transition { get; private set; }
 		public LootModel Loot { get; private set; }
+
+
     }
     public partial class Node_Trade : Node
     {
@@ -494,6 +530,8 @@ namespace GameDatabase.DataModel
 
 		public int Transition { get; private set; }
 		public LootModel Loot { get; private set; }
+
+
     }
     public partial class Node_CompleteQuest : Node
     {
@@ -510,6 +548,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class Node_FailQuest : Node
@@ -528,6 +568,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class Node_CancelQuest : Node
     {
@@ -544,6 +586,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class Node_StartQuest : Node
@@ -566,6 +610,8 @@ namespace GameDatabase.DataModel
 
 		public int Transition { get; private set; }
 		public QuestModel Quest { get; private set; }
+
+
     }
     public partial class Node_SetCharacterRelations : Node
     {
@@ -589,6 +635,8 @@ namespace GameDatabase.DataModel
 		public int Transition { get; private set; }
 		public Character Character { get; private set; }
 		public int Value { get; private set; }
+
+
     }
     public partial class Node_SetFactionRelations : Node
     {
@@ -610,6 +658,8 @@ namespace GameDatabase.DataModel
 
 		public int Transition { get; private set; }
 		public int Value { get; private set; }
+
+
     }
     public partial class Node_ChangeCharacterRelations : Node
     {
@@ -633,6 +683,8 @@ namespace GameDatabase.DataModel
 		public int Transition { get; private set; }
 		public Character Character { get; private set; }
 		public int Value { get; private set; }
+
+
     }
     public partial class Node_ChangeFactionRelations : Node
     {
@@ -654,6 +706,8 @@ namespace GameDatabase.DataModel
 
 		public int Transition { get; private set; }
 		public int Value { get; private set; }
+
+
     }
     public partial class Node_CaptureStarBase : Node
     {
@@ -673,6 +727,8 @@ namespace GameDatabase.DataModel
         }
 
 		public int Transition { get; private set; }
+
+
     }
     public partial class Node_LiberateStarBase : Node
     {
@@ -692,6 +748,8 @@ namespace GameDatabase.DataModel
         }
 
 		public int Transition { get; private set; }
+
+
     }
     public partial class Node_ChangeFaction : Node
     {
@@ -713,6 +771,8 @@ namespace GameDatabase.DataModel
 
 		public int Transition { get; private set; }
 		public Faction Faction { get; private set; }
+
+
     }
 
 }

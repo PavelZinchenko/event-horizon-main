@@ -33,7 +33,7 @@ EditorBuildSettings:
     path: Assets/Scenes/EhopediaScene.unity
     guid: 57b42f564798b3744bb59157477e04ef
   - enabled: 1
-    path: Assets/Modules/ShipEditor/Scenes/ShipEditorScene.unity
+    path: Assets/ModulesShared/ShipEditor/Scenes/ShipEditorScene.unity
     guid: e95cc52cac57ad147af25e18b786b228
   - enabled: 1
     path: Assets/Scenes/SettingsScene.unity

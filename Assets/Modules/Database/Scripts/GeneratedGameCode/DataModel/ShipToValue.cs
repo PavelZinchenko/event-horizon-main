@@ -1,3 +1,6 @@
+
+
+
 //-------------------------------------------------------------------------------
 //                                                                               
 //    This code was automatically generated.                                     
@@ -13,7 +16,7 @@ using GameDatabase.Model;
 
 namespace GameDatabase.DataModel
 {
-	public partial class ShipToValue
+	public partial class ShipToValue 
 	{
 		partial void OnDataDeserialized(ShipToValueSerializable serializable, Database.Loader loader);
 

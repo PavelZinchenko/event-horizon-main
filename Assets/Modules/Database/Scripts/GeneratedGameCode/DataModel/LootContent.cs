@@ -1,3 +1,6 @@
+
+
+
 //-------------------------------------------------------------------------------
 //                                                                               
 //    This code was automatically generated.                                     
@@ -13,7 +16,7 @@ using GameDatabase.Model;
 
 namespace GameDatabase.DataModel
 {
-	public abstract partial class LootContent
+	public abstract partial class LootContent 
 	{
 		partial void OnDataDeserialized(LootContentSerializable serializable, Database.Loader loader);
 
@@ -71,6 +74,7 @@ namespace GameDatabase.DataModel
 			OnDataDeserialized(serializable, loader);
 		}
 
+
 		public LootItemType Type { get; private set; }
 
 		public static LootContent DefaultValue { get; private set; } = Create(new(), null);
@@ -113,6 +117,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class LootContent_SomeMoney : LootContent
     {
@@ -132,6 +138,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float ValueRatio { get; private set; }
+
+
     }
     public partial class LootContent_Fuel : LootContent
     {
@@ -153,6 +161,8 @@ namespace GameDatabase.DataModel
 
 		public int MinAmount { get; private set; }
 		public int MaxAmount { get; private set; }
+
+
     }
     public partial class LootContent_Money : LootContent
     {
@@ -174,6 +184,8 @@ namespace GameDatabase.DataModel
 
 		public int MinAmount { get; private set; }
 		public int MaxAmount { get; private set; }
+
+
     }
     public partial class LootContent_Stars : LootContent
     {
@@ -195,6 +207,8 @@ namespace GameDatabase.DataModel
 
 		public int MinAmount { get; private set; }
 		public int MaxAmount { get; private set; }
+
+
     }
     public partial class LootContent_StarMap : LootContent
     {
@@ -211,6 +225,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class LootContent_RandomComponents : LootContent
@@ -237,6 +253,8 @@ namespace GameDatabase.DataModel
 		public int MaxAmount { get; private set; }
 		public float ValueRatio { get; private set; }
 		public RequiredFactions Factions { get; private set; }
+
+
     }
     public partial class LootContent_RandomItems : LootContent
     {
@@ -260,6 +278,8 @@ namespace GameDatabase.DataModel
 		public int MinAmount { get; private set; }
 		public int MaxAmount { get; private set; }
 		public ImmutableCollection<LootItem> Items { get; private set; }
+
+
     }
     public partial class LootContent_AllItems : LootContent
     {
@@ -279,6 +299,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<LootItem> Items { get; private set; }
+
+
     }
     public partial class LootContent_ItemsWithChance : LootContent
     {
@@ -298,6 +320,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<LootItem> Items { get; private set; }
+
+
     }
     public partial class LootContent_QuestItem : LootContent
     {
@@ -323,6 +347,8 @@ namespace GameDatabase.DataModel
 		public QuestItem QuestItem { get; private set; }
 		public int MinAmount { get; private set; }
 		public int MaxAmount { get; private set; }
+
+
     }
     public partial class LootContent_Ship : LootContent
     {
@@ -344,6 +370,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ShipBuild ShipBuild { get; private set; }
+
+
     }
     public partial class LootContent_EmptyShip : LootContent
     {
@@ -365,6 +393,8 @@ namespace GameDatabase.DataModel
         }
 
 		public Ship Ship { get; private set; }
+
+
     }
     public partial class LootContent_Component : LootContent
     {
@@ -390,6 +420,8 @@ namespace GameDatabase.DataModel
 		public Component Component { get; private set; }
 		public int MinAmount { get; private set; }
 		public int MaxAmount { get; private set; }
+
+
     }
     public partial class LootContent_Blueprint : LootContent
     {
@@ -411,6 +443,8 @@ namespace GameDatabase.DataModel
         }
 
 		public Technology Blueprint { get; private set; }
+
+
     }
     public partial class LootContent_ResearchPoints : LootContent
     {
@@ -434,6 +468,8 @@ namespace GameDatabase.DataModel
 		public int MinAmount { get; private set; }
 		public int MaxAmount { get; private set; }
 		public RequiredFactions Factions { get; private set; }
+
+
     }
     public partial class LootContent_Satellite : LootContent
     {
@@ -459,6 +495,8 @@ namespace GameDatabase.DataModel
 		public Satellite Satellite { get; private set; }
 		public int MinAmount { get; private set; }
 		public int MaxAmount { get; private set; }
+
+
     }
 
 }

@@ -1,3 +1,6 @@
+
+
+
 //-------------------------------------------------------------------------------
 //                                                                               
 //    This code was automatically generated.                                     
@@ -13,7 +16,7 @@ using GameDatabase.Model;
 
 namespace GameDatabase.DataModel
 {
-	public abstract partial class BehaviorTreeNode
+	public abstract partial class BehaviorTreeNode 
 	{
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
@@ -174,6 +177,7 @@ namespace GameDatabase.DataModel
 			OnDataDeserialized(serializable, loader);
 		}
 
+
 		public BehaviorNodeType Type { get; private set; }
 		public BehaviorNodeRequirement Requirement { get; private set; }
 
@@ -268,6 +272,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorTreeNode_SubTree : BehaviorTreeNode
     {
@@ -287,6 +293,8 @@ namespace GameDatabase.DataModel
         }
 
 		public BehaviorTreeModel BehaviourTree { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_Selector : BehaviorTreeNode
     {
@@ -306,6 +314,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<BehaviorTreeNode> Nodes { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_Sequence : BehaviorTreeNode
     {
@@ -325,6 +335,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<BehaviorTreeNode> Nodes { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_Parallel : BehaviorTreeNode
     {
@@ -344,6 +356,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<BehaviorTreeNode> Nodes { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_RandomSelector : BehaviorTreeNode
     {
@@ -365,6 +379,8 @@ namespace GameDatabase.DataModel
 
 		public ImmutableCollection<BehaviorTreeNode> Nodes { get; private set; }
 		public float Cooldown { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_Invertor : BehaviorTreeNode
     {
@@ -384,6 +400,8 @@ namespace GameDatabase.DataModel
         }
 
 		public BehaviorTreeNode Node { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_Cooldown : BehaviorTreeNode
     {
@@ -409,6 +427,8 @@ namespace GameDatabase.DataModel
 		public NodeExecutionMode ExecutionMode { get; private set; }
 		public bool Result { get; private set; }
 		public float Cooldown { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_Execute : BehaviorTreeNode
     {
@@ -432,6 +452,8 @@ namespace GameDatabase.DataModel
 		public BehaviorTreeNode Node { get; private set; }
 		public NodeExecutionMode ExecutionMode { get; private set; }
 		public bool Result { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_ParallelSequence : BehaviorTreeNode
     {
@@ -451,6 +473,8 @@ namespace GameDatabase.DataModel
         }
 
 		public ImmutableCollection<BehaviorTreeNode> Nodes { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_HasEnoughEnergy : BehaviorTreeNode
     {
@@ -470,6 +494,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float FailIfLess { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_IsLowOnHp : BehaviorTreeNode
     {
@@ -489,6 +515,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float MinValue { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_IsControledByPlayer : BehaviorTreeNode
     {
@@ -505,6 +533,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_HasIncomingThreat : BehaviorTreeNode
@@ -525,6 +555,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float TimeToCollision { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_HasAdditionalTargets : BehaviorTreeNode
     {
@@ -541,6 +573,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_IsFasterThanTarget : BehaviorTreeNode
@@ -559,6 +593,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorTreeNode_HasMainTarget : BehaviorTreeNode
     {
@@ -575,6 +611,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_MainTargetIsAlly : BehaviorTreeNode
@@ -593,6 +631,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorTreeNode_MainTargetIsEnemy : BehaviorTreeNode
     {
@@ -609,6 +649,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_MainTargetLowHp : BehaviorTreeNode
@@ -629,6 +671,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float MinValue { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_MainTargetWithinAttackRange : BehaviorTreeNode
     {
@@ -648,6 +692,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float MinMaxLerp { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_FindEnemy : BehaviorTreeNode
     {
@@ -673,6 +719,8 @@ namespace GameDatabase.DataModel
 		public float MaxCooldown { get; private set; }
 		public bool InAttackRange { get; private set; }
 		public bool IgnoreDrones { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_MoveToAttackRange : BehaviorTreeNode
     {
@@ -694,6 +742,8 @@ namespace GameDatabase.DataModel
 
 		public float MinMaxLerp { get; private set; }
 		public float Multiplier { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_AttackMainTarget : BehaviorTreeNode
     {
@@ -710,6 +760,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_SelectWeapon : BehaviorTreeNode
@@ -730,6 +782,8 @@ namespace GameDatabase.DataModel
         }
 
 		public AiWeaponCategory WeaponType { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_SpawnDrones : BehaviorTreeNode
     {
@@ -746,6 +800,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_Ram : BehaviorTreeNode
@@ -766,6 +822,8 @@ namespace GameDatabase.DataModel
         }
 
 		public bool UseShipSystems { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_DetonateShip : BehaviorTreeNode
     {
@@ -785,6 +843,8 @@ namespace GameDatabase.DataModel
         }
 
 		public bool InAttackRange { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_Vanish : BehaviorTreeNode
     {
@@ -801,6 +861,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_MaintainAttackRange : BehaviorTreeNode
@@ -823,6 +885,8 @@ namespace GameDatabase.DataModel
 
 		public float MinMaxLerp { get; private set; }
 		public float Tolerance { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_Wait : BehaviorTreeNode
     {
@@ -844,6 +908,8 @@ namespace GameDatabase.DataModel
 
 		public float Cooldown { get; private set; }
 		public bool ResetIfInterrupted { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_LookAtTarget : BehaviorTreeNode
     {
@@ -860,6 +926,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_LookForAdditionalTargets : BehaviorTreeNode
@@ -880,6 +948,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float Cooldown { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_LookForThreats : BehaviorTreeNode
     {
@@ -899,6 +969,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float Cooldown { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_MatchVelocityWithTarget : BehaviorTreeNode
     {
@@ -918,6 +990,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float Tolerance { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_ActivateDevice : BehaviorTreeNode
     {
@@ -937,6 +1011,8 @@ namespace GameDatabase.DataModel
         }
 
 		public DeviceClass DeviceClass { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_RechargeEnergy : BehaviorTreeNode
     {
@@ -958,6 +1034,8 @@ namespace GameDatabase.DataModel
 
 		public float FailIfLess { get; private set; }
 		public float RestoreUntil { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_SustainAim : BehaviorTreeNode
     {
@@ -974,6 +1052,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_ChargeWeapons : BehaviorTreeNode
@@ -992,6 +1072,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorTreeNode_Chase : BehaviorTreeNode
     {
@@ -1009,6 +1091,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorTreeNode_AvoidThreats : BehaviorTreeNode
     {
@@ -1025,6 +1109,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_SlowDown : BehaviorTreeNode
@@ -1045,6 +1131,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float Tolerance { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_UseRecoil : BehaviorTreeNode
     {
@@ -1061,6 +1149,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_DefendWithFronalShield : BehaviorTreeNode
@@ -1079,6 +1169,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorTreeNode_TrackControllableAmmo : BehaviorTreeNode
     {
@@ -1095,6 +1187,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_KeepDistance : BehaviorTreeNode
@@ -1117,6 +1211,8 @@ namespace GameDatabase.DataModel
 
 		public float MinDistance { get; private set; }
 		public float MaxDistance { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_ForgetMainTarget : BehaviorTreeNode
     {
@@ -1133,6 +1229,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_EscapeTargetAttackRadius : BehaviorTreeNode
@@ -1151,6 +1249,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorTreeNode_AttackAdditionalTargets : BehaviorTreeNode
     {
@@ -1167,6 +1267,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_EnginePropulsionForce : BehaviorTreeNode
@@ -1187,6 +1289,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float MinValue { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_MotherShipRetreated : BehaviorTreeNode
     {
@@ -1204,6 +1308,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorTreeNode_MotherShipDestroyed : BehaviorTreeNode
     {
@@ -1220,6 +1326,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_FlyAroundMothership : BehaviorTreeNode
@@ -1242,6 +1350,8 @@ namespace GameDatabase.DataModel
 
 		public float MinDistance { get; private set; }
 		public float MaxDistance { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_GoBerserk : BehaviorTreeNode
     {
@@ -1259,6 +1369,8 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
     }
     public partial class BehaviorTreeNode_TargetMothership : BehaviorTreeNode
     {
@@ -1275,6 +1387,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_MothershipLowHp : BehaviorTreeNode
@@ -1295,6 +1409,8 @@ namespace GameDatabase.DataModel
         }
 
 		public float MinValue { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_DroneBayRangeExceeded : BehaviorTreeNode
     {
@@ -1311,6 +1427,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_ShowMessage : BehaviorTreeNode
@@ -1333,6 +1451,8 @@ namespace GameDatabase.DataModel
 
 		public string Text { get; private set; }
 		public ColorData Color { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_DebugLog : BehaviorTreeNode
     {
@@ -1352,6 +1472,8 @@ namespace GameDatabase.DataModel
         }
 
 		public string Text { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_SetValue : BehaviorTreeNode
     {
@@ -1373,6 +1495,8 @@ namespace GameDatabase.DataModel
 
 		public bool Value { get; private set; }
 		public string Name { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_GetValue : BehaviorTreeNode
     {
@@ -1392,6 +1516,8 @@ namespace GameDatabase.DataModel
         }
 
 		public string Name { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_SendMessage : BehaviorTreeNode
     {
@@ -1411,6 +1537,8 @@ namespace GameDatabase.DataModel
         }
 
 		public string Name { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_MessageReceived : BehaviorTreeNode
     {
@@ -1430,6 +1558,8 @@ namespace GameDatabase.DataModel
         }
 
 		public string Name { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_TargetMessageSender : BehaviorTreeNode
     {
@@ -1446,6 +1576,8 @@ namespace GameDatabase.DataModel
         {
             return factory.Create(this);
         }
+
+
 
     }
     public partial class BehaviorTreeNode_SaveTarget : BehaviorTreeNode
@@ -1466,6 +1598,8 @@ namespace GameDatabase.DataModel
         }
 
 		public string Name { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_LoadTarget : BehaviorTreeNode
     {
@@ -1485,6 +1619,8 @@ namespace GameDatabase.DataModel
         }
 
 		public string Name { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_HasSavedTarget : BehaviorTreeNode
     {
@@ -1504,6 +1640,8 @@ namespace GameDatabase.DataModel
         }
 
 		public string Name { get; private set; }
+
+
     }
     public partial class BehaviorTreeNode_ForgetSavedTarget : BehaviorTreeNode
     {
@@ -1523,6 +1661,8 @@ namespace GameDatabase.DataModel
         }
 
 		public string Name { get; private set; }
+
+
     }
 
 }
