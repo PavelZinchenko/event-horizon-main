@@ -2,7 +2,7 @@
 using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
-using Economy.ItemType;
+using Gui.Theme;
 
 namespace Gui.Exploration
 {
@@ -19,7 +19,7 @@ namespace Gui.Exploration
             Icon.sprite = resourceLocator.GetSprite(product.Type.Icon);
             Icon.color = product.Type.Color;
             Name.text = product.Type.Name;
-            Name.color = product.Type.Quality.ToColor();
+            Name.color = UiTheme.Current.GetQualityColor(product.Type.Quality);
 
             if (string.IsNullOrEmpty(product.Type.Description))
             {

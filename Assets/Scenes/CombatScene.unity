@@ -1874,8 +1874,8 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 100%
   _themeColor: 0
-  _themeFont: 0
-  _themeFontSize: 0
+  _themeFont: 1
+  _themeFontSize: 4
 --- !u!222 &163528451
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3335,6 +3335,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8968145260543016773, guid: 68174d76033627f40b6fe6a50300c4ff,
+        type: 3}
+      propertyPath: OnExitEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 655522629}
+    - target: {fileID: 8968145260543016773, guid: 68174d76033627f40b6fe6a50300c4ff,
+        type: 3}
+      propertyPath: OnExitEvent.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: Reload
+      objectReference: {fileID: 0}
+    - target: {fileID: 8968145260543016773, guid: 68174d76033627f40b6fe6a50300c4ff,
+        type: 3}
+      propertyPath: OnExitEvent.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Gui.Combat.ShipControlsPanel, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 8968145260575165796, guid: 68174d76033627f40b6fe6a50300c4ff,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -4347,8 +4362,8 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 100%
   _themeColor: 0
-  _themeFont: 0
-  _themeFontSize: 0
+  _themeFont: 1
+  _themeFontSize: 4
 --- !u!222 &278534245
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6105,8 +6120,8 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 100%
   _themeColor: 0
-  _themeFont: 0
-  _themeFontSize: 0
+  _themeFont: 1
+  _themeFontSize: 4
 --- !u!222 &507271916
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7552,8 +7567,8 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 100%
   _themeColor: 0
-  _themeFont: 0
-  _themeFontSize: 0
+  _themeFont: 1
+  _themeFontSize: 4
 --- !u!222 &680341736
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19466,8 +19481,8 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 100%
   _themeColor: 0
-  _themeFont: 0
-  _themeFontSize: 0
+  _themeFont: 1
+  _themeFontSize: 4
 --- !u!222 &1854795871
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19876,8 +19891,8 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 100%
   _themeColor: 0
-  _themeFont: 0
-  _themeFontSize: 0
+  _themeFont: 1
+  _themeFontSize: 4
 --- !u!222 &1898623324
 CanvasRenderer:
   m_ObjectHideFlags: 0

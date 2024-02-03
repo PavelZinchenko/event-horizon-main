@@ -166,10 +166,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1195555749}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &3707888
 RectTransform:
@@ -286,6 +282,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &3707891
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -345,6 +342,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &6206681
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -417,10 +415,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1428744581}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &8606223
 RectTransform:
@@ -537,6 +531,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &8606226
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -596,6 +591,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &10013708
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -676,6 +672,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &11732305
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -748,10 +745,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2129427563}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &22788064
 RectTransform:
@@ -868,6 +861,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &22788067
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1007,10 +1001,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1025495241}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &32628768
 RectTransform:
@@ -1127,6 +1117,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &32628771
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1178,10 +1169,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 318920322}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &46913768
 RectTransform:
@@ -1298,6 +1285,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &46913771
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1357,6 +1345,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &67079056
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1429,10 +1418,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1009652985}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &70785909
 RectTransform:
@@ -1549,6 +1534,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &70785912
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1608,6 +1594,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &73576485
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1688,6 +1675,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &75530933
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1789,6 +1777,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &82483795
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1848,6 +1837,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &84768000
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1928,6 +1918,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &86256733
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2029,6 +2020,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &97215873
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2088,6 +2080,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &105041269
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2189,6 +2182,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &111547820
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2248,6 +2242,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &113738446
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2328,6 +2323,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &114513833
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2400,10 +2396,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1374738371}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &122004260
 RectTransform:
@@ -2520,6 +2512,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &122004263
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2579,6 +2572,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &125979789
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2659,6 +2653,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &127750177
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2739,6 +2734,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &131394185
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2840,6 +2836,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &132153078
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2899,6 +2896,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &133771989
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2979,6 +2977,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &137806714
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3080,6 +3079,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &140479663
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3191,6 +3191,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!1 &147382228
 GameObject:
   m_ObjectHideFlags: 0
@@ -3232,10 +3233,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1083438394}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &147382230
 RectTransform:
@@ -3352,6 +3349,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &147382233
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3432,6 +3430,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &152721639
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3552,10 +3551,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2069882244}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &155594630
 RectTransform:
@@ -3672,6 +3667,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &155594633
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3723,10 +3719,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1947448864}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &164226126
 RectTransform:
@@ -3843,6 +3835,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &164226129
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3902,6 +3895,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &165795737
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3974,10 +3968,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 885518551}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &174691633
 RectTransform:
@@ -4094,6 +4084,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &174691636
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4145,10 +4136,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1981464754}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &177175878
 RectTransform:
@@ -4265,6 +4252,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &177175881
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4316,10 +4304,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1816941734}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &179313752
 RectTransform:
@@ -4436,6 +4420,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &179313755
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4495,6 +4480,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &179446204
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4567,10 +4553,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1240601263}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &191610043
 RectTransform:
@@ -4687,6 +4669,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &191610046
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4767,6 +4750,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &192480697
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4847,6 +4831,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &193423855
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4927,6 +4912,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &196425420
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4979,10 +4965,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1138103734}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &197460169
 RectTransform:
@@ -5099,6 +5081,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &197460172
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5152,10 +5135,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 347083282}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &198019680
 RectTransform:
@@ -5272,6 +5251,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &198019683
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5331,6 +5311,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &198663153
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5404,10 +5385,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 75530932}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &202986385
 RectTransform:
@@ -5524,6 +5501,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &202986388
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5646,6 +5624,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &204273708
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5676,10 +5655,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1262841261}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &204273710
 RectTransform:
@@ -5775,6 +5750,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &205667980
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5855,6 +5831,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &207876558
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5906,10 +5883,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 237236501}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &208010076
 RectTransform:
@@ -6026,6 +5999,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &208010079
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6077,10 +6051,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 179446203}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &209272125
 RectTransform:
@@ -6197,6 +6167,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &209272128
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6248,10 +6219,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 418770555}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &213423132
 RectTransform:
@@ -6368,6 +6335,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &213423135
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6419,10 +6387,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 11732304}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &221049733
 RectTransform:
@@ -6539,6 +6503,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &221049736
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6590,10 +6555,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1601423917}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &227702397
 RectTransform:
@@ -6710,6 +6671,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &227702400
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6790,6 +6752,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &229617469
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6849,6 +6812,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &237236502
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6921,10 +6885,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1580514396}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &241235216
 RectTransform:
@@ -7041,6 +7001,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &241235219
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7121,6 +7082,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &242533215
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7180,6 +7142,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &245523084
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7252,10 +7215,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1049162286}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &245650152
 RectTransform:
@@ -7372,6 +7331,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &245650155
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7452,6 +7412,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &249456733
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7503,10 +7464,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2020635705}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &257862876
 RectTransform:
@@ -7623,6 +7580,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &257862879
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7682,6 +7640,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &266567440
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7754,10 +7713,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1507600175}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &267518290
 RectTransform:
@@ -7874,6 +7829,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &267518293
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7954,6 +7910,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &277768548
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8005,10 +7962,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 245523083}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &279124148
 RectTransform:
@@ -8125,6 +8078,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &279124151
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8205,6 +8159,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &279814384
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8264,6 +8219,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &280975782
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8426,10 +8382,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1071823243}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &285115854
 RectTransform:
@@ -8546,6 +8498,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &285115857
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8626,6 +8579,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &287937823
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8753,6 +8707,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &305103382
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8826,10 +8781,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2026890905}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &307616711
 RectTransform:
@@ -8946,6 +8897,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &307616714
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9026,6 +8978,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &309210487
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9085,6 +9038,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &318920323
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9186,6 +9140,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &333027463
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9266,6 +9221,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &337138517
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9317,10 +9273,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1341098486}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &337743548
 RectTransform:
@@ -9437,6 +9389,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &337743551
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9496,6 +9449,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &347083283
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9597,6 +9551,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &348599264
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9677,6 +9632,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &360860769
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9728,10 +9684,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1013775936}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &370751775
 RectTransform:
@@ -9848,6 +9800,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &370751778
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9898,10 +9851,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 825807775}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &378495133
 RectTransform:
@@ -10018,6 +9967,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &378495136
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10078,6 +10028,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &378593107
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10163,10 +10114,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 578654415}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &388184377
 RectTransform:
@@ -10283,6 +10230,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &388184380
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10363,6 +10311,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &391146400
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10422,6 +10371,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &395184647
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10494,10 +10444,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2145010250}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &406537695
 RectTransform:
@@ -10614,6 +10560,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &406537698
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10746,6 +10693,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 1
 --- !u!222 &406867632
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10805,6 +10753,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &413894704
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10885,6 +10834,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &415814090
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10965,6 +10915,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &418770556
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11066,6 +11017,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &419052501
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11117,10 +11069,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1999902843}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &423431815
 RectTransform:
@@ -11237,6 +11185,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &423431818
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11296,6 +11245,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &428604188
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11376,6 +11326,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &440877846
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11516,6 +11467,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &445462658
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11617,6 +11569,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &448495569
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11697,6 +11650,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &451592142
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11777,6 +11731,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &459441471
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11828,10 +11783,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1413841670}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &467137417
 RectTransform:
@@ -11948,6 +11899,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &467137420
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12007,6 +11959,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &471891535
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12173,6 +12126,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &479850989
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12202,10 +12156,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 732551442}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!1 &483097739
 GameObject:
@@ -12249,10 +12199,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1124164134}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &483097741
 RectTransform:
@@ -12369,6 +12315,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &483097744
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12428,6 +12375,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &485898534
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12529,6 +12477,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &488668964
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12609,6 +12558,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &494387178
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12668,6 +12618,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &499897567
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12748,6 +12699,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &499936950
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12849,6 +12801,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &501356364
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12929,6 +12882,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &501854706
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12988,6 +12942,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &507345799
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13068,6 +13023,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &508761084
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13140,10 +13096,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1621559186}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &511165675
 RectTransform:
@@ -13260,6 +13212,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &511165678
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13311,10 +13264,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1474329678}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &512375893
 RectTransform:
@@ -13431,6 +13380,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &512375896
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13484,10 +13434,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1340425576}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &535050274
 RectTransform:
@@ -13604,6 +13550,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &535050277
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13684,6 +13631,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &536285765
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13743,6 +13691,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &539936350
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13886,6 +13835,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &546884946
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13916,10 +13866,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 963034731}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &546884948
 RectTransform:
@@ -13986,10 +13932,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1494067770}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &546912295
 RectTransform:
@@ -14106,6 +14048,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &546912298
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14186,6 +14129,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &548825289
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14266,6 +14210,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &552105194
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14346,6 +14291,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &552989861
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14397,10 +14343,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 440877845}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &555654457
 RectTransform:
@@ -14517,6 +14459,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &555654460
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14597,6 +14540,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 53
 --- !u!222 &558837415
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14656,6 +14600,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &559269300
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14730,10 +14675,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1179571110}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &570321715
 RectTransform:
@@ -14850,6 +14791,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &570321718
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14909,6 +14851,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &578654416
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15010,6 +14953,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &583468061
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15061,10 +15005,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1787350982}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &585604779
 RectTransform:
@@ -15181,6 +15121,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &585604782
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15261,6 +15202,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &601946715
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15320,6 +15262,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &602559003
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15421,6 +15364,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &603513878
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15501,6 +15445,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &608170335
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15581,6 +15526,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &615794461
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15631,10 +15577,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1156584917}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!114 &616682823
 MonoBehaviour:
@@ -15728,6 +15670,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &616682825
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15810,6 +15753,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &618376401
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15911,6 +15855,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &618959067
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15970,6 +15915,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &631059132
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16042,10 +15988,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1343563310}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &631137507
 RectTransform:
@@ -16162,6 +16104,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &631137510
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16221,6 +16164,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &631449207
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16293,10 +16237,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1952643086}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &635871024
 RectTransform:
@@ -16413,6 +16353,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &635871027
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16464,10 +16405,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2084961309}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &636844494
 RectTransform:
@@ -16584,6 +16521,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &636844497
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16635,10 +16573,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2037554245}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &640806554
 RectTransform:
@@ -16755,6 +16689,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &640806557
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16814,6 +16749,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &641548997
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16915,6 +16851,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &649239933
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16974,6 +16911,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &650999716
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17075,6 +17013,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &654272883
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17134,6 +17073,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &658430421
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17296,10 +17236,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 631059131}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &662016795
 RectTransform:
@@ -17416,6 +17352,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &662016798
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17466,10 +17403,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2061276022}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &668848261
 RectTransform:
@@ -17586,6 +17519,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &668848264
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17666,6 +17600,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &673700814
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17725,6 +17660,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &678191607
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17826,6 +17762,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &678691313
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17906,6 +17843,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &680473547
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17986,6 +17924,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &686092465
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18045,6 +17984,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &689518856
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18216,6 +18156,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &698253472
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18317,6 +18258,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &698609589
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18397,6 +18339,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &700157161
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18519,6 +18462,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &701269248
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18548,10 +18492,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 378593106}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.5019608, g: 0.7529412, b: 0.5019608, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &701269250
 RectTransform:
@@ -18626,6 +18566,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &708133462
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18698,10 +18639,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 618376400}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &723218867
 RectTransform:
@@ -18818,6 +18755,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &723218870
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18869,10 +18807,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2009163976}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &729895276
 RectTransform:
@@ -18989,6 +18923,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &729895279
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19069,6 +19004,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &732551443
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19149,6 +19085,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &733921215
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19201,10 +19138,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 131394184}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &734512242
 RectTransform:
@@ -19321,6 +19254,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &734512245
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19380,6 +19314,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &735056041
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19460,6 +19395,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &736599240
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19540,6 +19476,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &743218886
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19612,10 +19549,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 198663152}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &759475379
 RectTransform:
@@ -19732,6 +19665,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &759475382
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19791,6 +19725,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &762320151
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19863,10 +19798,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 762320150}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &764995757
 RectTransform:
@@ -19983,6 +19914,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &764995760
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20063,6 +19995,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &765626725
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20114,10 +20047,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1768528924}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &767949755
 RectTransform:
@@ -20234,6 +20163,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &767949758
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20293,6 +20223,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &767970097
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20394,6 +20325,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 53
 --- !u!222 &768098133
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20474,6 +20406,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &768620641
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20533,6 +20466,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &776008447
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20613,6 +20547,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &784978072
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20685,10 +20620,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1170100019}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &785669062
 RectTransform:
@@ -20805,6 +20736,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &785669065
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20856,10 +20788,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1421127072}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &791970225
 RectTransform:
@@ -20976,6 +20904,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &791970228
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21098,6 +21027,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &798115037
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21128,10 +21058,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 743218885}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &798115039
 RectTransform:
@@ -21227,6 +21153,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &804707053
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21286,6 +21213,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &804841918
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21358,10 +21286,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 6206680}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &806382582
 RectTransform:
@@ -21478,6 +21402,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &806382585
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21529,10 +21454,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 784978071}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &808257635
 RectTransform:
@@ -21649,6 +21570,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &808257638
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21712,6 +21634,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: description
+  _themeColor: 100
+  _themeFont: 3
+  _themeFontSize: 3
 --- !u!222 &812858846
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21792,6 +21717,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &813115944
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21864,10 +21790,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1924687316}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &816725422
 RectTransform:
@@ -21984,6 +21906,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &816725425
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22035,10 +21958,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1133732906}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &819240575
 RectTransform:
@@ -22155,6 +22074,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &819240578
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22205,10 +22125,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 767970096}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &819856390
 RectTransform:
@@ -22325,6 +22241,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &819856393
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22405,6 +22322,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &823096809
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22464,6 +22382,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &825807776
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22565,6 +22484,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &826328276
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22645,6 +22565,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &830462440
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22697,10 +22618,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1719905551}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &830897295
 RectTransform:
@@ -22817,6 +22734,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &830897298
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22868,10 +22786,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1230333218}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &831546672
 RectTransform:
@@ -22988,6 +22902,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &831546675
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23040,10 +22955,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 631449206}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &836082874
 RectTransform:
@@ -23160,6 +23071,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &836082877
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23213,10 +23125,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1790550507}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &836793326
 RectTransform:
@@ -23333,6 +23241,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &836793329
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23384,10 +23293,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1061735346}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &838825485
 RectTransform:
@@ -23504,6 +23409,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &838825488
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23556,10 +23462,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2097731857}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &843722142
 RectTransform:
@@ -23676,6 +23578,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &843722145
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23727,10 +23630,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1636938781}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &844245225
 RectTransform:
@@ -23847,6 +23746,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &844245228
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23898,10 +23798,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 165795736}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &853389078
 RectTransform:
@@ -24018,6 +23914,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &853389081
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24098,6 +23995,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &855231353
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24148,10 +24046,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1072460312}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &856671186
 RectTransform:
@@ -24268,6 +24162,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &856671189
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24348,6 +24243,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &862012741
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24407,6 +24303,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &866751712
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24487,6 +24384,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &868578018
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24601,6 +24499,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 10
+  _themeColor: 102
+  _themeFont: 1
+  _themeFontSize: 8
 --- !u!1 &885518550
 GameObject:
   m_ObjectHideFlags: 0
@@ -24651,6 +24552,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &885518552
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24723,10 +24625,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1405793664}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &890743337
 RectTransform:
@@ -24843,6 +24741,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &890743340
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24923,6 +24822,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &897089699
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25045,6 +24945,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &901633019
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25075,10 +24976,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 67079055}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &901633021
 RectTransform:
@@ -25145,10 +25042,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1090919854}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &904821651
 RectTransform:
@@ -25265,6 +25158,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &904821654
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25387,6 +25281,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &911169089
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25417,10 +25312,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 804841917}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &911169091
 RectTransform:
@@ -25487,10 +25378,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2025919364}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &915952892
 RectTransform:
@@ -25607,6 +25494,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &915952895
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25670,6 +25558,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 100 points left
+  _themeColor: 100
+  _themeFont: 1
+  _themeFontSize: 8
 --- !u!222 &916142337
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25742,10 +25633,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 280975781}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &916973684
 RectTransform:
@@ -25862,6 +25749,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &916973687
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25942,6 +25830,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &930977042
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25993,10 +25882,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2123077392}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &942399633
 RectTransform:
@@ -26113,6 +25998,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &942399636
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -26165,10 +26051,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 305103381}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &945797989
 RectTransform:
@@ -26285,6 +26167,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &945797992
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -26365,6 +26248,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &950715650
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -26424,6 +26308,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &951021974
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -26525,6 +26410,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &952051235
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -26576,10 +26462,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1302974626}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &954269191
 RectTransform:
@@ -26696,6 +26578,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &954269194
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -26748,10 +26631,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1780755445}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &956185356
 RectTransform:
@@ -26868,6 +26747,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &956185359
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -26990,6 +26870,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &959737763
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27019,10 +26900,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 689518855}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &959737765
 RectTransform:
@@ -27118,6 +26995,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &960003034
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27177,6 +27055,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &963034732
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27278,6 +27157,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &964757136
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27358,6 +27238,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &972976637
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27410,10 +27291,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 989762297}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &975549963
 RectTransform:
@@ -27530,6 +27407,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &975549966
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27610,6 +27488,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 53
 --- !u!222 &976476378
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27663,10 +27542,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 395184646}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &978385680
 RectTransform:
@@ -27783,6 +27658,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &978385683
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27842,6 +27718,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &983084437
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27943,6 +27820,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &989000517
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28002,6 +27880,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &989762298
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28103,6 +27982,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &991568028
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28183,6 +28063,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &992248818
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28242,6 +28123,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &999268194
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28343,6 +28225,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &999677161
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28394,10 +28277,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 868578017}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1000137926
 RectTransform:
@@ -28514,6 +28393,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1000137929
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28565,10 +28445,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 428604187}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1006887208
 RectTransform:
@@ -28685,6 +28561,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1006887211
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28744,6 +28621,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1009652986
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28824,6 +28702,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1013775937
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28904,6 +28783,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1020107280
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28984,6 +28864,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1025495242
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -29056,10 +28937,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1921784570}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1029364621
 RectTransform:
@@ -29176,6 +29053,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1029364624
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -29227,10 +29105,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1285009255}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1029971566
 RectTransform:
@@ -29347,6 +29221,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1029971569
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -29406,6 +29281,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1031768900
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -29507,6 +29383,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1035011450
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -29558,10 +29435,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1333290447}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1041338652
 RectTransform:
@@ -29678,6 +29551,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1041338655
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -29729,10 +29603,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1340166937}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1044276849
 RectTransform:
@@ -29849,6 +29719,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1044276852
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -29942,6 +29813,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: $NothingSelected
+  _themeColor: 100
+  _themeFont: 1
+  _themeFontSize: 8
 --- !u!1 &1049162285
 GameObject:
   m_ObjectHideFlags: 0
@@ -29992,6 +29866,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1049162287
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30093,6 +29968,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1059161013
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30152,6 +30028,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1061735347
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30223,10 +30100,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1144619259}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1065188071
 RectTransform:
@@ -30343,6 +30216,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1065188074
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30402,6 +30276,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1071823244
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30482,6 +30357,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1072460313
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30562,6 +30438,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1083171727
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30642,6 +30519,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1083438395
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30722,6 +30600,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1083933299
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30823,6 +30702,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1085548700
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30882,6 +30762,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1089635212
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30962,6 +30843,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1090919855
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31034,10 +30916,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1214848770}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1094625143
 RectTransform:
@@ -31154,6 +31032,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1094625146
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31205,10 +31084,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 114513832}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1095348930
 RectTransform:
@@ -31325,6 +31200,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1095348933
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31376,10 +31252,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 650999715}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1096816119
 RectTransform:
@@ -31496,6 +31368,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1096816122
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31547,10 +31420,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 133771988}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1102657151
 RectTransform:
@@ -31667,6 +31536,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1102657154
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31718,10 +31588,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 708133461}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1105665921
 RectTransform:
@@ -31838,6 +31704,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1105665924
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31889,10 +31756,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2083046545}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1115171695
 RectTransform:
@@ -32009,6 +31872,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1115171698
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -32068,6 +31932,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1120444921
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -32148,6 +32013,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1124164135
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -32228,6 +32094,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1124469246
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -32371,6 +32238,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1124658697
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -32401,10 +32269,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 698253471}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1124658699
 RectTransform:
@@ -32545,6 +32409,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 53
 --- !u!222 &1125949915
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -32604,6 +32469,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1129469978
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -32727,6 +32593,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 1
 --- !u!222 &1129798308
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -32778,10 +32645,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 485898533}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1130242447
 RectTransform:
@@ -32898,6 +32761,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1130242450
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -32957,6 +32821,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1133732907
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33037,6 +32902,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1138103735
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33117,6 +32983,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1144619260
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33218,6 +33085,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1154724448
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33277,6 +33145,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1156584918
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33351,10 +33220,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 86256732}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1157578923
 RectTransform:
@@ -33471,6 +33336,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1157578926
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33551,6 +33417,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1158759858
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33653,6 +33520,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 1
 --- !u!222 &1159520069
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33712,6 +33580,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1170100020
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33792,6 +33661,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1179571111
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33872,6 +33742,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1195555750
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33973,6 +33844,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1198781337
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34053,6 +33925,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1202112600
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34133,6 +34006,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1204282272
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34213,6 +34087,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1211067791
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34293,6 +34168,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1214447881
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34352,6 +34228,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1214848771
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34424,10 +34301,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1350715892}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1218358595
 RectTransform:
@@ -34544,6 +34417,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1218358598
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34666,6 +34540,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1220217522
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34695,10 +34570,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 415814089}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1220217524
 RectTransform:
@@ -34882,6 +34753,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1224831579
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34933,10 +34805,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1395961400}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1227990087
 RectTransform:
@@ -35053,6 +34921,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1227990090
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -35112,6 +34981,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1230333219
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -35192,6 +35062,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1230518702
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -35293,6 +35164,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1237948322
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -35352,6 +35224,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1240601264
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -35453,6 +35326,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1245525717
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -35533,6 +35407,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1249939767
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -35613,6 +35488,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1255474248
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -35672,6 +35548,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1258061657
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -35744,10 +35621,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 735056040}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1258895988
 RectTransform:
@@ -35864,6 +35737,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1258895991
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -35923,6 +35797,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1262841262
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36024,6 +35899,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1263704896
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36074,10 +35950,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1083933298}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1263981250
 RectTransform:
@@ -36194,6 +36066,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1263981253
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36274,6 +36147,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1264439870
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36354,6 +36228,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1266583501
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36434,6 +36309,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1273227392
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36514,6 +36390,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1277741527
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36565,10 +36442,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 84767999}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1279371071
 RectTransform:
@@ -36685,6 +36558,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1279371074
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36744,6 +36618,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1285009256
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36824,6 +36699,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1285068731
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36904,6 +36780,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1285363934
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36976,10 +36853,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1031768899}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1286458568
 RectTransform:
@@ -37096,6 +36969,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1286458571
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -37155,6 +37029,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1297171346
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -37256,6 +37131,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1299875571
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -37315,6 +37191,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1302974627
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -37387,10 +37264,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 471891534}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1304484801
 RectTransform:
@@ -37507,6 +37380,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1304484804
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -37587,6 +37461,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1307270361
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -37646,6 +37521,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1307608294
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -37747,6 +37623,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1313802857
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -37798,10 +37675,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1840248706}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1316778728
 RectTransform:
@@ -37918,6 +37791,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1316778731
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -37998,6 +37872,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1322456717
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38078,6 +37953,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1324625247
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38159,6 +38035,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 50
 --- !u!222 &1325185863
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38232,10 +38109,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 539936349}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1332174785
 RectTransform:
@@ -38352,6 +38225,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1332174788
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38411,6 +38285,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1333290448
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38512,6 +38387,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1334134771
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38571,6 +38447,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1337233419
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38651,6 +38528,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1340166938
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38731,6 +38609,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1340425577
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38811,6 +38690,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1341098487
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38912,6 +38792,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1341554905
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38971,6 +38852,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1343563311
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -39072,6 +38954,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1349792353
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -39131,6 +39014,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1350715893
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -39204,10 +39088,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 678191606}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1365681838
 RectTransform:
@@ -39324,6 +39204,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1365681841
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -39404,6 +39285,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1369409200
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -39496,6 +39378,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1369867492
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -39927,6 +39810,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1370760803
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -40007,6 +39891,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1374738372
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -40108,6 +39993,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1381829108
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -40188,6 +40074,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1385537558
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -40239,10 +40126,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1451110838}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1394563876
 RectTransform:
@@ -40359,6 +40242,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1394563879
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -40440,6 +40324,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 50
 --- !u!222 &1395834576
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -40521,6 +40406,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1395961401
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -40593,10 +40479,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1020107279}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1398460512
 RectTransform:
@@ -40713,6 +40595,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1398460515
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -40793,6 +40676,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1400805178
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -40873,6 +40757,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1402831441
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -40932,6 +40817,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1405793665
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -41012,6 +40898,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1413841671
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -41113,6 +41000,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1417750817
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -41235,6 +41123,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1418873220
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -41264,10 +41153,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1297171345}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1418873222
 RectTransform:
@@ -41342,6 +41227,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1421127073
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -41422,6 +41308,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1422930109
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -41523,6 +41410,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1423183756
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -41716,6 +41604,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1428744582
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -41788,10 +41677,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 507345798}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1433300838
 RectTransform:
@@ -41908,6 +41793,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1433300841
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -41958,10 +41844,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1089635211}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1435364561
 RectTransform:
@@ -42078,6 +41960,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1435364564
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -42130,10 +42013,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 137806713}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1437285032
 RectTransform:
@@ -42250,6 +42129,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1437285035
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -42330,6 +42210,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1442818180
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -42389,6 +42270,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1451110839
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -42490,6 +42372,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1465983105
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -42549,6 +42432,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1474329679
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -42621,10 +42505,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2024840031}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1475632709
 RectTransform:
@@ -42741,6 +42621,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1475632712
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -42821,6 +42702,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1484651204
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -42880,6 +42762,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1494067771
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -42960,6 +42843,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1502980099
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -43040,6 +42924,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1507600176
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -43120,6 +43005,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1510616545
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -43286,6 +43172,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1515406984
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -43337,10 +43224,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1083171726}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1519688632
 RectTransform:
@@ -43457,6 +43340,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1519688635
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -43508,10 +43392,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1285068730}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1522541272
 RectTransform:
@@ -43628,6 +43508,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1522541275
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -43708,6 +43589,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1528877866
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -43788,6 +43670,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1531360095
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -43868,6 +43751,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1541025155
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -43919,10 +43803,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1258061656}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1544852783
 RectTransform:
@@ -44039,6 +43919,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1544852786
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -44119,6 +44000,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1548624714
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -44170,10 +44052,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1129469977}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1550330116
 RectTransform:
@@ -44290,6 +44168,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1550330119
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -44341,10 +44220,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 641548996}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1551395370
 RectTransform:
@@ -44461,6 +44336,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1551395373
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -44520,6 +44396,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1569126043
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -44592,10 +44469,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1422930108}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1570974035
 RectTransform:
@@ -44712,6 +44585,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1570974038
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -44792,6 +44666,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1577727367
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -44851,6 +44726,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1580514397
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -45023,6 +44899,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1588558269
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -45103,6 +44980,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1599495043
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -45162,6 +45040,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1601423918
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -45242,6 +45121,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1602692731
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -45314,10 +45194,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1608417010}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1604801973
 RectTransform:
@@ -45434,6 +45310,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1604801976
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -45485,10 +45362,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1951321593}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1607240777
 RectTransform:
@@ -45605,6 +45478,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1607240780
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -45685,6 +45559,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1608004808
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -45744,6 +45619,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1608417011
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -45845,6 +45721,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1620028132
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -45929,6 +45806,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: $ResetSkills
+  _themeColor: 100
+  _themeFont: 1
+  _themeFontSize: 8
 --- !u!222 &1620211495
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -45988,6 +45868,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1621559187
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -46089,6 +45970,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1626053677
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -46169,6 +46051,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1633178800
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -46228,6 +46111,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1636065553
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -46308,6 +46192,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1636938782
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -46380,10 +46265,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1978940192}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1639133225
 RectTransform:
@@ -46500,6 +46381,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1639133228
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -46550,10 +46432,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 105041268}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1650891045
 RectTransform:
@@ -46670,6 +46548,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1650891048
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -46750,6 +46629,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1653983461
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -46801,10 +46681,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 125979788}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1657826264
 RectTransform:
@@ -46921,6 +46797,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1657826267
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47001,6 +46878,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1665486731
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47052,10 +46930,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 776008446}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1668130350
 RectTransform:
@@ -47172,6 +47046,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1668130353
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47223,10 +47098,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1696489248}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1668337056
 RectTransform:
@@ -47343,6 +47214,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1668337059
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47423,6 +47295,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1670953349
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47503,6 +47376,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1688808506
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47562,6 +47436,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1696489249
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47634,10 +47509,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1953487428}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1698803431
 RectTransform:
@@ -47754,6 +47625,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1698803434
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47834,6 +47706,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1710613376
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47914,6 +47787,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1711112935
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47965,10 +47839,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 508761083}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1718965573
 RectTransform:
@@ -48085,6 +47955,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1718965576
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -48144,6 +48015,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1719905552
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -48216,10 +48088,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1370760802}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1723551212
 RectTransform:
@@ -48336,6 +48204,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1723551215
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -48395,6 +48264,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1741498520
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -48467,10 +48337,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1337233418}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1742641853
 RectTransform:
@@ -48587,6 +48453,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1742641856
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -48640,10 +48507,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1124469245}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1743861659
 RectTransform:
@@ -48760,6 +48623,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1743861662
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -48922,6 +48786,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 50
 --- !u!222 &1743993909
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -49002,6 +48867,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1747657738
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -49082,6 +48948,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1752870062
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -49244,6 +49111,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 50
 --- !u!222 &1754334313
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -49324,6 +49192,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1756430327
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -49374,10 +49243,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 73576484}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1757720629
 RectTransform:
@@ -49494,6 +49359,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1757720632
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -49574,6 +49440,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1768366651
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -49633,6 +49500,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1768528925
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -49776,6 +49644,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1777222915
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -49806,10 +49675,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1936905440}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1777222917
 RectTransform:
@@ -49959,6 +49824,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1780420882
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -50018,6 +49884,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1780755446
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -50098,6 +49965,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1787350983
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -50178,6 +50046,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1790550508
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -50321,6 +50190,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1806052345
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -50351,10 +50221,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 499936949}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1806052347
 RectTransform:
@@ -50429,6 +50295,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1816941735
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -50530,6 +50397,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1832618047
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -50610,6 +50478,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1833133164
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -50669,6 +50538,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1840248707
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -50749,6 +50619,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1840668958
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -50821,10 +50692,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 113738445}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1847538326
 RectTransform:
@@ -50941,6 +50808,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1847538329
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -51000,6 +50868,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1851796244
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -51160,6 +51029,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 50
 --- !u!222 &1851962037
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -51263,6 +51133,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1853204856
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -51313,10 +51184,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2141252580}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1855638674
 RectTransform:
@@ -51433,6 +51300,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1855638677
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -51484,10 +51352,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 658430420}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1872592771
 RectTransform:
@@ -51604,6 +51468,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1872592774
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -51684,6 +51549,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1872703748
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -51764,6 +51630,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1873196274
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -51815,10 +51682,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 266567439}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1880345669
 RectTransform:
@@ -51935,6 +51798,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1880345672
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52015,6 +51879,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1883101891
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52095,6 +51960,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1885508213
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52175,6 +52041,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1887709902
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52234,6 +52101,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1890207524
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52335,6 +52203,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1902844425
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52415,6 +52284,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 53
 --- !u!222 &1904025823
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52466,10 +52336,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 127750176}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1912360090
 RectTransform:
@@ -52586,6 +52452,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1912360093
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52637,10 +52504,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1569126042}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1915067702
 RectTransform:
@@ -52757,6 +52620,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1915067705
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52837,6 +52701,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1917610980
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52890,10 +52755,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1230518701}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1919709884
 RectTransform:
@@ -53010,6 +52871,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1919709887
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -53069,6 +52931,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1921784571
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -53149,6 +53012,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1924687317
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -53250,6 +53114,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1926310323
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -53330,6 +53195,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1934857903
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -53381,10 +53247,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 559269299}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1935033300
 RectTransform:
@@ -53501,6 +53363,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1935033303
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -53560,6 +53423,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1936905441
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -53641,6 +53505,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1941230161
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -53695,10 +53560,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 0}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!1 &1942794217
 GameObject:
@@ -53742,10 +53603,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2116404920}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1942794219
 RectTransform:
@@ -53862,6 +53719,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1942794222
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -53921,6 +53779,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1947448865
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54001,6 +53860,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1951321594
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54081,6 +53941,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1952643087
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54161,6 +54022,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1953487429
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54262,6 +54124,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1954035012
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54313,10 +54176,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 413894703}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1955947552
 RectTransform:
@@ -54433,6 +54292,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1955947555
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54513,6 +54373,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1963559484
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54564,10 +54425,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 866751711}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1966991030
 RectTransform:
@@ -54684,6 +54541,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1966991033
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54764,6 +54622,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1968678324
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54815,10 +54674,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 2044504498}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1969012881
 RectTransform:
@@ -54935,6 +54790,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1969012884
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54994,6 +54850,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1978940193
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -55075,6 +54932,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!114 &1979782243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55176,6 +55034,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1981464755
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -55277,6 +55136,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1983036779
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -55328,10 +55188,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1510616544}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1987756333
 RectTransform:
@@ -55448,6 +55304,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1987756336
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -55528,6 +55385,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &1989668662
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -55579,10 +55437,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 499897566}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &1996970869
 RectTransform:
@@ -55699,6 +55553,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1996970872
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -55758,6 +55613,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &1999902844
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -55838,6 +55694,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &2000561081
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -55939,6 +55796,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &2004768431
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -55998,6 +55856,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2009163977
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56143,10 +56002,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1502980098}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &2010503228
 RectTransform:
@@ -56263,6 +56118,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2010503231
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56411,6 +56267,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2020635706
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56491,6 +56348,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2024840032
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56571,6 +56429,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2025919365
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56651,6 +56510,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2026890906
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56731,6 +56591,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2037554246
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56811,6 +56672,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2044504499
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56891,6 +56753,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &2046319798
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56971,6 +56834,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &2048049288
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57051,6 +56915,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2061276023
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57131,6 +56996,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2069882245
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57232,6 +57098,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &2071229869
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57283,10 +57150,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1851796243}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &2071965857
 RectTransform:
@@ -57403,6 +57266,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2071965860
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57462,6 +57326,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2083046546
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57542,6 +57407,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2084961310
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57622,6 +57488,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &2086055994
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57723,6 +57590,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &2091083104
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57774,10 +57642,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 813115943}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5019608, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &2095454003
 RectTransform:
@@ -57894,6 +57758,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2095454006
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57953,6 +57818,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2097731858
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -58054,6 +57920,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &2097974411
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -58134,6 +58001,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &2098133363
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -58214,6 +58082,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &2100349937
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -58336,6 +58205,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2104993039
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -58367,10 +58237,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 10013707}
   _sizeScale: 0.8
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &2104993041
 RectTransform:
@@ -58439,10 +58305,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1120444920}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &2111202983
 RectTransform:
@@ -58559,6 +58421,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2111202986
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -58639,6 +58502,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!222 &2113955194
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -58698,6 +58562,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2116404921
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -58771,10 +58636,6 @@ MonoBehaviour:
   _linkPrefab: {fileID: 2010234183}
   _icon: {fileID: 1307608293}
   _sizeScale: 0.85
-  _lockedColor: {r: 0.3125, g: 0.75, b: 1, a: 1}
-  _unlockedColor: {r: 1, g: 1, b: 0.7529412, a: 1}
-  _lockedIconColor: {r: 0.5, g: 1, b: 1, a: 1}
-  _unlockedIconColor: {r: 1, g: 1, b: 0.75, a: 1}
   _skillSettings: {fileID: 11400000, guid: 480ede4d1ad83044ba852285274d7121, type: 2}
 --- !u!224 &2119026893
 RectTransform:
@@ -58891,6 +58752,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2119026896
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -58950,6 +58812,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2123077393
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -59030,6 +58893,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2129427564
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -59110,6 +58974,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2141252581
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -59190,6 +59055,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &2145010251
 CanvasRenderer:
   m_ObjectHideFlags: 0

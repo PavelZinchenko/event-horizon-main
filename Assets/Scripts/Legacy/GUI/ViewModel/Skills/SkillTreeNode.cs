@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameDatabase;
 using GameModel.Skills;
+using Gui.Theme;
 using Services.Localization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,10 +29,6 @@ namespace ViewModel.Skills
         [SerializeField] UiLine _linkPrefab;
         [SerializeField] Image _icon;
         [SerializeField] float _sizeScale = 0.85f;
-        [SerializeField] Color _lockedColor = new Color(0.3125f, 0.75f, 1f);
-        [SerializeField] Color _unlockedColor = new Color(1f, 1f, 0.75f);
-        [SerializeField] Color _lockedIconColor = new Color(0.5f, 1f, 1f);
-        [SerializeField] Color _unlockedIconColor = new Color(1f, 1f, 0.75f);
         [SerializeField] private GameContent.PlayerSkillSettings _skillSettings;
 
         public float Size { get { return _sizeScale*GetComponent<RectTransform>().rect.width/2f; } }
@@ -41,7 +38,12 @@ namespace ViewModel.Skills
         public SkillType Type { get { return _type; } }
         public int Multiplier { get { return _multiplier; } }
 
-		public NodeState State
+        private Color LockedColor => UiTheme.Current.GetColor(ThemeColor.Window);
+        private Color UnlockedColor => UiTheme.Current.GetColor(ThemeColor.HeaderText);
+        private Color LockedIconColor => UiTheme.Current.GetColor(ThemeColor.Icon);
+        private Color UnlockedIconColor => UiTheme.Current.GetColor(ThemeColor.HeaderText);
+
+        public NodeState State
         {
             set
             {
@@ -94,10 +96,10 @@ namespace ViewModel.Skills
         {
             var image = GetComponent<Image>();
             if (image)
-				image.color = _state == NodeState.Disabled ? _lockedColor : _unlockedColor;
+				image.color = _state == NodeState.Disabled ? LockedColor : UnlockedColor;
 
             if (_icon)
-				_icon.color = _state == NodeState.Disabled ? _lockedIconColor : _unlockedIconColor;
+				_icon.color = _state == NodeState.Disabled ? LockedIconColor : UnlockedIconColor;
         }
 
         private void CreateLines()
@@ -116,7 +118,7 @@ namespace ViewModel.Skills
         private void UpdateLinks()
         {
             foreach (var link in _links)
-                link.Value.color = IsLinkEnabled(link.Key) ? _unlockedColor : _lockedColor;
+                link.Value.color = IsLinkEnabled(link.Key) ? UnlockedColor : LockedColor;
         }
 
         private void OnValidate()
@@ -143,7 +145,7 @@ namespace ViewModel.Skills
             link.transform.SetParent(transform.parent);
             link.transform.localScale = Vector3.one;
 
-            link.color = IsLinkEnabled(node) ? _unlockedColor : _lockedColor;
+            link.color = IsLinkEnabled(node) ? UnlockedColor : LockedColor;
 
             var begin = transform.localPosition;
             var end = node.transform.localPosition;
