@@ -1,14 +1,18 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Gui.Theme;
 
 namespace Gui
 {
 	public class ImagesColorSelector : MonoBehaviour
 	{
-		public Color EnabledColor = Color.white;
-		public Color DisabledColor = Color.gray;
+        [SerializeField] private ThemeColor _enabledColor = ThemeColor.Window;
+        [SerializeField] private ThemeColor _disabledColor = ThemeColor.BackgroundDark;
+        
+        private Color EnabledColor => UiTheme.Current.GetColor(_enabledColor);
+		private Color DisabledColor => UiTheme.Current.GetColor(_disabledColor);
 
-		public int TotalCount
+        public int TotalCount
 		{
 			get { return _totalCount; }
 			set 

@@ -257,7 +257,7 @@ namespace ViewModel
 					Icon.color = product.Type.Color;
 					NameText.text = _localization.GetString(product.Type.Name);
                     DescrtiptionText.gameObject.SetActive(!string.IsNullOrEmpty(DescrtiptionText.text = product.Type.Description));
-				    NameText.color = DescrtiptionText.color = product.Type.Quality.ToColor();
+                    NameText.color = DescrtiptionText.color = Gui.Theme.UiTheme.Current.GetQualityColor(product.Type.Quality);
 					PricePanel.Initialize(product.Type, product.Price);
 				}
 				else

@@ -28,7 +28,7 @@ namespace ViewModel
 				Icon.color = item.Type.Color;
 				NameText.text = item.Type.Name;
                 DescriptionText.gameObject.SetActive(!string.IsNullOrEmpty(DescriptionText.text = item.Type.Description));
-                NameText.color = DescriptionText.color = item.Type.Quality.ToColor();
+                NameText.color = DescriptionText.color = Gui.Theme.UiTheme.Current.GetQualityColor(item.Type.Quality);
 
                 if (PricePanel != null)
                     PricePanel.Initialize(item.Type, item.Price, notEnoughMoney);

@@ -23,7 +23,7 @@ namespace Gui.StarMap
             Ship = ship;
 
             _nameText.text = localization.GetString(ship.Name);
-            _nameText.color = ship.Model.Quality().ToColor();
+            _nameText.color = Gui.Theme.UiTheme.Current.GetQualityColor(ship.Model.Quality());
             _levelText.text = ship.Experience.Level > 0 ? ship.Experience.Level.ToString() : "0";
             _classText.text = ship.Model.SizeClass.ToString(localization);
 

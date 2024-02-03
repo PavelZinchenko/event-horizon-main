@@ -8,18 +8,25 @@
     <member name="ButtonColor" type="color" default="#50C0FF" />
     <member name="ButtonFocusColor" type="color" default="#4050C0FF" />
     <member name="ButtonTextColor" type="color" default="#80FFFF" />
-    <member name="ButtonIconColor" type="color" default="#50C0FF" />
+    <member name="ButtonIconColor" type="color" default="#E080FFFF" />
 
     <member name="WarningButtonColor" type="color" default="#FF8050" />
     <member name="WarningButtonFocusColor" type="color" default="#20FF8050" />
     <member name="WarningButtonTextColor" type="color" default="#FFFFC0" />
     <member name="WarningButtonIconColor" type="color" default="#FFFFC0" />
 
+    <member name="PremiumButtonColor" type="color" default="#FFFFC0" />
+    <member name="PremiumButtonFocusColor" type="color" default="#40FFFFC0" />
+    <member name="PremiumButtonTextColor" type="color" default="#FFFFE0" />
+    <member name="PremiumButtonIconColor" type="color" default="#FFFFC0" />
+
     <member name="TextColor" type="color" default="#80FFFF" />
     <member name="ErrorTextColor" type="color" default="#FFC000" />
     <member name="HeaderTextColor" type="color" default="#FFFFC0" />
     <member name="PaleTextColor" type="color" default="#A0FFFFFF" />
     <member name="BrightTextColor" type="color" default="#FFFFFF" />
+
+    <member name="BackgroundDark" type="color" default="#000000" />
 
     <member name="LowQualityItemColor" type="color" default="#C0C0C0" />
     <member name="CommonQualityItemColor" type="color" default="#80FFFF" />

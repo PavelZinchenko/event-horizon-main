@@ -27,11 +27,16 @@ namespace GameDatabase.Serializable
 		public string WarningButtonFocusColor = "#20FF8050";
 		public string WarningButtonTextColor = "#FFFFC0";
 		public string WarningButtonIconColor = "#FFFFC0";
+		public string PremiumButtonColor = "#FFFFC0";
+		public string PremiumButtonFocusColor = "#40FFFFC0";
+		public string PremiumButtonTextColor = "#FFFFFF";
+		public string PremiumButtonIconColor = "#FFFFC0";
 		public string TextColor = "#80FFFF";
 		public string ErrorTextColor = "#FFC000";
 		public string HeaderTextColor = "#FFFFC0";
-		public string PaleTextColor = "#C0C0C0";
+		public string PaleTextColor = "#A0FFFFFF";
 		public string BrightTextColor = "#FFFFFF";
+		public string BackgroundDark = "#000000";
 		public string LowQualityItemColor = "#C0C0C0";
 		public string CommonQualityItemColor = "#80FFFF";
 		public string MediumQualityItemColor = "#80FF80";

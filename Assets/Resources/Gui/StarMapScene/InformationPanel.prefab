@@ -79,6 +79,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!114 &114372167910656730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,6 +193,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 50
 --- !u!114 &114324603716563072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,7 +253,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -259.00165}
+  m_AnchoredPosition: {x: 205, y: -342.0739}
   m_SizeDelta: {x: 346, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114107919960042982
@@ -564,6 +566,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: $RateApp
+  _themeColor: 52
+  _themeFont: 1
+  _themeFontSize: 4
 --- !u!1 &1187987619943016
 GameObject:
   m_ObjectHideFlags: 0
@@ -643,6 +648,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 5
 --- !u!114 &114339070624226122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -767,6 +773,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 3
 --- !u!114 &114421002428234666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -883,6 +890,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Faction
+  _themeColor: 0
+  _themeFont: 1
+  _themeFontSize: 3
 --- !u!114 &114268548939900138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1044,6 +1054,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!1 &1324284569203646
 GameObject:
   m_ObjectHideFlags: 0
@@ -1125,6 +1136,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Space Station
+  _themeColor: 100
+  _themeFont: 1
+  _themeFontSize: 6
 --- !u!114 &114682000711740600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1226,6 +1240,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Barren
+  _themeColor: 100
+  _themeFont: 1
+  _themeFontSize: 7
 --- !u!114 &114485916630103014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1326,6 +1343,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: $AddNote
+  _themeColor: 101
+  _themeFont: 3
+  _themeFontSize: 3
 --- !u!1 &1357930120110410
 GameObject:
   m_ObjectHideFlags: 0
@@ -1409,6 +1429,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 1
 --- !u!114 &114714907265165214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1619,6 +1640,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 50
 --- !u!114 &114989498373192098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1716,6 +1738,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 1
 --- !u!114 &114163634206714236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1888,6 +1911,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!114 &114784636845765500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1988,6 +2012,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 
+  _themeColor: 101
+  _themeFont: 3
+  _themeFontSize: 3
 --- !u!1 &1506024698202112
 GameObject:
   m_ObjectHideFlags: 0
@@ -2096,6 +2123,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 50
 --- !u!114 &114045037779237304
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2252,6 +2280,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: QWERQWER I
+  _themeColor: 100
+  _themeFont: 1
+  _themeFontSize: 3
 --- !u!114 &114705102993504710
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2406,6 +2437,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 1
 --- !u!114 &114050438645452790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2462,7 +2494,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -196.50165}
+  m_AnchoredPosition: {x: 205, y: -279.5739}
   m_SizeDelta: {x: 346, y: 29}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222921120775443680
@@ -2507,6 +2539,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: $RateGameText
+  _themeColor: 100
+  _themeFont: 3
+  _themeFontSize: 3
 --- !u!114 &114563006754574098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2603,6 +2638,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!1 &1791180969920310
 GameObject:
   m_ObjectHideFlags: 0
@@ -2878,8 +2914,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 240, y: -436.04395}
-  m_SizeDelta: {x: 432, y: 824.0879}
+  m_AnchoredPosition: {x: 240, y: -430.7036}
+  m_SizeDelta: {x: 432, y: 813.4072}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222490840177331092
 CanvasRenderer:
@@ -2919,6 +2955,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 1
 --- !u!114 &114771700857685906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3042,6 +3079,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 3
 --- !u!114 &114371366385713686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3139,6 +3177,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 51
 --- !u!114 &114900010158492716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3241,6 +3280,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: STARNAME
+  _themeColor: 100
+  _themeFont: 1
+  _themeFontSize: 8
 --- !u!114 &114432345844499522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3298,8 +3340,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 216, y: -553.8341}
-  m_SizeDelta: {x: 410, y: 331.00165}
+  m_AnchoredPosition: {x: 216, y: -595.37024}
+  m_SizeDelta: {x: 410, y: 414.0739}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114086352397342382
 MonoBehaviour:
@@ -3424,6 +3466,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!114 &3927175104878661170
 MonoBehaviour:
   m_ObjectHideFlags: 0

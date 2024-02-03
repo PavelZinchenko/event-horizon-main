@@ -13,6 +13,7 @@ using Services.Localization;
 using Services.ObjectPool;
 using Services.Resources;
 using Zenject;
+using Gui.Theme;
 
 namespace ViewModel
 {
@@ -34,14 +35,17 @@ namespace ViewModel
         [SerializeField] private int Width;
         [SerializeField] private int Height;
         [SerializeField] private int BorderSize;
-        [SerializeField] private Color NormalColor;
-        [SerializeField] private Color LockedColor;
 	    [SerializeField] private Text _itemNameText;
         [SerializeField] private Text _alreadyResearchedText;
         [SerializeField] private Image _itemIcon;
         [SerializeField] private GameObject _itemIconPanel;
+        [SerializeField] private ThemeColor _normalColor;
+        [SerializeField] private ThemeColor _lockedColor;
 
-		public void Initialize(Faction faction)
+        private Color NormalColor => UiTheme.Current.GetColor(_normalColor);
+        private Color LockedColor => UiTheme.Current.GetColor(_lockedColor);
+
+        public void Initialize(Faction faction)
 		{
 			if (_faction == faction)
 				return;

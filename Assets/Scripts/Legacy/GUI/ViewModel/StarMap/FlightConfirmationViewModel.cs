@@ -5,6 +5,7 @@ using Services.Gui;
 using Services.Messenger;
 using UnityEngine;
 using UnityEngine.UI;
+using Gui.Theme;
 using Zenject;
 
 namespace ViewModel
@@ -19,8 +20,12 @@ namespace ViewModel
         public Text FuelText;
 		public Image FuelIcon;
 		public Button ConfirmButton;
-		public Color NormalColor;
-		public Color NotEnoughColor;
+
+        [SerializeField] private ThemeColor _normalColor = ThemeColor.Text;
+        [SerializeField] private ThemeColor _notEnoughColor = ThemeColor.ErrorText;
+
+        private Color NormalColor => UiTheme.Current.GetColor(_normalColor);
+		private Color NotEnoughColor => UiTheme.Current.GetColor(_notEnoughColor);
 
 	    public void Initialize(WindowArgs args)
 	    {

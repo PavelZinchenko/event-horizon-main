@@ -39,11 +39,16 @@ namespace GameDatabase.DataModel
 			WarningButtonFocusColor = new ColorData(serializable.WarningButtonFocusColor);
 			WarningButtonTextColor = new ColorData(serializable.WarningButtonTextColor);
 			WarningButtonIconColor = new ColorData(serializable.WarningButtonIconColor);
+			PremiumButtonColor = new ColorData(serializable.PremiumButtonColor);
+			PremiumButtonFocusColor = new ColorData(serializable.PremiumButtonFocusColor);
+			PremiumButtonTextColor = new ColorData(serializable.PremiumButtonTextColor);
+			PremiumButtonIconColor = new ColorData(serializable.PremiumButtonIconColor);
 			TextColor = new ColorData(serializable.TextColor);
 			ErrorTextColor = new ColorData(serializable.ErrorTextColor);
 			HeaderTextColor = new ColorData(serializable.HeaderTextColor);
 			PaleTextColor = new ColorData(serializable.PaleTextColor);
 			BrightTextColor = new ColorData(serializable.BrightTextColor);
+			BackgroundDark = new ColorData(serializable.BackgroundDark);
 			LowQualityItemColor = new ColorData(serializable.LowQualityItemColor);
 			CommonQualityItemColor = new ColorData(serializable.CommonQualityItemColor);
 			MediumQualityItemColor = new ColorData(serializable.MediumQualityItemColor);
@@ -65,11 +70,16 @@ namespace GameDatabase.DataModel
 		public ColorData WarningButtonFocusColor { get; private set; }
 		public ColorData WarningButtonTextColor { get; private set; }
 		public ColorData WarningButtonIconColor { get; private set; }
+		public ColorData PremiumButtonColor { get; private set; }
+		public ColorData PremiumButtonFocusColor { get; private set; }
+		public ColorData PremiumButtonTextColor { get; private set; }
+		public ColorData PremiumButtonIconColor { get; private set; }
 		public ColorData TextColor { get; private set; }
 		public ColorData ErrorTextColor { get; private set; }
 		public ColorData HeaderTextColor { get; private set; }
 		public ColorData PaleTextColor { get; private set; }
 		public ColorData BrightTextColor { get; private set; }
+		public ColorData BackgroundDark { get; private set; }
 		public ColorData LowQualityItemColor { get; private set; }
 		public ColorData CommonQualityItemColor { get; private set; }
 		public ColorData MediumQualityItemColor { get; private set; }
