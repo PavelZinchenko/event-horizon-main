@@ -171,6 +171,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &48123534
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -267,6 +268,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!222 &116876277
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -534,6 +536,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: EVENT HORIZON
+  _themeColor: 0
+  _themeFont: 0
+  _themeFontSize: 0
 --- !u!114 &289575157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -641,6 +646,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!114 &335400570
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -730,7 +736,7 @@ MonoBehaviour:
   _musicPlayer: {fileID: 1171077219}
   _soundPlayer: {fileID: 1993476686}
   _resourceLocator: {fileID: 2127999406}
-  _defaultUiTheme: {fileID: 11400000, guid: 05a3bcf1256787645a0c298a72cf6993, type: 2}
+  _defaultUiTheme: {fileID: 11400000, guid: a8e10a6a0ca6b4a46a03ebd31d78b0ca, type: 2}
 --- !u!4 &368924450
 Transform:
   m_ObjectHideFlags: 0
@@ -1135,6 +1141,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!114 &1455831499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1421,6 +1428,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: $Loading
+  _themeColor: 0
+  _themeFont: 0
+  _themeFontSize: 0
 --- !u!222 &1637357182
 CanvasRenderer:
   m_ObjectHideFlags: 0

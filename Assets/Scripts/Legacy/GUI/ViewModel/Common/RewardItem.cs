@@ -1,7 +1,6 @@
 using Economy.Products;
 using UnityEngine;
 using UnityEngine.UI;
-using Economy.ItemType;
 using Services.Resources;
 using ViewModel.Quests;
 
@@ -22,7 +21,7 @@ namespace ViewModel
 		    public void Initialize(IProduct item, IResourceLocator resourceLocator)
 			{
 				Name = item.Type.Name;
-		        Color = item.Type.Quality.ToColor();
+		        Color = Gui.Theme.UiTheme.Current.GetQualityColor(item.Type.Quality);
 
 				Icon.sprite = resourceLocator.GetSprite(item.Type.Icon);
 				Icon.color = item.Type.Color;

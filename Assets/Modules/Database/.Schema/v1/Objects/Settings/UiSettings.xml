@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data name="UiSettings" type="settings" typeid="UiSettings">
-    <member name="WindowColor" type="color" default="#FF50C0FF" />
+    <member name="WindowColor" type="color" default="#50C0FF" />
     <member name="ScrollBarColor" type="color" default="#C050C0FF" />
-    <member name="IconColor" type="color" default="#FF80FFFF" />
-    <member name="InnerPanelColor" type="color" default="#8050C0FF" />
-    <member name="SelectionColor" type="color" default="#FF80FFFF" />
-    <member name="ButtonColor" type="color" default="#FF50C0FF" />
+    <member name="IconColor" type="color" default="#80FFFF" />
+    <member name="SelectionColor" type="color" default="#80FFFF" />
+
+    <member name="ButtonColor" type="color" default="#50C0FF" />
     <member name="ButtonFocusColor" type="color" default="#4050C0FF" />
-    <member name="ButtonTextColor" type="color" default="#FF80FFFF" />
-    <member name="ButtonIconColor" type="color" default="#FF50C0FF" />
-    <member name="TextColor" type="color" default="#FF80FFFF" />
-    <member name="HeaderTextColor" type="color" default="#FFFFC0FF" />
-    <member name="PaleTextColor" type="color" default="#FFC0C0C0" />
-    <member name="BrightTextColor" type="color" default="#FFFFFFFF" />
-    <member name="LowQualityItemColor" type="color" default="#FFC0C0C0" />
-    <member name="CommonQualityItemColor" type="color" default="#FF80FFFF" />
-    <member name="MediumQualityItemColor" type="color" default="#FF80FF80" />
-    <member name="HighQualityItemColor" type="color" default="#FFF09FFF" />
-    <member name="PerfectQualityItemColor" type="color" default="#FFFFDF51" />
+    <member name="ButtonTextColor" type="color" default="#80FFFF" />
+    <member name="ButtonIconColor" type="color" default="#50C0FF" />
+
+    <member name="WarningButtonColor" type="color" default="#FF8050" />
+    <member name="WarningButtonFocusColor" type="color" default="#20FF8050" />
+    <member name="WarningButtonTextColor" type="color" default="#FFFFC0" />
+    <member name="WarningButtonIconColor" type="color" default="#FFFFC0" />
+
+    <member name="TextColor" type="color" default="#80FFFF" />
+    <member name="ErrorTextColor" type="color" default="#FFC000" />
+    <member name="HeaderTextColor" type="color" default="#FFFFC0" />
+    <member name="PaleTextColor" type="color" default="#A0FFFFFF" />
+    <member name="BrightTextColor" type="color" default="#FFFFFF" />
+
+    <member name="LowQualityItemColor" type="color" default="#C0C0C0" />
+    <member name="CommonQualityItemColor" type="color" default="#80FFFF" />
+    <member name="MediumQualityItemColor" type="color" default="#80FF80" />
+    <member name="HighQualityItemColor" type="color" default="#F09FFF" />
+    <member name="PerfectQualityItemColor" type="color" default="#FFDF51" />
 </data>

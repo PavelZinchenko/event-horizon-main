@@ -20,10 +20,9 @@ namespace ViewModel
 			[SerializeField] Text ExperienceText;
 			[SerializeField] GameObject RankPanel;
 			[SerializeField] Text RankText;
-			[SerializeField] private Color _textColor;
 
 			public string Name { get; private set; }
-            public Color Color { get { return _textColor; } }
+            public Color Color => Gui.Theme.UiTheme.Current.GetColor(Gui.Theme.ThemeColor.Text);
 
             public void Initialize(GameModel.ExperienceData data)
             {

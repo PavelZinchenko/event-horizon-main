@@ -30,13 +30,17 @@ namespace GameDatabase.DataModel
 			WindowColor = new ColorData(serializable.WindowColor);
 			ScrollBarColor = new ColorData(serializable.ScrollBarColor);
 			IconColor = new ColorData(serializable.IconColor);
-			InnerPanelColor = new ColorData(serializable.InnerPanelColor);
 			SelectionColor = new ColorData(serializable.SelectionColor);
 			ButtonColor = new ColorData(serializable.ButtonColor);
 			ButtonFocusColor = new ColorData(serializable.ButtonFocusColor);
 			ButtonTextColor = new ColorData(serializable.ButtonTextColor);
 			ButtonIconColor = new ColorData(serializable.ButtonIconColor);
+			WarningButtonColor = new ColorData(serializable.WarningButtonColor);
+			WarningButtonFocusColor = new ColorData(serializable.WarningButtonFocusColor);
+			WarningButtonTextColor = new ColorData(serializable.WarningButtonTextColor);
+			WarningButtonIconColor = new ColorData(serializable.WarningButtonIconColor);
 			TextColor = new ColorData(serializable.TextColor);
+			ErrorTextColor = new ColorData(serializable.ErrorTextColor);
 			HeaderTextColor = new ColorData(serializable.HeaderTextColor);
 			PaleTextColor = new ColorData(serializable.PaleTextColor);
 			BrightTextColor = new ColorData(serializable.BrightTextColor);
@@ -52,13 +56,17 @@ namespace GameDatabase.DataModel
 		public ColorData WindowColor { get; private set; }
 		public ColorData ScrollBarColor { get; private set; }
 		public ColorData IconColor { get; private set; }
-		public ColorData InnerPanelColor { get; private set; }
 		public ColorData SelectionColor { get; private set; }
 		public ColorData ButtonColor { get; private set; }
 		public ColorData ButtonFocusColor { get; private set; }
 		public ColorData ButtonTextColor { get; private set; }
 		public ColorData ButtonIconColor { get; private set; }
+		public ColorData WarningButtonColor { get; private set; }
+		public ColorData WarningButtonFocusColor { get; private set; }
+		public ColorData WarningButtonTextColor { get; private set; }
+		public ColorData WarningButtonIconColor { get; private set; }
 		public ColorData TextColor { get; private set; }
+		public ColorData ErrorTextColor { get; private set; }
 		public ColorData HeaderTextColor { get; private set; }
 		public ColorData PaleTextColor { get; private set; }
 		public ColorData BrightTextColor { get; private set; }

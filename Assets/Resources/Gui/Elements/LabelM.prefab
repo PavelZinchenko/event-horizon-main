@@ -57,7 +57,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1976134998573080}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Script: {fileID: 11500000, guid: a57811ade5f43264f96354d7400cca71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -82,6 +82,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: TEXT
+  _themeColor: 103
+  _themeFont: 1
+  _themeFontSize: 2
 --- !u!114 &114999878699200578
 MonoBehaviour:
   m_ObjectHideFlags: 0
