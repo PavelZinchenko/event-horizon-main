@@ -61,7 +61,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 744229764934259271}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: 11500000, guid: 9111079df60566940a316b73ad641512, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 232e64d0978bf6b4294dfebcf208e098, type: 2}
@@ -82,6 +82,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 50
 --- !u!114 &744229764934259265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,7 +239,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 744591245545564797}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: 11500000, guid: 9111079df60566940a316b73ad641512, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -259,6 +260,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+  _themeColor: 0
 --- !u!114 &848600097284384231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -335,7 +337,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2477649736872590968}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Script: {fileID: 11500000, guid: a57811ade5f43264f96354d7400cca71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -360,6 +362,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: KEY
+  _themeColor: 52
+  _themeFont: 1
+  _themeFontSize: 8
 --- !u!114 &2590500658953982428
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -460,6 +465,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.r
       value: 0.5019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381863950369726, guid: 01949154060bea54abeeb7d129bce5ce,
+        type: 3}
+      propertyPath: _themeColor
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381863950369726, guid: 01949154060bea54abeeb7d129bce5ce,
+        type: 3}
+      propertyPath: _themeFontSize
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 114381863950369726, guid: 01949154060bea54abeeb7d129bce5ce,
         type: 3}

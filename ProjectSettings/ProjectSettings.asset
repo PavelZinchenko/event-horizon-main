@@ -52,7 +52,7 @@ PlayerSettings:
   m_MTRendering: 1
   mipStripping: 0
   numberOfMipsStripped: 0
-  m_StackTraceTypes: 000000000000000000000000000000000100000001000000
+  m_StackTraceTypes: 010000000000000000000000000000000100000001000000
   iosShowActivityIndicatorOnLoading: -1
   androidShowActivityIndicatorOnLoading: -1
   iosUseCustomAppBackgroundBehavior: 0
@@ -968,8 +968,8 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: UNITY_ASSERTIONS;STEAMWORKS_NET;ADS_GOOGLE;IAP_UNITY;LICENSE_OPENSOURCE
-    Standalone: UNITY_ASSERTIONS;NO_GPGS;ADS_DISABLED;IAP_DISABLED;STEAMWORKS_NET;LICENSE_OPENSOURCE
+    Android: UNITY_ASSERTIONS;STEAMWORKS_NET;ADS_GOOGLE;IAP_UNITY;LICENSE_COMMERCIAL
+    Standalone: UNITY_ASSERTIONS;NO_GPGS;ADS_DISABLED;IAP_DISABLED;STEAMWORKS_NET;LICENSE_COMMERCIAL
     iPhone: NO_GPGS;STEAMWORKS_NET;IAP_UNITY;LICENSE_OPENSOURCE;ADS_UNITY
   additionalCompilerArguments: {}
   platformArchitecture:
