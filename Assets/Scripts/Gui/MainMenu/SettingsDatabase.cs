@@ -9,6 +9,7 @@ using Services.Messenger;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using GameStateMachine.States;
 
 namespace Gui.MainMenu
 {
@@ -18,7 +19,8 @@ namespace Gui.MainMenu
         [Inject] private readonly IDatabase _database;
         [Inject] private readonly ILocalization _localization;
         [Inject] private readonly IGameSettings _settings;
-		[InjectOptional] private readonly GuiHelper _guiHelper;
+        [Inject] private readonly ReloadUiSignal.Trigger _reloadGuiTrigger;
+        [InjectOptional] private readonly GuiHelper _guiHelper;
 
 		[SerializeField] private LayoutGroup _modsGroup;
 
@@ -26,7 +28,7 @@ namespace Gui.MainMenu
         private void Initialize(IMessenger messenger)
         {
             messenger.AddListener(EventType.DatabaseLoaded, OnDatabaseLoaded);
-            OnDatabaseLoaded();
+            UpdateMods();
         }
 
         public void OnModSelected(ModInfoItem item)
@@ -41,6 +43,7 @@ namespace Gui.MainMenu
         {
             UpdateMods();
             _localization.Initialize(_settings.Language, _database, true);
+            _reloadGuiTrigger.Fire();
         }
 
         private void OnEnable()
