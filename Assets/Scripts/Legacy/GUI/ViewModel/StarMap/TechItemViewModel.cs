@@ -23,19 +23,15 @@ namespace ViewModel
         [SerializeField] private Text Description;
         [SerializeField] private Text PriceText;
         [SerializeField] private Graphic[] UiElements;
-	    [SerializeField] private ThemeColor _researchedColor;
-        [SerializeField] private ThemeColor _availableColor;
-        [SerializeField] private ThemeColor _notAvailableColor;
-        [SerializeField] private ThemeColor _hiddenColor;
 	    [SerializeField] private Sprite HiddenIcon;
 
         public TechEvent OnTechSelectedEvent = new TechEvent();
 		public TechEvent OnTechDeselectedEvent = new TechEvent();
 
-        private Color ResearchedColor => UiTheme.Current.GetColor(_researchedColor);
-        private Color AvailableColor => UiTheme.Current.GetColor(_availableColor);
-        private Color NotAvailableColor => UiTheme.Current.GetColor(_notAvailableColor);
-        private Color HiddenColor => UiTheme.Current.GetColor(_hiddenColor);
+        private Color ResearchedColor => UiTheme.Current.GetTechColor(TechColor.Obtained);
+        private Color AvailableColor => UiTheme.Current.GetTechColor(TechColor.Available);
+        private Color NotAvailableColor => UiTheme.Current.GetTechColor(TechColor.NotAvailable);
+        private Color HiddenColor => UiTheme.Current.GetTechColor(TechColor.Hidden);
 		
 		[Serializable]
 		public class TechEvent : UnityEvent<ITechnology>

@@ -35,7 +35,7 @@ namespace GameContent
             }
         }
 
-        public Color GetColor(Economy.Currency currency)
+        [System.Obsolete] public Color GetColor(Economy.Currency currency)
         {
             switch (currency)
             {

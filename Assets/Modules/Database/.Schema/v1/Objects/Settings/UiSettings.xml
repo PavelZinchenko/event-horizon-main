@@ -33,4 +33,15 @@
     <member name="MediumQualityItemColor" type="color" default="#80FF80" />
     <member name="HighQualityItemColor" type="color" default="#F09FFF" />
     <member name="PerfectQualityItemColor" type="color" default="#FFDF51" />
+
+    <member name="AvailableTechColor" type="color" default="#FFFFC0" />
+    <member name="UnavailableTechColor" type="color" default="#808080" />
+    <member name="ObtainedTechColor" type="color" default="#50C0FF" />
+    <member name="HiddenTechColor" type="color" default="#8080FF" />
+
+    <member name="CreditsColor" type="color" default="#00FF00" />
+    <member name="StarsColor" type="color" default="#FFF0A0" />
+    <member name="MoneyColor" type="color" default="#FFF0A0" />
+    <member name="FuelColor" type="color" default="#00FFFF" />
+    <member name="TokensColor" type="color" default="#8080FF" />
 </data>

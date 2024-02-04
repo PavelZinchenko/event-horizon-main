@@ -38,7 +38,7 @@ namespace ViewModel
 				PriceText.text = price.Amount.ToString();
 
 				var icon = _currencySettings.GetIcon(price.Currency);
-				var color = _currencySettings.GetColor(price.Currency);
+				var color = Gui.Theme.UiTheme.Current.GetCurrencyColor(price.Currency);
 				CurrencyIcon.sprite = icon;
 				CurrencyIcon.color = color;
 

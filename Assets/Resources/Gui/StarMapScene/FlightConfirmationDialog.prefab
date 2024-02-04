@@ -78,6 +78,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!114 &114267135284380050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,6 +180,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114408878249683648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -336,6 +338,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $RequiredFuel
   _themeColor: 100
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!1 &1359024263815390
@@ -415,6 +418,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!1 &1448577434735960
 GameObject:
   m_ObjectHideFlags: 0
@@ -542,6 +546,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!1 &1454960906794600
 GameObject:
   m_ObjectHideFlags: 0
@@ -680,6 +685,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $ConfirmDestination
   _themeColor: 100
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!1 &1510072234752110
@@ -763,6 +769,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $No
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!1 &1530831800592432
@@ -846,6 +853,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Yes
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!1 &1540498128036024
@@ -1280,6 +1288,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 20
   _themeColor: 0
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!1 &1962090654381878
@@ -1359,6 +1368,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!1 &1992672927765398
 GameObject:
   m_ObjectHideFlags: 0
@@ -1440,6 +1450,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114108581851145674
 MonoBehaviour:
   m_ObjectHideFlags: 0

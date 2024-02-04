@@ -81,6 +81,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $CaptureBase
   _themeColor: 62
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 1
 --- !u!1 &1088504864516886
@@ -120,8 +121,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 216, y: -56}
-  m_SizeDelta: {x: 346, y: 64}
+  m_AnchoredPosition: {x: 216, y: -41.384964}
+  m_SizeDelta: {x: 346, y: 34.76993}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222050172789690084
 CanvasRenderer:
@@ -166,6 +167,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $ObjectStarBase
   _themeColor: 100
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!114 &114714476034137754
@@ -225,8 +227,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 237.00002, y: -40}
-  m_SizeDelta: {x: 314.00003, y: 80}
+  m_AnchoredPosition: {x: 237.00002, y: -23.19271}
+  m_SizeDelta: {x: 314.00003, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222682274035065998
 CanvasRenderer:
@@ -267,6 +269,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 60
+  _colorMode: 0
 --- !u!114 &114037247141001812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,8 +325,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 373.5, y: -14.5}
-  m_SizeDelta: {x: 41, y: 29}
+  m_AnchoredPosition: {x: 373.5, y: -7.8775625}
+  m_SizeDelta: {x: 41, y: 15.755125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222605846717113208
 CanvasRenderer:
@@ -368,6 +371,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: +10
   _themeColor: 101
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!1 &1125124698880432
@@ -406,8 +410,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 153.75, y: -14.5}
-  m_SizeDelta: {x: 275.5, y: 29}
+  m_AnchoredPosition: {x: 153.75, y: -7.8775625}
+  m_SizeDelta: {x: 275.5, y: 15.755125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222461507931158206
 CanvasRenderer:
@@ -452,6 +456,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $MilitaryPower
   _themeColor: 100
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!114 &114780728622504648
@@ -511,8 +516,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -41.166664}
-  m_SizeDelta: {x: 410, y: 29}
+  m_AnchoredPosition: {x: 205, y: -26.018791}
+  m_SizeDelta: {x: 410, y: 15.755125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114697434710188434
 MonoBehaviour:
@@ -577,8 +582,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 237.00002, y: -40}
-  m_SizeDelta: {x: 314.00003, y: 80}
+  m_AnchoredPosition: {x: 237.00002, y: -23.19271}
+  m_SizeDelta: {x: 314.00003, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222456562686414208
 CanvasRenderer:
@@ -619,6 +624,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114816375388553024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -716,6 +722,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!1 &1183046949685922
 GameObject:
   m_ObjectHideFlags: 0
@@ -794,6 +801,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 3
+  _colorMode: 0
 --- !u!114 &114103264480749272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -895,6 +903,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $FactoryDescription
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 1
 --- !u!1 &1186327770917448
@@ -980,6 +989,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!114 &114211707494951354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1130,8 +1140,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 40, y: -40}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchoredPosition: {x: 40, y: -23.19271}
+  m_SizeDelta: {x: 80, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222733547920491606
 CanvasRenderer:
@@ -1172,6 +1182,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114345983546238334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1226,8 +1237,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -72.53696}
-  m_SizeDelta: {x: 394, y: 145.07391}
+  m_AnchoredPosition: {x: 205, y: -0}
+  m_SizeDelta: {x: 394, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114061931402555764
 MonoBehaviour:
@@ -1326,6 +1337,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!1 &1242331858426542
 GameObject:
   m_ObjectHideFlags: 0
@@ -1464,6 +1476,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $TakeMission
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 1
 --- !u!1 &1271519421535398
@@ -1547,6 +1560,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Shipyard
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 1
 --- !u!1 &1328565923093126
@@ -1585,8 +1599,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -9.333333}
-  m_SizeDelta: {x: 410, y: 18.666666}
+  m_AnchoredPosition: {x: 205, y: -5.070615}
+  m_SizeDelta: {x: 410, y: 10.14123}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222594469767949346
 CanvasRenderer:
@@ -1627,6 +1641,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!114 &114537053454491212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1684,8 +1699,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 237.00002, y: -40}
-  m_SizeDelta: {x: 314.00003, y: 80}
+  m_AnchoredPosition: {x: 237.00002, y: -23.19271}
+  m_SizeDelta: {x: 314.00003, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222536509552731916
 CanvasRenderer:
@@ -1726,6 +1741,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114962408224522530
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1788,8 +1804,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 240, y: -430.7036}
-  m_SizeDelta: {x: 432, y: 813.4072}
+  m_AnchoredPosition: {x: 240, y: -224.5}
+  m_SizeDelta: {x: 432, y: 401}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222925252035308646
 CanvasRenderer:
@@ -1830,6 +1846,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!114 &114999584738839752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1912,8 +1929,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -146.99998}
-  m_SizeDelta: {x: 410, y: 18.666666}
+  m_AnchoredPosition: {x: 205, y: -94.47723}
+  m_SizeDelta: {x: 410, y: 10.14123}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222219268168300804
 CanvasRenderer:
@@ -1954,6 +1971,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!114 &114565000306961394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2051,6 +2069,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!1 &1387465656734570
 GameObject:
   m_ObjectHideFlags: 0
@@ -2128,6 +2147,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 63
+  _colorMode: 0
 --- !u!1 &1391687351840060
 GameObject:
   m_ObjectHideFlags: 0
@@ -2206,6 +2226,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!114 &114314954269913014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2263,8 +2284,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -78.166664}
-  m_SizeDelta: {x: 410, y: 29}
+  m_AnchoredPosition: {x: 205, y: -49.77392}
+  m_SizeDelta: {x: 410, y: 15.755125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114826563177668898
 MonoBehaviour:
@@ -2333,8 +2354,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 216, y: -545.87024}
-  m_SizeDelta: {x: 410, y: 513.0739}
+  m_AnchoredPosition: {x: 216, y: -290.03644}
+  m_SizeDelta: {x: 410, y: 199.92711}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222324940247697988
 CanvasRenderer:
@@ -2447,6 +2468,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!1 &1428774452640614
 GameObject:
   m_ObjectHideFlags: 0
@@ -2484,8 +2506,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 40, y: -40}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchoredPosition: {x: 40, y: -23.19271}
+  m_SizeDelta: {x: 80, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222994648584031556
 CanvasRenderer:
@@ -2526,6 +2548,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114378736036885678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2585,8 +2608,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -321.0739}
-  m_SizeDelta: {x: 394, y: 80}
+  m_AnchoredPosition: {x: 205, y: -91.963554}
+  m_SizeDelta: {x: 394, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114324826182598604
 MonoBehaviour:
@@ -2729,8 +2752,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -465.0739}
-  m_SizeDelta: {x: 394, y: 80}
+  m_AnchoredPosition: {x: 205, y: -168.7344}
+  m_SizeDelta: {x: 394, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114990051555996360
 MonoBehaviour:
@@ -2912,6 +2935,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!114 &114816557538223182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3010,6 +3034,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!114 &114477624606846422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3107,6 +3132,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!1 &1526105429648476
 GameObject:
   m_ObjectHideFlags: 0
@@ -3144,8 +3170,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 237.00002, y: -40}
-  m_SizeDelta: {x: 314.00003, y: 80}
+  m_AnchoredPosition: {x: 237.00002, y: -23.19271}
+  m_SizeDelta: {x: 314.00003, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222240423440007248
 CanvasRenderer:
@@ -3186,6 +3212,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114256204789673206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3242,8 +3269,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 216, y: -266.8333}
-  m_SizeDelta: {x: 292, y: 45}
+  m_AnchoredPosition: {x: 216, y: -174.19533}
+  m_SizeDelta: {x: 292, y: 31.755125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222924856474397922
 CanvasRenderer:
@@ -3318,8 +3345,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -249.07391}
-  m_SizeDelta: {x: 394, y: 80}
+  m_AnchoredPosition: {x: 205, y: -53.578133}
+  m_SizeDelta: {x: 394, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114107379357362520
 MonoBehaviour:
@@ -3517,8 +3544,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 40, y: -40}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchoredPosition: {x: 40, y: -23.19271}
+  m_SizeDelta: {x: 80, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222624748555633644
 CanvasRenderer:
@@ -3559,6 +3586,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114580856612640438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3615,8 +3643,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 148, y: -14.5}
-  m_SizeDelta: {x: 264, y: 29}
+  m_AnchoredPosition: {x: 148, y: -7.8775625}
+  m_SizeDelta: {x: 264, y: 15.755125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222866941166783444
 CanvasRenderer:
@@ -3661,6 +3689,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Reputation
   _themeColor: 100
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!114 &114978249066343574
@@ -3720,8 +3749,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 40, y: -40}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchoredPosition: {x: 40, y: -23.19271}
+  m_SizeDelta: {x: 80, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222701534373977938
 CanvasRenderer:
@@ -3762,6 +3791,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 60
+  _colorMode: 0
 --- !u!114 &114037389876949496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3819,8 +3849,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 237.00002, y: -40}
-  m_SizeDelta: {x: 314.00003, y: 80}
+  m_AnchoredPosition: {x: 237.00002, y: -23.19271}
+  m_SizeDelta: {x: 314.00003, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222963823006426218
 CanvasRenderer:
@@ -3861,6 +3891,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114490259410205118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3921,8 +3952,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 216, y: -166.16666}
-  m_SizeDelta: {x: 410, y: 156.33333}
+  m_AnchoredPosition: {x: 216, y: -108.54385}
+  m_SizeDelta: {x: 410, y: 99.54784}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222226987983247552
 CanvasRenderer:
@@ -4036,6 +4067,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!114 &114417025479631944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4092,8 +4124,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 124.25, y: -14.5}
-  m_SizeDelta: {x: 216.5, y: 29}
+  m_AnchoredPosition: {x: 124.25, y: -7.8775625}
+  m_SizeDelta: {x: 216.5, y: 15.755125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222066966092237696
 CanvasRenderer:
@@ -4138,6 +4170,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Faction
   _themeColor: 100
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!114 &114781683262251490
@@ -4199,8 +4232,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -177.07391}
-  m_SizeDelta: {x: 394, y: 80}
+  m_AnchoredPosition: {x: 205, y: -15.192711}
+  m_SizeDelta: {x: 394, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114206195805040328
 MonoBehaviour:
@@ -4343,8 +4376,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -393.0739}
-  m_SizeDelta: {x: 394, y: 80}
+  m_AnchoredPosition: {x: 205, y: -130.34897}
+  m_SizeDelta: {x: 394, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114883443713149182
 MonoBehaviour:
@@ -4483,8 +4516,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 354.5, y: -14.5}
-  m_SizeDelta: {x: 79, y: 29}
+  m_AnchoredPosition: {x: 354.5, y: -7.8775625}
+  m_SizeDelta: {x: 79, y: 15.755125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222677353763256180
 CanvasRenderer:
@@ -4529,6 +4562,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: NAME
   _themeColor: 101
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!1 &1832727553711624
@@ -4566,8 +4600,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 359.5, y: -14.5}
-  m_SizeDelta: {x: 69, y: 29}
+  m_AnchoredPosition: {x: 359.5, y: -7.8775625}
+  m_SizeDelta: {x: 69, y: 15.755125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222282992803950814
 CanvasRenderer:
@@ -4612,6 +4646,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 100%
   _themeColor: 101
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!1 &1862393486276814
@@ -4695,6 +4730,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $StoreDescription
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 1
 --- !u!1 &1880727433433904
@@ -4832,6 +4868,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 61
+  _colorMode: 0
 --- !u!114 &114476275930003888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4889,8 +4926,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 40, y: -40}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchoredPosition: {x: 40, y: -23.19271}
+  m_SizeDelta: {x: 80, y: 46.38542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222932312250040340
 CanvasRenderer:
@@ -4931,6 +4968,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114153134793715782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4986,8 +5024,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 146, y: -22.5}
-  m_SizeDelta: {x: 276, y: 29}
+  m_AnchoredPosition: {x: 146, y: -15.8775625}
+  m_SizeDelta: {x: 276, y: 15.755125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222413284850757322
 CanvasRenderer:
@@ -5032,6 +5070,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $CaptureBaseDescription
   _themeColor: 100
+  _colorMode: 0
   _themeFont: 3
   _themeFontSize: 3
 --- !u!1 &1987733114181996
@@ -5071,8 +5110,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -115.166664}
-  m_SizeDelta: {x: 410, y: 29}
+  m_AnchoredPosition: {x: 205, y: -73.529045}
+  m_SizeDelta: {x: 410, y: 15.755125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114502956571946602
 MonoBehaviour:

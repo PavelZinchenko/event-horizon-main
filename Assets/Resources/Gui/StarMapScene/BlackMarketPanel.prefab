@@ -77,6 +77,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!1 &1378836530860528
 GameObject:
   m_ObjectHideFlags: 0
@@ -156,6 +157,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114078850448986504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -401,6 +403,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $StoreDescription
   _themeColor: 100
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 1
 --- !u!1 &1596522950856160
@@ -487,6 +490,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!114 &114253813160822240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -626,8 +630,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 240, y: -321.12396}
-  m_SizeDelta: {x: 432, y: 594.2479}
+  m_AnchoredPosition: {x: 240, y: -113.99999}
+  m_SizeDelta: {x: 432, y: 179.99998}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222807646000152484
 CanvasRenderer:
@@ -668,6 +672,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!114 &114120211084518610
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -766,6 +771,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!114 &114565693669833284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -824,7 +830,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 240, y: -728.7479}
+  m_AnchoredPosition: {x: 240, y: -314.5}
   m_SizeDelta: {x: 432, y: 221}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222779292242698174
@@ -866,6 +872,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!114 &114476460472205994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -970,6 +977,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 3
+  _colorMode: 0
 --- !u!114 &114444602001924272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1069,6 +1077,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114914597682257040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1170,5 +1179,6 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $BlackMarketDescription
   _themeColor: 100
+  _colorMode: 0
   _themeFont: 3
   _themeFontSize: 3

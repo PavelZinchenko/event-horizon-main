@@ -39,11 +39,9 @@ namespace ViewModel
         [SerializeField] private Text _alreadyResearchedText;
         [SerializeField] private Image _itemIcon;
         [SerializeField] private GameObject _itemIconPanel;
-        [SerializeField] private ThemeColor _normalColor;
-        [SerializeField] private ThemeColor _lockedColor;
 
-        private Color NormalColor => UiTheme.Current.GetColor(_normalColor);
-        private Color LockedColor => UiTheme.Current.GetColor(_lockedColor);
+        private Color NormalColor => UiTheme.Current.GetTechColor(TechColor.Obtained);
+        private Color LockedColor => UiTheme.Current.GetTechColor(TechColor.NotAvailable);
 
         public void Initialize(Faction faction)
 		{

@@ -54,6 +54,15 @@ namespace GameDatabase.DataModel
 			MediumQualityItemColor = new ColorData(serializable.MediumQualityItemColor);
 			HighQualityItemColor = new ColorData(serializable.HighQualityItemColor);
 			PerfectQualityItemColor = new ColorData(serializable.PerfectQualityItemColor);
+			AvailableTechColor = new ColorData(serializable.AvailableTechColor);
+			UnavailableTechColor = new ColorData(serializable.UnavailableTechColor);
+			ObtainedTechColor = new ColorData(serializable.ObtainedTechColor);
+			HiddenTechColor = new ColorData(serializable.HiddenTechColor);
+			CreditsColor = new ColorData(serializable.CreditsColor);
+			StarsColor = new ColorData(serializable.StarsColor);
+			MoneyColor = new ColorData(serializable.MoneyColor);
+			FuelColor = new ColorData(serializable.FuelColor);
+			TokensColor = new ColorData(serializable.TokensColor);
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -85,6 +94,15 @@ namespace GameDatabase.DataModel
 		public ColorData MediumQualityItemColor { get; private set; }
 		public ColorData HighQualityItemColor { get; private set; }
 		public ColorData PerfectQualityItemColor { get; private set; }
+		public ColorData AvailableTechColor { get; private set; }
+		public ColorData UnavailableTechColor { get; private set; }
+		public ColorData ObtainedTechColor { get; private set; }
+		public ColorData HiddenTechColor { get; private set; }
+		public ColorData CreditsColor { get; private set; }
+		public ColorData StarsColor { get; private set; }
+		public ColorData MoneyColor { get; private set; }
+		public ColorData FuelColor { get; private set; }
+		public ColorData TokensColor { get; private set; }
 
 		public static UiSettings DefaultValue { get; private set; }
 	}
