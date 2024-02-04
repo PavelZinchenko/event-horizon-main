@@ -76,7 +76,8 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  _themeColor: 5
+  _themeColor: 1
+  _colorMode: 2
 --- !u!1 &6996732915306655856
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,6 +155,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!1 &6996902516052103882
 GameObject:
   m_ObjectHideFlags: 0
@@ -230,7 +232,8 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  _themeColor: 5
+  _themeColor: 1
+  _colorMode: 2
 --- !u!1 &6997036052094584942
 GameObject:
   m_ObjectHideFlags: 0
@@ -308,6 +311,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!1 &6997134432246259574
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,7 +388,8 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  _themeColor: 5
+  _themeColor: 1
+  _colorMode: 2
 --- !u!1 &6997275965491554784
 GameObject:
   m_ObjectHideFlags: 0
@@ -462,6 +467,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!1 &6997288679984413818
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,7 +556,8 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  _themeColor: 0
+  _themeColor: 1
+  _colorMode: 1
 --- !u!114 &6956256769808089592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -720,7 +727,8 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  _themeColor: 5
+  _themeColor: 1
+  _colorMode: 2
 --- !u!1 &6997355002798351808
 GameObject:
   m_ObjectHideFlags: 0
@@ -799,6 +807,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!114 &6956546146010811862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -889,6 +898,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!1 &6997742851431551678
 GameObject:
   m_ObjectHideFlags: 0
@@ -965,4 +975,5 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  _themeColor: 5
+  _themeColor: 1
+  _colorMode: 2

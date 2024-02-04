@@ -23,7 +23,7 @@ namespace Gui.StarMap
             _icon.sprite = resourceLocator.GetSprite(item.Type.Icon);
             _icon.color = item.Type.Color;
             _name.text = item.Type.Name;
-            _name.color = item.Type.Quality.ToColor();
+            _name.color = Gui.Theme.UiTheme.Current.GetQualityColor(item.Type.Quality);
 
             if (_description != null)
             {

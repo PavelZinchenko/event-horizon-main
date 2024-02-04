@@ -14,6 +14,7 @@ using GameDatabase.Enums;
 using GameDatabase.Serializable;
 using Services.Resources;
 using Zenject;
+using Gui.Theme;
 
 namespace ViewModel.Craft
 {
@@ -62,7 +63,7 @@ namespace ViewModel.Craft
             _icon.sprite = _resourceLocator.GetSprite(ship.Model.ModelImage);
             _icon.color = Color.white;
             _name.text = _localization.GetString(ship.Name);
-            _name.color = ship.Model.Quality().ToColor();
+            _name.color = Gui.Theme.UiTheme.Current.GetQualityColor(ship.Model.Quality());
             _description.gameObject.SetActive(false);
 
             _modification.gameObject.SetActive(ship.Model.Modifications.Any());
@@ -78,7 +79,7 @@ namespace ViewModel.Craft
             _icon.sprite = _resourceLocator.GetSprite(satellite.ModelImage);
             _icon.color = Color.white;
             _name.text = _localization.GetString(satellite.Name);
-            _name.color = ItemQuality.Common.ToColor();
+            _name.color = Gui.Theme.UiTheme.Current.GetQualityColor(ItemQuality.Common);
             _description.gameObject.SetActive(false);
 
             _modification.gameObject.SetActive(false);
@@ -93,14 +94,14 @@ namespace ViewModel.Craft
             _icon.sprite = _resourceLocator.GetSprite(info.Data.Icon);
             _icon.color = info.Data.Color;
             _name.text = _localization.GetString(info.Data.Name);
-            _name.color = info.ItemQuality.ToColor();
+            _name.color = UiTheme.Current.GetQualityColor(info.ItemQuality);
             _description.gameObject.SetActive(false);
 
             var component = info.CreateComponent(100);
 
             var modification = component.Modification ?? Constructor.Modification.EmptyModification.Instance;
             _modification.gameObject.SetActive(!string.IsNullOrEmpty(_modification.text = modification.GetDescription(_localization)));
-            _modification.color = info.ItemQuality.ToColor();
+            _modification.color = UiTheme.Current.GetQualityColor(info.ItemQuality);
 
             _stats.gameObject.SetActive(true);
             _stats.transform.InitializeElements<TextFieldViewModel, KeyValuePair<string, string>>(ShipEditor.UI.ComponentItem.GetDescription(component, _localization), UpdateTextField, _factory);
@@ -123,7 +124,7 @@ namespace ViewModel.Craft
             _icon.sprite = _resourceLocator.GetSprite(item.Icon);
             _icon.color = item.Color;
             _name.text = item.Name;
-            _name.color = item.Quality.ToColor();
+            _name.color = UiTheme.Current.GetQualityColor(item.Quality);
 
             var description = item.Description;
             _description.gameObject.SetActive(!string.IsNullOrEmpty(description));

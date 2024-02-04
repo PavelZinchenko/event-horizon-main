@@ -167,6 +167,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!114 &845707640392421699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,6 +269,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Exit
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!1 &1122741384900426
@@ -347,6 +349,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!1 &1229962984316010
 GameObject:
   m_ObjectHideFlags: 0
@@ -531,6 +534,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!1 &1246391734512996
 GameObject:
   m_ObjectHideFlags: 0
@@ -784,6 +788,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!114 &5120528126557812269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -881,6 +886,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!1 &1378174333439520
 GameObject:
   m_ObjectHideFlags: 0
@@ -962,6 +968,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: Description
   _themeColor: 0
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 6
 --- !u!1 &1381943593185376
@@ -1041,6 +1048,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 2
+  _colorMode: 0
 --- !u!1 &1433274535347182
 GameObject:
   m_ObjectHideFlags: 0
@@ -1120,6 +1128,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!114 &7083278191156071103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1441,6 +1450,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!1 &1607728618168380
 GameObject:
   m_ObjectHideFlags: 0
@@ -1518,6 +1528,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!1 &1642838099277642
 GameObject:
   m_ObjectHideFlags: 0
@@ -1596,6 +1607,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!114 &1879987622425050398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1844,6 +1856,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!114 &7576006230048472263
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1941,6 +1954,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!1 &1835514509959538
 GameObject:
   m_ObjectHideFlags: 0
@@ -2131,6 +2145,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 100
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 2
 --- !u!1 &1860867007198712
@@ -2214,6 +2229,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: Name
   _themeColor: 0
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!1 &1891440505598476
@@ -2314,6 +2330,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!1 &1909538932815600
 GameObject:
   m_ObjectHideFlags: 0
@@ -2395,6 +2412,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &5581070182672009126
 MonoBehaviour:
   m_ObjectHideFlags: 0

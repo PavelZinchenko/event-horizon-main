@@ -79,6 +79,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114833988124420316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,6 +179,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114624285257903574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,6 +284,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!114 &114002034853713150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,6 +467,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!114 &114792616304316330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -522,8 +526,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 240, y: -271.12396}
-  m_SizeDelta: {x: 432, y: 494.2479}
+  m_AnchoredPosition: {x: 240, y: -105.99999}
+  m_SizeDelta: {x: 432, y: 163.99998}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114228759155532318
 MonoBehaviour:
@@ -584,6 +588,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!1 &1250935359385524
 GameObject:
   m_ObjectHideFlags: 0
@@ -661,7 +666,8 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  _themeColor: 5
+  _themeColor: 3
+  _colorMode: 2
 --- !u!114 &114806012511512440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -756,6 +762,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $StoreDescription
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 1
 --- !u!1 &1332166792205082
@@ -835,6 +842,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!1 &1518127875458420
 GameObject:
   m_ObjectHideFlags: 0
@@ -914,6 +922,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114662894430416144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1015,6 +1024,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $SantaShipInfo
   _themeColor: 100
+  _colorMode: 0
   _themeFont: 3
   _themeFontSize: 3
 --- !u!1 &1576553620671760
@@ -1238,6 +1248,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!1 &1633931789266140
 GameObject:
   m_ObjectHideFlags: 0
@@ -1279,7 +1290,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 240, y: -678.7479}
+  m_AnchoredPosition: {x: 240, y: -348.5}
   m_SizeDelta: {x: 432, y: 321}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114947576768145062
@@ -1341,6 +1352,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!114 &114915647167626120
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1448,6 +1460,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Attack
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 1
 --- !u!1 &1779333874398464
@@ -1528,6 +1541,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!114 &114671439407809684
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1627,6 +1641,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &114442814487997282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1925,3 +1940,4 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 3
+  _colorMode: 0

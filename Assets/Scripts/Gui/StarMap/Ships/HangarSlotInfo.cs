@@ -7,6 +7,7 @@ using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using Gui.Theme;
 
 namespace Gui.StarMap
 {
@@ -115,7 +116,7 @@ namespace Gui.StarMap
                 _shipIcon.sprite = _resourceLocator.GetSprite(ship.Model.ModelImage);
                 _shipIcon.color = ship.ColorScheme.HsvColor;
                 _shipNameText.text = _localization.GetString(ship.Name);
-                _shipNameText.color = ship.Model.Quality().ToColor();
+                _shipNameText.color = UiTheme.Current.GetQualityColor(ship.Model.Quality());
                 _shipLevelText.text = ship.Experience.Level.ToString();
                 //_shipClassText.text = ship.Model.Info.SizeClass.ToString(_localization);
                 _modsPanel.Initialize(ship.Model.Modifications, _resourceLocator);

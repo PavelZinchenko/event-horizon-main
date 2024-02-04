@@ -262,6 +262,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &29259242
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -340,6 +341,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!222 &30092009
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -417,6 +419,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!222 &30700284
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2377,6 +2380,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &114138222
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2585,6 +2589,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!222 &145999607
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2866,7 +2871,8 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  _themeColor: 5
+  _themeColor: 1
+  _colorMode: 11
 --- !u!222 &185049381
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4084,6 +4090,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!222 &392154446
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4241,6 +4248,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!222 &394305594
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4390,6 +4398,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &442432153
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4528,6 +4537,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 0
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!222 &476441323
@@ -5208,6 +5218,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &610297505
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5374,6 +5385,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &651360434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9671,6 +9683,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &670808858
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10254,6 +10267,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $OutOfFuelDescription
   _themeColor: 62
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 5
 --- !u!222 &679033260
@@ -10429,6 +10443,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!222 &741577115
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10677,6 +10692,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &790106744
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10910,6 +10926,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!222 &824516812
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10993,6 +11010,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &834301727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11220,6 +11238,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &912108437
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11434,6 +11453,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!222 &925698772
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11514,6 +11534,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!222 &928621210
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11610,6 +11631,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 3
+  _colorMode: 0
 --- !u!222 &984472342
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11687,6 +11709,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &988566362
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15476,6 +15499,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &1044772773
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16426,7 +16450,8 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  _themeColor: 0
+  _themeColor: 73
+  _colorMode: 0
 --- !u!222 &1099418242
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16557,6 +16582,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!222 &1121622769
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16754,6 +16780,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!222 &1140594060
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16906,6 +16933,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!222 &1159925297
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17863,6 +17891,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &1184476111
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18103,6 +18132,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &1231581088
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18344,6 +18374,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $OutOfFuel
   _themeColor: 62
+  _colorMode: 0
   _themeFont: 3
   _themeFontSize: 1
 --- !u!222 &1256333247
@@ -18597,6 +18628,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!222 &1291870594
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20741,6 +20773,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &1314533664
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22745,6 +22778,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &1326350217
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23011,7 +23045,8 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  _themeColor: 0
+  _themeColor: 71
+  _colorMode: 0
 --- !u!222 &1373928488
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23733,6 +23768,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &1432363925
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25032,6 +25068,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: +1
   _themeColor: 101
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!222 &1454856351
@@ -25390,6 +25427,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!222 &1528844678
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25823,6 +25861,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!222 &1571186039
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25930,6 +25969,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 60
+  _colorMode: 0
 --- !u!222 &1584215446
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -26081,6 +26121,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 0
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!222 &1605197461
@@ -26328,6 +26369,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!114 &1642975315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26749,17 +26791,17 @@ PrefabInstance:
     - target: {fileID: 224635645980756258, guid: 39ccf7447143d164491071df9b4436af,
         type: 3}
       propertyPath: m_Pivot.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224635645980756258, guid: 39ccf7447143d164491071df9b4436af,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224635645980756258, guid: 39ccf7447143d164491071df9b4436af,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224731243393767280, guid: 39ccf7447143d164491071df9b4436af,
         type: 3}
@@ -27052,6 +27094,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!222 &1677334675
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28400,6 +28443,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &1745113132
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28936,6 +28980,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!222 &1775848546
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -29182,6 +29227,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 1
+  _colorMode: 0
 --- !u!114 &1782411455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29548,6 +29594,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!222 &1810387275
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -29784,7 +29831,8 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  _themeColor: 0
+  _themeColor: 70
+  _colorMode: 0
 --- !u!222 &1851460441
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -29948,6 +29996,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!222 &1893562816
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30031,6 +30080,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 0
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!222 &1910067096
@@ -30111,6 +30161,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 51
+  _colorMode: 0
 --- !u!222 &1921427228
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30189,6 +30240,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 60
+  _colorMode: 0
 --- !u!114 &1930745162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30328,6 +30380,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 24.0
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 3
   _themeFontSize: 4
 --- !u!222 &1934140151
@@ -30705,7 +30758,8 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  _themeColor: 5
+  _themeColor: 1
+  _colorMode: 2
 --- !u!222 &1937356461
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30873,6 +30927,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &1974180308
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31079,6 +31134,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &2000133204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37368,6 +37424,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &2078140622
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -37623,6 +37680,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 53
+  _colorMode: 0
 --- !u!222 &2102449984
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38194,6 +38252,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &2114820174
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38471,6 +38530,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 0
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!222 &2124285051
@@ -38574,6 +38634,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &2146052118
 CanvasRenderer:
   m_ObjectHideFlags: 0

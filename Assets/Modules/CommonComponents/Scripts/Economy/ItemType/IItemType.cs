@@ -27,12 +27,4 @@ namespace Economy.ItemType
         int MaxItemsToConsume { get; }
         int MaxItemsToWithdraw { get; }
     }
-
-    public static class ItemQualityExtensions
-    {
-        public static Color ToColor(this ItemQuality quality)
-        {
-            return AppConfiguration.ColorTable.QualityColor((AppConfiguration.ColorTable.Quality)quality);
-        }
-    }
 }

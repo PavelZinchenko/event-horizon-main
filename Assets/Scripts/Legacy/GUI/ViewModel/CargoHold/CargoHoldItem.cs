@@ -28,7 +28,7 @@ namespace ViewModel
             _descriptionText.gameObject.SetActive(!string.IsNullOrEmpty(description));
             _descriptionText.text = description;
 
-            _descriptionText.color = _nameText.color = item.Type.Quality.ToColor();
+            _descriptionText.color = _nameText.color = Gui.Theme.UiTheme.Current.GetQualityColor(item.Type.Quality);
 
             _quantityText.text = item.Quantity > 1 ? item.Quantity.ToString() : string.Empty;
         }
