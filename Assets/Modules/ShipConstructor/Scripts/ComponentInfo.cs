@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using Constructor.Modification;
-using Database.Legacy;
 using Economy.ItemType;
 using GameDatabase;
 using GameDatabase.DataModel;
@@ -21,7 +19,7 @@ namespace Constructor
     {
         public bool Equals(ComponentInfo other)
         {
-            return _modification == other._modification && _quality == other._quality && Data.Id == other.Data.Id && _level == other._level;
+            return ModificationType == other.ModificationType && _quality == other._quality && Data.Id == other.Data.Id && _level == other._level;
         }
 
         public static bool operator ==(ComponentInfo c1, ComponentInfo c2)
@@ -89,7 +87,7 @@ namespace Constructor
             }
         }
 
-        public bool IsValidModification => _modification == ComponentMod.Empty || _data.PossibleModifications.Contains(_modification);
+        public bool IsValidModification => ModificationType == ComponentMod.Empty || _data.PossibleModifications.Contains(ModificationType);
 
         public static ComponentInfo CreateRandomModification(GameDatabase.DataModel.Component data, System.Random random, ModificationQuality minQuality = ModificationQuality.N3, ModificationQuality maxQuality = ModificationQuality.P3)
         {
@@ -116,7 +114,7 @@ namespace Constructor
 
         public override int GetHashCode()
         {
-            return Data.Id.GetHashCode() + ((int)_quality << 16) + _modification.Id.Value;
+            return Data.Id.GetHashCode() + ((int)_quality << 16) + ModificationType.Id.Value;
         }
 
 		[Obsolete]
@@ -129,7 +127,7 @@ namespace Constructor
                 UnityEngine.Debug.Break();
             }
 
-			var modificationType = _modification.Id.Value;
+			var modificationType = ModificationType.Id.Value;
             if (modificationType < 0 || modificationType > 0xff)
             {
                 Debug.LogError("Bad modification type " + modificationType);
@@ -141,7 +139,7 @@ namespace Constructor
             value <<= 8;
             value += (byte)_quality;
             value <<= 8;
-            value += (byte)_modification.Id.Value;
+            value += (byte)ModificationType.Id.Value;
 
             return value;
         }
@@ -150,7 +148,7 @@ namespace Constructor
 		public long SerializeToInt64()
         {
 #if UNITY_EDITOR
-			var modificationType = _modification.Id.Value;
+			var modificationType = ModificationType.Id.Value;
 			if ((int)modificationType < 0 || (int)modificationType > 0xff)
                 Debug.Break();
             if ((int)_quality < 0 || (int)_quality > 0xff)
@@ -163,7 +161,7 @@ namespace Constructor
             value <<= 8;
             value += (byte)_quality;
             value <<= 8;
-            value += (byte)_modification.Id.Value;
+            value += (byte)ModificationType.Id.Value;
             value <<= 8;
             value += (byte)_level;
             value <<= 8;
@@ -202,15 +200,15 @@ namespace Constructor
         public IComponent CreateComponent(int shipSize)
         {
             var component = _data.Create(shipSize);
-            component.Modification = ComponentModification.Create(_modification, _quality);
+            component.Modification = ComponentModification.Create(ModificationType, _quality);
             return component;
         }
 
-		public ComponentMod ModificationType => _modification;
+		public ComponentMod ModificationType => _modification ?? ComponentMod.Empty;
 
         public IModification CreateModification()
         {
-            return ComponentModification.Create(_modification, _quality);
+            return ComponentModification.Create(ModificationType, _quality);
         }
 
         public ModificationQuality ModificationQuality { get { return _quality; } }
@@ -220,7 +218,7 @@ namespace Constructor
         {
             get
             {
-                if (_modification == ComponentMod.Empty)
+                if (ModificationType == ComponentMod.Empty)
                     return ItemQuality.Common;
 
                 switch (_quality)
@@ -243,13 +241,13 @@ namespace Constructor
 
         public GameDatabase.DataModel.Component Data { get { return _data ?? GameDatabase.DataModel.Component.Empty; } }
 
-        public Economy.Price Price => Economy.Price.Common(_modification == ComponentMod.Empty ? Data.Price(): Data.Price(_quality));
+        public Economy.Price Price => Economy.Price.Common(ModificationType == ComponentMod.Empty ? Data.Price(): Data.Price(_quality));
 
         public Economy.Price PremiumPrice
         {
             get
             {
-                ModificationQuality? quality = _modification == ComponentMod.Empty ? null : _quality;
+                ModificationQuality? quality = ModificationType == ComponentMod.Empty ? null : _quality;
 #if IAP_DISABLED
                 return Economy.Price.Common(Data.PremiumPriceInCredits(quality));
 #else
@@ -288,7 +286,6 @@ namespace Constructor
         private readonly ModificationQuality _quality;
         private readonly int _level;
 
-        private const char _separator = '.';
         public const int MaxUpgradeLevel = 20;
         public static ComponentInfo Empty = new ComponentInfo();
     }
