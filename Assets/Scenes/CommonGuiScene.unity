@@ -14091,7 +14091,7 @@ MonoBehaviour:
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 0
   _initiallyHidden: 0
-  _escapeKeyAction: 0
+  _escapeKeyAction: 2
   OnInitializedEvent:
     m_PersistentCalls:
       m_Calls:
@@ -16344,7 +16344,7 @@ MonoBehaviour:
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 20992539}
   m_HorizontalScrollbarVisibility: 0
-  m_VerticalScrollbarVisibility: 0
+  m_VerticalScrollbarVisibility: 1
   m_HorizontalScrollbarSpacing: 0
   m_VerticalScrollbarSpacing: 0
   m_OnValueChanged:
