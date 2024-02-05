@@ -172,6 +172,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &48123534
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -269,6 +270,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &116876277
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -537,6 +539,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: EVENT HORIZON
   _themeColor: 0
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!114 &289575157
@@ -647,6 +650,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!114 &335400570
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1142,6 +1146,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!114 &1455831499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1427,8 +1432,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: $Loading
+  m_Text: Loading...
   _themeColor: 0
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &1637357182

@@ -28,18 +28,18 @@ public class LoadingScreen : MonoBehaviour
 	private bool _coroutineRunning;
 
 	[Inject]
-    private void Initialize(SceneManagerStateChangedSignal sceneManagerStateChangedSignal)
+    private void Initialize(
+        SceneManagerStateChangedSignal sceneManagerStateChangedSignal,
+        LocalizationChangedSignal localizationChangedSignal)
     {
         _sceneManagerStateChangedSignal = sceneManagerStateChangedSignal;
 		_sceneManagerStateChangedSignal.Event += OnSceneManagerStateChanged;
-		LocalizeText();
+        _localizationChangedSignal = localizationChangedSignal;
+        _localizationChangedSignal.Event += OnLocalizationChanged;
 	}
 
-	private void LocalizeText()
+	private void OnLocalizationChanged(string language)
 	{
-		if (string.IsNullOrEmpty(_localization.Language))
-			_localization.Initialize(_settings.Language, _database);
-
 		_shipNameText.text = _localization.GetString("$Credits_Title");
 		_loadingText.text = _localization.GetString("$Loading");
 	}
@@ -96,4 +96,5 @@ public class LoadingScreen : MonoBehaviour
     private bool _firstTime = true;
     private readonly System.Random _random = new System.Random();
     private SceneManagerStateChangedSignal _sceneManagerStateChangedSignal;
+    private LocalizationChangedSignal _localizationChangedSignal;
 }
