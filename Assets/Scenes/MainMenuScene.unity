@@ -200,6 +200,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 7
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &43330448
@@ -342,6 +343,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &43332467
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -482,6 +484,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &48222111
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -567,6 +570,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 8
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &56111230
@@ -654,6 +658,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: '*'
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &89763355
@@ -741,6 +746,7 @@ MonoBehaviour:
     m_LineSpacing: 2
   m_Text: $Credits_Graphics_Content
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!222 &131335943
@@ -828,6 +834,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 9
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &180439099
@@ -1123,6 +1130,7 @@ MonoBehaviour:
   _class: 0
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 0
+  _initiallyHidden: 0
   _escapeKeyAction: 0
   OnInitializedEvent:
     m_PersistentCalls:
@@ -1222,6 +1230,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &197487429
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1407,6 +1416,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &214547992
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1492,6 +1502,7 @@ MonoBehaviour:
     m_LineSpacing: 2
   m_Text: $Credits_Thanks_Content
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!222 &291737299
@@ -1685,6 +1696,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!222 &300970554
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2040,6 +2052,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Credits_Program
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!222 &352906827
@@ -2127,6 +2140,7 @@ MonoBehaviour:
     m_LineSpacing: 2
   m_Text: $Credits_Localization_Content
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!222 &357157491
@@ -2443,6 +2457,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 2
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &493505435
@@ -3039,6 +3054,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Credits_Title
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 0
 --- !u!222 &531943013
@@ -3226,7 +3242,7 @@ PrefabInstance:
     - target: {fileID: 8214161447537931291, guid: 3c6e9f9b8e49ad84ca1a0227e3de8cfa,
         type: 3}
       propertyPath: m_Text
-      value: $Encyclopedia
+      value: Encyclopedia
       objectReference: {fileID: 0}
     - target: {fileID: 8214161447720988075, guid: 3c6e9f9b8e49ad84ca1a0227e3de8cfa,
         type: 3}
@@ -3338,6 +3354,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 50
+  _colorMode: 0
 --- !u!114 &659914207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3490,6 +3507,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 1
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &660316687
@@ -3596,6 +3614,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &665448460
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3736,6 +3755,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &792055604
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3881,6 +3901,7 @@ MonoBehaviour:
     m_LineSpacing: 2
   m_Text: $Credits_Program_Content
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!222 &843260710
@@ -3968,6 +3989,7 @@ MonoBehaviour:
     m_LineSpacing: 2
   m_Text: $Credits_Music_Content
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!222 &897264783
@@ -4170,6 +4192,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &997611310
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4310,6 +4333,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &1009355737
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4450,6 +4474,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &1012828741
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4713,6 +4738,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &1024681262
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9688,6 +9714,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 5
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &1082205920
@@ -9772,6 +9799,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: Enter Ship Buid Id
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 3
   _themeFontSize: 8
 --- !u!222 &1084625104
@@ -9858,6 +9886,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 6
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &1086778454
@@ -9945,6 +9974,7 @@ MonoBehaviour:
     m_LineSpacing: 2
   m_Text: $Credits_GameDesign_Content
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!222 &1103463348
@@ -10260,6 +10290,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: E
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &1176104976
@@ -10446,6 +10477,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &1262059118
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10531,6 +10563,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 4
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &1267551728
@@ -10673,6 +10706,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &1384060728
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10976,6 +11010,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 
   _themeColor: 101
+  _colorMode: 0
   _themeFont: 3
   _themeFontSize: 8
 --- !u!222 &1419998228
@@ -11117,6 +11152,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &1465704981
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11262,6 +11298,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Credits_Graphics
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!222 &1544902599
@@ -11453,6 +11490,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 0
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &1686649664
@@ -11540,6 +11578,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Credits_Sound
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!222 &1687073873
@@ -11627,6 +11666,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Credits_Music
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!222 &1763969846
@@ -11714,6 +11754,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $PrivacyPolicy
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 3
   _themeFontSize: 8
 --- !u!222 &1765528654
@@ -11801,6 +11842,7 @@ MonoBehaviour:
     m_LineSpacing: 2
   m_Text: $Credits_Sound_Content
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 3
 --- !u!222 &1771479717
@@ -11888,6 +11930,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Credits_GameDesign
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!222 &1790245524
@@ -11975,6 +12018,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Credits_Thanks
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!222 &1800537397
@@ -12117,6 +12161,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &1810080115
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12277,6 +12322,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 00.00.000
   _themeColor: 0
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &1906451617
@@ -12360,6 +12406,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _themeColor: 0
+  _colorMode: 0
 --- !u!222 &1921061771
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12496,6 +12543,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 3
   _themeColor: 52
+  _colorMode: 0
   _themeFont: 0
   _themeFontSize: 0
 --- !u!222 &1953303454
@@ -12583,6 +12631,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 12345
   _themeColor: 101
+  _colorMode: 0
   _themeFont: 3
   _themeFontSize: 2
 --- !u!222 &1966632740
@@ -13049,6 +13098,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: $Credits_Localization
   _themeColor: 102
+  _colorMode: 0
   _themeFont: 1
   _themeFontSize: 8
 --- !u!222 &2033879836
@@ -13147,6 +13197,7 @@ MonoBehaviour:
   _class: 0
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 0
+  _initiallyHidden: 0
   _escapeKeyAction: 0
   OnInitializedEvent:
     m_PersistentCalls:

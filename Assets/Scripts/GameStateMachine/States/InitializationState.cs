@@ -31,8 +31,7 @@ namespace GameStateMachine.States
 			IAccount account, 
 			IDatabase database, 
             IAdsManager adsManager, 
-			ILocalization localization, 
-			IDebugManager debugManager)
+			ILocalization localization)
             : base(stateMachine, stateFactory)
         {
             _sessionData = sessionData;
@@ -42,7 +41,6 @@ namespace GameStateMachine.States
             _account = account;
             _adsManager = adsManager;
             _localization = localization;
-            _debugManager = debugManager;
         }
 
         public override StateType Type { get { return StateType.Initialization; } }
@@ -81,57 +79,40 @@ namespace GameStateMachine.States
 
 		    if (_database.IsEditable)
 		    {
-		        Debug.Log("Checking ships...");
-
-		        //var ships = Resources.LoadAll<Constructor.ShipBuild> ("Prefabs/Constructor/Builds");
-		        //var drones = Resources.LoadAll<Constructor.ShipBuild> ("Prefabs/Constructor/DroneBuilds");
-		        foreach (var item in _database.ShipBuildList)
+                GameDiagnostics.Trace.Log("Checking ship builds...");
+                
+                foreach (var item in _database.ShipBuildList)
 		        {
-		            // TODO: move to database
-		            var ship = new CommonShip(item);
-		            var debug = _debugManager.CreateLog(item.Id.ToString());
-		            var layout = new Constructor.ShipLayout(item.Ship.Layout, item.Ship.Barrels, ship.Components, debug);
+                    var ship = new CommonShip(item);
+		            var layout = new Constructor.ShipLayout(item.Ship.Layout, item.Ship.Barrels, ship.Components);
 		            if (layout.Components.Count() != ship.Components.Count)
-		            {
-		                Debug.LogError("invalid ship layout: " + item.Id);
-		                Debug.Break();
-		            }
+		                GameDiagnostics.Trace.LogError("invalid ship layout: " + item.Id);
 
 		            if ((item.Ship.ShipType == ShipType.Common || item.Ship.ShipType == ShipType.Drone) && (item.AvailableForPlayer || item.AvailableForEnemy) &&
 		                !ShipValidator.IsShipViable(new CommonShip(item), _database.ShipSettings))
 		            {
-		                Debug.LogError("invalid build: " + item.Id);
-		                Debug.Break();
+		                GameDiagnostics.Trace.LogError("invalid build: " + item.Id);
 		            }
 		        }
 
 		        var companions = _database.SatelliteBuildList; //Resources.LoadAll<Constructor.CompanionBuildWrapper> ("Prefabs/Constructor/CompanionBuilds");
 		        foreach (var item in companions)
 		        {
-		            var debug = _debugManager.CreateLog(item.Id.ToString());
 		            var components = item.Components
 		                .Select<InstalledComponent, IntegratedComponent>(ComponentExtensions.FromDatabase).ToArray();
-		            var layout = new ShipLayout(item.Satellite.Layout, item.Satellite.Barrels, components, debug);
+		            var layout = new ShipLayout(item.Satellite.Layout, item.Satellite.Barrels, components);
 		            if (layout.Components.Count() != components.Length)
-		            {
-		                Debug.LogError("invalid companion layout: " + item.Id);
-		                Debug.Break();
-		            }
+		                GameDiagnostics.Trace.LogError("invalid satellite layout: " + item.Id);
 		        }
 
-		        Debug.Log("Checking techs...");
+                GameDiagnostics.Trace.Log("Checking techs...");
 
 		        foreach (var tech in _database.TechnologyList)
 		        {
 		            var index = tech.Dependencies.IndexOf(null);
                     if (index >= 0)
-		            {
-		                _debugManager.CreateLog(tech.Id.ToString()).Write("unknown dependency - " + index);
-		                Debug.LogError("invalid tech: " + tech.Id);
-		            }
+                        GameDiagnostics.Trace.LogError($"{tech.Id}: unknown dependency - {index}");
                 }
-
-		        Debug.Log("...done");
 		    }
 
 		    Debug.Log("InitializationState: signin - " + _settings.SignedIn);
@@ -177,7 +158,6 @@ namespace GameStateMachine.States
         private readonly IAccount _account;
         private readonly IAdsManager _adsManager;
         private readonly ILocalization _localization;
-        private readonly IDebugManager _debugManager;
 
         public class Factory : Factory<InitializationState> { }
     }

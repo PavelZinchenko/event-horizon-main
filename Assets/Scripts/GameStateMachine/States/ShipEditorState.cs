@@ -78,9 +78,10 @@ namespace GameStateMachine.States
 
 			public IShip Ship { get; }
 			public IInventoryProvider Inventory { get; }
+            public bool IsShipNameEditable => true;
 
-			public bool IsTechResearched(Component component)
-			{
+            public bool CanBeUnlocked(Component component)
+            {
 				// TODO: 
 				if (component.Id.Value == 96) // Xmas bomb
 					return true;

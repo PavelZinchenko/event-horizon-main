@@ -7,7 +7,8 @@ namespace GameDatabase
 {
     public partial interface IDatabase
     {
-        public event Action DatabaseLoaded;
+        event Action<Storage.IDataStorage> DatabaseLoading;
+        event Action DatabaseLoaded;
 
         void LookForMods();
         void LoadDefault();

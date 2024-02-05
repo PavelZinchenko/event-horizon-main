@@ -28,11 +28,13 @@ namespace GameDatabase.DataModel
 		private DebugSettings(DebugSettingsSerializable serializable, Database.Loader loader)
 		{
 			Codes = new ImmutableCollection<DebugCode>(serializable.Codes?.Select(item => DebugCode.Create(item, loader)));
+			EnableDebugConsole = serializable.EnableDebugConsole;
 
 			OnDataDeserialized(serializable, loader);
 		}
 
 		public ImmutableCollection<DebugCode> Codes { get; private set; }
+		public bool EnableDebugConsole { get; private set; }
 
 		public static DebugSettings DefaultValue { get; private set; }
 	}

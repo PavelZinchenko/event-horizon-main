@@ -18,6 +18,7 @@ namespace GameDatabase
         private readonly List<ModInfo> _mods = new List<ModInfo>();
         private const string DefaultPath = "Database";
 
+        public event Action<IDataStorage> DatabaseLoading;
         public event Action DatabaseLoaded;
 
         public IEnumerable<ModInfo> AvailableMods => _mods;
@@ -133,6 +134,8 @@ namespace GameDatabase
         {
             Clear();
             _storage = null;
+
+            DatabaseLoading?.Invoke(storage);
 
             _content = LoadContent(storage);
 

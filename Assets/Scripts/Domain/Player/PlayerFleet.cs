@@ -6,7 +6,6 @@ using Session;
 using Session.Model;
 using Zenject;
 using Constructor.Ships;
-using Diagnostics;
 using GameDatabase;
 using GameDatabase.Enums;
 using UnityEngine.Assertions;
@@ -24,12 +23,10 @@ namespace GameServices.Player
             SessionCreatedSignal sessionCreatedSignal, 
             SessionAboutToSaveSignal sessionAboutToSaveSignal,
             SupporterPackPurchasedSignal supporterPackPurchasedSignal,
-            IDebugManager debugManager,
             PlayerSkillsResetSignal playerSkillsResetSignal)
             : base(dataLoadedSignal, sessionCreatedSignal)
         {
             _session = session;
-            _debugManager = debugManager;
 
             _sessionAboutToSaveSignal = sessionAboutToSaveSignal;
             _sessionAboutToSaveSignal.Event += OnSessionAboutToSave;
@@ -96,22 +93,21 @@ namespace GameServices.Player
             var components = new List<IntegratedComponent>();
             foreach (var ship in _ships)
             {
-                var debug = _debugManager.CreateLog(ship.Name);
                 var empty = Enumerable.Empty<IntegratedComponent>();
-                if (TryRemoveInvalidComponents(new ShipLayout(ship.Model.Layout, ship.Model.Barrels, empty, debug), ship.Components, components))
+                if (TryRemoveInvalidComponents(new ShipLayout(ship.Model.Layout, ship.Model.Barrels, empty), ship.Components, components))
 	                ship.Components.Assign(components);
 
                 if (ship.FirstSatellite != null)
                 {
                     if (TryRemoveInvalidComponents(new ShipLayout(ship.FirstSatellite.Information.Layout, ship.FirstSatellite.Information.Barrels, 
-                        empty, debug), ship.FirstSatellite.Components, components))
+                        empty), ship.FirstSatellite.Components, components))
 	                    ship.FirstSatellite.Components.Assign(components);
                 }
 
                 if (ship.SecondSatellite != null)
                 {
                     if (TryRemoveInvalidComponents(new ShipLayout(ship.SecondSatellite.Information.Layout, ship.SecondSatellite.Information.Barrels,
-                        empty, debug), ship.SecondSatellite.Components, components))
+                        empty), ship.SecondSatellite.Components, components))
 	                    ship.SecondSatellite.Components.Assign(components);
                 }
             }
@@ -272,7 +268,6 @@ namespace GameServices.Player
         private readonly ObservableCollection<IShip> _ships = new ObservableCollection<IShip>();
 
         private readonly ISessionData _session;
-        private readonly IDebugManager _debugManager;
         private readonly SupporterPackPurchasedSignal _supporterPackPurchasedSignal;
         private readonly SessionAboutToSaveSignal _sessionAboutToSaveSignal;
         private readonly PlayerSkillsResetSignal _playerSkillsResetSignal;

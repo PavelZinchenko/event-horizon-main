@@ -11,14 +11,14 @@ namespace GameDatabase.Utils
 {
     public static class BarrelConverter
     {
-        public static List<Barrel> Convert(Layout layout, BarrelSerializable[] serializableBarrels)
+        public static List<Barrel> Convert(Layout layout, BarrelSerializable[] serializableBarrels, int shipId = 0)
         {
             var barrels = new List<Barrel>();
             var indices = FindBarrels(layout);
             var count = serializableBarrels?.Length ?? 0;
 
             if (indices.Count != count)
-                Debug.LogException(new ArgumentOutOfRangeException("serializableBarrels", "barrels do not fit layout"));
+                Debug.LogException(new ArgumentOutOfRangeException("serializableBarrels", $"barrels do not fit layout {shipId}"));
 
             for (var i = 0; i < count && i < indices.Count; ++i)
                 barrels.Add(new Barrel(serializableBarrels[i], null, indices[i]));

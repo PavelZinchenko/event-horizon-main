@@ -8,7 +8,7 @@ namespace GameDatabase.DataModel
     {
         partial void OnDataDeserialized(ShipSerializable serializable, Database.Loader loader)
         {
-            Barrels = new ImmutableCollection<Barrel>(BarrelConverter.Convert(Layout, serializable.Barrels));
+            Barrels = new ImmutableCollection<Barrel>(BarrelConverter.Convert(Layout, serializable.Barrels, serializable.Id));
         }
     }
 }

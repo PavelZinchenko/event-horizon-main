@@ -1,7 +1,6 @@
 using System; 
 using System.Linq;
 using System.Collections.Generic;
-using Diagnostics;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
@@ -10,7 +9,7 @@ namespace Constructor
 {
 	public class ShipLayout
 	{
-		public ShipLayout(Layout layout, IEnumerable<Barrel> barrels, IEnumerable<IntegratedComponent> predefinedComponents, IDebugLog debugLog = null)
+		public ShipLayout(Layout layout, IEnumerable<Barrel> barrels, IEnumerable<IntegratedComponent> predefinedComponents)
 		{
 			_layout = layout.Data.Select(item => new LayoutElement((CellType)item)).ToArray();
 		    Size = layout.Size;
@@ -29,13 +28,12 @@ namespace Constructor
 					if (id < 0)
 					{
 					    var moduleId = component.Info.Data != null ? component.Info.Data.Id.ToString() : "invalid ID";
-					    if (debugLog == null)
-					        throw new System.ArgumentException("invalid predefined component: " + moduleId);
+                        GameDiagnostics.Trace.LogError($"invalid module installed: {moduleId}");
 
                         if (component.Info.Data != null)
-                            debugLog.Write("wrong place for module - " + moduleId);
+                            GameDiagnostics.Trace.LogError($"invalid position - [{component.X},{component.Y}]");
                         else
-                            debugLog.Write("unknown module");
+                            GameDiagnostics.Trace.LogError("unknown module");
                         continue;
 					}
 

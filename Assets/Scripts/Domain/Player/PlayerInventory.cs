@@ -18,11 +18,10 @@ namespace GameServices.Player
 
         [Inject]
         public PlayerInventory(ISessionData session, SessionDataLoadedSignal dataLoadedSignal, SessionCreatedSignal sessionCreatedSignal, 
-            SessionAboutToSaveSignal sessionAboutToSaveSignal, IDebugManager debugManager)
+            SessionAboutToSaveSignal sessionAboutToSaveSignal)
             : base(dataLoadedSignal, sessionCreatedSignal)
         {
             _session = session;
-            _debugManager = debugManager;
             _sessionAboutToSaveSignal = sessionAboutToSaveSignal;
             _sessionAboutToSaveSignal.Event += OnSessionAboutToSave;
         }
@@ -41,21 +40,19 @@ namespace GameServices.Player
         {
             Clear();
 
-            var debug = _debugManager.CreateLog("Inventory");
-
             var random = new System.Random(_session.Game.Seed);
             foreach (var item in _session.Inventory.Components.Items)
             {
                 var componentInfo = item.Key.ToComponentInfo(_database);
                 if (!componentInfo)
                 {
-                    debug.Write("Unknown module id - " + item.Key);
+                    GameDiagnostics.Trace.LogError($"Unknown module in inventory - {item.Key}");
                     continue;
                 }
 
                 if (!componentInfo.IsValidModification)
                 {
-                    debug.Write("Invalid modification " + componentInfo.ModificationType + " for module " + componentInfo.Data.Id);
+                    GameDiagnostics.Trace.LogError($"Invalid modification {componentInfo.ModificationType} for module {componentInfo.Data.Id}");
                     componentInfo = ComponentInfo.CreateRandomModification(componentInfo.Data, random, componentInfo.ModificationQuality, componentInfo.ModificationQuality);
                 }
 
@@ -105,7 +102,6 @@ namespace GameServices.Player
         private readonly GameItemCollection<ComponentInfo> _components = new GameItemCollection<ComponentInfo>();
         private readonly GameItemCollection<Satellite> _satellites = new GameItemCollection<Satellite>();
         private readonly SessionAboutToSaveSignal _sessionAboutToSaveSignal;
-        private readonly IDebugManager _debugManager;
 
         private readonly ISessionData _session;
     }

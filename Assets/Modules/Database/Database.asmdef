@@ -5,7 +5,8 @@
         "Security",
         "SecurityStub",
         "CommonComponents",
-        "CodeWriter.ExpressionParser"
+        "CodeWriter.ExpressionParser",
+        "Diagnostics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -7,7 +7,7 @@ namespace DatabaseMigration.v1
     {
 		partial void Migrate_1_2()
 		{
-			UnityEngine.Debug.LogWarning("Database migration: v1.1 -> v1.2");
+            GameDiagnostics.Trace.LogWarning("Database migration: v1.1 -> v1.2");
 
 			var lootId = 0;
 			foreach (var item in Content.LootList)

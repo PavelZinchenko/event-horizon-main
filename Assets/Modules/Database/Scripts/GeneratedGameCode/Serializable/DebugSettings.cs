@@ -16,5 +16,6 @@ namespace GameDatabase.Serializable
 	public class DebugSettingsSerializable : SerializableItem
 	{
 		public DebugCodeSerializable[] Codes;
+		public bool EnableDebugConsole;
 	}
 }

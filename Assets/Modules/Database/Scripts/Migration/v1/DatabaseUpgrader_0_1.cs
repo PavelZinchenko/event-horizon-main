@@ -7,7 +7,7 @@ namespace DatabaseMigration.v1
     {
         partial void Migrate_0_1()
         {
-            UnityEngine.Debug.LogWarning("Database migration: v1.0 -> v1.1");
+            GameDiagnostics.Trace.LogWarning("Database migration: v1.0 -> v1.1");
 
             UpdateBarrels();
             UpdateComponentStats();
