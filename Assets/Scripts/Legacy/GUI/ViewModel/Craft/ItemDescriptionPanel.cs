@@ -95,7 +95,14 @@ namespace ViewModel.Craft
             _icon.color = info.Data.Color;
             _name.text = _localization.GetString(info.Data.Name);
             _name.color = UiTheme.Current.GetQualityColor(info.ItemQuality);
-            _description.gameObject.SetActive(false);
+
+            if (!string.IsNullOrEmpty(info.Data.Description))
+            {
+                _description.gameObject.SetActive(true);
+                _description.text = _localization.Localize(info.Data.Description);
+            }
+            else
+                _description.gameObject.SetActive(false);
 
             var component = info.CreateComponent(100);
 
