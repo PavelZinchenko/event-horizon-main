@@ -139,8 +139,6 @@ namespace Constructor.Component
         public IModification Modification { get; set; }
         public int UpgradeLevel { get; set; }
 
-		public ImmutableCollection<ComponentMod> SuitableModifications => _component.PossibleModifications;
-
         private readonly int _shipSize;
         private readonly GameDatabase.DataModel.Component _component;
     }

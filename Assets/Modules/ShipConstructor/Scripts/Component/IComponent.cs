@@ -27,7 +27,6 @@ namespace Constructor.Component
 
 	    int UpgradeLevel { get; set; }
 	    IModification Modification { get; set; }
-		ImmutableCollection<ComponentMod> SuitableModifications { get; }
 	}
 
     public struct WeaponData

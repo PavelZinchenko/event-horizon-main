@@ -61,7 +61,7 @@ namespace Constructor
             if (componentQuality == ComponentQuality.P0)
                 return new ComponentInfo(component);
 
-            var modification = component.Create(100).SuitableModifications.RandomElement(random);
+            var modification = component.PossibleModifications.RandomElement(random);
             return new ComponentInfo(component, modification, componentQuality.ToModificationQuality());
         }
 
@@ -81,7 +81,7 @@ namespace Constructor
                 }
                 else
                 {
-                    var modification = component.Create(100).SuitableModifications.RandomElement(random);
+                    var modification = component.PossibleModifications.RandomElement(random);
                     yield return new ComponentInfo(component, modification, componentQuality.ToModificationQuality());
                 }
             }
@@ -95,7 +95,7 @@ namespace Constructor
                 Generic.Swap(ref minQuality, ref maxQuality);
 
             var quality = (ModificationQuality)random.SquareRange((int)minQuality, (int)maxQuality);
-            var modification = data.Create(100).SuitableModifications.RandomElement(random);
+            var modification = data.PossibleModifications.RandomElement(random);
 
             return new ComponentInfo(data, modification, quality);
         }
@@ -260,8 +260,12 @@ namespace Constructor
         {
             _data = data;
             _modification = modification;
-            _quality = quality;
-            _level = level < MaxUpgradeLevel ? level : MaxUpgradeLevel;
+            if (_modification == null || _modification == ComponentMod.Empty)
+                _quality = ModificationQuality.N3;
+            else
+                _quality = quality;
+
+            _level = Mathf.Clamp(level, 0, MaxUpgradeLevel);
         }
 
         private static ModificationQuality FromItemQuality(ItemQuality itemQuality, System.Random random)
