@@ -78,6 +78,7 @@ namespace GameStateMachine.States
 
 			public IShip Ship { get; }
 			public IInventoryProvider Inventory { get; }
+            public IShipDataProvider ShipDataProvider => new EmptyDataProvider();
             public bool IsShipNameEditable => true;
 
             public bool CanBeUnlocked(Component component)

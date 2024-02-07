@@ -27,4 +27,14 @@ public static class RotationHelpers
 				point.x * Mathf.Cos(angleRadians) - point.y * Mathf.Sin(angleRadians),
 				point.y * Mathf.Cos(angleRadians) + point.x * Mathf.Sin(angleRadians));
 	}
+
+    public static Vector2 BoundingRect(float width, float height, float rotation)
+    {
+        var angleRadians = rotation * Mathf.Deg2Rad;
+        float cosAngle = Mathf.Abs(Mathf.Cos(angleRadians));
+        float sinAngle = Mathf.Abs(Mathf.Sin(angleRadians));
+        float boundWidth = height * sinAngle + width * cosAngle;
+        float boundHeight = height * cosAngle + width * sinAngle;
+        return new Vector2(boundWidth, boundHeight);
+    }
 }
