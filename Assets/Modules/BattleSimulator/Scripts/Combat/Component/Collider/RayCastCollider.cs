@@ -73,7 +73,7 @@ namespace Combat.Component.Collider
 					var collider = _buffer[i].collider;
 					if (collider == null) continue;
 					var target = collider.GetComponent<ICollider>();
-					if (target.Unit == Source || target.Unit.Type.Owner == Source)
+					if (Source != null && (target.Unit == Source || target.Unit.Type.Owner == Source))
 						continue;
 
 					other = target;

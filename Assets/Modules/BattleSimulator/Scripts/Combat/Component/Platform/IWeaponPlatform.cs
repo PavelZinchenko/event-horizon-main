@@ -11,6 +11,7 @@ namespace Combat.Component.Platform
     {
         [Obsolete] UnitType Type { get; }
         IBody Body { get; }
+        IUnit Owner { get; }
         IResourcePoints EnergyPoints { get; }
         bool IsTemporary { get; }
 

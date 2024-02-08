@@ -103,6 +103,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 80f67db487f359744b2ea8048da3de78, type: 3}
   - {fileID: 21300000, guid: 889e05c4e36cc2a41bb001da7c644245, type: 3}
   - {fileID: 21300000, guid: ad0e46f4346fe1d469766a6a5a059d52, type: 3}
+  - {fileID: 21300000, guid: 86d46c153e9e83e45a00c0f3a3b03a6b, type: 3}
   - {fileID: 21300000, guid: 6a062045fa4f10e42b2c5cc6ae0ce87c, type: 3}
   - {fileID: 21300000, guid: cc6b7f5502f7d4e43b59e981b5b9b473, type: 3}
   - {fileID: 21300000, guid: 655f2d65eb770a140b591396db37775e, type: 3}
@@ -227,6 +228,7 @@ SpriteAtlas:
   - engine1
   - biogun
   - block
+  - rocket2x4
   - fueltank11
   - shield_capacitor1
   - inertial1

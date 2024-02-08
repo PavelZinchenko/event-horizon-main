@@ -72,6 +72,7 @@ namespace Constructor
         public StatMultiplier VelocityMultiplier;
         public StatMultiplier HitPointsMultiplier;
         public StatMultiplier WeightMultiplier;
+        public StatMultiplier EffectPowerMultiplier;
         public Color? Color;
     }
 

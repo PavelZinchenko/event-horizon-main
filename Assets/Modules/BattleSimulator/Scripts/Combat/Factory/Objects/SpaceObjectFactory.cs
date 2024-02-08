@@ -298,7 +298,7 @@ namespace Combat.Factory
             var collisionBehaviour = new BulletCollisionBehaviour();
             collisionBehaviour.AddAction(new ApplyExplosionDamageAction(damageType, damage, radius, 0));
             collisionBehaviour.AddAction(new DrainEnergyAction(energyDrain, BulletImpactType.HitAllTargets));
-            collisionBehaviour.AddAction(new DamageShieldAction(shieldDamage, true));
+            collisionBehaviour.AddAction(new DamageShieldAction(BulletImpactType.HitAllTargets, shieldDamage));
 
             unit.SetCollisionBehaviour(collisionBehaviour);
 

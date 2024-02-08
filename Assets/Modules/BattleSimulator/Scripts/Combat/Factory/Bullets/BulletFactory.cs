@@ -68,7 +68,7 @@ namespace Combat.Factory
 
             var bullet = CreateUnit(body, view, bulletGameObject);
             var collisionBehaviour = CreateCollisionBehaviour(bullet);
-            bullet.Collider = ConfigureCollider(bulletGameObject.GetComponent<ICollider>(true), bullet);
+            bullet.Collider = ConfigureCollider(bulletGameObject.GetComponent<ICollider>(true), bullet, parent);
             bullet.CollisionBehaviour = collisionBehaviour;
             bullet.Controller = CreateController(parent, bullet, bulletSpeed, spread, rotation);
             bullet.DamageHandler = CreateDamageHandler(bullet);
@@ -104,17 +104,21 @@ namespace Combat.Factory
                 else if (effect.Type == ImpactEffectType.Pull)
                     collisionBehaviour.AddAction(new PushAction(-effect.Power, impactType));
                 else if (effect.Type == ImpactEffectType.DrainEnergy)
-                    collisionBehaviour.AddAction(new DrainEnergyAction(effect.Power, impactType));
+                    collisionBehaviour.AddAction(new DrainEnergyAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.SiphonHitPoints)
                     collisionBehaviour.AddAction(new SiphonHitPointsAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, effect.Factor, impactType));
                 else if (effect.Type == ImpactEffectType.SlowDown)
                     collisionBehaviour.AddAction(new SlowDownAction(effect.Power, impactType));
                 else if (effect.Type == ImpactEffectType.CaptureDrones)
-                    collisionBehaviour.AddAction(new CaptureDroneAction(impactType));
+                    collisionBehaviour.AddAction(new AffectDroneAction(impactType, AffectDroneAction.EffectType.Capture));
+                else if (effect.Type == ImpactEffectType.DriveDronesCrazy)
+                    collisionBehaviour.AddAction(new AffectDroneAction(impactType, AffectDroneAction.EffectType.DriveCrazy));
                 else if (effect.Type == ImpactEffectType.Repair)
                     collisionBehaviour.AddAction(new RepairAction(effect.Power*_stats.DamageMultiplier, impactType, effect.DamageType, effect.Factor, _owner.Type.Side));
                 else if (effect.Type == ImpactEffectType.Teleport)
                     collisionBehaviour.AddAction(new TeleportAction(effect.Power));
+                else if (effect.Type == ImpactEffectType.DrainShield)
+                    collisionBehaviour.AddAction(new DamageShieldAction(impactType, effect.Power * _stats.DamageMultiplier));
                 else if (effect.Type == ImpactEffectType.Devour)
                     collisionBehaviour.AddAction(new DevourAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.RestoreLifetime)
@@ -201,10 +205,10 @@ namespace Combat.Factory
             return view;
         }
 
-        private ICollider ConfigureCollider(ICollider collider, IUnit unit)
+        private ICollider ConfigureCollider(ICollider collider, IUnit unit, IWeaponPlatform weaponPlatform)
         {
             collider.Unit = unit;
-			collider.Source = _owner;
+			collider.Source = weaponPlatform.Owner;
 
             if (_ammunition.Body.Type == BulletType.Continuous)
                 collider.MaxRange = _stats.Range;
@@ -469,16 +473,22 @@ namespace Combat.Factory
                 if (trigger.VisualEffect == null) return;
 
                 var color = trigger.ColorMode.Apply(trigger.Color, _factory._stats.Color);
+                var size = trigger.Size > 0 ? trigger.Size : 1.0f;
 
-                AddAction(bullet, trigger, new SpawnEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, trigger.Size,
-                    trigger.Lifetime, condition));
+                AddAction(bullet, trigger, new SpawnEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, 
+                    size * _factory._stats.BodySize, trigger.Lifetime, condition));
             }
 
             private BulletFactory CreateFactory(Ammunition ammunition, BulletTrigger_SpawnBullet trigger)
             {
                 var stats = _factory._statModifier;
                 stats.Color = trigger.ColorMode.Apply(trigger.Color, _factory._stats.Color);
-                if (trigger.PowerMultiplier > 0) stats.DamageMultiplier *= trigger.PowerMultiplier;
+                if (trigger.PowerMultiplier > 0)
+                {
+                    stats.DamageMultiplier *= trigger.PowerMultiplier;
+                    stats.EffectPowerMultiplier *= trigger.PowerMultiplier;
+                }
+
                 if (trigger.Size > 0)
                 {
                     stats.AoeRadiusMultiplier *= trigger.Size;

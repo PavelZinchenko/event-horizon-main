@@ -5,10 +5,17 @@ using GameDatabase.Enums;
 
 namespace Combat.Collision.Behaviour.Action
 {
-    public class CaptureDroneAction : ICollisionAction
+    public class AffectDroneAction : ICollisionAction
     {
-        public CaptureDroneAction(BulletImpactType impactType)
+        public enum EffectType 
         {
+            DriveCrazy,
+            Capture,
+        }
+
+        public AffectDroneAction(BulletImpactType impactType, EffectType effectType)
+        {
+            _effectType = effectType;
             _impactType = impactType;
         }
 
@@ -20,7 +27,16 @@ namespace Combat.Collision.Behaviour.Action
             if (target.Type.Class != UnitClass.Drone && target.Type.Class != UnitClass.Missile)
                 return;
 
-            target.Type.Owner = self.Type.Owner;
+            switch (_effectType)
+            {
+                case EffectType.Capture:
+                    target.Type.Owner = self.Type.Owner;
+                    break;
+                case EffectType.DriveCrazy:
+                    target.Type.Owner = null;
+                    break;
+            }
+
 
             _isAlive = _impactType == BulletImpactType.DamageOverTime || _impactType == BulletImpactType.HitAllTargets;
         }
@@ -28,6 +44,7 @@ namespace Combat.Collision.Behaviour.Action
         public void Dispose() {}
 
         private bool _isAlive = true;
+        private readonly EffectType _effectType;
         private readonly BulletImpactType _impactType;
     }
 }

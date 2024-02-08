@@ -20,6 +20,7 @@ namespace Combat.Component.Platform
 
         public UnitType Type { get { return _ship.Type; } }
         public IBody Body { get { return _body; } }
+        public IUnit Owner => _ship;
         public IResourcePoints EnergyPoints { get { return _ship.Stats.Energy; } }
         public bool IsTemporary { get { return false; } }
 

@@ -238,7 +238,7 @@ namespace Combat.Factory
                 collisionBehaviour.AddAction(new StrikeAction(_owner != null ? _owner.Stats.WeaponDamageMultiplier : 1.0f, false));
 
             if (_stats.AmmunitionClass == AmmunitionClassObsolete.DroneControl)
-                collisionBehaviour.AddAction(new CaptureDroneAction(BulletImpactType.HitFirstTarget));
+                collisionBehaviour.AddAction(new AffectDroneAction(BulletImpactType.HitFirstTarget, AffectDroneAction.EffectType.Capture));
 
             if (_stats.AmmunitionClass == AmmunitionClassObsolete.Immobilizer || _stats.AmmunitionClass == AmmunitionClassObsolete.HomingImmobilizer)
                 collisionBehaviour.AddAction(new SlowDownAction(_bulletStats.Lifetime, BulletImpactType.HitFirstTarget));

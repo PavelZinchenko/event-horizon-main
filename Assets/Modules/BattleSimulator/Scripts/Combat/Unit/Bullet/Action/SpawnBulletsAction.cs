@@ -16,7 +16,7 @@ namespace Combat.Component.Bullet.Action
     {
 	    public SpawnBulletsAction(IBulletFactory factory, int magazine, IBulletSpawnSettings spawnSettings, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
         {
-            Type = parent.Type;
+            Owner = parent;
             _body = new BodyWrapper(parent.Body);
             _factory = factory;
             _magazine = magazine;
@@ -57,8 +57,9 @@ namespace Combat.Component.Bullet.Action
             //_soundPlayer.Stop(GetHashCode());
         }
 
-        public UnitType Type { get; private set; }
+        public UnitType Type => Owner.Type;
         public IBody Body { get { return _body; } }
+        public IUnit Owner { get; }
         public IResourcePoints EnergyPoints { get; private set; }
         public bool IsTemporary { get { return true; } }
         public float FixedRotation { get { return 0; } }

@@ -43,7 +43,7 @@ namespace Combat.Component.Collider
             {
                 var collider = _buffer[i];
                 var other = collider.GetComponent<ICollider>();
-				if (other.Unit == Source || other.Unit.Type.Owner == Source)
+				if (Source != null && (other.Unit == Source || other.Unit.Type.Owner == Source))
 					continue;
 
 				var target = other.Unit;

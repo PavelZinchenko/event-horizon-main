@@ -1,0 +1,34 @@
+{
+  "ItemType": 25,
+  "Id": 127,
+  "Body": {
+    "Type": 2,
+    "Size": 1.0,
+    "Lifetime": 0.5,
+    "Color": "#FF0000",
+    "EnergyCost": 1.0,
+    "FriendlyFire": true
+  },
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "VisualEffect": 2,
+      "Color": "#00000000"
+    }
+  ],
+  "ImpactType": 1,
+  "Effects": [
+    {
+      "Type": 3,
+      "Power": 1.0
+    },
+    {
+      "Type": 11,
+      "Power": 1.0
+    },
+    {
+      "Type": 12
+    }
+  ]
+}

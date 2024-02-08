@@ -72,14 +72,17 @@ namespace Combat.Factory
 					switch (_ammunition.Effects[i].Type)
 					{
 						case ImpactEffectType.Damage:
-						case ImpactEffectType.SiphonHitPoints:
-							capability |= WeaponCapability.DamageEnemy;
+                        case ImpactEffectType.SiphonHitPoints:
+                        case ImpactEffectType.DrainEnergy:
+                        case ImpactEffectType.DrainShield:
+                            capability |= WeaponCapability.DamageEnemy;
 							break;
 						case ImpactEffectType.Repair:
 							capability |= WeaponCapability.RepairAlly;
 							break;
-						case ImpactEffectType.CaptureDrones:
-							capability |= WeaponCapability.CaptureDrone;
+                        case ImpactEffectType.CaptureDrones:
+                        case ImpactEffectType.DriveDronesCrazy:
+                            capability |= WeaponCapability.CaptureDrone;
 							break;
 					}
 				}
@@ -145,7 +148,7 @@ namespace Combat.Factory
 		public float Range { get { return _ammunition.Body.Range * RangeMultiplier; } }
         public float HitPoints { get { return _ammunition.Body.HitPoints * HitPointsMultiplier * _statModifier.HitPointsMultiplier.Value; } }
         public float DamageMultiplier { get { return PowerLevel * _statModifier.DamageMultiplier.Value; } }
-
+        public float EffectPowerMultiplier { get { return PowerLevel * _statModifier.EffectPowerMultiplier.Value; } }
 
         public float GetBulletSpeed()
         {

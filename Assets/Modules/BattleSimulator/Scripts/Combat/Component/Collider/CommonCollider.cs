@@ -90,21 +90,25 @@ namespace Combat.Component.Collider
             _activeCollisions.Clear();
         }
 
+        private bool IsValidCollider(ICollider collider)
+        {
+            if (collider == null) return false;
+            var unit = collider.Unit;
+            if (unit == null || unit.Body == null) return false;
+            
+            if (Source == null) return true;
+            if (unit == Source || unit.Type.Owner == Source) return false;
+
+            return true;
+        }
+
         private void OnTriggerEnter2D(Collider2D collider)
         {
             if (_collisionManager == null || _unit == null || !collider)
                 return;
 
             var other = collider.gameObject.GetComponent<ICollider>();
-            if (other == null || other.Unit == null || other.Unit.Body == null)
-            {
-                Debug.LogError("invalid collider: " + other);
-                //Debug.Break();
-                return;
-            }
-
-            //if (!TryAddActiveCollision(other.Unit))
-            //    return;
+            if (!IsValidCollider(other)) return;
 
             var isNew = _recentTrigger != other.Unit;
             _recentTrigger = other.Unit;
@@ -120,15 +124,7 @@ namespace Combat.Component.Collider
                 return;
 
             var other = collider.gameObject.GetComponent<ICollider>();
-            if (other == null || other.Unit == null || other.Unit.Body == null)
-            {
-                Debug.LogError("invalid collider: " + other);
-                //Debug.Break();
-                return;
-            }
-
-            //if (!TryUpdateActiveCollision(other.Unit))
-            //    return;
+            if (!IsValidCollider(other)) return;
 
             LastContactPoint = Unit.Body.WorldPosition();// + RotationHelpers.Direction(Unit.Body.WorldRotation())*Unit.Body.Scale/2;
             var hitPoint = LastContactPoint + Unit.Body.WorldVelocity().normalized * Unit.Body.Scale/2;
@@ -154,12 +150,7 @@ namespace Combat.Component.Collider
                 return;
 
             var other = collision.collider.gameObject.GetComponent<ICollider>();
-            if (other == null || other.Unit == null)
-            {
-                Debug.LogError("invalid collider: " + other);
-                //Debug.Break();
-                return;
-            }
+            if (!IsValidCollider(other)) return;
 
             if (!TryAddActiveCollision(other.Unit))
                 return;
@@ -176,11 +167,7 @@ namespace Combat.Component.Collider
         private void OnCollisionExit2D(Collision2D collision)
         {
             var other = collision.collider.gameObject.GetComponent<ICollider>();
-            if (other == null || other.Unit == null)
-            {
-                Debug.LogError("invalid collider: " + other);
-                return;
-            }
+            if (!IsValidCollider(other)) return;
 
             RemoveActiveCollision(collision.gameObject.GetComponent<ICollider>().Unit);
         }
@@ -191,12 +178,7 @@ namespace Combat.Component.Collider
                 return;
 
             var other = collision.collider.gameObject.GetComponent<ICollider>();
-            if (other == null || other.Unit == null)
-            {
-                Debug.LogError("invalid collider: " + other);
-                //Debug.Break();
-                return;
-            }
+            if (!IsValidCollider(other)) return;
 
             if (!TryUpdateActiveCollision(other.Unit))
                 return;
@@ -226,7 +208,7 @@ namespace Combat.Component.Collider
 
         private bool TryAddActiveCollision(IUnit unit)
         {
-            if (unit == null || unit == Source || unit.Type.Owner == Source || _activeCollisions.ContainsKey(unit))
+            if (_activeCollisions.ContainsKey(unit))
                 return false;
 
             _activeCollision = unit;
@@ -237,11 +219,7 @@ namespace Combat.Component.Collider
 
         private bool TryUpdateActiveCollision(IUnit unit)
         {
-            if (unit == null || unit == Source || unit.Type.Owner == Source)
-                return false;
-
-            int frameId;
-            if (_activeCollisions.TryGetValue(unit, out frameId) && frameId == _frameId)
+            if (_activeCollisions.TryGetValue(unit, out int frameId) && frameId == _frameId)
                 return false;
 
             if (_activeCollision == unit)

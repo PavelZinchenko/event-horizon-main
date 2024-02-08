@@ -222,7 +222,7 @@ namespace GameDatabase.DataModel
 			Quantity = UnityEngine.Mathf.Clamp(serializable.Quantity, 0, 1000);
 			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 100f);
 			RandomFactor = UnityEngine.Mathf.Clamp(serializable.RandomFactor, 0f, 1f);
-			PowerMultiplier = UnityEngine.Mathf.Clamp(serializable.PowerMultiplier, 0f, 1000f);
+			PowerMultiplier = UnityEngine.Mathf.Clamp(serializable.PowerMultiplier, 0f, 3.402823E+38f);
 			MaxNestingLevel = UnityEngine.Mathf.Clamp(serializable.MaxNestingLevel, 0, 100);
 			_rotation = new Expressions.IntToFloat(serializable.Rotation, -2147483648, 2147483647, variableResolver) { ParamName1 = "i" };
 			Rotation = _rotation.Evaluate;
@@ -425,7 +425,7 @@ namespace GameDatabase.DataModel
         {
 			var variableResolver = GetVariableResolver();
 			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 100f);
-			PowerMultiplier = UnityEngine.Mathf.Clamp(serializable.PowerMultiplier, 0f, 1000f);
+			PowerMultiplier = UnityEngine.Mathf.Clamp(serializable.PowerMultiplier, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
