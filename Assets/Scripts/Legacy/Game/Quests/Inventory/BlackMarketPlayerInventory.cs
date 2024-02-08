@@ -11,9 +11,13 @@ namespace GameModel
 	{
 		public class BlackMarketPlayerInventory : IInventory
 		{
-		    public BlackMarketPlayerInventory(PlayerResources playerResources, ItemTypeFactory itemTypeFactory)
+		    public BlackMarketPlayerInventory(
+                ProductFactory productFactory,
+                PlayerResources playerResources, 
+                ItemTypeFactory itemTypeFactory)
 		    {
-		        _playerResources = playerResources;
+                _productFactory = productFactory;
+                _playerResources = playerResources;
 		        _itemTypeFactory = itemTypeFactory;
 		    }
 
@@ -28,14 +32,13 @@ namespace GameModel
 #else
 				    var itemType = _itemTypeFactory.CreateCurrencyItem(Currency.Stars);
                     if (_playerResources.Stars > 0)
-                        yield return new PlayerProduct(_playerResources, itemType, itemType.MaxItemsToWithdraw);
+                        yield return _productFactory.CreatePlayerProduct(itemType, itemType.MaxItemsToWithdraw);
 #endif
                 }
             }
-			
-			//public int Money { get { return Game.Session.Player.Money; } }
 
-		    private readonly PlayerResources _playerResources;
+            private readonly ProductFactory _productFactory;
+            private readonly PlayerResources _playerResources;
 		    private readonly ItemTypeFactory _itemTypeFactory;
 
 		}

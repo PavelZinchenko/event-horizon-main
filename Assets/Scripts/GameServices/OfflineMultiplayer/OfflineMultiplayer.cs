@@ -152,7 +152,7 @@ namespace GameServices.Multiplayer
             builder.Rules = Model.Factories.CombatRules.Arena();
 
             if (enemy.Id > 0)
-                builder.AddSpecialReward(new Product(_factory.CreateCurrencyItem(Currency.Tokens), price));
+                builder.AddSpecialReward(CommonProduct.Create(_factory.CreateCurrencyItem(Currency.Tokens), price));
 
             _startBattleTrigger.Fire(builder.Build(), model => OnCombatCompleted(enemy, model));
             Status = Status.Ready;

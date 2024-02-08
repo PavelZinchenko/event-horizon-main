@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Combat.Component.Unit.Classification;
-using Economy.ItemType;
 using Economy.Products;
 using GameModel;
 using GameModel.Quests;
@@ -21,7 +19,7 @@ namespace Combat.Domain
                 {
                     IProduct product;
                     if (_items.TryGetValue(item.Type.Id, out product))
-                        _items[item.Type.Id] = new Product(item.Type, item.Quantity + product.Quantity);
+                        _items[item.Type.Id] = CommonProduct.Create(item.Type, item.Quantity + product.Quantity);
                     else
                         _items.Add(item.Type.Id, item);
                 }

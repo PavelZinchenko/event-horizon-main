@@ -82,9 +82,9 @@ namespace Economy.ItemType
             items.AddRange(_database.ComponentList.CommonAndRare().RandomUniqueElements(value / 25, random));
 
             foreach (var item in items)
-                yield return new Product(_itemTypeFactory.CreateComponentItem(ComponentInfo.CreateRandomModification(item, random, ModificationQuality.P2)));
+                yield return CommonProduct.Create(_itemTypeFactory.CreateComponentItem(ComponentInfo.CreateRandomModification(item, random, ModificationQuality.P2)));
 
-            yield return new Product(_itemTypeFactory.CreateCurrencyItem(Currency.Snowflakes), random.Range(15, 25));
+            yield return CommonProduct.Create(_itemTypeFactory.CreateCurrencyItem(Currency.Snowflakes), random.Range(15, 25));
         }
 
         private readonly int _seed;

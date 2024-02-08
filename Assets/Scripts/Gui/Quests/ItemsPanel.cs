@@ -23,7 +23,7 @@ namespace Gui.Quests
             if (loot != null && loot.Items.Any())
             {
                 gameObject.SetActive(true);
-                _layoutGroup.transform.InitializeElements<ViewModel.Common.RewardItem, IProduct>(loot.Items.Select(item => (IProduct)new Product(item.Type, item.Quantity)), UpdateItem);
+                _layoutGroup.transform.InitializeElements<ViewModel.Common.RewardItem, IProduct>(loot.Items.Select(item => CommonProduct.Create(item.Type, item.Quantity)), UpdateItem);
                 _descriptionText.text = string.Empty;
                 _scrollRect.content.anchoredPosition = Vector2.zero;
             }

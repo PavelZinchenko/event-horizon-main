@@ -130,7 +130,7 @@ namespace DataModel.Technology
             
             var defaultBuild = ShipBuildQuery.PlayerShips(_database).All.FirstOrDefault(build => build.Ship.Id == Ship.Id);
             var ship = new CommonShip(model, defaultBuild?.Components.Select<InstalledComponent,IntegratedComponent>(Constructor.ComponentExtensions.FromDatabase) ?? Enumerable.Empty<IntegratedComponent>());
-			return new Product(_factory.CreateMarketShipItem(ship));
+			return CommonProduct.Create(_factory.CreateMarketShipItem(ship));
 		}
 
 	    public Ship Ship { get; private set; }
@@ -205,13 +205,13 @@ namespace DataModel.Technology
 	        switch (quality)
 	        {
 	            case CraftItemQuality.Common:
-	                return new Product(_factory.CreateComponentItem(new ComponentInfo(Component)));
+	                return CommonProduct.Create(_factory.CreateComponentItem(new ComponentInfo(Component)));
                 case CraftItemQuality.Improved:
-                    return new Product(_factory.CreateComponentItem(ComponentInfo.CreateRandomModification(Component, random, ModificationQuality.P1, ModificationQuality.P1)));
+                    return CommonProduct.Create(_factory.CreateComponentItem(ComponentInfo.CreateRandomModification(Component, random, ModificationQuality.P1, ModificationQuality.P1)));
                 case CraftItemQuality.Excellent:
-                    return new Product(_factory.CreateComponentItem(ComponentInfo.CreateRandomModification(Component, random, ModificationQuality.P2, ModificationQuality.P2)));
+                    return CommonProduct.Create(_factory.CreateComponentItem(ComponentInfo.CreateRandomModification(Component, random, ModificationQuality.P2, ModificationQuality.P2)));
                 case CraftItemQuality.Superior:
-                    return new Product(_factory.CreateComponentItem(ComponentInfo.CreateRandomModification(Component, random, ModificationQuality.P2, ModificationQuality.P3)));
+                    return CommonProduct.Create(_factory.CreateComponentItem(ComponentInfo.CreateRandomModification(Component, random, ModificationQuality.P2, ModificationQuality.P3)));
                 default:
                     throw new InvalidEnumArgumentException();
             }
@@ -244,7 +244,7 @@ namespace DataModel.Technology
             if (quality != CraftItemQuality.Common)
                 throw new ArgumentException();
 
-	        return new Product(_factory.CreateSatelliteItem(_satellite));
+	        return CommonProduct.Create(_factory.CreateSatelliteItem(_satellite));
 	    }
 
 	    public override CraftingPrice GetCraftPrice(CraftItemQuality quality)

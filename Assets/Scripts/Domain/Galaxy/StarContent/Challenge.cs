@@ -98,7 +98,8 @@ namespace Galaxy.StarContent
             var step = GetCurrentLevel(starId);
             var level = _starData.GetLevel(starId);
 
-            yield return new Product(_lootGenerator.GetRandomComponent(level + (step + 1) * 10, starId + step + 3456, false));
+            if (_lootGenerator.TryGetRandomComponent(level + (step + 1) * 10, starId + step + 3456, false, out var product))
+                yield return product;
 
             if (step + 1 < MaxLevel)
                 yield break;

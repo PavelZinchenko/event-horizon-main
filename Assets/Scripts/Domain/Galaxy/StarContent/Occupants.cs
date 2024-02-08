@@ -112,14 +112,14 @@ namespace Galaxy.StarContent
 		        builder.Rules = Model.Factories.CombatRules.Faction(region.Faction, region.MilitaryPower);
 
                 if (_random.RandomInt(starId + 123, 100) <= 10)
-                    builder.AddSpecialReward(new Product(_itemTypeFactory.CreateResearchItem(region.Faction)));
+                    builder.AddSpecialReward(CommonProduct.Create(_itemTypeFactory.CreateResearchItem(region.Faction)));
             }
             else
 		    {
 		        builder.Rules = Model.Factories.CombatRules.Neutral(level);
 
                 if (_random.RandomInt(starId + 123, 100) <= 20)
-                    builder.AddSpecialReward(new Product(_itemTypeFactory.CreateResearchItem(Faction.Empty)));
+                    builder.AddSpecialReward(CommonProduct.Create(_itemTypeFactory.CreateResearchItem(Faction.Empty)));
             }
 
             return builder;

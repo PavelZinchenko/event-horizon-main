@@ -40,7 +40,7 @@ namespace GameModel.Quests
 
         public IInventory CreateBlackMarketPlayerInventory(int starId)
         {
-            return new BlackMarketPlayerInventory(_playerResources, _itemTypeFactory);
+            return new BlackMarketPlayerInventory(_productFactory, _playerResources, _itemTypeFactory);
         }
 
         public IInventory CreateFactionInventory(Region region)
@@ -60,12 +60,12 @@ namespace GameModel.Quests
 
         public IInventory CreatePlayerInventory()
         {
-            return new PlayerInventory(_playerInventory, _playerFleet, _playerResources, _itemTypeFactory, _database);
+            return new PlayerInventory(_productFactory, _playerInventory, _playerFleet, _playerResources, _itemTypeFactory, _database);
         }
 
         public IInventory CreateCargoHoldInventory()
         {
-            return new CargoHoldInventory(_playerInventory, _playerFleet, _playerResources, _itemTypeFactory, _database);
+            return new CargoHoldInventory(_productFactory, _playerInventory, _playerFleet, _playerResources, _itemTypeFactory, _database);
         }
 
         public IInventory CreateArenaInventory(Galaxy.Star star)

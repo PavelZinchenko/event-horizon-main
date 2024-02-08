@@ -130,15 +130,15 @@ public class Cheats
             {
                 //new Product(_itemTypeFactory.CreatePurchasedStarsItem(), 123),
                 //new Product(_itemTypeFactory.CreateSupporterPackItem()),
-                new Product(_itemTypeFactory.CreateCurrencyItem(Currency.Stars), 1000),
-                new Product(_itemTypeFactory.CreateCurrencyItem(Currency.Credits), 1000000),
+                CommonProduct.Create(_itemTypeFactory.CreateCurrencyItem(Currency.Stars), 1000),
+                CommonProduct.Create(_itemTypeFactory.CreateCurrencyItem(Currency.Credits), 1000000),
                 //new Product(_itemTypeFactory.CreateShipItem(new CommonShip(Ships.Get("fns2")))),
                 //new Product(_itemTypeFactory.CreateShipItem(new CommonShip(Ships.Get("f0s4")).OfLevel(20))),
                 //new Product(_itemTypeFactory.CreateShipItem(new CommonShip(Ships.Get("fas4")).OfLevel(20))),
 
                 //new Product(_itemTypeFactory.CreatePurchasedStarsItem(), 200),
                 //new Product(_itemTypeFactory.CreateShipItem(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(94))))), // easter egg
-                new Product(_itemTypeFactory.CreateMarketShipItem(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(262))))), // veletz
+                CommonProduct.Create(_itemTypeFactory.CreateMarketShipItem(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(262))))), // veletz
                 //new Product(_itemTypeFactory.CreateShipItem(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(38))).OfLevel(25))),
 
                 //new Product(_itemTypeFactory.CreateComponentItem(ComponentInfo.CreateRandomModification(_database.GetComponent(LegacyComponentNames.GetId("XmasBomb_M_1")), random, ModificationQuality.P3)), 10)
@@ -309,37 +309,37 @@ public class Cheats
                 case ItemType.Stars:
                     {
                         var amount = Helpers.DeserializeInt(data, ref index);
-                        yield return new Product(_itemTypeFactory.CreateCurrencyItem(Currency.Stars), amount);
+                        yield return CommonProduct.Create(_itemTypeFactory.CreateCurrencyItem(Currency.Stars), amount);
                     }
                     break;
                 case ItemType.Money:
                     {
                         var amount = Helpers.DeserializeInt(data, ref index);
-                        yield return new Product(_itemTypeFactory.CreateCurrencyItem(Currency.Credits), amount);
+                        yield return CommonProduct.Create(_itemTypeFactory.CreateCurrencyItem(Currency.Credits), amount);
                     }
                     break;
                 case ItemType.Ship:
                     {
                         var ship = ShipDataExtensions.FromShipData(_database, ShipData.Deserialize(data, ref index));
-                        yield return new Product(_itemTypeFactory.CreateMarketShipItem(ship));
+                        yield return CommonProduct.Create(_itemTypeFactory.CreateMarketShipItem(ship));
                     }
                     break;
                 case ItemType.Component:
                     {
                         var component = ComponentInfo.FromInt64(_database, Helpers.DeserializeInt(data, ref index));
                         var amount = Helpers.DeserializeInt(data, ref index);
-                        yield return new Product(_itemTypeFactory.CreateComponentItem(component), amount);
+                        yield return CommonProduct.Create(_itemTypeFactory.CreateComponentItem(component), amount);
                     }
                     break;
                 case ItemType.PurchasedStars:
                     {
                         var amount = Helpers.DeserializeInt(data, ref index);
-                        yield return new Product(_itemTypeFactory.CreatePurchasedStarsItem(), amount);
+                        yield return CommonProduct.Create(_itemTypeFactory.CreatePurchasedStarsItem(), amount);
                     }
                     break;
                 case ItemType.SupporterPack1:
                     {
-                        yield return new Product(_itemTypeFactory.CreateSupporterPackItem(), 1);
+                        yield return CommonProduct.Create(_itemTypeFactory.CreateSupporterPackItem(), 1);
                     }
                     break;
             }

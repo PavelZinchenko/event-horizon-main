@@ -45,12 +45,18 @@ namespace Constructor
             _level = 0;
         }
 
-        public static ComponentInfo CreateRandom(IDatabase database, int level, Faction faction, System.Random random, bool allowRare, ComponentQuality maxQuality = ComponentQuality.P3)
+        public static bool TryCreateRandomComponent(IDatabase database, int level, Faction faction, System.Random random, bool allowRare, 
+            ComponentQuality maxQuality, out ComponentInfo componentInfo)
         {
             var maxLevel = 3*level/2;
             var components = allowRare ? database.ComponentList.CommonAndRare() : database.ComponentList.Common();
             if (faction != null) components = components.FilterByFactionOrEmpty(faction);
             var component = components.LevelLessOrEqual(maxLevel).RandomElement(random);
+            if (component == null)
+            {
+                componentInfo = Empty;
+                return false;
+            }
 
             var componentLevel = Mathf.Max(10, component.Level);
             var requiredLevel = Mathf.Max(10, level);
@@ -59,10 +65,14 @@ namespace Constructor
                 componentQuality = maxQuality;
 
             if (componentQuality == ComponentQuality.P0)
-                return new ComponentInfo(component);
+            {
+                componentInfo = new ComponentInfo(component);
+                return true;
+            }
 
             var modification = component.PossibleModifications.RandomElement(random);
-            return new ComponentInfo(component, modification, componentQuality.ToModificationQuality());
+            componentInfo = new ComponentInfo(component, modification, componentQuality.ToModificationQuality());
+            return true;
         }
 
         public static IEnumerable<ComponentInfo> CreateRandom(IEnumerable<GameDatabase.DataModel.Component> components, int count, int level, System.Random random, ComponentQuality maxQuality = ComponentQuality.P3)

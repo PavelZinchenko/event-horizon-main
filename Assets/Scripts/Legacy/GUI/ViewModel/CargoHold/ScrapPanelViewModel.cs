@@ -127,11 +127,11 @@ namespace ViewModel
 			get
 			{
 				foreach (var ship in _playerFleet.Ships.Where(item => item.Model.ShipType == ShipType.Common && item.Model.ShipRarity != ShipRarity.Unique))
-                    yield return new Product(_factory.CreatePlayerShipItem(ship));
+                    yield return CommonProduct.Create(_factory.CreatePlayerShipItem(ship));
                 foreach (var item in _playerInventory.Satellites.Items)
-                    yield return new Product(_factory.CreateSatelliteItem(item.Key), item.Value);
+                    yield return CommonProduct.Create(_factory.CreateSatelliteItem(item.Key), item.Value);
 			    foreach (var item in _playerInventory.Components.Items.OrderBy(component => component.Key.SerializeToInt64()))
-                    yield return new Product(_factory.CreateComponentItem(item.Key), item.Value);
+                    yield return CommonProduct.Create(_factory.CreateComponentItem(item.Key), item.Value);
 			}
 		}
 		

@@ -9,7 +9,7 @@ namespace Economy
     {
         public static IProduct GetProduct(this Price price, ItemTypeFactory factory)
         {
-            return new Product(factory.CreateCurrencyItem(price.Currency), (int)price.Amount);
+            return CommonProduct.Create(factory.CreateCurrencyItem(price.Currency), (int)price.Amount);
         }
 
         public static void Consume(this Price price, PlayerResources playerResources)

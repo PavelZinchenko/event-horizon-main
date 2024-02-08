@@ -5,7 +5,6 @@ using Economy.Products;
 using GameServices.Player;
 using Constructor.Ships;
 using GameDatabase;
-using GameDatabase.Enums;
 
 namespace GameModel
 {
@@ -13,8 +12,15 @@ namespace GameModel
     {
         public class CargoHoldInventory : IInventory
         {
-            public CargoHoldInventory(GameServices.Player.PlayerInventory inventory, PlayerFleet fleet, PlayerResources playerResources, ItemTypeFactory factory, IDatabase database)
+            public CargoHoldInventory(
+                ProductFactory productFactory,
+                GameServices.Player.PlayerInventory inventory, 
+                PlayerFleet fleet, 
+                PlayerResources playerResources, 
+                ItemTypeFactory factory, 
+                IDatabase database)
             {
+                _productFactory = productFactory;
                 _inventory = inventory;
                 _playerResources = playerResources;
                 _database = database;
@@ -32,19 +38,20 @@ namespace GameModel
                     {
                         var resource = _database.GetQuestItem(item);
                         if (resource != null)
-                            yield return new PlayerProduct(_playerResources, _factory.CreateArtifactItem(resource), _playerResources.GetResource(item), _priceScale);
+                            yield return _productFactory.CreatePlayerProduct(_factory.CreateArtifactItem(resource), _playerResources.GetResource(item), _priceScale);
                     }
 
                     foreach (var item in _inventory.Components.Items)
-                        yield return new PlayerProduct(_playerResources, _factory.CreateComponentItem(item.Key), item.Value, _priceScale);
+                        yield return _productFactory.CreatePlayerProduct(_factory.CreateComponentItem(item.Key), item.Value, _priceScale);
                     foreach (var item in _inventory.Satellites.Items)
-                        yield return new PlayerProduct(_playerResources, _factory.CreateSatelliteItem(item.Key), item.Value, _priceScale);
+                        yield return _productFactory.CreatePlayerProduct(_factory.CreateSatelliteItem(item.Key), item.Value, _priceScale);
 
                     foreach (var item in _fleet.Ships.Where(ShipExtensions.CanBeSold).Except(_fleet.GetAllHangarShips()))
-                        yield return new PlayerProduct(_playerResources, _factory.CreatePlayerShipItem(item));
+                        yield return _productFactory.CreatePlayerProduct(_factory.CreatePlayerShipItem(item));
                 }
             }
 
+            private readonly ProductFactory _productFactory;
             private readonly GameServices.Player.PlayerInventory _inventory;
             private readonly PlayerFleet _fleet;
             private readonly PlayerResources _playerResources;

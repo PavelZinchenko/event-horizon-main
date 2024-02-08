@@ -60,10 +60,13 @@ namespace GameModel
 
 						var componentCount = random.Next(4, 7);
 						for (var i = 0; i < componentCount; ++i)
-							_items.Add(_productFactory.CreateRandomComponentProduct(_starId, i, _level+75, ComponentQuality.P3, null, true, Market.RareComponentRenewalTime, true, 2f * pricescale));
+                            if (_productFactory.TryCreateRandomComponentProduct(_starId, i, _level + 75, ComponentQuality.P3,
+                                null, true, Market.RareComponentRenewalTime, out var product, true, 2f * pricescale))
+    							_items.Add(product);
 
                         if (extraGoods > 0)
-                            _items.Add(_productFactory.CreateRandomComponentProduct(_starId, componentCount, _level + 75, ComponentQuality.P3, null, true, Market.RareComponentRenewalTime, false, 5f*pricescale));
+                            if (_productFactory.TryCreateRandomComponentProduct(_starId, componentCount, _level + 75, ComponentQuality.P3, null, true, Market.RareComponentRenewalTime, out var product, false, 5f * pricescale))
+                               _items.Add(product);
 
                         foreach (var item in _database.SatelliteList.Where(item => item.SizeClass != SizeClass.Titan).RandomUniqueElements(random.Next(extraGoods + 3), random))
 							_items.Add(_productFactory.CreateRenewableMarketProduct(_itemTypeFactory.CreateSatelliteItem(item, true), 1, _starId, Market.SatelliteRenewalTime, pricescale));

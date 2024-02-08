@@ -58,7 +58,7 @@ namespace Domain.Quests
 			builder.PlayerFleet = Model.Factories.Fleet.Player(_playerFleet, _database);
 			builder.Rules = rules;
 
-			var loot = specialLoot?.Items.Select(item => (IProduct)new Product(item.Type, item.Quantity));
+			var loot = specialLoot?.Items.Select(item => CommonProduct.Create(item.Type, item.Quantity));
 
 			return builder.Build(loot);
 		}

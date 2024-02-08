@@ -29,7 +29,7 @@ namespace GameServices.Gui
 #if !EDITOR_MODE
         public void ShowItemInfoWindow(IShip ship)
         {
-            var item = new Product(_itemFactory.CreateMarketShipItem(ship));
+            var item = CommonProduct.Create(_itemFactory.CreateMarketShipItem(ship));
             _guiManager.OpenWindow(global::Gui.Notifications.WindowNames.ItemInfoWindow, new WindowArgs(item));
         }
 #else

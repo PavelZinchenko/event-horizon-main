@@ -71,7 +71,9 @@ namespace GameModel
                 }
 
 			    for (var i = 0; i < 5 + extraGoods; ++i)
-                    _items.Add(_productFactory.CreateRandomComponentProduct(_starId, i, _level, Constructor.ComponentQuality.P1, _faction, false, Market.CommonComponentRenewalTime, false, 2f*pricescale));
+                    if (_productFactory.TryCreateRandomComponentProduct(_starId, i, _level, Constructor.ComponentQuality.P1, 
+                        _faction, false, Market.CommonComponentRenewalTime, out var product, false, 2f * pricescale))
+                        _items.Add(product);
 
 				//if (Model.Regulations.Time.IsCristmas)
 				//	_items.Add(new MarketProduct(new XmaxBoxItem(random.Next(), _starId), 1, _starId, Market.GiftBoxRenewalTime, 1));
@@ -100,7 +102,9 @@ namespace GameModel
 					_items.Add(_productFactory.CreateRenewableMarketProduct(_itemTypeFactory.CreateMarketShipItem(new CommonShip(ship)), 1, _starId, Market.ShipRenewalTime, 3f*pricescale));
 				
 				for (var i = 0; i < 5 + extraGoods; ++i)
-                    _items.Add(_productFactory.CreateRandomComponentProduct(_starId, i, _level, Constructor.ComponentQuality.P1, _faction, false, Market.CommonComponentRenewalTime, false, 2f*pricescale));
+                    if (_productFactory.TryCreateRandomComponentProduct(_starId, i, _level, Constructor.ComponentQuality.P1, 
+                        _faction, false, Market.CommonComponentRenewalTime, out var product, false, 2f * pricescale))
+                        _items.Add(product);
 
 				//if (Model.Regulations.Time.IsCristmas && random.Next(3) == 0)
 				//	_items.Add(new MarketProduct(new XmaxBoxItem(random.Next(), _starId), 1, _starId, Market.GiftBoxRenewalTime, 1));
