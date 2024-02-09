@@ -38,7 +38,7 @@
       "Type": 7,
       "DamageType": 2,
       "Power": 20.0,
-      "Factor": 0.002
+      "Factor": 0.2
     }
   ]
 }
