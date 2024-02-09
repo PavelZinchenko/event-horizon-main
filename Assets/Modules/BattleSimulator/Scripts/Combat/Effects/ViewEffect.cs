@@ -24,11 +24,11 @@ namespace Combat.Effects
 
         public Vector2 Position { get { return _position; } set { _position = value; _positionChanged = true; } }
         public float Rotation { get { return _rotation; } set { _rotation = value; _positionChanged = true; } }
-        public float Size { get { return _view.Size; } set { _view.Size = value; } }
+        public virtual float Size { get => _view.Size; set => _view.Size = value; }
         public Color Color { get { return _view.Color; } set { _view.Color = value; } }
         public float Life { get { return _view.Life; } set { _view.Life = value; } }
 
-        public void Initialize(GameObjectHolder objectHolder)
+        public virtual void Initialize(GameObjectHolder objectHolder)
         {
             _view = GetComponent<IView>();
             _gameObjectHolder = objectHolder;
@@ -82,15 +82,25 @@ namespace Combat.Effects
             if (_positionChanged)
             {
                 UpdatePosition();
+                UpdateRotation();
                 _positionChanged = false;
             }
 
+            UpdateView();
+        }
+
+        protected virtual void UpdateView()
+        {
             _view.UpdateView(Time.deltaTime);
         }
 
-        private void UpdatePosition()
+        protected virtual void UpdatePosition()
         {
             gameObject.transform.localPosition = Position;
+        }
+
+        protected virtual void UpdateRotation()
+        {
             gameObject.transform.localEulerAngles = new Vector3(0, 0, Rotation);
         }
 

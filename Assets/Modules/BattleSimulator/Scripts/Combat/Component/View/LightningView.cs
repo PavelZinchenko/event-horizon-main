@@ -79,7 +79,7 @@ namespace Combat.Component.View
             _lineRenderer.endColor = color * _endColor;
         }
 
-        private void UpdateLine()
+        public void UpdateLine()
         {
             if (!_lineRenderer) return;
 

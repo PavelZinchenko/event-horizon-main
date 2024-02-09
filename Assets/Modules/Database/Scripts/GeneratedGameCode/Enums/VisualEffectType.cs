@@ -17,5 +17,6 @@ namespace GameDatabase.Enums
 		SmokeAdditive,
 		Shake,
 		Spark,
+		Lightning,
 	}
 }

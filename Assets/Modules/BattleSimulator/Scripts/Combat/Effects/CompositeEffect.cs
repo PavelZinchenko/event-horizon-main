@@ -149,25 +149,35 @@ namespace Combat.Effects
 
         private void UpdateLife()
         {
+            int index = 0;
+            int quantity = 0;
+            VisualEffectElement element = null;
+
             for (var i = 0; i < _effects.Count; ++i)
             {
-                var data = _data.Elements[i];
+                if (quantity == 0)
+                {
+                    element = _data.Elements[index++];
+                    quantity = element.Quantity;
+                }
+
+                quantity--;
                 var effect = _effects[i];
 
                 var time = (1f - Life) * _lifetimeMax;
-                if (time <= data.StartTime || time >= data.StartTime + data.Lifetime)
+                if (time <= element.StartTime || time >= element.StartTime + element.Lifetime)
                 {
                     effect.Visible = false;
                     continue;
                 }
 
                 effect.Visible = true;
-                effect.Life = 1f - (time - data.StartTime) / data.Lifetime;
+                effect.Life = 1f - (time - element.StartTime) / element.Lifetime;
 
-                if (data.GrowthRate != 0)
-                    effect.Size = data.Size * (1.0f + data.GrowthRate * (1.0f - effect.Life));
-                if (data.TurnRate != 0)
-                    effect.Rotation = data.TurnRate * (1.0f - effect.Life);
+                if (element.GrowthRate != 0)
+                    effect.Size = element.Size * (1.0f + element.GrowthRate * (1.0f - effect.Life));
+                if (element.TurnRate != 0)
+                    effect.Rotation = element.TurnRate * (1.0f - effect.Life);
             }
         }
 
@@ -188,11 +198,21 @@ namespace Combat.Effects
 
         private void UpdateColor()
         {
+            int index = 0;
+            int quantity = 0;
+            VisualEffectElement element = null;
+
             for (var i = 0; i < _effects.Count; ++i)
             {
-                var data = _data.Elements[i];
+                if (quantity == 0)
+                {
+                    element = _data.Elements[index++];
+                    quantity = element.Quantity;
+                }
+
+                quantity--;
                 var effect = _effects[i];
-                effect.Color = data.ColorMode.Apply(data.Color, Color);
+                effect.Color = element.ColorMode.Apply(element.Color, Color);
             }
         }
 

@@ -5,13 +5,32 @@
     {
       "Type": 1,
       "Image": "star",
-      "ColorMode": 2
+      "Size": 1.5
+    },
+    {
+      "ColorMode": 1,
+      "Color": "#00000000"
     },
     {
       "Type": 2,
       "Image": "wave",
       "Size": 1.2,
       "Lifetime": 0.5
+    },
+    {
+      "Type": 7,
+      "Image": "laser",
+      "ColorMode": 2,
+      "Color": "#00000000",
+      "Quantity": 5,
+      "GrowthRate": 0.1,
+      "Lifetime": 0.5,
+      "ParticleSize": 0.4
+    },
+    {
+      "Type": 5,
+      "Color": "#00000000",
+      "Lifetime": 0.0
     }
   ]
 }
