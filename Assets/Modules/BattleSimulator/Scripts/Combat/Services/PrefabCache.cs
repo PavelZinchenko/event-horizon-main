@@ -122,6 +122,7 @@ public class PrefabCache : MonoBehaviour
             case VisualEffectType.Shockwave: commonPrefab = LoadPrefab(new PrefabId("Wave", PrefabId.Type.Effect)); break;
             case VisualEffectType.Smoke: commonPrefab = LoadPrefab(new PrefabId("Smoke", PrefabId.Type.Effect)); break;
             case VisualEffectType.SmokeAdditive: commonPrefab = LoadPrefab(new PrefabId("SmokeAdditive", PrefabId.Type.Effect)); break;
+            case VisualEffectType.Spark: commonPrefab = LoadPrefab(new PrefabId("Spark", PrefabId.Type.Effect)); break;
             default: return null;
         }
 

@@ -5,26 +5,20 @@
     {
       "Type": 2,
       "Image": "wave",
-      "Size": 1.2,
-      "Lifetime": 1.0
+      "Size": 1.2
     },
     {
       "Type": 1,
       "Image": "star",
-      "Size": 2.0,
-      "Lifetime": 1.0
+      "Size": 2.0
     },
     {
       "Type": 1,
       "Image": "star",
-      "ColorMode": 1,
-      "Size": 1.0,
-      "Lifetime": 1.0
+      "ColorMode": 1
     },
     {
-      "Type": 5,
-      "Size": 1.0,
-      "Lifetime": 1.0
+      "Type": 5
     }
   ]
 }

@@ -16,5 +16,6 @@ namespace GameDatabase.Enums
 		Smoke,
 		SmokeAdditive,
 		Shake,
+		Spark,
 	}
 }

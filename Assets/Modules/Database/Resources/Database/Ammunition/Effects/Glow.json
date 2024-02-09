@@ -5,7 +5,6 @@
     {
       "Type": 1,
       "Image": "cloud",
-      "Size": 1.0,
       "GrowthRate": 1.0,
       "Lifetime": 0.2
     }

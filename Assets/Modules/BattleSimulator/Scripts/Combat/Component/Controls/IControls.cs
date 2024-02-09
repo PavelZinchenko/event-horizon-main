@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace Combat.Component.Controls
+﻿namespace Combat.Component.Controls
 {
     public interface IControls
     {

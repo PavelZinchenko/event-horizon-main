@@ -6,22 +6,19 @@
       "Type": 2,
       "Image": "wave",
       "ColorMode": 2,
-      "Size": 6.0,
-      "Lifetime": 1.0
+      "Size": 6.0
     },
     {
       "Type": 1,
       "Image": "star",
       "ColorMode": 2,
-      "Size": 4.0,
-      "Lifetime": 1.0
+      "Size": 4.0
     },
     {
       "Type": 4,
       "Image": "CloudWhite",
       "ColorMode": 2,
-      "Size": 1.5,
-      "Lifetime": 1.0
+      "Size": 1.5
     },
     {
       "Type": 3,
@@ -33,8 +30,7 @@
     },
     {
       "Type": 5,
-      "Size": 4.0,
-      "Lifetime": 1.0
+      "Size": 4.0
     }
   ]
 }

@@ -404,7 +404,7 @@ namespace Combat.Factory
             {
                 var condition = FromTriggerCondition(trigger.Condition);
                 CreateSoundEffect(_bullet, trigger.AudioClip, condition, trigger);
-                CreateStaticVisualEffect(_bullet, condition, trigger);
+                CreateStaticVisualEffect(_bullet, _collisionBehaviour, condition, trigger);
                 return Result.Ok;
             }
 
@@ -465,18 +465,23 @@ namespace Combat.Factory
                         size * _factory._stats.BodySize, trigger.Lifetime));
                 else
                     AddAction(bullet, trigger, new PlayEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, size,
-                        trigger.Lifetime, condition));
+                        trigger.Lifetime, condition).WithCooldown(trigger.Cooldown));
             }
 
-            private void CreateStaticVisualEffect(Bullet bullet, ConditionType condition, BulletTrigger_SpawnStaticSfx trigger)
+            private void CreateStaticVisualEffect(Bullet bullet, BulletCollisionBehaviour collisionBehaviour,
+                ConditionType condition, BulletTrigger_SpawnStaticSfx trigger)
             {
                 if (trigger.VisualEffect == null) return;
 
                 var color = trigger.ColorMode.Apply(trigger.Color, _factory._stats.Color);
                 var size = trigger.Size > 0 ? trigger.Size : 1.0f;
 
-                AddAction(bullet, trigger, new SpawnEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, 
-                    size * _factory._stats.BodySize, trigger.Lifetime, condition));
+                if (condition == ConditionType.OnCollide)
+                    collisionBehaviour.AddAction(new SpawnHitEffectAction(_factory._effectFactory, trigger.VisualEffect, color,
+                        size * _factory._stats.BodySize, trigger.Lifetime, trigger.Cooldown));
+                else
+                    AddAction(bullet, trigger, new SpawnEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, 
+                        size * _factory._stats.BodySize, trigger.Lifetime, condition).WithCooldown(trigger.Cooldown));
             }
 
             private BulletFactory CreateFactory(Ammunition ammunition, BulletTrigger_SpawnBullet trigger)

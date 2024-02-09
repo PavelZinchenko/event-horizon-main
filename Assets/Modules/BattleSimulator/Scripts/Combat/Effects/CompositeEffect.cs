@@ -82,15 +82,18 @@ namespace Combat.Effects
 
             foreach (var element in effectData.Elements)
             {
-                var effect = factory.CreateEffect(element, gameObject.transform);
-                effect.Visible = false;
-                effect.Color = element.Color;
-                effect.Size = element.Size;
-                _effects.Add(effect);
+                for (int i = 0; i < element.Quantity; ++i)
+                {
+                    var effect = factory.CreateEffect(element, gameObject.transform);
+                    effect.Visible = false;
+                    effect.Color = element.Color;
+                    effect.Size = element.Size;
+                    _effects.Add(effect);
 
-                var lifetime = element.Lifetime + element.StartTime;
-                if (_lifetimeMax < lifetime)
-                    _lifetimeMax = lifetime;
+                    var lifetime = element.Lifetime + element.StartTime;
+                    if (_lifetimeMax < lifetime)
+                        _lifetimeMax = lifetime;
+                }
             }
 
             Position = Vector2.zero;

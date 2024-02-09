@@ -19,10 +19,12 @@ namespace GameDatabase.Serializable
 		public string Image;
 		public ColorMode ColorMode;
 		public string Color;
-		public float Size;
+		public int Quantity = 1;
+		public float Size = 1f;
 		public float GrowthRate;
 		public float TurnRate;
 		public float StartTime;
-		public float Lifetime;
+		public float Lifetime = 1f;
+		public float ParticleSize = 1f;
 	}
 }

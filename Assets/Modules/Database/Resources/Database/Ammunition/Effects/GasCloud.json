@@ -7,16 +7,14 @@
       "Image": "CloudWhite",
       "ColorMode": 1,
       "Color": "#80808080",
-      "Size": 1.8,
-      "Lifetime": 1.0
+      "Size": 1.8
     },
     {
       "Type": 4,
       "Image": "CloudWhite",
       "ColorMode": 3,
       "Color": "#40FFFFFF",
-      "Size": 1.5,
-      "Lifetime": 1.0
+      "Size": 1.5
     }
   ]
 }

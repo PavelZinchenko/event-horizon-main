@@ -18,19 +18,18 @@
       "VisualEffect": 1,
       "Color": "#CDFF45",
       "ColorMode": 1,
-      "Size": 2.0,
+      "Size": 1.0,
       "Lifetime": 0.1
     },
     {
       "Condition": 3,
-      "EffectType": 2,
-      "Ammunition": 105,
-      "Color": "#47FF41",
+      "EffectType": 4,
+      "VisualEffect": 11,
+      "Color": "#FED642",
       "ColorMode": 1,
-      "Quantity": 2,
-      "Size": 4.0,
-      "Cooldown": 1.0,
-      "RandomFactor": 1.0
+      "Size": 2.0,
+      "Lifetime": 1.0,
+      "Cooldown": 0.2
     }
   ],
   "ImpactType": 2,

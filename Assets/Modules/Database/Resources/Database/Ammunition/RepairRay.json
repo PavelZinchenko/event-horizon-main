@@ -23,14 +23,13 @@
     },
     {
       "Condition": 3,
-      "EffectType": 2,
-      "Ammunition": 105,
+      "EffectType": 4,
+      "VisualEffect": 11,
       "Color": "#FFA400",
       "ColorMode": 1,
-      "Quantity": 2,
-      "Size": 4.0,
-      "Cooldown": 1.0,
-      "RandomFactor": 1.0
+      "Size": 2.0,
+      "Lifetime": 1.0,
+      "Cooldown": 0.2
     }
   ],
   "ImpactType": 2,
@@ -39,7 +38,7 @@
       "Type": 7,
       "DamageType": 2,
       "Power": 20.0,
-      "Factor": 0.2
+      "Factor": 0.002
     }
   ]
 }

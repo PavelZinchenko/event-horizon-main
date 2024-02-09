@@ -12,9 +12,7 @@
     {
       "Type": 3,
       "Image": "CloudWhite",
-      "Size": 1.0,
-      "GrowthRate": 0.5,
-      "Lifetime": 1.0
+      "GrowthRate": 0.5
     }
   ]
 }

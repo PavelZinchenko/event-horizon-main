@@ -1,11 +1,11 @@
 {
   "ItemType": 26,
-  "Id": 1,
+  "Id": 11,
   "Elements": [
     {
-      "Type": 1,
+      "Type": 6,
       "Image": "star",
-      "Lifetime": 0.2
+      "ParticleSize": 0.25
     }
   ]
 }
