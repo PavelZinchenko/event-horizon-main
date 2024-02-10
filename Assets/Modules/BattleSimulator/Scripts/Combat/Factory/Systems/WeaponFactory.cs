@@ -1,7 +1,6 @@
 ﻿using System;
 using Combat.Component.Platform;
 using Combat.Component.Ship;
-using Combat.Component.Systems;
 using Combat.Component.Systems.Weapons;
 using Combat.Component.Triggers;
 using Combat.Scene;
@@ -24,7 +23,7 @@ namespace Combat.Factory
         [Inject] private readonly EffectFactory _effectFactory;
         [Inject] private readonly PrefabCache _prefabCache;
 
-        public ISystem Create(IWeaponData weaponData, IWeaponPlatform platform, float hitPointsMultiplier, IShip owner)
+        public IWeapon Create(IWeaponData weaponData, IWeaponPlatform platform, float hitPointsMultiplier, IShip owner)
         {
             var bulletFactory = new BulletFactory(weaponData.Ammunition, weaponData.Stats, _scene, _soundPlayer, _objectPool, _prefabCache, _spaceObjectFactory, _effectFactory, owner);
             bulletFactory.Stats.HitPointsMultiplier = hitPointsMultiplier;
@@ -33,14 +32,14 @@ namespace Combat.Factory
             return Create(stats, weaponData.KeyBinding, bulletFactory, platform);
         }
 
-        public ISystem Create(IWeaponDataObsolete weaponData, IWeaponPlatform platform, float hitPointsMultiplier, IShip owner)
+        public IWeapon Create(IWeaponDataObsolete weaponData, IWeaponPlatform platform, float hitPointsMultiplier, IShip owner)
         {
             var bulletFactory = new BulletFactoryObsolete(weaponData.Ammunition, _scene, _soundPlayer, _objectPool, _prefabCache, _spaceObjectFactory, _effectFactory, owner);
             bulletFactory.Stats.HitPointsMultiplier = hitPointsMultiplier;
             return Create(weaponData.Weapon, weaponData.KeyBinding, bulletFactory, platform);
         }
 
-        private ISystem Create(WeaponStats weaponStats, int keyBinding, IBulletFactory bulletFactory, IWeaponPlatform platform)
+        private IWeapon Create(WeaponStats weaponStats, int keyBinding, IBulletFactory bulletFactory, IWeaponPlatform platform)
         {
             switch (weaponStats.WeaponClass)
             {

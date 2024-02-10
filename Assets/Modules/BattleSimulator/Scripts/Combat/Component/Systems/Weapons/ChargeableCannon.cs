@@ -7,36 +7,28 @@ using UnityEngine;
 
 namespace Combat.Component.Systems.Weapons
 {
-    public class ChargeableCannon : SystemBase, IWeapon
+    public class ChargeableCannon : WeaponBase
     {
         public ChargeableCannon(IWeaponPlatform platform, WeaponStats weaponStats, Factory.IBulletFactory bulletFactory, int keyBinding)
-            : base(keyBinding, weaponStats.ControlButtonIcon)
+            : base(platform, weaponStats, bulletFactory, keyBinding)
         {
-            _bulletFactory = bulletFactory;
-            _platform = platform;
             _energyConsumption = bulletFactory.Stats.EnergyCost;
-            _spread = weaponStats.Spread;
             _chargeTotalTime = 1.0f / weaponStats.FireRate;
-			_bullets = BulletCompositeDisposable.Create(_bulletFactory.Stats);
-
-			Info = new WeaponInfo(WeaponType.RequiredCharging, _spread, bulletFactory, platform);
+			_bullets = BulletCompositeDisposable.Create(BulletFactory.Stats);
         }
 
-        public override bool CanBeActivated { get { return _chargeTime > 0 || (_platform.IsReady && _platform.EnergyPoints.Value >= _energyConsumption*0.5f); } }
-        public override float Cooldown { get { return _platform.Cooldown; } }
+        public override bool CanBeActivated { get { return _chargeTime > 0 || (Platform.IsReady && Platform.EnergyPoints.Value >= _energyConsumption*0.5f); } }
+        public override float Cooldown => Platform.Cooldown;
 
-        public WeaponInfo Info { get; private set; }
-        public IWeaponPlatform Platform { get { return _platform; } }
-        public float PowerLevel { get { return Mathf.Clamp01(_chargeTime / _chargeTotalTime); } }
-        public IBullet ActiveBullet { get { return null; } }
+        public override float PowerLevel => Mathf.Clamp01(_chargeTime / _chargeTotalTime);
 
         protected override void OnUpdateView(float elapsedTime) {}
 
         protected override void OnUpdatePhysics(float elapsedTime)
         {
-            if (Active && CanBeActivated && _chargeTime > 0 && (_chargeTime > _chargeTotalTime || _platform.EnergyPoints.TryGet(_energyConsumption*elapsedTime / _chargeTotalTime)))
+            if (Active && CanBeActivated && _chargeTime > 0 && (_chargeTime > _chargeTotalTime || Platform.EnergyPoints.TryGet(_energyConsumption*elapsedTime / _chargeTotalTime)))
             {
-                _platform.Aim(Info.BulletSpeed, Info.Range, Info.IsRelativeVelocity);
+                Aim();
                 _chargeTime += elapsedTime;
                 UpdatePower();
             }
@@ -54,7 +46,7 @@ namespace Combat.Component.Systems.Weapons
             }
             else if (HasActiveBullet && Info.BulletType == BulletType.Direct)
             {
-                _platform.Aim(Info.BulletSpeed, Info.Range, Info.IsRelativeVelocity);
+                Aim();
             }
         }
 
@@ -65,9 +57,9 @@ namespace Combat.Component.Systems.Weapons
 
 		private void Shot()
         {
-            _platform.Aim(Info.BulletSpeed, Info.Range, Info.IsRelativeVelocity);
-            _platform.OnShot();
-            _activeBullet = _bulletFactory.Create(_platform, _spread, 0, Vector2.zero);
+            Aim();
+            Platform.OnShot();
+            _activeBullet = CreateBullet();
 			_bullets.Add(_activeBullet);
 
             InvokeTriggers(ConditionType.OnDischarge);
@@ -75,7 +67,7 @@ namespace Combat.Component.Systems.Weapons
 
         private void UpdatePower()
         {
-            _bulletFactory.Stats.PowerLevel = PowerLevel;
+            BulletFactory.Stats.PowerLevel = PowerLevel;
         }
 
         private bool HasActiveBullet { get { return _activeBullet.IsActive(); } }
@@ -84,10 +76,7 @@ namespace Combat.Component.Systems.Weapons
 
         private IBullet _activeBullet;
         private readonly float _chargeTotalTime;
-        private readonly float _spread;
         private readonly float _energyConsumption;
-        private readonly IWeaponPlatform _platform;
-        private readonly Factory.IBulletFactory _bulletFactory;
 		private readonly IBulletCompositeDisposable _bullets;
-	}
+    }
 }

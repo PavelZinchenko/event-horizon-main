@@ -85,8 +85,10 @@ namespace Combat.Component.Platform
             if (!IsValidTarget(_target))
                 _target = null;
 
-            if (_timeFromTargetUpdate > _targetUpdateCooldown || (_timeFromTargetUpdate > _targetFindCooldown && !_target.IsActive()))
-				ActiveTarget = _scene.Ships.GetEnemy(_parent, EnemyMatchingOptions.EnemyForTurret(), _initialRotation, _maxAngle, _weaponRange);
+            if (_timeFromTargetUpdate < _targetFindCooldown) return;
+            if (_timeFromTargetUpdate < _targetUpdateCooldown && _target.IsActive()) return;
+
+			ActiveTarget = _scene.Ships.GetEnemy(_parent, EnemyMatchingOptions.EnemyForTurret(), _initialRotation, _maxAngle, _weaponRange);
         }
 
 		private bool IsValidTarget(IUnit target)
@@ -175,7 +177,7 @@ namespace Combat.Component.Platform
         private bool _isRelativeVelocity = true;
 
         private int _updateFrameId;
-        private float _timeFromTargetUpdate;
+        private float _timeFromTargetUpdate = _targetUpdateCooldown;
         private IUnit _target;
 
         private float _rotation;

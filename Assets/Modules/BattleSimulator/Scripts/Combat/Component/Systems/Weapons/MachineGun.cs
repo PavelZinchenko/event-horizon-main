@@ -1,38 +1,25 @@
-﻿using Combat.Component.Bullet;
-using Combat.Component.Platform;
+﻿using Combat.Component.Platform;
 using Combat.Component.Triggers;
 using GameDatabase.DataModel;
 using UnityEngine;
-using Vector2 = UnityEngine.Vector2;
 
 namespace Combat.Component.Systems.Weapons
 {
-    public class MachineGun : SystemBase, IWeapon
+    public class MachineGun : WeaponBase
     {
         public MachineGun(IWeaponPlatform platform, WeaponStats weaponStats, Factory.IBulletFactory bulletFactory, int keyBinding)
-            : base(keyBinding, weaponStats.ControlButtonIcon)
+            : base(platform, weaponStats, bulletFactory, keyBinding)
         {
             MaxCooldown = weaponStats.FireRate > 0 ? 1f / weaponStats.FireRate : 0f;
 
-            _bulletFactory = bulletFactory;
-            _platform = platform;
             _energyConsumption = bulletFactory.Stats.EnergyCost;
-            _spread = weaponStats.Spread;
             _magazine = weaponStats.Magazine;
-			_bullets = BulletCompositeDisposable.Create(_bulletFactory.Stats);
-
-            Info = new WeaponInfo(WeaponType.Common, _spread, bulletFactory, platform);
+			_bullets = BulletCompositeDisposable.Create(BulletFactory.Stats);
         }
 
         public override float ActivationCost { get { return _energyConsumption; } }
-        public override bool CanBeActivated { get { return base.CanBeActivated && _platform.EnergyPoints.Value > _energyConsumption; } }
-        public override float Cooldown { get { return Mathf.Max(base.Cooldown, _platform.Cooldown); } }
-
-        public WeaponInfo Info { get; private set; }
-        public IWeaponPlatform Platform { get { return _platform; } }
-        public float PowerLevel { get { return 1.0f; } }
-        public IBullet ActiveBullet { get { return null; } }
-
+        public override bool CanBeActivated { get { return base.CanBeActivated && Platform.EnergyPoints.Value > _energyConsumption; } }
+        public override float Cooldown { get { return Mathf.Max(base.Cooldown, Platform.Cooldown); } }
 
         protected override void OnUpdateView(float elapsedTime) { }
 
@@ -40,7 +27,7 @@ namespace Combat.Component.Systems.Weapons
         {
             if (Active && _shots < _magazine && CanBeActivated)
             {
-                if (_platform.IsReady && _platform.EnergyPoints.TryGet(_energyConsumption))
+                if (Platform.IsReady && Platform.EnergyPoints.TryGet(_energyConsumption))
                 {
                     Shot();
                     _shots++;
@@ -61,17 +48,14 @@ namespace Combat.Component.Systems.Weapons
 
         private void Shot()
         {
-            _platform.Aim(Info.BulletSpeed, Info.Range, Info.IsRelativeVelocity);
-            _platform.OnShot();
-            _bullets.Add(_bulletFactory.Create(_platform, _spread, 0, Vector2.zero));
+            Aim();
+            Platform.OnShot();
+            _bullets.Add(CreateBullet());
         }
 
         private int _shots;
         private readonly int _magazine;
-        private readonly float _spread;
         private readonly float _energyConsumption;
-        private readonly IWeaponPlatform _platform;
-        private readonly Factory.IBulletFactory _bulletFactory;
 		private readonly IBulletCompositeDisposable _bullets;
 	}
 }

@@ -119,12 +119,14 @@ namespace Combat.Factory
                 {
                     var weapon = _weaponFactory.Create(weaponSpec, platform, spec.Stats.ArmorMultiplier.Value, ship);
                     ship.AddSystem(weapon);
+                    weapon.Aim();
                 }
 
                 foreach (var weaponSpec in item.WeaponsObsolete)
                 {
                     var weapon = _weaponFactory.Create(weaponSpec, platform, spec.Stats.ArmorMultiplier.Value, ship);
                     ship.AddSystem(weapon);
+                    weapon.Aim();
                 }
             }
 

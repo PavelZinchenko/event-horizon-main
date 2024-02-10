@@ -9,5 +9,6 @@ namespace Combat.Component.Systems.Weapons
         IWeaponPlatform Platform { get; }
         float PowerLevel { get; }
         IBullet ActiveBullet { get; }
+        void Aim();
     }
 }
