@@ -153,6 +153,7 @@ namespace Combat.Effects
             int index = 0;
             int quantity = 0;
             VisualEffectElement element = null;
+            var time = (1f - Life) * _lifetimeMax;
 
             for (var i = 0; i < _effects.Count; ++i)
             {
@@ -165,11 +166,10 @@ namespace Combat.Effects
                 quantity--;
                 var effect = _effects[i];
 
-                var time = (1f - Life) * _lifetimeMax;
                 if (time <= element.StartTime || !element.Loop && time >= element.StartTime + element.Lifetime)
                 {
                     effect.Visible = false;
-                    return;
+                    continue;
                 }
 
                 effect.Visible = true;
