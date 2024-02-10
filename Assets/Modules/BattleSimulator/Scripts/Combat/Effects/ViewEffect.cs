@@ -24,9 +24,9 @@ namespace Combat.Effects
 
         public Vector2 Position { get { return _position; } set { _position = value; _positionChanged = true; } }
         public float Rotation { get { return _rotation; } set { _rotation = value; _positionChanged = true; } }
-        public virtual float Size { get => _view.Size; set => _view.Size = value; }
         public Color Color { get { return _view.Color; } set { _view.Color = value; } }
         public float Life { get { return _view.Life; } set { _view.Life = value; } }
+        public virtual float Size { get => _view.Size; set => _view.Size = value; }
 
         public virtual void Initialize(GameObjectHolder objectHolder)
         {
@@ -60,6 +60,8 @@ namespace Combat.Effects
             _gameObjectHolder.Dispose();
             IsAlive = false;
         }
+
+        public virtual void OnParentSizeChanged() { }
 
         private void Update()
         {

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Maths
+﻿namespace Maths
 {
     public static class Format
     {

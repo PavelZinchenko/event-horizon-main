@@ -117,14 +117,30 @@ public class PrefabCache : MonoBehaviour
         GameObject commonPrefab;
         switch (data.Type)
         {
-            case VisualEffectType.Flash: commonPrefab = LoadPrefab(new PrefabId("Flash", PrefabId.Type.Effect)); break;
-            case VisualEffectType.FlashAdditive: commonPrefab = LoadPrefab(new PrefabId("FlashAdditive", PrefabId.Type.Effect)); break;
-            case VisualEffectType.Shockwave: commonPrefab = LoadPrefab(new PrefabId("Wave", PrefabId.Type.Effect)); break;
-            case VisualEffectType.Smoke: commonPrefab = LoadPrefab(new PrefabId("Smoke", PrefabId.Type.Effect)); break;
-            case VisualEffectType.SmokeAdditive: commonPrefab = LoadPrefab(new PrefabId("SmokeAdditive", PrefabId.Type.Effect)); break;
-            case VisualEffectType.Spark: commonPrefab = LoadPrefab(new PrefabId("Spark", PrefabId.Type.Effect)); break;
-            case VisualEffectType.Lightning: commonPrefab = LoadPrefab(new PrefabId("LightningStrike", PrefabId.Type.Effect)); break;
-            default: return null;
+            case VisualEffectType.Flash: 
+                commonPrefab = LoadPrefab(new PrefabId("Flash", PrefabId.Type.Effect)); 
+                break;
+            case VisualEffectType.FlashAdditive: 
+                commonPrefab = LoadPrefab(new PrefabId("FlashAdditive", PrefabId.Type.Effect)); 
+                break;
+            case VisualEffectType.Shockwave: 
+                commonPrefab = LoadPrefab(new PrefabId("Wave", PrefabId.Type.Effect)); 
+                break;
+            case VisualEffectType.Smoke: 
+                commonPrefab = LoadPrefab(new PrefabId("Smoke", PrefabId.Type.Effect)); 
+                break;
+            case VisualEffectType.SmokeAdditive: 
+                commonPrefab = LoadPrefab(new PrefabId("SmokeAdditive", PrefabId.Type.Effect)); 
+                break;
+            case VisualEffectType.Spark: 
+                commonPrefab = LoadPrefab(new PrefabId("Spark", PrefabId.Type.Effect)); 
+                break;
+            case VisualEffectType.Lightning:
+            case VisualEffectType.LightningStrike:
+                commonPrefab = LoadPrefab(new PrefabId("LightningStrike", PrefabId.Type.Effect)); 
+                break;
+            default:
+                return null;
         }
 
         prefab = Instantiate(commonPrefab);

@@ -10,21 +10,20 @@ namespace Combat.Effects
     [RequireComponent(typeof(LightningView), typeof(LineRenderer))]
     public class LightningEffect : ViewEffect, IEffectPrefabInitializer
     {
-        [HideInInspector] [SerializeField] private LightningView _view;
-        [HideInInspector] [SerializeField] private float _thickness;
+        [HideInInspector][SerializeField] private LightningView _view;
+        [HideInInspector][SerializeField] private float _thickness;
+        [HideInInspector][SerializeField] private bool _jiggle;
 
         private Material _material;
         private float _direction;
-        private bool _sizeChanged;
 
-        public override float Size 
+        public override float Size { get => _view.Size*2; set => _view.Size = value*0.5f; }
+
+        public override void OnParentSizeChanged()
         {
-            get => _view.Size;
-            set
-            {
-                _view.Size = value;
-                _sizeChanged = true;
-            }
+            var parentSize = transform.parent.lossyScale.z;
+            transform.localScale = Vector3.one / parentSize;
+            _view.Thickness = _thickness * parentSize;
         }
 
         public void Initialize(VisualEffectElement data, IResourceLocator resourceLocator)
@@ -38,25 +37,24 @@ namespace Combat.Effects
             _material.mainTexture = sprite == null ? null : sprite.texture;
 
             _view.Initialize(data.Color, data.ColorMode);
+            _view.Animated = data.Type == GameDatabase.Enums.VisualEffectType.Lightning;
             _thickness = data.ParticleSize;
         }
 
         public override void Initialize(GameObjectHolder objectHolder)
         {
             base.Initialize(objectHolder);
-
             _direction = Random.Range(0, 360);
         }
 
         protected override void UpdateView()
         {
             base.UpdateView();
-
-            if (_sizeChanged)
+            
+            if (_view.Animated)
             {
-                _sizeChanged = false;
-                _view.Thickness = _thickness * transform.lossyScale.z;
-                _view.UpdateLine();
+                _direction = Random.Range(0, 360);
+                UpdateRotation();
             }
         }
 

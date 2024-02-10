@@ -21,7 +21,8 @@ namespace Combat.Component.View
         [SerializeField] private Color _baseColor = Color.white;
         [SerializeField] private ColorMode _colorMode = ColorMode.TakeFromOwner;
 
-        public float Thickness { get { return _startWidth; } set { _startWidth = value; } }
+        public float Thickness { get { return _startWidth; } set { _startWidth = value; Size = Size; } }
+        public bool Animated { get => _animated; set => _animated = value; }
 
         public void Initialize(Color baseColor, ColorMode colorMode)
         {
@@ -66,7 +67,7 @@ namespace Combat.Component.View
             _lineLength = size/_objectScale;
 
             if (!_animated && !Mathf.Approximately(oldLength, _lineLength))
-                UpdateLine();
+                UpdateLine(true);
         }
 
         protected override void UpdateColor(Color color)
@@ -74,12 +75,12 @@ namespace Combat.Component.View
             if (!_lineRenderer) return;
 
             color = _colorMode.Apply(_baseColor, color);
-            color.a *= _alphaScale;
+            color.a *= _alphaScale * (1f - (1f - Opacity)*(1f - Opacity));
             _lineRenderer.startColor = color * _startColor;
             _lineRenderer.endColor = color * _endColor;
         }
 
-        public void UpdateLine()
+        public void UpdateLine(bool isStatic = false)
         {
             if (!_lineRenderer) return;
 
@@ -102,6 +103,9 @@ namespace Combat.Component.View
             var p2 = new Vector2(_bezierStepSize, _bezierAmplitude*_random.NextFloatSigned());
             var p3 = new Vector2(2*_bezierStepSize, _bezierAmplitude*_random.NextFloatSigned());
             var p23 = (p2 + p3)/2;
+
+            if (isStatic)
+                _random = new System.Random(GetHashCode());
 
             for (var i = 1; i <= steps; ++i)
             {

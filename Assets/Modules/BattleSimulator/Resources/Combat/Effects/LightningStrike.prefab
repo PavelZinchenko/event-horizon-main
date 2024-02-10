@@ -156,10 +156,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f522c3edcf7484d4b808084127bf7c80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _alphaScale: 2
+  _alphaScale: 1.5
   _startWidth: 1
   _endWidth: 0.1
-  _stepSize: 0.3
+  _stepSize: 1
   _bezierStepSize: 1
   _bezierAmplitude: 1
   _pinchFactor: 2
@@ -182,3 +182,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _view: {fileID: 0}
   _thickness: 0
+  _jiggle: 0

@@ -11,6 +11,8 @@ namespace Combat.Effects
         Color Color { get; set; }
         float Life { get; set; }
 
+        void OnParentSizeChanged();
+
         bool IsAlive { get; }
         void Run(float lifetime , Vector2 velocity, float angularVelocity);
         void Dispose();

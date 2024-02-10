@@ -18,5 +18,6 @@ namespace GameDatabase.Enums
 		Shake,
 		Spark,
 		Lightning,
+		LightningStrike,
 	}
 }

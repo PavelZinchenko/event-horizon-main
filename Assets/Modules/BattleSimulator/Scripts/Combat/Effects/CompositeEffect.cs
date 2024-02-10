@@ -104,6 +104,8 @@ namespace Combat.Effects
             gameObject.SetActive(true);
         }
 
+        public void OnParentSizeChanged() { }
+
         private void Update()
         {
             if (!IsAlive)
@@ -194,6 +196,9 @@ namespace Combat.Effects
         private void UpdateSize()
         {
             gameObject.transform.localScale = Size * Vector3.one;
+
+            foreach (var effect in _effects)
+                effect.OnParentSizeChanged();
         }
 
         private void UpdateColor()

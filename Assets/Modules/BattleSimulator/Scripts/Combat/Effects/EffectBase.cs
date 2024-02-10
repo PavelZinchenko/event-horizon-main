@@ -75,6 +75,8 @@ namespace Combat.Effects
             IsAlive = false;
         }
 
+        public virtual void OnParentSizeChanged() { }
+
         protected float Opacity { get { return _opacity; } set { _opacity = value; _colorChanged = true; } }
         protected float Scale { get { return _scale; } set { _scale = value; _sizeChanged = true; } }
 
