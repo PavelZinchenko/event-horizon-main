@@ -4,6 +4,7 @@
     <member name="ShipRarity" type="enum" typeid="ShipRarity" />
     <member name="SizeClass" type="enum" typeid="SizeClass" />
     <member name="Name" type="string" />
+    <member name="Description" type="string" />
     <member name="Faction" type="object" typeid="Faction" />
     <member name="IconImage" type="image" typeid="ShipIcon" />
     <member name="IconScale" type="float" minvalue="0.1" maxvalue="100" />

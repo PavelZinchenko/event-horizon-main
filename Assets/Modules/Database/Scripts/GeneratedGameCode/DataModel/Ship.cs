@@ -34,6 +34,7 @@ namespace GameDatabase.DataModel
 			ShipRarity = serializable.ShipRarity;
 			SizeClass = serializable.SizeClass;
 			Name = serializable.Name;
+			Description = serializable.Description;
 			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 			IconImage = new SpriteId(serializable.IconImage, SpriteId.Type.ShipIcon);
 			IconScale = UnityEngine.Mathf.Clamp(serializable.IconScale, 0.1f, 100f);
@@ -55,6 +56,7 @@ namespace GameDatabase.DataModel
 		public ShipRarity ShipRarity { get; private set; }
 		public SizeClass SizeClass { get; private set; }
 		public string Name { get; private set; }
+		public string Description { get; private set; }
 		public Faction Faction { get; private set; }
 		public SpriteId IconImage { get; private set; }
 		public float IconScale { get; private set; }

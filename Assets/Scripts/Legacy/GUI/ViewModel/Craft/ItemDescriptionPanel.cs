@@ -64,7 +64,14 @@ namespace ViewModel.Craft
             _icon.color = Color.white;
             _name.text = _localization.GetString(ship.Name);
             _name.color = Gui.Theme.UiTheme.Current.GetQualityColor(ship.Model.Quality());
-            _description.gameObject.SetActive(false);
+
+            if (!string.IsNullOrEmpty(ship.Model.OriginalShip.Description))
+            {
+                _description.gameObject.SetActive(true);
+                _description.text = _localization.Localize(ship.Model.OriginalShip.Description);
+            }
+            else
+                _description.gameObject.SetActive(false);
 
             _modification.gameObject.SetActive(ship.Model.Modifications.Any());
             _modification.text = string.Join("\n", ship.Model.Modifications.Select(item => item.GetDescription(_localization)).ToArray());
@@ -81,7 +88,6 @@ namespace ViewModel.Craft
             _name.text = _localization.GetString(satellite.Name);
             _name.color = Gui.Theme.UiTheme.Current.GetQualityColor(ItemQuality.Common);
             _description.gameObject.SetActive(false);
-
             _modification.gameObject.SetActive(false);
 
             _stats.gameObject.SetActive(true);
