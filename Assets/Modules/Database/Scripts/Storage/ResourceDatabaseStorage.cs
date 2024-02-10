@@ -33,7 +33,7 @@ namespace GameDatabase.Storage
 				}
 				catch (System.Exception)
 				{
-					Debug.LogError("JSON parse error: " + name);
+					GameDiagnostics.Trace.LogError("JSON parse error: " + name);
 				}
 #else
                 loader.LoadJson(string.Empty, asset.text);
@@ -93,7 +93,7 @@ namespace GameDatabase.Storage
 				}
 				catch (Exception)
 				{
-					Debug.LogError("JSON parse error: " + asset.name);
+                    GameDiagnostics.Trace.LogError("JSON parse error: " + asset.name);
 				}
 
 			}

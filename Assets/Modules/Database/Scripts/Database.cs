@@ -55,7 +55,7 @@ namespace GameDatabase
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError("invalid mod file - " + fileInfo.FullName);
+                        GameDiagnostics.Trace.LogError("invalid mod file - " + fileInfo.FullName);
                         Debug.LogException(e);
                     }
                 }
@@ -69,14 +69,14 @@ namespace GameDatabase
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError("invalid database - " + directoryInfo.FullName);
+                        GameDiagnostics.Trace.LogError("invalid database - " + directoryInfo.FullName);
                         Debug.LogException(e);
                     }
                 }
             }
             catch (Exception e)
             {
-                Debug.LogError("Error loading mods - " + e.Message);
+                GameDiagnostics.Trace.LogError("Error loading mods - " + e.Message);
             }
         }
 
@@ -124,7 +124,7 @@ namespace GameDatabase
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogError("Database.TryLoad() Error: " + e.Message);
+                GameDiagnostics.Trace.LogError("Database.TryLoad() Error: " + e.Message);
                 error = e.Message;
                 return false;
             }
@@ -185,7 +185,7 @@ namespace GameDatabase
             var serializedBuild = _content.GetShipBuild(id.Value);
             if (serializedBuild == null)
             {
-                Debug.LogError("SaveShipBuild: not found " + id);
+                GameDiagnostics.Trace.LogError("SaveShipBuild: not found " + id);
                 return;
             }
 
@@ -199,7 +199,7 @@ namespace GameDatabase
             var serializedBuild = _content.GetSatelliteBuild(id.Value);
             if (serializedBuild == null)
             {
-                Debug.LogError("SaveSatelliteBuild: not found " + id);
+                GameDiagnostics.Trace.LogError("SaveSatelliteBuild: not found " + id);
                 return;
             }
 
