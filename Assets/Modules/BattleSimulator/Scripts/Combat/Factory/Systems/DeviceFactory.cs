@@ -24,6 +24,7 @@ namespace Combat.Factory
         [Inject] private readonly SatelliteFactory _satelliteFactory;
         [Inject] private readonly EffectFactory _effectFactory;
         [Inject] private readonly ShipFactory _shipFactory;
+        [Inject] private readonly PrefabCache _prefabCache;
 
         public ISystem Create(IDeviceData deviceData, IShip ship, IShipSpecification shipSpec)
         {
@@ -132,8 +133,9 @@ namespace Combat.Factory
                     device = new ToxicWaste(ship, stats, _spaceObjectFactory, shipSpec.Stats.DamageMultiplier.Value);
                     break;
                 case DeviceClass.WormTail:
+                    var tailSegment = stats.Prefab != null ? _prefabCache.LoadPrefab(stats.Prefab) : _prefabCache.LoadPrefab(stats.ObjectPrefab);
                     device = new WormTailDevice(stats, _spaceObjectFactory.CreateWormTail(ship, Mathf.FloorToInt(stats.Size), 0.1f,
-                        ship.Stats.Armor.MaxValue * stats.Power, stats.ObjectPrefab, stats.Offset.x, stats.Offset.y, 0.15f, shipSpec.Stats.ShipColor));
+                        ship.Stats.Armor.MaxValue * stats.Power, tailSegment, stats.Offset.x, stats.Offset.y, 0.15f, shipSpec.Stats.ShipColor));
                     break;
                 case DeviceClass.Jammer:
                     device = new JammerDevice(TargetPriority.High);

@@ -24,6 +24,7 @@
     <item name="VisualEffect" value="26" />
     <item name="BulletPrefab" value="27" />
     <item name="BehaviorTree" value="28" />
+    <item name="GameObjectPrefab" value="29" />
 
     <item name="ShipSettings" value="100" />
     <item name="GalaxySettings" value="101" />

@@ -35,6 +35,7 @@ namespace GameDatabase
 		IEnumerable<Device> DeviceList { get; }
 		IEnumerable<DroneBay> DroneBayList { get; }
 		IEnumerable<Faction> FactionList { get; }
+		IEnumerable<GameObjectPrefab> GameObjectPrefabList { get; }
 		IEnumerable<Satellite> SatelliteList { get; }
 		IEnumerable<SatelliteBuild> SatelliteBuildList { get; }
 		IEnumerable<Ship> ShipList { get; }
@@ -59,6 +60,7 @@ namespace GameDatabase
 		Device GetDevice(ItemId<Device> id);
 		DroneBay GetDroneBay(ItemId<DroneBay> id);
 		Faction GetFaction(ItemId<Faction> id);
+		GameObjectPrefab GetGameObjectPrefab(ItemId<GameObjectPrefab> id);
 		Satellite GetSatellite(ItemId<Satellite> id);
 		SatelliteBuild GetSatelliteBuild(ItemId<SatelliteBuild> id);
 		Ship GetShip(ItemId<Ship> id);
@@ -105,6 +107,7 @@ namespace GameDatabase
 		public IEnumerable<Device> DeviceList => _deviceMap.Values;
 		public IEnumerable<DroneBay> DroneBayList => _droneBayMap.Values;
 		public IEnumerable<Faction> FactionList => _factionMap.Values;
+		public IEnumerable<GameObjectPrefab> GameObjectPrefabList => _gameObjectPrefabMap.Values;
 		public IEnumerable<Satellite> SatelliteList => _satelliteMap.Values;
 		public IEnumerable<SatelliteBuild> SatelliteBuildList => _satelliteBuildMap.Values;
 		public IEnumerable<Ship> ShipList => _shipMap.Values;
@@ -129,6 +132,7 @@ namespace GameDatabase
 		public Device GetDevice(ItemId<Device> id) { return (_deviceMap.TryGetValue(id.Value, out var item)) ? item : Device.DefaultValue; }
 		public DroneBay GetDroneBay(ItemId<DroneBay> id) { return (_droneBayMap.TryGetValue(id.Value, out var item)) ? item : DroneBay.DefaultValue; }
 		public Faction GetFaction(ItemId<Faction> id) { return (_factionMap.TryGetValue(id.Value, out var item)) ? item : Faction.DefaultValue; }
+		public GameObjectPrefab GetGameObjectPrefab(ItemId<GameObjectPrefab> id) { return (_gameObjectPrefabMap.TryGetValue(id.Value, out var item)) ? item : GameObjectPrefab.DefaultValue; }
 		public Satellite GetSatellite(ItemId<Satellite> id) { return (_satelliteMap.TryGetValue(id.Value, out var item)) ? item : Satellite.DefaultValue; }
 		public SatelliteBuild GetSatelliteBuild(ItemId<SatelliteBuild> id) { return (_satelliteBuildMap.TryGetValue(id.Value, out var item)) ? item : SatelliteBuild.DefaultValue; }
 		public Ship GetShip(ItemId<Ship> id) { return (_shipMap.TryGetValue(id.Value, out var item)) ? item : Ship.DefaultValue; }
@@ -159,6 +163,7 @@ namespace GameDatabase
 			_deviceMap.Clear();
 			_droneBayMap.Clear();
 			_factionMap.Clear();
+			_gameObjectPrefabMap.Clear();
 			_satelliteMap.Clear();
 			_satelliteBuildMap.Clear();
 			_shipMap.Clear();
@@ -200,6 +205,7 @@ namespace GameDatabase
 		private readonly Dictionary<int, Device> _deviceMap = new();
 		private readonly Dictionary<int, DroneBay> _droneBayMap = new();
 		private readonly Dictionary<int, Faction> _factionMap = new();
+		private readonly Dictionary<int, GameObjectPrefab> _gameObjectPrefabMap = new();
 		private readonly Dictionary<int, Satellite> _satelliteMap = new();
 		private readonly Dictionary<int, SatelliteBuild> _satelliteBuildMap = new();
 		private readonly Dictionary<int, Ship> _shipMap = new();
@@ -258,6 +264,9 @@ namespace GameDatabase
 				foreach (var item in _content.FactionList)
 					if (!item.Disabled && !_database._factionMap.ContainsKey(item.Id))
 						Faction.Create(item, this);
+				foreach (var item in _content.GameObjectPrefabList)
+					if (!item.Disabled && !_database._gameObjectPrefabMap.ContainsKey(item.Id))
+						GameObjectPrefab.Create(item, this);
 				foreach (var item in _content.SatelliteList)
 					if (!item.Disabled && !_database._satelliteMap.ContainsKey(item.Id))
 						Satellite.Create(item, this);
@@ -410,6 +419,16 @@ namespace GameDatabase
                 if (serializable != null && !serializable.Disabled) return Faction.Create(serializable, this);
 
 				var value = Faction.DefaultValue;
+				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
+                return value;
+			}
+			public GameObjectPrefab GetGameObjectPrefab(ItemId<GameObjectPrefab> id, bool notNull = false)
+			{
+				if (_database._gameObjectPrefabMap.TryGetValue(id.Value, out var item)) return item;
+                var serializable = _content.GetGameObjectPrefab(id.Value);
+                if (serializable != null && !serializable.Disabled) return GameObjectPrefab.Create(serializable, this);
+
+				var value = GameObjectPrefab.DefaultValue;
 				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
                 return value;
 			}
@@ -582,6 +601,7 @@ namespace GameDatabase
 			public void AddDevice(int id, Device item) { _database._deviceMap.Add(id, item); }
 			public void AddDroneBay(int id, DroneBay item) { _database._droneBayMap.Add(id, item); }
 			public void AddFaction(int id, Faction item) { _database._factionMap.Add(id, item); }
+			public void AddGameObjectPrefab(int id, GameObjectPrefab item) { _database._gameObjectPrefabMap.Add(id, item); }
 			public void AddSatellite(int id, Satellite item) { _database._satelliteMap.Add(id, item); }
 			public void AddSatelliteBuild(int id, SatelliteBuild item) { _database._satelliteBuildMap.Add(id, item); }
 			public void AddShip(int id, Ship item) { _database._shipMap.Add(id, item); }

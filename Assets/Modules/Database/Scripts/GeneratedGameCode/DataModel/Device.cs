@@ -53,6 +53,7 @@ namespace GameDatabase.DataModel
 			Sound = new AudioClipId(serializable.Sound);
 			EffectPrefab = new PrefabId(serializable.EffectPrefab, PrefabId.Type.Effect);
 			ObjectPrefab = new PrefabId(serializable.ObjectPrefab, PrefabId.Type.Object);
+			Prefab = loader?.GetGameObjectPrefab(new ItemId<GameObjectPrefab>(serializable.Prefab)) ?? GameObjectPrefab.DefaultValue;
 			ControlButtonIcon = new SpriteId(serializable.ControlButtonIcon, SpriteId.Type.ActionButton);
 
 			OnDataDeserialized(serializable, loader);
@@ -72,6 +73,7 @@ namespace GameDatabase.DataModel
 		public AudioClipId Sound;
 		public PrefabId EffectPrefab;
 		public PrefabId ObjectPrefab;
+		public GameObjectPrefab Prefab;
 		public SpriteId ControlButtonIcon;
 	}
 }

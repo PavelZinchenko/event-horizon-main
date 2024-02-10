@@ -9,7 +9,6 @@
     "x": 0.45,
     "y": 0.35
   },
-  "Color": "#000000",
-  "ObjectPrefab": "WormSegment",
+  "Prefab": 1,
   "ControlButtonIcon": "controls_gear"
 }

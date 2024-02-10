@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="GameObjectPrefab" type="object" typeid="GameObjectPrefab" switch="Type" >
+    <member name="Type" type="enum" typeid="ObjectPrefabType" />
+    <member name="Image1" type="image" typeid="Satellite" alias="BodyImage" case="WormTailSegment" />
+    <member name="Image2" type="image" typeid="Satellite" alias="JointImage" case="WormTailSegment" />
+</data>

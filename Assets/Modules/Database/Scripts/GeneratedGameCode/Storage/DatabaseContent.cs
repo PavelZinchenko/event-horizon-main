@@ -124,6 +124,19 @@ namespace GameDatabase.Storage
                 if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate Faction ID - " + item.Id + " (" + name + ")");
             }
+            else if (type == ItemType.GameObjectPrefab)
+            {
+			    if (!_gameObjectPrefabMap.ContainsKey(item.Id))
+                {
+                    var data = _serializer.FromJson<GameObjectPrefabSerializable>(content);
+                    data.FileName = name;
+                    _gameObjectPrefabMap.Add(data.Id, data);
+                    return;
+                }
+
+                if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate GameObjectPrefab ID - " + item.Id + " (" + name + ")");
+            }
             else if (type == ItemType.Satellite)
             {
 			    if (!_satelliteMap.ContainsKey(item.Id))
@@ -515,6 +528,7 @@ namespace GameDatabase.Storage
 		public IEnumerable<DeviceSerializable> DeviceList => _deviceMap.Values;
 		public IEnumerable<DroneBaySerializable> DroneBayList => _droneBayMap.Values;
 		public IEnumerable<FactionSerializable> FactionList => _factionMap.Values;
+		public IEnumerable<GameObjectPrefabSerializable> GameObjectPrefabList => _gameObjectPrefabMap.Values;
 		public IEnumerable<SatelliteSerializable> SatelliteList => _satelliteMap.Values;
 		public IEnumerable<SatelliteBuildSerializable> SatelliteBuildList => _satelliteBuildMap.Values;
 		public IEnumerable<ShipSerializable> ShipList => _shipMap.Values;
@@ -539,6 +553,7 @@ namespace GameDatabase.Storage
 		public DeviceSerializable GetDevice(int id) { return _deviceMap.TryGetValue(id, out var item) ? item : null; }
 		public DroneBaySerializable GetDroneBay(int id) { return _droneBayMap.TryGetValue(id, out var item) ? item : null; }
 		public FactionSerializable GetFaction(int id) { return _factionMap.TryGetValue(id, out var item) ? item : null; }
+		public GameObjectPrefabSerializable GetGameObjectPrefab(int id) { return _gameObjectPrefabMap.TryGetValue(id, out var item) ? item : null; }
 		public SatelliteSerializable GetSatellite(int id) { return _satelliteMap.TryGetValue(id, out var item) ? item : null; }
 		public SatelliteBuildSerializable GetSatelliteBuild(int id) { return _satelliteBuildMap.TryGetValue(id, out var item) ? item : null; }
 		public ShipSerializable GetShip(int id) { return _shipMap.TryGetValue(id, out var item) ? item : null; }
@@ -570,6 +585,7 @@ namespace GameDatabase.Storage
 		private readonly Dictionary<int, DeviceSerializable> _deviceMap = new();
 		private readonly Dictionary<int, DroneBaySerializable> _droneBayMap = new();
 		private readonly Dictionary<int, FactionSerializable> _factionMap = new();
+		private readonly Dictionary<int, GameObjectPrefabSerializable> _gameObjectPrefabMap = new();
 		private readonly Dictionary<int, SatelliteSerializable> _satelliteMap = new();
 		private readonly Dictionary<int, SatelliteBuildSerializable> _satelliteBuildMap = new();
 		private readonly Dictionary<int, ShipSerializable> _shipMap = new();

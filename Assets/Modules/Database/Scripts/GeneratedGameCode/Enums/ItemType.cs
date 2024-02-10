@@ -34,6 +34,7 @@ namespace GameDatabase.Enums
 		VisualEffect = 26,
 		BulletPrefab = 27,
 		BehaviorTree = 28,
+		GameObjectPrefab = 29,
 		ShipSettings = 100,
 		GalaxySettings = 101,
 		DatabaseSettings = 102,

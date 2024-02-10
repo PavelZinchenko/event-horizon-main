@@ -17,6 +17,7 @@ public class PrefabCache : MonoBehaviour
         _database = database;
         _resourceLocator = resourceLocator;
         _database.DatabaseLoaded += OnDatabaseLoaded;
+        _customPrefabLoader = new Combat.Services.CustomPrefabLoader(this, resourceLocator);
     }
 
     private void OnDestroy()
@@ -70,6 +71,20 @@ public class PrefabCache : MonoBehaviour
             _prefabs[path] = prefab;
         }
 
+        return prefab;
+    }
+
+    public GameObject LoadPrefab(GameObjectPrefab data)
+    {
+        if (data == null) return null;
+        GameObject prefab;
+        if (_customPrefabs.TryGetValue(data.Id.Value, out prefab))
+            return prefab;
+
+        prefab = data.Create(_customPrefabLoader);
+        prefab.SetActive(false);
+        prefab.transform.parent = transform;
+        _customPrefabs.Add(data.Id.Value, prefab);
         return prefab;
     }
 
@@ -160,7 +175,9 @@ public class PrefabCache : MonoBehaviour
 
     private IDatabase _database;
     private IResourceLocator _resourceLocator;
+    private Combat.Services.CustomPrefabLoader _customPrefabLoader;
     private readonly Dictionary<string, GameObject> _prefabs = new Dictionary<string, GameObject>();
-    private readonly Dictionary<int, GameObject> _bulletPrefabs = new Dictionary<int, GameObject>();
     private readonly Dictionary<string, GameObject> _effectPrefabs = new Dictionary<string, GameObject>();
+    private readonly Dictionary<int, GameObject> _bulletPrefabs = new Dictionary<int, GameObject>();
+    private readonly Dictionary<int, GameObject> _customPrefabs = new Dictionary<int, GameObject>();
 }

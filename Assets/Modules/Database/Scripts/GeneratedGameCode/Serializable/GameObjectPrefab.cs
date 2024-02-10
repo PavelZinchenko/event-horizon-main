@@ -13,23 +13,10 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public class DeviceSerializable : SerializableItem
+	public class GameObjectPrefabSerializable : SerializableItem
 	{
-		public DeviceClass DeviceClass;
-		public float EnergyConsumption;
-		public float PassiveEnergyConsumption;
-		public float Power;
-		public float Range;
-		public float Size;
-		public float Cooldown;
-		public float Lifetime;
-		public UnityEngine.Vector2 Offset;
-		public ActivationType ActivationType;
-		public string Color;
-		public string Sound;
-		public string EffectPrefab;
-		public string ObjectPrefab;
-		public int Prefab;
-		public string ControlButtonIcon;
+		public ObjectPrefabType Type;
+		public string Image1;
+		public string Image2;
 	}
 }

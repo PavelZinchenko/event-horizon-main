@@ -216,9 +216,8 @@ namespace Combat.Factory
         }
 
         public IEnumerable<WormSegment> CreateWormTail(IShip parent, int size, float weightScale, float hitPoints,
-            PrefabId prefabId, float offset1, float offset2, float extraOffset, ColorScheme colorScheme)
+            GameObject prefab, float offset1, float offset2, float extraOffset, ColorScheme colorScheme)
         {
-            var prefab = _prefabCache.LoadPrefab(prefabId);
             var damageIndicator = new DamageIndicator(parent, _effectFactory, parent.Type.Side == UnitSide.Player ? 0.75f : 0.5f);
 
             WormSegment segment = null;
