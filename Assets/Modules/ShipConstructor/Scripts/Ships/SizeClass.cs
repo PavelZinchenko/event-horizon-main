@@ -22,6 +22,7 @@ namespace Constructor.Ships
 
         public static string ToString(this SizeClass sizeClass, ILocalization localization)
         {
+            if (sizeClass == SizeClass.Undefined) return string.Empty;
             return localization.GetString("$Class" + sizeClass);
         }
     }
