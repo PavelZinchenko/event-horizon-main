@@ -171,6 +171,7 @@ public class PrefabCache : MonoBehaviour
     {
         _bulletPrefabs.Clear();
         _effectPrefabs.Clear();
+        _customPrefabs.Clear();
     }
 
     private IDatabase _database;
