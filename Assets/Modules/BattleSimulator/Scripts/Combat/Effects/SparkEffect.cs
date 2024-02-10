@@ -14,12 +14,19 @@ namespace Combat.Effects
         private Vector2 _velocity;
         private float _angularVelocity;
 
-        protected override void OnInitialize() 
+        public void Initialize(VisualEffectElement data, IResourceLocator resourceLocator)
         {
-            _velocity = RotationHelpers.Direction(Random.Range(0, 360)) * _speed;
-            _angularVelocity = Random.Range(-360, 360) * _speed;
+            var renderer = GetComponent<SpriteRenderer>();
+            var sprite = resourceLocator.GetSprite(data.Image);
+            renderer.sprite = sprite;
+
+            _speed = data.Size;
+            _sparkSize = data.ParticleSize;
         }
 
+        public override void Restart() => Randomize();
+
+        protected override void OnInitialize() => Randomize();
         protected override void OnDispose() {}
         protected override void OnGameObjectDestroyed() {}
 
@@ -41,14 +48,10 @@ namespace Combat.Effects
             gameObject.transform.localScale = Scale * _sparkSize * Vector3.one;
         }
 
-        public void Initialize(VisualEffectElement data, IResourceLocator resourceLocator)
+        private void Randomize()
         {
-            var renderer = GetComponent<SpriteRenderer>();
-            var sprite = resourceLocator.GetSprite(data.Image);
-            renderer.sprite = sprite;
-
-            _speed = data.Size;
-            _sparkSize = data.ParticleSize;
+            _velocity = RotationHelpers.Direction(Random.Range(0, 360)) * _speed;
+            _angularVelocity = Random.Range(-360, 360) * _speed;
         }
     }
 }

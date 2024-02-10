@@ -38,6 +38,7 @@ namespace GameDatabase.DataModel
 			StartTime = UnityEngine.Mathf.Clamp(serializable.StartTime, 0f, 1000f);
 			Lifetime = UnityEngine.Mathf.Clamp(serializable.Lifetime, 0f, 1000f);
 			ParticleSize = UnityEngine.Mathf.Clamp(serializable.ParticleSize, 0.001f, 100f);
+			Loop = serializable.Loop;
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -53,6 +54,7 @@ namespace GameDatabase.DataModel
 		public float StartTime { get; private set; }
 		public float Lifetime { get; private set; }
 		public float ParticleSize { get; private set; }
+		public bool Loop { get; private set; }
 
 		public static VisualEffectElement DefaultValue { get; private set; }= new(new(), null);
 	}

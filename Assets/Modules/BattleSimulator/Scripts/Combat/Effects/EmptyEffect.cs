@@ -13,6 +13,7 @@ namespace Combat.Effects
         public bool IsAlive { get; private set; }
         public void Run(float lifetime, Vector2 velocity, float angularVelocity) {}
         public void Dispose() {}
+        public void Restart() { }
         public void OnParentSizeChanged() { }
     }
 }

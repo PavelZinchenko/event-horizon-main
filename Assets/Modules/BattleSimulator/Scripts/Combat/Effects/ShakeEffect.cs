@@ -45,6 +45,7 @@ namespace Combat.Effects
         }
 
         public void Dispose() {}
+        public void Restart() { }
         public void OnParentSizeChanged() {}
 
         private bool _active;

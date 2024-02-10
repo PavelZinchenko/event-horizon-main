@@ -26,6 +26,8 @@ namespace Combat.Effects
             _view.Thickness = _thickness * parentSize;
         }
 
+        public override void Restart() => RandomizeRotation();
+
         public void Initialize(VisualEffectElement data, IResourceLocator resourceLocator)
         {
             var renderer = GetComponent<LineRenderer>();
@@ -52,15 +54,18 @@ namespace Combat.Effects
             base.UpdateView();
             
             if (_view.Animated)
-            {
-                _direction = Random.Range(0, 360);
-                UpdateRotation();
-            }
+                RandomizeRotation();
         }
 
         protected override void UpdateRotation()
         {
             gameObject.transform.localEulerAngles = new Vector3(0, 0, Rotation + _direction);
+        }
+
+        private void RandomizeRotation()
+        {
+            _direction = Random.Range(0, 360);
+            UpdateRotation();
         }
     }
 }

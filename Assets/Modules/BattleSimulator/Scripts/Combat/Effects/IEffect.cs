@@ -12,6 +12,7 @@ namespace Combat.Effects
         float Life { get; set; }
 
         void OnParentSizeChanged();
+        void Restart();
 
         bool IsAlive { get; }
         void Run(float lifetime , Vector2 velocity, float angularVelocity);

@@ -62,6 +62,7 @@ namespace Combat.Effects
         }
 
         public virtual void OnParentSizeChanged() { }
+        public virtual void Restart() { }
 
         private void Update()
         {

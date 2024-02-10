@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using Combat.Component.Body;
 using Combat.Factory;
-using Combat.Scene;
 using GameDatabase.DataModel;
-using GameDatabase.Enums;
 using GameDatabase.Extensions;
 using UnityEngine;
 
@@ -105,6 +103,7 @@ namespace Combat.Effects
         }
 
         public void OnParentSizeChanged() { }
+        public void Restart() { }
 
         private void Update()
         {
@@ -167,20 +166,44 @@ namespace Combat.Effects
                 var effect = _effects[i];
 
                 var time = (1f - Life) * _lifetimeMax;
-                if (time <= element.StartTime || time >= element.StartTime + element.Lifetime)
+                if (time <= element.StartTime || !element.Loop && time >= element.StartTime + element.Lifetime)
                 {
                     effect.Visible = false;
-                    continue;
+                    return;
                 }
 
                 effect.Visible = true;
-                effect.Life = 1f - (time - element.StartTime) / element.Lifetime;
+
+                if (element.Loop)
+                    UpdateLoopingEffectLife(effect, element);
+                else
+                    UpdateEffectLife(effect, element, time);
 
                 if (element.GrowthRate != 0)
                     effect.Size = element.Size * (1.0f + element.GrowthRate * (1.0f - effect.Life));
                 if (element.TurnRate != 0)
                     effect.Rotation = element.TurnRate * (1.0f - effect.Life);
             }
+        }
+
+        private void UpdateLoopingEffectLife(IEffect effect, VisualEffectElement element)
+        {
+            var deltaTime = Time.deltaTime / (_lifetime * element.Lifetime);
+            var life = effect.Life - deltaTime;
+            if (life <= 0)
+            {
+                effect.Life = 1.0f;
+                effect.Restart();
+            }
+            else
+            {
+                effect.Life = life;
+            }
+        }
+
+        private void UpdateEffectLife(IEffect effect, VisualEffectElement element, float time)
+        {
+            effect.Life = 1f - (time - element.StartTime) / element.Lifetime;
         }
 
         private void UpdatePosition()
