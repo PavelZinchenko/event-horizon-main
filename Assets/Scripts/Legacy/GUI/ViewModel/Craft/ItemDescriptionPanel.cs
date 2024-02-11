@@ -150,10 +150,8 @@ namespace ViewModel.Craft
 
 		private void UpdateWeaponSlots(IReadOnlyCollection<Barrel> barrels)
 		{
-			HashSet<char> types = new(barrels.SelectMany(barrel => string.IsNullOrEmpty(barrel.WeaponClass) ? "•" : barrel.WeaponClass));
-
 			_weaponSlots.gameObject.SetActive(barrels.Count > 0);
-			_weaponSlots.transform.InitializeElements<BlockViewModel, char>(types, UpdateWeaponSlot);
+			_weaponSlots.transform.InitializeElements<BlockViewModel, Barrel>(barrels, UpdateWeaponSlot);
 		}
 
 		private void UpdateTextField(TextFieldViewModel viewModel, KeyValuePair<string, string> data)
@@ -162,9 +160,9 @@ namespace ViewModel.Craft
             viewModel.Value.text = data.Value;
         }
 
-        private static void UpdateWeaponSlot(BlockViewModel viewModel, char type)
+        private static void UpdateWeaponSlot(BlockViewModel view, Barrel barrel)
         {
-            viewModel.Label.text = type.ToString();
+            view.Label.text = barrel.WeaponClass;
         }
 
         private static IEnumerable<KeyValuePair<string, string>> GetShipDescription(IShip ship, ILocalization localization)
