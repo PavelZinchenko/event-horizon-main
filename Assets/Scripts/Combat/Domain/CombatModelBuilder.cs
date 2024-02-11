@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Combat.Component.Unit.Classification;
-using Combat.Scene;
 using Economy.Products;
 using GameDatabase;
+using GameDatabase.DataModel;
 using GameServices.Player;
 using Model.Military;
 using Zenject;
@@ -19,20 +19,19 @@ namespace Combat.Domain
 
     public class CombatModelBuilder : ICombatModelBuilder
     {
-        public CombatModelBuilder(IDatabase database, ShipCreatedSignal shipCreatedSignal, ShipDestroyedSignal shipDestroyedSignal, PlayerSkills playerSkills)
+        public CombatModelBuilder(IDatabase database, PlayerSkills playerSkills)
         {
             _database = database;
-            _shipDestroyedSignal = shipDestroyedSignal;
-            _shipCreatedSignal = shipCreatedSignal;
             _playerSkills = playerSkills;
 
-            Rules = Model.Factories.CombatRules.Default();
+            Rules = database.CombatSettings.DefaultCombatRules;
         }
 
         public IFleet EnemyFleet { get; set; }
         public IFleet PlayerFleet { get; set; }
 
         public CombatRules Rules { get; set; }
+        public int StarLevel { get; set; }
 
         public void AddSpecialReward(IProduct item)
         {
@@ -48,17 +47,13 @@ namespace Combat.Domain
         {
             var playerFleet = PlayerFleet ?? Model.Factories.Fleet.Empty;
             var enemyFleet = EnemyFleet ?? Model.Factories.Fleet.Empty;
-            var useBonuses = !Rules.DisableBonusses;
+            var useBonuses = !Rules.DisableSkillBonuses;
 
             var model = new CombatModel(
                 new FleetModel(playerFleet.Ships, UnitSide.Player, _database, playerFleet.AiLevel, useBonuses ? _playerSkills : null),
-                new FleetModel(enemyFleet.Ships, UnitSide.Enemy, _database, enemyFleet.AiLevel),
-                _shipCreatedSignal, 
-                _shipDestroyedSignal);
+                new FleetModel(enemyFleet.Ships, UnitSide.Enemy, _database, enemyFleet.AiLevel));
 
-			var rules = Rules;
-			if (useBonuses && !_playerSkills.HasRescueUnit)
-				rules.NoRetreats = true;
+			var rules = Rules.Create(StarLevel, _playerSkills.HasRescueUnit);
 
 			model.SpecialRewards = specialLoot != null ? _specialReward.Concat(specialLoot) : _specialReward;
 			model.Rules = rules;
@@ -67,8 +62,6 @@ namespace Combat.Domain
         }
 
         private readonly IDatabase _database;
-        private readonly ShipCreatedSignal _shipCreatedSignal;
-        private readonly ShipDestroyedSignal _shipDestroyedSignal;
         private readonly List<IProduct> _specialReward = new List<IProduct>();
         private readonly PlayerSkills _playerSkills;
 

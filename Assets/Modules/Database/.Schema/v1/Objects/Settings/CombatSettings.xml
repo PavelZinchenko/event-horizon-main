@@ -6,4 +6,5 @@
     <member name="DefensiveDroneAI" type="object" typeid="BehaviorTree" />
     <member name="OffensiveDroneAI" type="object" typeid="BehaviorTree" />
     <member name="StarbaseAI" type="object" typeid="BehaviorTree" />
+    <member name="DefaultCombatRules" type="object" typeid="CombatRules" />
 </data>

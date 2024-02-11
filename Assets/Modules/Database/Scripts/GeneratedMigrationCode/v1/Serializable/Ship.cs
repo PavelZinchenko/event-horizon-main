@@ -25,6 +25,7 @@ namespace DatabaseMigration.v1.Serializable
 		public ShipRarity ShipRarity;
 		public SizeClass SizeClass;
 		public string Name;
+		public string Description;
 		public int Faction;
 		public string IconImage;
 		public float IconScale;

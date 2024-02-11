@@ -45,8 +45,9 @@ namespace Galaxy.StarContent
             var builder = _combatModelBuilderFactory.Create();
             builder.PlayerFleet = firstFleet;
             builder.EnemyFleet = CreateFleet(starId);
-            builder.Rules = CombatRules.Xmas(level);
+            builder.Rules = _database.SpecialEventSettings.XmasCombatRules;
             builder.AddSpecialReward(_lootGenerator.GetXmasRewards(level, starId));
+            builder.StarLevel = level;
 
             _startBattleTrigger.Fire(builder.Build(), result => OnCombatCompleted(starId, result));
         }

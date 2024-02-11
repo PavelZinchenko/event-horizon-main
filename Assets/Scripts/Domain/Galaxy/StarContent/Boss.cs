@@ -48,8 +48,9 @@ namespace Galaxy.StarContent
             var builder = _combatModelBuilderFactory.Create();
             builder.PlayerFleet = firstFleet;
             builder.EnemyFleet = CreateFleet(starId);
-            builder.Rules = CombatRules.Flagship(GetLevel(starId));
+            builder.Rules = _database.GalaxySettings.FlagshipCombatRules ?? _database.CombatSettings.DefaultCombatRules;
             builder.AddSpecialReward(CommonProduct.Create(_factory.CreateResearchItem(faction)));
+            builder.StarLevel = GetLevel(starId);
 
             _startBattleTrigger.Fire(builder.Build(), model => OnCombatCompleted(starId, model));
         }

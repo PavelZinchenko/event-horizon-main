@@ -11,11 +11,7 @@ namespace Domain.Quests
     public struct QuestEnemyData
     {
         public IEnumerable<ShipBuild> EnemyFleet;
-        public RewardCondition LootCondition;
-        public RewardCondition ExpCondition;
-        public bool NoRetreats;
-        public bool PlayerHasOneShip;
-        public int TimeLimit;
+        public CombatRules Rules;
         public int Level;
         public int Seed;
     }
@@ -35,21 +31,28 @@ namespace Domain.Quests
 
             return new QuestEnemyData
             {
-                EnemyFleet = CreateFleet(enemy, questInfo, level),
-                LootCondition = enemy.LootCondition,
-                ExpCondition = enemy.ExpCondition,
-                NoRetreats = enemy.NoShipChanging,
-                PlayerHasOneShip = enemy.PlayerHasOneShip,
-                TimeLimit = enemy.CombatTimeLimit,
+                EnemyFleet = CreateFleet(enemy, questInfo.Faction, level, questInfo.Seed),
+                Rules = enemy.CombatRules,
                 Level = level,
                 Seed = questInfo.Seed
             };
         }
 
-        private IEnumerable<ShipBuild> CreateFleet(Fleet enemy, QuestInfo questInfo, int level)
+        public QuestEnemyData CreateCombatPlan(Fleet enemy, Faction faction, int level, int seed)
         {
-            var random = new Random(questInfo.Seed);
-            var factionFilter = new FactionFilter(enemy.Factions, level, questInfo.Faction);
+            return new QuestEnemyData
+            {
+                EnemyFleet = CreateFleet(enemy, faction, level, seed),
+                Rules = enemy.CombatRules,
+                Level = Math.Max(0, level + enemy.LevelBonus),
+                Seed = seed
+            };
+        }
+
+        private IEnumerable<ShipBuild> CreateFleet(Fleet enemy, Faction faction, int level, int seed)
+        {
+            var random = new Random(seed);
+            var factionFilter = new FactionFilter(enemy.Factions, level, faction);
 
             var numberOfShips = enemy.NoRandomShips ? 0 : FleetSize(level, random);
 

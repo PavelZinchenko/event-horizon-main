@@ -33,6 +33,7 @@ namespace GameDatabase.DataModel
 			XmasDaysBefore = UnityEngine.Mathf.Clamp(serializable.XmasDaysBefore, 0, 30);
 			XmasDaysAfter = UnityEngine.Mathf.Clamp(serializable.XmasDaysAfter, 0, 30);
 			XmasQuest = loader?.GetQuest(new ItemId<QuestModel>(serializable.XmasQuest)) ?? QuestModel.DefaultValue;
+			XmasCombatRules = loader?.GetCombatRules(new ItemId<CombatRules>(serializable.XmasCombatRules)) ?? CombatRules.DefaultValue;
 			_convertCreditsToSnowflakes = new Expressions.IntToInt(serializable.ConvertCreditsToSnowflakes, 1, 2147483647, variableResolver) { ParamName1 = "credits" };
 			ConvertCreditsToSnowflakes = _convertCreditsToSnowflakes.Evaluate;
 			EnableEasterEvent = serializable.EnableEasterEvent;
@@ -51,6 +52,7 @@ namespace GameDatabase.DataModel
 		public int XmasDaysBefore { get; private set; }
 		public int XmasDaysAfter { get; private set; }
 		public QuestModel XmasQuest { get; private set; }
+		public CombatRules XmasCombatRules { get; private set; }
 		private readonly Expressions.IntToInt _convertCreditsToSnowflakes;
 		public delegate int ConvertCreditsToSnowflakesDelegate(int credits);
 		public ConvertCreditsToSnowflakesDelegate ConvertCreditsToSnowflakes { get; private set; }

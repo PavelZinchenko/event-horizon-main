@@ -33,12 +33,8 @@ namespace GameDatabase.DataModel
 			Factions = RequiredFactions.Create(serializable.Factions, loader);
 			LevelBonus = UnityEngine.Mathf.Clamp(serializable.LevelBonus, -10000, 10000);
 			NoRandomShips = serializable.NoRandomShips;
-			CombatTimeLimit = UnityEngine.Mathf.Clamp(serializable.CombatTimeLimit, 0, 999);
-			LootCondition = serializable.LootCondition;
-			ExpCondition = serializable.ExpCondition;
 			SpecificShips = new ImmutableCollection<ShipBuild>(serializable.SpecificShips?.Select(item => loader.GetShipBuild(new ItemId<ShipBuild>(item), true)));
-			NoShipChanging = serializable.NoShipChanging;
-			PlayerHasOneShip = serializable.PlayerHasOneShip;
+			CombatRules = loader?.GetCombatRules(new ItemId<CombatRules>(serializable.CombatRules)) ?? CombatRules.DefaultValue;
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -48,12 +44,8 @@ namespace GameDatabase.DataModel
 		public RequiredFactions Factions { get; private set; }
 		public int LevelBonus { get; private set; }
 		public bool NoRandomShips { get; private set; }
-		public int CombatTimeLimit { get; private set; }
-		public RewardCondition LootCondition { get; private set; }
-		public RewardCondition ExpCondition { get; private set; }
 		public ImmutableCollection<ShipBuild> SpecificShips { get; private set; }
-		public bool NoShipChanging { get; private set; }
-		public bool PlayerHasOneShip { get; private set; }
+		public CombatRules CombatRules { get; private set; }
 
 		public static Fleet DefaultValue { get; private set; }
 	}

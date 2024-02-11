@@ -35,6 +35,7 @@ namespace DatabaseMigration.v1.Serializable
 		public string Sound;
 		public string EffectPrefab;
 		public string ObjectPrefab;
+		public int Prefab;
 		public string ControlButtonIcon;
 	}
 }

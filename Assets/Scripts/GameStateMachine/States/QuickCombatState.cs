@@ -10,7 +10,6 @@ using GameDatabase.Query;
 using GameDatabase.DataModel;
 using Database.Legacy;
 using Session;
-using GameDatabase.Enums;
 using Model.Military;
 
 namespace GameStateMachine.States
@@ -91,18 +90,12 @@ namespace GameStateMachine.States
 				secondFleet = new TestFleet(_database, ships.RandomUniqueElements(12, random).OrderBy(item => random.Next()), _settings.EasyMode ? 0 : 100);
 			}
 
-			var rules = Model.Factories.CombatRules.Default();
-			rules.LootCondition = RewardCondition.Never;
-			rules.ExpCondition = RewardCondition.Never;
-			rules.DisableBonusses = true;
-			rules.TimeoutBehaviour = TimeoutBehaviour.NextEnemy;
-
 			var builder = _combatModelBuilderFactory.Create();
 			builder.PlayerFleet = firstFleet;
 			builder.EnemyFleet = secondFleet;
-			builder.Rules = rules;
+			builder.Rules = _database.GalaxySettings.QuickCombatRules ?? _database.CombatSettings.DefaultCombatRules;
 
-			return builder.Build();
+            return builder.Build();
 		}
 
 		private HashSet<ShipBuild> GetUnlockedShips()

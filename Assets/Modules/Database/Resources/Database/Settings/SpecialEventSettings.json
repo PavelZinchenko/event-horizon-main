@@ -1,5 +1,6 @@
 {
   "ItemType": 106,
+  "XmasCombatRules": 8,
   "EnableEasterEvent": true,
   "EasterQuest": 10,
   "EnableHalloweenEvent": true,

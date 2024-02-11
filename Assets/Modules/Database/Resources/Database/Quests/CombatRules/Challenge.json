@@ -1,0 +1,10 @@
+{
+  "ItemType": 30,
+  "Id": 7,
+  "TimeLimit": "60",
+  "TimeOutMode": 1,
+  "ExpCondition": 2,
+  "ShipSelection": 2,
+  "DisableSkillBonuses": true,
+  "DisableRandomLoot": true
+}

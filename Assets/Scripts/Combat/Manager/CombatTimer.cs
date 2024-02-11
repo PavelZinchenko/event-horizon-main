@@ -2,8 +2,8 @@
 using Combat.Component.Ship;
 using Combat.Component.Unit.Classification;
 using Combat.Domain;
+using GameDatabase.Enums;
 using Gui.Combat;
-using Model.Military;
 using Services.Audio;
 using Services.Messenger;
 using UnityEngine;
@@ -32,8 +32,7 @@ namespace Combat.Manager
         {
             get
             {
-                var timeLimit = _combatModel.Rules.TimeLimit;
-                return _elapsedTime > timeLimit ? 0 : Mathf.CeilToInt(timeLimit - _elapsedTime);
+                return _elapsedTime > _combatModel.Rules.TimeLimit ? 0 : Mathf.CeilToInt(_combatModel.Rules.TimeLimit - _elapsedTime);
             }
         }
 
@@ -68,13 +67,13 @@ namespace Combat.Manager
             switch (ship.Type.Side)
             {
                 case UnitSide.Player:
-                    if (_combatModel.Rules.TimeoutBehaviour == TimeoutBehaviour.Decay || ship.Type.Side == UnitSide.Enemy)
+                    if (_combatModel.Rules.TimeOutMode == TimeOutMode.DrainPlayerHp || ship.Type.Side == UnitSide.Enemy)
                         ResetTimer();
 
                     _activePlayerShipCount = _combatModel.PlayerFleet.Ships.Count(item => item.Status == ShipStatus.Active);
                     break;
                 case UnitSide.Enemy:
-                    if (_combatModel.Rules.TimeoutBehaviour != TimeoutBehaviour.AllEnemiesThenDraw || _combatModel.EnemyFleet.IsAnyShipLeft())
+                    if (_combatModel.Rules.TimeOutMode != TimeOutMode.CallNextEnemyOrDraw || _combatModel.EnemyFleet.IsAnyShipLeft())
                         ResetTimer();
 
                     _activeEnemyShipCount = _combatModel.EnemyFleet.Ships.Count(item => item.Status == ShipStatus.Active);
@@ -104,9 +103,9 @@ namespace Combat.Manager
                 var timeLeft = Mathf.CeilToInt(_combatModel.Rules.TimeLimit - _elapsedTime);
                 _timerPanel.Enabled = true;
 
-                switch (_combatModel.Rules.TimeoutBehaviour)
+                switch (_combatModel.Rules.TimeOutMode)
                 {
-                    case TimeoutBehaviour.NextEnemy:
+                    case TimeOutMode.CallNextEnemy:
                         if (_combatManager.CanCallNextEnemy())
                         {
                             if (timeLeft <= 0)
@@ -121,7 +120,7 @@ namespace Combat.Manager
                         }
 
                         break;
-                    case TimeoutBehaviour.AllEnemiesThenDraw:
+                    case TimeOutMode.CallNextEnemyOrDraw:
                         var hasMoreShips = _combatModel.EnemyFleet.IsAnyShipLeft();
                         if (!hasMoreShips)
                             timeLeft += 2 * _combatModel.Rules.TimeLimit;
@@ -144,7 +143,7 @@ namespace Combat.Manager
                         }
 
                         break;
-                    case TimeoutBehaviour.Decay:
+                    case TimeOutMode.DrainPlayerHp:
                         if (timeLeft <= 0)
                         {
                             _activePlayerShip.Stats.Armor.Get(-timeLeft * Time.deltaTime * _activePlayerShip.Stats.Armor.MaxValue / 100f);
@@ -158,23 +157,19 @@ namespace Combat.Manager
                 _timerPanel.Time = Mathf.Max(0, timeLeft);
             }
 
-            Alarm = _background.OutOfTimeMode;
+            SetAlarm(_background.OutOfTimeMode);
         }
 
-        private bool Alarm
+        private void SetAlarm(bool value)
         {
-            get { return _isAlarmEnabled; }
-            set
+            if (_isAlarmEnabled != value)
             {
-                if (_isAlarmEnabled != value)
-                {
-                    _isAlarmEnabled = value;
-                    _musicPlayer.Mute(value);
-                    if (_isAlarmEnabled)
-                        _soundPlayer.Play(_settings.AlarmSound, GetHashCode(), true);
-                    else
-                        _soundPlayer.Stop(GetHashCode());
-                }
+                _isAlarmEnabled = value;
+                _musicPlayer.Mute(value);
+                if (_isAlarmEnabled)
+                    _soundPlayer.Play(_settings.AlarmSound, GetHashCode(), true);
+                else
+                    _soundPlayer.Stop(GetHashCode());
             }
         }
 

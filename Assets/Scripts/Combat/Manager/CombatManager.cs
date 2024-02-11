@@ -15,9 +15,8 @@ using Services.Messenger;
 using GameDatabase;
 using Gui.Combat;
 using Maths;
-using Model.Military;
 using Zenject;
-using Services.GameApplication;
+using GameDatabase.Enums;
 
 namespace Combat.Manager
 {
@@ -25,12 +24,10 @@ namespace Combat.Manager
     {
         [Inject]
         private CombatManager(
-            IApplication application,
             IMessenger messenger,
             ISoundPlayer soundPlayer,
             ExitSignal.Trigger exitTrigger)
         {
-            _application = application;
             _soundPlayer = soundPlayer;
             _exitTrigger = exitTrigger;
             _messenger = messenger;
@@ -64,15 +61,10 @@ namespace Combat.Manager
 
             var random = new System.Random();
 
-            //if (_combatData.Rules.PlanetEnabled)
-            //{
-            //    objectFactory.CreatePlanet(_config.PlanetPrefab, _config.AtmospherePrefab, Position.Random(random), Random.Range(0, 360), Vector2.zero, Random.Range(16, 25));
-            //}
-
             var level = _database.GalaxySettings.EnemyLevel(_combatModel.Rules.StarLevel);
             var powerMultiplier = Experience.LevelToPowerMultiplier(level);
 
-            if (_combatModel.Rules.AsteroidsEnabled)
+            if (!_combatModel.Rules.DisableAsteroids)
             {
                 for (int i = 0; i < 10; ++i)
                 {
@@ -88,7 +80,7 @@ namespace Combat.Manager
                 }
             }
 
-            if (_combatModel.Rules.PlanetEnabled)
+            if (!_combatModel.Rules.DisablePlanet)
             {
                 var r = random.NextFloat();
                 var g = Mathf.Sqrt(1f - r * r);
@@ -100,8 +92,9 @@ namespace Combat.Manager
                 _spaceObjectFactory.CreatePlanet(position, size, color);
             }
 
-            if (_combatModel.Rules.InitialEnemies > 1)
-                foreach (var ship in _combatModel.EnemyFleet.Ships.Where(item => item.Status == ShipStatus.Ready).Skip(1).Take(_combatModel.Rules.InitialEnemies - 1))
+            var initialEnemies = _combatModel.Rules.InitialEnemyShips;
+            if (initialEnemies > 1)
+                foreach (var ship in _combatModel.EnemyFleet.Ships.Where(item => item.Status == ShipStatus.Ready).Skip(1).Take(initialEnemies - 1))
                     CreateShip(ship);
         }
 
@@ -144,16 +137,11 @@ namespace Combat.Manager
 				controllerFactory = new KeyboardController.Factory(_keyboard, _mouse);
 			else if (_database.CombatSettings.EnemyAI != null)
 				controllerFactory = new BehaviorTreeController.Factory(_database.CombatSettings.EnemyAI, 
-					_scene, Ai.BehaviorTree.AiSettings.FromAiLevel(_combatModel.EnemyFleet.Level), _behaviorTreeBuilder);
+					_scene, Ai.BehaviorTree.AiSettings.FromAiLevel(_combatModel.EnemyFleet.AiLevel), _behaviorTreeBuilder);
 			else
-				controllerFactory = new Computer.Factory(_scene, _combatModel.EnemyFleet.Level);
+				controllerFactory = new Computer.Factory(_scene, _combatModel.EnemyFleet.AiLevel);
 
             ship.Create(_shipFactory, controllerFactory, position);
-            //UnityEngine.Debug.Log("CreateShip.start - " + ship.Name);
-            //var context = new FactoryContext(_scene, _bindingManager, _soundPlayer, _objectPool, _resourceLocator, _settings);
-            //var shipModel = fleet.ActivateShip(ship, position, Random.Range(0, 360), _gameSettings.ShowDamage, _playerSkills, _messenger, context, _aiManager, _database);
-            ////UnityEngine.Debug.Log("CreateShip.end");
-            //return shipModel;
         }
 
         public bool IsGamePaused { get { return _pausedCount > 0; } }
@@ -178,13 +166,11 @@ namespace Combat.Manager
 
         public bool CanChangeShip()
         {
-            if (!_combatModel.Rules.CanSelectShips) return false;
-            if (_combatModel.Rules.NoRetreats) return false;
-            if (_combatModel.Rules.PlayerHasOneShip) return false;
-            if (!_combatModel.PlayerFleet.IsAnyShipLeft()) return false;
-
-            return true;
+            if (_combatModel.Rules.ShipSelection != PlayerShipSelectionMode.Default) return false;
+            return _combatModel.PlayerFleet.IsAnyShipLeft();
         }
+
+        public bool CanKillAllEnemies => _combatModel.Rules.KillThemAllButton;
 
         public void ChangeShip()
         {
@@ -221,7 +207,7 @@ namespace Combat.Manager
         private void CheckIfCanCallNextEnemy()
         {
             var rules = _combatModel.Rules;
-            if (rules.TimeoutBehaviour != TimeoutBehaviour.NextEnemy && rules.TimeoutBehaviour != TimeoutBehaviour.AllEnemiesThenDraw)
+            if (rules.TimeOutMode != TimeOutMode.CallNextEnemy && rules.TimeOutMode != TimeOutMode.CallNextEnemyOrDraw)
             {
                 _canCallNextEnemy = false;
                 return;
@@ -233,7 +219,8 @@ namespace Combat.Manager
                 return;
             }
 
-            _canCallNextEnemy = _combatModel.EnemyFleet.Ships.Count(item => item.Status == ShipStatus.Active) < 12 && _combatModel.EnemyFleet.IsAnyShipLeft();
+            var enemyCount = _combatModel.EnemyFleet.Ships.Count(item => item.Status == ShipStatus.Active);
+            _canCallNextEnemy = enemyCount < rules.MaxEnemyShips && _combatModel.EnemyFleet.IsAnyShipLeft();
         }
 
         public void Tick()
@@ -279,7 +266,8 @@ namespace Combat.Manager
                         UnityEngine.Debug.Log("No more ships");
                         Exit();
                     }
-                    else if (_combatModel.Rules.CanSelectShips)
+                    else if (_combatModel.Rules.ShipSelection == PlayerShipSelectionMode.Default || 
+                        _combatModel.Rules.ShipSelection == PlayerShipSelectionMode.NoRetreats)
                     {
                         _shipSelectionPanel.Open(_combatModel);
                     }
@@ -299,7 +287,8 @@ namespace Combat.Manager
 
         private bool IsPlayerDefeated()
         {
-            if (_combatModel.Rules.PlayerHasOneShip && _scene.PlayerShip != null && _scene.PlayerShip.State == UnitState.Destroyed)
+            if (_combatModel.Rules.ShipSelection == PlayerShipSelectionMode.OnlyOneShip && 
+                _scene.PlayerShip != null && _scene.PlayerShip.State == UnitState.Destroyed)
                 return true;
 
             if (!_combatModel.PlayerFleet.IsAnyShipLeft())
@@ -315,7 +304,6 @@ namespace Combat.Manager
         private const float _nextShipMaxCooldown = 3.0f;
 
         private int _pausedCount;
-        private readonly IApplication _application;
         private readonly ISoundPlayer _soundPlayer;
         private readonly ExitSignal.Trigger _exitTrigger;
         private readonly IMessenger _messenger;

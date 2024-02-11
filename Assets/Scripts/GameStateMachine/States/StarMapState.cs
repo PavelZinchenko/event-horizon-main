@@ -291,12 +291,12 @@ namespace GameStateMachine.States
 
         public void AttackOccupants(int starId)
         {
-			StartCombat(_starData.GetOccupant(starId).CreateCombatModelBuilder().Build());
+			StartCombat(_starData.GetOccupant(starId).CreateCombatModel());
         }
 
 		public void AttackStarbase(int starId)
 		{
-			StartCombat(_starData.GetStarbase(starId).CreateCombatModelBuilder().Build());
+			StartCombat(_starData.GetStarbase(starId).CreateCombatModel());
 		}
 
 		public void StartTrading(ILoot merchantItems)

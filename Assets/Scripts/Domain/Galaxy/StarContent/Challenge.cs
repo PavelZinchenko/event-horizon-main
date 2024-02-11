@@ -87,7 +87,7 @@ namespace Galaxy.StarContent
             var builder = _combatModelBuilderFactory.Create();
             builder.PlayerFleet = playerFleet;
             builder.EnemyFleet = enemyFleet;
-            builder.Rules = CombatRules.Challenge();
+            builder.Rules = _database.GalaxySettings.ChallengeCombatRules ?? _database.CombatSettings.DefaultCombatRules;
             builder.AddSpecialReward(GetReward(starId));
 
             _startBattleTrigger.Fire(builder.Build(), result => OnCombatCompleted(starId, result));

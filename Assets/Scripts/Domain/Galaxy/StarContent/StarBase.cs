@@ -1,5 +1,4 @@
 ﻿using Combat.Domain;
-using Economy.ItemType;
 using GameDatabase;
 using GameServices.Economy;
 using GameServices.Player;
@@ -18,29 +17,29 @@ namespace Galaxy.StarContent
         [Inject] private readonly StarData _starData;
         [Inject] private readonly StarContentChangedSignal.Trigger _starContentChangedTrigger;
         [Inject] private readonly StartBattleSignal.Trigger _startBattleTrigger;
-        [Inject] private readonly ItemTypeFactory _itemTypeFactory;
         [Inject] private readonly IDatabase _database;
         [Inject] private readonly CombatModelBuilder.Factory _combatModelBuilderFactory;
         [Inject] private readonly LootGenerator _lootGenerator;
         [Inject] private readonly ISessionData _session;
 		[Inject] private readonly IQuestManager _questManager;
 
-		public CombatModelBuilder CreateCombatModelBuilder(int starId)
+		public ICombatModel CreateCombatModel(int starId)
 		{
 			var region = _starData.GetRegion(starId);
 			if (region.IsCaptured)
 				return null;
 
-			var playerFleet = new Model.Military.PlayerFleet(_database, _playerFleet);
+            var playerFleet = new Model.Military.PlayerFleet(_database, _playerFleet);
 			var defenderFleet = Fleet.Capital(region, _database);
 
 			var builder = _combatModelBuilderFactory.Create();
 			builder.PlayerFleet = playerFleet;
 			builder.EnemyFleet = defenderFleet;
-			builder.Rules = CombatRules.Capital(region);
+            builder.Rules = _database.GalaxySettings.StarbaseCombatRules ?? _database.CombatSettings.DefaultCombatRules;
 			builder.AddSpecialReward(_lootGenerator.GetStarBaseSpecialReward(region));
+            builder.StarLevel = UnityEngine.Mathf.RoundToInt(region.MilitaryPower * region.BaseDefensePower);
 
-			return builder;
+			return builder.Build();
 		}
 
 		public bool IsExists(int starId)
@@ -65,12 +64,9 @@ namespace Galaxy.StarContent
 				return;
 			}
 
-			var builder = CreateCombatModelBuilder(starId);
-			if (builder == null)
-                throw new System.InvalidOperationException();
-
+			var model = CreateCombatModel(starId);
             _session.Quests.SetFactionRelations(starId, -100);
-            _startBattleTrigger.Fire(builder.Build(), result => OnCombatCompleted(starId, result));
+            _startBattleTrigger.Fire(model, result => OnCombatCompleted(starId, result));
         }
 
         private void OnCombatCompleted(int starId, ICombatModel result)
@@ -92,7 +88,7 @@ namespace Galaxy.StarContent
 
 			public bool IsExists => _starbase.IsExists(_starId);
 			public void Attack() => _starbase.Attack(_starId);
-			public CombatModelBuilder CreateCombatModelBuilder() => _starbase.CreateCombatModelBuilder(_starId);
+			public ICombatModel CreateCombatModel() => _starbase.CreateCombatModel(_starId);
 
 			private readonly StarBase _starbase;
 			private readonly int _starId;

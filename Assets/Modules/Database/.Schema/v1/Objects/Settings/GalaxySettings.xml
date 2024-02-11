@@ -11,6 +11,11 @@
     <member name="ShipMinSpawnDistance" type="expression" typeid="SizeClassToInt" arguments="size" minvalue="0" maxvalue="1000"
         default="IF(size == Destroyer, 5, size == Cruiser, 15, size == Battleship, 50, size == Titan, 100, 0)" />
     <member name="CaptureStarbaseQuest" type="object" typeid="Quest" />
-
     <member name="StartingInvenory" type="object" typeid="Loot" options="obsolete" />
+    <member name="SurvivalCombatRules" type="object" typeid="CombatRules" />
+    <member name="StarbaseCombatRules" type="object" typeid="CombatRules" />
+    <member name="FlagshipCombatRules" type="object" typeid="CombatRules" />
+    <member name="ArenaCombatRules" type="object" typeid="CombatRules" />
+    <member name="ChallengeCombatRules" type="object" typeid="CombatRules" />
+    <member name="QuickCombatRules" type="object" typeid="CombatRules" />
 </data>

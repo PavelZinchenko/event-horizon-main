@@ -82,6 +82,12 @@ namespace DatabaseMigration.v1.Storage
                 data.FileName = name;
                 FactionList.Add(data);
             }
+            else if (type == ItemType.GameObjectPrefab)
+            {
+                var data = _serializer.FromJson<GameObjectPrefabSerializable>(content);
+                data.FileName = name;
+                GameObjectPrefabList.Add(data);
+            }
             else if (type == ItemType.Satellite)
             {
                 var data = _serializer.FromJson<SatelliteSerializable>(content);
@@ -129,6 +135,12 @@ namespace DatabaseMigration.v1.Storage
                 var data = _serializer.FromJson<CharacterSerializable>(content);
                 data.FileName = name;
                 CharacterList.Add(data);
+            }
+            else if (type == ItemType.CombatRules)
+            {
+                var data = _serializer.FromJson<CombatRulesSerializable>(content);
+                data.FileName = name;
+                CombatRulesList.Add(data);
             }
             else if (type == ItemType.Fleet)
             {
@@ -238,6 +250,12 @@ namespace DatabaseMigration.v1.Storage
                 data.FileName = name;
                 SpecialEventSettings = data;
             }
+            else if (type == ItemType.UiSettings)
+            {
+                var data = _serializer.FromJson<UiSettingsSerializable>(content);
+                data.FileName = name;
+                UiSettings = data;
+            }
             else
             {
                 throw new DatabaseException("Unknown file type - " + type + "(" + name + ")");
@@ -260,6 +278,8 @@ namespace DatabaseMigration.v1.Storage
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
             foreach (var item in FactionList)
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
+            foreach (var item in GameObjectPrefabList)
+                contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
             foreach (var item in SatelliteList)
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
             foreach (var item in SatelliteBuildList)
@@ -275,6 +295,8 @@ namespace DatabaseMigration.v1.Storage
             foreach (var item in BehaviorTreeList)
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
             foreach (var item in CharacterList)
+                contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
+            foreach (var item in CombatRulesList)
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
             foreach (var item in FleetList)
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
@@ -312,6 +334,8 @@ namespace DatabaseMigration.v1.Storage
                 contentLoader.LoadJson(SkillSettings.FileName, _serializer.ToJson(SkillSettings));
             if (SpecialEventSettings != null)
                 contentLoader.LoadJson(SpecialEventSettings.FileName, _serializer.ToJson(SpecialEventSettings));
+            if (UiSettings != null)
+                contentLoader.LoadJson(UiSettings.FileName, _serializer.ToJson(UiSettings));
             foreach (var item in _images)
                 contentLoader.LoadImage(item.Key, item.Value);
             foreach (var item in _audioClips)
@@ -345,6 +369,7 @@ namespace DatabaseMigration.v1.Storage
 		public ShipSettingsSerializable ShipSettings { get; private set; }
 		public SkillSettingsSerializable SkillSettings { get; private set; }
 		public SpecialEventSettingsSerializable SpecialEventSettings { get; private set; }
+		public UiSettingsSerializable UiSettings { get; private set; }
 
 		public CombatSettingsSerializable CreateCombatSettings() => CombatSettings ?? (CombatSettings = new CombatSettingsSerializable());
 		public DatabaseSettingsSerializable CreateDatabaseSettings() => DatabaseSettings ?? (DatabaseSettings = new DatabaseSettingsSerializable());
@@ -356,6 +381,7 @@ namespace DatabaseMigration.v1.Storage
 		public ShipSettingsSerializable CreateShipSettings() => ShipSettings ?? (ShipSettings = new ShipSettingsSerializable());
 		public SkillSettingsSerializable CreateSkillSettings() => SkillSettings ?? (SkillSettings = new SkillSettingsSerializable());
 		public SpecialEventSettingsSerializable CreateSpecialEventSettings() => SpecialEventSettings ?? (SpecialEventSettings = new SpecialEventSettingsSerializable());
+		public UiSettingsSerializable CreateUiSettings() => UiSettings ?? (UiSettings = new UiSettingsSerializable());
 
 		public List<AmmunitionObsoleteSerializable> AmmunitionObsoleteList { get; } = new List<AmmunitionObsoleteSerializable>();
 		public List<ComponentSerializable> ComponentList { get; } = new List<ComponentSerializable>();
@@ -364,6 +390,7 @@ namespace DatabaseMigration.v1.Storage
 		public List<DeviceSerializable> DeviceList { get; } = new List<DeviceSerializable>();
 		public List<DroneBaySerializable> DroneBayList { get; } = new List<DroneBaySerializable>();
 		public List<FactionSerializable> FactionList { get; } = new List<FactionSerializable>();
+		public List<GameObjectPrefabSerializable> GameObjectPrefabList { get; } = new List<GameObjectPrefabSerializable>();
 		public List<SatelliteSerializable> SatelliteList { get; } = new List<SatelliteSerializable>();
 		public List<SatelliteBuildSerializable> SatelliteBuildList { get; } = new List<SatelliteBuildSerializable>();
 		public List<ShipSerializable> ShipList { get; } = new List<ShipSerializable>();
@@ -372,6 +399,7 @@ namespace DatabaseMigration.v1.Storage
 		public List<TechnologySerializable> TechnologyList { get; } = new List<TechnologySerializable>();
 		public List<BehaviorTreeSerializable> BehaviorTreeList { get; } = new List<BehaviorTreeSerializable>();
 		public List<CharacterSerializable> CharacterList { get; } = new List<CharacterSerializable>();
+		public List<CombatRulesSerializable> CombatRulesList { get; } = new List<CombatRulesSerializable>();
 		public List<FleetSerializable> FleetList { get; } = new List<FleetSerializable>();
 		public List<LootSerializable> LootList { get; } = new List<LootSerializable>();
 		public List<QuestSerializable> QuestList { get; } = new List<QuestSerializable>();

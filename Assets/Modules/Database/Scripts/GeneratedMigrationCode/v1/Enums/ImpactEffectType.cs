@@ -21,5 +21,7 @@ namespace DatabaseMigration.v1.Enums
 		RestoreLifetime,
 		Devour,
 		Teleport,
+		DrainShield,
+		DriveDronesCrazy,
 	}
 }

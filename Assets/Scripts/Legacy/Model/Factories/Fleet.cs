@@ -5,7 +5,6 @@ using Database.Legacy;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameDatabase.Extensions;
 using GameDatabase.Model;
 using GameDatabase.Query;
 using Model.Military;

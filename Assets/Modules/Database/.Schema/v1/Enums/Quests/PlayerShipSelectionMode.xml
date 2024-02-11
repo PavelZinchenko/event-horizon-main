@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="PlayerShipSelectionMode">
+    <item name="Default" value="0" />
+    <item name="OnlyOneShip" value="1">Player can select only one ship. When it dies, battle ends</item>
+    <item name="ByOrder" value="2">Ships enters battlefield by order. Selection is not allowed</item>
+    <item name="NoRetreats" value="3">Player can select ship but can't change it until it dies</item>
+</data>

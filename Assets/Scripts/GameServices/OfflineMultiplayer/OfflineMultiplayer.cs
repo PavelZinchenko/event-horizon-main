@@ -12,6 +12,7 @@ using Session;
 using CommonComponents.Signals;
 using Zenject;
 using UniRx;
+using GameDatabase.DataModel;
 
 namespace GameServices.Multiplayer
 {
@@ -47,6 +48,7 @@ namespace GameServices.Multiplayer
             ISessionData session)
             : base(dataLoadedSignal, sessionCreatedSignal)
         {
+            _database = database;
             _account = account;
             _accountStatusChangedSignal = accountStatusChangedSignal;
             _accountStatusChangedSignal.Event += OnAccountStatusChanged;
@@ -149,7 +151,7 @@ namespace GameServices.Multiplayer
             var builder = _combatModelBuilderFactory.Create();
             builder.PlayerFleet = playerFleet;
             builder.EnemyFleet = enemyFleet;
-            builder.Rules = Model.Factories.CombatRules.Arena();
+            builder.Rules = _database.GalaxySettings.ArenaCombatRules ?? _database.CombatSettings.DefaultCombatRules;
 
             if (enemy.Id > 0)
                 builder.AddSpecialReward(CommonProduct.Create(_factory.CreateCurrencyItem(Currency.Tokens), price));
@@ -193,6 +195,7 @@ namespace GameServices.Multiplayer
             });
         }
 
+        private readonly IDatabase _database;
         private Status _status = Status.Unknown;
         private readonly ArenaTimeManager _timeManager;
         private readonly PlayerInfo _player;

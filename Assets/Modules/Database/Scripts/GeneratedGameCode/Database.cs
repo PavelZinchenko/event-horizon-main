@@ -44,6 +44,7 @@ namespace GameDatabase
 		IEnumerable<Technology> TechnologyList { get; }
 		IEnumerable<BehaviorTreeModel> BehaviorTreeList { get; }
 		IEnumerable<Character> CharacterList { get; }
+		IEnumerable<CombatRules> CombatRulesList { get; }
 		IEnumerable<Fleet> FleetList { get; }
 		IEnumerable<LootModel> LootList { get; }
 		IEnumerable<QuestModel> QuestList { get; }
@@ -69,6 +70,7 @@ namespace GameDatabase
 		Technology GetTechnology(ItemId<Technology> id);
 		BehaviorTreeModel GetBehaviorTree(ItemId<BehaviorTreeModel> id);
 		Character GetCharacter(ItemId<Character> id);
+		CombatRules GetCombatRules(ItemId<CombatRules> id);
 		Fleet GetFleet(ItemId<Fleet> id);
 		LootModel GetLoot(ItemId<LootModel> id);
 		QuestModel GetQuest(ItemId<QuestModel> id);
@@ -86,7 +88,7 @@ namespace GameDatabase
     public partial class Database : IDatabase
     {
 		public const int VersionMajor = 1;
-		public const int VersionMinor = 4;
+		public const int VersionMinor = 5;
 
 		public CombatSettings CombatSettings { get; private set; }
 		public DatabaseSettings DatabaseSettings { get; private set; }
@@ -116,6 +118,7 @@ namespace GameDatabase
 		public IEnumerable<Technology> TechnologyList => _technologyMap.Values;
 		public IEnumerable<BehaviorTreeModel> BehaviorTreeList => _behaviorTreeMap.Values;
 		public IEnumerable<Character> CharacterList => _characterMap.Values;
+		public IEnumerable<CombatRules> CombatRulesList => _combatRulesMap.Values;
 		public IEnumerable<Fleet> FleetList => _fleetMap.Values;
 		public IEnumerable<LootModel> LootList => _lootMap.Values;
 		public IEnumerable<QuestModel> QuestList => _questMap.Values;
@@ -141,6 +144,7 @@ namespace GameDatabase
 		public Technology GetTechnology(ItemId<Technology> id) { return (_technologyMap.TryGetValue(id.Value, out var item)) ? item : Technology.DefaultValue; }
 		public BehaviorTreeModel GetBehaviorTree(ItemId<BehaviorTreeModel> id) { return (_behaviorTreeMap.TryGetValue(id.Value, out var item)) ? item : BehaviorTreeModel.DefaultValue; }
 		public Character GetCharacter(ItemId<Character> id) { return (_characterMap.TryGetValue(id.Value, out var item)) ? item : Character.DefaultValue; }
+		public CombatRules GetCombatRules(ItemId<CombatRules> id) { return (_combatRulesMap.TryGetValue(id.Value, out var item)) ? item : CombatRules.DefaultValue; }
 		public Fleet GetFleet(ItemId<Fleet> id) { return (_fleetMap.TryGetValue(id.Value, out var item)) ? item : Fleet.DefaultValue; }
 		public LootModel GetLoot(ItemId<LootModel> id) { return (_lootMap.TryGetValue(id.Value, out var item)) ? item : LootModel.DefaultValue; }
 		public QuestModel GetQuest(ItemId<QuestModel> id) { return (_questMap.TryGetValue(id.Value, out var item)) ? item : QuestModel.DefaultValue; }
@@ -172,6 +176,7 @@ namespace GameDatabase
 			_technologyMap.Clear();
 			_behaviorTreeMap.Clear();
 			_characterMap.Clear();
+			_combatRulesMap.Clear();
 			_fleetMap.Clear();
 			_lootMap.Clear();
 			_questMap.Clear();
@@ -214,6 +219,7 @@ namespace GameDatabase
 		private readonly Dictionary<int, Technology> _technologyMap = new();
 		private readonly Dictionary<int, BehaviorTreeModel> _behaviorTreeMap = new();
 		private readonly Dictionary<int, Character> _characterMap = new();
+		private readonly Dictionary<int, CombatRules> _combatRulesMap = new();
 		private readonly Dictionary<int, Fleet> _fleetMap = new();
 		private readonly Dictionary<int, LootModel> _lootMap = new();
 		private readonly Dictionary<int, QuestModel> _questMap = new();
@@ -291,6 +297,9 @@ namespace GameDatabase
 				foreach (var item in _content.CharacterList)
 					if (!item.Disabled && !_database._characterMap.ContainsKey(item.Id))
 						Character.Create(item, this);
+				foreach (var item in _content.CombatRulesList)
+					if (!item.Disabled && !_database._combatRulesMap.ContainsKey(item.Id))
+						CombatRules.Create(item, this);
 				foreach (var item in _content.FleetList)
 					if (!item.Disabled && !_database._fleetMap.ContainsKey(item.Id))
 						Fleet.Create(item, this);
@@ -512,6 +521,16 @@ namespace GameDatabase
 				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
                 return value;
 			}
+			public CombatRules GetCombatRules(ItemId<CombatRules> id, bool notNull = false)
+			{
+				if (_database._combatRulesMap.TryGetValue(id.Value, out var item)) return item;
+                var serializable = _content.GetCombatRules(id.Value);
+                if (serializable != null && !serializable.Disabled) return CombatRules.Create(serializable, this);
+
+				var value = CombatRules.DefaultValue;
+				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
+                return value;
+			}
 			public Fleet GetFleet(ItemId<Fleet> id, bool notNull = false)
 			{
 				if (_database._fleetMap.TryGetValue(id.Value, out var item)) return item;
@@ -610,6 +629,7 @@ namespace GameDatabase
 			public void AddTechnology(int id, Technology item) { _database._technologyMap.Add(id, item); }
 			public void AddBehaviorTree(int id, BehaviorTreeModel item) { _database._behaviorTreeMap.Add(id, item); }
 			public void AddCharacter(int id, Character item) { _database._characterMap.Add(id, item); }
+			public void AddCombatRules(int id, CombatRules item) { _database._combatRulesMap.Add(id, item); }
 			public void AddFleet(int id, Fleet item) { _database._fleetMap.Add(id, item); }
 			public void AddLoot(int id, LootModel item) { _database._lootMap.Add(id, item); }
 			public void AddQuest(int id, QuestModel item) { _database._questMap.Add(id, item); }

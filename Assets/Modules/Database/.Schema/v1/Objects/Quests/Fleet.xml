@@ -3,10 +3,11 @@
     <member name="Factions" type="struct" typeid="FactionFilter" />
     <member name="LevelBonus" type="int" minvalue="-10000" maxvalue="10000" />
     <member name="NoRandomShips" type="bool" />
-    <member name="CombatTimeLimit" type="int" minvalue="0" maxvalue="999" />
-    <member name="LootCondition" type="enum" typeid="RewardCondition" />
-    <member name="ExpCondition" type="enum" typeid="RewardCondition" />
+    <member name="CombatTimeLimit" type="int" minvalue="0" maxvalue="999" options="obsolete" />
+    <member name="LootCondition" type="enum" typeid="RewardCondition" options="obsolete" />
+    <member name="ExpCondition" type="enum" typeid="RewardCondition" options="obsolete" />
     <member name="SpecificShips" type="object_list" typeid="ShipBuild" />
-    <member name="NoShipChanging" type="bool" />
-    <member name="PlayerHasOneShip" type="bool" />
+    <member name="NoShipChanging" type="bool" options="obsolete" />
+    <member name="PlayerHasOneShip" type="bool" options="obsolete" />
+    <member name="CombatRules" type="object" typeid="CombatRules" />
 </data>

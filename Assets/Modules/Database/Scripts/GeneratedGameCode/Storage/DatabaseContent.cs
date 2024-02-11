@@ -241,6 +241,19 @@ namespace GameDatabase.Storage
                 if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate Character ID - " + item.Id + " (" + name + ")");
             }
+            else if (type == ItemType.CombatRules)
+            {
+			    if (!_combatRulesMap.ContainsKey(item.Id))
+                {
+                    var data = _serializer.FromJson<CombatRulesSerializable>(content);
+                    data.FileName = name;
+                    _combatRulesMap.Add(data.Id, data);
+                    return;
+                }
+
+                if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate CombatRules ID - " + item.Id + " (" + name + ")");
+            }
             else if (type == ItemType.Fleet)
             {
 			    if (!_fleetMap.ContainsKey(item.Id))
@@ -537,6 +550,7 @@ namespace GameDatabase.Storage
 		public IEnumerable<TechnologySerializable> TechnologyList => _technologyMap.Values;
 		public IEnumerable<BehaviorTreeSerializable> BehaviorTreeList => _behaviorTreeMap.Values;
 		public IEnumerable<CharacterSerializable> CharacterList => _characterMap.Values;
+		public IEnumerable<CombatRulesSerializable> CombatRulesList => _combatRulesMap.Values;
 		public IEnumerable<FleetSerializable> FleetList => _fleetMap.Values;
 		public IEnumerable<LootSerializable> LootList => _lootMap.Values;
 		public IEnumerable<QuestSerializable> QuestList => _questMap.Values;
@@ -562,6 +576,7 @@ namespace GameDatabase.Storage
 		public TechnologySerializable GetTechnology(int id) { return _technologyMap.TryGetValue(id, out var item) ? item : null; }
 		public BehaviorTreeSerializable GetBehaviorTree(int id) { return _behaviorTreeMap.TryGetValue(id, out var item) ? item : null; }
 		public CharacterSerializable GetCharacter(int id) { return _characterMap.TryGetValue(id, out var item) ? item : null; }
+		public CombatRulesSerializable GetCombatRules(int id) { return _combatRulesMap.TryGetValue(id, out var item) ? item : null; }
 		public FleetSerializable GetFleet(int id) { return _fleetMap.TryGetValue(id, out var item) ? item : null; }
 		public LootSerializable GetLoot(int id) { return _lootMap.TryGetValue(id, out var item) ? item : null; }
 		public QuestSerializable GetQuest(int id) { return _questMap.TryGetValue(id, out var item) ? item : null; }
@@ -594,6 +609,7 @@ namespace GameDatabase.Storage
 		private readonly Dictionary<int, TechnologySerializable> _technologyMap = new();
 		private readonly Dictionary<int, BehaviorTreeSerializable> _behaviorTreeMap = new();
 		private readonly Dictionary<int, CharacterSerializable> _characterMap = new();
+		private readonly Dictionary<int, CombatRulesSerializable> _combatRulesMap = new();
 		private readonly Dictionary<int, FleetSerializable> _fleetMap = new();
 		private readonly Dictionary<int, LootSerializable> _lootMap = new();
 		private readonly Dictionary<int, QuestSerializable> _questMap = new();

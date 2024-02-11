@@ -427,4 +427,29 @@ namespace GameServices.Economy
             return _factory.CreateArtifactItem(artifact);
         }
     }
+
+    public static class ProductListExtensions
+    {
+        public static Domain.Quests.ILoot ToLoot(this IEnumerable<IProduct> products)
+        {
+            var loot = new Loot();
+            foreach (var item in products)
+                loot.Add(item.Type, item.Quantity);
+
+            return loot;
+        }
+
+        private class Loot : Domain.Quests.ILoot
+        {
+            private List<Domain.Quests.LootItem> _items = new();
+
+            public void Add(IItemType item, int quantity)
+            {
+                _items.Add(new Domain.Quests.LootItem(item, quantity));
+            }
+
+            public IEnumerable<Domain.Quests.LootItem> Items => _items;
+            public bool CanBeRemoved => false;
+        }
+    }
 }

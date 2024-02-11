@@ -95,7 +95,7 @@ namespace Galaxy.StarContent
                 return Model.Factories.Fleet.Common(level, starId + _random.Seed, _database);
         }
 
-        public CombatModelBuilder CreateCombatModelBuilder(int starId)
+        public ICombatModel CreateCombatModel(int starId)
 		{
 		    if (!IsExists(starId))
 		        throw new System.InvalidOperationException();
@@ -106,23 +106,23 @@ namespace Galaxy.StarContent
 		    var builder = _combatModelBuilderFactory.Create();
 		    builder.PlayerFleet = Model.Factories.Fleet.Player(_playerFleet, _database);
 		    builder.EnemyFleet = CreateFleet(starId);
+            builder.Rules = _database.CombatSettings.DefaultCombatRules;
 
-		    if (region.Id > Region.PlayerHomeRegionId)
+            if (region.Id > Region.PlayerHomeRegionId)
 		    {
-		        builder.Rules = Model.Factories.CombatRules.Faction(region.Faction, region.MilitaryPower);
-
+                level = region.MilitaryPower;
                 if (_random.RandomInt(starId + 123, 100) <= 10)
                     builder.AddSpecialReward(CommonProduct.Create(_itemTypeFactory.CreateResearchItem(region.Faction)));
             }
             else
 		    {
-		        builder.Rules = Model.Factories.CombatRules.Neutral(level);
-
                 if (_random.RandomInt(starId + 123, 100) <= 20)
                     builder.AddSpecialReward(CommonProduct.Create(_itemTypeFactory.CreateResearchItem(Faction.Empty)));
             }
 
-            return builder;
+            builder.StarLevel = level;
+
+            return builder.Build();
 		}
 
 		public struct Facade
@@ -137,7 +137,7 @@ namespace Galaxy.StarContent
 			public bool CanBeAggressive { get { return _occupants.CanBeAggressive(_starId); } }
 			public bool IsAggressive { get { return _occupants.IsAggressive(_starId); } }
 		    public IFleet CreateFleet() { return _occupants.CreateFleet(_starId); }
-		    public CombatModelBuilder CreateCombatModelBuilder() { return _occupants.CreateCombatModelBuilder(_starId); }
+		    public ICombatModel CreateCombatModel() { return _occupants.CreateCombatModel(_starId); }
             public void Attack() { _occupants.Attack(_starId); }
 		    public void Suppress(bool destroy) { _occupants.Suppress(_starId, destroy); }
 

@@ -29,5 +29,8 @@ namespace DatabaseMigration.v1.Serializable
 		public float RandomFactor;
 		public float PowerMultiplier;
 		public int MaxNestingLevel;
+		public string Rotation = "IF(Quantity == 1, 0, RANDOM(0, 360))";
+		public string OffsetX = "IF(Quantity == 1, 0, Size / 2)";
+		public string OffsetY = "0";
 	}
 }

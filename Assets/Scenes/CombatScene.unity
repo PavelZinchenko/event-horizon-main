@@ -4243,6 +4243,7 @@ MonoBehaviour:
   _class: 0
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 0
+  _initiallyHidden: 0
   _escapeKeyAction: 0
   OnInitializedEvent:
     m_PersistentCalls:
@@ -6939,7 +6940,6 @@ GameObject:
   - component: {fileID: 628411328}
   - component: {fileID: 628411327}
   - component: {fileID: 628411326}
-  - component: {fileID: 628411329}
   m_Layer: 5
   m_Name: KillThemAll
   m_TagString: Untagged
@@ -7088,26 +7088,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &628411329
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 628411323}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 580966dcd9c9d574c9875554bbfdb35c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Editor: 1
-  Android: 0
-  Ios: 0
-  Standalone: 0
-  WebGL: 0
-  Premium: 0
-  Online: 0
-  ForceAwake: 0
 --- !u!1 &653243315
 GameObject:
   m_ObjectHideFlags: 0
@@ -7296,6 +7276,7 @@ MonoBehaviour:
   _class: 0
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 0
+  _initiallyHidden: 0
   _escapeKeyAction: 0
   OnInitializedEvent:
     m_PersistentCalls:
@@ -15469,6 +15450,7 @@ MonoBehaviour:
   _class: 0
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 0
+  _initiallyHidden: 0
   _escapeKeyAction: 0
   OnInitializedEvent:
     m_PersistentCalls:
@@ -16402,6 +16384,7 @@ MonoBehaviour:
   _class: 1
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 0
+  _initiallyHidden: 0
   _escapeKeyAction: 1
   OnInitializedEvent:
     m_PersistentCalls:
@@ -17358,6 +17341,7 @@ MonoBehaviour:
   _class: 4
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 0
+  _initiallyHidden: 0
   _escapeKeyAction: 2
   OnInitializedEvent:
     m_PersistentCalls:
@@ -17524,6 +17508,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _nextEnemyButton: {fileID: 2023081101}
   _changeShipButton: {fileID: 1164525907}
+  _killAllButton: {fileID: 628411328}
 --- !u!114 &1616174609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19335,6 +19320,7 @@ MonoBehaviour:
   _class: 0
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 0
+  _initiallyHidden: 0
   _escapeKeyAction: 0
   OnInitializedEvent:
     m_PersistentCalls:
@@ -20134,6 +20120,7 @@ MonoBehaviour:
   _class: 0
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 0
+  _initiallyHidden: 0
   _escapeKeyAction: 0
   OnInitializedEvent:
     m_PersistentCalls:
@@ -21977,6 +21964,7 @@ MonoBehaviour:
   _class: 0
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 0
+  _initiallyHidden: 0
   _escapeKeyAction: 0
   OnInitializedEvent:
     m_PersistentCalls:

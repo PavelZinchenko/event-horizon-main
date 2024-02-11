@@ -9,5 +9,11 @@
   "StartingInventory": 12,
   "SupporterPackShip": 92,
   "DefaultStarbaseBuild": 192,
-  "CaptureStarbaseQuest": 9
+  "CaptureStarbaseQuest": 9,
+  "SurvivalCombatRules": 3,
+  "StarbaseCombatRules": 4,
+  "FlagshipCombatRules": 5,
+  "ArenaCombatRules": 6,
+  "ChallengeCombatRules": 7,
+  "QuickCombatRules": 2
 }

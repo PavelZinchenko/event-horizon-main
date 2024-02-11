@@ -22,5 +22,6 @@ namespace DatabaseMigration.v1.Serializable
 		}
 
 		public DebugCodeSerializable[] Codes;
+		public bool EnableDebugConsole;
 	}
 }

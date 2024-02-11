@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="TimeOutMode">
+    <item name="CallNextEnemy" value="0" />
+    <item name="DrainPlayerHp" value="1" />
+    <item name="CallNextEnemyOrDraw" value="2">Calls next enemy if any and resets the timer, draws the battle otherwise</item>
+</data>

@@ -54,7 +54,7 @@ namespace Combat.Domain
                 foreach (var item in combatModel.SpecialRewards)
                     yield return item;
 
-            if (combatModel.Rules.RewardType == RewardType.SpecialOnly)
+            if (combatModel.Rules.DisableRandomLoot)
                 yield break;
 
             var rewards = lootGenerator.GetCommonReward(combatModel.EnemyFleet.Ships.Where(item => item.Status == ShipStatus.Destroyed).Select(item => item.ShipData),

@@ -1,15 +1,14 @@
-﻿using Combat.Component.Unit.Classification;
+﻿using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameModel.Quests;
 using GameServices.Economy;
 using GameServices.Player;
-using Model.Military;
 
 namespace Combat.Domain
 {
     public interface ICombatModel
     {
-        CombatRules Rules { get; }
+        CombatRulesAdapter Rules { get; }
 
         IReward GetReward(LootGenerator lootGenerator, PlayerSkills playerSkills, Galaxy.Star currentStar);
 

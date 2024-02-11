@@ -16,5 +16,8 @@ namespace DatabaseMigration.v1.Enums
 		Smoke,
 		SmokeAdditive,
 		Shake,
+		Spark,
+		Lightning,
+		LightningStrike,
 	}
 }

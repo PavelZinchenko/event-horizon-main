@@ -32,31 +32,10 @@ namespace Domain.Quests
         public ICombatModel CreateCombatModel(QuestEnemyData enemyData, ILoot specialLoot)
         {
 			var builder = _combatModelBuilderFactory.Create();
-			var rules = new Model.Military.CombatRules
-			{
-				StarLevel = enemyData.Level,
-				RewardType = Model.Military.RewardType.Default,
-				LootCondition = RewardCondition.Default,
-				ExpCondition = RewardCondition.Default,
-				TimeLimit = Maths.Distance.CombatTime(enemyData.Level),
-				TimeoutBehaviour = Model.Military.TimeoutBehaviour.NextEnemy,
-				CanSelectShips = true,
-				CanCallEnemies = true,
-				AsteroidsEnabled = true,
-				PlanetEnabled = true,
-				InitialEnemies = 1,
-				MaxEnemies = 3
-			};
-
-			if (enemyData.TimeLimit > 0) rules.TimeLimit = enemyData.TimeLimit;
-			rules.LootCondition = enemyData.LootCondition;
-			rules.ExpCondition = enemyData.ExpCondition;
-			rules.NoRetreats = enemyData.NoRetreats;
-			rules.PlayerHasOneShip = enemyData.PlayerHasOneShip;
-
 			builder.EnemyFleet = CreateEnemyFleet(enemyData);
 			builder.PlayerFleet = Model.Factories.Fleet.Player(_playerFleet, _database);
-			builder.Rules = rules;
+			builder.Rules = enemyData.Rules ?? _database.CombatSettings.DefaultCombatRules;
+            builder.StarLevel = enemyData.Level;
 
 			var loot = specialLoot?.Items.Select(item => CommonProduct.Create(item.Type, item.Quantity));
 

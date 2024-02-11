@@ -5,7 +5,7 @@ namespace Combat.Domain
     public interface IFleetModel
     {
         IList<IShipInfo> Ships { get; }
-        int Level { get; }
+        int AiLevel { get; }
     }
 
     public static class FleetModelExtensions

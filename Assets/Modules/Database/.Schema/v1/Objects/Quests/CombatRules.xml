@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="CombatRules" type="object" typeid="CombatRules" >
+    <member name="InitialEnemyShips" type="expression" typeid="IntToInt" arguments="level" minvalue="1" default="1" />
+    <member name="MaxEnemyShips" type="expression" typeid="IntToInt" arguments="level" minvalue="1" default="12" />
+    <member name="TimeLimit" type="expression" typeid="IntToInt" arguments="level" minvalue="0" default="MAX(40, 100 - level)" />
+    <member name="TimeOutMode" type="enum" typeid="TimeOutMode" />
+    <member name="LootCondition" type="enum" typeid="RewardCondition" />
+    <member name="ExpCondition" type="enum" typeid="RewardCondition" />
+    <member name="ShipSelection" type="enum" typeid="PlayerShipSelectionMode" />
+    <member name="DisableSkillBonuses" type="bool" />
+    <member name="DisableRandomLoot" type="bool" />
+    <member name="DisableAsteroids" type="bool" />
+    <member name="DisablePlanet" type="bool" />
+    <member name="NextEnemyButton" type="bool" default="true" />
+    <member name="KillThemAllButton" type="bool">For debug purposes</member>
+</data>

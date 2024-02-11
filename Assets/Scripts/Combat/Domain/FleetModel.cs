@@ -2,7 +2,6 @@
 using Combat.Component.Unit.Classification;
 using Combat.Unit;
 using Constructor.Ships;
-using Constructor;
 using GameDatabase;
 using GameServices.Player;
 
@@ -13,7 +12,7 @@ namespace Combat.Domain
         public FleetModel(IEnumerable<IShip> ships, UnitSide unitSide, IDatabase database, int level, PlayerSkills playerSkills = null)
         {
             var settings = database.ShipSettings;
-            Level = level;
+            AiLevel = level;
 
             foreach (var ship in ships)
             {
@@ -26,7 +25,7 @@ namespace Combat.Domain
             }
         }
 
-        public int Level { get; private set; }
+        public int AiLevel { get; private set; }
 
         public IList<IShipInfo> Ships { get { return _ships.AsReadOnly(); } }
 

@@ -1,5 +1,4 @@
 ﻿using Combat.Manager;
-using GameServices;
 using Services.Gui;
 using Services.Messenger;
 using UnityEngine;
@@ -12,6 +11,7 @@ namespace Gui.Combat
     {
         [SerializeField] private Button _nextEnemyButton;
         [SerializeField] private Button _changeShipButton;
+        [SerializeField] private Button _killAllButton;
 
         [Inject]
         private void Initialize(IMessenger messenger, CombatManager manager)
@@ -30,6 +30,9 @@ namespace Gui.Combat
             _nextEnemyButton.gameObject.SetActive(_manager.CanCallNextEnemy());
             _nextEnemyButton.interactable = true;
             _changeShipButton.gameObject.SetActive(_manager.CanChangeShip());
+#if !UNITY_EDITOR
+            _killAllButton.gameObject.SetActive(_manager.CanKillAllEnemies);
+#endif
         }
 
         public void ExitButtonClicked()
