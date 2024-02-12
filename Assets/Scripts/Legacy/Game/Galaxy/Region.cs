@@ -89,7 +89,8 @@ namespace GameModel
 			}
             set
             {
-                _session.Regions.SetStarbaseDefensePower(Id, value > 0 ? (uint)value : 0);
+                var min = _database.FactionsSettings.StarbaseMinDefense;
+                _session.Regions.SetStarbaseDefensePower(Id, value > min ? (uint)value : (uint)min);
             }
 		}
 
