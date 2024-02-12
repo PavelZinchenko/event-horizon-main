@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <data name="FactionsSettings" type="settings" typeid="FactionsSettings" >
+    <member name="StarbaseInitialDefense" type="expression" typeid="IntToInt" arguments="distance" minvalue="1" maxvalue="100000" default="MIN(1000, 300 + 5*distance)" />
+    <member name="StarbaseMinDefense" type="int" minvalue="1" default="50" />
+    <member name="DefenseLossPerEnemyDefeated" type="int" minvalue="0" default="10" />
+</data>

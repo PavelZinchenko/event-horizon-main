@@ -30,6 +30,7 @@ namespace GameDatabase.DataModel
         public int MaxEnemyShips { get; }
         public int TimeLimit { get; }
         public int StarLevel { get; }
+        public int BattleMapSize => _combatRules.BattleMapSize;
         public TimeOutMode TimeOutMode => _combatRules.TimeOutMode;
         public RewardCondition LootCondition => _combatRules.LootCondition;
         public RewardCondition ExpCondition => _combatRules.ExpCondition;

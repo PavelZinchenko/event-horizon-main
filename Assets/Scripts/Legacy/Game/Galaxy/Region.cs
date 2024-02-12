@@ -28,7 +28,6 @@ namespace GameModel
 				Size = RegionLayout.RegionFourthSize*2 - 1;// Game.Data.RandomInt(id, 1, RegionLayout.RegionMaxSize);
 			}
 
-			_defeatedFleetCount = _session.Regions.GetDefeatedFleetCount(Id);
 			_isCaptured = Id == PlayerHomeRegionId || _session.Regions.IsRegionCaptured(Id);
 		}
 
@@ -39,8 +38,7 @@ namespace GameModel
 			if (Id == UnoccupiedRegionId)
 				return;
 
-			_defeatedFleetCount++;
-			_session.Regions.SetDefeatedFleetCount(Id, _defeatedFleetCount);
+            BaseDefensePower -= _database.FactionsSettings.DefenseLossPerEnemyDefeated;
             _regionFleetDefeatedTrigger.Fire(this);
 		}
 
@@ -80,22 +78,23 @@ namespace GameModel
 
 		public bool IsVisited => IsCaptured || _session.StarMap.IsVisited(HomeStar);
 
-		public float BaseDefensePower 
+		public int BaseDefensePower 
 		{
 			get
 			{
-				return Mathf.Max(0.5f, Mathf.Min(3.0f + 0.05f * MilitaryPower, 10.0f) - _defeatedFleetCount*0.1f);
+                if (!_session.Regions.TryGetStarbaseDefensePower(Id, out var power))
+                    power = (uint)_database.FactionsSettings.StarbaseInitialDefense(HomeStarLevel);
+
+				return (int)power;
 			}
+            set
+            {
+                _session.Regions.SetStarbaseDefensePower(Id, value > 0 ? (uint)value : 0);
+            }
 		}
 
-		public int MilitaryPower 
-		{
-			get
-			{
-				var level = Mathf.RoundToInt(StarLayout.GetStarPosition(HomeStar, _session.Game.Seed).magnitude);
-				return level;
-			}
-		}
+        public int BaseDefendersLevel => HomeStarLevel * BaseDefensePower / 100;
+		public int HomeStarLevel => Mathf.RoundToInt(StarLayout.GetStarPosition(HomeStar, _session.Game.Seed).magnitude);
 
 		public Faction Faction
 		{
@@ -110,7 +109,7 @@ namespace GameModel
 					return _faction;
 				}
 
-			    _faction = _database.FactionList.WithStarbases(MilitaryPower).RandomElement(new System.Random(HomeStar + _session.Game.Seed));
+			    _faction = _database.FactionList.WithStarbases(HomeStarLevel).RandomElement(new System.Random(HomeStar + _session.Game.Seed));
 			    _session.Regions.SetRegionFactionId(Id, _faction.Id);
 
                 return _faction;
@@ -145,7 +144,6 @@ namespace GameModel
 	    }
 
         private bool _isCaptured;
-		private int _defeatedFleetCount = 0;
 		private int _homeStar = -1;
 		private Faction _faction;
 

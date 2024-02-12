@@ -8,18 +8,17 @@
 
 using Session.Utils;
 
-namespace Session.Model
+namespace Session.v1
 {
 	public class RegionData : IDataChangedCallback
 	{
 		private IDataChangedCallback _parent;
 
-		private ObservableMap<int, uint> _militaryPower;
-		private ObservableBitset _capturedBases;
+		private ObservableMap<int, int> _defeatedFleetCount;
 		private ObservableMap<int, int> _factions;
 
 		public const int VersionMinor = 0;
-		public const int VersionMajor = 2;
+		public const int VersionMajor = 1;
 
 		public bool DataChanged { get; private set; }
 
@@ -28,25 +27,23 @@ namespace Session.Model
 		public RegionData(IDataChangedCallback parent)
 		{
 			_parent = parent;
-			_militaryPower = new ObservableMap<int, uint>(this);
-			_capturedBases = new ObservableBitset(this);
+			_defeatedFleetCount = new ObservableMap<int, int>(this);
 			_factions = new ObservableMap<int, int>(this);
 		}
 
 		public RegionData(SessionDataReader reader, IDataChangedCallback parent)
 		{
-			int militaryPowerItemCount;
-			militaryPowerItemCount = reader.ReadInt(EncodingType.EliasGamma);
-			_militaryPower = new ObservableMap<int, uint>(this);
-			for (int i = 0; i < militaryPowerItemCount; ++i)
+			int defeatedFleetCountItemCount;
+			defeatedFleetCountItemCount = reader.ReadInt(EncodingType.EliasGamma);
+			_defeatedFleetCount = new ObservableMap<int, int>(this);
+			for (int i = 0; i < defeatedFleetCountItemCount; ++i)
 			{
 				int key;
-				uint value;
+				int value;
 				key = reader.ReadInt(EncodingType.EliasGamma);
-				value = reader.ReadUint(EncodingType.EliasGamma);
-				_militaryPower.Add(key,value);
+				value = reader.ReadInt(EncodingType.EliasGamma);
+				_defeatedFleetCount.Add(key,value);
 			}
-			_capturedBases = new ObservableBitset(reader, EncodingType.EliasGamma, this);
 			int factionsItemCount;
 			factionsItemCount = reader.ReadInt(EncodingType.EliasGamma);
 			_factions = new ObservableMap<int, int>(this);
@@ -62,27 +59,8 @@ namespace Session.Model
 			DataChanged = false;
 		}
 
-		public ObservableMap<int, uint> MilitaryPower => _militaryPower;
-		public ObservableBitset CapturedBases => _capturedBases;
+		public ObservableMap<int, int> DefeatedFleetCount => _defeatedFleetCount;
 		public ObservableMap<int, int> Factions => _factions;
-
-		public void Serialize(SessionDataWriter writer)
-		{
-			writer.WriteInt(_militaryPower.Count, EncodingType.EliasGamma);
-			foreach (var item in _militaryPower)
-			{
-				writer.WriteInt(item.Key, EncodingType.EliasGamma);
-				writer.WriteUint(item.Value, EncodingType.EliasGamma);
-			}
-			_capturedBases.Serialize(writer, EncodingType.EliasGamma);
-			writer.WriteInt(_factions.Count, EncodingType.EliasGamma);
-			foreach (var item in _factions)
-			{
-				writer.WriteInt(item.Key, EncodingType.EliasGamma);
-				writer.WriteInt(item.Value, EncodingType.EliasGamma);
-			}
-			DataChanged = false;
-		}
 
 		public void OnDataChanged()
 		{

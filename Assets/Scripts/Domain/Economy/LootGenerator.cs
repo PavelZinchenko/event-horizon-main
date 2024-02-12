@@ -231,15 +231,15 @@ namespace GameServices.Economy
 
         public IEnumerable<IProduct> GetStarBaseSpecialReward(Region region)
         {
-            yield return CommonProduct.Create(_factory.CreateResearchItem(region.Faction), Mathf.FloorToInt(3f + region.BaseDefensePower / 4f));
+            yield return CommonProduct.Create(_factory.CreateResearchItem(region.Faction), Mathf.FloorToInt(3f + region.BaseDefensePower / 400f));
 
             if (region.IsPirateBase)
             {
                 var random = _random.CreateRandom(region.Id);
 
-                yield return Price.Premium(Mathf.Min(10, 1 + region.MilitaryPower / 30)).GetProduct(_factory);
+                yield return Price.Premium(Mathf.Min(10, 1 + region.HomeStarLevel / 30)).GetProduct(_factory);
                 foreach (var faction in _database.FactionsWithEmpty.ValidForMerchants().RandomUniqueElements(4, random))
-                    yield return CommonProduct.Create(_factory.CreateResearchItem(faction), Mathf.Min(10, 1 + region.MilitaryPower / 30));
+                    yield return CommonProduct.Create(_factory.CreateResearchItem(faction), Mathf.Min(10, 1 + region.HomeStarLevel / 30));
 
                 if (random.Percentage(30))
                 {

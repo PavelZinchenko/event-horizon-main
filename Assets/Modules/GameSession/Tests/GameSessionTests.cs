@@ -104,7 +104,17 @@ namespace Session.Tests
 			}
 		}
 
-		[Test]
+        [Test]
+        public void TestBitsetEnumeration()
+        {
+            var bitset1 = new ObservableBitset(null) { 1, 2, 5, 6, 7 };
+            var bitset2 = new ObservableBitset(null) { 0, 1, 2, 5, 6, 7 };
+
+            Assert.AreEqual(string.Join(' ', bitset1), "1 2 5 6 7");
+            Assert.AreEqual(string.Join(' ', bitset2), "0 1 2 5 6 7");
+        }
+
+        [Test]
 		public void TestSaveLoad()
 		{
 			const int quantity = 1000;

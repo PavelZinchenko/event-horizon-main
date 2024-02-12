@@ -6,6 +6,8 @@
     <member name="ItemId" type="object" case="QuestCompleted,QuestActive" typeid="Quest" alias="Quest" />
     <member name="MinValue" type="int" case="PlayerPosition,RandomStarSystem" minvalue="0" maxvalue="10000" />
     <member name="MaxValue" type="int" case="PlayerPosition,RandomStarSystem" minvalue="0" maxvalue="10000" />
+    <member name="MinValue" type="int" case="FactionStarbasePower" minvalue="0" maxvalue="100000">Percentage value</member>
+    <member name="MaxValue" type="int" case="FactionStarbasePower" minvalue="0" maxvalue="100000">Percentage value</member>
     <member name="MinValue" type="int" case="CharacterRelations,FactionRelations" minvalue="-100" maxvalue="100" />
     <member name="MaxValue" type="int" case="CharacterRelations,FactionRelations" minvalue="-100" maxvalue="100" />
     <member name="MinValue" type="int" case="HaveQuestItem" minvalue="1" maxvalue="1000000" alias="Amount" />

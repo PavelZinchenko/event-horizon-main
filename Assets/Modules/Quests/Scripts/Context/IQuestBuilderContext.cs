@@ -45,6 +45,7 @@ namespace Domain.Quests
         int HomeStarId { get; }
         Faction Faction { get; }
         int Relations { get; }
+        int StarbasePower { get; }
         bool IsCaptured { get; }
         bool IsVisited { get; }
         bool IsHome { get; }

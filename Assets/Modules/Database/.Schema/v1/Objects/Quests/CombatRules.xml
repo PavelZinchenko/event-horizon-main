@@ -2,6 +2,7 @@
 <data name="CombatRules" type="object" typeid="CombatRules" >
     <member name="InitialEnemyShips" type="expression" typeid="IntToInt" arguments="level" minvalue="1" default="1" />
     <member name="MaxEnemyShips" type="expression" typeid="IntToInt" arguments="level" minvalue="1" default="12" />
+    <member name="BattleMapSize" type="int" minvalue="50" default="200" />
     <member name="TimeLimit" type="expression" typeid="IntToInt" arguments="level" minvalue="0" default="MAX(40, 100 - level)" />
     <member name="TimeOutMode" type="enum" typeid="TimeOutMode" />
     <member name="LootCondition" type="enum" typeid="RewardCondition" />

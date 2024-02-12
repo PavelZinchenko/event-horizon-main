@@ -11,16 +11,16 @@ namespace Session.Content
 		IEnumerable<int> Regions { get; }
 		bool TryGetRegionFactionId(int regionId, out ItemId<Faction> faction);
 		void SetRegionFactionId(int regionId, ItemId<Faction> factionId);
-		int GetDefeatedFleetCount(int regionId);
 		bool IsRegionCaptured(int regionId);
 		IEnumerable<ItemId<Faction>> GetCapturedFactions();
 		void SetRegionCaptured(int regionId, bool caputured);
 		IEnumerable<int> DiscoveredRegions { get; }
-		void SetDefeatedFleetCount(int regionId, int count);
-		void Reset();
-	}
+        void SetStarbaseDefensePower(int regionId, uint power);
+        bool TryGetStarbaseDefensePower(int regionId, out uint power);
+        void Reset();
+    }
 
-	public class RegionData : IRegionData, ISessionDataContent
+    public class RegionData : IRegionData, ISessionDataContent
 	{
 		private readonly SaveGameData _data;
 
@@ -42,32 +42,34 @@ namespace Session.Content
 		}
 
 		public void SetRegionFactionId(int regionId, ItemId<Faction> factionId) => _data.Regions.Factions.SetValue(regionId, factionId.Value);
-		public int GetDefeatedFleetCount(int regionId) => _data.Regions.DefeatedFleetCount.TryGetValue(regionId, out var value) && value > 0 ? value : 0;
-		public bool IsRegionCaptured(int regionId) => _data.Regions.DefeatedFleetCount.TryGetValue(regionId, out var value) && value < 0;
+		//public int GetDefeatedFleetCount(int regionId) => _data.Regions.DefeatedFleetCount.TryGetValue(regionId, out var value) && value > 0 ? value : 0;
+		public bool IsRegionCaptured(int regionId) => _data.Regions.CapturedBases.Get((uint)regionId);
 
 		public void Reset()
 		{
 			_data.Regions.Factions.Clear();
-			_data.Regions.DefeatedFleetCount.Clear();
+			_data.Regions.CapturedBases.Clear();
 		}
 
 		public IEnumerable<ItemId<Faction>> GetCapturedFactions()
 		{
-			foreach (var item in _data.Regions.DefeatedFleetCount)
+			foreach (var item in _data.Regions.CapturedBases)
 			{
-				if (item.Value >= 0) continue;
-				if (!_data.Regions.Factions.TryGetValue(item.Key, out var faction)) continue;
+				if (!_data.Regions.Factions.TryGetValue((int)item, out var faction)) continue;
 				yield return new ItemId<Faction>(faction);
 			}
 		}
 
-		public void SetRegionCaptured(int regionId, bool caputured) => _data.Regions.DefeatedFleetCount.SetValue(regionId, caputured ? -1 : 0);
-		public IEnumerable<int> DiscoveredRegions => _data.Regions.DefeatedFleetCount.Keys;
+        public void SetRegionCaptured(int regionId, bool caputured) => _data.Regions.CapturedBases.Set((uint)regionId, caputured);
+		public IEnumerable<int> DiscoveredRegions => _data.Regions.MilitaryPower.Keys;
 
-		public void SetDefeatedFleetCount(int regionId, int count)
-		{
-			if (_data.Regions.DefeatedFleetCount.TryGetValue(regionId, out var value) && value < 0) return;
-			_data.Regions.DefeatedFleetCount.SetValue(regionId, count > 0 ? count : 0);
-		}
-	}
+		//public void SetDefeatedFleetCount(int regionId, int count)
+		//{
+		//	if (_data.Regions.DefeatedFleetCount.TryGetValue(regionId, out var value) && value < 0) return;
+		//	_data.Regions.DefeatedFleetCount.SetValue(regionId, count > 0 ? count : 0);
+		//}
+
+        public void SetStarbaseDefensePower(int regionId, uint power) => _data.Regions.MilitaryPower.SetValue(regionId, power);
+        public bool TryGetStarbaseDefensePower(int regionId, out uint power) => _data.Regions.MilitaryPower.TryGetValue(regionId, out power);
+    }
 }

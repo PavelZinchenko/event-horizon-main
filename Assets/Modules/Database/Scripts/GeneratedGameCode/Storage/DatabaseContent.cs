@@ -410,6 +410,19 @@ namespace GameDatabase.Storage
 				if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate ExplorationSettings file found - " + name);
             }
+            else if (type == ItemType.FactionsSettings)
+            {
+                if (FactionsSettings == null)
+                {
+                    var data = _serializer.FromJson<FactionsSettingsSerializable>(content);
+                    data.FileName = name;
+                    FactionsSettings = data;
+                    return;
+                }
+
+				if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate FactionsSettings file found - " + name);
+            }
             else if (type == ItemType.FrontierSettings)
             {
                 if (FrontierSettings == null)
@@ -526,6 +539,7 @@ namespace GameDatabase.Storage
 		public DatabaseSettingsSerializable DatabaseSettings { get; private set; }
 		public DebugSettingsSerializable DebugSettings { get; private set; }
 		public ExplorationSettingsSerializable ExplorationSettings { get; private set; }
+		public FactionsSettingsSerializable FactionsSettings { get; private set; }
 		public FrontierSettingsSerializable FrontierSettings { get; private set; }
 		public GalaxySettingsSerializable GalaxySettings { get; private set; }
 		public ShipModSettingsSerializable ShipModSettings { get; private set; }

@@ -6,29 +6,17 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
-namespace GameDatabase.Enums
+using System;
+using GameDatabase.Enums;
+using GameDatabase.Model;
+
+namespace GameDatabase.Serializable
 {
-	public enum RequirementType
+	[Serializable]
+	public class FactionsSettingsSerializable : SerializableItem
 	{
-		Empty = 0,
-		Any = 1,
-		All = 2,
-		None = 3,
-		PlayerPosition = 6,
-		RandomStarSystem = 7,
-		AggressiveOccupants = 8,
-		QuestCompleted = 9,
-		QuestActive = 10,
-		CharacterRelations = 15,
-		FactionRelations = 16,
-		StarbaseCaptured = 17,
-		FactionStarbasePower = 18,
-		Faction = 20,
-		HaveQuestItem = 25,
-		HaveItem = 26,
-		HaveItemById = 27,
-		ComeToOrigin = 30,
-		TimeSinceQuestStart = 40,
-		TimeSinceLastCompletion = 41,
+		public string StarbaseInitialDefense = "MIN(1000, 300 + 5*distance)";
+		public int StarbaseMinDefense = 50;
+		public int DefenseLossPerEnemyDefeated = 10;
 	}
 }

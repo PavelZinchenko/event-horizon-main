@@ -17,6 +17,9 @@ namespace Session
 		/// copy oldData.Bosses.Bosses to newData.Bosses.Bosses;
 		/// type was changed - oldData.Events.CompletedTime;
 		/// type was changed - oldData.Inventory.Components;
+		/// property was removed - oldData.Regions.DefeatedFleetCount;
+		/// property was added - newData.Regions.MilitaryPower;
+		/// property was added - newData.Regions.CapturedBases;
 		/// copy oldData.Shop.Purchases to newData.Shop.Purchases;
 		/// property was removed - oldData.StarMap.StarData;
 		/// property was added - newData.StarMap.DiscoveredStars;
@@ -62,7 +65,7 @@ namespace Session
 			newData.Pvp = oldData.Pvp;
 			newData.Inventory.Satellites.Assign(oldData.Inventory.Satellites);
 			newData.Quests = oldData.Quests;
-			newData.Regions = oldData.Regions;
+			newData.Regions.Factions.Assign(oldData.Regions.Factions);
 			newData.Research = oldData.Research;
 			newData.Resources = oldData.Resources;
 			newData.Social = oldData.Social;

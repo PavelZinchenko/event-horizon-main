@@ -20,6 +20,7 @@ namespace GameDatabase
 		DatabaseSettings DatabaseSettings { get; }
 		DebugSettings DebugSettings { get; }
 		ExplorationSettings ExplorationSettings { get; }
+		FactionsSettings FactionsSettings { get; }
 		FrontierSettings FrontierSettings { get; }
 		GalaxySettings GalaxySettings { get; }
 		ShipModSettings ShipModSettings { get; }
@@ -94,6 +95,7 @@ namespace GameDatabase
 		public DatabaseSettings DatabaseSettings { get; private set; }
 		public DebugSettings DebugSettings { get; private set; }
 		public ExplorationSettings ExplorationSettings { get; private set; }
+		public FactionsSettings FactionsSettings { get; private set; }
 		public FrontierSettings FrontierSettings { get; private set; }
 		public GalaxySettings GalaxySettings { get; private set; }
 		public ShipModSettings ShipModSettings { get; private set; }
@@ -190,6 +192,7 @@ namespace GameDatabase
 			DatabaseSettings = null;
 			DebugSettings = null;
 			ExplorationSettings = null;
+			FactionsSettings = null;
 			FrontierSettings = null;
 			GalaxySettings = null;
 			ShipModSettings = null;
@@ -345,6 +348,8 @@ namespace GameDatabase
 					_database.DebugSettings = DebugSettings.Create(_content.DebugSettings ?? new Serializable.DebugSettingsSerializable { ItemType = Enums.ItemType.DebugSettings }, this);
 				if (_database.ExplorationSettings == null)
 					_database.ExplorationSettings = ExplorationSettings.Create(_content.ExplorationSettings ?? new Serializable.ExplorationSettingsSerializable { ItemType = Enums.ItemType.ExplorationSettings }, this);
+				if (_database.FactionsSettings == null)
+					_database.FactionsSettings = FactionsSettings.Create(_content.FactionsSettings ?? new Serializable.FactionsSettingsSerializable { ItemType = Enums.ItemType.FactionsSettings }, this);
 				if (_database.FrontierSettings == null)
 					_database.FrontierSettings = FrontierSettings.Create(_content.FrontierSettings ?? new Serializable.FrontierSettingsSerializable { ItemType = Enums.ItemType.FrontierSettings }, this);
 				if (_database.GalaxySettings == null)

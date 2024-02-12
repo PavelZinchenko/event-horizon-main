@@ -96,7 +96,7 @@ namespace ViewModel
 		    MilitaryPowerPanel.gameObject.SetActive(true);
 		    ReputationPanel.gameObject.SetActive(!region.Faction.NoMissions);
 		    ReputationText.text = reputation > 0 ? "+" + reputation : reputation.ToString();
-		    PowerText.text = Mathf.RoundToInt(region.BaseDefensePower * 100) + "%";
+		    PowerText.text = region.BaseDefensePower + "%";
 
             MissionButton.gameObject.SetActive(MissionsAvailable);
 

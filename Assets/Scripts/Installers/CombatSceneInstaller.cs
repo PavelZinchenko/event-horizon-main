@@ -31,6 +31,7 @@ namespace Installers
         [SerializeField] private Camera _camera;
 
         [Inject] private readonly IGameSettings _gameSettings;
+        [Inject] private readonly Combat.Domain.ICombatModel _combatModel;
 
         public override void InstallBindings()
         {
@@ -40,11 +41,13 @@ namespace Installers
 				NoEnemyMessages = !_gameSettings.ShowEnemyMessages,
 			};
 
-			Container.BindInterfacesTo<Messenger>().AsSingle().WithArguments(GameScene.Combat);
+            var areaSize = _combatModel.Rules.BattleMapSize;
+
+            Container.BindInterfacesTo<Messenger>().AsSingle().WithArguments(GameScene.Combat);
 
 			Container.BindInterfacesAndSelfTo<CombatManager>().AsSingle().NonLazy();
             Container.BindInterfacesTo<ViewRect>().AsTransient();
-            Container.BindInterfacesTo<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = 200, AreaHeight = 200 }).NonLazy();
+            Container.BindInterfacesTo<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = areaSize, AreaHeight = areaSize }).NonLazy();
             Container.BindInterfacesTo<CollisionManager>().AsSingle();
             Container.BindInterfacesTo<AiManager>().AsSingle().NonLazy();
 			Container.Bind<Combat.Ai.BehaviorTree.BehaviorTreeBuilder>().AsSingle();

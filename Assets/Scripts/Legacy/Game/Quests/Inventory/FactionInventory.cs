@@ -21,7 +21,7 @@ namespace GameModel
 			public FactionInventory(Region region, ItemTypeFactory irItemTypeFactory, ProductFactory productFactory, PlayerSkills playerSkills, IRandom random, IDatabase database)
 			{
 				_starId = region.HomeStar;
-				_level = region.MilitaryPower;
+				_level = region.HomeStarLevel;
 				_faction = region.Faction;
 			    _itemTypeFactory = irItemTypeFactory;
 			    _productFactory = productFactory;

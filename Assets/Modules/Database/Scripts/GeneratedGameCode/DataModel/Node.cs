@@ -72,10 +72,14 @@ namespace GameDatabase.DataModel
 					return new Node_SetCharacterRelations(serializable, loader);
 				case NodeType.SetFactionRelations:
 					return new Node_SetFactionRelations(serializable, loader);
+				case NodeType.SetFactionStarbasePower:
+					return new Node_SetFactionStarbasePower(serializable, loader);
 				case NodeType.ChangeCharacterRelations:
 					return new Node_ChangeCharacterRelations(serializable, loader);
 				case NodeType.ChangeFactionRelations:
 					return new Node_ChangeFactionRelations(serializable, loader);
+				case NodeType.ChangeFactionStarbasePower:
+					return new Node_ChangeFactionStarbasePower(serializable, loader);
 				case NodeType.CaptureStarBase:
 					return new Node_CaptureStarBase(serializable, loader);
 				case NodeType.LiberateStarBase:
@@ -129,8 +133,10 @@ namespace GameDatabase.DataModel
 	    T Create(Node_StartQuest content);
 	    T Create(Node_SetCharacterRelations content);
 	    T Create(Node_SetFactionRelations content);
+	    T Create(Node_SetFactionStarbasePower content);
 	    T Create(Node_ChangeCharacterRelations content);
 	    T Create(Node_ChangeFactionRelations content);
+	    T Create(Node_ChangeFactionStarbasePower content);
 	    T Create(Node_CaptureStarBase content);
 	    T Create(Node_LiberateStarBase content);
 	    T Create(Node_ChangeFaction content);
@@ -212,7 +218,7 @@ namespace GameDatabase.DataModel
   		public Node_OpenShipyard(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 			Level = UnityEngine.Mathf.Clamp(serializable.Value, 0, 10000);
 
@@ -237,7 +243,7 @@ namespace GameDatabase.DataModel
   		public Node_OpenWorkshop(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 			Level = UnityEngine.Mathf.Clamp(serializable.Value, 0, 10000);
 
@@ -408,7 +414,7 @@ namespace GameDatabase.DataModel
   		public Node_DestroyOccupants(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -429,7 +435,7 @@ namespace GameDatabase.DataModel
   		public Node_SuppressOccupants(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -450,7 +456,7 @@ namespace GameDatabase.DataModel
   		public Node_Retreat(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -471,7 +477,7 @@ namespace GameDatabase.DataModel
   		public Node_ReceiveItem(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 			Loot = loader?.GetLoot(new ItemId<LootModel>(serializable.Loot)) ?? LootModel.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
@@ -494,7 +500,7 @@ namespace GameDatabase.DataModel
   		public Node_RemoveItem(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 			Loot = loader?.GetLoot(new ItemId<LootModel>(serializable.Loot)) ?? LootModel.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
@@ -517,7 +523,7 @@ namespace GameDatabase.DataModel
   		public Node_Trade(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 			Loot = loader?.GetLoot(new ItemId<LootModel>(serializable.Loot)) ?? LootModel.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
@@ -597,7 +603,7 @@ namespace GameDatabase.DataModel
   		public Node_StartQuest(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 			Quest = loader?.GetQuest(new ItemId<QuestModel>(serializable.Quest)) ?? QuestModel.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
@@ -620,7 +626,7 @@ namespace GameDatabase.DataModel
   		public Node_SetCharacterRelations(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 			Character = loader?.GetCharacter(new ItemId<Character>(serializable.Character)) ?? Character.DefaultValue;
 			Value = UnityEngine.Mathf.Clamp(serializable.Value, -100, 100);
 
@@ -645,8 +651,31 @@ namespace GameDatabase.DataModel
   		public Node_SetFactionRelations(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 			Value = UnityEngine.Mathf.Clamp(serializable.Value, -100, 100);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(INodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public int Transition { get; private set; }
+		public int Value { get; private set; }
+
+
+    }
+    public partial class Node_SetFactionStarbasePower : Node
+    {
+		partial void OnDataDeserialized(NodeSerializable serializable, Database.Loader loader);
+
+  		public Node_SetFactionStarbasePower(NodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
+			Value = UnityEngine.Mathf.Clamp(serializable.Value, 0, 100000);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -668,7 +697,7 @@ namespace GameDatabase.DataModel
   		public Node_ChangeCharacterRelations(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 			Character = loader?.GetCharacter(new ItemId<Character>(serializable.Character)) ?? Character.DefaultValue;
 			Value = UnityEngine.Mathf.Clamp(serializable.Value, -100, 100);
 
@@ -693,8 +722,31 @@ namespace GameDatabase.DataModel
   		public Node_ChangeFactionRelations(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 			Value = UnityEngine.Mathf.Clamp(serializable.Value, -100, 100);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(INodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public int Transition { get; private set; }
+		public int Value { get; private set; }
+
+
+    }
+    public partial class Node_ChangeFactionStarbasePower : Node
+    {
+		partial void OnDataDeserialized(NodeSerializable serializable, Database.Loader loader);
+
+  		public Node_ChangeFactionStarbasePower(NodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
+			Value = UnityEngine.Mathf.Clamp(serializable.Value, -100000, 100000);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -716,7 +768,7 @@ namespace GameDatabase.DataModel
   		public Node_CaptureStarBase(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -737,7 +789,7 @@ namespace GameDatabase.DataModel
   		public Node_LiberateStarBase(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -758,7 +810,7 @@ namespace GameDatabase.DataModel
   		public Node_ChangeFaction(NodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 1000);
+			Transition = UnityEngine.Mathf.Clamp(serializable.DefaultTransition, 1, 999999);
 			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 
             OnDataDeserialized(serializable, loader);

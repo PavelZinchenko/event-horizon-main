@@ -130,7 +130,7 @@ namespace Session
 				newData.Bosses.Add(item.Key, new v1.BossInfo(item.Value.DefeatCount, item.Value.LastDefeatTime));
 		}
 
-		private void TransferRegionData(ContentObsolete.RegionData oldData, RegionData newData)
+		private void TransferRegionData(ContentObsolete.RegionData oldData, v1.RegionData newData)
 		{
 			foreach (var item in oldData._defeatedFleetCount)
 				newData.DefeatedFleetCount.Add(item.Key, item.Value);

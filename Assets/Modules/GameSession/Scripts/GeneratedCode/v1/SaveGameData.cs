@@ -24,7 +24,7 @@ namespace Session.v1
 		private Model.PvpData _pvp;
 		private v1.Inventory _inventory;
 		private Model.QuestData _quests;
-		private Model.RegionData _regions;
+		private v1.RegionData _regions;
 		private Model.ResearchData _research;
 		private Model.ResourcesData _resources;
 		private v1.ShopData _shop;
@@ -54,7 +54,7 @@ namespace Session.v1
 			_pvp = new Model.PvpData(this);
 			_inventory = new v1.Inventory(this);
 			_quests = new Model.QuestData(this);
-			_regions = new Model.RegionData(this);
+			_regions = new v1.RegionData(this);
 			_research = new Model.ResearchData(this);
 			_resources = new Model.ResourcesData(this);
 			_shop = new v1.ShopData(this);
@@ -77,7 +77,7 @@ namespace Session.v1
 			_pvp = new Model.PvpData(reader, this);
 			_inventory = new v1.Inventory(reader, this);
 			_quests = new Model.QuestData(reader, this);
-			_regions = new Model.RegionData(reader, this);
+			_regions = new v1.RegionData(reader, this);
 			_research = new Model.ResearchData(reader, this);
 			_resources = new Model.ResourcesData(reader, this);
 			_shop = new v1.ShopData(reader, this);
@@ -200,7 +200,7 @@ namespace Session.v1
 				OnDataChanged();
 			}
 		}
-		public Model.RegionData Regions
+		public v1.RegionData Regions
 		{
 			get => _regions;
 			set

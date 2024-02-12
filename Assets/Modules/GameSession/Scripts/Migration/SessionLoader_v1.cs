@@ -14,7 +14,23 @@ namespace Session
 				newData.Bosses.Bosses.Add(item.Key, new Model.BossInfo(item.Value.DefeatCount, defeatTime));
 			}
 
-			foreach (var item in oldData.Events.CompletedTime)
+            foreach(var item in oldData.Regions.DefeatedFleetCount)
+            {
+                if (item.Value < 0)
+                {
+                    newData.Regions.CapturedBases.Set((uint)item.Key, true);
+                }
+                else
+                {
+                    var homeStar = GameModel.RegionLayout.GetRegionHomeStar(item.Key);
+                    var distance = UnityEngine.Mathf.RoundToInt(GameModel.StarLayout.GetStarPosition(homeStar, oldData.Game.Seed).magnitude);
+                    var maxPower = UnityEngine.Mathf.Min(300 + 5 * distance, 1000);
+                    var power = (uint)UnityEngine.Mathf.Max(50, maxPower - item.Value*10);
+                    newData.Regions.MilitaryPower.Add(item.Key, power);
+                }
+            }
+
+            foreach (var item in oldData.Events.CompletedTime)
 			{
 				var time = GameTimeExtensions.TicksToGameTime(item.Value, oldData.Game.StartTime, TimeUnits.Hours);
 				newData.Events.CompletedTime.Add(item.Key, time);

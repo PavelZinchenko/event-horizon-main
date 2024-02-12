@@ -277,7 +277,7 @@ public class Star : MonoBehaviour
 		else
 		{
 			textMesh.color = new Color(1f,0.75f,0.5f);
-			textMesh.text = _localization.GetString("$StarInfo", name, Mathf.RoundToInt(star.Region.BaseDefensePower*100) + "%");
+			textMesh.text = _localization.GetString("$StarInfo", name, star.Region.BaseDefensePower + "%");
 		}
 
 		return item;

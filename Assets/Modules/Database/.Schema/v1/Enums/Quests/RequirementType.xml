@@ -15,6 +15,7 @@
     <item name="CharacterRelations" value="15" />
     <item name="FactionRelations" value="16" />
     <item name="StarbaseCaptured" value="17" />
+    <item name="FactionStarbasePower" value="18" />
     
     <item name="Faction" value="20" />
     

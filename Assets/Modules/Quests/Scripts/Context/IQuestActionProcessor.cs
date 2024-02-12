@@ -14,6 +14,7 @@ namespace Domain.Quests
         void Retreat();
         void SetCharacterRelations(int characterId, int value, bool additive);
         void SetFactionRelations(int starId, int value, bool additive);
+        void SetFactionStarbasePower(int starId, int value, bool additive);
         void StartQuest(QuestModel quest);
         void OpenShipyard(Faction faction, int level);
         void OpenWorkshop(Faction faction, int level);

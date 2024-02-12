@@ -36,6 +36,7 @@ namespace GameDatabase.DataModel
 			InitialEnemyShips = _initialEnemyShips.Evaluate;
 			_maxEnemyShips = new Expressions.IntToInt(serializable.MaxEnemyShips, 1, 2147483647, variableResolver) { ParamName1 = "level" };
 			MaxEnemyShips = _maxEnemyShips.Evaluate;
+			BattleMapSize = UnityEngine.Mathf.Clamp(serializable.BattleMapSize, 50, 2147483647);
 			_timeLimit = new Expressions.IntToInt(serializable.TimeLimit, 0, 2147483647, variableResolver) { ParamName1 = "level" };
 			TimeLimit = _timeLimit.Evaluate;
 			TimeOutMode = serializable.TimeOutMode;
@@ -60,6 +61,7 @@ namespace GameDatabase.DataModel
 		private readonly Expressions.IntToInt _maxEnemyShips;
 		public delegate int MaxEnemyShipsDelegate(int level);
 		public MaxEnemyShipsDelegate MaxEnemyShips { get; private set; }
+		public int BattleMapSize { get; private set; }
 		private readonly Expressions.IntToInt _timeLimit;
 		public delegate int TimeLimitDelegate(int level);
 		public TimeLimitDelegate TimeLimit { get; private set; }
@@ -95,6 +97,7 @@ namespace GameDatabase.DataModel
 
 			public Expression<Variant> ResolveVariable(string name)
 			{
+				if (name == "BattleMapSize") return GetBattleMapSize;
 				if (name == "DisableSkillBonuses") return GetDisableSkillBonuses;
 				if (name == "DisableRandomLoot") return GetDisableRandomLoot;
 				if (name == "DisableAsteroids") return GetDisableAsteroids;
@@ -104,6 +107,7 @@ namespace GameDatabase.DataModel
 				return ((IVariableResolver)_context).ResolveVariable(name);
 			}
 
+			private Variant GetBattleMapSize() => _context.BattleMapSize;
 			private Variant GetDisableSkillBonuses() => _context.DisableSkillBonuses;
 			private Variant GetDisableRandomLoot() => _context.DisableRandomLoot;
 			private Variant GetDisableAsteroids() => _context.DisableAsteroids;

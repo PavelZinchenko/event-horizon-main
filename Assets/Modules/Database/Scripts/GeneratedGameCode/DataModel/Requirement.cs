@@ -50,6 +50,8 @@ namespace GameDatabase.DataModel
 					return new Requirement_FactionRelations(serializable, loader);
 				case RequirementType.StarbaseCaptured:
 					return new Requirement_StarbaseCaptured(serializable, loader);
+				case RequirementType.FactionStarbasePower:
+					return new Requirement_FactionStarbasePower(serializable, loader);
 				case RequirementType.Faction:
 					return new Requirement_Faction(serializable, loader);
 				case RequirementType.HaveQuestItem:
@@ -98,6 +100,7 @@ namespace GameDatabase.DataModel
 	    T Create(Requirement_CharacterRelations content);
 	    T Create(Requirement_FactionRelations content);
 	    T Create(Requirement_StarbaseCaptured content);
+	    T Create(Requirement_FactionStarbasePower content);
 	    T Create(Requirement_Faction content);
 	    T Create(Requirement_HaveQuestItem content);
 	    T Create(Requirement_HaveItem content);
@@ -364,6 +367,29 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
+    }
+    public partial class Requirement_FactionStarbasePower : Requirement
+    {
+		partial void OnDataDeserialized(RequirementSerializable serializable, Database.Loader loader);
+
+  		public Requirement_FactionStarbasePower(RequirementSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0, 100000);
+			MaxValue = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0, 100000);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IRequirementFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public int MinValue { get; private set; }
+		public int MaxValue { get; private set; }
 
 
     }

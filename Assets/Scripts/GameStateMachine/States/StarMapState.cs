@@ -254,6 +254,12 @@ namespace GameStateMachine.States
             _session.Quests.SetFactionRelations(starId, additive ? value + _session.Quests.GetFactionRelations(starId) : value);
         }
 
+        public void SetFactionStarbasePower(int starId, int value, bool additive)
+        {
+            var region = _starData.GetRegion(starId);
+            region.BaseDefensePower = additive ? region.BaseDefensePower + value : value;
+        }
+
         public void StartQuest(QuestModel quest)
         {
             _questManager.StartQuest(quest);

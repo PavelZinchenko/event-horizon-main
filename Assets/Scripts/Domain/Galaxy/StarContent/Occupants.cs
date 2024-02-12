@@ -110,7 +110,7 @@ namespace Galaxy.StarContent
 
             if (region.Id > Region.PlayerHomeRegionId)
 		    {
-                level = region.MilitaryPower;
+                level = region.HomeStarLevel;
                 if (_random.RandomInt(starId + 123, 100) <= 10)
                     builder.AddSpecialReward(CommonProduct.Create(_itemTypeFactory.CreateResearchItem(region.Faction)));
             }

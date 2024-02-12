@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace Session.Utils
 {
-	public struct ObservableBitset
+	public struct ObservableBitset : IEnumerable<uint>
 	{
 		private readonly List<uint> _indices; // sorted list of ids where value changes. Last value is always true
 		private readonly IDataChangedCallback _callback;
@@ -193,5 +194,65 @@ namespace Session.Utils
 				lastValue = value;
 			}
 		}
-	}
+
+        public IEnumerator<uint> GetEnumerator() => new KeyEnumerator(_indices);
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        private struct KeyEnumerator : IEnumerator<uint>
+        {
+            private readonly List<uint> _indices;
+            private int _index;
+            private uint _key;
+
+            public KeyEnumerator(List<uint> indices)
+            {
+                _indices = indices;
+                _index = -1;
+                _key = 0;
+            }
+
+            public uint Current => _key;
+            object IEnumerator.Current => Current;
+
+            public void Dispose() {}
+
+            public bool MoveNext()
+            {
+                var count = _indices.Count;
+                if (count == 0) return false;
+                if (_index >= count) return false;
+
+                if (_index < 0)
+                {
+                    if ((count & 1) == 0)
+                    {
+                        _index = 1;
+                        _key = _indices[0];
+                    }
+                    else
+                    {
+                        _key = 0;
+                        _index = 0;
+                    }
+                    return true;
+                }
+                else if (++_key < _indices[_index])
+                {
+                    return true;
+                }
+                else if (++_index < count)
+                {
+                    _key = _indices[_index++];
+                    return true;
+                }
+
+                return false;
+            }
+
+            public void Reset()
+            {
+                _index = -1;
+            }
+        }
+    }
 }

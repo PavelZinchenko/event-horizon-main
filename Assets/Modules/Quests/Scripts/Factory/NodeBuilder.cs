@@ -242,6 +242,24 @@ namespace Domain.Quests
             return node;
         }
 
+        public INode Create(Node_ChangeFactionStarbasePower content)
+        {
+            var starId = _starMapData.GetStarData(_context.StarId).Region.HomeStarId;
+            var node = new StarbasePowerNode(content.Id, starId, content.Value, true);
+            _nodes.Add(node.Id, node);
+            node.TargetNode = CreateNode(content.Transition);
+            return node;
+        }
+
+        public INode Create(Node_SetFactionStarbasePower content)
+        {
+            var starId = _starMapData.GetStarData(_context.StarId).Region.HomeStarId;
+            var node = new StarbasePowerNode(content.Id, starId, content.Value, false);
+            _nodes.Add(node.Id, node);
+            node.TargetNode = CreateNode(content.Transition);
+            return node;
+        }
+
         public INode Create(Node_ChangeCharacterRelations content)
         {
             var node = new CharacterRelationsNode(content.Id, content.Character.Id.Value, content.Value, true);
@@ -307,7 +325,7 @@ namespace Domain.Quests
             return node;
         }
 
-		private readonly QuestInfo _context;
+        private readonly QuestInfo _context;
         private readonly Dictionary<NodeId, INode> _nodes;
         private readonly Dictionary<NodeId, Node> _nodesData;
         private readonly IStarMapDataProvider _starMapData;

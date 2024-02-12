@@ -17,5 +17,6 @@ namespace Domain.Quests
         public bool IsHome => _region.Id == GameModel.Region.PlayerHomeRegionId;
         public bool IsCaptured => _region != GameModel.Region.Empty && _region.IsCaptured;
         public bool IsVisited => _region != GameModel.Region.Empty && _region.IsVisited;
+        public int StarbasePower => _region.BaseDefensePower;
     }
 }

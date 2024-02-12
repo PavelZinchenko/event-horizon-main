@@ -84,6 +84,11 @@ namespace Domain.Quests
             return new FactionReputationRequirement(_questInfo.StarId, content.MinValue, content.MaxValue, _context.StarMapDataProvider);
         }
 
+        public IRequirements Create(Requirement_FactionStarbasePower content)
+        {
+            return new StarbasePowerRequirement(_questInfo.StarId, content.MinValue, content.MaxValue, _context.StarMapDataProvider);
+        }
+
         public IRequirements Create(Requirement_StarbaseCaptured content)
         {
             return new StarbaseCaprturedRequirement(_questInfo.StarId, _context.StarMapDataProvider);

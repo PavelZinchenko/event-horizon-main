@@ -31,8 +31,10 @@
 
     <item name="SetCharacterRelations" value="50" />
     <item name="SetFactionRelations" value="51" />
+    <item name="SetFactionStarbasePower" value="52" />
     <item name="ChangeCharacterRelations" value="55" />
     <item name="ChangeFactionRelations" value="56" />
+    <item name="ChangeFactionStarbasePower" value="57" />
 
     <item name="CaptureStarBase" value="60" />
     <item name="LiberateStarBase" value="61" />

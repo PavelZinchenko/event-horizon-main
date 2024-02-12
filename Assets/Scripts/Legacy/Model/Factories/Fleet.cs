@@ -58,7 +58,7 @@ namespace Model
 			public static IFleet FactionDefenders(GameModel.Region region, int seed, IDatabase database)
 			{
 				var random = new Random(seed);
-				var distance = region.MilitaryPower;
+				var distance = region.HomeStarLevel;
 				var count = Maths.Distance.FleetSize(distance, random);
 				var ships = ShipBuildQuery.EnemyShips(database).
 					CommonAndRare().
@@ -75,10 +75,10 @@ namespace Model
 				var seed = region.HomeStar;
 				var random = new Random(seed);
 
-				var distance = region.MilitaryPower; 
+				var distance = region.HomeStarLevel; 
 
-				var numberOfShips = (int)Math.Round(4*region.BaseDefensePower);
-				var numberOfBosses = (int)Math.Floor(region.BaseDefensePower);
+				var numberOfShips = region.BaseDefensePower/25;
+				var numberOfBosses = region.BaseDefensePower/100;
 				var bossClass = numberOfBosses >= 2 ? DifficultyClass.Class2 : DifficultyClass.Class1;
 
 				var bosses = ShipBuildQuery.EnemyShips(database).
@@ -93,7 +93,7 @@ namespace Model
 					FilterByStarDistance(distance, ShipBuildQuery.FilterMode.SizeAndDifficulty).
 					SelectRandom(numberOfShips, random);
 
-                var starbaseClass = region.MilitaryPower < 40 ? DifficultyClass.Default : DifficultyClass.Class1;
+                var starbaseClass = region.HomeStarLevel < 40 ? DifficultyClass.Default : DifficultyClass.Class1;
 			    var starbase = ShipBuildQuery.Starbases(database).
 					BelongToFaction(region.Faction).
 					WithDifficulty(starbaseClass, starbaseClass).
