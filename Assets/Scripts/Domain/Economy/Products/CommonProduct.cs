@@ -143,7 +143,7 @@ namespace Economy.Products
         public bool TryConsume(int amount)
         {
             if (amount < 0) return false;
-            _quantity += amount;
+            _quantity -= amount;
             return true;
         }
 
@@ -151,7 +151,7 @@ namespace Economy.Products
         {
             if (amount < 0) return false;
             if (_quantity < amount) return false;
-            _quantity -= amount;
+            _quantity += amount;
             return true;
         }
     }
