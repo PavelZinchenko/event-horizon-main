@@ -3,6 +3,7 @@ using Services.Localization;
 using GameDatabase.Model;
 using UnityEngine;
 using Zenject;
+using Gui.Theme;
 
 namespace Economy.ItemType
 {
@@ -15,13 +16,13 @@ namespace Economy.ItemType
             _playerResources = playerResources;
         }
 
-        public string Id { get { return "snowflake"; } }
-        public string Name { get { return _localization.GetString("$Snowflakes"); } }
-        public string Description { get { return string.Empty; } }
+        public string Id => "snowflake";
+        public string Name => _localization.GetString("$Snowflakes");
+        public string Description => string.Empty;
         public SpriteId Icon => new("Textures/Artifacts/snowflake", SpriteId.Type.Default);
-        public Color Color { get { return AppConfiguration.ColorTable.SnowflakesColor; } }
-        public Price Price { get { return new Price(1, Currency.Snowflakes); } }
-        public ItemQuality Quality { get { return ItemQuality.Common; } }
+        public Color Color => UiTheme.Current.GetCurrencyColor(Currency.Snowflakes);
+        public Price Price => new(1, Currency.Snowflakes);
+        public ItemQuality Quality => ItemQuality.Common;
 
         public bool IsEqual(IItemType other) { return other.GetType() == GetType(); }
 
@@ -35,9 +36,9 @@ namespace Economy.ItemType
             _playerResources.Snowflakes -= amount;
         }
 
-        public int MaxItemsToConsume { get { return int.MaxValue; } }
+        public int MaxItemsToConsume => int.MaxValue;
 
-        public int MaxItemsToWithdraw { get { return _playerResources.Snowflakes; } }
+        public int MaxItemsToWithdraw => _playerResources.Snowflakes;
 
         private readonly PlayerResources _playerResources;
         private readonly ILocalization _localization;

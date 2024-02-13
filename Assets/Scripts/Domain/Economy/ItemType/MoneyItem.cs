@@ -3,6 +3,7 @@ using Services.Localization;
 using GameDatabase.Model;
 using UnityEngine;
 using Zenject;
+using Gui.Theme;
 
 namespace Economy.ItemType
 {
@@ -15,13 +16,13 @@ namespace Economy.ItemType
             _localization = localization;
         }
 
-        public string Id { get { return "m"; } }
-        public string Name { get { return _localization.GetString("$Credits"); } }
-        public string Description { get { return string.Empty; } }
+        public string Id => "m";
+        public string Name => _localization.GetString("$Credits");
+        public string Description => string.Empty;
         public SpriteId Icon => new("Textures/GUI/credit", SpriteId.Type.Default);
-        public Price Price { get { return Price.Common(1); } }
-        public Color Color { get { return Color.green; } }
-        public ItemQuality Quality { get { return ItemQuality.Common; } }
+        public Price Price => Price.Common(1);
+        public Color Color => UiTheme.Current.GetCurrencyColor(Currency.Credits);
+        public ItemQuality Quality => ItemQuality.Common;
 
         public void Consume(int amount)
         {
@@ -33,8 +34,8 @@ namespace Economy.ItemType
             _playerResources.Money -= amount;
         }
 
-        public int MaxItemsToConsume { get { return int.MaxValue; } }
-        public int MaxItemsToWithdraw { get { return (int)_playerResources.Money; } }
+        public int MaxItemsToConsume => int.MaxValue;
+        public int MaxItemsToWithdraw => (int)_playerResources.Money;
 
         private readonly PlayerResources _playerResources;
         private readonly ILocalization _localization;

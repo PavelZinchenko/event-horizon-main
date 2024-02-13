@@ -3,6 +3,7 @@ using Services.Localization;
 using GameDatabase.Model;
 using UnityEngine;
 using Zenject;
+using Gui.Theme;
 
 namespace Economy.ItemType
 {
@@ -15,13 +16,13 @@ namespace Economy.ItemType
             _localization = localization;
         }
 
-        public string Id { get { return "token"; } }
-        public string Name { get { return _localization.GetString("$TokenCurrency"); } }
-        public string Description { get { return string.Empty; } }
+        public string Id => "token";
+        public string Name => _localization.GetString("$TokenCurrency");
+        public string Description => string.Empty;
         public SpriteId Icon => new("Textures/Currency/tokens", SpriteId.Type.Default);
-        public Color Color { get { return AppConfiguration.ColorTable.TokensColor; } }
-        public Price Price { get { return Price.Tokens(1); } }
-        public ItemQuality Quality { get { return ItemQuality.Perfect; } }
+        public Color Color => UiTheme.Current.GetCurrencyColor(Currency.Tokens);
+        public Price Price => Price.Tokens(1);
+        public ItemQuality Quality => ItemQuality.Perfect;
 
         public void Consume(int amount)
         {
@@ -33,9 +34,8 @@ namespace Economy.ItemType
             _playerResources.Tokens -= amount;
         }
 
-        public int MaxItemsToConsume { get { return int.MaxValue; } }
-
-        public int MaxItemsToWithdraw { get { return _playerResources.Tokens; } }
+        public int MaxItemsToConsume => int.MaxValue;
+        public int MaxItemsToWithdraw => _playerResources.Tokens;
 
         private readonly PlayerResources _playerResources;
         private readonly ILocalization _localization;

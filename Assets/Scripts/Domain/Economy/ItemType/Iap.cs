@@ -4,6 +4,7 @@ using GameDatabase.Model;
 using Session;
 using UnityEngine;
 using Zenject;
+using Gui.Theme;
 
 namespace Economy.ItemType
 {
@@ -16,13 +17,13 @@ namespace Economy.ItemType
             _iapCompletedTrigger = iapCompletedTrigger;
         }
 
-        public string Id { get { return "iapstar"; } }
-        public string Name { get { return "stars"; } }
-        public string Description { get { return string.Empty; } }
+        public string Id => "iapstar";
+        public string Name => "stars";
+        public string Description => string.Empty;
         public SpriteId Icon => new("Textures/Currency/star", SpriteId.Type.Default);
-        public Color Color { get { return AppConfiguration.ColorTable.PremiumItemColor; } }
-        public Price Price { get { return Price.Common(15000); } }
-        public ItemQuality Quality { get { return ItemQuality.Perfect; } }
+        public Color Color => UiTheme.Current.GetCurrencyColor(Currency.Money);
+        public Price Price => Price.Common(15000);
+        public ItemQuality Quality => ItemQuality.Perfect;
 
         public void Consume(int amount)
         {
@@ -36,9 +37,9 @@ namespace Economy.ItemType
             throw new InvalidOperationException();
         }
 
-        public int MaxItemsToConsume { get { return int.MaxValue; } }
+        public int MaxItemsToConsume => int.MaxValue;
 
-        public int MaxItemsToWithdraw { get { return 0; } }
+        public int MaxItemsToWithdraw => 0;
 
         private readonly ISessionData _session;
         private readonly InAppPurchaseCompletedSignal.Trigger _iapCompletedTrigger;
@@ -52,13 +53,13 @@ namespace Economy.ItemType
             _purchaseProcessor = purchaseProcessor;
         }
 
-        public string Id { get { return "iap_pack1"; } }
-        public string Name { get { return "supporter pack"; } }
-        public string Description { get { return string.Empty; } }
+        public string Id => "iap_pack1";
+        public string Name => "supporter pack";
+        public string Description => string.Empty;
         public SpriteId Icon => new("Textures/GUI/shopping_cart.png", SpriteId.Type.Default);
-        public Color Color { get { return AppConfiguration.ColorTable.PremiumItemColor; } }
-        public Price Price { get { return Price.Common(15000); } }
-        public ItemQuality Quality { get { return ItemQuality.Perfect; } }
+        public Color Color => UiTheme.Current.GetCurrencyColor(Currency.Money);
+        public Price Price => Price.Common(15000);
+        public ItemQuality Quality => ItemQuality.Perfect;
 
         public void Consume(int amount)
         {
@@ -70,9 +71,9 @@ namespace Economy.ItemType
             throw new InvalidOperationException();
         }
 
-        public int MaxItemsToConsume { get { return 1; } }
+        public int MaxItemsToConsume => 1;
 
-        public int MaxItemsToWithdraw { get { return 0; } }
+        public int MaxItemsToWithdraw => 0;
 
         private readonly IapPurchaseProcessor _purchaseProcessor;
     }
