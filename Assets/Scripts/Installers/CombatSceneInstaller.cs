@@ -63,6 +63,7 @@ namespace Installers
             Container.Bind<Settings>().FromInstance(_settings);
             Container.Bind<WeaponFactory>().AsSingle();
             Container.Bind<ShipFactory>().AsSingle().WithArguments(settings);
+            Container.Bind<ControllerFactory>().AsSingle();
             Container.Bind<SpaceObjectFactory>().AsSingle();
             Container.Bind<DeviceFactory>().AsSingle();
             Container.Bind<DroneBayFactory>().AsSingle();

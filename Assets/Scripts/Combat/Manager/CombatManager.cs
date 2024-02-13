@@ -41,6 +41,7 @@ namespace Combat.Manager
         [Inject] private readonly IDatabase _database;
         [Inject] private readonly ShipControlsPanel _shipControlsPanel;
         [Inject] private readonly ShipFactory _shipFactory;
+        [Inject] private readonly ControllerFactory _controllerFactory;
         [Inject] private readonly SpaceObjectFactory _spaceObjectFactory;
         [Inject] private readonly EffectFactory _effectFactory;
 
@@ -50,10 +51,7 @@ namespace Combat.Manager
         [Inject] private readonly CombatMenu _combatMenu;
         [Inject] private readonly Settings _settings;
         [Inject] private readonly RadarPanel _radarPanel;
-        [Inject] private readonly IKeyboard _keyboard;
-        [Inject] private readonly IMouse _mouse;
         [Inject] private readonly ICombatModel _combatModel;
-		[Inject] private readonly Ai.BehaviorTree.BehaviorTreeBuilder _behaviorTreeBuilder;
 
         public void Initialize()
         {
@@ -133,13 +131,10 @@ namespace Combat.Manager
             var position = _scene.FindFreePlace(40, ship.Side);
 
 			IControllerFactory controllerFactory;
-			if (ship.Side == UnitSide.Player)
-				controllerFactory = new KeyboardController.Factory(_keyboard, _mouse);
-			else if (_database.CombatSettings.EnemyAI != null)
-				controllerFactory = new BehaviorTreeController.Factory(_database.CombatSettings.EnemyAI, 
-					_scene, Ai.BehaviorTree.AiSettings.FromAiLevel(_combatModel.EnemyFleet.AiLevel), _behaviorTreeBuilder);
-			else
-				controllerFactory = new Computer.Factory(_scene, _combatModel.EnemyFleet.AiLevel);
+            if (ship.Side == UnitSide.Player)
+                controllerFactory = _controllerFactory.CreateKeyboardController();
+            else
+                controllerFactory = _controllerFactory.CreateDefaultAiController(_combatModel.EnemyFleet.AiLevel, ship.ShipData.CustomAi);
 
             ship.Create(_shipFactory, controllerFactory, position);
         }

@@ -32,6 +32,7 @@ namespace Installers
 			Container.Bind<ShipControlsPanel>().FromInstance(_shipControlsPanel);
             Container.Bind<WeaponFactory>().AsSingle();
             Container.Bind<ShipFactory>().AsSingle().WithArguments(new ShipFactory.Settings());
+            Container.Bind<ControllerFactory>().AsSingle();
             Container.Bind<SpaceObjectFactory>().AsSingle();
             Container.Bind<DeviceFactory>().AsSingle();
             Container.Bind<DroneBayFactory>().AsSingle();

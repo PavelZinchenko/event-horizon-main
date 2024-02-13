@@ -9,29 +9,20 @@ using Constructor.Ships;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
-using GameServices.Settings;
 using GameStateMachine.States;
 using Gui.Combat;
-using Services.Audio;
 using Services.Messenger;
-using Services.ObjectPool;
-using Services.Resources;
 using Zenject;
 
 namespace Controller
 {
 	public class Manager : MonoBehaviour
 	{
-        [Inject] private readonly GameSettings _gameSettings;
 	    [Inject] private readonly ExitSignal.Trigger _exitTrigger;
 	    [Inject] private readonly IScene _scene;
-        [Inject] private readonly IObjectPool _objectPool;
-        [Inject] private readonly ISoundPlayer _soundPlayer;
-	    [Inject] private readonly IAiManager _aiManager;
-	    [Inject] private readonly Combat.Settings _settings;
 	    [Inject] private readonly IDatabase _database;
-	    [Inject] private readonly IResourceLocator _resourceLocator;
-	    [Inject] private readonly ShipFactory _shipFactory;
+        [Inject] private readonly ShipFactory _shipFactory;
+        [Inject] private readonly ControllerFactory _controllerFactory;
         [Inject] private readonly ShipControlsPanel _shipControlsPanel;
         [Inject] private readonly IKeyboard _keyboard;
         [Inject] private readonly IMouse _mouse;
@@ -54,11 +45,14 @@ namespace Controller
 			var playerShip = _scene.PlayerShip;
 			if (!playerShip.IsActive())
 				playerShip = _shipFactory.CreateShip(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(226))).CreateBuilder().Build(_database.ShipSettings), 
-                    new KeyboardController.Factory(_keyboard, _mouse), UnitSide.Player, Vector2.zero, 0f);
+                    _controllerFactory.CreateKeyboardController(), UnitSide.Player, Vector2.zero, 0f);
 
             if (!_scene.EnemyShip.IsActive())
-                _shipFactory.CreateShip(new EnemyShip(_database.GetShipBuild(new ItemId<ShipBuild>(218))).CreateBuilder().Build(_database.ShipSettings),
-                    new Computer.Factory(_scene, 10), UnitSide.Enemy, new Vector2(5,5), 0);
+            {
+                var enemyBuild = _database.GetShipBuild(new ItemId<ShipBuild>(218)); // TODO: move to database settings
+                _shipFactory.CreateShip(new EnemyShip(enemyBuild).CreateBuilder().Build(_database.ShipSettings),
+                    _controllerFactory.CreateDefaultAiController(10, enemyBuild.CustomAI), UnitSide.Enemy, new Vector2(5, 5), 0);
+            }
 
             _shipControlsPanel.Load(playerShip);
 

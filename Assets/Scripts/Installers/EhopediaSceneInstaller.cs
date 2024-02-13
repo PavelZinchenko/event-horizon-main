@@ -30,6 +30,7 @@ namespace Installers
             Container.BindInterfacesTo<AiManager>().AsSingle().NonLazy();
             Container.Bind<WeaponFactory>().AsSingle();
             Container.Bind<ShipFactory>().AsSingle().WithArguments(new ShipFactory.Settings());
+            Container.Bind<ControllerFactory>().AsSingle();
             Container.Bind<SpaceObjectFactory>().AsSingle();
             Container.Bind<DeviceFactory>().AsSingle();
             Container.Bind<DroneBayFactory>().AsSingle();

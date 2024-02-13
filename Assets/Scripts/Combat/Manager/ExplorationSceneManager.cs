@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Combat.Ai;
 using Combat.Collision;
 using Combat.Domain;
 using Combat.Component.Triggers;
@@ -16,20 +15,14 @@ using Game.Exploration;
 using GameStateMachine.States;
 using Services.Messenger;
 using GameDatabase;
-using GameServices;
-using GameServices.Economy;
 using GameServices.Player;
 using Services.Gui;
-using Services.Localization;
-using Services.ObjectPool;
 using Services.Resources;
-using Services.Unity;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Zenject;
 using IShip = Combat.Component.Ship.IShip;
-using Services.GameApplication;
 
 namespace Combat.Manager
 {
@@ -51,21 +44,14 @@ namespace Combat.Manager
         }
 
         [Inject] private readonly IScene _scene;
-        [Inject] private readonly IObjectPool _objectPool;
-        [Inject] private readonly IAiManager _aiManager;
         [Inject] private readonly IDatabase _database;
         [Inject] private readonly IResourceLocator _resourceLocator;
         [Inject] private readonly Gui.Combat.ShipControlsPanel _shipControlsPanel;
         [Inject] private readonly ShipFactory _shipFactory;
+        [Inject] private readonly ControllerFactory _controllerFactory;
         [Inject] private readonly SpaceObjectFactory _spaceObjectFactory;
         [Inject] private readonly EffectFactory _effectFactory;
         [Inject] private readonly IGuiManager _guiManager;
-        [Inject] private readonly IApplication _application;
-        [Inject] private readonly ICoroutineManager _coroutineManager;
-        [Inject] private readonly IKeyboard _keyboard;
-        [Inject] private readonly IMouse _mouse;
-        [Inject] private readonly ILocalization _localization;
-        [Inject] private readonly LootGenerator _lootGenerator;
         [Inject] private readonly PlayerFleet _playerFleet;
         [Inject] private readonly PlayerSkills _playerSkills;
         [Inject] private readonly ExplorationData _exploration;
@@ -73,8 +59,6 @@ namespace Combat.Manager
 
         [Inject] private readonly Gui.Combat.ShipStatsPanel _playerStatsPanel;
         [Inject] private readonly Gui.Combat.ShipStatsPanel _enemyStatsPanel;
-
-        [Inject] private readonly Settings _settings;
         [Inject] private readonly Gui.Combat.RadarPanel _radarPanel;
 
         private void OnShipCreated(IShip ship)
@@ -182,8 +166,8 @@ namespace Combat.Manager
 
         private void CreatePlayerShip()
         {
+            var controllerFactory = _controllerFactory.CreateKeyboardController();
             var spec = _playerFleet.ExplorationShip.CreateBuilder().ApplyPlayerSkills(_playerSkills).Build(_database.ShipSettings);
-            var controllerFactory = new KeyboardController.Factory(_keyboard, _mouse);
             var ship = _shipFactory.CreateShip(spec, controllerFactory, UnitSide.Player, Vector2.zero, new System.Random().Next(360));
 
             _shipControlsPanel.Load(ship);
