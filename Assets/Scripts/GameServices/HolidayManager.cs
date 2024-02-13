@@ -4,6 +4,7 @@ using GameServices;
 using Domain.Quests;
 using Services.InternetTime;
 using Session;
+using CommonComponents;
 
 namespace Game
 {
@@ -77,9 +78,10 @@ namespace Game
 
         protected override void OnSessionCreated()
         {
-            if (IsEaster) _questManager.StartQuest(_database.SpecialEventSettings.EasterQuest);
-            if (IsChristmas) _questManager.StartQuest(_database.SpecialEventSettings.XmasQuest);
-            if (IsHalloween) _questManager.StartQuest(_database.SpecialEventSettings.HalloweenQuest);
+            var random = RandomState.FromTickCount();
+            if (IsEaster) _questManager.StartQuest(_database.SpecialEventSettings.EasterQuest, random.Next());
+            if (IsChristmas) _questManager.StartQuest(_database.SpecialEventSettings.XmasQuest, random.Next());
+            if (IsHalloween) _questManager.StartQuest(_database.SpecialEventSettings.HalloweenQuest, random.Next());
         }
 
         private static bool IsValidDate(DateTime eventDate, DateTime now, int daysBefore, int daysAfter)

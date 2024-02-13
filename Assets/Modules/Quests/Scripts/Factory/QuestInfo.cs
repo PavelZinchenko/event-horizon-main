@@ -4,9 +4,16 @@ namespace Domain.Quests
 {
     public class QuestInfo
     {
+        public QuestModel QuestModel { get; }
+        public int QuestId => QuestModel != null ? QuestModel.Id.Value : 0;
+        public Faction Faction { get; }
+        public int StarId { get; }
+        public int Level { get; }
+        public int Seed { get; }
+
         public QuestInfo(QuestModel questModel, IStarDataProvider star, int seed)
         {
-            QuestId = questModel.Id.Value;
+            QuestModel = questModel;
             StarId = star.Id;
             Level = questModel.Level > 0 ? questModel.Level : star.Level;
             Faction = star.Region.Faction;
@@ -20,11 +27,5 @@ namespace Domain.Quests
             Level = 0;
             Faction = Faction.Empty;
         }
-
-        public readonly int QuestId;
-        public readonly int StarId;
-        public readonly int Level;
-        public readonly Faction Faction;
-        public readonly int Seed;
     }
 }

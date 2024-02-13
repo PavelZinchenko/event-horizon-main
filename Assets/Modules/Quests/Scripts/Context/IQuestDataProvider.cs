@@ -14,6 +14,7 @@ namespace Domain.Quests
         long LastCompletionTime(int id);
         long QuestStartTime(int id, int starId);
         int TotalQuestCount();
+        int GenerateSeed(QuestModel quest, int starId);
         IEnumerable<QuestProgress> GetActiveQuests();
     }
 

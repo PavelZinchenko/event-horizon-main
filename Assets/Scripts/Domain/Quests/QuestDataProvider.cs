@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Services.InternetTime;
+using GameDatabase.DataModel;
 
 namespace Domain.Quests
 {
@@ -9,6 +10,7 @@ namespace Domain.Quests
     {
         private readonly ISessionData _session;
         private readonly GameTime _gameTime;
+        private readonly CommonComponents.PcgRandom _random = new();
 
         public QuestDataProvider(ISessionData session, GameTime gameTime)
         {
@@ -34,5 +36,16 @@ namespace Domain.Quests
         public void SetQuestFailed(int questId, int starId) => 
             _session.Quests.SetQuestCompleted(questId, starId, false, _gameTime.TotalPlayTime);
         public void SetQuestCancelled(int questId, int starId) => _session.Quests.CancelQuest(questId, starId);
+
+        public int GenerateSeed(QuestModel quest, int starId)
+        {
+            if (quest.UseRandomSeed) return _random.Next();
+
+            var id = quest.Id.Value;
+            var statistics = _session.Quests.GetQuestStatistics(id);
+            var totalStartCount = _session.Quests.GetQuestProgress(id).Count() + statistics.CompletionCount + statistics.FailureCount;
+            var seed = _session.Game.Seed + (id + starId + 1)*(totalStartCount + 1);
+            return seed;
+        }
     }
 }

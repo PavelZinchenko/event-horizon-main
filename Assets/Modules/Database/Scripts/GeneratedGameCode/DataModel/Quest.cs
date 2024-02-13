@@ -37,6 +37,7 @@ namespace GameDatabase.DataModel
 			Origin = QuestOrigin.Create(serializable.Origin, loader);
 			Requirement = Requirement.Create(serializable.Requirement, loader);
 			Level = UnityEngine.Mathf.Clamp(serializable.Level, 0, 1000);
+			UseRandomSeed = serializable.UseRandomSeed;
 			Nodes = new ImmutableCollection<Node>(serializable.Nodes?.Select(item => Node.Create(item, loader)));
 
 			OnDataDeserialized(serializable, loader);
@@ -51,6 +52,7 @@ namespace GameDatabase.DataModel
 		public QuestOrigin Origin { get; private set; }
 		public Requirement Requirement { get; private set; }
 		public int Level { get; private set; }
+		public bool UseRandomSeed { get; private set; }
 		public ImmutableCollection<Node> Nodes { get; private set; }
 
 		public static QuestModel DefaultValue { get; private set; }

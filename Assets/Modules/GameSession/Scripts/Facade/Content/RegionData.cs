@@ -42,7 +42,6 @@ namespace Session.Content
 		}
 
 		public void SetRegionFactionId(int regionId, ItemId<Faction> factionId) => _data.Regions.Factions.SetValue(regionId, factionId.Value);
-		//public int GetDefeatedFleetCount(int regionId) => _data.Regions.DefeatedFleetCount.TryGetValue(regionId, out var value) && value > 0 ? value : 0;
 		public bool IsRegionCaptured(int regionId) => _data.Regions.CapturedBases.Get((uint)regionId);
 
 		public void Reset()
@@ -62,12 +61,6 @@ namespace Session.Content
 
         public void SetRegionCaptured(int regionId, bool caputured) => _data.Regions.CapturedBases.Set((uint)regionId, caputured);
 		public IEnumerable<int> DiscoveredRegions => _data.Regions.MilitaryPower.Keys;
-
-		//public void SetDefeatedFleetCount(int regionId, int count)
-		//{
-		//	if (_data.Regions.DefeatedFleetCount.TryGetValue(regionId, out var value) && value < 0) return;
-		//	_data.Regions.DefeatedFleetCount.SetValue(regionId, count > 0 ? count : 0);
-		//}
 
         public void SetStarbaseDefensePower(int regionId, uint power) => _data.Regions.MilitaryPower.SetValue(regionId, power);
         public bool TryGetStarbaseDefensePower(int regionId, out uint power) => _data.Regions.MilitaryPower.TryGetValue(regionId, out power);

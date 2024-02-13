@@ -5,7 +5,6 @@ using Economy.ItemType;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Extensions;
-using Zenject;
 
 namespace Domain.Quests
 {
@@ -57,7 +56,7 @@ namespace Domain.Quests
             _database = database;
             _loot = loot;
             _questInfo = questInfo;
-            _random = new Random(questInfo.Seed);
+            _random = new Random(questInfo.Seed + loot.Id.Value);
         }
 
         public bool CanBeRemoved

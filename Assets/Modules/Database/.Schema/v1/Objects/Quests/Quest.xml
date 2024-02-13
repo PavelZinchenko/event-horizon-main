@@ -7,5 +7,6 @@
     <member name="Origin" type="struct" typeid="QuestOrigin" />
     <member name="Requirement" type="struct" typeid="Requirement" />
     <member name="Level" type="int" minvalue="0" maxvalue="1000" />
+    <member name="UseRandomSeed" type="bool" />
     <member name="Nodes" type="struct_list" typeid="Node" />
 </data>

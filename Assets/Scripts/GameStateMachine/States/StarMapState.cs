@@ -260,9 +260,9 @@ namespace GameStateMachine.States
             region.BaseDefensePower = additive ? region.BaseDefensePower + value : value;
         }
 
-        public void StartQuest(QuestModel quest)
+        public void StartQuest(QuestModel quest, int seed)
         {
-            _questManager.StartQuest(quest);
+            _questManager.StartQuest(quest, seed);
         }
 
         public void OpenShipyard(Faction faction, int level)

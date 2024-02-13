@@ -112,12 +112,12 @@ namespace Domain.Quests
 				Add(_factory.Create(item));
 
 	        var starId = _context.StarMapDataProvider.CurrentStar.Id;
-	        var seed = _context.GameDataProvider.GameSeed;
 
             foreach (var questData in _database.QuestList)
                 if (questData.StartCondition == StartCondition.GameStart && questData.CanBeStarted(_context.QuestDataStorage, starId))
-	                Add(_factory.Create(questData, starId, seed + questData.Id.Value));
+	                Add(_factory.Create(questData, starId));
 
+            var seed = _context.GameDataProvider.GameSeed;
             _beaconQuests.Assign(_database.QuestList.Where(item => item.StartCondition == StartCondition.Beacon), _requirementsFactory, seed);
 	        _localEncounterQuests.Assign(_database.QuestList.Where(item => item.StartCondition == StartCondition.LocalEncounter), _requirementsFactory, seed);
 	        _arrivedAtStarQuests.Assign(_database.QuestList.Where(item => item.StartCondition == StartCondition.ArrivedAtStar), _requirementsFactory, seed);
@@ -126,12 +126,12 @@ namespace Domain.Quests
 			_dailyQuests.Assign(_database.QuestList.Where(item => item.StartCondition == StartCondition.Daily), _requirementsFactory, seed);
         }
 
-	    public void StartQuest(QuestModel questModel)
+	    public void StartQuest(QuestModel questModel, int seedIncrement = 0)
 	    {
             if (questModel == null) return;
 
 	        var starId = _context.StarMapDataProvider.CurrentStar.Id;
-	        var seed = _context.GameDataProvider.GameSeed + starId;
+            var seed = _context.QuestDataStorage.GenerateSeed(questModel, starId) + seedIncrement;
 
 	        if (questModel.StartCondition != StartCondition.Manual)
 	        {
@@ -151,7 +151,7 @@ namespace Domain.Quests
 	            return;
 	        }
 
-            Add(_factory.Create(questModel, starId, seed));
+            Add(_factory.Create(questModel, starId, seedIncrement));
 	    }
 
         private void Add(Quest quest)
@@ -248,7 +248,8 @@ namespace Domain.Quests
                     _context.QuestDataStorage.SetQuestFailed(quest.Id, quest.StarId);
                     break;
                 case QuestStatus.Cancelled:
-	                _context.QuestDataStorage.SetQuestCancelled(quest.Id, quest.StarId);
+                case QuestStatus.InProgress:
+                    _context.QuestDataStorage.SetQuestCancelled(quest.Id, quest.StarId);
 	                break;
                 case QuestStatus.Error:
                 default:

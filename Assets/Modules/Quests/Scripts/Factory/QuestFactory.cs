@@ -23,8 +23,9 @@ namespace Domain.Quests
             return builder.Build(progress.ActiveNode);
         }
 
-        public Quest Create(QuestModel data, int starId, int seed)
+        public Quest Create(QuestModel data, int starId, int seedIncrement = 0)
         {
+            var seed = _questBuilderContext.QuestDataProvider.GenerateSeed(data, starId) + seedIncrement;
             var builder = new QuestBuilder(data, starId, seed, _questBuilderContext);
             return builder.Build();
         }

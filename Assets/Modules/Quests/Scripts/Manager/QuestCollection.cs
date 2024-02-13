@@ -7,13 +7,13 @@ namespace Domain.Quests
 {
     internal class QuestCollection
     {
-        public void Assign(IEnumerable<QuestModel> quests, RequirementsFactory factory, int seed)
+        public void Assign(IEnumerable<QuestModel> quests, RequirementsFactory factory, int requirementsSeed)
         {
             _quests.Clear();
             _quests.AddRange(quests.Select(item => new QuestInfo
             {
 				QuestGiver = factory.CreateQuestGiver(item.Origin),
-                Requirements = factory.CreateForQuest(item.Requirement, seed + item.Id.Value), 
+                Requirements = factory.CreateForQuest(item.Requirement, requirementsSeed + item.Id.Value), 
                 Quest = item
             }));
         }

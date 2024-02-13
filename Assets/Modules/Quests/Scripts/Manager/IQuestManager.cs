@@ -10,6 +10,6 @@ namespace Domain.Quests
         IEnumerable<IQuest> Quests { get; }
         bool IsQuestObjective(int starId);
         void AbandonQuest(IQuest quest);
-        void StartQuest(QuestModel questModel);
+        void StartQuest(QuestModel questModel, int seedIncrement = 0);
     }
 }

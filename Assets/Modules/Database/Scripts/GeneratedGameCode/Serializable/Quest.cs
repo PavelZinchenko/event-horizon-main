@@ -22,6 +22,7 @@ namespace GameDatabase.Serializable
 		public QuestOriginSerializable Origin;
 		public RequirementSerializable Requirement;
 		public int Level;
+		public bool UseRandomSeed;
 		public NodeSerializable[] Nodes;
 	}
 }
