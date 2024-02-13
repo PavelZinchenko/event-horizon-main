@@ -120,7 +120,7 @@ namespace Combat.Component.Body
                 return;
 
             Position += Velocity * elapsedTime;
-            Rotation += AngularVelocity * elapsedTime * Mathf.Rad2Deg;
+            Rotation += AngularVelocity * elapsedTime;
 		}
 
 		public void UpdateView(float elapsedTime) 
