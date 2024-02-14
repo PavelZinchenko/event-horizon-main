@@ -124,6 +124,7 @@ namespace GameDatabase
             }
             catch (Exception e)
             {
+                GameDiagnostics.Trace.LogException(e);
                 GameDiagnostics.Trace.LogError("Database.TryLoad() Error: " + e.Message);
                 error = e.Message;
                 return false;
