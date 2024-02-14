@@ -9,7 +9,7 @@ namespace Session
 		private const uint _header = 0x5AFE5AFE;
 		private const uint _eofMarker = 0xDEADC0DE;
 		private const int _formatMin = 1;
-		private const int _format = 2;
+		private const int _format = 1;
 
 		private readonly ContentFactoryObsolete _contentFactoryObsolete;
 
@@ -69,15 +69,13 @@ namespace Session
 				return false;
 			}
 
-			bool checkEof = format > 1;
-
 			var version = reader.ReadInt();
 			var versionMinor = version & 0xffff;
 			var versionMajor = version >> 16;
 
 			content = new SessionLoader().Load(new SessionDataReader(reader), versionMajor, versionMinor);
 
-			if (checkEof && reader.ReadUint() != _eofMarker)
+			if (reader.ReadUint() != _eofMarker)
 			{
 				GameDiagnostics.Trace.LogError($"{nameof(SessionSerializer)}: EoF marker was not found");
 				return false;
