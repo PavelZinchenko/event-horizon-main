@@ -26,9 +26,9 @@ namespace Combat.Component.Triggers
             _effect.Life -= elapsedTime/_lifetime;
             _effect.Rotation = _body.WorldRotation();
 
-            var position = _body.WorldPosition() + _body.WorldVelocity()*elapsedTime;
+            var position = _body.VisualWorldPosition() + _body.WorldVelocity()*elapsedTime;
             if (_position != Vector2.zero)
-                position += RotationHelpers.Transform(_position, _body.WorldRotation())*_body.WorldScale();
+                position += RotationHelpers.Transform(_position, _body.VisualWorldRotation())*_body.WorldScale();
 
             _effect.Position = position;
 

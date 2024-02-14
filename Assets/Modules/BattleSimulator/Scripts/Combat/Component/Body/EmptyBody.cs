@@ -21,10 +21,12 @@ namespace Combat.Component.Body
         public Vector2 Position { get; private set; }
         public float Rotation { get; private set; }
         public float Offset { get; private set; }
-        public Vector2 Velocity { get { return Vector2.zero; } }
-        public float AngularVelocity { get { return 0f; } }
+        public Vector2 Velocity => Vector2.zero;
+        public float AngularVelocity => 0f;
         public float Weight { get; private set; }
         public float Scale { get; private set; }
+        public Vector2 VisualPosition => Position;
+        public float VisualRotation => Rotation;
 
         public void Move(Vector2 position)
         {

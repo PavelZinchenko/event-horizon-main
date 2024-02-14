@@ -38,6 +38,9 @@ namespace Combat.Component.Body
             }
         }
 
+        public Vector2 VisualPosition => _viewPosition;
+        public float VisualRotation => _viewRotation;
+
         public Vector2 Position
         {
 			get { return _cachedPosition; }
@@ -152,12 +155,14 @@ namespace Combat.Component.Body
             }
 
             _cachedVelocity = velocity;
+            _cachedPosition = _rigidbody.position;
+            _cachedRotation = _rigidbody.rotation;
         }
 
         public void UpdateView(float elapsedTime)
         {
-            _cachedPosition = transform.localPosition;
-            _cachedRotation = transform.localEulerAngles.z;
+            _viewPosition = transform.localPosition;
+            _viewRotation = transform.localEulerAngles.z;
         }
 
         public void AddChild(Transform child)
@@ -170,18 +175,11 @@ namespace Combat.Component.Body
             _rigidbody = GetComponent<Rigidbody2D>();
         }
 
-        //private void Update()
-        //{
-        //    if (Parent == null)
-        //        return;
-
-        //    transform.localPosition = this.WorldPosition();
-        //    transform.localEulerAngles = new Vector3(0,0,this.WorldRotation());
-        //}
-
-        private Rigidbody2D _rigidbody;
+        private Vector2 _viewPosition;
+        private float _viewRotation;
         private Vector2 _cachedPosition;
         private float _cachedRotation;
+        private Rigidbody2D _rigidbody;
         private Vector2 _cachedVelocity;
         private float _scale;
         private IBody _parent;

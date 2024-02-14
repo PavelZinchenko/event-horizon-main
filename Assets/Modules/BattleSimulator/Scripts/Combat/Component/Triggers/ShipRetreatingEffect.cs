@@ -22,7 +22,7 @@ namespace Combat.Component.Triggers
         {
             _elapsedTime += elapsedTime;
             _effect.Life = 0.5f + 0.25f*Mathf.Sin(_elapsedTime);
-            _effect.Position = _unit.Body.WorldPosition();
+            _effect.Position = _unit.Body.VisualWorldPosition();
             return true;
         }
 

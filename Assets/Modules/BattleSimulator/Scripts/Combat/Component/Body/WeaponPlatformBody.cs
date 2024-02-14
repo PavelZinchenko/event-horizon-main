@@ -20,14 +20,17 @@ namespace Combat.Component.Platform
             return body;
         }
 
-        public IBody Parent { get { return _parent.Body; } }
-        public Vector2 Position { get { return _position; } }
-        public float Rotation { get { return _rotation; } }
-        public float Offset { get { return _offset; } }
-        public Vector2 Velocity { get { return Vector2.zero; } }
-        public float AngularVelocity { get { return 0f; } }
-        public float Weight { get { return 0.0f; } }
-        public float Scale { get { return _scale; } }
+        public IBody Parent => _parent.Body;
+        public Vector2 Position => _position;
+        public float Rotation => _rotation;
+        public float Offset => _offset;
+        public Vector2 Velocity => Vector2.zero;
+        public float AngularVelocity => 0f;
+        public float Weight => 0.0f;
+        public float Scale => _scale;
+        public Vector2 VisualPosition => _position;
+        public float VisualRotation => _rotation;
+
 
         public void Move(Vector2 position) {}
         public void Turn(float rotation) {}
@@ -47,8 +50,8 @@ namespace Combat.Component.Platform
             Destroy(gameObject);
         }
 
-        public float FixedRotation { get { return Parent.WorldRotation() + _initialRotation; } }
-        public float AutoAimingAngle { get { return _maxAngle; } }
+        public float FixedRotation => Parent.WorldRotation() + _initialRotation;
+        public float AutoAimingAngle => _maxAngle;
 
         public void UpdatePhysics(float elapsedTime)
         {
@@ -76,7 +79,7 @@ namespace Combat.Component.Platform
 			} 
 		}
 
-		public void Aim(float bulletVelocity, float weaponRange, bool relative)
+        public void Aim(float bulletVelocity, float weaponRange, bool relative)
         {
             _bulletVelocity = bulletVelocity;
             _weaponRange = weaponRange;

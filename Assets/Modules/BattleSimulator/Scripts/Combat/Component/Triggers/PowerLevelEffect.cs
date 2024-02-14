@@ -28,8 +28,8 @@ namespace Combat.Component.Triggers
             _effect.Life = _effect.Life < life ? life : Mathf.MoveTowards(_effect.Life, life, elapsedTime / _lifetime);
 
             var body = _weapon.Platform.Body;
-            _effect.Rotation = body.WorldRotation();
-            var position = body.WorldPosition() + RotationHelpers.Transform(_position, body.WorldRotation()) * body.WorldScale();
+            _effect.Rotation = body.VisualWorldRotation();
+            var position = body.VisualWorldPosition() + RotationHelpers.Transform(_position, body.VisualWorldRotation()) * body.WorldScale();
 
             _effect.Position = position;
 

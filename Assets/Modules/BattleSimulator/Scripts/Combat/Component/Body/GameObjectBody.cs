@@ -45,7 +45,10 @@ namespace Combat.Component.Body
             }
         }
 
-		public Vector2 Position
+        public Vector2 VisualPosition => _viewPosition;
+        public float VisualRotation => _viewRotation;
+
+        public Vector2 Position
 		{
 			get { return _position; }
 			set
@@ -86,7 +89,7 @@ namespace Combat.Component.Body
             }
         }
 
-		public void ApplyAcceleration(Vector2 acceleration) => Velocity += acceleration;
+        public void ApplyAcceleration(Vector2 acceleration) => Velocity += acceleration;
 		public void ApplyAngularAcceleration(float acceleration) => AngularVelocity += acceleration;
 
         public void ApplyForce(Vector2 position, Vector2 force)
@@ -130,9 +133,10 @@ namespace Combat.Component.Body
 			if (!this || !transform) return;
 
 			var deltaTime = (float)(Time.timeAsDouble - Time.fixedTimeAsDouble);
-			transform.localEulerAngles = new Vector3(0, 0, Mathf.Repeat(_rotation + AngularVelocity*deltaTime, 360));
-			var position = _position + Velocity * deltaTime;
-			gameObject.Move(Parent == null ? position : Parent.ChildPosition(position));
+            _viewRotation = _rotation + AngularVelocity*deltaTime;
+			transform.localEulerAngles = new Vector3(0, 0, Mathf.Repeat(_viewRotation, 360));
+			_viewPosition = _position + Velocity * deltaTime;
+			gameObject.Move(Parent == null ? _viewPosition : Parent.ChildPosition(_viewPosition));
 		}
 
 		public void AddChild(Transform child)
@@ -158,6 +162,8 @@ namespace Combat.Component.Body
 
         private Vector2 _position;
         private float _rotation;
+        private Vector2 _viewPosition;
+        private float _viewRotation;
         private float _scale;
         private IBody _parent;
     }

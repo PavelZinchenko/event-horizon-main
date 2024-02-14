@@ -17,6 +17,9 @@ namespace Combat.Component.Body
         float Weight { get; }
         float Scale { get; }
 
+        Vector2 VisualPosition { get; }
+        float VisualRotation { get; }
+
         void Move(Vector2 position);
         void Turn(float rotation);
         void SetSize(float size);
@@ -43,6 +46,16 @@ namespace Combat.Component.Body
             return body.Parent.WorldPosition() + RotationHelpers.Transform(position, body.Parent.WorldRotation())*body.Parent.WorldScale();
         }
 
+        public static Vector2 VisualWorldPosition(this IBody body)
+        {
+            var position = body.VisualPosition + RotationHelpers.Direction(body.VisualRotation) * body.Offset;
+
+            if (body.Parent == null)
+                return position;
+
+            return body.Parent.VisualWorldPosition() + RotationHelpers.Transform(position, body.Parent.VisualWorldRotation()) * body.Parent.WorldScale();
+        }
+
         public static Vector2 ChildPosition(this IBody body, Vector2 position)
         {
             return new Vector2(body.Offset/body.Scale + position.x, position.y);
@@ -64,6 +77,14 @@ namespace Combat.Component.Body
                 return body.Rotation;
 
             return body.Rotation + body.Parent.WorldRotation();
+        }
+
+        public static float VisualWorldRotation(this IBody body)
+        {
+            if (body.Parent == null)
+                return body.VisualRotation;
+
+            return body.VisualRotation + body.Parent.VisualWorldRotation();
         }
 
         public static Vector2 WorldVelocity(this IBody body)

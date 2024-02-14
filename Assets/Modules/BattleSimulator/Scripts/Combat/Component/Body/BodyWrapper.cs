@@ -11,14 +11,17 @@ namespace Combat.Component.Bullet.Action
         }
 
         public void Dispose() { }
-        public IBody Parent { get { return _body.Parent; } }
-        public Vector2 Position { get { return _body.Position; } }
-        public float Rotation { get { return _body.Rotation + _rotation; } }
-        public float Offset { get { return _body.Offset; } }
-        public Vector2 Velocity { get { return _body.Velocity; } }
-        public float AngularVelocity { get { return _body.AngularVelocity; } }
-        public float Weight { get { return _body.Weight; } }
-        public float Scale { get { return _body.Scale; } }
+        public IBody Parent => _body.Parent;
+        public Vector2 Position => _body.Position;
+        public float Rotation => _body.Rotation + _rotation;
+        public float Offset => _body.Offset;
+        public Vector2 Velocity => _body.Velocity;
+        public float AngularVelocity => _body.AngularVelocity;
+        public float Weight => _body.Weight;
+        public float Scale => _body.Scale;
+        public Vector2 VisualPosition => _body.VisualPosition;
+        public float VisualRotation => _body.VisualRotation;
+
         public void Move(Vector2 position) { }
         public void Turn(float rotation) { _rotation = rotation; }
         public void SetSize(float size) { }
