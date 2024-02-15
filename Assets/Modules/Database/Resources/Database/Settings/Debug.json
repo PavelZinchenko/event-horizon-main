@@ -1,3 +1,4 @@
 {
-  "ItemType": 108
+  "ItemType": 108,
+  "EnableDebugConsole": true
 }
