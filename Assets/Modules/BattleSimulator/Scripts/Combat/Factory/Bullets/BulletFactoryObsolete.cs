@@ -297,7 +297,7 @@ namespace Combat.Factory
                 stats.Range = _bulletStats.AreaOfEffect;
                 var factory = new BulletFactoryObsolete(stats, _scene, _soundPlayer, _objectPool, _prefabCache, _spaceObjectFactory, _effectFactory, _owner);
                 factory.Stats.RandomFactor = 0.75f;
-                bullet.AddAction(new SpawnBulletsAction(factory, 20, SimpleBulletSpawnSettings.FromFloatOffset(0.5f), bullet, _soundPlayer, AudioClipId.None, explodeCondition));
+                bullet.AddAction(new SpawnBulletsAction(factory, 20, RandomRotationSpawnSettings.Instance, bullet, _soundPlayer, AudioClipId.None, explodeCondition));
             }
             if (_stats.AmmunitionClass.EmpIfDetonated())
             {

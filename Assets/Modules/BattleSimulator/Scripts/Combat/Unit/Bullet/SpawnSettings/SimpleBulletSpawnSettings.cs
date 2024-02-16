@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Combat.Component.Bullet.SpawnSettings
 {
-    public readonly struct SimpleBulletSpawnSettings : IBulletSpawnSettings
+    public class SimpleBulletSpawnSettings : IBulletSpawnSettings
     {
         public SimpleBulletSpawnSettings(Vector2 offset, float rotation)
         {
