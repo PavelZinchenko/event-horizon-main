@@ -290,7 +290,8 @@ namespace Domain.Quests
             if (data.Type == QuestEventType.FactionMissionAccepted)
 	        {
 	            var eventData = (StarEventData)data;
-	            var seed = _context.GameDataProvider.GameSeed + eventData.StarId + _context.StarMapDataProvider.GetStarData(eventData.StarId).Region.Relations;
+	            var seed = _context.GameDataProvider.GameSeed + eventData.StarId + _context.QuestDataStorage.TotalQuestCount() +
+                    _context.StarMapDataProvider.GetStarData(eventData.StarId).Region.Relations;
                 _factionQuests.UpdateQuests(eventData.StarId, seed, time, _context);
                 Add(_factionQuests.CreateRandomWeighted(_factory, seed));
                 return;
