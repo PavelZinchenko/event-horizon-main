@@ -251,17 +251,23 @@ namespace Constructor.Component
                 {
                     case ImpactEffectType.Damage:
                     case ImpactEffectType.SiphonHitPoints:
+                    case ImpactEffectType.Devour:
+                        impactDamage.Add(effect.Power * powerMultiplier, effect.DamageType);
+                        break;
+                    case ImpactEffectType.Repair:
+                        impactDamage.Repair += effect.Power * powerMultiplier;
+                        impactDamage.Add(effect.Power * effect.Factor * powerMultiplier, effect.DamageType);
+                        break;
+                    case ImpactEffectType.DrainShield:
+                        impactDamage.Shield += effect.Power * powerMultiplier;
                         break;
                     case ImpactEffectType.DrainEnergy:
                     case ImpactEffectType.SlowDown:
                     case ImpactEffectType.CaptureDrones:
-                    case ImpactEffectType.Repair:
                     case ImpactEffectType.RestoreLifetime:
                     default:
-                        continue;
+                        break;
                 }
-
-                impactDamage.Add(effect.Power * powerMultiplier, effect.DamageType);
             }
 
             switch (ammunition.ImpactType)
@@ -290,17 +296,22 @@ namespace Constructor.Component
                     case ImpactEffectType.Damage:
                     case ImpactEffectType.SiphonHitPoints:
                     case ImpactEffectType.Devour:
+                        impactDamage.Add(effect.Power * powerMultiplier, effect.DamageType);
+                        break;
+                    case ImpactEffectType.Repair:
+                        impactDamage.Repair += effect.Power * powerMultiplier;
+                        impactDamage.Add(effect.Power * effect.Factor * powerMultiplier, effect.DamageType);
+                        break;
+                    case ImpactEffectType.DrainShield:
+                        impactDamage.Shield += effect.Power * powerMultiplier;
                         break;
                     case ImpactEffectType.DrainEnergy:
                     case ImpactEffectType.SlowDown:
                     case ImpactEffectType.CaptureDrones:
-                    case ImpactEffectType.Repair:
                     case ImpactEffectType.RestoreLifetime:
                     default:
-                        continue;
+                        break;
                 }
-
-                impactDamage.Add(effect.Power * powerMultiplier, effect.DamageType);
             }
 
             switch (ammunition.ImpactType)
@@ -346,11 +357,14 @@ namespace Constructor.Component
 
             public static DamageInfo operator+(DamageInfo first, DamageInfo second)
             {
-                return new DamageInfo { 
-                    Kinetic = first.Kinetic + second.Kinetic, 
+                return new DamageInfo {
+                    Kinetic = first.Kinetic + second.Kinetic,
                     Energy = first.Energy + second.Energy,
                     Heat = first.Heat + second.Heat,
-                    Direct = first.Direct + second.Direct };
+                    Direct = first.Direct + second.Direct,
+                    Repair = first.Repair + second.Repair,
+                    Shield = first.Shield + second.Shield,
+                };
             }
 
             public static DamageInfo operator *(DamageInfo first, float second)
@@ -360,16 +374,20 @@ namespace Constructor.Component
                     Kinetic = first.Kinetic * second,
                     Energy = first.Energy * second,
                     Heat = first.Heat * second,
-                    Direct = first.Direct * second
+                    Direct = first.Direct * second,
+                    Repair = first.Repair * second,
+                    Shield = first.Shield * second,
                 };
             }
 
-            public bool Any => Kinetic > 0 || Heat > 0 || Energy > 0 || Direct > 0;
+            public bool Any => Kinetic > 0 || Heat > 0 || Energy > 0 || Direct > 0 || Shield > 0 || Repair > 0;
 
             public float Kinetic;
             public float Heat;
             public float Energy;
             public float Direct;
+            public float Repair;
+            public float Shield;
         }
 
         public struct WeaponInfo 
