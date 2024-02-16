@@ -17,6 +17,7 @@ using Gui.Combat;
 using Maths;
 using Zenject;
 using GameDatabase.Enums;
+using GameDatabase.Extensions;
 
 namespace Combat.Manager
 {
@@ -261,8 +262,7 @@ namespace Combat.Manager
                         UnityEngine.Debug.Log("No more ships");
                         Exit();
                     }
-                    else if (_combatModel.Rules.ShipSelection == PlayerShipSelectionMode.Default || 
-                        _combatModel.Rules.ShipSelection == PlayerShipSelectionMode.NoRetreats)
+                    else if (_combatModel.Rules.ShipSelection.CanChooseShip())
                     {
                         _shipSelectionPanel.Open(_combatModel);
                     }
