@@ -37,7 +37,7 @@ namespace Galaxy.StarContent
 			builder.EnemyFleet = defenderFleet;
             builder.Rules = _database.GalaxySettings.StarbaseCombatRules ?? _database.CombatSettings.DefaultCombatRules;
 			builder.AddSpecialReward(_lootGenerator.GetStarBaseSpecialReward(region));
-            builder.StarLevel = region.BaseDefendersLevel;
+            builder.StarLevel = region.HomeStarLevel;
 
 			return builder.Build();
 		}

@@ -12,7 +12,8 @@ namespace Domain.Quests
     {
         public IEnumerable<ShipBuild> EnemyFleet;
         public CombatRules Rules;
-        public int Level;
+        public int StarLevel;
+        public int EnemyLevel;
         public int Seed;
     }
 
@@ -27,24 +28,27 @@ namespace Domain.Quests
 
         public QuestEnemyData CreateCombatPlan(Fleet enemy, QuestInfo questInfo)
         {
-            var level = Math.Max(0, questInfo.Level + enemy.LevelBonus);
+            var enemyLevel = Math.Max(0, questInfo.Level + enemy.LevelBonus);
 
             return new QuestEnemyData
             {
-                EnemyFleet = CreateFleet(enemy, questInfo.Faction, level, questInfo.Seed),
+                EnemyFleet = CreateFleet(enemy, questInfo.Faction, enemyLevel, questInfo.Seed),
                 Rules = enemy.CombatRules,
-                Level = level,
+                StarLevel = questInfo.Level,
+                EnemyLevel = enemyLevel,
                 Seed = questInfo.Seed
             };
         }
 
         public QuestEnemyData CreateCombatPlan(Fleet enemy, Faction faction, int level, int seed)
         {
+            var enemyLevel = Math.Max(0, level + enemy.LevelBonus);
             return new QuestEnemyData
             {
-                EnemyFleet = CreateFleet(enemy, faction, level, seed),
+                EnemyFleet = CreateFleet(enemy, faction, enemyLevel, seed),
                 Rules = enemy.CombatRules,
-                Level = Math.Max(0, level + enemy.LevelBonus),
+                StarLevel = level,
+                EnemyLevel = enemyLevel,
                 Seed = seed
             };
         }

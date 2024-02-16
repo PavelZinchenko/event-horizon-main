@@ -26,7 +26,7 @@ namespace Domain.Quests
 		public Model.Military.IFleet CreateEnemyFleet(QuestEnemyData enemyData)
         {
 			if (enemyData.EnemyFleet == null) return null;
-			return new Model.Military.QuestFleet(_database, enemyData.EnemyFleet, enemyData.Level, enemyData.Seed);
+			return new Model.Military.QuestFleet(_database, enemyData.EnemyFleet, enemyData.EnemyLevel, enemyData.Seed);
 		}
 
         public ICombatModel CreateCombatModel(QuestEnemyData enemyData, ILoot specialLoot)
@@ -35,7 +35,7 @@ namespace Domain.Quests
 			builder.EnemyFleet = CreateEnemyFleet(enemyData);
 			builder.PlayerFleet = Model.Factories.Fleet.Player(_playerFleet, _database);
 			builder.Rules = enemyData.Rules ?? _database.CombatSettings.DefaultCombatRules;
-            builder.StarLevel = enemyData.Level;
+            builder.StarLevel = enemyData.StarLevel;
 
 			var loot = specialLoot?.Items.Select(item => CommonProduct.Create(item.Type, item.Quantity));
 
