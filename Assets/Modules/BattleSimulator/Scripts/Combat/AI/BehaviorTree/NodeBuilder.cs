@@ -180,7 +180,7 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_UseRecoil content) => RecoilNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_DefendWithFronalShield content) => FrontalShieldNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_TrackControllableAmmo content) => TrackControllableAmmo.Create(Ship, true);
-			public INode Create(BehaviorTreeNode_DroneBayRangeExceeded content) => new DroneBayRangeExceeded(Settings.DroneRange);
+			public INode Create(BehaviorTreeNode_DroneBayRangeExceeded content) => DroneBayRangeExceeded.Create(Settings.DroneRange);
 			public INode Create(BehaviorTreeNode_IsFasterThanTarget content) => new IsFaterThanTarget(1.0f);
 			public INode Create(BehaviorTreeNode_MatchVelocityWithTarget content) => new MatchVelocityNode(content.Tolerance);
 			public INode Create(BehaviorTreeNode_KeepDistance content) => new KeepDistanceNode(content.MinDistance, content.MaxDistance);
