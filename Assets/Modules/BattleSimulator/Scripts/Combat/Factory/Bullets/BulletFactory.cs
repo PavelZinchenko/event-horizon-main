@@ -274,27 +274,9 @@ namespace Combat.Factory
             return factory;
         }
 
-		private Cooldown GetSpawnBulletCooldown(BulletTrigger_SpawnBullet trigget)
-        {
-            // When the Cooldown condition is used, the user likely wants for trigger to activate
-            // consistently every `Cooldown` seconds, and the shared SpawnBullet cooldown will likely mess
-            // with that. Additionally, there are possible floating point issues when trying to synchronize
-            // two independent timers 
-            if (trigget.Condition == BulletTriggerCondition.Cooldown) return null;
-			if (_cooldownMap == null) _cooldownMap = new();
-
-			if (_cooldownMap.TryGetValue(trigget, out var cooldown))
-				return cooldown;
-
-			cooldown = new Cooldown(trigget.Cooldown);
-			_cooldownMap.Add(trigget, cooldown);
-			return cooldown;
-		}
-
 		private BulletShape BulletShape => _ammunition.Body.BulletPrefab == null ? BulletShape.Mine : _ammunition.Body.BulletPrefab.Shape;
 
 		private int _nestingLevel;
-		private Dictionary<BulletTrigger_SpawnBullet, Cooldown> _cooldownMap;
 		private readonly Lazy<GameObject> _prefab;
         private readonly BulletStats _stats;
         private readonly Ammunition _ammunition;
@@ -422,8 +404,7 @@ namespace Combat.Factory
                 // May be resolved once member access is added, and expressions can do something like
                 // IF(quantity == 1, 0, Ammunition.Body.Size * Size / 2)
                 AddAction(_bullet, trigger, new SpawnBulletsAction(factory, magazine, trigger, _bullet,
-                        factory._soundPlayer, trigger.AudioClip, _condition)
-                    .WithCooldown(_factory.GetSpawnBulletCooldown(trigger)));
+                        factory._soundPlayer, trigger.AudioClip, _condition).WithCooldown(trigger.Cooldown));
 
                 return Result.Ok;
             }

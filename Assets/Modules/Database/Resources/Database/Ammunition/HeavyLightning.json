@@ -22,8 +22,11 @@
       "EffectType": 2,
       "Ammunition": 106,
       "Quantity": 10,
+      "Size": 1.0,
       "Cooldown": 0.5,
-      "RandomFactor": 0.75
+      "RandomFactor": 0.75,
+      "Rotation": "RANDOM(0, 360)",
+      "OffsetX": "Size/2"
     }
   ],
   "ImpactType": 2,
