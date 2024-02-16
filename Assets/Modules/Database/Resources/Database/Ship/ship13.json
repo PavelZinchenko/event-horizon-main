@@ -4,6 +4,7 @@
   "ShipRarity": 1,
   "SizeClass": 3,
   "Name": "$ship_13",
+  "Faction": 1,
   "IconImage": "ship13",
   "IconScale": 1.0,
   "ModelImage": "ship13",
@@ -38,6 +39,7 @@
     "ShipWeightBonus": -0.3,
     "EquipmentWeightBonus": -0.3,
     "VelocityBonus": 0.3,
-    "TurnRateBonus": 0.3
+    "TurnRateBonus": 0.3,
+    "EnergyBonus": 1.0
   }
 }

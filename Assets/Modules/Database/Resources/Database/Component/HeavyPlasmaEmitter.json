@@ -5,6 +5,7 @@
   "DisplayCategory": 1,
   "Availability": 2,
   "ComponentStatsId": 1,
+  "Faction": 1,
   "Level": 300,
   "Icon": "cannon_1x4",
   "Color": "#FF8080",
