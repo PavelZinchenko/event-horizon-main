@@ -5,15 +5,15 @@ namespace Domain.Quests
 {
     public class FactionRequirements : IRequirements
     {
-        public FactionRequirements(Faction faction, IPlayerDataProvider playerData)
+        public FactionRequirements(Faction faction, IStarMapDataProvider starMapData)
         {
             _faction = faction;
-            _playerData = playerData;
+            _starMapData = starMapData;
         }
 
-        public bool IsMet { get { return _playerData.CurrentStar.Region.Faction == _faction; } }
+        public bool IsMet => _starMapData.CurrentStar.Region.Faction == _faction;
 
-        public bool CanStart(int starId, int seed) { return IsMet; }
+        public bool CanStart(int starId, int seed) => _starMapData.GetStarData(starId).Region.Faction == _faction;
 
         public string GetDescription(ILocalization localization)
         {
@@ -27,6 +27,6 @@ namespace Domain.Quests
         public int BeaconPosition { get { return -1; } }
 
         private readonly Faction _faction;
-        private readonly IPlayerDataProvider _playerData;
+        private readonly IStarMapDataProvider _starMapData;
     }
 }

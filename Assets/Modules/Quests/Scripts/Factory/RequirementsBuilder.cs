@@ -96,7 +96,12 @@ namespace Domain.Quests
 
         public IRequirements Create(Requirement_Faction content)
         {
-            return new FactionRequirements(content.Faction, _context.PlayerDataProvider);
+            return new FactionRequirements(content.Faction, _context.StarMapDataProvider);
+        }
+
+        public IRequirements Create(Requirement_IsHostileFaction content)
+        {
+            return new HostileFactionRequirement(_context.StarMapDataProvider);
         }
 
         public IRequirements Create(Requirement_HaveQuestItem content)

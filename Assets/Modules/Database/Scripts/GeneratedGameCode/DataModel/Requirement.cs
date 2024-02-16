@@ -52,6 +52,8 @@ namespace GameDatabase.DataModel
 					return new Requirement_StarbaseCaptured(serializable, loader);
 				case RequirementType.FactionStarbasePower:
 					return new Requirement_FactionStarbasePower(serializable, loader);
+				case RequirementType.IsHostileFaction:
+					return new Requirement_IsHostileFaction(serializable, loader);
 				case RequirementType.Faction:
 					return new Requirement_Faction(serializable, loader);
 				case RequirementType.HaveQuestItem:
@@ -101,6 +103,7 @@ namespace GameDatabase.DataModel
 	    T Create(Requirement_FactionRelations content);
 	    T Create(Requirement_StarbaseCaptured content);
 	    T Create(Requirement_FactionStarbasePower content);
+	    T Create(Requirement_IsHostileFaction content);
 	    T Create(Requirement_Faction content);
 	    T Create(Requirement_HaveQuestItem content);
 	    T Create(Requirement_HaveItem content);
@@ -390,6 +393,25 @@ namespace GameDatabase.DataModel
 
 		public int MinValue { get; private set; }
 		public int MaxValue { get; private set; }
+
+
+    }
+    public partial class Requirement_IsHostileFaction : Requirement
+    {
+		partial void OnDataDeserialized(RequirementSerializable serializable, Database.Loader loader);
+
+  		public Requirement_IsHostileFaction(RequirementSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IRequirementFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
 
 
     }

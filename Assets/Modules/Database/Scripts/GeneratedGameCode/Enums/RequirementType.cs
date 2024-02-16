@@ -23,6 +23,7 @@ namespace GameDatabase.Enums
 		FactionRelations = 16,
 		StarbaseCaptured = 17,
 		FactionStarbasePower = 18,
+		IsHostileFaction = 19,
 		Faction = 20,
 		HaveQuestItem = 25,
 		HaveItem = 26,
