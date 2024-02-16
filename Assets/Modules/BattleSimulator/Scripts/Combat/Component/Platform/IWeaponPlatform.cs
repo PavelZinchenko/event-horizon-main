@@ -1,5 +1,6 @@
 ﻿using System;
 using Combat.Component.Body;
+using Combat.Component.Systems.Weapons;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Component.View;
@@ -13,7 +14,8 @@ namespace Combat.Component.Platform
         IBody Body { get; }
         IUnit Owner { get; }
         IResourcePoints EnergyPoints { get; }
-        bool IsTemporary { get; }
+        
+        IBulletCompositeDisposable Bullets => null;
 
         float FixedRotation { get; } // TODO: remove
 
@@ -22,7 +24,7 @@ namespace Combat.Component.Platform
         float AutoAimingAngle { get; }
 		IUnit ActiveTarget { get; set; }
 
-		void Aim(float bulletVelocity, float weaponRange, bool relative);
+		void Aim(float bulletVelocity, float weaponRange, float relativeEffect);
         void OnShot();
         void SetView(IView view, UnityEngine.Color color);
 

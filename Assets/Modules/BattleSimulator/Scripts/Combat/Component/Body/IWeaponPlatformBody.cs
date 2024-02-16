@@ -6,7 +6,7 @@ namespace Combat.Component.Body
     {
         float FixedRotation { get; }
         float AutoAimingAngle { get; }
-        void Aim(float bulletVelocity, float weaponRange, bool relative);
+        void Aim(float bulletVelocity, float weaponRange, float relativeEffect);
 		IUnit ActiveTarget { get; set; }
 	}
 }

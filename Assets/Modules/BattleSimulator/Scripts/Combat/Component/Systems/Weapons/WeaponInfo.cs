@@ -51,7 +51,7 @@ namespace Combat.Component.Systems.Weapons
 		[System.Obsolete] public BulletEffectType BulletEffectType => _bulletFactory.Stats.EffectType;
 		public float Range => _bulletFactory.Stats.BulletHitRange;
 		public float Spread => _spread;
-		public bool IsRelativeVelocity => !_bulletFactory.Stats.IgnoresShipSpeed;
+		public float RelativeVelocityEffect => _bulletFactory.Stats.RelativeVelocityEffect;
 		public float BulletSpeed => _bulletFactory.Stats.BulletSpeed;
 		public float EnergyCost => _bulletFactory.Stats.EnergyCost;
 		public float Recoil { get; private set; }

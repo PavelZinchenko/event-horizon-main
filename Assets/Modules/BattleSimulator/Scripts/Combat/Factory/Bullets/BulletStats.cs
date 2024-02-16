@@ -23,7 +23,7 @@ namespace Combat.Factory
 		float BulletSpeed { get; }
         float BulletHitRange { get; }
         float Recoil { get; }
-        bool IgnoresShipSpeed { get; }
+        float RelativeVelocityEffect { get; }
 		bool IsBoundToCannon { get; }
 
 		float PowerLevel { get; set; }
@@ -111,23 +111,22 @@ namespace Combat.Factory
 
         public float FlashSize { get { return _ammunition.Body.Size * SizeMultiplier; } }
         public Color FlashColor { get { return Color; } }
-        public float FlashTime { get { return _ammunition.Body.Type == BulletType.Continuous ? Mathf.Max(0.2f, _ammunition.Body.Lifetime * LifetimeMultiplier) : 0.2f; } }
+        public float FlashTime { get { return _ammunition.Controller.Continuous ? Mathf.Max(0.2f, _ammunition.Body.Lifetime * LifetimeMultiplier) : 0.2f; } }
 
-        public float BulletHitRange { get { return _ammunition.Body.Type == BulletType.Continuous ? Range : Range + BodySize; } }
+        public float BulletHitRange { get { return _ammunition.Body.AiBulletBehavior is AiBulletBehavior.Beam or AiBulletBehavior.AreaOfEffect ? Range : Range + BodySize; } }
         public float BulletSpeed { get { return _ammunition.Body.Velocity * _statModifier.VelocityMultiplier.Value; } }
         public float EnergyCost { get { return _ammunition.Body.EnergyCost * _statModifier.EnergyCostMultiplier.Value; } }
-		public bool IgnoresShipSpeed { get { return _ammunition.Body.Type == BulletType.Static; } }
-		public float ActivationCost => _ammunition.Body.Type == BulletType.Continuous ? EnergyCost * _ammunition.Body.Lifetime : EnergyCost;
+		public float RelativeVelocityEffect { get { return _ammunition.Body.ParentVelocityEffect; } }
+		public float ActivationCost => _ammunition.Controller.Continuous ? EnergyCost * _ammunition.Body.Lifetime : EnergyCost;
 
 		public float Recoil
         {
             get
             {
-                if (_ammunition.Body.Type == BulletType.Projectile)
-                    return Weight * BulletSpeed;
-                if (_ammunition.Body.Type == BulletType.Homing)
-                    return Weight * BulletSpeed * 0.1f;
-                return 0f;
+	            return Weight *
+	                   BulletSpeed *
+	                   _ammunition.Controller.StartingVelocityMultiplier *
+	                   _ammunition.Body.ParentVelocityEffect;
             }
         }
 
@@ -179,7 +178,7 @@ namespace Combat.Factory
         public float PowerLevel { get; set; }
         public float RandomFactor { get; set; }
         public float HitPointsMultiplier { get; set; }
-		public bool IsBoundToCannon => _ammunition.Body.Type == BulletType.Continuous;
+		public bool IsBoundToCannon => _ammunition.Body.AttachedToParent;
 
 		private bool IsAoe { get { return (_ammunition.ImpactType == BulletImpactType.DamageOverTime || _ammunition.ImpactType == BulletImpactType.HitAllTargets) && _ammunition.Effects.Count > 0; } }
 
@@ -241,7 +240,7 @@ namespace Combat.Factory
         public float AreaOfEffect { get { return _stats.AreaOfEffect * SizeMultiplier; } }
         public float Velocity { get { return _stats.Velocity; } }
 		public float EnergyCost { get { return _stats.EnergyCost; } }
-		public bool IgnoresShipSpeed { get { return _stats.IgnoresShipVelocity; } }
+		public float RelativeVelocityEffect { get { return _stats.IgnoresShipVelocity ? 0f : 1f; } }
 		public float ActivationCost => _stats.AmmunitionClass.IsBeam() ? EnergyCost * _stats.LifeTime : EnergyCost;
 
 		public float BulletSpeed { get { return Velocity; } }

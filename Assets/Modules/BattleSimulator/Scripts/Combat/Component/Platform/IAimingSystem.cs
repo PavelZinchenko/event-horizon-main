@@ -5,6 +5,6 @@ namespace Combat.Component.Platform
     public interface IAimingSystem
     {
 		IUnit ActiveTarget { get; set; }
-		void Aim(float bulletVelocity, float weaponRange, bool relative);
+		void Aim(float bulletVelocity, float weaponRange, float relativeEffect);
     }
 }

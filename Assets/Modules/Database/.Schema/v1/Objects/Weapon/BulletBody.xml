@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data name="BulletBody" type="struct" >
-    <member name="Type" type="enum" typeid="BulletType" />
     <member name="Size" type="float" minvalue="0" maxvalue="1000" />
     <member name="Length" type="float" minvalue="0" maxvalue="1000" />
     <member name="Velocity" type="float" minvalue="0" maxvalue="1000" />
+    <member name="ParentVelocityEffect" type="float" default="1" minvalue="-1000" maxvalue="1000" >How hard is the ammunition affected by the parent velocity during spawn.</member>
+    <member name="AttachedToParent" type="bool" >Specifies whenever ammunition is attached to the parent ship or ammo. Moving ammo will move in parent's coordinate space</member>
     <member name="Range" type="float" minvalue="0" maxvalue="999999999" />
     <member name="Lifetime" type="float" minvalue="0" maxvalue="999999999" />
     <member name="Weight" type="float" minvalue="0" maxvalue="999999999" />

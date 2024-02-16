@@ -46,10 +46,10 @@ namespace Combat.Component.Platform
             _color = color;
         }
 
-        public void Aim(float bulletVelocity, float weaponRange, bool relative)
+        public void Aim(float bulletVelocity, float weaponRange, float relativeEffect)
         {
             if (_aimingSystem != null)
-                _aimingSystem.Aim(bulletVelocity, weaponRange, relative);
+                _aimingSystem.Aim(bulletVelocity, weaponRange, relativeEffect);
         }
 
         public void OnShot()

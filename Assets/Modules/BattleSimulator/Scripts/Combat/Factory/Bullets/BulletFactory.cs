@@ -78,6 +78,7 @@ namespace Combat.Factory
             _scene.AddUnit(bullet);
             bullet.UpdateView(0);
             bullet.AddResource(bulletGameObject);
+            parent.Bullets?.Add(bullet);
             return bullet;
         }
 
@@ -167,7 +168,7 @@ namespace Combat.Factory
             var weight = _stats.Weight;
             var scale = _stats.BodySize;
 
-            if (_ammunition.Body.Type == BulletType.Continuous && !parent.IsTemporary)
+            if (_ammunition.Body.AttachedToParent && parent.Bullets != null)
             {
                 parentBody = parent.Body;
                 position = offset;
@@ -178,15 +179,13 @@ namespace Combat.Factory
                 position = parent.Body.WorldPosition() + RotationHelpers.Transform(offset, rotation);
             }
 
-            if (_ammunition.Body.Type != BulletType.Continuous)
+            if (!_ammunition.Controller.Continuous)
             {
                 velocity = RotationHelpers.Direction(rotation) * bulletSpeed;
+                
+                velocity *= _ammunition.Controller.StartingVelocityMultiplier;
 
-                if (_ammunition.Body.Type == BulletType.Homing)
-                    velocity *= 0.1f;
-
-                if (_ammunition.Body.Type != BulletType.Static)
-                    velocity += parent.Body.WorldVelocity();
+                velocity += parent.Body.WorldVelocity() * _ammunition.Body.ParentVelocityEffect;
             }
 
             body.Initialize(parentBody, position, rotation, scale, velocity, angularVelocity, weight);
@@ -210,7 +209,7 @@ namespace Combat.Factory
             collider.Unit = unit;
 			collider.Source = weaponPlatform.Owner;
 
-            if (_ammunition.Body.Type == BulletType.Continuous)
+            if (_ammunition.Controller.Continuous)
                 collider.MaxRange = _stats.Range;
 
 			return collider;
@@ -224,7 +223,7 @@ namespace Combat.Factory
                 //UnityEngine.Debug.LogError("HP:" + _stats.HitPoints);
                 return new MissileDamageHandler(bullet, hitPoints);
             }
-            else if (_ammunition.Body.Type == BulletType.Continuous)
+            else if (_ammunition.Controller.Continuous)
                 return new BeamDamageHandler(bullet, CanSiphonHitpoints());
             else
                 return new DefaultDamageHandler(bullet, CanSiphonHitpoints());
@@ -241,22 +240,36 @@ namespace Combat.Factory
             var range = _stats.Range;
             var weight = _stats.Weight;
 
-			IController controller = null;
-            if (_ammunition.Body.Type == BulletType.Homing)
-                controller = new HomingController(bullet, bulletSpeed, 120f * WeightToAcceleration(weight),
-                    0.5f * bulletSpeed / (0.2f + weight * 2), range, _scene);
-			else if (_ammunition.Body.Type == BulletType.Magnetic)
-                controller = new MagneticController(bullet, bulletSpeed, bulletSpeed * WeightToAcceleration(weight), range, 
-					BulletShape.HasDirection(), _scene);            
-			else if (_ammunition.Body.Type == BulletType.Continuous && !parent.IsTemporary)
-                controller = new BeamController(bullet, spread, rotationOffset);
-
-			if (_ammunition.Body.Type != BulletType.Continuous && BulletShape.IsBeam())
-			{
-				var length = _ammunition.Body.Length > 0 ? _stats.Length : _stats.BodySize;
-				var velocity = _ammunition.Body.Type == BulletType.Static ? Vector2.zero : parent.Body.WorldVelocity();
-				controller = new MovingBeamController(bullet, length, bulletSpeed, velocity, controller);
-			}
+            IController controller = null;
+            switch (_ammunition.Controller)
+            {
+                case BulletController_Projectile:
+                    if (BulletShape.IsBeam())
+                    {
+                        var length = _ammunition.Body.Length > 0 ? _stats.Length : _stats.BodySize;
+                        var velocity = parent.Body.WorldVelocity() * _ammunition.Body.ParentVelocityEffect;
+                        controller = new MovingBeamController(bullet, length, bulletSpeed, velocity, controller);
+                    }
+                    break;
+                case BulletController_Homing homing:
+                    if (homing.IgnoreRotation)
+                    {
+                        controller = new MagneticController(bullet, bulletSpeed, bulletSpeed * WeightToAcceleration(weight), range, 
+                            BulletShape.HasDirection(), _scene);            
+                    }
+                    else
+                    {
+                        controller = new HomingController(bullet, bulletSpeed, 120f * WeightToAcceleration(weight),
+                            0.5f * bulletSpeed / (0.2f + weight * 2), range, _scene);                        
+                    }
+                    break;
+                case BulletController_Beam:
+                    controller = new BeamController(bullet, spread, rotationOffset);
+                    break;
+                default:
+                    Debug.LogError($"Unknown controller: {_ammunition.Controller.GetType().Name}");
+                    break;
+            }
 
             return controller;
         }

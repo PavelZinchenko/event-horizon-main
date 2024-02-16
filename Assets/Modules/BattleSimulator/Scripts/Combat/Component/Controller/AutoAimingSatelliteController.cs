@@ -22,11 +22,11 @@ namespace Combat.Component.Controller
             _satellite = satellite;
         }
 
-        public void Aim(float bulletVelocity, float weaponRange, bool relative)
+        public void Aim(float bulletVelocity, float weaponRange, float relativeEffect)
         {
             _bulletVelocity = bulletVelocity;
             _weaponRange = weaponRange;
-            _isRelativeVelocity = relative;
+            _relativeEffect = relativeEffect;
         }
 
         public void UpdatePhysics(float elapsedTime)
@@ -77,7 +77,7 @@ namespace Combat.Component.Controller
 
             if (_bulletVelocity > 0)
             {
-                var velocity = _isRelativeVelocity ? _target.Body.WorldVelocity() - _satellite.Body.WorldVelocity() : _target.Body.WorldVelocity();
+                var velocity = _target.Body.WorldVelocity() - _satellite.Body.WorldVelocity() * _relativeEffect;
 
                 Vector2 target;
                 float timeInterval;
@@ -109,7 +109,7 @@ namespace Combat.Component.Controller
 
         private float _bulletVelocity;
         private float _weaponRange;
-        private bool _isRelativeVelocity = true;
+        private float _relativeEffect = 1f;
         private float _timeFromTargetUpdate;
 
         private IUnit _target;

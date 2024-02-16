@@ -150,7 +150,7 @@ namespace Combat.Factory
             var weight = _bulletStats.Impulse;
             var scale = _bulletStats.Size;
 
-            if (_stats.AmmunitionClass.IsBoundToCannon() && !parent.IsTemporary)
+            if (_stats.AmmunitionClass.IsBoundToCannon() && parent.Bullets != null)
             {
                 parentBody = parent.Body;
             }
@@ -198,7 +198,7 @@ namespace Combat.Factory
                 return new RocketController(bullet, velocity, 1.0f * velocity / (0.1f + _bulletStats.Impulse));
             if (_stats.AmmunitionClass == AmmunitionClassObsolete.Aura)
                 return new AuraController(bullet, _bulletStats.AreaOfEffect, _stats.LifeTime);
-            if (_stats.AmmunitionClass.IsBoundToCannon() && !parent.IsTemporary)
+            if (_stats.AmmunitionClass.IsBoundToCannon() && parent.Bullets != null)
                 return new BeamController(bullet, spread, rotationOffset);
 
             return null;
