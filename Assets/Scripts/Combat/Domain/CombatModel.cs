@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Combat.Component.Unit.Classification;
+using Combat.Scene;
 using Constructor.Ships;
 using Economy.Products;
 using GameDatabase.DataModel;
@@ -10,12 +12,21 @@ namespace Combat.Domain
 {
     public class CombatModel : ICombatModel
     {
+        private readonly Dictionary<IShip, long> _playerExperienceData = new Dictionary<IShip, long>();
+        private readonly ShipDestroyedSignal _shipDestroyedSignal;
+        private readonly FleetModel _playerFleet;
+        private readonly FleetModel _enemyFleet;
+        private long _totalExperience;
+
         public CombatModel(
             FleetModel playerFleet, 
-            FleetModel enemyFleet)
+            FleetModel enemyFleet,
+            ShipDestroyedSignal shipDestroyedSignal)
         {
             _playerFleet = playerFleet;
             _enemyFleet = enemyFleet;
+            _shipDestroyedSignal = shipDestroyedSignal;
+            _shipDestroyedSignal.Event += OnShipDestroyed;
         }
 
         public CombatRulesAdapter Rules { get; set; }
@@ -32,8 +43,12 @@ namespace Combat.Domain
         public IEnumerable<KeyValuePair<IShip, long>> PlayerExperience { get { return _playerExperienceData; } }
         public IEnumerable<IProduct> SpecialRewards { get; set; }
 
-        private readonly FleetModel _playerFleet;
-        private readonly FleetModel _enemyFleet;
+        private void OnShipDestroyed(Component.Ship.IShip ship)
+        {
+            IShipInfo shipInfo;
+            if (ship.Type.Class == UnitClass.Ship && ship.Type.Side == UnitSide.Player && _playerFleet.TryGetInfo(ship, out shipInfo))
+                UpdateExperienceData(shipInfo);
+        }
 
         private void UpdateExperienceData(IShipInfo ship)
         {
@@ -53,9 +68,6 @@ namespace Combat.Domain
 
             _totalExperience = total;
         }
-
-        private long _totalExperience;
-        private readonly Dictionary<IShip, long> _playerExperienceData = new Dictionary<IShip, long>();
     }
 }
 

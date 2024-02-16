@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Combat.Component.Unit.Classification;
+using Combat.Scene;
 using Economy.Products;
 using GameDatabase;
 using GameDatabase.DataModel;
@@ -19,10 +20,11 @@ namespace Combat.Domain
 
     public class CombatModelBuilder : ICombatModelBuilder
     {
-        public CombatModelBuilder(IDatabase database, PlayerSkills playerSkills)
+        public CombatModelBuilder(IDatabase database, PlayerSkills playerSkills, ShipDestroyedSignal shipDestroyedSignal)
         {
             _database = database;
             _playerSkills = playerSkills;
+            _shipDestroyedSignal = shipDestroyedSignal;
 
             Rules = database.CombatSettings.DefaultCombatRules;
         }
@@ -51,7 +53,7 @@ namespace Combat.Domain
 
             var model = new CombatModel(
                 new FleetModel(playerFleet.Ships, UnitSide.Player, _database, playerFleet.AiLevel, useBonuses ? _playerSkills : null),
-                new FleetModel(enemyFleet.Ships, UnitSide.Enemy, _database, enemyFleet.AiLevel));
+                new FleetModel(enemyFleet.Ships, UnitSide.Enemy, _database, enemyFleet.AiLevel), _shipDestroyedSignal);
 
 			var rules = Rules.Create(StarLevel, _playerSkills.HasRescueUnit);
 
@@ -63,6 +65,7 @@ namespace Combat.Domain
 
         private readonly IDatabase _database;
         private readonly List<IProduct> _specialReward = new List<IProduct>();
+        private readonly ShipDestroyedSignal _shipDestroyedSignal;
         private readonly PlayerSkills _playerSkills;
 
         public class Factory : Factory<CombatModelBuilder> { }
