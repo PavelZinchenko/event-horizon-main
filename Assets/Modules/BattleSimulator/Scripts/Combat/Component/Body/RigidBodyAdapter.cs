@@ -43,7 +43,13 @@ namespace Combat.Component.Body
 
         public Vector2 Position
         {
-			get { return _cachedPosition; }
+			get 
+            {
+                if (System.Threading.Thread.CurrentThread == _mainThread)
+                    return _rigidbody.position;
+                else 
+                    return _cachedPosition; 
+            }
             set
             {
                 _cachedPosition = value;
@@ -54,7 +60,13 @@ namespace Combat.Component.Body
 
         public float Rotation
         {
-			get { return _cachedRotation; }
+			get 
+            {
+                if (System.Threading.Thread.CurrentThread == _mainThread)
+                    return _rigidbody.rotation;
+                else
+                    return _cachedRotation;
+            }
             set
             {
                 _cachedRotation = value;
@@ -80,11 +92,14 @@ namespace Combat.Component.Body
 
         public float AngularVelocity
         {
-            get { return Parent == null ? _rigidbody.angularVelocity : 0f; }
+            get { return Parent == null ? _cachedAngularVelocity : 0f; }
             set
             {
                 if (Parent == null && _rigidbody)
-                    _rigidbody.angularVelocity = value; 
+                {
+                    _cachedAngularVelocity = value;
+                    _rigidbody.angularVelocity = value;
+                }
             }
         }
 
@@ -154,9 +169,10 @@ namespace Combat.Component.Body
                 _rigidbody.velocity = velocity;
             }
 
-            _cachedVelocity = velocity;
             _cachedPosition = _rigidbody.position;
             _cachedRotation = _rigidbody.rotation;
+            _cachedVelocity = velocity;
+            _cachedAngularVelocity = _rigidbody.angularVelocity;
         }
 
         public void UpdateView(float elapsedTime)
@@ -173,14 +189,17 @@ namespace Combat.Component.Body
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
+            _mainThread = System.Threading.Thread.CurrentThread;
         }
 
+        private System.Threading.Thread _mainThread;
         private Vector2 _viewPosition;
         private float _viewRotation;
         private Vector2 _cachedPosition;
         private float _cachedRotation;
         private Rigidbody2D _rigidbody;
         private Vector2 _cachedVelocity;
+        private float _cachedAngularVelocity;
         private float _scale;
         private IBody _parent;
         private float _maxVelocity;

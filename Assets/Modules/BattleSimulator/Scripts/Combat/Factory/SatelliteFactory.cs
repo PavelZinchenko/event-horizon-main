@@ -85,7 +85,7 @@ namespace Combat.Factory
             var isTurret = (bool)data.Image;
 
             if (data.AutoAimingArc < 10 || isTurret)
-                satellite.Controller = new SatelliteControllser(ship, satellite, position, data.Rotation);
+                satellite.Controller = new SatelliteController(ship, satellite, position, data.Rotation);
             else
                 satellite.Controller = new AutoAimingSatelliteController(ship, satellite, position, data.Rotation, minAngle, maxAngle, _scene);
 

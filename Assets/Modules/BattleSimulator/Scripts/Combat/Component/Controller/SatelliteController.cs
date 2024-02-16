@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace Combat.Component.Controller
 {
-    public class SatelliteControllser : IController
+    public class SatelliteController : IController
     {
-        public SatelliteControllser(IShip ship, ISatellite satellite, Vector2 position, float rotation)
+        public SatelliteController(IShip ship, ISatellite satellite, Vector2 position, float rotation)
         {
             _ship = ship;
             _satellite = satellite;
@@ -26,6 +26,7 @@ namespace Combat.Component.Controller
             {
                 var requiredPosition = _ship.Body.WorldPosition() + RotationHelpers.Transform(_position, _ship.Body.WorldRotation());
                 var requiredRotation = _ship.Body.WorldRotation() + _rotation;
+
                 _satellite.MoveTowards(requiredPosition, requiredRotation, _ship.Body.WorldVelocity(), _velocityFactor, _angularVelocityFactor);
             }
         }
