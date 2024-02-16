@@ -7,7 +7,15 @@ namespace Combat.Ai.BehaviorTree.Utils
 {
 	public static class ShipSystemsExtensions
 	{
-		public static bool UpdateAttackRangeIfWeapon(this IReadOnlyList<ISystem> systems, int id, ref float rangeMin, ref float rangeMax)
+        public static void CalculateAttackRange(this IReadOnlyList<ISystem> systems, out float rangeMin, out float rangeMax)
+        {
+            rangeMin = 0;
+            rangeMax = 0;
+            for (int i = 0; i < systems.Count; ++i)
+                systems.UpdateAttackRangeIfWeapon(i, ref rangeMin, ref rangeMax);
+        }
+
+        public static bool UpdateAttackRangeIfWeapon(this IReadOnlyList<ISystem> systems, int id, ref float rangeMin, ref float rangeMax)
 		{
 			var weapon = systems[id] as IWeapon;
 			if (weapon == null) return false;

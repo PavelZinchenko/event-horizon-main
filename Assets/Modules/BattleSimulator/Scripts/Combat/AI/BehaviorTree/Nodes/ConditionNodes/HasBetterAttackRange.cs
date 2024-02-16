@@ -1,26 +1,28 @@
-﻿using Combat.Ai.Calculations;
-using Combat.Component.Ship;
+﻿using Combat.Component.Ship;
 using Combat.Ai.BehaviorTree.Utils;
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
-	public class EscapeAttackRadiusNode : INode
+	public class HasBetterAttackRange : INode
 	{
 		private IShip _target;
 		private float _targetAttackRadius;
 
-		public NodeState Evaluate(Context context)
+        private readonly float _targetRangeMultiplier;
+
+        public HasBetterAttackRange(float targetRangeMultiplier)
+        {
+            _targetRangeMultiplier = targetRangeMultiplier;
+        }
+
+        public NodeState Evaluate(Context context)
 		{
 			UpdateTarget(context.TargetShip);
 
 			if (_target == null)
-				return NodeState.Success;
+				return NodeState.Failure;
 
-			var minDistance = _targetAttackRadius + _target.Body.Scale + context.Ship.Body.Scale;
-			if (ShipNavigationHandler.FlyAround(context.Ship, _target, minDistance, 1000f, 0, context.Controls))
-				return NodeState.Success;
-
-			return NodeState.Running;
+			return context.AttackRangeMax > _targetAttackRadius*_targetRangeMultiplier ? NodeState.Success : NodeState.Failure;
 		}
 
 		private void UpdateTarget(IShip target)
@@ -33,9 +35,8 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			}
 
 			_target = target;
-            _target = target;
             target.Systems.All.CalculateAttackRange(out var rangeMin, out var rangeMax);
-            _targetAttackRadius = rangeMax;
-        }
-    }
+			_targetAttackRadius = rangeMax;
+		}
+	}
 }

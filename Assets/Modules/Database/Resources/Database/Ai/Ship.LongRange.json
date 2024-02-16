@@ -1,6 +1,6 @@
 {
   "ItemType": 28,
-  "Id": 13,
+  "Id": 5,
   "RootNode": {
     "Type": 4,
     "Nodes": [
@@ -12,17 +12,8 @@
         "ItemId": 124
       },
       {
-        "Type": 4,
-        "Nodes": [
-          {
-            "Type": 1,
-            "ItemId": 122
-          },
-          {
-            "Type": 1,
-            "ItemId": 128
-          }
-        ]
+        "Type": 1,
+        "ItemId": 131
       },
       {
         "Type": 1,

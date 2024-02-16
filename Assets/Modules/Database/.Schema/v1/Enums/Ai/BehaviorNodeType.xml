@@ -18,7 +18,7 @@
     <item name="HasIncomingThreat" value="53">Requires threat list. Returns SUCCESS if time to collision less than value</item>
     <item name="HasAdditionalTargets" value="54">Returns SUCCESS if has any targets found by LookForAdditionalTargets node</item>
 
-    <item name="IsFasterThanTarget" value="55" />
+    <item name="IsFasterThanTarget" value="55">Returns SUCCESS if [engine power] > Multiplier * [target engine power]</item>
     <item name="HasMainTarget" value="56">Returns SUCCESS if the main is selected and alive</item>
     <item name="MainTargetIsAlly" value="57" />
     <item name="MainTargetIsEnemy" value="58" />
@@ -26,6 +26,7 @@
     <item name="MainTargetWithinAttackRange" value="60" />
     <item name="HasMothership" value="61">Returns SUCCESS if mothership exists and is alive</item>
     <item name="TargetDistance" value="62">Returns SUCCESS if the distance to the target does not exceed the MaxDistance</item>
+    <item name="HasLongerAttackRange" value="63">Returns SUCCESS if the attack range of any weapon surpasses [enemy attack range] * Multiplier</item>
 
     <item name="FindEnemy" value="100">Looks for nearest enemy. Changes target every MaxCooldown sec if it's defined. SUCCESS if found, FAILURE otherwise</item>
     <item name="MoveToAttackRange" value="101">Moves towards target until inside attack radius. Requires main target. Uses attack range of selected weapons. SUCCESS if inside attack range, FAILURE if any error, RUNNING otherwise</item>

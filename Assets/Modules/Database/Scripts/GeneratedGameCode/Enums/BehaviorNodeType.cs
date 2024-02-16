@@ -34,6 +34,7 @@ namespace GameDatabase.Enums
 		MainTargetWithinAttackRange = 60,
 		HasMothership = 61,
 		TargetDistance = 62,
+		HasLongerAttackRange = 63,
 		FindEnemy = 100,
 		MoveToAttackRange = 101,
 		AttackMainTarget = 102,

@@ -74,6 +74,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_HasMothership(serializable, loader);
 				case BehaviorNodeType.TargetDistance:
 					return new BehaviorTreeNode_TargetDistance(serializable, loader);
+				case BehaviorNodeType.HasLongerAttackRange:
+					return new BehaviorTreeNode_HasLongerAttackRange(serializable, loader);
 				case BehaviorNodeType.FindEnemy:
 					return new BehaviorTreeNode_FindEnemy(serializable, loader);
 				case BehaviorNodeType.MoveToAttackRange:
@@ -222,6 +224,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_MainTargetWithinAttackRange content);
 	    T Create(BehaviorTreeNode_HasMothership content);
 	    T Create(BehaviorTreeNode_TargetDistance content);
+	    T Create(BehaviorTreeNode_HasLongerAttackRange content);
 	    T Create(BehaviorTreeNode_FindEnemy content);
 	    T Create(BehaviorTreeNode_MoveToAttackRange content);
 	    T Create(BehaviorTreeNode_AttackMainTarget content);
@@ -623,6 +626,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_IsFasterThanTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
+			Multiplier = UnityEngine.Mathf.Clamp(serializable.MinValue, 1f, 10f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -632,6 +636,7 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+		public float Multiplier { get; private set; }
 
 
     }
@@ -771,6 +776,27 @@ namespace GameDatabase.DataModel
         }
 
 		public float MaxDistance { get; private set; }
+
+
+    }
+    public partial class BehaviorTreeNode_HasLongerAttackRange : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_HasLongerAttackRange(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Multiplier = UnityEngine.Mathf.Clamp(serializable.MinValue, 1f, 10f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public float Multiplier { get; private set; }
 
 
     }

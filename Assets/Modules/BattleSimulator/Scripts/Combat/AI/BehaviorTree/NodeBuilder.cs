@@ -182,7 +182,7 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_DefendWithFronalShield content) => FrontalShieldNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_TrackControllableAmmo content) => TrackControllableAmmo.Create(Ship, true);
             public INode Create(BehaviorTreeNode_DroneBayRangeExceeded content) => DroneBayRangeExceeded.Create(Settings.DroneRange);
-            public INode Create(BehaviorTreeNode_IsFasterThanTarget content) => new IsFaterThanTarget(1.0f);
+            public INode Create(BehaviorTreeNode_IsFasterThanTarget content) => new IsFaterThanTarget(content.Multiplier);
 			public INode Create(BehaviorTreeNode_MatchVelocityWithTarget content) => new MatchVelocityNode(content.Tolerance);
 			public INode Create(BehaviorTreeNode_KeepDistance content) => new KeepDistanceNode(content.MinDistance, content.MaxDistance);
 			public INode Create(BehaviorTreeNode_HasMainTarget content) => new HasTargetNode();
@@ -211,6 +211,7 @@ namespace Combat.Ai.BehaviorTree
             public INode Create(BehaviorTreeNode_TargetEnemyStarbase content) => new TargetStarbaseNode(false);
             public INode Create(BehaviorTreeNode_MakeTargetMothership content) => new SetMothershipNode();
             public INode Create(BehaviorTreeNode_TargetDistance content) => new DistanceToTargetNode(content.MaxDistance);
+            public INode Create(BehaviorTreeNode_HasLongerAttackRange content) => new HasBetterAttackRange(content.Multiplier);
         }
 	}
 }

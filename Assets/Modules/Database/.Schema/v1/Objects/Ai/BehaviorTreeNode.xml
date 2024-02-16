@@ -30,6 +30,7 @@
     <member name="MaxValue" type="float" case="SlowDown,MatchVelocityWithTarget" alias="Tolerance" minvalue="0" maxvalue="1" default="0.2">Acceptable speed deviation</member>
     <member name="MinValue" type="float" case="FlyAroundMothership,KeepDistance" alias="MinDistance" minvalue="0" maxvalue="100" default="2.5" />
     <member name="MaxValue" type="float" case="FlyAroundMothership,KeepDistance,TargetDistance" alias="MaxDistance" minvalue="0" maxvalue="100" default="3.5" />
+    <member name="MinValue" type="float" case="IsFasterThanTarget,HasLongerAttackRange" alias="Multiplier" minvalue="1" maxvalue="10" />
     <member name="DeviceClass" type="enum" typeid="DeviceClass" case="ActivateDevice" />
 
     <member name="Text" type="string" case="ShowMessage,DebugLog" />
