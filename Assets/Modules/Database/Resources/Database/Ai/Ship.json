@@ -56,6 +56,10 @@
       },
       {
         "Type": 3,
+        "Requirement": {
+          "Type": 6,
+          "DifficultyLevel": 1
+        },
         "Nodes": [
           {
             "Type": 63,
