@@ -149,7 +149,7 @@ namespace Combat.Factory
             else
                 unitClass = UnitClass.AreaOfEffect;
 
-            var unitType = new UnitType(unitClass, UnitSide.Undefined, _ammunition.Body.FriendlyFire ? null : _owner);
+            var unitType = new UnitType(unitClass, UnitSide.Neutral, _ammunition.Body.FriendlyFire ? null : _owner);
             var bullet = new Bullet(body, view, new Lifetime(_stats.GetBulletLifetime()), unitType);
 
             bullet.Physics = gameObject.GetComponent<PhysicsManager>();
