@@ -1,5 +1,4 @@
-﻿using Combat.Component.Unit.Classification;
-using Combat.Unit;
+﻿using Combat.Unit;
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
@@ -14,10 +13,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 
 		public NodeState Evaluate(Context context)
 		{
-			if (context.Ship.Type.Class != UnitClass.Drone)
-				return NodeState.Failure;
-
-			var mothership = context.Ship.Type.Owner;
+			var mothership = context.Mothership;
 			if (!mothership.IsActive())
 				return NodeState.Failure;
 

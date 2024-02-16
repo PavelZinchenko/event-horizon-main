@@ -17,10 +17,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 		{
 			var ship = context.Ship;
 
-			if (ship.Type.Class != UnitClass.Drone)
-				return NodeState.Failure;
-
-			var mothership = context.Ship.Type.Owner;
+			var mothership = context.Mothership;
 			if (!mothership.IsActive())
 				return NodeState.Failure;
 

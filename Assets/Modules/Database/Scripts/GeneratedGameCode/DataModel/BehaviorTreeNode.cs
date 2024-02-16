@@ -46,6 +46,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_Execute(serializable, loader);
 				case BehaviorNodeType.ParallelSequence:
 					return new BehaviorTreeNode_ParallelSequence(serializable, loader);
+				case BehaviorNodeType.PreserveTarget:
+					return new BehaviorTreeNode_PreserveTarget(serializable, loader);
 				case BehaviorNodeType.HasEnoughEnergy:
 					return new BehaviorTreeNode_HasEnoughEnergy(serializable, loader);
 				case BehaviorNodeType.IsLowOnHp:
@@ -68,6 +70,10 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_MainTargetLowHp(serializable, loader);
 				case BehaviorNodeType.MainTargetWithinAttackRange:
 					return new BehaviorTreeNode_MainTargetWithinAttackRange(serializable, loader);
+				case BehaviorNodeType.HasMothership:
+					return new BehaviorTreeNode_HasMothership(serializable, loader);
+				case BehaviorNodeType.TargetDistance:
+					return new BehaviorTreeNode_TargetDistance(serializable, loader);
 				case BehaviorNodeType.FindEnemy:
 					return new BehaviorTreeNode_FindEnemy(serializable, loader);
 				case BehaviorNodeType.MoveToAttackRange:
@@ -124,6 +130,10 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_EscapeTargetAttackRadius(serializable, loader);
 				case BehaviorNodeType.AttackAdditionalTargets:
 					return new BehaviorTreeNode_AttackAdditionalTargets(serializable, loader);
+				case BehaviorNodeType.TargetAllyStarbase:
+					return new BehaviorTreeNode_TargetAllyStarbase(serializable, loader);
+				case BehaviorNodeType.TargetEnemyStarbase:
+					return new BehaviorTreeNode_TargetEnemyStarbase(serializable, loader);
 				case BehaviorNodeType.EnginePropulsionForce:
 					return new BehaviorTreeNode_EnginePropulsionForce(serializable, loader);
 				case BehaviorNodeType.MotherShipRetreated:
@@ -140,6 +150,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_MothershipLowHp(serializable, loader);
 				case BehaviorNodeType.DroneBayRangeExceeded:
 					return new BehaviorTreeNode_DroneBayRangeExceeded(serializable, loader);
+				case BehaviorNodeType.MakeTargetMothership:
+					return new BehaviorTreeNode_MakeTargetMothership(serializable, loader);
 				case BehaviorNodeType.ShowMessage:
 					return new BehaviorTreeNode_ShowMessage(serializable, loader);
 				case BehaviorNodeType.DebugLog:
@@ -196,6 +208,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_Cooldown content);
 	    T Create(BehaviorTreeNode_Execute content);
 	    T Create(BehaviorTreeNode_ParallelSequence content);
+	    T Create(BehaviorTreeNode_PreserveTarget content);
 	    T Create(BehaviorTreeNode_HasEnoughEnergy content);
 	    T Create(BehaviorTreeNode_IsLowOnHp content);
 	    T Create(BehaviorTreeNode_IsControledByPlayer content);
@@ -207,6 +220,8 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_MainTargetIsEnemy content);
 	    T Create(BehaviorTreeNode_MainTargetLowHp content);
 	    T Create(BehaviorTreeNode_MainTargetWithinAttackRange content);
+	    T Create(BehaviorTreeNode_HasMothership content);
+	    T Create(BehaviorTreeNode_TargetDistance content);
 	    T Create(BehaviorTreeNode_FindEnemy content);
 	    T Create(BehaviorTreeNode_MoveToAttackRange content);
 	    T Create(BehaviorTreeNode_AttackMainTarget content);
@@ -235,6 +250,8 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_ForgetMainTarget content);
 	    T Create(BehaviorTreeNode_EscapeTargetAttackRadius content);
 	    T Create(BehaviorTreeNode_AttackAdditionalTargets content);
+	    T Create(BehaviorTreeNode_TargetAllyStarbase content);
+	    T Create(BehaviorTreeNode_TargetEnemyStarbase content);
 	    T Create(BehaviorTreeNode_EnginePropulsionForce content);
 	    T Create(BehaviorTreeNode_MotherShipRetreated content);
 	    T Create(BehaviorTreeNode_MotherShipDestroyed content);
@@ -243,6 +260,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_TargetMothership content);
 	    T Create(BehaviorTreeNode_MothershipLowHp content);
 	    T Create(BehaviorTreeNode_DroneBayRangeExceeded content);
+	    T Create(BehaviorTreeNode_MakeTargetMothership content);
 	    T Create(BehaviorTreeNode_ShowMessage content);
 	    T Create(BehaviorTreeNode_DebugLog content);
 	    T Create(BehaviorTreeNode_SetValue content);
@@ -476,6 +494,27 @@ namespace GameDatabase.DataModel
 
 
     }
+    public partial class BehaviorTreeNode_PreserveTarget : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_PreserveTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Node = BehaviorTreeNode.Create(serializable.Node, loader);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public BehaviorTreeNode Node { get; private set; }
+
+
+    }
     public partial class BehaviorTreeNode_HasEnoughEnergy : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
@@ -692,6 +731,46 @@ namespace GameDatabase.DataModel
         }
 
 		public float MinMaxLerp { get; private set; }
+
+
+    }
+    public partial class BehaviorTreeNode_HasMothership : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_HasMothership(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+
+
+    }
+    public partial class BehaviorTreeNode_TargetDistance : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_TargetDistance(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 100f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public float MaxDistance { get; private set; }
 
 
     }
@@ -1198,8 +1277,8 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_KeepDistance(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinDistance = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 10f);
-			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 10f);
+			MinDistance = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 100f);
+			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 100f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1257,6 +1336,44 @@ namespace GameDatabase.DataModel
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
   		public BehaviorTreeNode_AttackAdditionalTargets(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+
+
+    }
+    public partial class BehaviorTreeNode_TargetAllyStarbase : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_TargetAllyStarbase(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+
+
+    }
+    public partial class BehaviorTreeNode_TargetEnemyStarbase : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_TargetEnemyStarbase(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 
@@ -1337,8 +1454,8 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_FlyAroundMothership(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinDistance = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 10f);
-			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 10f);
+			MinDistance = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 100f);
+			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 100f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1417,6 +1534,25 @@ namespace GameDatabase.DataModel
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
   		public BehaviorTreeNode_DroneBayRangeExceeded(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+
+
+    }
+    public partial class BehaviorTreeNode_MakeTargetMothership : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_MakeTargetMothership(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 

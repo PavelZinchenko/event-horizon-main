@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Combat.Component.Ship;
 using Combat.Component.Unit;
+using Combat.Component.Unit.Classification;
 using Combat.Scene;
 using Combat.Ai.BehaviorTree.Utils;
 
@@ -14,11 +15,11 @@ namespace Combat.Ai.BehaviorTree
 		private readonly IShip _ship;
 		private readonly ShipWeaponList _allWeapons;
 
-		private IShip _targetShip;
-		private float _elapsedTime;
+        private IShip _mothership;
+        private float _elapsedTime;
 		private ShipWeaponList _selectedWeapons;
-		private TargetList _targetList;
-		private ThreatList _threatList;
+        private TargetList _targetList;
+        private ThreatList _threatList;
 		private float _targetListUpdateTime = _initialTime;
 		private float _threatListUpdateTime = _initialTime;
 
@@ -29,15 +30,27 @@ namespace Combat.Ai.BehaviorTree
 		public IShip Ship => _ship;
 		public ShipControls Controls { get; } = new();
 
-		public IShip TargetShip { get => _targetShip; set => _targetShip = value; }
+        public IShip TargetShip { get; set; }
 
-		public IShip LastMessageSender { get; set; }
+        public IShip Mothership 
+        {
+            get => Ship.Type.Class == UnitClass.Drone ? Ship.Type.Owner : _mothership;
+            set 
+            {
+                if (Ship.Type.Class == UnitClass.Drone)
+                    Ship.Type.Owner = value;
+                else 
+                    _mothership = value;
+            } 
+        }
+
+        public IShip LastMessageSender { get; set; }
 		public float LastTargetUpdateTime { get; set; } = _initialTime;
 		public float LastTextMessageTime { get; set; } = _initialTime;
 
-		public IReadOnlyList<IShip> SecondaryTargets => _targetList?.Items ?? EmptyList<IShip>.Instance;
+        public IReadOnlyList<IShip> SecondaryTargets => _targetList?.Items ?? EmptyList<IShip>.Instance;
 
-		public IReadOnlyList<IUnit> Threats => _threatList?.Units ?? EmptyList<IUnit>.Instance;
+        public IReadOnlyList<IUnit> Threats => _threatList?.Units ?? EmptyList<IUnit>.Instance;
 		public float TimeToCollision => _threatList != null ? _threatList.TimeToHit : float.MaxValue;
 
 		public bool HaveWeapons => _allWeapons.Count > 0;
@@ -76,7 +89,7 @@ namespace Combat.Ai.BehaviorTree
 
 			if (_elapsedTime - _targetListUpdateTime < cooldown) return;
 			_targetListUpdateTime = _elapsedTime;
-			_targetList.Update(_ship, _targetShip);
+			_targetList.Update(_ship, TargetShip);
 		}
 
 		public void UpdateThreatList(IThreatAnalyzer threatAnalyzer, float cooldown)

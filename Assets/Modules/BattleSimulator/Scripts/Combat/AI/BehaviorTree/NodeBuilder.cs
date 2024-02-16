@@ -61,8 +61,9 @@ namespace Combat.Ai.BehaviorTree
 				content.ExecutionMode, content.Cooldown, content.Result ? NodeState.Success : NodeState.Failure);
 			public INode Create(BehaviorTreeNode_Execute content) => ExecuteNode.Create(_builder.Build(content.Node),
 				content.ExecutionMode, content.Result ? NodeState.Success : NodeState.Failure);
+            public INode Create(BehaviorTreeNode_PreserveTarget content) => PreserveTargetNode.Create(_builder.Build(content.Node));
 
-			public INode Create(BehaviorTreeNode_Selector content)
+            public INode Create(BehaviorTreeNode_Selector content)
 			{
 				var selector = new SelectorNode();
 				for (int i = 0; i < content.Nodes.Count; ++i)
@@ -180,8 +181,8 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_UseRecoil content) => RecoilNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_DefendWithFronalShield content) => FrontalShieldNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_TrackControllableAmmo content) => TrackControllableAmmo.Create(Ship, true);
-			public INode Create(BehaviorTreeNode_DroneBayRangeExceeded content) => DroneBayRangeExceeded.Create(Settings.DroneRange);
-			public INode Create(BehaviorTreeNode_IsFasterThanTarget content) => new IsFaterThanTarget(1.0f);
+            public INode Create(BehaviorTreeNode_DroneBayRangeExceeded content) => DroneBayRangeExceeded.Create(Settings.DroneRange);
+            public INode Create(BehaviorTreeNode_IsFasterThanTarget content) => new IsFaterThanTarget(1.0f);
 			public INode Create(BehaviorTreeNode_MatchVelocityWithTarget content) => new MatchVelocityNode(content.Tolerance);
 			public INode Create(BehaviorTreeNode_KeepDistance content) => new KeepDistanceNode(content.MinDistance, content.MaxDistance);
 			public INode Create(BehaviorTreeNode_HasMainTarget content) => new HasTargetNode();
@@ -205,6 +206,11 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_HasAdditionalTargets content) => new HasSecondaryTargetsNode();
 			public INode Create(BehaviorTreeNode_AttackMainTarget content) => new AttackMainTargetNode(Settings.AiLevel);
 			public INode Create(BehaviorTreeNode_AttackAdditionalTargets content) => new AttackSecondaryTargetsNode(Settings.AiLevel);
-		}
+            public INode Create(BehaviorTreeNode_HasMothership content) => new MothershipAlive();
+            public INode Create(BehaviorTreeNode_TargetAllyStarbase content) => new TargetStarbaseNode(true);
+            public INode Create(BehaviorTreeNode_TargetEnemyStarbase content) => new TargetStarbaseNode(false);
+            public INode Create(BehaviorTreeNode_MakeTargetMothership content) => new SetMothershipNode();
+            public INode Create(BehaviorTreeNode_TargetDistance content) => new DistanceToTargetNode(content.MaxDistance);
+        }
 	}
 }

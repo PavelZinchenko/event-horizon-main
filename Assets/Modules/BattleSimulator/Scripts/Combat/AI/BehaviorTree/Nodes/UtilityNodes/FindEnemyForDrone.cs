@@ -31,7 +31,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			if (enemy.Type.Side.IsAlly(ship.Type.Side)) return false;
 			if (_ignoreDrones && enemy.Type.Class != UnitClass.Ship) return false;
 
-			var mothership = ship.Type.Owner;
+			var mothership = context.Mothership;
 			if (mothership == null) return true;
 			return Helpers.Distance(mothership, enemy) <= context.AttackRangeMax + _droneRange;
 		}

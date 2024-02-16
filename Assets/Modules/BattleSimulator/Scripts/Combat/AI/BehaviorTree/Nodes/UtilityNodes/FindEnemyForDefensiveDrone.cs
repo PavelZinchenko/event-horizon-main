@@ -23,7 +23,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			var range = context.AttackRangeMax + _droneRange;
 			var options = EnemyMatchingOptions.EnemyForDrone(range);
 			options.IgnoreDrones = _ignoreDrones;
-			return context.Scene.Ships.GetEnemy(context.Ship.Type.Owner ?? context.Ship, options);
+			return context.Scene.Ships.GetEnemy(context.Mothership ?? context.Ship, options);
 		}
 
 		protected override bool IsValidEnemy(IShip enemy, Context context)
@@ -33,7 +33,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			if (enemy.Type.Side.IsAlly(ship.Type.Side)) return false;
 			if (_ignoreDrones && enemy.Type.Class != UnitClass.Ship) return false;
 
-			var mothership = ship.Type.Owner;
+			var mothership = context.Mothership;
 			if (mothership == null) return true;
 
 			return Helpers.Distance(mothership, enemy) <= context.AttackRangeMax + _droneRange;

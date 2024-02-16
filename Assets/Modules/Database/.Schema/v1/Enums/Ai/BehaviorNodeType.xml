@@ -10,6 +10,7 @@
     <item name="Cooldown" value="7">Executes node until condition met, then waits a specific amount of time, returning 'Result', repeats</item>
     <item name="Execute" value="8">Executes node until condition met, returns 'Result' after that</item>
     <item name="ParallelSequence" value="10">Executes nodes sequentially, stops when the first node returns FAILURE</item>
+    <item name="PreserveTarget" value="11">Memorizes the primary target, runs the child node, then restores the original target. Returns the result of the node's execution</item>
 
     <item name="HasEnoughEnergy" value="50" />
     <item name="IsLowOnHp" value="51" />
@@ -23,6 +24,8 @@
     <item name="MainTargetIsEnemy" value="58" />
     <item name="MainTargetLowHp" value="59" />
     <item name="MainTargetWithinAttackRange" value="60" />
+    <item name="HasMothership" value="61">Returns SUCCESS if mothership exists and is alive</item>
+    <item name="TargetDistance" value="62">Returns SUCCESS if the distance to the target does not exceed the MaxDistance</item>
 
     <item name="FindEnemy" value="100">Looks for nearest enemy. Changes target every MaxCooldown sec if it's defined. SUCCESS if found, FAILURE otherwise</item>
     <item name="MoveToAttackRange" value="101">Moves towards target until inside attack radius. Requires main target. Uses attack range of selected weapons. SUCCESS if inside attack range, FAILURE if any error, RUNNING otherwise</item>
@@ -52,16 +55,19 @@
     <item name="ForgetMainTarget" value="125">Removes main target. Returns SUCCESS</item>
     <item name="EscapeTargetAttackRadius" value="126">Flies away from target until outside its attack radius. Returns SUCCESS when safe, RUNNING otherwise</item>
     <item name="AttackAdditionalTargets" value="127">Attacks additional targets with selected weapons, returning SUCCESS upon firing, RUNNING while aiming, and FAILURE for any inability to initiate the attack</item>
+    <item name="TargetAllyStarbase" value="128">Targets an ally starbase. Returns SUCCESS if it exists and alive, otherwise FAILURE</item>
+    <item name="TargetEnemyStarbase" value="129">Targets an enemy starbase. Returns SUCCESS if it exists and alive, otherwise FAILURE</item>
 
     <item name="EnginePropulsionForce" value="150">Returns SUCCESS when [forward acceleration]/[max acceleration] > MinValue</item>
 
     <item name="MotherShipRetreated" value="200" />
     <item name="MotherShipDestroyed" value="201" />
     <item name="FlyAroundMothership" value="202" />
-    <item name="GoBerserk" value="203">Detaches from the mothership. Starts treating all ships as enemies. Returns SUCCESS once activated, FAILURE after that</item>
+    <item name="GoBerserk" value="203">Detaches drone from the mothership. Starts treating all ships as enemies. Returns SUCCESS once activated, FAILURE after that</item>
     <item name="TargetMothership" value="204">Sets the mothership as a main target. Returns FAILURE if it's absent, otherwise SUCCESS</item>
     <item name="MothershipLowHp" value="205" />
     <item name="DroneBayRangeExceeded" value="206">Returns SUCCESS if drone is too far from the mothership</item>
+    <item name="MakeTargetMothership" value="207">Makes primary target a new mothership. Returns FAILURE if target is absent or already a mothership, otherwise SUCCESS</item>
 
     <item name="ShowMessage" value="300">Spawns text over the ship sprite that disappears shortly. Retruns SUCCESS if spawned, RUNNING if on cooldown</item>
     <item name="DebugLog" value="301">Writes message to the log file (https://docs.unity3d.com/Manual/LogFiles.html). Retruns SUCCESS</item>

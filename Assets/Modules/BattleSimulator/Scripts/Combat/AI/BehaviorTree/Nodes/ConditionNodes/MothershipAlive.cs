@@ -2,12 +2,12 @@
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
-	public class MothershipDestroyed : INode
+	public class MothershipAlive : INode
 	{
 		public NodeState Evaluate(Context context)
 		{
 			var mothership = context.Mothership;
-			return mothership != null && mothership.State == UnitState.Destroyed ? NodeState.Success : NodeState.Failure;
+			return mothership != null && mothership.State == UnitState.Active ? NodeState.Success : NodeState.Failure;
 		}
 	}
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using Combat.Component.Collider;
 using Combat.Component.Ship;
-using Combat.Unit;
 using UnityEngine;
 
 namespace Combat.Component.Unit.Classification
