@@ -4,6 +4,8 @@ using Combat.Component.Systems.Weapons;
 using Combat.Component.Unit.Classification;
 using Combat.Ai.BehaviorTree.Utils;
 using Combat.Component.Body;
+using DatabaseMigration.v1.Enums;
+using GameDatabase.Enums;
 
 namespace Combat.Ai.Calculations
 {
@@ -35,13 +37,13 @@ namespace Combat.Ai.Calculations
 				var caps = weapon.Info.Capability;
 				if (caps.HasCapability(WeaponCapability.CaptureDrone) && enemy.Type.Class != UnitClass.Drone) continue;
 
-				var bulletType = weapon.Info.BulletType == BulletType.Projectile && directAttacksOnly ? BulletType.Direct : weapon.Info.BulletType;
+				var bulletType = weapon.Info.BulletType == AiBulletBehavior.Projectile && directAttacksOnly ? AiBulletBehavior.Beam : weapon.Info.BulletType;
 				if (!AttackHelpers.TryGetTarget(weapon, ship, enemy, bulletType, out var target))
 					continue;
 
 				aiming++;
-				var shotImmediately = weapon.Info.BulletType == BulletType.Homing || weapon.Info.BulletType == BulletType.AreaOfEffect;
-				var shouldTrackTarget = weapon.Info.BulletType != BulletType.AreaOfEffect;
+				var shotImmediately = weapon.Info.BulletType == AiBulletBehavior.Homing || weapon.Info.BulletType == AiBulletBehavior.AreaOfEffect;
+				var shouldTrackTarget = weapon.Info.BulletType != AiBulletBehavior.AreaOfEffect;
 
 				var course = Helpers.TargetCourse(ship, target, weapon.Platform);
 				var spread = weapon.Info.Spread / 2 + Mathf.Asin(0.3f * enemy.Body.Scale / Vector2.Distance(enemy.Body.Position, ship.Body.Position)) * Mathf.Rad2Deg;

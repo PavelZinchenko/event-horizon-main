@@ -6,28 +6,13 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
-using System;
-using GameDatabase.Enums;
-using GameDatabase.Model;
-
-namespace GameDatabase.Serializable
+namespace GameDatabase.Enums
 {
-	[Serializable]
-	public class BulletBodySerializable
+	public enum AiBulletBehavior
 	{
-		public BulletType Type;
-		public float Size;
-		public float Length;
-		public float Velocity;
-		public float Range;
-		public float Lifetime;
-		public float Weight;
-		public int HitPoints;
-		public string Color;
-		public int BulletPrefab;
-		public float EnergyCost;
-		public bool CanBeDisarmed;
-		public bool FriendlyFire;
-		public AiBulletBehavior AiBulletBehavior;
+		Projectile,
+		Homing,
+		Beam,
+		AreaOfEffect,
 	}
 }

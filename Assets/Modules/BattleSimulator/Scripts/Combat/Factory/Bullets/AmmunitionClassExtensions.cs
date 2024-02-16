@@ -1,7 +1,6 @@
 ﻿using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using BulletEffectType = Combat.Component.Systems.Weapons.BulletEffectType;
-using BulletType = Combat.Component.Systems.Weapons.BulletType;
 
 namespace Combat.Factory
 {
@@ -29,10 +28,10 @@ namespace Combat.Factory
             return !ammunition.IsBeam() && !ammunition.IsAoe();
         }
 
-        public static BulletType GetBulletType(this AmmunitionClassObsolete ammunition)
+        public static AiBulletBehavior GetBehaviorType(this AmmunitionClassObsolete ammunition)
         {
             if (ammunition.IsBeam())
-                return BulletType.Direct;
+                return AiBulletBehavior.Beam;
 
             switch (ammunition)
             {
@@ -42,12 +41,12 @@ namespace Combat.Factory
                 case AmmunitionClassObsolete.HomingTorpedo:
                 case AmmunitionClassObsolete.Rocket:
                 case AmmunitionClassObsolete.ClusterMissile:
-                    return BulletType.Homing;
+                    return AiBulletBehavior.Homing;
                 case AmmunitionClassObsolete.Aura:
                 case AmmunitionClassObsolete.Explosion:
-                    return BulletType.AreaOfEffect;
+                    return AiBulletBehavior.AreaOfEffect;
                 default:
-                    return BulletType.Projectile;
+                    return AiBulletBehavior.Projectile;
             }
         }
 

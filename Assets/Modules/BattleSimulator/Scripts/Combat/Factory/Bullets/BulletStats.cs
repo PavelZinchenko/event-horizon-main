@@ -9,7 +9,7 @@ namespace Combat.Factory
 {
     public interface IBulletStats
     {
-        Component.Systems.Weapons.BulletType Type { get; }
+	    AiBulletBehavior BehaviorType { get; }
         [System.Obsolete] Component.Systems.Weapons.BulletEffectType EffectType { get; }
 
 		WeaponCapability Capability { get; }
@@ -43,22 +43,23 @@ namespace Combat.Factory
             HitPointsMultiplier = 1.0f;
         }
 
-        public Component.Systems.Weapons.BulletType Type
+        public AiBulletBehavior BehaviorType
         {
             get
             {
-                switch (_ammunition.Body.Type)
-                {
-                    case BulletType.Projectile:
-                    case GameDatabase.Enums.BulletType.Static:
-                        return Component.Systems.Weapons.BulletType.Projectile;
-                    case GameDatabase.Enums.BulletType.Homing:
-                    case GameDatabase.Enums.BulletType.Magnetic:
-                        return Component.Systems.Weapons.BulletType.Homing;
-                    case GameDatabase.Enums.BulletType.Continuous:
-                    default:
-                        return Component.Systems.Weapons.BulletType.Direct;
-                }
+	            return _ammunition.Body.AiBulletBehavior;
+	            // switch (_ammunition.Body.Type)
+	            // {
+	            //     case BulletType.Projectile:
+	            //     case GameDatabase.Enums.BulletType.Static:
+	            //         return Component.Systems.Weapons.BulletType.Projectile;
+	            //     case GameDatabase.Enums.BulletType.Homing:
+	            //     case GameDatabase.Enums.BulletType.Magnetic:
+	            //         return Component.Systems.Weapons.BulletType.Homing;
+	            //     case GameDatabase.Enums.BulletType.Continuous:
+	            //     default:
+	            //         return Component.Systems.Weapons.BulletType.Direct;
+	            // }
             }
         }
 
@@ -196,7 +197,7 @@ namespace Combat.Factory
         public BulletStatsObsolete(AmmunitionObsoleteStats ammunition)
         {
             _stats = ammunition;
-            Type = ammunition.AmmunitionClass.GetBulletType();
+            BehaviorType = ammunition.AmmunitionClass.GetBehaviorType();
             EffectType = ammunition.AmmunitionClass.GetEffectType();
 
             PowerLevel = 1.0f;
@@ -204,7 +205,7 @@ namespace Combat.Factory
             HitPointsMultiplier = 1.0f;
         }
 
-        public Component.Systems.Weapons.BulletType Type { get; private set; }
+        public AiBulletBehavior BehaviorType { get; private set; }
         public Component.Systems.Weapons.BulletEffectType EffectType { get; private set; }
 
 		public WeaponCapability Capability

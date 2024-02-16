@@ -1,5 +1,6 @@
 using Combat.Component.Ship;
 using Combat.Component.Systems.Weapons;
+using GameDatabase.Enums;
 
 namespace Combat.Ai
 {
@@ -11,15 +12,15 @@ namespace Combat.Ai
 			
 			switch (weapon.Info.BulletType)
 			{
-			case BulletType.Projectile:
+			case AiBulletBehavior.Projectile:
                 if (weapon.Info.WeaponType == WeaponType.Manageable)
                     return new ProjectileAttackAction(weaponIndex);
                 return level < 100 ? (IAction)(new DirectAttackAction(weaponIndex)) : (IAction)(new ProjectileAttackAction(weaponIndex));
-			case BulletType.Homing:
+			case AiBulletBehavior.Homing:
 				return new HomingAttackAction(weaponIndex);
-			case BulletType.Direct:
+			case AiBulletBehavior.Beam:
 				return new DirectAttackAction(weaponIndex);
-			case BulletType.AreaOfEffect:
+			case AiBulletBehavior.AreaOfEffect:
 				return new ExplosionAttackAction(weaponIndex);
 			default:
 				throw new System.NotSupportedException();

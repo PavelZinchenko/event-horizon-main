@@ -1,4 +1,5 @@
 ﻿using Combat.Component.Systems.Weapons;
+using GameDatabase.Enums;
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
@@ -58,9 +59,9 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			var bulletType = weapon.Info.BulletType;
 			switch (bulletType)
 			{
-				case BulletType.Direct:
+				case AiBulletBehavior.Beam:
 					return true;
-				case BulletType.Projectile:
+				case AiBulletBehavior.Projectile:
 					return !_onlyDirectWeapon;
 				default:
 					return false;

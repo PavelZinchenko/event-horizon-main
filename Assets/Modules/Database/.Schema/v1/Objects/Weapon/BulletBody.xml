@@ -13,4 +13,5 @@
     <member name="EnergyCost" type="float" minvalue="0" maxvalue="999999999" />
     <member name="CanBeDisarmed" type="bool" />
     <member name="FriendlyFire" type="bool" />
+    <member name="AiBulletBehavior" type="enum" typeid="AiBulletBehavior" >Hints for AI and auto-aim0 on usage of this weapon</member>
 </data>

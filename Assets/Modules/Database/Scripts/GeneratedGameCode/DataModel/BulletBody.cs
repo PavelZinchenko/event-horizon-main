@@ -40,6 +40,7 @@ namespace GameDatabase.DataModel
 			EnergyCost = UnityEngine.Mathf.Clamp(serializable.EnergyCost, 0f, 1E+09f);
 			CanBeDisarmed = serializable.CanBeDisarmed;
 			FriendlyFire = serializable.FriendlyFire;
+			AiBulletBehavior = serializable.AiBulletBehavior;
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -57,6 +58,7 @@ namespace GameDatabase.DataModel
 		public float EnergyCost { get; private set; }
 		public bool CanBeDisarmed { get; private set; }
 		public bool FriendlyFire { get; private set; }
+		public AiBulletBehavior AiBulletBehavior { get; private set; }
 
 		public static BulletBody DefaultValue { get; private set; }= new(new(), null);
 	}
