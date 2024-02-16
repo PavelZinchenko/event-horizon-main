@@ -37,7 +37,6 @@
   ],
   "Features": {
     "ShipWeightBonus": -0.3,
-    "EquipmentWeightBonus": -0.3,
     "VelocityBonus": 0.3,
     "TurnRateBonus": 0.3,
     "EnergyBonus": 1.0
