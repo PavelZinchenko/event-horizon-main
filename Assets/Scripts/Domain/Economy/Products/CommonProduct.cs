@@ -95,13 +95,13 @@ namespace Economy.Products
         public bool TryBuy(int amount)
         {
             if (amount <= 0) return false;
-            return _price.TryWithdraw(_playerResources);
+            return (_price*amount).TryWithdraw(_playerResources);
         }
 
         public bool TrySell(int amount)
         {
             if (amount <= 0) return false;
-            _price.Consume(_playerResources);
+            (_price*amount).Consume(_playerResources);
             return true;
         }
     }
@@ -124,7 +124,7 @@ namespace Economy.Products
         public bool TrySell(int amount)
         {
             if (amount <= 0) return false;
-            _price.Consume(_playerResources);
+            (_price*amount).Consume(_playerResources);
             return true;
         }
     }
