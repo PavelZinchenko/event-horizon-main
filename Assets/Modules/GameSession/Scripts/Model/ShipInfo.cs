@@ -62,7 +62,7 @@ namespace Session.Model
 
 			ship.FirstSatellite = _satellite1.ToSatellite(database);
 			ship.SecondSatellite = _satellite2.ToSatellite(database);
-			ship.Name = shipData.Name;
+			ship.Name = _name;
 			ship.ColorScheme.Value = _colorScheme;
 			ship.Experience = (long)_experience;
 			ship.DataChanged = false;
