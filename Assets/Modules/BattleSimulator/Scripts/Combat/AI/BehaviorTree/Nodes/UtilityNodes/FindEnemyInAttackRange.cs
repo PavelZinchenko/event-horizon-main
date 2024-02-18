@@ -5,21 +5,23 @@ using Combat.Component.Unit.Classification;
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
-	public class FindEnemyForDrone : FindEnemyNodeBase
+	public class FindEnemyInAttackRange : FindEnemyNodeBase
 	{
-		private readonly float _droneRange;
-		private readonly bool _ignoreDrones;
+        private readonly bool _ignoreDrones;
+        private readonly bool _isDrone;
 
-		public FindEnemyForDrone(float findEnemyCooldown, float changeEnemyCooldown, float droneRange, bool ignoreDrones)
+        public FindEnemyInAttackRange(IShip ship, float findEnemyCooldown, float changeEnemyCooldown, bool ignoreDrones)
 			: base(findEnemyCooldown, changeEnemyCooldown)
 		{
-			_droneRange = droneRange;
 			_ignoreDrones = ignoreDrones;
-		}
+            _isDrone = ship.Type.Class == UnitClass.Drone;
+        }
 
-		protected override IShip FindNewEnemy(Context context)
+        protected override IShip FindNewEnemy(Context context)
 		{
-			var options = EnemyMatchingOptions.EnemyForDrone(context.AttackRangeMax + _droneRange);
+			var options = _isDrone ? EnemyMatchingOptions.EnemyForDrone(context.AttackRangeMax) :
+                EnemyMatchingOptions.EnemyForShip(context.AttackRangeMax);
+
 			options.IgnoreDrones = _ignoreDrones;
 			return context.Scene.Ships.GetEnemy(context.Ship, options);
 		}
@@ -30,10 +32,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			if (!enemy.IsActive()) return false;
 			if (enemy.Type.Side.IsAlly(ship.Type.Side)) return false;
 			if (_ignoreDrones && enemy.Type.Class != UnitClass.Ship) return false;
-
-			var mothership = context.Mothership;
-			if (mothership == null) return true;
-			return Helpers.Distance(mothership, enemy) <= context.AttackRangeMax + _droneRange;
+			return Helpers.Distance(ship, enemy) <= context.AttackRangeMax;
 		}
 	}
 }

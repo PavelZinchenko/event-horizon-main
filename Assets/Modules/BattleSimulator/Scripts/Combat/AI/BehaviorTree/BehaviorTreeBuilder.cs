@@ -29,18 +29,19 @@ namespace Combat.Ai.BehaviorTree
 
 	public readonly struct AiSettings
 	{
-		public readonly float DroneRange;
+		public readonly float LimitedRange;
 		public readonly AiDifficultyLevel AiLevel;
 
-		public static AiSettings ForDrone(float droneRange) => new(AiDifficultyLevel.Hard, droneRange);
-		public static AiSettings FromAiLevel(int aiLevel) => new(AiLevelFromValue(aiLevel));
+        public static AiSettings ForDrone(float droneRange) => new(AiDifficultyLevel.Hard, droneRange);
+        public static AiSettings ForMercenary(float range, int aiLevel) => new(AiLevelFromValue(aiLevel), range);
+        public static AiSettings FromAiLevel(int aiLevel) => new(AiLevelFromValue(aiLevel));
 		public static AiSettings FromAiLevel(AiDifficultyLevel aiLevel) => new(aiLevel);
 		public static AiSettings Default => new(AiDifficultyLevel.Hard);
 
 		private AiSettings(AiDifficultyLevel aiLevel, float droneRange = 0f)
 		{
 			AiLevel = aiLevel;
-			DroneRange = droneRange;
+			LimitedRange = droneRange;
 		}
 
 		private static AiDifficultyLevel AiLevelFromValue(int value)

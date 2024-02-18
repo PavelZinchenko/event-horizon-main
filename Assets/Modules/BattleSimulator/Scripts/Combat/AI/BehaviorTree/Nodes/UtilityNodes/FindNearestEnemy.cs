@@ -5,21 +5,21 @@ using Combat.Component.Unit.Classification;
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
-	public class FindEnemyForShip : FindEnemyNodeBase
+	public class FindNearestEnemy : FindEnemyNodeBase
 	{
 		private readonly bool _ignoreDrones;
-		private readonly bool _inAttackRange;
+        private readonly bool _isDrone;
 
-		public FindEnemyForShip(float findEnemyCooldown, float changeEnemyCooldown, bool inAttackRange, bool ignoreDrones)
+        public FindNearestEnemy(IShip ship, float findEnemyCooldown, float changeEnemyCooldown, bool ignoreDrones)
 			: base(findEnemyCooldown, changeEnemyCooldown)
 		{
 			_ignoreDrones = ignoreDrones;
-			_inAttackRange = inAttackRange;
-		}
+            _isDrone = ship.Type.Class == UnitClass.Drone;
+        }
 
-		protected override IShip FindNewEnemy(Context context)
+        protected override IShip FindNewEnemy(Context context)
 		{
-			var options = EnemyMatchingOptions.EnemyForShip(_inAttackRange ? context.AttackRangeMax : 0);
+			var options = _isDrone ? EnemyMatchingOptions.EnemyForDrone(0) : EnemyMatchingOptions.EnemyForShip(0);
 			options.IgnoreDrones = _ignoreDrones;
 			return context.Scene.Ships.GetEnemy(context.Ship, options);
 		}
@@ -30,7 +30,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			if (!enemy.IsActive()) return false;
 			if (enemy.Type.Side.IsAlly(ship.Type.Side)) return false;
 			if (_ignoreDrones && enemy.Type.Class != UnitClass.Ship) return false;
-			return !_inAttackRange || Helpers.Distance(ship, enemy) <= context.AttackRangeMax;
+			return true;
 		}
 	}
 }

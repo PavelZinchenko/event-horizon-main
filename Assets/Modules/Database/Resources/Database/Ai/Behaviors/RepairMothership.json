@@ -4,15 +4,7 @@
   "RootNode": {
     "Type": 3,
     "Requirement": {
-      "Type": 2,
-      "Requirements": [
-        {
-          "Type": 50
-        },
-        {
-          "Type": 13
-        }
-      ]
+      "Type": 13
     },
     "Nodes": [
       {
