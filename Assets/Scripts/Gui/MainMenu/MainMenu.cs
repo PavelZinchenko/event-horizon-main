@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using GameStateMachine.States;
 using Services.Gui;
 using Services.Messenger;
 using Session;
 using Constructor.Ships;
-using Database.Legacy;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
@@ -13,6 +11,7 @@ using GameServices.GameManager;
 using GameServices.Gui;
 using GameServices.Settings;
 using Services.InAppPurchasing;
+using Services.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -26,7 +25,8 @@ namespace Gui.MainMenu
         [Inject] private readonly GameSettings _gameSettings;
         [Inject] private readonly IDatabase _database;
         [Inject] private readonly GuiHelper _guiHelper;
-		[Inject] private readonly OpenGameSettingsSignal.Trigger _openSettingsTrigger;
+        [Inject] private readonly ILocalization _localization;
+        [Inject] private readonly OpenGameSettingsSignal.Trigger _openSettingsTrigger;
 
         [Inject]
         private void Initialize(
@@ -108,7 +108,11 @@ namespace Gui.MainMenu
 
         public void Exit()
         {
+#if UNITY_STANDALONE
+            _guiHelper.ShowConfirmation(_localization.GetString("$ExitConfirmation"), Application.Quit);
+#else
             Application.Quit();
+#endif
         }
 
         public void RestorePurchases()
