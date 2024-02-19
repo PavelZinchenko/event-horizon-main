@@ -21,7 +21,7 @@
 			_lastFrameId = context.FrameId;
 			_elapsedTime += context.DeltaTime;
 
-			return _elapsedTime >= _timeInterval ? NodeState.Success : NodeState.Running;
+            return _elapsedTime >= _timeInterval ? NodeState.Success : NodeState.Failure;
 		}
 	}
 }
