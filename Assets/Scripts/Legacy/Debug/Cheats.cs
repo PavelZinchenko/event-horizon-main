@@ -293,6 +293,7 @@ public class Cheats
         Component = 4,
         PurchasedStars = 5,
         SupporterPack1 = 6,
+        Satellite = 9,
     }
 
     private IEnumerable<IProduct> DeserializeItems(byte[] data)
@@ -324,9 +325,16 @@ public class Cheats
                         yield return CommonProduct.Create(_itemTypeFactory.CreateMarketShipItem(ship));
                     }
                     break;
+                case ItemType.Satellite:
+                    {
+                        var satelliteId = Helpers.DeserializeInt(data, ref index);
+                        var satellite = _database.GetSatellite(ItemId<Satellite>.Create(satelliteId));
+                        yield return CommonProduct.Create(_itemTypeFactory.CreateSatelliteItem(satellite));
+                    }
+                    break;
                 case ItemType.Component:
                     {
-                        var component = ComponentInfo.FromInt64(_database, Helpers.DeserializeInt(data, ref index));
+                        var component = ComponentInfo.FromInt64(_database, Helpers.DeserializeLong(data, ref index));
                         var amount = Helpers.DeserializeInt(data, ref index);
                         yield return CommonProduct.Create(_itemTypeFactory.CreateComponentItem(component), amount);
                     }
@@ -373,6 +381,15 @@ public class Cheats
 
                 var ship = ((ShipItemBase)item.Type).Ship;
                 foreach (var value in ship.ToShipData().Serialize())
+                    yield return value;
+            }
+            else if (item.Type is SatelliteItem)
+            {
+                foreach (var value in Helpers.Serialize((int)ItemType.Satellite))
+                    yield return value;
+
+                var satellite = ((SatelliteItem)item.Type).Satellite;
+                foreach (var value in Helpers.Serialize(satellite.Id.Value))
                     yield return value;
             }
             else if (item.Type is ComponentItem)
