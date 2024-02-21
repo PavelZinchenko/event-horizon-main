@@ -155,8 +155,18 @@ namespace Combat.Ai
 			    var spread = weapon.Info.Spread/2 + Mathf.Asin(0.3f * enemy.Body.Scale / Vector2.Distance(enemy.Body.Position, ship.Body.Position))*Mathf.Rad2Deg;
 				var delta = Mathf.Abs(Mathf.DeltaAngle(course, ship.Body.Rotation)) - weapon.Platform.AutoAimingAngle;
 
-				if (delta < spread + 1 || shotImmediately)
-					controls.ActivateSystem(id, weapon.Info.WeaponType != WeaponType.RequiredCharging);
+                if (delta < spread + 1 || shotImmediately)
+                {
+                    if (weapon.Info.WeaponType == WeaponType.RequiredCharging)
+                    {
+                        controls.ActivateSystem(id, false);
+                        ship.Systems.All[id].Active = false;
+                    }
+                    else
+                    {
+                        controls.ActivateSystem(id, true);
+                    }
+                }
 				if (delta < 0 || delta > targetDeltaAngle)
 					continue;
 
