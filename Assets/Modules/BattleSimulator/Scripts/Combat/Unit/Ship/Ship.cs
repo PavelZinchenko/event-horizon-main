@@ -90,7 +90,6 @@ namespace Combat.Component.Ship
 
             Features.UpdatePhysics(elapsedTime, Collider);
             UpdateSystems(elapsedTime);
-            Controls.DataChanged = false;
         }
 
         protected override void OnUpdateView(float elapsedTime)
