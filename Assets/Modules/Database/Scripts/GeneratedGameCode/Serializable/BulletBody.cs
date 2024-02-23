@@ -30,5 +30,6 @@ namespace GameDatabase.Serializable
 		public bool CanBeDisarmed;
 		public bool FriendlyFire;
 		public AiBulletBehavior AiBulletBehavior;
+		public BulletTypeObsolete Type;
 	}
 }
