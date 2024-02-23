@@ -42,7 +42,7 @@ namespace Session
 		{
 			writer.WriteUint(_header);
 			writer.WriteInt(_format);
-			var version = SaveGameData.VersionMajor << 16 + SaveGameData.VersionMinor;
+			var version = (SaveGameData.VersionMajor << 16) + SaveGameData.VersionMinor;
 			writer.WriteInt(version);
 
 			using (var sessionDataWriter = new SessionDataWriter(writer))

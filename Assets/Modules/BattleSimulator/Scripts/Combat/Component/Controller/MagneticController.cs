@@ -32,6 +32,17 @@ namespace Combat.Component.Controller
             }
 
             UpdateVelocity(elapsedTime);
+
+            if (_lookForward)
+                UpdateRotation();
+        }
+
+        private void UpdateRotation()
+        {
+            var rotation = RotationHelpers.Angle(_unit.Body.Velocity);
+            var requiredAngularVelocity = UnityEngine.Mathf.DeltaAngle(_unit.Body.Rotation, rotation) * 10;
+            var acceleration = requiredAngularVelocity - _unit.Body.AngularVelocity;
+            _unit.Body.ApplyAngularAcceleration(acceleration);
         }
 
         private void UpdateVelocity(float deltaTime)
@@ -48,14 +59,8 @@ namespace Combat.Component.Controller
 
             var requiredVelocity = (targetPosition - position).normalized * _maxVelocity;
             _unit.Body.ApplyAcceleration((requiredVelocity - velocity).normalized * _acceleration * deltaTime);
-
-            _rotation = RotationHelpers.Angle(velocity);
-
-            if (_lookForward)
-                _unit.Body.Turn(_rotation);
         }
 
-        private float _rotation;
         private float _timeFromLastUpdate = _targetUpdateCooldown;
         private IUnit _target;
         private readonly bool _lookForward;

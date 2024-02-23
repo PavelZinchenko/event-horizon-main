@@ -6,74 +6,7 @@
     "Nodes": [
       {
         "Type": 1,
-        "Requirement": {
-          "Type": 2,
-          "Requirements": [
-            {
-              "Type": 13
-            },
-            {
-              "Type": 101,
-              "Value": 5.0
-            }
-          ]
-        },
-        "ItemId": 12
-      },
-      {
-        "Type": 1,
-        "Requirement": {
-          "Type": 2,
-          "Requirements": [
-            {
-              "Type": 1,
-              "Requirements": [
-                {
-                  "Type": 100,
-                  "Value": 0.5
-                },
-                {
-                  "Type": 10,
-                  "DeviceClass": 13
-                }
-              ]
-            },
-            {
-              "Type": 1,
-              "Requirements": [
-                {
-                  "Type": 101,
-                  "Value": 8.0
-                },
-                {
-                  "Type": 10
-                }
-              ]
-            }
-          ]
-        },
-        "ItemId": 13
-      },
-      {
-        "Type": 3,
-        "Requirement": {
-          "Type": 6,
-          "DifficultyLevel": 1
-        },
-        "Nodes": [
-          {
-            "Type": 63,
-            "MinValue": 1.2
-          },
-          {
-            "Type": 1,
-            "ItemId": 5
-          }
-        ]
-      },
-      {
-        "Type": 1,
-        "ItemId": 11
+        "ItemId": 17
       },
       {
         "Type": 1,

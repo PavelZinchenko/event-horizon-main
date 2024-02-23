@@ -89,7 +89,6 @@ namespace Combat.Component.Ship
             }
 
             Features.UpdatePhysics(elapsedTime, Collider);
-
             UpdateSystems(elapsedTime);
         }
 

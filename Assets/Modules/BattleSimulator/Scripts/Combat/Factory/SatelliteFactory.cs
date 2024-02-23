@@ -158,19 +158,19 @@ namespace Combat.Factory
             return pointDefense;
         }
 
-        public IAuxiliaryUnit CreateEnergyShield(IShip ship, float energyConsumption, float size, Color color)
+        public IAuxiliaryUnit CreateEnergyShield(IShip ship, GameObject prefab, float energyConsumption, float size, Color color)
         {
-            return CreateEnergyShield(ship, energyConsumption, size, Vector2.zero, color, 0.3f, "Combat/Objects/EnergyShield");
+            return CreateEnergyShield(ship, energyConsumption, size, Vector2.zero, color, 0.3f, prefab);
         }
 
         public IAuxiliaryUnit CreateFrontalShield(IShip ship, float energyConsumption, Vector2 offset, float size, Color color)
         {
-            return CreateEnergyShield(ship, energyConsumption, size, offset / ship.Body.Scale, color, 1.0f, "Combat/Objects/FrontalShield");
+            var prefab = _prefabCache.LoadResourcePrefab("Combat/Objects/FrontalShield");
+            return CreateEnergyShield(ship, energyConsumption, size, offset / ship.Body.Scale, color, 1.0f, prefab);
         }
 
-        private IAuxiliaryUnit CreateEnergyShield(IShip ship, float energyConsumption, float size, Vector2 offset, Color color, float defaultOpacity, string prefabName)
+        private IAuxiliaryUnit CreateEnergyShield(IShip ship, float energyConsumption, float size, Vector2 offset, Color color, float defaultOpacity, GameObject prefab)
         {
-            var prefab = _prefabCache.LoadResourcePrefab(prefabName);
             var gameObject = new GameObjectHolder(prefab, _objectPool);
             gameObject.IsActive = true;
 
@@ -182,8 +182,6 @@ namespace Combat.Factory
             view.Color = color;
 
             var collider = gameObject.GetComponent<ICollider>();
-
-            var physics = gameObject.GetComponent<PhysicsManager>();
 
             var energyShield = new EnergyShield(ship, body, view, collider, defaultOpacity);
             energyShield.DamageHandler = new EnergyShieldDamageHandler(energyShield, energyConsumption);

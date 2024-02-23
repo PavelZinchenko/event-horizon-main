@@ -30,6 +30,10 @@ namespace GameDatabase.DataModel
 					return new GameObjectPrefab_Undefined(serializable, loader);
 				case ObjectPrefabType.WormTailSegment:
 					return new GameObjectPrefab_WormTailSegment(serializable, loader);
+				case ObjectPrefabType.CircularSpriteObject:
+					return new GameObjectPrefab_CircularSpriteObject(serializable, loader);
+				case ObjectPrefabType.CircularOutlineObject:
+					return new GameObjectPrefab_CircularOutlineObject(serializable, loader);
 				default:
                     throw new DatabaseException("GameObjectPrefab: Invalid content type - " + serializable.Type);
 			}
@@ -59,6 +63,8 @@ namespace GameDatabase.DataModel
     {
 	    T Create(GameObjectPrefab_Undefined content);
 	    T Create(GameObjectPrefab_WormTailSegment content);
+	    T Create(GameObjectPrefab_CircularSpriteObject content);
+	    T Create(GameObjectPrefab_CircularOutlineObject content);
     }
 
     public partial class GameObjectPrefab_Undefined : GameObjectPrefab
@@ -100,6 +106,56 @@ namespace GameDatabase.DataModel
 
 		public SpriteId BodyImage { get; private set; }
 		public SpriteId JointImage { get; private set; }
+
+
+    }
+    public partial class GameObjectPrefab_CircularSpriteObject : GameObjectPrefab
+    {
+		partial void OnDataDeserialized(GameObjectPrefabSerializable serializable, Database.Loader loader);
+
+  		public GameObjectPrefab_CircularSpriteObject(GameObjectPrefabSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Image = new SpriteId(serializable.Image1, SpriteId.Type.Effect);
+			ImageScale = UnityEngine.Mathf.Clamp(serializable.ImageScale, 0f, 10f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IGameObjectPrefabFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public SpriteId Image { get; private set; }
+		public float ImageScale { get; private set; }
+
+
+    }
+    public partial class GameObjectPrefab_CircularOutlineObject : GameObjectPrefab
+    {
+		partial void OnDataDeserialized(GameObjectPrefabSerializable serializable, Database.Loader loader);
+
+  		public GameObjectPrefab_CircularOutlineObject(GameObjectPrefabSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Image = new SpriteId(serializable.Image1, SpriteId.Type.Effect);
+			ImageScale = UnityEngine.Mathf.Clamp(serializable.ImageScale, 0f, 10f);
+			Thickness = UnityEngine.Mathf.Clamp(serializable.Thickness, 0f, 1f);
+			AspectRatio = UnityEngine.Mathf.Clamp(serializable.AspectRatio, 0f, 100f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IGameObjectPrefabFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public SpriteId Image { get; private set; }
+		public float ImageScale { get; private set; }
+		public float Thickness { get; private set; }
+		public float AspectRatio { get; private set; }
 
 
     }

@@ -54,7 +54,8 @@ namespace Combat.Ai.BehaviorTree.Nodes
 
         private static bool IsStarbase(IShip ship, IShip target, bool ally)
         {
-            if (target == null) return false; 
+            if (target == null) return false;
+            if (target.Specification == null) return false;
             if (target.State != UnitState.Active) return false;
             if (target.Specification.Stats.ShipModel.SizeClass != GameDatabase.Enums.SizeClass.Starbase) return false;
             if (ally == target.Type.Side.IsEnemy(ship.Type.Side)) return false;

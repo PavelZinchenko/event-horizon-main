@@ -4,7 +4,7 @@ using Services.Resources;
 
 namespace Combat.Component.Helpers
 {
-    class WormTailSegmentInitializer : MonoBehaviour
+    class WormTailSegmentInitializer : MonoBehaviour, ICustomPrefabIntializer<GameObjectPrefab_WormTailSegment>
     {
         [SerializeField] private SpriteRenderer _bodySprite;
         [SerializeField] private SpriteRenderer _jointSprite;

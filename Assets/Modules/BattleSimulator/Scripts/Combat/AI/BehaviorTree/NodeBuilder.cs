@@ -140,16 +140,24 @@ namespace Combat.Ai.BehaviorTree
 
 			public INode Create(BehaviorTreeNode_FindEnemy content)
 			{
-				if (_builder._settings.DroneRange <= 0)
-					return new FindEnemyForShip(content.MinCooldown, content.MaxCooldown, content.InAttackRange, content.IgnoreDrones);
+                var isDrone = Ship.Type.Class == Component.Unit.Classification.UnitClass.Drone && Settings.LimitedRange > 0;
 
-				if (content.InAttackRange)
-					return new FindEnemyForDefensiveDrone(content.MinCooldown, content.MaxCooldown, Settings.DroneRange, content.IgnoreDrones);
+                // TODO: make separate node or additional option for defensive drones
+                var isDefensiveDrone = isDrone && content.InAttackRange;
 
-				return new FindEnemyForDrone(content.MinCooldown, content.MaxCooldown, Settings.DroneRange, content.InAttackRange);
-			}
+                if (content.InAttackRange && !isDrone)
+                    return new FindEnemyInAttackRange(Ship, content.MinCooldown, content.MaxCooldown, content.IgnoreDrones);
 
-			public INode Create(BehaviorTreeNode_MoveToAttackRange content) => new MoveToAttackRange(content.MinMaxLerp, content.Multiplier > 0 ? content.Multiplier : 1.0f);
+                if (Settings.LimitedRange > 0)
+                {
+                    var range = isDefensiveDrone ? Settings.LimitedRange / 4 : Settings.LimitedRange;
+                    return new FindEnemyNearMothership(Ship, content.MinCooldown, content.MaxCooldown, range, content.IgnoreDrones);
+                }
+
+                return new FindNearestEnemy(Ship, content.MinCooldown, content.MaxCooldown, content.IgnoreDrones);
+            }
+
+            public INode Create(BehaviorTreeNode_MoveToAttackRange content) => new MoveToAttackRange(content.MinMaxLerp, content.Multiplier > 0 ? content.Multiplier : 1.0f);
 			public INode Create(BehaviorTreeNode_FlyAroundMothership content) => new FlyAroundMothership(RandomRange(content.MinDistance, content.MaxDistance));
 			public INode Create(BehaviorTreeNode_HasEnoughEnergy content) => new HaveEnoughEnergy(content.FailIfLess);
 			public INode Create(BehaviorTreeNode_SelectWeapon content) => SelectWeaponNode.Create(Ship, content.WeaponType);
@@ -181,7 +189,7 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_UseRecoil content) => RecoilNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_DefendWithFronalShield content) => FrontalShieldNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_TrackControllableAmmo content) => TrackControllableAmmo.Create(Ship, true);
-            public INode Create(BehaviorTreeNode_DroneBayRangeExceeded content) => DroneBayRangeExceeded.Create(Settings.DroneRange);
+            public INode Create(BehaviorTreeNode_DroneBayRangeExceeded content) => DroneBayRangeExceeded.Create(Settings.LimitedRange);
             public INode Create(BehaviorTreeNode_IsFasterThanTarget content) => new IsFaterThanTarget(content.Multiplier);
 			public INode Create(BehaviorTreeNode_MatchVelocityWithTarget content) => new MatchVelocityNode(content.Tolerance);
 			public INode Create(BehaviorTreeNode_KeepDistance content) => new KeepDistanceNode(content.MinDistance, content.MaxDistance);

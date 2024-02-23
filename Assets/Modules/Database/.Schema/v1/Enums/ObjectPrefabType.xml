@@ -2,4 +2,6 @@
 <data type="enum" name="ObjectPrefabType">
     <item name="Undefined" value="0" />
     <item name="WormTailSegment" value="1" />
+    <item name="CircularSpriteObject" value="2" />
+    <item name="CircularOutlineObject" value="3" />
 </data>

@@ -24,8 +24,8 @@ namespace Combat.Ai
 		public void Update(float deltaTime)
 		{
 			_behaviorTree.Update(deltaTime);
-			_ship.Controls.DataChanged = false;
-		}
+            _ship.Controls.DataChanged = false;
+        }
 
 		public class Factory : IControllerFactory
 		{
