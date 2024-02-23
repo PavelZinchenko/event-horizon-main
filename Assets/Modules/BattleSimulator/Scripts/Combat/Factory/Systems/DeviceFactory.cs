@@ -84,7 +84,8 @@ namespace Combat.Factory
                     break;
                 case DeviceClass.EnergyShield:
                     {
-                        var energyShield = _satelliteFactory.CreateEnergyShield(ship, 1f / (stats.Power * shipSpec.Stats.ShieldMultiplier.Value), stats.Size, stats.Color);
+                        var prefab = stats.Prefab != null ? _prefabCache.LoadPrefab(stats.Prefab) : _prefabCache.LoadPrefab(stats.EffectPrefab);
+                        var energyShield = _satelliteFactory.CreateEnergyShield(ship, prefab, 1f / (stats.Power * shipSpec.Stats.ShieldMultiplier.Value), stats.Size, stats.Color);
                         var energyShieldDevice = new EnergyShieldDevice(ship, stats, deviceData.KeyBinding);
                         device = energyShieldDevice;
                         device.AddTrigger(new AuxiliaryUnitAction(energyShieldDevice, energyShield));

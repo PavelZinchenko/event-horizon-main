@@ -5,10 +5,10 @@
   "EnergyConsumption": 5.0,
   "PassiveEnergyConsumption": 5.0,
   "Power": 0.75,
-  "Size": 1.5,
+  "Size": 1.4,
   "Cooldown": 1.0,
   "ActivationType": 2,
   "Color": "#C0C0FFFF",
-  "EffectPrefab": "Shield",
+  "Prefab": 2,
   "ControlButtonIcon": "controls_shield"
 }

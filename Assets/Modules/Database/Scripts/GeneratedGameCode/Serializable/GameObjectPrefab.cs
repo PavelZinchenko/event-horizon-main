@@ -18,5 +18,8 @@ namespace GameDatabase.Serializable
 		public ObjectPrefabType Type;
 		public string Image1;
 		public string Image2;
+		public float ImageScale = 1f;
+		public float Thickness = 0.1f;
+		public float AspectRatio = 1f;
 	}
 }

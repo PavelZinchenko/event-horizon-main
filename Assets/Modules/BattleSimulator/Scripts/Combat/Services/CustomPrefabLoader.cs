@@ -17,16 +17,17 @@ namespace Combat.Services
             _resourceLocator = resourceLocator;
         }
 
-        public GameObject Create(GameObjectPrefab_Undefined content)
-        {
-            throw new System.InvalidOperationException();
-        }
+        public GameObject Create(GameObjectPrefab_Undefined content) => throw new System.InvalidOperationException();
+        public GameObject Create(GameObjectPrefab_WormTailSegment content) => LoadPrefab(content, "WormSegment");
+        public GameObject Create(GameObjectPrefab_CircularSpriteObject content) => LoadPrefab(content, "EnergyShield");
+        public GameObject Create(GameObjectPrefab_CircularOutlineObject content) => LoadPrefab(content, "EnergyShieldOutline");
 
-        public GameObject Create(GameObjectPrefab_WormTailSegment content)
+        private GameObject LoadPrefab<T>(T content, string name) where T : GameObjectPrefab
         {
-            var template = _prefabCache.LoadPrefab(new PrefabId("WormSegment", PrefabId.Type.Object));
+            var template = _prefabCache.LoadPrefab(new PrefabId(name, PrefabId.Type.Object));
             var prefab = GameObject.Instantiate(template);
-            prefab.GetComponent<WormTailSegmentInitializer>().Initialize(content, _resourceLocator);
+            prefab.GetComponent<ICustomPrefabIntializer<T>>().Initialize(content, _resourceLocator);
+            prefab.transform.parent = _prefabCache.transform;
             return prefab;
         }
     }

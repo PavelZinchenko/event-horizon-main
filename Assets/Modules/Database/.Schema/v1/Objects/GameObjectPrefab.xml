@@ -3,4 +3,8 @@
     <member name="Type" type="enum" typeid="ObjectPrefabType" />
     <member name="Image1" type="image" typeid="Satellite" alias="BodyImage" case="WormTailSegment" />
     <member name="Image2" type="image" typeid="Satellite" alias="JointImage" case="WormTailSegment" />
+    <member name="Image1" type="image" typeid="Effect" alias="Image" case="CircularSpriteObject,CircularOutlineObject" />
+    <member name="ImageScale" type="float" case="CircularSpriteObject,CircularOutlineObject" minvalue="0" maxvalue="10" default="1" />
+    <member name="Thickness" type="float" case="CircularOutlineObject" minvalue="0" maxvalue="1" default="0.1" />
+    <member name="AspectRatio" type="float" case="CircularOutlineObject" minvalue="0" maxvalue="100" default="1" />
 </data>
