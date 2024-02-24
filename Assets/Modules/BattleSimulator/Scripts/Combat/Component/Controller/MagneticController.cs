@@ -51,20 +51,10 @@ namespace Combat.Component.Controller
             {
                 // If parent is present, we can not move, so just rotate towards the target
                 if (_target == null || !_target.IsActive()) return;
-                
-                Vector2 targetPosition;
-                if (_smartAim)
-                {
-                    if (!Geometry.GetTargetPosition(_target.Body.WorldPosition(), _target.Body.Velocity,
-                            _unit.Body.WorldPosition(),
-                            _maxVelocity, out targetPosition, out _))
-                    {
-                        // Can't catch this target, wait until the next aim
-                        _target = null;
-                        return;
-                    }
-                }
-                else
+
+                if (!_smartAim || !Geometry.GetTargetPosition(_target.Body.WorldPosition(), _target.Body.Velocity,
+                        _unit.Body.WorldPosition(),
+                        _maxVelocity, out var targetPosition, out _))
                 {
                     targetPosition = _target.Body.WorldPosition();
                 }
@@ -84,20 +74,10 @@ namespace Combat.Component.Controller
             
             var position = _unit.Body.Position;
             var velocity = _unit.Body.Velocity;
-            
-            Vector2 targetPosition;
-            if (_smartAim)
-            {
-                if (!Geometry.GetTargetPosition(_target.Body.WorldPosition(), _target.Body.Velocity,
-                        _unit.Body.WorldPosition(),
-                        _maxVelocity, out targetPosition, out _))
-                {
-                    // Can't catch this target, wait until the next aim
-                    _target = null;
-                    return;
-                }
-            }
-            else
+
+            if (!_smartAim || !Geometry.GetTargetPosition(_target.Body.WorldPosition(), _target.Body.Velocity,
+                    _unit.Body.WorldPosition(),
+                    _maxVelocity, out var targetPosition, out _))
             {
                 var targetVelocity = _target.Body.Velocity;
                 targetPosition = _target.Body.Position;
