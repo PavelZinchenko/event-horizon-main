@@ -44,18 +44,28 @@ namespace Combat.Component.Systems.Devices
 
         public override void OnEvent(SystemEventType eventType)
         {
-            if (eventType == SystemEventType.DamageTaken && !_ship.Stats.IsAlive && CanBeActivated)
-                Activate();
+            if (eventType == SystemEventType.DamageTaken && !_ship.Stats.IsAlive)
+            {
+                if (_invulnerabilityTime > 0)
+                    RestoreShip();
+                else if (CanBeActivated)
+                    Activate();
+            }
         }
 
         private void Activate()
         {
             InvokeTriggers(ConditionType.OnActivate);
+            RestoreShip();
             TimeFromLastUse = 0;
+            _invulnerabilityTime = _lifetime;
+        }
+
+        private void RestoreShip()
+        {
             _ship.Stats.Energy.Get(-_ship.Stats.Energy.MaxValue);
             _ship.Stats.Armor.Get(-_ship.Stats.Armor.MaxValue);
             _ship.Stats.Shield.Get(-_ship.Stats.Shield.MaxValue);
-            _invulnerabilityTime = _lifetime;
         }
 
         protected override void OnUpdateView(float elapsedTime)
