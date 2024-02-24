@@ -15,13 +15,7 @@ namespace GameDatabase.DataModel
                 return;
             }
 
-            if (serializable.Controller != null &&
-                (serializable.Controller.Type != DefaultController.Type ||
-                 serializable.Controller.IgnoreRotation != DefaultController.IgnoreRotation ||
-                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-                 serializable.Controller.StartingVelocityModifier != DefaultController.StartingVelocityModifier
-                 )
-                )
+            if (serializable.Controller != null && serializable.Controller.Type != DefaultController.Type)
             {
                 throw new DatabaseException("Ammunition.Controller field can not be used when obsolete BulletBody.Type field is used in the Ammunition.Body");
             }
