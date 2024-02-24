@@ -3,6 +3,7 @@ using Combat.Component.Platform;
 using Combat.Component.Ship;
 using Combat.Component.Systems.Weapons;
 using Combat.Component.Triggers;
+using Combat.Effects;
 using Combat.Scene;
 using Constructor;
 using GameDatabase.DataModel;
@@ -48,8 +49,11 @@ namespace Combat.Factory
                         var weapon = new ManageableCannon(platform, weaponStats, bulletFactory, keyBinding);
                         if (weaponStats.ShotSound)
                             weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ShotSound, ConditionType.OnActivate, ConditionType.OnDeactivate));
-                        if (weaponStats.ShotEffectPrefab)
-                            weapon.AddTrigger(CreateFlashEffect(weaponStats, bulletFactory, platform));
+
+                        var effect = CreateEffect(weaponStats, bulletFactory);
+                        if (effect != null)
+                            weapon.AddTrigger(CreateFlashEffect(effect, bulletFactory, platform));
+
                         return weapon;
                     }
                 case WeaponClass.Continuous:
@@ -57,8 +61,11 @@ namespace Combat.Factory
                         var weapon = new ContinuousCannon(platform, weaponStats, bulletFactory, keyBinding);
                         if (weaponStats.ShotSound)
                             weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ShotSound, ConditionType.OnActivate, ConditionType.OnDeactivate));
-                        if (weaponStats.ShotEffectPrefab)
-                            weapon.AddTrigger(CreateFlashEffect(weaponStats, bulletFactory, platform, ConditionType.OnActivate | ConditionType.OnRemainActive));
+
+                        var effect = CreateEffect(weaponStats, bulletFactory);
+                        if (effect != null)
+                            weapon.AddTrigger(CreateFlashEffect(effect, bulletFactory, platform, ConditionType.OnActivate | ConditionType.OnRemainActive));
+
                         return weapon;
                     }
                 case WeaponClass.MashineGun:
@@ -67,8 +74,11 @@ namespace Combat.Factory
                         var weapon = new MachineGun(platform, weaponStats, bulletFactory, keyBinding);
                         if (weaponStats.ShotSound)
                             weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ShotSound, ConditionType.OnActivate));
-                        if (weaponStats.ShotEffectPrefab)
-                            weapon.AddTrigger(CreateFlashEffect(weaponStats, bulletFactory, platform));
+
+                        var effect = CreateEffect(weaponStats, bulletFactory);
+                        if (effect != null)
+                            weapon.AddTrigger(CreateFlashEffect(effect, bulletFactory, platform));
+
                         return weapon;
                     }
                 case WeaponClass.MultiShot:
@@ -77,15 +87,21 @@ namespace Combat.Factory
                         var weapon = new MultishotCannon(platform, weaponStats, bulletFactory, keyBinding);
                         if (weaponStats.ShotSound)
                             weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ShotSound, ConditionType.OnActivate));
-                        if (weaponStats.ShotEffectPrefab)
-                            weapon.AddTrigger(CreateFlashEffect(weaponStats, bulletFactory, platform));
+
+                        var effect = CreateEffect(weaponStats, bulletFactory);
+                        if (effect != null)
+                            weapon.AddTrigger(CreateFlashEffect(effect, bulletFactory, platform));
+
                         return weapon;
                     }
                 case WeaponClass.RequiredCharging:
                     {
                         var weapon = new ChargeableCannon(platform, weaponStats, bulletFactory, keyBinding);
-                        if (weaponStats.ShotEffectPrefab)
-                            weapon.AddTrigger(CreatePowerLevelEffect(weapon, weaponStats, bulletFactory));
+
+                        var effect = CreateEffect(weaponStats, bulletFactory);
+                        if (effect != null)
+                            weapon.AddTrigger(CreatePowerLevelEffect(effect, weapon, bulletFactory));
+
                         if (weaponStats.ShotSound)
                             weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ShotSound, ConditionType.OnDischarge));
                         if (weaponStats.ChargeSound)
@@ -97,8 +113,11 @@ namespace Combat.Factory
                         var weapon = new CommonCannon(platform, weaponStats, bulletFactory, keyBinding);
                         if (weaponStats.ShotSound)
                             weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ShotSound, ConditionType.OnActivate));
-                        if (weaponStats.ShotEffectPrefab)
-                            weapon.AddTrigger(CreateFlashEffect(weaponStats, bulletFactory, platform));
+
+                        var effect = CreateEffect(weaponStats, bulletFactory);
+                        if (effect != null)
+                            weapon.AddTrigger(CreateFlashEffect(effect, bulletFactory, platform));
+
                         return weapon;
                     }
                 default:
@@ -106,25 +125,32 @@ namespace Combat.Factory
             }
         }
 
-        private IUnitEffect CreateFlashEffect(WeaponStats stats, IBulletFactory bulletFactory, IWeaponPlatform platform, ConditionType condition = ConditionType.OnActivate)
+        private IEffect CreateEffect(WeaponStats weaponStats, IBulletFactory bulletFactory)
         {
-            if (!stats.ShotEffectPrefab)
+            IEffect effect;
+            if (weaponStats.VisualEffect != null)
+                effect = CompositeEffect.Create(weaponStats.VisualEffect, _effectFactory, null);
+            else if (weaponStats.ShotEffectPrefab)
+                effect = _effectFactory.CreateEffect(weaponStats.ShotEffectPrefab);
+            else
                 return null;
 
-            var effect = _effectFactory.CreateEffect(stats.ShotEffectPrefab);
             effect.Color = bulletFactory.Stats.FlashColor;
             effect.Size = bulletFactory.Stats.FlashSize;
+
+            if (weaponStats.EffectSize > 0)
+                effect.Size *= weaponStats.EffectSize;
+
+            return effect;
+        }
+
+        private IUnitEffect CreateFlashEffect(IEffect effect, IBulletFactory bulletFactory, IWeaponPlatform platform, ConditionType condition = ConditionType.OnActivate)
+        {
             return new FlashEffect(effect, platform.Body, bulletFactory.Stats.FlashTime, Vector2.zero, condition);
         }
 
-        private IUnitEffect CreatePowerLevelEffect(IWeapon weapon, WeaponStats stats, IBulletFactory bulletFactory)
+        private IUnitEffect CreatePowerLevelEffect(IEffect effect, IWeapon weapon, IBulletFactory bulletFactory)
         {
-            if (!stats.ShotEffectPrefab)
-                return null;
-
-            var effect = _effectFactory.CreateEffect(stats.ShotEffectPrefab);
-            effect.Color = bulletFactory.Stats.FlashColor;
-            effect.Size = bulletFactory.Stats.FlashSize;
             return new PowerLevelEffect(weapon, effect, Vector2.zero, bulletFactory.Stats.FlashTime, ConditionType.OnActivate);
         }
     }
