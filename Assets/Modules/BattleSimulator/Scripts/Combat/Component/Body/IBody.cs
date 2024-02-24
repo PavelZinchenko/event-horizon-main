@@ -32,34 +32,6 @@ namespace Combat.Component.Body
         void UpdateView(float elapsedTime);
 
         void AddChild(Transform child);
-
-        public Vector2 WorldPositionNoOffset()
-        {
-            return DefaultWorldPositionNoOffset(this);
-        }
-        
-        public float WorldRotation()
-        {
-            return DefaultWorldRotation(this);
-        }
-
-        protected static Vector2 DefaultWorldPositionNoOffset(IBody body)
-        {
-            var position = body.Position;
-
-            if (body.Parent == null)
-                return position;
-
-            return body.Parent.WorldPosition() + RotationHelpers.Transform(position, body.Parent.WorldRotation()) * body.Parent.WorldScale();
-        }
-        
-        protected static float DefaultWorldRotation(IBody body)
-        {
-            if (body.Parent == null)
-                return body.Rotation;
-
-            return body.Rotation + body.Parent.WorldRotation();
-        }
     }
 
     public static class BodyExtensions
@@ -87,6 +59,24 @@ namespace Combat.Component.Body
         public static Vector2 ChildPosition(this IBody body, Vector2 position)
         {
             return new Vector2(body.Offset/body.Scale + position.x, position.y);
+        }
+
+        public static Vector2 WorldPositionNoOffset(this IBody body)
+        {
+            var position = body.Position;
+
+            if (body.Parent == null)
+                return position;
+
+            return body.Parent.WorldPosition() + RotationHelpers.Transform(position, body.Parent.WorldRotation())*body.Parent.WorldScale();
+        }
+
+        public static float WorldRotation(this IBody body)
+        {
+            if (body.Parent == null)
+                return body.Rotation;
+
+            return body.Rotation + body.Parent.WorldRotation();
         }
 
         public static float VisualWorldRotation(this IBody body)

@@ -188,16 +188,6 @@ namespace Combat.Component.Body
             child.parent = transform;
         }
 
-        public Vector2 WorldPositionNoOffset()
-        {
-            return IsMainThread() && _rigidbody ? _rigidbody.position : IBody.DefaultWorldPositionNoOffset(this);
-        }
-
-        public float WorldRotation()
-        {
-            return IsMainThread() && _rigidbody ? _rigidbody.rotation : IBody.DefaultWorldRotation(this);
-        }
-
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
