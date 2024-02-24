@@ -95,6 +95,13 @@ namespace GameDatabase.DataModel
         {
 			BodyImage = new SpriteId(serializable.Image1, SpriteId.Type.Satellite);
 			JointImage = new SpriteId(serializable.Image2, SpriteId.Type.Satellite);
+			JointImageScale = UnityEngine.Mathf.Clamp(serializable.ImageScale, 0f, 10f);
+			JointImageOffset = UnityEngine.Mathf.Clamp(serializable.ImageOffset, -1f, 1f);
+			BoneLength = UnityEngine.Mathf.Clamp(serializable.Length, 0f, 1f);
+			JointOffset = UnityEngine.Mathf.Clamp(serializable.Offset1, 0f, 1f);
+			HeadOffset = UnityEngine.Mathf.Clamp(serializable.Offset2, -1f, 1f);
+			MaxRotation = UnityEngine.Mathf.Clamp(serializable.Angle1, 0f, 180f);
+			MaxHeadRotation = UnityEngine.Mathf.Clamp(serializable.Angle2, 0f, 180f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -106,6 +113,13 @@ namespace GameDatabase.DataModel
 
 		public SpriteId BodyImage { get; private set; }
 		public SpriteId JointImage { get; private set; }
+		public float JointImageScale { get; private set; }
+		public float JointImageOffset { get; private set; }
+		public float BoneLength { get; private set; }
+		public float JointOffset { get; private set; }
+		public float HeadOffset { get; private set; }
+		public float MaxRotation { get; private set; }
+		public float MaxHeadRotation { get; private set; }
 
 
     }

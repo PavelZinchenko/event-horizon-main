@@ -215,9 +215,16 @@ namespace Combat.Factory
             return unit;
         }
 
-        public IEnumerable<WormSegment> CreateWormTail(IShip parent, int size, float weightScale, float hitPoints,
-            GameObject prefab, float offset1, float offset2, float extraOffset, ColorScheme colorScheme)
+        public IEnumerable<WormSegment> CreateWormTail(IShip parent, int size, float weightScale, float hitPoints, 
+            GameObject segmentPrefab, ColorScheme colorScheme)
         {
+            var config = segmentPrefab.GetComponent<Component.Helpers.IWormTailConfiguration>();
+            if (config == null)
+            {
+                GameDiagnostics.Trace.LogError("Prefab is not suitable for the worm tail");
+                yield break;
+            }
+
             var damageIndicator = new DamageIndicator(parent, _effectFactory, parent.Type.Side == UnitSide.Player ? 0.75f : 0.5f);
 
             WormSegment segment = null;
@@ -226,10 +233,10 @@ namespace Combat.Factory
                 var parentBody = segment != null ? segment.Body : parent.Body;
                 var parentWeight = segment != null ? segment.Body.Weight * 0.95f : parent.Body.Weight * weightScale;
 
-                var gameObject = new GameObjectHolder(prefab, _objectPool);
+                var gameObject = new GameObjectHolder(segmentPrefab, _objectPool);
                 gameObject.IsActive = true;
                 var body = gameObject.GetComponent<IBodyComponent>();
-                var position = parentBody.Position - RotationHelpers.Direction(parentBody.Rotation)*parentBody.Scale;
+                var position = parentBody.Position - RotationHelpers.Direction(parentBody.Rotation) * parentBody.Scale;
                 body.Initialize(null, position, parentBody.Rotation, parentBody.Scale*0.95f, Vector2.zero, 0.0f, parentWeight*0.95f);
                 var physics = gameObject.GetComponent<PhysicsManager>();
                 var collider = gameObject.GetComponent<ICollider>();
@@ -241,12 +248,12 @@ namespace Combat.Factory
 
                 if (segment != null)
                 {
-                    unit.Connect(segment, offset1, offset2, 30f);
+                    unit.Connect(segment, config.SegmentLength, config.JointOffset, config.MaxRotation);
                     unit.SetDamageIndicator(damageIndicator, false);
                 }
                 else
                 {
-                    unit.Connect(parent, offset1 + extraOffset, offset2, 60f);
+                    unit.Connect(parent, config.SegmentLength + config.HeadOffset, config.JointOffset, config.MaxHeadRotation);
                     unit.SetDamageIndicator(damageIndicator, true);
                 }
 

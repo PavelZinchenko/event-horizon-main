@@ -21,5 +21,11 @@ namespace GameDatabase.Serializable
 		public float ImageScale = 1f;
 		public float Thickness = 0.1f;
 		public float AspectRatio = 1f;
+		public float ImageOffset;
+		public float Length;
+		public float Offset1;
+		public float Offset2;
+		public float Angle1;
+		public float Angle2;
 	}
 }

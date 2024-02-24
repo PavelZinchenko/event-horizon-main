@@ -3,5 +3,12 @@
   "Id": 1,
   "Type": 1,
   "Image1": "worm_segment",
-  "Image2": "worm_joint"
+  "Image2": "worm_joint",
+  "ImageScale": 0.5,
+  "ImageOffset": 0.5,
+  "Length": 0.4,
+  "Offset1": 0.5,
+  "Offset2": 0.15,
+  "Angle1": 30.0,
+  "Angle2": 60.0
 }
