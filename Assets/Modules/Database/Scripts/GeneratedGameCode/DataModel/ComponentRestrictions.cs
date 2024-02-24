@@ -31,6 +31,7 @@ namespace GameDatabase.DataModel
 			NotForOrganicShips = serializable.NotForOrganicShips;
 			NotForMechanicShips = serializable.NotForMechanicShips;
 			UniqueComponentTag = serializable.UniqueComponentTag;
+			MaxComponentAmount = UnityEngine.Mathf.Clamp(serializable.MaxComponentAmount, 0, 2147483647);
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -39,6 +40,7 @@ namespace GameDatabase.DataModel
 		public bool NotForOrganicShips { get; private set; }
 		public bool NotForMechanicShips { get; private set; }
 		public string UniqueComponentTag { get; private set; }
+		public int MaxComponentAmount { get; private set; }
 
 		public static ComponentRestrictions DefaultValue { get; private set; }= new(new(), null);
 	}
