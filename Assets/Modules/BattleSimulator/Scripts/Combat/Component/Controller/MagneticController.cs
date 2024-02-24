@@ -1,12 +1,14 @@
-﻿using Combat.Component.Unit;
+﻿using Combat.Component.Body;
+using Combat.Component.Unit;
 using Combat.Scene;
 using Combat.Unit;
+using UnityEngine;
 
 namespace Combat.Component.Controller
 {
     public class MagneticController : IController
     {
-        public MagneticController(IUnit unit, float maxVelocity, float acceleration, float maxRange, bool lookForward, IScene scene)
+        public MagneticController(IUnit unit, float maxVelocity, float acceleration, float maxRange, bool lookForward, bool smartAim, IScene scene)
         {
             _unit = unit;
             _scene = scene;
@@ -14,15 +16,13 @@ namespace Combat.Component.Controller
             _acceleration = acceleration;
             _maxRange = maxRange;
             _lookForward = lookForward;
+            _smartAim = smartAim;
         }
 
         public void Dispose() { }
 
         public void UpdatePhysics(float elapsedTime)
         {
-            if (_unit.Body.Parent != null)
-                return;
-
             _timeFromLastUpdate += elapsedTime;
 
             if (_timeFromLastUpdate > _targetUpdateCooldown)
@@ -32,30 +32,78 @@ namespace Combat.Component.Controller
             }
 
             UpdateVelocity(elapsedTime);
-
+            
             if (_lookForward)
                 UpdateRotation();
         }
 
         private void UpdateRotation()
         {
-            var rotation = RotationHelpers.Angle(_unit.Body.Velocity);
-            var requiredAngularVelocity = UnityEngine.Mathf.DeltaAngle(_unit.Body.Rotation, rotation) * 10;
-            var acceleration = requiredAngularVelocity - _unit.Body.AngularVelocity;
-            _unit.Body.ApplyAngularAcceleration(acceleration);
+            if (_unit.Body.Parent == null)
+            {
+                var rotation = RotationHelpers.Angle(_unit.Body.Velocity);
+                var requiredAngularVelocity = UnityEngine.Mathf.DeltaAngle(_unit.Body.Rotation, rotation) * 10;
+            
+                var acceleration = requiredAngularVelocity - _unit.Body.AngularVelocity;
+                _unit.Body.ApplyAngularAcceleration(acceleration);
+            }
+            else
+            {
+                // If parent is present, we can not move, so just rotate towards the target
+                if (_target == null || !_target.IsActive()) return;
+                
+                Vector2 targetPosition;
+                if (_smartAim)
+                {
+                    if (!Geometry.GetTargetPosition(_target.Body.WorldPosition(), _target.Body.Velocity,
+                            _unit.Body.WorldPosition(),
+                            _maxVelocity, out targetPosition, out _))
+                    {
+                        // Can't catch this target, wait until the next aim
+                        _target = null;
+                        return;
+                    }
+                }
+                else
+                {
+                    targetPosition = _target.Body.WorldPosition();
+                }
+                
+                var direction = _unit.Body.WorldPosition().Direction(targetPosition);
+                var target = RotationHelpers.Angle(direction);
+                var rotation = _unit.Body.WorldRotation();
+                var delta = Mathf.DeltaAngle(rotation, target);
+                if(!Mathf.Approximately(delta, 0))
+                    _unit.Body.Turn(_unit.Body.Rotation + delta);
+            }
         }
 
         private void UpdateVelocity(float deltaTime)
         {
-            if (!_target.IsActive()) return;
-
-            var velocity = _unit.Body.Velocity;
+            if (_target == null || !_target.IsActive() || _unit.Body.Parent != null) return;
+            
             var position = _unit.Body.Position;
-            var targetVelocity = _target.Body.Velocity;
-            var targetPosition = _target.Body.Position;
-
-            var timeToTarget = (targetPosition - position).magnitude / _maxVelocity;
-            targetPosition += targetVelocity * timeToTarget;
+            var velocity = _unit.Body.Velocity;
+            
+            Vector2 targetPosition;
+            if (_smartAim)
+            {
+                if (!Geometry.GetTargetPosition(_target.Body.WorldPosition(), _target.Body.Velocity,
+                        _unit.Body.WorldPosition(),
+                        _maxVelocity, out targetPosition, out _))
+                {
+                    // Can't catch this target, wait until the next aim
+                    _target = null;
+                    return;
+                }
+            }
+            else
+            {
+                var targetVelocity = _target.Body.Velocity;
+                targetPosition = _target.Body.Position;
+                var timeToTarget = (targetPosition - position).magnitude / _maxVelocity;
+                targetPosition += targetVelocity * timeToTarget;
+            }
 
             var requiredVelocity = (targetPosition - position).normalized * _maxVelocity;
             _unit.Body.ApplyAcceleration((requiredVelocity - velocity).normalized * _acceleration * deltaTime);
@@ -64,6 +112,7 @@ namespace Combat.Component.Controller
         private float _timeFromLastUpdate = _targetUpdateCooldown;
         private IUnit _target;
         private readonly bool _lookForward;
+        private readonly bool _smartAim;
         private readonly IUnit _unit;
         private readonly IScene _scene;
         private readonly float _maxVelocity;

@@ -255,12 +255,12 @@ namespace Combat.Factory
                     if (homing.IgnoreRotation)
                     {
                         controller = new MagneticController(bullet, bulletSpeed, bulletSpeed * WeightToAcceleration(weight), range, 
-                            BulletShape.HasDirection(), _scene);            
+                            BulletShape.HasDirection(), homing.SmartAim, _scene);            
                     }
                     else
                     {
                         controller = new HomingController(bullet, bulletSpeed, 120f * WeightToAcceleration(weight),
-                            0.5f * bulletSpeed / (0.2f + weight * 2), range, _scene);                        
+                            0.5f * bulletSpeed / (0.2f + weight * 2), range, homing.SmartAim, _scene);                        
                     }
                     break;
                 case BulletController_Beam:

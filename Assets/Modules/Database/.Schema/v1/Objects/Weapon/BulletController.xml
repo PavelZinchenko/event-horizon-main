@@ -3,4 +3,5 @@
     <member name="Type" type="enum" typeid="BulletControllerType" />
     <member name="StartingVelocityModifier" type="float" minvalue="0" maxvalue="1000" default="0.1" case="Homing" />
     <member name="IgnoreRotation" type="bool" case="Homing" />
+    <member name="SmartAim" type="bool" case="Homing" />
 </data>

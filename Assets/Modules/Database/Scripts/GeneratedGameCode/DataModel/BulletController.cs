@@ -87,6 +87,7 @@ namespace GameDatabase.DataModel
         {
 			StartingVelocityModifier = UnityEngine.Mathf.Clamp(serializable.StartingVelocityModifier, 0f, 1000f);
 			IgnoreRotation = serializable.IgnoreRotation;
+			SmartAim = serializable.SmartAim;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -98,6 +99,7 @@ namespace GameDatabase.DataModel
 
 		public float StartingVelocityModifier { get; private set; }
 		public bool IgnoreRotation { get; private set; }
+		public bool SmartAim { get; private set; }
 
 
     }
