@@ -171,7 +171,8 @@ namespace Combat.Factory
             if (_ammunition.Body.AttachedToParent && parent.Bullets != null)
             {
                 parentBody = parent.Body;
-                position = offset;
+                rotation = deltaAngle;
+                position = RotationHelpers.Transform(offset, rotation) / parentBody.WorldScale();
             }
             else
             {
@@ -181,6 +182,11 @@ namespace Combat.Factory
 
             if (!_ammunition.Controller.Continuous)
             {
+                if (parentBody != null)
+                {
+                    scale /= parentBody.WorldScale();
+                }
+                
                 velocity = RotationHelpers.Direction(rotation) * bulletSpeed;
                 
                 velocity *= _ammunition.Controller.StartingVelocityMultiplier;

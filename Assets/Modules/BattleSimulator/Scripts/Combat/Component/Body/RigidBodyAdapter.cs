@@ -45,8 +45,8 @@ namespace Combat.Component.Body
         {
 			get 
             {
-                if (System.Threading.Thread.CurrentThread == _mainThread)
-                    return _rigidbody.position;
+                if (IsMainThread() &&  transform)
+                    return transform.localPosition;
                 else 
                     return _cachedPosition; 
             }
@@ -54,16 +54,16 @@ namespace Combat.Component.Body
             {
                 _cachedPosition = value;
                 if (this && transform)
-                    gameObject.Move(_parent == null ? value : _parent.ChildPosition(value));
+                    gameObject.Move(value);
             }
         }
 
         public float Rotation
         {
-			get 
+			get
             {
-                if (System.Threading.Thread.CurrentThread == _mainThread)
-                    return _rigidbody.rotation;
+                if (IsMainThread() && transform)
+                    return transform.localEulerAngles.z;
                 else
                     return _cachedRotation;
             }
@@ -71,7 +71,7 @@ namespace Combat.Component.Body
             {
                 _cachedRotation = value;
                 if (this && transform)
-                    transform.localEulerAngles = new Vector3(0, 0, Mathf.Repeat(value, 360));
+                    transform.localEulerAngles = new Vector3(0, 0,Mathf.Repeat(value, 360));
             }
         }
         
@@ -116,7 +116,7 @@ namespace Combat.Component.Body
             {
                 _scale = value;
                 if (transform)
-                    transform.localScale = Parent == null ? Vector3.one * value : Vector3.one * Parent.WorldScale() * value;
+                    transform.localScale = Vector3.one * value;
             }
         }
 
@@ -169,16 +169,18 @@ namespace Combat.Component.Body
                 _rigidbody.velocity = velocity;
             }
 
-            _cachedPosition = _rigidbody.position;
-            _cachedRotation = _rigidbody.rotation;
+            var t = transform;
+            _cachedPosition = t.localPosition;
+            _cachedRotation = t.localEulerAngles.z;
             _cachedVelocity = velocity;
             _cachedAngularVelocity = _rigidbody.angularVelocity;
         }
 
         public void UpdateView(float elapsedTime)
         {
-            _viewPosition = transform.localPosition;
-            _viewRotation = transform.localEulerAngles.z;
+            var t = transform;
+            _viewPosition = t.localPosition;
+            _viewRotation = t.localEulerAngles.z;
         }
 
         public void AddChild(Transform child)
@@ -186,10 +188,25 @@ namespace Combat.Component.Body
             child.parent = transform;
         }
 
+        public Vector2 WorldPositionNoOffset()
+        {
+            return IsMainThread() && _rigidbody ? _rigidbody.position : IBody.DefaultWorldPositionNoOffset(this);
+        }
+
+        public float WorldRotation()
+        {
+            return IsMainThread() && _rigidbody ? _rigidbody.rotation : IBody.DefaultWorldRotation(this);
+        }
+
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
             _mainThread = System.Threading.Thread.CurrentThread;
+        }
+
+        private bool IsMainThread()
+        {
+            return System.Threading.Thread.CurrentThread == _mainThread;
         }
 
         private System.Threading.Thread _mainThread;

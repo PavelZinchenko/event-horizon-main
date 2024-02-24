@@ -32,7 +32,11 @@ namespace Combat.Component.Bullet.Action
 
         public void UpdatePhysics(float elapsedTime) { }
         public void UpdateView(float elapsedTime) { }
-        public void AddChild(Transform child) { }
+
+        public void AddChild(Transform child)
+        {
+            _body.AddChild(child);
+        }
 
         private float _rotation;
         private readonly IBody _body;
