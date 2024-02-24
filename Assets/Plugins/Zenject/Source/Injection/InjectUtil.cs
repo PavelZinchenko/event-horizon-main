@@ -24,9 +24,14 @@ namespace Zenject
     {
         public static List<TypeValuePair> CreateArgList(IEnumerable<object> args)
         {
-            Assert.That(!args.ContainsItem(null),
-                "Cannot include null values when creating a zenject argument list because zenject has no way of deducing the type from a null value.  If you want to allow null, use the Explicit form.");
-            return args.Select(x => new TypeValuePair(x.GetType(), x)).ToList();
+            var argList = new List<TypeValuePair>();
+            foreach (var x in args)
+            {
+                Assert.That(x != null,
+                    "Cannot include null values when creating a zenject argument list because zenject has no way of deducing the type from a null value.  If you want to allow null, use the Explicit form.");
+                argList.Add(new TypeValuePair(x.GetType(), x));
+            }
+            return argList;
         }
 
         public static TypeValuePair CreateTypePair<T>(T param)

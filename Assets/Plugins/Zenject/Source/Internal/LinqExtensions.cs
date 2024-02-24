@@ -76,8 +76,12 @@ namespace ModestTree
         // Log.Info(args.Where(x => x == null).Any());
         public static bool ContainsItem<T>(this IEnumerable<T> list, T value)
         {
-            // Use object.Equals to support null values
-            return list.Where(x => object.Equals(x, value)).Any();
+            foreach (var x in list)
+            {
+                if (object.Equals(x, value)) return true;
+            }
+
+            return false;
         }
     }
 }
