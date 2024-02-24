@@ -15,10 +15,9 @@ namespace Combat.Component.Bullet.Action
 {
     public class SpawnBulletsAction : IAction, IWeaponPlatform
     {
-	    public SpawnBulletsAction(IBulletFactory factory, int magazine, IBulletSpawnSettings spawnSettings, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
+	    public SpawnBulletsAction(IBulletFactory factory, int magazine, IBulletSpawnSettings spawnSettings, IBullet parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
         {
             Owner = parent;
-            _body = new BodyWrapper(parent.Body);
             _factory = factory;
             _magazine = magazine;
             _spawnSettings = spawnSettings;
@@ -27,6 +26,7 @@ namespace Combat.Component.Bullet.Action
             Condition = condition;
             EnergyPoints = new UnlimitedEnergy();
             Bullets = BulletCompositeDisposable.Create(factory.Stats);
+            _body = factory.Stats.IsBoundToCannon ? new BodyWrapper(parent.GetUnitSizedBody()) : new BodyWrapper(parent.Body);
         }
 
         public ConditionType Condition { get; private set; }

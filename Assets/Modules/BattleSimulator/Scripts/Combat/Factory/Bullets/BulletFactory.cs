@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using Combat.Collision.Behaviour;
 using Combat.Collision.Behaviour.Action;
 using Combat.Component.Body;
 using Combat.Component.Bullet;
 using Combat.Component.Bullet.Action;
-using Combat.Component.Bullet.Cooldown;
 using Combat.Component.Bullet.Lifetime;
-using Combat.Component.Bullet.SpawnSettings;
 using Combat.Component.Collider;
 using Combat.Component.Controller;
 using Combat.Component.DamageHandler;
@@ -173,7 +170,7 @@ namespace Combat.Factory
             {
                 parentBody = parent.Body;
                 rotation = deltaAngle;
-                position = RotationHelpers.Transform(offset, rotation) / parentBody.WorldScale();
+                position = RotationHelpers.Transform(offset, rotation);
             }
             else
             {
@@ -183,10 +180,6 @@ namespace Combat.Factory
 
             if (!_ammunition.Controller.Continuous)
             {
-                if (parentBody != null)
-                {
-                    scale /= parentBody.WorldScale();
-                }
                 
                 velocity = RotationHelpers.Direction(rotation) * bulletSpeed;
                 

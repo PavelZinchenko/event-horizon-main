@@ -42,6 +42,7 @@ namespace GameDatabase.DataModel
                 // Beam type
                 case BulletTypeObsolete.Continuous:
                     AiBulletBehavior = AiBulletBehavior.Beam;
+                    AttachedToParent = true;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

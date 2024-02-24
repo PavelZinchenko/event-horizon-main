@@ -14,6 +14,7 @@ using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Component.View;
 using Combat.Unit;
+using UnityEngine;
 
 namespace Combat.Component.Bullet
 {
@@ -69,6 +70,9 @@ namespace Combat.Component.Bullet
                 Controller.UpdatePhysics(elapsedTime);
 
             Body.UpdatePhysics(elapsedTime);
+
+            _unitSizedBody?.SetSize(1 / _body.WorldScale());
+
             Lifetime.Take(elapsedTime);
             Collider.UpdatePhysics(elapsedTime);
             
@@ -93,6 +97,17 @@ namespace Combat.Component.Bullet
             State = UnitState.Inactive;
         }
 
+        public IBody GetUnitSizedBody()
+        {
+            if (_unitSizedBody != null) return _unitSizedBody;
+            var obj = new GameObject("SizedBody");
+            var body = obj.AddComponent<GameObjectBody>();
+            body.Initialize(_body, Vector2.zero, 0, 1, Vector2.zero, 0, 0);
+            body.Scale = 1 / _body.WorldScale();
+            _unitSizedBody = body;
+            return _unitSizedBody;
+        }
+        
         public void Dispose()
         {
             Body.Dispose();
@@ -112,6 +127,9 @@ namespace Combat.Component.Bullet
 
             if (Collider != null)
                 Collider.Dispose();
+            
+            if(_unitSizedBody != null)
+                _unitSizedBody.Dispose();
         }
 
         public void AddAction(IAction action)
@@ -181,6 +199,7 @@ namespace Combat.Component.Bullet
             return effect;
         }
 
+        private IBody _unitSizedBody;
         private readonly ILifetime _lifetime;
         private readonly UnitType _unitType;
         private readonly IBody _body;
