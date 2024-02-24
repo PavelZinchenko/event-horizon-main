@@ -19,6 +19,7 @@ using Combat.Component.Unit.Classification;
 using Combat.Component.View;
 using Combat.Helpers;
 using Combat.Scene;
+using Combat.Unit;
 using Constructor;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
@@ -168,7 +169,7 @@ namespace Combat.Factory
             var weight = _stats.Weight;
             var scale = _stats.BodySize;
 
-            if (_ammunition.Body.AttachedToParent && parent.Bullets != null)
+            if (_ammunition.Body.AttachedToParent && parent.Owner.IsActive())
             {
                 parentBody = parent.Body;
                 rotation = deltaAngle;

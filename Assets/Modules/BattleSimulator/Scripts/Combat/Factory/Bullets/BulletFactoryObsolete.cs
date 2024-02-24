@@ -150,7 +150,7 @@ namespace Combat.Factory
             var weight = _bulletStats.Impulse;
             var scale = _bulletStats.Size;
 
-            if (_stats.AmmunitionClass.IsBoundToCannon() && parent.Bullets != null)
+            if (_stats.AmmunitionClass.IsBoundToCannon())
             {
                 parentBody = parent.Body;
             }
