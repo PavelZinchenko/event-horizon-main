@@ -15,6 +15,8 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			for (var i = 0; i < systems.Count; i++)
 			{
 				var system = systems[i];
+                if (system.IsAutomatic) continue;
+
 				if (system is IDroneBay droneBay)
 					_droneBays.Add(droneBay, i);
 				if (system is ClonningDevice clonningDevice)
