@@ -164,10 +164,10 @@ PlayerSettings:
     tvOS: com.ZipasGames.EventHorizon
   buildNumber:
     Standalone: 0
-    iPhone: 29
+    iPhone: 31
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 111000
+  AndroidBundleVersionCode: 111100
   AndroidMinSdkVersion: 22
   AndroidTargetSdkVersion: 33
   AndroidPreferredInstallLocation: 0
