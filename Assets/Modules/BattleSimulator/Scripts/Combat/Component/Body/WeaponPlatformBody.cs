@@ -135,7 +135,7 @@ namespace Combat.Component.Platform
             }
 
             var targetPosition = _target.Body.WorldPosition();
-            var platformPosition = this.WorldPosition();
+            var platformPosition = ((IBody)this).WorldPosition();
             float rotation;
 
             if (_bulletVelocity > 0)

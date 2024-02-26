@@ -32,91 +32,115 @@ namespace Combat.Component.Body
         void UpdateView(float elapsedTime);
 
         void AddChild(Transform child);
+        
+        public Vector2 WorldPosition()
+        {
+            var position = Position + RotationHelpers.Direction(Rotation)*Offset;
+
+            if (Parent == null)
+                return position;
+
+            return Parent.WorldPosition() +
+                   RotationHelpers.Transform(position, Parent.WorldRotation()) * Parent.WorldScale();
+        }
+
+        public Vector2 VisualWorldPosition()
+        {
+            var position = VisualPosition + RotationHelpers.Direction(VisualRotation) * Offset;
+
+            if (Parent == null)
+                return position;
+
+            return Parent.VisualWorldPosition() + RotationHelpers.Transform(position, Parent.VisualWorldRotation()) * Parent.WorldScale();
+        }
+
+        public Vector2 ChildPosition(Vector2 position)
+        {
+            return new Vector2(Offset/Scale + position.x, position.y);
+        }
+        
+        public Vector2 WorldPositionNoOffset()
+        {
+            var position = Position;
+
+            if (Parent == null)
+                return position;
+
+            return Parent.WorldPosition() +
+                   RotationHelpers.Transform(position, Parent.WorldRotation()) * Parent.WorldScale();
+        }
+
+        public float WorldRotation()
+        {
+            if (Parent == null)
+                return Rotation;
+
+            return Rotation + Parent.WorldRotation();
+        }
+
+        public float VisualWorldRotation()
+        {
+            if (Parent == null)
+                return VisualRotation;
+
+            return VisualRotation + Parent.VisualWorldRotation();
+        }
+
+        public Vector2 WorldVelocity()
+        {
+            if (Parent == null)
+                return Velocity;
+
+            return Parent.Velocity + RotationHelpers.Transform(Velocity, Parent.WorldRotation());
+        }
+
+        public float WorldAngularVelocity()
+        {
+            if (Parent == null)
+                return AngularVelocity;
+
+            return AngularVelocity + Parent.WorldAngularVelocity();
+        }
+
+        public float WorldScale()
+        {
+            if (Parent == null)
+                return Scale;
+
+            return Scale * Parent.WorldScale();
+        }
+
+        public float TotalWeight()
+        {
+            if (Parent == null)
+                return Weight;
+
+            return Weight + Parent.TotalWeight();
+        }
     }
 
     public static class BodyExtensions
     {
-        public static Vector2 WorldPosition(this IBody body)
+        /// <summary>
+        /// Converts world position to the position inside local coordinate system of the body
+        /// </summary>
+        /// <param name="body">Body to use as the origin of the coordinate system</param>
+        /// <param name="worldPosition">Position in the world</param>
+        /// <returns>Position in the body's local coordinates</returns>
+        public static Vector2 WorldPositionToLocal(this IBody body, Vector2 worldPosition)
         {
-            var position = body.Position + RotationHelpers.Direction(body.Rotation)*body.Offset;
-
-            if (body.Parent == null)
-                return position;
-
-            return body.Parent.WorldPosition() + RotationHelpers.Transform(position, body.Parent.WorldRotation())*body.Parent.WorldScale();
+            return RotationHelpers.Transform((worldPosition - body.Parent.WorldPosition()) / body.WorldScale(), -body.WorldRotation());
         }
 
-        public static Vector2 VisualWorldPosition(this IBody body)
+        /// <summary>
+        /// Converts world rotation to the rotation inside local coordinate system of the body
+        /// </summary>
+        /// <param name="body">Body to use as the origin of the coordinate system</param>
+        /// <param name="worldRotation">Rotation in the world</param>
+        /// <returns>Rotation in the body's local coordinates</returns>
+        public static float WorldRotationToLocal(this IBody body, float worldRotation)
         {
-            var position = body.VisualPosition + RotationHelpers.Direction(body.VisualRotation) * body.Offset;
-
-            if (body.Parent == null)
-                return position;
-
-            return body.Parent.VisualWorldPosition() + RotationHelpers.Transform(position, body.Parent.VisualWorldRotation()) * body.Parent.WorldScale();
-        }
-
-        public static Vector2 ChildPosition(this IBody body, Vector2 position)
-        {
-            return new Vector2(body.Offset/body.Scale + position.x, position.y);
-        }
-
-        public static Vector2 WorldPositionNoOffset(this IBody body)
-        {
-            var position = body.Position;
-
-            if (body.Parent == null)
-                return position;
-
-            return body.Parent.WorldPosition() + RotationHelpers.Transform(position, body.Parent.WorldRotation())*body.Parent.WorldScale();
-        }
-
-        public static float WorldRotation(this IBody body)
-        {
-            if (body.Parent == null)
-                return body.Rotation;
-
-            return body.Rotation + body.Parent.WorldRotation();
-        }
-
-        public static float VisualWorldRotation(this IBody body)
-        {
-            if (body.Parent == null)
-                return body.VisualRotation;
-
-            return body.VisualRotation + body.Parent.VisualWorldRotation();
-        }
-
-        public static Vector2 WorldVelocity(this IBody body)
-        {
-            if (body.Parent == null)
-                return body.Velocity;
-
-            return body.Parent.Velocity + RotationHelpers.Transform(body.Velocity, body.Parent.WorldRotation());
-        }
-
-        public static float WorldAngularVelocity(this IBody body)
-        {
-            if (body.Parent == null)
-                return body.AngularVelocity;
-
-            return body.AngularVelocity + body.Parent.WorldAngularVelocity();
-        }
-
-        public static float WorldScale(this IBody body)
-        {
-            if (body.Parent == null)
-                return body.Scale;
-
-            return body.Scale * body.Parent.WorldScale();
-        }
-
-        public static float TotalWeight(this IBody body)
-        {
-            if (body.Parent == null)
-                return body.Weight;
-
-            return body.Weight + body.Parent.TotalWeight();
+            return worldRotation - body.WorldRotation();
         }
 
         public static IBody Owner(this IBody body)
