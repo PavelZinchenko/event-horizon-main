@@ -105,8 +105,8 @@ namespace Combat.Component.Body
 
         public float Weight
         {
-            get { return _rigidbody.mass; }
-            set { _rigidbody.mass = value; }
+            get { return _weigth; }
+            set { _rigidbody.mass = _weigth = value; }
         }
 
         public float Scale
@@ -192,6 +192,7 @@ namespace Combat.Component.Body
             _mainThread = System.Threading.Thread.CurrentThread;
         }
 
+        private float _weigth;
         private System.Threading.Thread _mainThread;
         private Vector2 _viewPosition;
         private float _viewRotation;

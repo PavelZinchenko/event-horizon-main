@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Combat.Ai.BehaviorTree.Utils;
 using Combat.Component.Ship;
 using Combat.Component.Unit;
 
@@ -6,9 +7,9 @@ namespace Combat.Ai
 {
 	public abstract class StrategyBase : IStrategy
 	{
-		public abstract bool IsThreat(IShip ship, IUnit unit);
+        public virtual bool IsThreat(IShip ship, IUnit unit) => ThreatAnalyzer.IsThreat(ship, unit);
 
-		public void Apply(Context context, ShipControls controls)
+        public void Apply(Context context, ShipControls controls)
 		{
 			foreach (var policy in _policyList)
 			    policy.Perform(context, controls);

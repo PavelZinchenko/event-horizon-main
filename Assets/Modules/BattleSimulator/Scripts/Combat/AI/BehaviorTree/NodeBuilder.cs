@@ -146,15 +146,15 @@ namespace Combat.Ai.BehaviorTree
                 var isDefensiveDrone = isDrone && content.InAttackRange;
 
                 if (content.InAttackRange && !isDrone)
-                    return new FindEnemyInAttackRange(Ship, content.MinCooldown, content.MaxCooldown, content.IgnoreDrones);
+                    return new FindEnemyInAttackRange(content.MinCooldown, content.MaxCooldown, content.IgnoreDrones);
 
                 if (Settings.LimitedRange > 0)
                 {
                     var range = isDefensiveDrone ? Settings.LimitedRange / 4 : Settings.LimitedRange;
-                    return new FindEnemyNearMothership(Ship, content.MinCooldown, content.MaxCooldown, range, content.IgnoreDrones);
+                    return new FindEnemyNearMothership(content.MinCooldown, content.MaxCooldown, range, content.IgnoreDrones);
                 }
 
-                return new FindNearestEnemy(Ship, content.MinCooldown, content.MaxCooldown, content.IgnoreDrones);
+                return new FindNearestEnemy(content.MinCooldown, content.MaxCooldown, content.IgnoreDrones);
             }
 
             public INode Create(BehaviorTreeNode_MoveToAttackRange content) => new MoveToAttackRange(content.MinMaxLerp, content.Multiplier > 0 ? content.Multiplier : 1.0f);
@@ -183,13 +183,14 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_SustainAim content) => new SustainAimNode(false);
 			public INode Create(BehaviorTreeNode_ChargeWeapons content) => ChargeWeaponsNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_Chase content) => new ChaseNode();
-			public INode Create(BehaviorTreeNode_AvoidThreats content) => new AvoidThreatsNode();
-			public INode Create(BehaviorTreeNode_HasIncomingThreat content) => new HasIncomingThreatNode(content.TimeToCollision);
+            public INode Create(BehaviorTreeNode_AvoidThreats content) => new AvoidThreatsNode();
+            public INode Create(BehaviorTreeNode_BypassObstacles content) => new BypassObstaclesNode();
+            public INode Create(BehaviorTreeNode_HasIncomingThreat content) => new HasIncomingThreatNode(content.TimeToCollision);
 			public INode Create(BehaviorTreeNode_SlowDown content) => new SlowDownNode(content.Tolerance);
 			public INode Create(BehaviorTreeNode_UseRecoil content) => RecoilNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_DefendWithFronalShield content) => FrontalShieldNode.Create(Ship);
 			public INode Create(BehaviorTreeNode_TrackControllableAmmo content) => TrackControllableAmmo.Create(Ship, true);
-            public INode Create(BehaviorTreeNode_DroneBayRangeExceeded content) => DroneBayRangeExceeded.Create(Settings.LimitedRange);
+            public INode Create(BehaviorTreeNode_MothershipDistanceExceeded content) => MothershipRangeExceeded.Create(content.MaxDistance > 0 ? content.MaxDistance : Settings.LimitedRange);
             public INode Create(BehaviorTreeNode_IsFasterThanTarget content) => new IsFaterThanTarget(content.Multiplier);
 			public INode Create(BehaviorTreeNode_MatchVelocityWithTarget content) => new MatchVelocityNode(content.Tolerance);
 			public INode Create(BehaviorTreeNode_KeepDistance content) => new KeepDistanceNode(content.MinDistance, content.MaxDistance);
@@ -218,7 +219,7 @@ namespace Combat.Ai.BehaviorTree
             public INode Create(BehaviorTreeNode_TargetAllyStarbase content) => new TargetStarbaseNode(true);
             public INode Create(BehaviorTreeNode_TargetEnemyStarbase content) => new TargetStarbaseNode(false);
             public INode Create(BehaviorTreeNode_MakeTargetMothership content) => new SetMothershipNode();
-            public INode Create(BehaviorTreeNode_TargetDistance content) => new DistanceToTargetNode(content.MaxDistance);
+            public INode Create(BehaviorTreeNode_TargetDistance content) => new DistanceToTargetNode(content.MaxDistance > 0 ? content.MaxDistance : Settings.LimitedRange);
             public INode Create(BehaviorTreeNode_HasLongerAttackRange content) => new HasBetterAttackRange(content.Multiplier);
         }
 	}

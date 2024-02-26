@@ -22,10 +22,5 @@ namespace Combat.Ai
                 new MothershipRetreatedCondition(),
                 new VanishAction());
         }
-
-        public override bool IsThreat(IShip ship, IUnit unit)
-        {
-            return true;
-        }
     }
 }

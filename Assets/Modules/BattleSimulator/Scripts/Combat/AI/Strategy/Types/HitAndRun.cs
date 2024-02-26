@@ -55,11 +55,6 @@ namespace Combat.Ai
             this.UseAccelerators(ship, rechargingState);
         }
 
-        public override bool IsThreat(IShip ship, IUnit unit)
-        {
-            return true;
-        }
-
         private static float ShipTurretRange(IShip ship)
         {
             float range = 0;

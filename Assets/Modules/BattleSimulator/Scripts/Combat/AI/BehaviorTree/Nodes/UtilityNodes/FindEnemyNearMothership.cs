@@ -10,12 +10,10 @@ namespace Combat.Ai.BehaviorTree.Nodes
 		private const float _minDistance = 5f;
 		private readonly float _distance;
 		private readonly bool _ignoreDrones;
-        private readonly bool _isDrone;
 
-		public FindEnemyNearMothership(IShip ship, float findEnemyCooldown, float changeEnemyCooldown, float distance, bool ignoreDrones)
+		public FindEnemyNearMothership(float findEnemyCooldown, float changeEnemyCooldown, float distance, bool ignoreDrones)
 			: base(findEnemyCooldown, changeEnemyCooldown)
 		{
-            _isDrone = ship.Type.Class == UnitClass.Drone;
 			_ignoreDrones = ignoreDrones;
             _distance = distance < _minDistance ? _minDistance : distance;
 		}
@@ -24,10 +22,10 @@ namespace Combat.Ai.BehaviorTree.Nodes
 		{
             EnemyMatchingOptions options;
             if (context.Mothership.IsActive())
-                options = _isDrone ? EnemyMatchingOptions.EnemyForDrone(context.AttackRangeMax + _distance) :
+                options = context.IsDrone ? EnemyMatchingOptions.EnemyForDrone(context.AttackRangeMax + _distance) :
                     EnemyMatchingOptions.EnemyForShip(context.AttackRangeMax + _distance);
             else
-                options = _isDrone ? EnemyMatchingOptions.EnemyForDrone(0) : EnemyMatchingOptions.EnemyForShip(0);
+                options = context.IsDrone ? EnemyMatchingOptions.EnemyForDrone(0) : EnemyMatchingOptions.EnemyForShip(0);
 
             options.IgnoreDrones = _ignoreDrones;
             return context.Scene.Ships.GetEnemy(context.Ship, options);

@@ -1,4 +1,5 @@
-﻿using Combat.Component.Ship;
+﻿using Combat.Ai.BehaviorTree.Utils;
+using Combat.Component.Ship;
 using Combat.Component.Unit;
 
 namespace Combat.Ai.BehaviorTree.Nodes
@@ -18,6 +19,6 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			return context.Threats.Count > 0 ? NodeState.Success : NodeState.Failure;
 		}
 
-		public bool IsThreat(IShip ship, IUnit unit) => true;
+        public bool IsThreat(IShip ship, IUnit unit) => ThreatAnalyzer.IsThreat(ship, unit);
 	}
 }

@@ -7,7 +7,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 {
 	public class TargetStarbaseNode : INode
 	{
-        private const float _cooldown = 0.5f;
+        private const float _cooldown = 1.0f;
         private readonly bool _ally;
         private float _lastSearchTime = -_cooldown;
         private IShip _starbase;

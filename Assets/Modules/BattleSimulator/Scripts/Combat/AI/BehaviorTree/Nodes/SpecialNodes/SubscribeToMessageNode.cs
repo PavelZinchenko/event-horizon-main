@@ -1,5 +1,6 @@
 ﻿using Combat.Ai.BehaviorTree.Utils;
 using Combat.Component.Ship;
+using Combat.Component.Unit.Classification;
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
@@ -21,7 +22,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 		public bool IsSuitableSender(IShip sender)
 		{
 			if (sender == _ship) return false;
-			return sender.Type.Side == _ship.Type.Side;
+			return sender.Type.Side.IsAlly(_ship.Type.Side);
 		}
 
 		public void OnMessageReceived(int id, IShip sender)

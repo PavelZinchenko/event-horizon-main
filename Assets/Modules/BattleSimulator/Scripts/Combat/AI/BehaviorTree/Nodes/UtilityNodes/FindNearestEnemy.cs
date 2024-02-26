@@ -8,18 +8,16 @@ namespace Combat.Ai.BehaviorTree.Nodes
 	public class FindNearestEnemy : FindEnemyNodeBase
 	{
 		private readonly bool _ignoreDrones;
-        private readonly bool _isDrone;
 
-        public FindNearestEnemy(IShip ship, float findEnemyCooldown, float changeEnemyCooldown, bool ignoreDrones)
+        public FindNearestEnemy(float findEnemyCooldown, float changeEnemyCooldown, bool ignoreDrones)
 			: base(findEnemyCooldown, changeEnemyCooldown)
 		{
 			_ignoreDrones = ignoreDrones;
-            _isDrone = ship.Type.Class == UnitClass.Drone;
         }
 
         protected override IShip FindNewEnemy(Context context)
 		{
-			var options = _isDrone ? EnemyMatchingOptions.EnemyForDrone(0) : EnemyMatchingOptions.EnemyForShip(0);
+			var options = context.IsDrone ? EnemyMatchingOptions.EnemyForDrone(0) : EnemyMatchingOptions.EnemyForShip(0);
 			options.IgnoreDrones = _ignoreDrones;
 			return context.Scene.Ships.GetEnemy(context.Ship, options);
 		}

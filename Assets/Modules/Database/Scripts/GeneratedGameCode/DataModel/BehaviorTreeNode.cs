@@ -136,6 +136,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_TargetAllyStarbase(serializable, loader);
 				case BehaviorNodeType.TargetEnemyStarbase:
 					return new BehaviorTreeNode_TargetEnemyStarbase(serializable, loader);
+				case BehaviorNodeType.BypassObstacles:
+					return new BehaviorTreeNode_BypassObstacles(serializable, loader);
 				case BehaviorNodeType.EnginePropulsionForce:
 					return new BehaviorTreeNode_EnginePropulsionForce(serializable, loader);
 				case BehaviorNodeType.MotherShipRetreated:
@@ -150,8 +152,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_TargetMothership(serializable, loader);
 				case BehaviorNodeType.MothershipLowHp:
 					return new BehaviorTreeNode_MothershipLowHp(serializable, loader);
-				case BehaviorNodeType.DroneBayRangeExceeded:
-					return new BehaviorTreeNode_DroneBayRangeExceeded(serializable, loader);
+				case BehaviorNodeType.MothershipDistanceExceeded:
+					return new BehaviorTreeNode_MothershipDistanceExceeded(serializable, loader);
 				case BehaviorNodeType.MakeTargetMothership:
 					return new BehaviorTreeNode_MakeTargetMothership(serializable, loader);
 				case BehaviorNodeType.ShowMessage:
@@ -255,6 +257,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_AttackAdditionalTargets content);
 	    T Create(BehaviorTreeNode_TargetAllyStarbase content);
 	    T Create(BehaviorTreeNode_TargetEnemyStarbase content);
+	    T Create(BehaviorTreeNode_BypassObstacles content);
 	    T Create(BehaviorTreeNode_EnginePropulsionForce content);
 	    T Create(BehaviorTreeNode_MotherShipRetreated content);
 	    T Create(BehaviorTreeNode_MotherShipDestroyed content);
@@ -262,7 +265,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_GoBerserk content);
 	    T Create(BehaviorTreeNode_TargetMothership content);
 	    T Create(BehaviorTreeNode_MothershipLowHp content);
-	    T Create(BehaviorTreeNode_DroneBayRangeExceeded content);
+	    T Create(BehaviorTreeNode_MothershipDistanceExceeded content);
 	    T Create(BehaviorTreeNode_MakeTargetMothership content);
 	    T Create(BehaviorTreeNode_ShowMessage content);
 	    T Create(BehaviorTreeNode_DebugLog content);
@@ -765,7 +768,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_TargetDistance(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 100f);
+			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1414,6 +1417,25 @@ namespace GameDatabase.DataModel
 
 
     }
+    public partial class BehaviorTreeNode_BypassObstacles : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_BypassObstacles(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+
+
+    }
     public partial class BehaviorTreeNode_EnginePropulsionForce : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
@@ -1555,13 +1577,14 @@ namespace GameDatabase.DataModel
 
 
     }
-    public partial class BehaviorTreeNode_DroneBayRangeExceeded : BehaviorTreeNode
+    public partial class BehaviorTreeNode_MothershipDistanceExceeded : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
-  		public BehaviorTreeNode_DroneBayRangeExceeded(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+  		public BehaviorTreeNode_MothershipDistanceExceeded(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
+			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1571,6 +1594,7 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+		public float MaxDistance { get; private set; }
 
 
     }

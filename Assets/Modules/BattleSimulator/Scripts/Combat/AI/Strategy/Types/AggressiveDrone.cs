@@ -45,10 +45,5 @@ namespace Combat.Ai
 
             this.UseDroneDefenseSystems(ship);
         }
-
-        public override bool IsThreat(IShip ship, IUnit unit)
-        {
-            return true;
-        }
     }
 }
