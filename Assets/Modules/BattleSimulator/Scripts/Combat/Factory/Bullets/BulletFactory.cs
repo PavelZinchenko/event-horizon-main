@@ -244,12 +244,6 @@ namespace Combat.Factory
             switch (_ammunition.Controller)
             {
                 case BulletController_Projectile:
-                    if (BulletShape.IsBeam())
-                    {
-                        var length = _ammunition.Body.Length > 0 ? _stats.Length : _stats.BodySize;
-                        var velocity = parent.Body.WorldVelocity() * _ammunition.Body.ParentVelocityEffect;
-                        controller = new MovingBeamController(bullet, length, bulletSpeed, velocity, controller);
-                    }
                     break;
                 case BulletController_Homing homing:
                     if (homing.IgnoreRotation)
@@ -269,6 +263,13 @@ namespace Combat.Factory
                 default:
                     Debug.LogError($"Unknown controller: {_ammunition.Controller.GetType().Name}");
                     break;
+            }
+            
+            if (BulletShape.IsBeam() && bullet.Body.Parent == null)
+            {
+                var length = _ammunition.Body.Length > 0 ? _stats.Length : _stats.BodySize;
+                var velocity = parent.Body.WorldVelocity() * _ammunition.Body.ParentVelocityEffect;
+                controller = new MovingBeamController(bullet, length, bulletSpeed, velocity, controller);
             }
 
             return controller;
