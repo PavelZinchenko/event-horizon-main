@@ -45,10 +45,7 @@ namespace Combat.Component.Body
         {
 			get 
             {
-                if (IsMainThread() &&  transform)
-                    return transform.localPosition;
-                else 
-                    return _cachedPosition; 
+                return _cachedPosition; 
             }
             set
             {
@@ -62,10 +59,7 @@ namespace Combat.Component.Body
         {
 			get
             {
-                if (IsMainThread() && transform)
-                    return transform.localEulerAngles.z;
-                else
-                    return _cachedRotation;
+                return _cachedRotation;
             }
             set
             {
@@ -168,10 +162,20 @@ namespace Combat.Component.Body
                 velocity = velocity.normalized * _maxVelocity;
                 _rigidbody.velocity = velocity;
             }
-
-            var t = transform;
-            _cachedPosition = t.localPosition;
-            _cachedRotation = t.localEulerAngles.z;
+            
+            _cachedWorldPosition = _rigidbody.position;
+            _cachedWorldRotation = _rigidbody.rotation;
+            if (_parent != null)
+            {
+                _cachedPosition = _parent.WorldPositionToLocal(_cachedWorldPosition);
+                _cachedRotation = _parent.WorldRotationToLocal(_cachedWorldRotation);
+            }
+            else
+            {
+                _cachedPosition = _cachedWorldPosition;
+                _cachedRotation = _cachedWorldRotation;
+            }
+            
             _cachedVelocity = velocity;
             _cachedAngularVelocity = _rigidbody.angularVelocity;
         }
@@ -191,19 +195,30 @@ namespace Combat.Component.Body
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
-            _mainThread = System.Threading.Thread.CurrentThread;
         }
 
-        private bool IsMainThread()
+        public Vector2 WorldPosition()
         {
-            return System.Threading.Thread.CurrentThread == _mainThread;
+            return _cachedWorldPosition +
+                   RotationHelpers.Direction(_cachedWorldRotation) * (Offset * (_parent?.WorldScale() ?? 1));
         }
 
-        private System.Threading.Thread _mainThread;
+        public Vector2 WorldPositionNoOffset()
+        {
+            return _cachedWorldPosition;
+        }
+
+        public float WorldRotation()
+        {
+            return _cachedWorldRotation;
+        }
+        
         private Vector2 _viewPosition;
         private float _viewRotation;
         private Vector2 _cachedPosition;
         private float _cachedRotation;
+        private Vector2 _cachedWorldPosition;
+        private float _cachedWorldRotation;
         private Rigidbody2D _rigidbody;
         private Vector2 _cachedVelocity;
         private float _cachedAngularVelocity;
