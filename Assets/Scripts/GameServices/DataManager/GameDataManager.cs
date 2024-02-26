@@ -71,9 +71,9 @@ namespace GameServices.GameManager
             }
         }
 
-        public void LoadMod(string id = null)
+        public void LoadMod(string id = null, bool allowReload = false)
         {
-            if (_database.Id.Equals(id, StringComparison.OrdinalIgnoreCase))
+            if (!allowReload && _database.Id.Equals(id, StringComparison.OrdinalIgnoreCase))
                 return;
 
             string error;

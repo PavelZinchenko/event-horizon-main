@@ -7,7 +7,7 @@ namespace GameServices.GameManager
         void RestorePurchases();
         void CreateNewGame();
 
-        void LoadMod(string id = null);
+        void LoadMod(string id = null, bool allowReload = false);
 
         void SaveGameToCloud(string filename);
         void SaveGameToCloud(ISavedGame game);
