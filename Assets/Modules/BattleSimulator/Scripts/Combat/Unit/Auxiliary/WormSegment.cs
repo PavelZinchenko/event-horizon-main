@@ -7,7 +7,6 @@ using Combat.Component.Controls;
 using Combat.Component.Engine;
 using Combat.Component.Features;
 using Combat.Component.Physics;
-using Combat.Component.Physics.Joint;
 using Combat.Component.Platform;
 using Combat.Component.Ship;
 using Combat.Component.Ship.Effects;
@@ -35,7 +34,7 @@ namespace Combat.Component.Unit
 
         public void Connect(IUnit parent, float parentOffset, float offset, float maxAngle)
         {
-            Body.Move(parent.Body.Position - RotationHelpers.Direction(parent.Body.Rotation) * parent.Body.Scale);
+            Body.Move(parent.Body.Position - parent.Body.Scale * (offset + parentOffset) * RotationHelpers.Direction(parent.Body.Rotation));
             Body.Turn(parent.Body.Rotation);
 
             _parent = parent;
@@ -93,21 +92,39 @@ namespace Combat.Component.Unit
             var direction = RotationHelpers.Direction(Body.Rotation);
             var sideDirection = new Vector2(direction.y, -direction.x);
             var sideVelocity = Vector2.Dot(velocity, sideDirection);
-            Body.ApplyAcceleration(-5f*sideVelocity*elapsedTime*sideDirection);
+            Body.ApplyAcceleration(-5f * sideVelocity * elapsedTime * sideDirection);
         }
 
         private bool EnsurePositionValid()
         {
-            if (_parent.Body.Position.SqrDistance(Body.Position) < Body.Scale*5 && Mathf.Abs(Mathf.DeltaAngle(_parent.Body.Rotation, Body.Rotation)) < 90f)
-                return true;
+            var distance = _joint.Distance;
+            var validDistance = _offset + _parentOffset;
+            float threshold = validDistance*0.5f;
+            if (distance < validDistance - threshold || distance > validDistance + threshold)
+            {
+                //UnityEngine.Debug.LogError($"Invalid distance: {distance} / {validDistance}");
+                Reset();
+                return false;
+            }
 
+            var angle = Mathf.Abs(_joint.Angle);
+            if (angle > 90)
+            {
+                //UnityEngine.Debug.LogError($"Invalid Angle: {angle} / {_maxAngle}");
+                Reset();
+                return false;
+            }
+
+            return true;
+        }
+
+        private void Reset()
+        {
             _joint.Dispose();
             Connect(_parent, _parentOffset, _offset, _maxAngle);
 
             Body.ApplyAcceleration(_parent.Body.Velocity - Body.Velocity);
             Body.ApplyAngularAcceleration(-Body.AngularVelocity);
-
-            return false;
         }
 
         protected override void OnDispose()
@@ -172,7 +189,7 @@ namespace Combat.Component.Unit
         private bool _ownDamageIndicator;
 
         private bool _isActive = true;
-        private IJoint _joint;
+        private Physics.Joint.HingeJoint _joint;
         private UnitState _state;
         private float _hitPoints;
         private float _maxAngle;

@@ -11,33 +11,32 @@ namespace Combat.Ai.BehaviorTree
 	{
 		private const float _initialTime = -60;
 
-		private readonly IScene _scene;
-		private readonly IShip _ship;
 		private readonly ShipWeaponList _allWeapons;
 
         private IShip _mothership;
         private float _elapsedTime;
 		private ShipWeaponList _selectedWeapons;
-        private TargetList _targetList;
-        private ThreatList _threatList;
+		private TargetList _targetList;
+		private ThreatList _threatList;
 		private float _targetListUpdateTime = _initialTime;
 		private float _threatListUpdateTime = _initialTime;
 
 		private AutoExpandingList<IShip> _savedTargets;
 		private BitArray64 _savedFlags;
 
-		public IScene Scene => _scene;
-		public IShip Ship => _ship;
+        public bool IsDrone => Ship.Type.Class == UnitClass.Drone;
+		public IScene Scene { get; }
+		public IShip Ship { get; }
 		public ShipControls Controls { get; } = new();
 
         public IShip TargetShip { get; set; }
 
         public IShip Mothership 
         {
-            get => Ship.Type.Class == UnitClass.Drone ? Ship.Type.Owner : _mothership;
+            get => IsDrone ? Ship.Type.Owner : _mothership;
             set 
             {
-                if (Ship.Type.Class == UnitClass.Drone)
+                if (IsDrone)
                     Ship.Type.Owner = value;
                 else 
                     _mothership = value;
@@ -48,9 +47,10 @@ namespace Combat.Ai.BehaviorTree
 		public float LastTargetUpdateTime { get; set; } = _initialTime;
 		public float LastTextMessageTime { get; set; } = _initialTime;
 
-        public IReadOnlyList<IShip> SecondaryTargets => _targetList?.Items ?? EmptyList<IShip>.Instance;
+		public IReadOnlyList<IShip> SecondaryTargets => _targetList?.Items ?? EmptyList<IShip>.Instance;
 
-        public IReadOnlyList<IUnit> Threats => _threatList?.Units ?? EmptyList<IUnit>.Instance;
+        public IUnit Obstacle => _threatList?.Obstacle;
+		public IReadOnlyList<IUnit> Threats => _threatList?.Units ?? EmptyList<IUnit>.Instance;
 		public float TimeToCollision => _threatList != null ? _threatList.TimeToHit : float.MaxValue;
 
 		public bool HaveWeapons => _allWeapons.Count > 0;
@@ -61,16 +61,16 @@ namespace Combat.Ai.BehaviorTree
 		public float DeltaTime { get; private set; }
 		public float LockedEnergy { get; set; }
 		public float Time => _elapsedTime;
-		public float EnergyLevelPercentage => UnityEngine.Mathf.Clamp01((_ship.Stats.Energy.Value - LockedEnergy) / _ship.Stats.Energy.MaxValue);
-		public float EnergyLevel => UnityEngine.Mathf.Max(0, _ship.Stats.Energy.Value - LockedEnergy);
+		public float EnergyLevelPercentage => UnityEngine.Mathf.Clamp01((Ship.Stats.Energy.Value - LockedEnergy) / Ship.Stats.Energy.MaxValue);
+		public float EnergyLevel => UnityEngine.Mathf.Max(0, Ship.Stats.Energy.Value - LockedEnergy);
 
 		public bool RestoringEnergy { get; set; }
 		public ShipWeaponList SelectedWeapons { get => _selectedWeapons ?? _allWeapons; set => _selectedWeapons = value; }
 
 		public Context(IShip ship, IScene scene)
 		{
-			_scene = scene;
-			_ship = ship;
+			Scene = scene;
+			Ship = ship;
 			_allWeapons = new ShipWeaponList(ship);
 		}
 
@@ -85,21 +85,21 @@ namespace Combat.Ai.BehaviorTree
 		public void UpdateTargetList(float cooldown)
 		{
 			if (_targetList == null) 
-				_targetList = new(_scene);
+				_targetList = new(Scene);
 
 			if (_elapsedTime - _targetListUpdateTime < cooldown) return;
 			_targetListUpdateTime = _elapsedTime;
-			_targetList.Update(_ship, TargetShip);
+			_targetList.Update(Ship, TargetShip);
 		}
 
 		public void UpdateThreatList(IThreatAnalyzer threatAnalyzer, float cooldown)
 		{
 			if (_threatList == null)
-				_threatList = new(_scene);
+				_threatList = new(Scene);
 
 			if (_elapsedTime - _threatListUpdateTime < cooldown) return;
 			_threatListUpdateTime = _elapsedTime;
-			_threatList.Update(_ship, threatAnalyzer);
+			_threatList.Update(Ship, threatAnalyzer);
 		}
 
 		public bool TrySetValue(int id, bool value)

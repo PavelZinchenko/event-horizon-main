@@ -4,4 +4,5 @@
     <member name="NotForOrganicShips" type="bool" />
     <member name="NotForMechanicShips" type="bool" />
     <member name="UniqueComponentTag" type="string" />
+    <member name="MaxComponentAmount" type="int" minvalue="0" />
 </data>

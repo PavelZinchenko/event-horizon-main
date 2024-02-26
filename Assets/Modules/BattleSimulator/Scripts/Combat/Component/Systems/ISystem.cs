@@ -16,6 +16,7 @@ namespace Combat.Component.Systems
     {
         bool Enabled { get; set; }
         bool Active { get; set; }
+        bool IsAutomatic => KeyBinding < 0;
 
         float ActivationCost { get; }
         bool CanBeActivated { get; }

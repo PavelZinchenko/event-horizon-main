@@ -35,7 +35,7 @@ namespace Combat.Factory
         {
             var aiModel = customAi ?? _database.CombatSettings.EnemyAI;
             if (aiModel != null)
-                return new BehaviorTreeController.Factory(aiModel, _scene, AiSettings.FromAiLevel(aiLevel), _behaviorTreeBuilder);
+                return new BehaviorTreeController.Factory(aiModel, AiSettings.FromAiLevel(aiLevel), _behaviorTreeBuilder);
 
             return new Computer.Factory(_scene, aiLevel);
         }
@@ -44,7 +44,7 @@ namespace Combat.Factory
         {
             var aiModel = customAi ?? _database.CombatSettings.CloneAI;
             if (aiModel != null)
-                return new BehaviorTreeController.Factory(aiModel, _scene, AiSettings.Default, _behaviorTreeBuilder);
+                return new BehaviorTreeController.Factory(aiModel, AiSettings.Default, _behaviorTreeBuilder);
 
             return new Clone.Factory(_scene);
         }
@@ -53,7 +53,7 @@ namespace Combat.Factory
         {
             var aiModel = customAi ?? _database.CombatSettings.StarbaseAI;
             if (aiModel != null)
-                return new BehaviorTreeController.Factory(aiModel, _scene, AiSettings.Default, _behaviorTreeBuilder);
+                return new BehaviorTreeController.Factory(aiModel, AiSettings.Default, _behaviorTreeBuilder);
 
             return new Starbase.Factory(_scene, combatMode);
         }
@@ -66,7 +66,7 @@ namespace Combat.Factory
                     _database.CombatSettings.DefensiveDroneAI;
 
             if (behaviorTree != null)
-                return new BehaviorTreeController.Factory(behaviorTree, _scene, AiSettings.ForDrone(range), _behaviorTreeBuilder);
+                return new BehaviorTreeController.Factory(behaviorTree, AiSettings.ForDrone(range), _behaviorTreeBuilder);
 
             return new Drone.Factory(_scene, range, behaviour, improvedAi);
         }
@@ -74,7 +74,7 @@ namespace Combat.Factory
         public IControllerFactory CreateAutopilotController()
         {
             if (_database.CombatSettings.AutopilotAI != null)
-                return new BehaviorTreeController.Factory(_database.CombatSettings.AutopilotAI, _scene, AiSettings.Default, _behaviorTreeBuilder);
+                return new BehaviorTreeController.Factory(_database.CombatSettings.AutopilotAI, AiSettings.Default, _behaviorTreeBuilder);
 
             return new Computer.Factory(_scene, 100, true);
         }

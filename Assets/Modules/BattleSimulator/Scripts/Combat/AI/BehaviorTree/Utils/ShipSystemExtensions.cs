@@ -30,12 +30,14 @@ namespace Combat.Ai.BehaviorTree.Utils
 			return true;
 		}
 
-		public static ShipSystemList<IDevice> FindDevices(this IReadOnlyList<ISystem> shipSystems, GameDatabase.Enums.DeviceClass deviceClass)
+		public static ShipSystemList<IDevice> FindDevices(this IReadOnlyList<ISystem> shipSystems,
+            GameDatabase.Enums.DeviceClass deviceClass, bool includeAutomatic = false)
 		{
 			var systems = new ShipSystemList<IDevice>();
 			for (int i = 0; i < shipSystems.Count; ++i)
 				if (shipSystems[i] is IDevice device && device.DeviceClass == deviceClass)
-					systems.Add(device, i);
+                    if (includeAutomatic || !device.IsAutomatic)
+    					systems.Add(device, i);
 
 			return systems;
 		}

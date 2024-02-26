@@ -3,6 +3,7 @@ using GameDatabase.Enums;
 using GameDatabase.Model;
 using GameDatabase.DataModel;
 using Constructor;
+using System.Collections.Generic;
 
 namespace Session.Model
 {
@@ -55,8 +56,21 @@ namespace Session.Model
 				return null;
 			}
 
-			var info = new ComponentInfo(component, database.GetComponentMod(new(_modification)), (ModificationQuality)_quality, _upgradeLevel);			
-			return new IntegratedComponent(info, _x, _y, _barrelId, _keyBinding, _behaviour, _locked);
+            var info = new ComponentInfo(component, database.GetComponentMod(new(_modification)), (ModificationQuality)_quality, _upgradeLevel);
+            return new IntegratedComponent(info, _x, _y, _barrelId, _keyBinding, _behaviour, _locked);
 		}
 	}
+
+    public static class ShipComponentInfoExtensions
+    {
+        public static IEnumerable<IntegratedComponent> ToIntegratedComponents(this IEnumerable<ShipComponentInfo> components, IDatabase database)
+        {
+            foreach (var item in components)
+            {
+                var component = item.ToIntegratedComponent(database);
+                if (component != null)
+                    yield return component;
+            }
+        }
+    }
 }

@@ -54,18 +54,19 @@ namespace Combat.Ai.Calculations
 		{
 			var maxVelocity = ship.Engine.MaxVelocity;
 
-			var minDistance = min + ship.Body.Scale / 2 + target.Body.Scale / 2;
-			var maxDistance = minDistance - min + max;
+            var shipSummarySize = ship.Body.Scale/2 + target.Body.Scale/2;
+            var minDistance = min + shipSummarySize;
+			var maxDistance = max + shipSummarySize;
 
 			var direction = ship.Body.Position.Direction(target.Body.Position);
-			var distance = direction.magnitude;
-			if (distance >= minDistance && distance <= maxDistance)
-				return true;
+            var distance = direction.magnitude;
+            if (distance >= minDistance && distance <= maxDistance)
+                return true;
 
-			if (controls.MovementLocked)
-				return false;
+            if (controls.MovementLocked)
+                return false;
 
-			Vector2 requiredVelocity;
+            Vector2 requiredVelocity;
 			if (distance < minDistance)
 			{
 				var excess = (1 + minDistance - distance) / (1 + minDistance);

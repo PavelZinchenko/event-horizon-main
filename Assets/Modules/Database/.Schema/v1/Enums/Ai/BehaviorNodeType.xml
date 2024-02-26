@@ -58,6 +58,7 @@
     <item name="AttackAdditionalTargets" value="127">Attacks additional targets with selected weapons, returning SUCCESS upon firing, RUNNING while aiming, and FAILURE for any inability to initiate the attack</item>
     <item name="TargetAllyStarbase" value="128">Targets an ally starbase. Returns SUCCESS if it exists and alive, otherwise FAILURE</item>
     <item name="TargetEnemyStarbase" value="129">Targets an enemy starbase. Returns SUCCESS if it exists and alive, otherwise FAILURE</item>
+    <item name="BypassObstacles" value="130">Tries to bypass obstacle if any. Requires threat list. Returns FAILURE if there are no obstacles, RUNNING otherwise</item>
 
     <item name="EnginePropulsionForce" value="150">Returns SUCCESS when [forward acceleration]/[max acceleration] > MinValue</item>
 
@@ -67,7 +68,7 @@
     <item name="GoBerserk" value="203">Detaches drone from the mothership. Starts treating all ships as enemies. Returns SUCCESS once activated, FAILURE after that</item>
     <item name="TargetMothership" value="204">Sets the mothership as a main target. Returns FAILURE if it's absent, otherwise SUCCESS</item>
     <item name="MothershipLowHp" value="205" />
-    <item name="DroneBayRangeExceeded" value="206">Returns SUCCESS if drone is too far from the mothership</item>
+    <item name="MothershipDistanceExceeded" value="206">Returns SUCCESS if ship is too far from the mothership</item>
     <item name="MakeTargetMothership" value="207">Makes primary target a new mothership. Returns FAILURE if target is absent or already a mothership, otherwise SUCCESS</item>
 
     <item name="ShowMessage" value="300">Spawns text over the ship sprite that disappears shortly. Retruns SUCCESS if spawned, RUNNING if on cooldown</item>

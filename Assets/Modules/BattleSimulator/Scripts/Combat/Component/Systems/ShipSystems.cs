@@ -9,13 +9,11 @@ namespace Combat.Component.Systems
         public ShipSystems(IShip ship)
         {
             _ship = ship;
-			_systems = new();
-			_systemsReadonly = _systems.AsReadOnly();
         }
 
-        public IReadOnlyList<ISystem> All => _systemsReadonly;
+        public IReadOnlyList<ISystem> All => _systems;
 
-        public SystemsModifications Modifications { get { return _modifications; } }
+        public SystemsModifications Modifications => _modifications;
 
         public void UpdatePhysics(float elapsedTime)
         {
@@ -106,9 +104,8 @@ namespace Combat.Component.Systems
         }
 
         private readonly IShip _ship;
-		private readonly List<ISystem> _systems;
-		private readonly IReadOnlyList<ISystem> _systemsReadonly;
-		private readonly List<IWeaponPlatform> _weaponPlatforms = new List<IWeaponPlatform>();
-        private readonly SystemsModifications _modifications = new SystemsModifications();
+        private readonly List<ISystem> _systems = new();
+        private readonly List<IWeaponPlatform> _weaponPlatforms = new();
+        private readonly SystemsModifications _modifications = new();
     }
 }

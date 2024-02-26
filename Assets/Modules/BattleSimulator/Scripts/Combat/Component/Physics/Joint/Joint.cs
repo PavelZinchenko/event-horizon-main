@@ -2,14 +2,16 @@
 
 namespace Combat.Component.Physics.Joint
 {
-    public class Joint : IJoint
+    public class Joint<T> : IJoint where T : Joint2D
     {
-        public Joint(Joint2D joint)
+        private readonly T _joint;
+
+        public Joint(T joint)
         {
             _joint = joint;
         }
 
-        public bool IsActive { get { return _joint && _joint.connectedBody; } }
+        public bool IsActive => _joint && _joint.connectedBody;
 
         public void Dispose()
         {
@@ -17,6 +19,6 @@ namespace Combat.Component.Physics.Joint
                 Object.Destroy(_joint);
         }
 
-        private readonly Joint2D _joint;
+        protected T Component => _joint;
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Combat.Ai.BehaviorTree.Utils;
 using Combat.Component.Body;
 using Combat.Component.Collider;
 using Combat.Component.Ship;
@@ -14,34 +15,36 @@ namespace Combat.Ai
     public class ThreatList
     {
 		private float _timeToHit = 1000f;
-		private float _cooldown;
-		private const float UpdateInterval = 0.1f;
-		private readonly IScene _scene;
-		private readonly List<IUnit> _threats;
-		private readonly IReadOnlyList<IUnit> _threatsReadOnly;
-
-		public ThreatList(IScene scene)
+        private float _cooldown;
+        private const float UpdateInterval = 0.1f;
+        private readonly IScene _scene;
+        private readonly List<IUnit> _threats;
+        private IUnit _obstacle;
+        
+        public ThreatList(IScene scene)
         {
             _scene = scene;
 			_threats = new List<IUnit>();
-			_threatsReadOnly = _threats.AsReadOnly();
         }
 
-        public IReadOnlyList<IUnit> Units => _threatsReadOnly;
+        public IUnit Obstacle => _obstacle;
+        public IReadOnlyList<IUnit> Units => _threats;
         public float TimeToHit => _timeToHit;
 
-		[Obsolete] public void Update(float elapsedTime, IShip ship, IThreatAnalyzer analyzer)
-		{
-			_cooldown -= elapsedTime;
-			if (_cooldown > 0)
-				return;
-
-			_cooldown = UpdateInterval;
-			Update(ship, analyzer);
-		}
-
-		public void Update(IShip ship, IThreatAnalyzer analyzer)
+        [Obsolete]
+        public void Update(float elapsedTime, IShip ship, IThreatAnalyzer analyzer)
         {
+            _cooldown -= elapsedTime;
+            if (_cooldown > 0)
+                return;
+
+            _cooldown = UpdateInterval;
+            Update(ship, analyzer);
+        }
+
+        public void Update(IShip ship, IThreatAnalyzer analyzer)
+        {
+            _obstacle = null;
             _threats.Clear();
             _timeToHit = 1000f;
 
@@ -57,23 +60,9 @@ namespace Combat.Ai
             for (var i = 0; i < _threats.Count; ++i)
             {
                 var item = _threats[i];
+                if (item == ship) continue;
 
-                switch (item.Type.Class)
-                {
-                    case UnitClass.Ship:
-                    case UnitClass.Drone:
-                    case UnitClass.Decoy:
-                    case UnitClass.Loot:
-                    case UnitClass.Camera:
-                        continue;
-                }
-
-                if (item.Type.Side.IsAlly(ship.Type.Side))
-                    continue;
-
-                if (!analyzer.IsThreat(ship, item))
-                    continue;
-
+                if (analyzer.IsThreat(ship, item))
                 {
                     var itemPosition = ship.Body.Position.Direction(item.Body.Position);
                     var velocity = ship.Body.Velocity - item.Body.Velocity;
@@ -90,6 +79,9 @@ namespace Combat.Ai
                             _timeToHit = threatTime;
                     }
                 }
+
+                if (ThreatAnalyzer.IsObstacle(ship, item))
+                    _obstacle = item;
             }
 
             if (parentedObjects.Count > 0)

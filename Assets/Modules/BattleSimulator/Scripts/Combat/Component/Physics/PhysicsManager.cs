@@ -20,10 +20,10 @@ namespace Combat.Component.Physics
             joint.distance = maxDistance;
 
             _joints.Add(joint);
-            return new Joint.Joint(joint);
+            return new Joint<DistanceJoint2D>(joint);
         }
 
-        public IJoint CreateHingeJoint(PhysicsManager other, float offset, float connectedOffset, float minAngle, float maxAngle)
+        public Joint.HingeJoint CreateHingeJoint(PhysicsManager other, float offset, float connectedOffset, float minAngle, float maxAngle)
         {
             if (other == null)
                 return null;
@@ -37,7 +37,7 @@ namespace Combat.Component.Physics
             joint.limits = new JointAngleLimits2D {min = minAngle, max = maxAngle};
 
             _joints.Add(joint);
-            return new Joint.Joint(joint);
+            return new Joint.HingeJoint(joint);
         }
 
         public IJoint CreateFixedJoint(PhysicsManager other, Vector2 position)
@@ -53,7 +53,7 @@ namespace Combat.Component.Physics
             joint.dampingRatio = 1.0f;
 
             _joints.Add(joint);
-            return new Joint.Joint(joint);
+            return new Joint<FixedJoint2D>(joint);
         }
 
         public void Dispose()
@@ -66,6 +66,6 @@ namespace Combat.Component.Physics
         protected Rigidbody2D Rigidbody { get { return _rigidbody ?? (_rigidbody = GetComponent<Rigidbody2D>()); } }
 
         protected Rigidbody2D _rigidbody;
-        private List<Joint2D> _joints = new List<Joint2D>();
+        private readonly List<Joint2D> _joints = new();
     }
 }

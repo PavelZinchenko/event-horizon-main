@@ -35,8 +35,8 @@ namespace Session.Model
 			if (_id == 0) return null;
 			var satellite = database.GetSatellite(new ItemId<Satellite>(_id));
 			if (satellite == null) return null;
-			var components = _components.Select(item => item.ToIntegratedComponent(database));
-			return new CommonSatellite(satellite, components);
+            var components = _components.ToIntegratedComponents(database);
+            return new CommonSatellite(satellite, components);
 		}
 	}
 }

@@ -136,7 +136,7 @@ namespace Combat.Factory
                 case DeviceClass.WormTail:
                     var tailSegment = stats.Prefab != null ? _prefabCache.LoadPrefab(stats.Prefab) : _prefabCache.LoadPrefab(stats.ObjectPrefab);
                     device = new WormTailDevice(stats, _spaceObjectFactory.CreateWormTail(ship, Mathf.FloorToInt(stats.Size), 0.1f,
-                        ship.Stats.Armor.MaxValue * stats.Power, tailSegment, stats.Offset.x, stats.Offset.y, 0.15f, shipSpec.Stats.ShipColor));
+                        ship.Stats.Armor.MaxValue * stats.Power, tailSegment, shipSpec.Stats.ShipColor));
                     break;
                 case DeviceClass.Jammer:
                     device = new JammerDevice(TargetPriority.High);

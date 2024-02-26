@@ -8,18 +8,16 @@ namespace Combat.Ai.BehaviorTree.Nodes
 	public class FindEnemyInAttackRange : FindEnemyNodeBase
 	{
         private readonly bool _ignoreDrones;
-        private readonly bool _isDrone;
 
-        public FindEnemyInAttackRange(IShip ship, float findEnemyCooldown, float changeEnemyCooldown, bool ignoreDrones)
+        public FindEnemyInAttackRange(float findEnemyCooldown, float changeEnemyCooldown, bool ignoreDrones)
 			: base(findEnemyCooldown, changeEnemyCooldown)
 		{
 			_ignoreDrones = ignoreDrones;
-            _isDrone = ship.Type.Class == UnitClass.Drone;
         }
 
         protected override IShip FindNewEnemy(Context context)
 		{
-			var options = _isDrone ? EnemyMatchingOptions.EnemyForDrone(context.AttackRangeMax) :
+			var options = context.IsDrone ? EnemyMatchingOptions.EnemyForDrone(context.AttackRangeMax) :
                 EnemyMatchingOptions.EnemyForShip(context.AttackRangeMax);
 
 			options.IgnoreDrones = _ignoreDrones;

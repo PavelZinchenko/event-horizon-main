@@ -52,10 +52,5 @@ namespace Combat.Ai
 
 			this.UseAccelerators(ship, rechargingState);
 		}
-
-		public override bool IsThreat(IShip ship, IUnit unit)
-		{
-			return true;
-		}
     }
 }

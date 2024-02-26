@@ -49,7 +49,7 @@ namespace Combat.Ai.Calculations
 				var spread = weapon.Info.Spread / 2 + Mathf.Asin(0.3f * enemy.Body.Scale / Vector2.Distance(enemy.Body.Position, ship.Body.Position)) * Mathf.Rad2Deg;
 				var delta = Mathf.Abs(Mathf.DeltaAngle(course, ship.Body.Rotation));
 
-				if (weapon.Platform.ActiveTarget == enemy)
+				if (weapon.Platform.ActiveTarget == enemy || weapon.Platform.ActiveTarget == null)
 					delta -= weapon.Platform.AutoAimingAngle;
 
 				if (delta < spread + 1 || shotImmediately)

@@ -40,7 +40,8 @@ public class LoadingScreen : MonoBehaviour
 
 	private void OnLocalizationChanged(string language)
 	{
-		_shipNameText.text = _localization.GetString("$Credits_Title");
+		_shipNameText.text = AppConfig.alternativeTitle ? 
+            _localization.GetString("$Credits_Title_Alternative") : _localization.GetString("$Credits_Title");
 		_loadingText.text = _localization.GetString("$Loading");
 	}
 

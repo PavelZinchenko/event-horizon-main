@@ -7,4 +7,11 @@
     <member name="ImageScale" type="float" case="CircularSpriteObject,CircularOutlineObject" minvalue="0" maxvalue="10" default="1" />
     <member name="Thickness" type="float" case="CircularOutlineObject" minvalue="0" maxvalue="1" default="0.1" />
     <member name="AspectRatio" type="float" case="CircularOutlineObject" minvalue="0" maxvalue="100" default="1" />
+    <member name="ImageScale" type="float" alias="JointImageScale" case="WormTailSegment" minvalue="0" maxvalue="10" />
+    <member name="ImageOffset" type="float" alias="JointImageOffset" case="WormTailSegment" minvalue="-1" maxvalue="1" />
+    <member name="Length" type="float" alias="BoneLength" case="WormTailSegment" minvalue="0" maxvalue="1" />
+    <member name="Offset1" type="float" alias="JointOffset" case="WormTailSegment" minvalue="0" maxvalue="1" />
+    <member name="Offset2" type="float" alias="HeadOffset" case="WormTailSegment" minvalue="-1" maxvalue="1" />
+    <member name="Angle1" type="float" alias="MaxRotation" case="WormTailSegment" minvalue="0" maxvalue="180" />
+    <member name="Angle2" type="float" alias="MaxHeadRotation" case="WormTailSegment" minvalue="0" maxvalue="180" />
 </data>

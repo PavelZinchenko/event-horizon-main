@@ -99,8 +99,8 @@ namespace Combat.Component.Body
 
         public float Weight
         {
-            get { return _rigidbody.mass; }
-            set { _rigidbody.mass = value; }
+            get { return _weigth; }
+            set { _rigidbody.mass = _weigth = value; }
         }
 
         public float Scale
@@ -213,6 +213,7 @@ namespace Combat.Component.Body
             return _cachedWorldRotation;
         }
         
+        private float _weigth;
         private Vector2 _viewPosition;
         private float _viewRotation;
         private Vector2 _cachedPosition;

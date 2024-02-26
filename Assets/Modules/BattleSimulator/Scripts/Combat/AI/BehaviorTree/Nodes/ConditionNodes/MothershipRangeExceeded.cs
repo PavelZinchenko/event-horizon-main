@@ -2,7 +2,7 @@
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
-	public class DroneBayRangeExceeded : INode
+	public class MothershipRangeExceeded : INode
 	{
 		private readonly float _maxRange;
 
@@ -11,7 +11,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
             if (maxRange <= 0)
                 return EmptyNode.Failure;
 
-            return new DroneBayRangeExceeded(maxRange);
+            return new MothershipRangeExceeded(maxRange);
         }
 
         public NodeState Evaluate(Context context)
@@ -24,6 +24,6 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			return currentDistance > _maxRange ? NodeState.Success : NodeState.Failure;
 		}
 
-        private DroneBayRangeExceeded(float maxRange) { _maxRange = maxRange; }
+        private MothershipRangeExceeded(float maxRange) { _maxRange = maxRange; }
     }
 }
