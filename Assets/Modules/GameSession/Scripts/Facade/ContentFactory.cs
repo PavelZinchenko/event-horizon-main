@@ -59,5 +59,6 @@ namespace Session
 		public PvpData CreatePvpData(Model.SaveGameData data) => new PvpData(data);
 		public SocialData CreateSocialData(Model.SaveGameData data) => new SocialData(data);
 		public QuestData CreateQuestData(Model.SaveGameData data) => new QuestData(data);
-	}
+        public ShipPresetsData CreatePresetsData(Model.SaveGameData data) => new ShipPresetsData(data);
+    }
 }

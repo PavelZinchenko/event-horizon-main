@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="WormholeData" type="object">
+    <member name="Routes" type="map" key="int" value="int" />
+</data>

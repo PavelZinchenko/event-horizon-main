@@ -25,8 +25,9 @@ namespace Session
 		private UpgradesData _upgradesData;
 		private SocialData _socialData;
 		private QuestData _questData;
+        private ShipPresetsData _presetsData;
 
-		public long GameId { get; private set; }
+        public long GameId { get; private set; }
 		public long TimePlayed { get; private set; }
 		public long DataVersion { get; private set; }
 		public string ModId { get; private set; }
@@ -65,5 +66,6 @@ namespace Session
 		public IUpgradesData Upgrades => _upgradesData;
 		public ISocialData Social => _socialData;
 		public IQuestData Quests => _questData;
-	}
+        public IShipPresetsData ShipPresets => _presetsData;
+    }
 }

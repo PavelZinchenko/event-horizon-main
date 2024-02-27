@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="FleetData" type="object">
+    <member name="ExplorationShipId" type="int" default="-1" />
+    <member name="Ships" type="list" value="ShipInfo" />
+    <member name="HangarSlots" type="list" value="HangarSlotInfo" />
+</data>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ShipPresetsData" type="object">
+    <member name="Presets" type="list" value="ShipPresetInfo" />
+</data>

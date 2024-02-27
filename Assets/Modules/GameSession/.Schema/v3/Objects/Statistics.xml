@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Statistics" type="object">
+    <member name="UnlockedShips" type="set" value="int" />
+    <member name="DefeatedEnemies" type="int" />
+</data>

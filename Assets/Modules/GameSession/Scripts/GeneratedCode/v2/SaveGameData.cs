@@ -8,7 +8,7 @@
 
 using Session.Utils;
 
-namespace Session.Model
+namespace Session.v2
 {
 	public class SaveGameData : IDataChangedCallback
 	{
@@ -33,10 +33,9 @@ namespace Session.Model
 		private Model.Statistics _statistics;
 		private Model.UpgradesData _upgrades;
 		private Model.WormholeData _wormholes;
-		private Model.ShipPresetsData _shipPresets;
 
 		public const int VersionMinor = 0;
-		public const int VersionMajor = 3;
+		public const int VersionMajor = 2;
 
 		public bool DataChanged { get; private set; }
 
@@ -64,7 +63,6 @@ namespace Session.Model
 			_statistics = new Model.Statistics(this);
 			_upgrades = new Model.UpgradesData(this);
 			_wormholes = new Model.WormholeData(this);
-			_shipPresets = new Model.ShipPresetsData(this);
 		}
 
 		public SaveGameData(SessionDataReader reader, IDataChangedCallback parent)
@@ -88,7 +86,6 @@ namespace Session.Model
 			_statistics = new Model.Statistics(reader, this);
 			_upgrades = new Model.UpgradesData(reader, this);
 			_wormholes = new Model.WormholeData(reader, this);
-			_shipPresets = new Model.ShipPresetsData(reader, this);
 			_parent = parent;
 			DataChanged = false;
 		}
@@ -301,42 +298,6 @@ namespace Session.Model
 				_wormholes.Parent = this;
 				OnDataChanged();
 			}
-		}
-		public Model.ShipPresetsData ShipPresets
-		{
-			get => _shipPresets;
-			set
-			{
-				if (_shipPresets == value) return;
-				_shipPresets = value;
-				_shipPresets.Parent = this;
-				OnDataChanged();
-			}
-		}
-
-		public void Serialize(SessionDataWriter writer)
-		{
-			_game.Serialize(writer);
-			_achievements.Serialize(writer);
-			_bosses.Serialize(writer);
-			_common.Serialize(writer);
-			_events.Serialize(writer);
-			_fleet.Serialize(writer);
-			_iap.Serialize(writer);
-			_pvp.Serialize(writer);
-			_inventory.Serialize(writer);
-			_quests.Serialize(writer);
-			_regions.Serialize(writer);
-			_research.Serialize(writer);
-			_resources.Serialize(writer);
-			_shop.Serialize(writer);
-			_social.Serialize(writer);
-			_starMap.Serialize(writer);
-			_statistics.Serialize(writer);
-			_upgrades.Serialize(writer);
-			_wormholes.Serialize(writer);
-			_shipPresets.Serialize(writer);
-			DataChanged = false;
 		}
 
 		public void OnDataChanged()

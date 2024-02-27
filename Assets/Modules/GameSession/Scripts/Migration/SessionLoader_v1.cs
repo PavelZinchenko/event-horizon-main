@@ -4,7 +4,7 @@ namespace Session
 {
 	public partial class SessionLoader
 	{
-		partial void Upgrage_v1_0_to_v2_0(v1.SaveGameData oldData, Model.SaveGameData newData)
+		partial void Upgrage_v1_0_to_v2_0(v1.SaveGameData oldData, v2.SaveGameData newData)
 		{
 			GameDiagnostics.Trace.LogWarning("Upgrading savegame from v1.0 to v2.0");
 

@@ -26,12 +26,18 @@ namespace Session
 		/// property was added - newData.StarMap.SecuredStars;
 		/// property was added - newData.StarMap.EnemiesOnStars;
 		/// </summary>
-		partial void Upgrage_v1_0_to_v2_0(v1.SaveGameData oldData, Model.SaveGameData newData);
+		partial void Upgrage_v1_0_to_v2_0(v1.SaveGameData oldData, v2.SaveGameData newData);
+		/// <summary>
+		/// These items must be transferred manually:
+		/// property was added - newData.ShipPresets;
+		/// </summary>
+		partial void Upgrage_v2_0_to_v3_0(v2.SaveGameData oldData, Model.SaveGameData newData);
 
 		public Model.SaveGameData Convert(v1.SaveGameData data)
 		{
 			var data2 = Convert_1_2(data);
-			return data2;
+			var data3 = Convert_2_3(data2);
+			return data3;
 		}
 
 		public Model.SaveGameData Load(SessionDataReader reader, int versionMajor, int versionMinor)
@@ -40,9 +46,9 @@ namespace Session
 			if (versionMajor == 1)
 				data1 = new v1.SaveGameData(reader, null);
 
-			Model.SaveGameData data2 = null;
+			v2.SaveGameData data2 = null;
 			if (versionMajor == 2)
-				data2 = new Model.SaveGameData(reader, null);
+				data2 = new v2.SaveGameData(reader, null);
 			else if (versionMajor == 1)
 			{
 				data2 = Convert_1_2(data1);
@@ -50,13 +56,23 @@ namespace Session
 				versionMinor = 0;
 			}
 
-			return data2;
+			Model.SaveGameData data3 = null;
+			if (versionMajor == 3)
+				data3 = new Model.SaveGameData(reader, null);
+			else if (versionMajor == 2)
+			{
+				data3 = Convert_2_3(data2);
+				versionMajor = 3;
+				versionMinor = 0;
+			}
+
+			return data3;
 		}
 
 
-		private Model.SaveGameData Convert_1_2(v1.SaveGameData oldData)
+		private v2.SaveGameData Convert_1_2(v1.SaveGameData oldData)
 		{
-			var newData = new Model.SaveGameData(null);
+			var newData = new v2.SaveGameData(null);
 			newData.Game = oldData.Game;
 			newData.Achievements = oldData.Achievements;
 			newData.Common = oldData.Common;
@@ -78,6 +94,32 @@ namespace Session
 			newData.Upgrades = oldData.Upgrades;
 			newData.Wormholes = oldData.Wormholes;
 			Upgrage_v1_0_to_v2_0(oldData, newData);
+			return newData;
+		}
+
+		private Model.SaveGameData Convert_2_3(v2.SaveGameData oldData)
+		{
+			var newData = new Model.SaveGameData(null);
+			newData.Game = oldData.Game;
+			newData.Achievements = oldData.Achievements;
+			newData.Bosses = oldData.Bosses;
+			newData.Common = oldData.Common;
+			newData.Events = oldData.Events;
+			newData.Fleet = oldData.Fleet;
+			newData.Iap = oldData.Iap;
+			newData.Pvp = oldData.Pvp;
+			newData.Inventory = oldData.Inventory;
+			newData.Quests = oldData.Quests;
+			newData.Regions = oldData.Regions;
+			newData.Research = oldData.Research;
+			newData.Resources = oldData.Resources;
+			newData.Shop = oldData.Shop;
+			newData.Social = oldData.Social;
+			newData.StarMap = oldData.StarMap;
+			newData.Statistics = oldData.Statistics;
+			newData.Upgrades = oldData.Upgrades;
+			newData.Wormholes = oldData.Wormholes;
+			Upgrage_v2_0_to_v3_0(oldData, newData);
 			return newData;
 		}
 	}

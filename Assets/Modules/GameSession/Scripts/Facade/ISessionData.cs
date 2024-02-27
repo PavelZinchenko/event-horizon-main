@@ -25,7 +25,8 @@ namespace Session
 		IUpgradesData Upgrades { get; }
 		ISocialData Social { get; }
 		IQuestData Quests { get; }
-	}
+        IShipPresetsData ShipPresets { get; }
+    }
 
 	public interface ISessionData : ISessionContent, Services.Storage.IGameData { }
 

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="SatelliteInfo" type="struct">
+    <member name="Id" type="int" />
+    <member name="Components" type="list" value="ShipComponentInfo" />
+</data>

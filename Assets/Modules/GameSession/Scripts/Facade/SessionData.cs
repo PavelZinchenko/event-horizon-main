@@ -36,8 +36,9 @@ namespace Session
 		private UpgradesData _upgradesData;
 		private SocialData _socialData;
 		private QuestData _questData;
+        private ShipPresetsData _presetsData;
 
-		public IGameData Game => _gameData;
+        public IGameData Game => _gameData;
 		public IStarMapData StarMap => _starMapData;
 		public IInventoryData Inventory => _inventoryData;
 		public IFleetData Fleet => _fleetData;
@@ -56,8 +57,9 @@ namespace Session
 		public IUpgradesData Upgrades => _upgradesData;
 		public ISocialData Social => _socialData;
 		public IQuestData Quests => _questData;
+        public IShipPresetsData ShipPresets => _presetsData;
 
-		public SessionData(
+        public SessionData(
 			ContentFactory contentFactory, 
 			SessionDataLoadedSignal.Trigger dataLoadedTrigger, 
 			SessionCreatedSignal.Trigger sesionCreatedTrigger)
@@ -167,6 +169,7 @@ namespace Session
 			_upgradesData = _contentFactory.CreateUpgradesData(data);
 			_socialData = _contentFactory.CreateSocialData(data);
 			_questData = _contentFactory.CreateQuestData(data);
+            _presetsData = _contentFactory.CreatePresetsData(data);
 			_content.Parent = this;
 		}
 

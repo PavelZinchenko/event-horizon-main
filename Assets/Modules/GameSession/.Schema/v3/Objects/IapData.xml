@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="IapData" type="object">
+    <member name="RemoveAds" type="bool" />
+    <member name="SupporterPack" type="bool" />
+    <member name="Stars" type="int" options="encrypted" />
+</data>

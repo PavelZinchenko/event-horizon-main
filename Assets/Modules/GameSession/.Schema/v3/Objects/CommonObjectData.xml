@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="CommonObjectData" type="object">
+    <member name="IntValues" type="map" key="int" value="int" />
+    <member name="LongValues" type="map" key="int" value="long" />
+</data>

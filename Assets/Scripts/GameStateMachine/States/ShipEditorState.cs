@@ -12,6 +12,10 @@ using GameServices.Database;
 using GameServices.Research;
 using Economy;
 using CommonComponents.Signals;
+using Session;
+using GameDatabase;
+using System.Linq;
+using System;
 
 namespace GameStateMachine.States
 {
@@ -44,10 +48,11 @@ namespace GameStateMachine.States
 			else
 			{
 				container.BindInterfacesTo<InventoryProvider>().AsTransient().WhenInjectedInto<ShipEditorContext>();
-				container.Bind<IShipEditorContext>().To<ShipEditorContext>().AsSingle().WithArguments(_context.Ship);
-			}
+                container.Bind<IShipEditorContext>().To<ShipEditorContext>().AsSingle().WithArguments(_context.Ship);
+                container.BindInterfacesTo<PresetStorage>().AsSingle();
+            }
 
-			container.BindSignal(_closeEditorSignal);
+            container.BindSignal(_closeEditorSignal);
 			container.BindTrigger<ShipEditor.CloseEditorSignal.Trigger>();
 		}
 
@@ -68,18 +73,20 @@ namespace GameStateMachine.States
 			private readonly ITechnologies _technologies;
 			private readonly Research _research;
 
-			public ShipEditorContext(IShip ship, IInventoryProvider inventory, ITechnologies technologies, Research research)
+			public ShipEditorContext(IShip ship, IInventoryProvider inventory, IShipPresetStorage presetStorage, ITechnologies technologies, Research research)
 			{
 				Ship = ship;
 				Inventory = inventory;
 				_research = research;
 				_technologies = technologies;
+                ShipPresetStorage = presetStorage;
 			}
 
 			public IShip Ship { get; }
 			public IInventoryProvider Inventory { get; }
             public IShipDataProvider ShipDataProvider => new EmptyDataProvider();
             public bool IsShipNameEditable => true;
+            public IShipPresetStorage ShipPresetStorage { get; }
 
             public bool CanBeUnlocked(Component component)
             {
@@ -90,6 +97,42 @@ namespace GameStateMachine.States
 				return _technologies.TryGetComponentTechnology(component, out var tech) && _research.IsTechResearched(tech);
 			}
 		}
+
+        private class PresetStorage : IShipPresetStorage, IDisposable
+        {
+            private readonly List<IShipPreset> _shipPresets;
+            private readonly ISessionData _session;
+            private readonly IDatabase _database;
+
+            public PresetStorage(ISessionData session, IDatabase database)
+            {
+                _session = session;
+                _database = database;
+                _shipPresets = session.ShipPresets.Presets.Select(item => item.ToShipPreset(database)).ToList();
+            }
+
+            public IShipPreset Create(Ship ship)
+            {
+                var preset = new ShipPreset(ship);
+                _shipPresets.Add(preset);
+                return preset;
+            }
+
+            public void Delete(IShipPreset preset)
+            {
+                _shipPresets.Remove(preset);
+            }
+
+            public IEnumerable<IShipPreset> GetPresets(Ship ship)
+            {
+                return _shipPresets.Where(item => item.Ship == ship);
+            }
+
+            public void Dispose()
+            {
+                _session.ShipPresets.UpdatePresets(_shipPresets);
+            }
+        }
 
 		private class InventoryProvider : IInventoryProvider
 		{

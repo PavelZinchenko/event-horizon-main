@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="QuestStatistics" type="struct">
+    <member name="CompletionCount" type="int" />
+    <member name="FailureCount" type="int" />
+    <member name="LastStartTime" type="long" />
+    <member name="LastCompletionTime" type="long" />
+</data>
