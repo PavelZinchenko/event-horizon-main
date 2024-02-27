@@ -17,7 +17,8 @@
     <member name="MerchantPriceFactor" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" default="1 - 0.05*level" />
     <member name="CraftingPriceFactor" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" default="1 - 0.05*level" />
     <member name="CraftingLevelReduction" type="expression" typeid="IntToInt" arguments="level" minvalue="0" default="5*level" />
-    <member name="IncreasedLevelLimit" type="int" minvalue="100" maxvalue="1000" default="200" />
+    <member name="MaxPlayerShipsLevel" type="int" minvalue="0" maxvalue="500" default="100" />
+    <member name="IncreasedLevelLimit" type="int" minvalue="0" maxvalue="1000" default="200" />
     <member name="BaseFuelCapacity" type="int" minvalue="10" default="100" />
     <member name="BaseFlightRange" type="float" minvalue="1.5" default="1.5" />
     <member name="BaseFlightSpeed" type="float" minvalue="1" default="1" />

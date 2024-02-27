@@ -32,6 +32,7 @@ namespace GameDatabase.Serializable
 		public string MerchantPriceFactor = "1 - 0.05*level";
 		public string CraftingPriceFactor = "1 - 0.05*level";
 		public string CraftingLevelReduction = "5*level";
+		public int MaxPlayerShipsLevel = 100;
 		public int IncreasedLevelLimit = 200;
 		public int BaseFuelCapacity = 100;
 		public float BaseFlightRange = 1.5f;

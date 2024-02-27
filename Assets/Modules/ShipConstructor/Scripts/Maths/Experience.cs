@@ -75,8 +75,5 @@ namespace Maths
 		public static long LevelToExp(int level) { return 100L*level*level*level; }
 
 		private readonly ObscuredLong _value;
-
-	    public const int MaxPlayerRank = 100;
-	    public const long MaxPlayerExperience = 100L * MaxPlayerRank * MaxPlayerRank * MaxPlayerRank;
     }
 }

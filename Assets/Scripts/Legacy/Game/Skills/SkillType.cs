@@ -172,7 +172,7 @@ namespace GameModel.Skills
 			case SkillType.ShipExperience:
 				return localization.GetString("$ExperienceBoosterDesc", ToPercentage(settings.ExperienceBonus(level)));
 			case SkillType.RequierementMaxLevel:
-				return localization.GetString("$ShipLevelsRequirement", level, Maths.Experience.MaxPlayerRank);
+				return localization.GetString("$ShipLevelsRequirement", level, settings.MaxPlayerShipsLevel);
             case SkillType.HangarSlot1:
                 return localization.GetString("$NewHangarSlotDesc");
             case SkillType.HangarSlot2:

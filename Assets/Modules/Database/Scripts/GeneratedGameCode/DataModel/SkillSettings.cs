@@ -61,7 +61,8 @@ namespace GameDatabase.DataModel
 			CraftingPriceFactor = _craftingPriceFactor.Evaluate;
 			_craftingLevelReduction = new Expressions.IntToInt(serializable.CraftingLevelReduction, 0, 2147483647, variableResolver) { ParamName1 = "level" };
 			CraftingLevelReduction = _craftingLevelReduction.Evaluate;
-			IncreasedLevelLimit = UnityEngine.Mathf.Clamp(serializable.IncreasedLevelLimit, 100, 1000);
+			MaxPlayerShipsLevel = UnityEngine.Mathf.Clamp(serializable.MaxPlayerShipsLevel, 0, 500);
+			IncreasedLevelLimit = UnityEngine.Mathf.Clamp(serializable.IncreasedLevelLimit, 0, 1000);
 			BaseFuelCapacity = UnityEngine.Mathf.Clamp(serializable.BaseFuelCapacity, 10, 2147483647);
 			BaseFlightRange = UnityEngine.Mathf.Clamp(serializable.BaseFlightRange, 1.5f, 3.402823E+38f);
 			BaseFlightSpeed = UnityEngine.Mathf.Clamp(serializable.BaseFlightSpeed, 1f, 3.402823E+38f);
@@ -116,6 +117,7 @@ namespace GameDatabase.DataModel
 		private readonly Expressions.IntToInt _craftingLevelReduction;
 		public delegate int CraftingLevelReductionDelegate(int level);
 		public CraftingLevelReductionDelegate CraftingLevelReduction { get; private set; }
+		public int MaxPlayerShipsLevel { get; private set; }
 		public int IncreasedLevelLimit { get; private set; }
 		public int BaseFuelCapacity { get; private set; }
 		public float BaseFlightRange { get; private set; }
@@ -155,6 +157,7 @@ namespace GameDatabase.DataModel
 			public Expression<Variant> ResolveVariable(string name)
 			{
 				if (name == "DisableExceedTheLimits") return GetDisableExceedTheLimits;
+				if (name == "MaxPlayerShipsLevel") return GetMaxPlayerShipsLevel;
 				if (name == "IncreasedLevelLimit") return GetIncreasedLevelLimit;
 				if (name == "BaseFuelCapacity") return GetBaseFuelCapacity;
 				if (name == "BaseFlightRange") return GetBaseFlightRange;
@@ -163,6 +166,7 @@ namespace GameDatabase.DataModel
 			}
 
 			private Variant GetDisableExceedTheLimits() => _context.DisableExceedTheLimits;
+			private Variant GetMaxPlayerShipsLevel() => _context.MaxPlayerShipsLevel;
 			private Variant GetIncreasedLevelLimit() => _context.IncreasedLevelLimit;
 			private Variant GetBaseFuelCapacity() => _context.BaseFuelCapacity;
 			private Variant GetBaseFlightRange() => _context.BaseFlightRange;

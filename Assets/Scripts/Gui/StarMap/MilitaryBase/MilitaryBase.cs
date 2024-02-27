@@ -9,6 +9,7 @@ using Services.Messenger;
 using Services.ObjectPool;
 using Zenject;
 using CommonComponents;
+using GameDatabase;
 
 namespace Gui.StarMap
 {
@@ -20,6 +21,7 @@ namespace Gui.StarMap
         [Inject] private readonly MotherShip _motherShip;
         [Inject] private readonly IGameObjectFactory _gameObjectFactory;
         [Inject] private readonly PlayerFleet _playerFleet;
+        [Inject] private readonly IDatabase _database;
 
         [Inject]
         private void Initialize(IMessenger _messenger)
@@ -51,14 +53,15 @@ namespace Gui.StarMap
         public void LevelUpButtonClicked(MilitaryBaseShipItem shipItem)
         {
             var ship = shipItem.Ship;
-            if (ship.Experience.Level >= Level || ship.Experience >= Maths.Experience.MaxPlayerExperience)
+            if (ship.Experience.Level >= Level || ship.Experience >= Maths.Experience.FromLevel(_database.SkillSettings.MaxPlayerShipsLevel))
                 return;
 
             var price = GetLevelUpPrice(ship);
             if (!price.TryWithdraw(_playerResources))
                 return;
 
-            ship.Experience = System.Math.Min((long)Maths.Experience.MaxPlayerExperience, (long)ship.Experience + ship.Experience.NextLevelCost);
+            ship.Experience = System.Math.Min((long)Maths.Experience.LevelToExp(_database.SkillSettings.MaxPlayerShipsLevel),
+                (long)ship.Experience + ship.Experience.NextLevelCost);
             _soundPlayer.Play(_buySound);
 
             UpdateContent();
@@ -71,7 +74,7 @@ namespace Gui.StarMap
 
         private void UpdateShipItem(MilitaryBaseShipItem item, IShip ship)
         {
-            item.Initialize(ship, GetLevelUpPrice(ship), Mathf.Min(Level, Maths.Experience.MaxPlayerRank));
+            item.Initialize(ship, GetLevelUpPrice(ship), Mathf.Min(Level, _database.SkillSettings.MaxPlayerShipsLevel));
         }
 
         private void UpdateResources()

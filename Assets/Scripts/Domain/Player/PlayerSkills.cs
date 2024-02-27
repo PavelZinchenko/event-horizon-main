@@ -127,9 +127,9 @@ namespace GameServices.Player
             get
             {
                 if (_database.SkillSettings.DisableExceedTheLimits) 
-                    return Maths.Experience.MaxPlayerExperience;
+                    return Maths.Experience.LevelToExp(_database.SkillSettings.MaxPlayerShipsLevel);
                 if (GetSkillLevels()[SkillType.ExceedTheLimits] == 0)
-                    return Maths.Experience.MaxPlayerExperience;
+                    return Maths.Experience.LevelToExp(_database.SkillSettings.MaxPlayerShipsLevel);
 
                 return Maths.Experience.LevelToExp(_database.SkillSettings.IncreasedLevelLimit);
             }

@@ -34,7 +34,7 @@ namespace GameDatabase.DataModel
 			StartingInventory = loader?.GetLoot(new ItemId<LootModel>(serializable.StartingInventory)) ?? LootModel.DefaultValue;
 			SupporterPackShip = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.SupporterPackShip)) ?? ShipBuild.DefaultValue;
 			DefaultStarbaseBuild = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.DefaultStarbaseBuild)) ?? ShipBuild.DefaultValue;
-			MaxEnemyShipsLevel = UnityEngine.Mathf.Clamp(serializable.MaxEnemyShipsLevel, 100, 500);
+			MaxEnemyShipsLevel = UnityEngine.Mathf.Clamp(serializable.MaxEnemyShipsLevel, 0, 500);
 			_enemyLevel = new Expressions.IntToInt(serializable.EnemyLevel, 0, 500, variableResolver) { ParamName1 = "distance" };
 			EnemyLevel = _enemyLevel.Evaluate;
 			_shipMinSpawnDistance = new Expressions.SizeClassToInt(serializable.ShipMinSpawnDistance, 0, 1000, variableResolver) { ParamName1 = "size" };
