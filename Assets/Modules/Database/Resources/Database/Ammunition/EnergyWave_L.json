@@ -16,9 +16,9 @@
       "Power": 35.0
     },
     {
-      "Type": 5,
+      "Type": 1,
       "DamageType": 1,
-      "Power": 2.0
+      "Power": 1.0
     }
   ]
 }
