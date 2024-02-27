@@ -24,7 +24,7 @@ namespace Combat.Component.Systems.Weapons
         public virtual float PowerLevel => 1.0f;
         public virtual IBullet ActiveBullet => null;
 
-        public void Aim() => Platform.Aim(Info.BulletSpeed, Info.Range, Info.IsRelativeVelocity);
+        public void Aim() => Platform.Aim(Info.BulletSpeed, Info.Range, Info.RelativeVelocityEffect);
 
         protected Factory.IBulletFactory BulletFactory { get; }
         protected IBullet CreateBullet() => BulletFactory.Create(Platform, _weaponStats.Spread, 0, Vector2.zero);

@@ -31,6 +31,7 @@ namespace GameDatabase.DataModel
 			loader.AddAmmunition(serializable.Id, this);
 
 			Body = BulletBody.Create(serializable.Body, loader);
+			Controller = BulletController.Create(serializable.Controller, loader);
 			Triggers = new ImmutableCollection<BulletTrigger>(serializable.Triggers?.Select(item => BulletTrigger.Create(item, loader)));
 			ImpactType = serializable.ImpactType;
 			Effects = new ImmutableCollection<ImpactEffect>(serializable.Effects?.Select(item => ImpactEffect.Create(item, loader)));
@@ -41,6 +42,7 @@ namespace GameDatabase.DataModel
 		public readonly ItemId<Ammunition> Id;
 
 		public BulletBody Body { get; private set; }
+		public BulletController Controller { get; private set; }
 		public ImmutableCollection<BulletTrigger> Triggers { get; private set; }
 		public BulletImpactType ImpactType { get; private set; }
 		public ImmutableCollection<ImpactEffect> Effects { get; private set; }

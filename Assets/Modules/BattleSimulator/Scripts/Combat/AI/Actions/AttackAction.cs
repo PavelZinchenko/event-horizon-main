@@ -5,7 +5,10 @@ using Combat.Component.Body;
 using Combat.Component.Ship;
 using Combat.Component.Systems.Weapons;
 using Combat.Component.Unit.Classification;
+using DatabaseMigration.v1.Enums;
+using GameDatabase.Enums;
 using UnityEngine;
+using BulletEffectType = Combat.Component.Systems.Weapons.BulletEffectType;
 
 namespace Combat.Ai
 {
@@ -73,7 +76,7 @@ namespace Combat.Ai
 			
 			foreach (var weapon in ship.Systems.All.OfType<IWeapon>())
 			{
-                if (!(_trackAlways || weapon.Info.BulletType == BulletType.Direct && weapon.Active))
+                if (!(_trackAlways || weapon.Info.BulletType == AiBulletBehavior.Beam && weapon.Active))
 					continue;
 
                 Vector2 target;
@@ -145,11 +148,11 @@ namespace Combat.Ai
                 if (weapon.Info.BulletEffectType == BulletEffectType.ForDronesOnly && enemy.Type.Class != UnitClass.Drone) continue;
 
 				Vector2 target;
-				if (!AttackHelpers.TryGetTarget(weapon, ship, enemy, weapon.Info.BulletType == BulletType.Projectile && _directOnly ? BulletType.Direct : weapon.Info.BulletType, out target))
+				if (!AttackHelpers.TryGetTarget(weapon, ship, enemy, weapon.Info.BulletType == AiBulletBehavior.Projectile && _directOnly ? AiBulletBehavior.Beam : weapon.Info.BulletType, out target))
 					continue;
 
-			    var shotImmediately = weapon.Info.BulletType == BulletType.Homing || weapon.Info.BulletType == BulletType.AreaOfEffect;
-			    var shouldTrackTarget = weapon.Info.BulletType != BulletType.AreaOfEffect;
+			    var shotImmediately = weapon.Info.BulletType == AiBulletBehavior.Homing || weapon.Info.BulletType == AiBulletBehavior.AreaOfEffect;
+			    var shouldTrackTarget = weapon.Info.BulletType != AiBulletBehavior.AreaOfEffect;
                 
                 var course = Helpers.TargetCourse(ship, target, weapon.Platform);
 			    var spread = weapon.Info.Spread/2 + Mathf.Asin(0.3f * enemy.Body.Scale / Vector2.Distance(enemy.Body.Position, ship.Body.Position))*Mathf.Rad2Deg;
@@ -236,7 +239,7 @@ namespace Combat.Ai
             if (weapon.Cooldown > 0) return;
 
             var position = weapon.Platform.Body.WorldPosition();
-            var velocity = weapon.Info.IsRelativeVelocity ? enemy.Body.Velocity - ship.Body.Velocity : enemy.Body.Velocity;
+            var velocity = enemy.Body.Velocity - ship.Body.Velocity * weapon.Info.RelativeVelocityEffect;
 
             Vector2 target;
             float timeInterval;
@@ -335,9 +338,9 @@ namespace Combat.Ai
             return distance > 5 + enemy.Body.Scale;
         }
 
-        public static bool TryGetTarget(IWeapon weapon, IShip ship, IShip enemy, BulletType type, out Vector2 target)
+        public static bool TryGetTarget(IWeapon weapon, IShip ship, IShip enemy, AiBulletBehavior type, out Vector2 target)
         {
-            if (type == BulletType.Projectile)
+            if (type == AiBulletBehavior.Projectile)
                 return TryGetProjectileTarget(weapon, ship, enemy, out target);
             else
                 return TryGetDirectTarget(weapon, ship, enemy, out target);
@@ -345,7 +348,7 @@ namespace Combat.Ai
 
         public static bool TryGetTarget(IWeapon weapon, IShip ship, IShip enemy, out Vector2 target)
         {
-            if (weapon.Info.BulletType == BulletType.Projectile)
+            if (weapon.Info.BulletType == AiBulletBehavior.Projectile)
                 return TryGetProjectileTarget(weapon, ship, enemy, out target);
             else
                 return TryGetDirectTarget(weapon, ship, enemy, out target);
@@ -360,7 +363,7 @@ namespace Combat.Ai
             }
 
             var position = weapon.Platform.Body.WorldPosition();
-            var velocity = weapon.Info.IsRelativeVelocity ? enemy.Body.Velocity - ship.Body.Velocity : enemy.Body.Velocity;
+            var velocity = enemy.Body.Velocity - ship.Body.Velocity * weapon.Info.RelativeVelocityEffect;
 
             float timeInterval;
             if (!Geometry.GetTargetPosition(

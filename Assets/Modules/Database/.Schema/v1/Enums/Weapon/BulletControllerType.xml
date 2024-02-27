@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="BulletControllerType">
+    <item name="Projectile" />
+    <item name="Homing" />
+    <item name="Beam" />
+</data>

@@ -3,6 +3,7 @@ using Combat.Component.Platform;
 using Combat.Component.Triggers;
 using Combat.Unit;
 using GameDatabase.DataModel;
+using GameDatabase.Enums;
 using UnityEngine;
 
 namespace Combat.Component.Systems.Weapons
@@ -44,7 +45,7 @@ namespace Combat.Component.Systems.Weapons
                 _chargeTime += elapsedTime;
                 UpdatePower();
             }
-            else if (HasActiveBullet && Info.BulletType == BulletType.Direct)
+            else if (HasActiveBullet && Info.BulletType == AiBulletBehavior.Beam)
             {
                 Aim();
             }

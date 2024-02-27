@@ -1,6 +1,7 @@
 ﻿using Combat.Component.Body;
 using Combat.Component.Platform;
 using Combat.Factory;
+using GameDatabase.Enums;
 using UnityEngine;
 
 namespace Combat.Component.Systems.Weapons
@@ -11,14 +12,6 @@ namespace Combat.Component.Systems.Weapons
         Manageable,
         Continuous,
         RequiredCharging,
-    }
-
-    public enum BulletType
-    {
-        Direct,
-        Homing,
-        Projectile,
-        AreaOfEffect,
     }
 
 	[System.Flags]
@@ -53,12 +46,12 @@ namespace Combat.Component.Systems.Weapons
         }
 
 		public WeaponType WeaponType => _weaponType;
-		public BulletType BulletType => _bulletFactory.Stats.Type;
+		public AiBulletBehavior BulletType => _bulletFactory.Stats.BehaviorType;
 		public WeaponCapability Capability => _bulletFactory.Stats.Capability;
 		[System.Obsolete] public BulletEffectType BulletEffectType => _bulletFactory.Stats.EffectType;
 		public float Range => _bulletFactory.Stats.BulletHitRange;
 		public float Spread => _spread;
-		public bool IsRelativeVelocity => !_bulletFactory.Stats.IgnoresShipSpeed;
+		public float RelativeVelocityEffect => _bulletFactory.Stats.RelativeVelocityEffect;
 		public float BulletSpeed => _bulletFactory.Stats.BulletSpeed;
 		public float EnergyCost => _bulletFactory.Stats.EnergyCost;
 		public float Recoil { get; private set; }

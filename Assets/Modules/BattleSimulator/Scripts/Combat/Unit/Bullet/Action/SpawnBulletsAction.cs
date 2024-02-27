@@ -1,6 +1,7 @@
 ﻿using Combat.Collision;
 using Combat.Component.Body;
 using Combat.Component.Platform;
+using Combat.Component.Systems.Weapons;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Component.View;
@@ -14,10 +15,9 @@ namespace Combat.Component.Bullet.Action
 {
     public class SpawnBulletsAction : IAction, IWeaponPlatform
     {
-	    public SpawnBulletsAction(IBulletFactory factory, int magazine, IBulletSpawnSettings spawnSettings, IUnit parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
+	    public SpawnBulletsAction(IBulletFactory factory, int magazine, IBulletSpawnSettings spawnSettings, IBullet parent, ISoundPlayer soundPlayer, AudioClipId audioClip, ConditionType condition)
         {
             Owner = parent;
-            _body = new BodyWrapper(parent.Body);
             _factory = factory;
             _magazine = magazine;
             _spawnSettings = spawnSettings;
@@ -25,6 +25,8 @@ namespace Combat.Component.Bullet.Action
             _audioClipId = audioClip;
             Condition = condition;
             EnergyPoints = new UnlimitedEnergy();
+            Bullets = BulletCompositeDisposable.Create(factory.Stats);
+            _body = factory.Stats.IsBoundToCannon ? new BodyWrapper(parent.GetUnitSizedBody()) : new BodyWrapper(parent.Body);
         }
 
         public ConditionType Condition { get; private set; }
@@ -54,6 +56,7 @@ namespace Combat.Component.Bullet.Action
 
         public void Dispose()
         {
+            Bullets.Dispose();
             //_soundPlayer.Stop(GetHashCode());
         }
 
@@ -61,6 +64,7 @@ namespace Combat.Component.Bullet.Action
         public IBody Body { get { return _body; } }
         public IUnit Owner { get; }
         public IResourcePoints EnergyPoints { get; private set; }
+        public IBulletCompositeDisposable Bullets { get; }
         public bool IsTemporary { get { return true; } }
         public float FixedRotation { get { return 0; } }
         public bool IsReady { get { return true; } }
@@ -68,7 +72,7 @@ namespace Combat.Component.Bullet.Action
         public float AutoAimingAngle { get { return 0; } }
 		public IUnit ActiveTarget { get => null; set {} }
 
-		public void Aim(float bulletVelocity, float weaponRange, bool relative) {}
+		public void Aim(float bulletVelocity, float weaponRange, float relativeEffect) {}
         public void OnShot() {}
         public void SetView(IView view, Color color) { }
 

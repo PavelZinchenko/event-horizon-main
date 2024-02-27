@@ -13,23 +13,11 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public class BulletBodySerializable
+	public class BulletControllerSerializable
 	{
-		public float Size;
-		public float Length;
-		public float Velocity;
-		public float ParentVelocityEffect = 1f;
-		public bool AttachedToParent;
-		public float Range;
-		public float Lifetime;
-		public float Weight;
-		public int HitPoints;
-		public string Color;
-		public int BulletPrefab;
-		public float EnergyCost;
-		public bool CanBeDisarmed;
-		public bool FriendlyFire;
-		public AiBulletBehavior AiBulletBehavior;
-		public BulletTypeObsolete Type;
+		public BulletControllerType Type;
+		public float StartingVelocityModifier = 0.1f;
+		public bool IgnoreRotation;
+		public bool SmartAim;
 	}
 }

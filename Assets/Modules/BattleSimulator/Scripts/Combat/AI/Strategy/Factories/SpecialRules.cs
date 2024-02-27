@@ -5,6 +5,7 @@ using Combat.Component.Systems.Devices;
 using Combat.Component.Systems.DroneBays;
 using Combat.Component.Systems.Weapons;
 using Combat.Component.Unit.Classification;
+using GameDatabase.Enums;
 using UnityEngine;
 
 namespace Combat.Ai
@@ -74,7 +75,7 @@ namespace Combat.Ai
                         distance = Mathf.Max(distance, droneBay.Range);
 
                     foreach (var weapon in enemy.Systems.All.OfType<IWeapon>())
-                        if (weapon.Platform.AutoAimingAngle > 5 || weapon.Info.BulletType == BulletType.Homing)
+                        if (weapon.Platform.AutoAimingAngle > 5 || weapon.Info.BulletType == AiBulletBehavior.Homing)
                             distance = Mathf.Max(distance, weapon.Info.Range);
 
                     if (distance > 0)

@@ -8,7 +8,7 @@ namespace Combat.Component.Controller
 {
     public class HomingController : IController
     {
-        public HomingController(IUnit unit, float maxVelocity, float maxAngularVelocity, float acceleration, float maxRange, IScene scene)
+        public HomingController(IUnit unit, float maxVelocity, float maxAngularVelocity, float acceleration, float maxRange, bool smartAim, IScene scene)
         {
             _unit = unit;
             _scene = scene;
@@ -16,39 +16,30 @@ namespace Combat.Component.Controller
             _maxAngularVelocity = maxAngularVelocity;
             _acceleration = acceleration;
             _maxRange = maxRange;
+            _smartAim = smartAim;
         }
 
         public void Dispose() {}
 
         public void UpdatePhysics(float elapsedTime)
         {
-            if (_unit.Body.Parent != null)
-                return;
-
             _timeFromLastUpdate += elapsedTime;
 
-            if (/*!_target.IsActive() || */_timeFromLastUpdate > _targetUpdateCooldown)
+            if (_timeFromLastUpdate > _targetUpdateCooldown)
             {
                 _target = _scene.Ships.GetEnemy(_unit, 0f, _maxRange*1.3f, 15f, false, false);
                 _timeFromLastUpdate = 0;
             }
-
-            var requiredAngularVelocity = 0f;
-            if (_target.IsActive())
-            {
-                var direction = _unit.Body.WorldPosition().Direction(_target.Body.WorldPosition());
-                var target = RotationHelpers.Angle(direction);
-                var rotation = _unit.Body.WorldRotation();
-                var delta = Mathf.DeltaAngle(rotation, target);
-                requiredAngularVelocity = delta > 5 ? _maxAngularVelocity : delta < -5 ? -_maxAngularVelocity : 0f;
-            }
-            _unit.Body.ApplyAngularAcceleration(requiredAngularVelocity - _unit.Body.AngularVelocity);
-
+            
+            
             UpdateVelocity(elapsedTime);
+            UpdateRotation(elapsedTime);
         }
 
         private void UpdateVelocity(float deltaTime)
         {
+            if (_unit.Body.Parent != null) return;
+
             var forward = RotationHelpers.Direction(_unit.Body.Rotation);
             var velocity = _unit.Body.Velocity;
             var forwardVelocity = Vector2.Dot(velocity, forward);
@@ -61,7 +52,42 @@ namespace Combat.Component.Controller
             _unit.Body.ApplyAcceleration(dir * _acceleration * deltaTime);
         }
 
+        private void UpdateRotation(float elapsedTime)
+        {
+            if(_target == null || !_target.IsActive()) return;
+
+            if (!_smartAim || !Geometry.GetTargetPosition(_target.Body.WorldPosition(), _target.Body.Velocity,
+                    _unit.Body.WorldPosition(),
+                    _maxVelocity, out var targetPosition, out _))
+            {
+                targetPosition = _target.Body.WorldPosition();
+            }
+            
+            
+            var direction = _unit.Body.WorldPosition().Direction(targetPosition);
+            var target = RotationHelpers.Angle(direction);
+            var rotation = _unit.Body.WorldRotation();
+            var delta = Mathf.DeltaAngle(rotation, target);
+            var requiredAngularVelocity = delta > 5 ? _maxAngularVelocity : delta < -5 ? -_maxAngularVelocity : 0f;
+            
+
+            if (_unit.Body.Parent == null)
+            {
+                _unit.Body.ApplyAngularAcceleration(requiredAngularVelocity - _unit.Body.AngularVelocity);
+            }
+            else
+            {
+                // Simulate ApplyAngularAcceleration behavior
+                _computedVelocity += (requiredAngularVelocity - _computedVelocity) * Mathf.Deg2Rad / (0.2f + _unit.Body.Weight * 2f);
+                var turn = _unit.Body.Rotation + _computedVelocity * elapsedTime;
+                if(!Mathf.Approximately(turn, 0))
+                    _unit.Body.Turn(turn);
+            }
+        }
+
         private float _timeFromLastUpdate = _targetUpdateCooldown;
+        private float _computedVelocity;
+        private readonly bool _smartAim;
         private IUnit _target;
         private readonly IUnit _unit;
         private readonly IScene _scene;

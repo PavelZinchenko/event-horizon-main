@@ -79,11 +79,11 @@ namespace Combat.Component.Platform
 			} 
 		}
 
-        public void Aim(float bulletVelocity, float weaponRange, bool relative)
+        public void Aim(float bulletVelocity, float weaponRange, float relativeEffect)
         {
             _bulletVelocity = bulletVelocity;
             _weaponRange = weaponRange;
-            _isRelativeVelocity = relative;
+            _relativeEffect = relativeEffect;
 
             if (!IsValidTarget(_target))
                 _target = null;
@@ -135,12 +135,12 @@ namespace Combat.Component.Platform
             }
 
             var targetPosition = _target.Body.WorldPosition();
-            var platformPosition = this.WorldPosition();
+            var platformPosition = ((IBody)this).WorldPosition();
             float rotation;
 
             if (_bulletVelocity > 0)
             {
-                var velocity = _isRelativeVelocity ? _target.Body.WorldVelocity() - Parent.WorldVelocity() : _target.Body.WorldVelocity();
+                var velocity = _target.Body.WorldVelocity() - Parent.WorldVelocity() * _relativeEffect;
 
                 Vector2 target;
                 float timeInterval;
@@ -177,7 +177,7 @@ namespace Combat.Component.Platform
 
         private float _bulletVelocity;
         private float _weaponRange;
-        private bool _isRelativeVelocity = true;
+        private float _relativeEffect = 1;
 
         private int _updateFrameId;
         private float _timeFromTargetUpdate = _targetUpdateCooldown;

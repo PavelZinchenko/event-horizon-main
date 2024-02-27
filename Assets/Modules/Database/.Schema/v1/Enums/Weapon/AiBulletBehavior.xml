@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="AiBulletBehavior">
+    <item name="Projectile" />
+    <item name="Homing" />
+    <item name="Beam" />
+    <item name="AreaOfEffect" />
+</data>
