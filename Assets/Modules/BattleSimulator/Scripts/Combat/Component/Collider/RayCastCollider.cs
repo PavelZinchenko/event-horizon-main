@@ -33,6 +33,7 @@ namespace Combat.Component.Collider
 
         public IUnit ActiveCollision { get; private set; }
         public Vector2 LastContactPoint { get; private set; }
+        public IUnit LastCollision { get; private set; }
 
         public void UpdatePhysics(float elapsedTime)
         {
@@ -95,6 +96,7 @@ namespace Combat.Component.Collider
 
                     var isNew = ActiveCollision != other.Unit;
                     ActiveCollision = other.Unit;
+                    LastCollision = other.Unit;
                     LastContactPoint = point;
                     _view.Size = distance;
                     if (_body != null) _body.Offset = distance;
@@ -115,6 +117,7 @@ namespace Combat.Component.Collider
             Unit = null;
 			Source = null;
             ActiveCollision = null;
+            LastCollision = null;
             MaxRange = 0;
             _enabled = true;
         }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Combat.Ai.BehaviorTree.Utils;
 using Combat.Component.Body;
 using Combat.Component.Collider;
 using Combat.Component.Ship;
@@ -20,7 +19,7 @@ namespace Combat.Ai
         private readonly IScene _scene;
         private readonly List<IUnit> _threats;
         private IUnit _obstacle;
-        
+
         public ThreatList(IScene scene)
         {
             _scene = scene;
@@ -44,7 +43,6 @@ namespace Combat.Ai
 
         public void Update(IShip ship, IThreatAnalyzer analyzer)
         {
-            _obstacle = null;
             _threats.Clear();
             _timeToHit = 1000f;
 
@@ -60,28 +58,22 @@ namespace Combat.Ai
             for (var i = 0; i < _threats.Count; ++i)
             {
                 var item = _threats[i];
-                if (item == ship) continue;
+                if (!analyzer.IsThreat(ship, item)) continue;
 
-                if (analyzer.IsThreat(ship, item))
+                var itemPosition = ship.Body.Position.Direction(item.Body.Position);
+                var velocity = ship.Body.Velocity - item.Body.Velocity;
+                var dir = velocity.normalized;
+                var len = Mathf.Max(0, Vector2.Dot(itemPosition, dir));
+
+                var distance = Vector2.Distance(len * dir, itemPosition);
+                var threatTime = len / velocity.magnitude;
+                if (2 * distance <= item.Body.Scale + ship.Body.Scale && threatTime < 5f)
                 {
-                    var itemPosition = ship.Body.Position.Direction(item.Body.Position);
-                    var velocity = ship.Body.Velocity - item.Body.Velocity;
-                    var dir = velocity.normalized;
-                    var len = Mathf.Max(0, Vector2.Dot(itemPosition, dir));
+                    _threats[index++] = item;
 
-                    var distance = Vector2.Distance(len * dir, itemPosition);
-                    var threatTime = len / velocity.magnitude;
-                    if (2 * distance <= item.Body.Scale + ship.Body.Scale && threatTime < 5f)
-                    {
-                        _threats[index++] = item;
-
-                        if (threatTime < _timeToHit)
-                            _timeToHit = threatTime;
-                    }
+                    if (threatTime < _timeToHit)
+                        _timeToHit = threatTime;
                 }
-
-                if (ThreatAnalyzer.IsObstacle(ship, item))
-                    _obstacle = item;
             }
 
             if (parentedObjects.Count > 0)
@@ -95,9 +87,6 @@ namespace Combat.Ai
             {
                 var item = parentedObjects[i];
                 if (item.Type.Class != UnitClass.AreaOfEffect) continue;
-
-                if (item.Type.Side.IsAlly(ship.Type.Side))
-                    continue;
 
                 if (!analyzer.IsThreat(ship, item))
                     continue;

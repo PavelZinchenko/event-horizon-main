@@ -5,9 +5,6 @@
     "Type": 2,
     "Nodes": [
       {
-        "Type": 130
-      },
-      {
         "Type": 1,
         "Requirement": {
           "Type": 2,

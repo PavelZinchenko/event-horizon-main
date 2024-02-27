@@ -17,10 +17,11 @@ namespace Combat.Component.Collider
 		public IUnit Unit { get; set; }
 		public IUnit Source { get; set; }
 
-		public float MaxRange { get; set; }
+        public float MaxRange { get; set; }
 
         public IUnit ActiveCollision { get; private set; }
         public Vector2 LastContactPoint { get; private set; }
+        public IUnit LastCollision { get; private set; }
 
         public void UpdatePhysics(float elapsedTime)
         {
@@ -48,6 +49,7 @@ namespace Combat.Component.Collider
 
 				var target = other.Unit;
                 ActiveCollision = target;
+                LastCollision = target;
                 LastContactPoint = target.Body.WorldPosition();
                 _activeCollisions.Add(target);
 
@@ -60,6 +62,7 @@ namespace Combat.Component.Collider
             Unit = null;
 			Source = null;
             ActiveCollision = null;
+            LastCollision = null;
             _activeCollisions.Clear();
             MaxRange = 0;
             _enabled = true;

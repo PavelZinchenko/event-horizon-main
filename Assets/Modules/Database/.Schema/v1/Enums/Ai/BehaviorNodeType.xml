@@ -58,7 +58,7 @@
     <item name="AttackAdditionalTargets" value="127">Attacks additional targets with selected weapons, returning SUCCESS upon firing, RUNNING while aiming, and FAILURE for any inability to initiate the attack</item>
     <item name="TargetAllyStarbase" value="128">Targets an ally starbase. Returns SUCCESS if it exists and alive, otherwise FAILURE</item>
     <item name="TargetEnemyStarbase" value="129">Targets an enemy starbase. Returns SUCCESS if it exists and alive, otherwise FAILURE</item>
-    <item name="BypassObstacles" value="130">Tries to bypass obstacle if any. Requires threat list. Returns FAILURE if there are no obstacles, RUNNING otherwise</item>
+    <item name="BypassObstacles" value="130">Tries to bypass obstacle if any. Returns FAILURE if there are no obstacles, RUNNING otherwise</item>
 
     <item name="EnginePropulsionForce" value="150">Returns SUCCESS when [forward acceleration]/[max acceleration] > MinValue</item>
 

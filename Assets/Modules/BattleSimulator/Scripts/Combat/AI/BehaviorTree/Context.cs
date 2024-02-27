@@ -49,7 +49,6 @@ namespace Combat.Ai.BehaviorTree
 
 		public IReadOnlyList<IShip> SecondaryTargets => _targetList?.Items ?? EmptyList<IShip>.Instance;
 
-        public IUnit Obstacle => _threatList?.Obstacle;
 		public IReadOnlyList<IUnit> Threats => _threatList?.Units ?? EmptyList<IUnit>.Instance;
 		public float TimeToCollision => _threatList != null ? _threatList.TimeToHit : float.MaxValue;
 

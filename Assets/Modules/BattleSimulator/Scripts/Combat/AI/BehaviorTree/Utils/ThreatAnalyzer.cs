@@ -9,6 +9,7 @@ namespace Combat.Ai.BehaviorTree.Utils
     {
         public static bool IsThreat(IShip ship, IUnit unit)
         {
+            if (unit == null || unit == ship || unit.State != Unit.UnitState.Active) return false;
             switch (unit.Type.Class)
             {
                 case UnitClass.Ship:
@@ -24,7 +25,16 @@ namespace Combat.Ai.BehaviorTree.Utils
 
         public static bool IsObstacle(IShip ship, IUnit unit)
         {
-            if (!IsSuitableUnit(ship, unit)) return false;
+            if (unit == null || unit == ship || unit.State != Unit.UnitState.Active) return false;
+
+            if (ship.Type.Class == UnitClass.Drone)
+            {
+                if (!CanBeObstacleForDrone(ship, unit)) return false;
+            }
+            else
+            {
+                if (!CanBeObstacle(ship, unit)) return false;
+            }
 
             const float maxAngle = 180f; // TODO: move to settings
             const float maxDistance = 1.0f;
@@ -35,7 +45,7 @@ namespace Combat.Ai.BehaviorTree.Utils
             return distance < maxDistance && delta < maxAngle;
         }
 
-        private static bool IsSuitableUnit(IUnit ship, IUnit unit)
+        private static bool CanBeObstacle(IUnit ship, IUnit unit)
         {
             switch (unit.Type.Class)
             {
@@ -48,6 +58,17 @@ namespace Combat.Ai.BehaviorTree.Utils
                 case UnitClass.Limb:
                     if (unit.Type.Side.IsEnemy(ship.Type.Side)) return false;
                     return ship.Body.Weight <= unit.Body.Weight;
+                default:
+                    return false;
+            }
+        }
+
+        private static bool CanBeObstacleForDrone(IUnit ship, IUnit unit)
+        {
+            switch (unit.Type.Class)
+            {
+                case UnitClass.SpaceObject:
+                    return true;
                 default:
                     return false;
             }

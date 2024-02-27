@@ -65,6 +65,7 @@ namespace Combat.Component.Collider
         //}
 
         public IUnit ActiveCollision { get { return _activeCollision ?? (_activeCollision = _activeCollisions.FirstOrDefault().Key); } }
+        public IUnit LastCollision { get; private set; }
         public Vector2 LastContactPoint { get; private set; }
 
         public void UpdatePhysics(float elapsedTime)
@@ -83,10 +84,11 @@ namespace Combat.Component.Collider
         {
             Unit = null;
 			Source = null;
+            LastCollision = null;
             _activeCollision = null;
             _cachedColliders = null;
             _recentTrigger = null;
-            Enabled = true;
+            if (this) Enabled = true;
             _activeCollisions.Clear();
         }
 
@@ -133,15 +135,6 @@ namespace Combat.Component.Collider
 
         private void OnTriggerExit2D(Collider2D collider)
         {
-            //var other = collider.gameObject.GetComponent<ICollider>();
-            //if (other == null || other.Unit == null)
-            //{
-            //    UnityEngine.Debug.Log("invalid collider: " + other);
-            //    //Debug.Break();
-            //    return;
-            //}
-
-            //RemoveActiveCollision(collider.GetComponent<ICollider>().Unit);
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -155,6 +148,7 @@ namespace Combat.Component.Collider
             if (!TryAddActiveCollision(other.Unit))
                 return;
 
+            LastCollision = other.Unit;
             var contacts = collision.contacts;
             if (contacts.Length > 0)
                 LastContactPoint = contacts[0].point;
@@ -197,6 +191,7 @@ namespace Combat.Component.Collider
                 }
             }
 
+            LastCollision = other.Unit;
             var contacts = collision.contacts;
             if (contacts.Length > 0)
                 LastContactPoint = contacts[0].point;

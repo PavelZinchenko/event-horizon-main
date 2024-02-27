@@ -15,6 +15,7 @@ namespace Combat.Component.Collider
 
         IUnit ActiveCollision { get; }
         Vector2 LastContactPoint { get; }
+        IUnit LastCollision { get; }
 
         void UpdatePhysics(float elapsedTime);
     }
