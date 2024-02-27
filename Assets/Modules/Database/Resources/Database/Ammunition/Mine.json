@@ -2,16 +2,18 @@
   "ItemType": 25,
   "Id": 109,
   "Body": {
-    "Type": 2,
     "Size": 0.7,
+    "ParentVelocityEffect": 0.0,
     "Lifetime": 30.0,
     "Weight": 0.5,
     "HitPoints": 10,
     "Color": "#C0C0C0",
     "BulletPrefab": 9,
     "CanBeDisarmed": true,
-    "FriendlyFire": true
+    "FriendlyFire": true,
+    "Type": 2
   },
+  "Controller": {},
   "Triggers": [
     {
       "Condition": 2,

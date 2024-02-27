@@ -2,13 +2,18 @@
   "ItemType": 25,
   "Id": 114,
   "Body": {
-    "Type": 3,
     "Size": 2.0,
+    "AttachedToParent": true,
     "Range": 15.0,
     "Lifetime": 0.1,
     "Color": "#00FF26",
     "BulletPrefab": 5,
-    "EnergyCost": 20.0
+    "EnergyCost": 20.0,
+    "AiBulletBehavior": 2,
+    "Type": 3
+  },
+  "Controller": {
+    "Type": 2
   },
   "Triggers": [
     {

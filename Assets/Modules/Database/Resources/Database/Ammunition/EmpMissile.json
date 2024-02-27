@@ -2,7 +2,6 @@
   "ItemType": 25,
   "Id": 126,
   "Body": {
-    "Type": 1,
     "Size": 0.9,
     "Velocity": 30.0,
     "Range": 200.0,
@@ -11,7 +10,12 @@
     "Color": "#78CFFF",
     "BulletPrefab": 16,
     "EnergyCost": 100.0,
-    "CanBeDisarmed": true
+    "CanBeDisarmed": true,
+    "AiBulletBehavior": 1,
+    "Type": 1
+  },
+  "Controller": {
+    "Type": 1
   },
   "Triggers": [
     {

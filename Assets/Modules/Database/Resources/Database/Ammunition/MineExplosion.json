@@ -2,13 +2,15 @@
   "ItemType": 25,
   "Id": 111,
   "Body": {
-    "Type": 2,
     "Size": 1.0,
+    "ParentVelocityEffect": 0.0,
     "Lifetime": 0.5,
     "Color": "#FF8400",
     "EnergyCost": 1.0,
-    "FriendlyFire": true
+    "FriendlyFire": true,
+    "Type": 2
   },
+  "Controller": {},
   "Triggers": [
     {
       "Condition": 1,

@@ -2,14 +2,16 @@
   "ItemType": 25,
   "Id": 100,
   "Body": {
-    "Type": 2,
     "Size": 0.5,
     "Velocity": 5.0,
+    "ParentVelocityEffect": 0.0,
     "Range": 5.0,
     "Color": "#00C7FF",
     "BulletPrefab": 4,
-    "CanBeDisarmed": true
+    "CanBeDisarmed": true,
+    "Type": 2
   },
+  "Controller": {},
   "Triggers": [
     {
       "Condition": 2,

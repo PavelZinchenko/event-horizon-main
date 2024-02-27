@@ -2,7 +2,6 @@
   "ItemType": 25,
   "Id": 123,
   "Body": {
-    "Type": 4,
     "Size": 1.5,
     "Velocity": 12.0,
     "Range": 40.0,
@@ -11,7 +10,13 @@
     "HitPoints": 50,
     "Color": "#C52921",
     "BulletPrefab": 15,
-    "EnergyCost": 30.0
+    "EnergyCost": 30.0,
+    "AiBulletBehavior": 1,
+    "Type": 4
+  },
+  "Controller": {
+    "Type": 1,
+    "IgnoreRotation": true
   },
   "Triggers": [
     {
