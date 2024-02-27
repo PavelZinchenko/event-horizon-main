@@ -214,6 +214,12 @@ namespace DatabaseMigration.v1.Storage
                 data.FileName = name;
                 ExplorationSettings = data;
             }
+            else if (type == ItemType.FactionsSettings)
+            {
+                var data = _serializer.FromJson<FactionsSettingsSerializable>(content);
+                data.FileName = name;
+                FactionsSettings = data;
+            }
             else if (type == ItemType.FrontierSettings)
             {
                 var data = _serializer.FromJson<FrontierSettingsSerializable>(content);
@@ -322,6 +328,8 @@ namespace DatabaseMigration.v1.Storage
                 contentLoader.LoadJson(DebugSettings.FileName, _serializer.ToJson(DebugSettings));
             if (ExplorationSettings != null)
                 contentLoader.LoadJson(ExplorationSettings.FileName, _serializer.ToJson(ExplorationSettings));
+            if (FactionsSettings != null)
+                contentLoader.LoadJson(FactionsSettings.FileName, _serializer.ToJson(FactionsSettings));
             if (FrontierSettings != null)
                 contentLoader.LoadJson(FrontierSettings.FileName, _serializer.ToJson(FrontierSettings));
             if (GalaxySettings != null)
@@ -363,6 +371,7 @@ namespace DatabaseMigration.v1.Storage
 		public DatabaseSettingsSerializable DatabaseSettings { get; private set; }
 		public DebugSettingsSerializable DebugSettings { get; private set; }
 		public ExplorationSettingsSerializable ExplorationSettings { get; private set; }
+		public FactionsSettingsSerializable FactionsSettings { get; private set; }
 		public FrontierSettingsSerializable FrontierSettings { get; private set; }
 		public GalaxySettingsSerializable GalaxySettings { get; private set; }
 		public ShipModSettingsSerializable ShipModSettings { get; private set; }
@@ -375,6 +384,7 @@ namespace DatabaseMigration.v1.Storage
 		public DatabaseSettingsSerializable CreateDatabaseSettings() => DatabaseSettings ?? (DatabaseSettings = new DatabaseSettingsSerializable());
 		public DebugSettingsSerializable CreateDebugSettings() => DebugSettings ?? (DebugSettings = new DebugSettingsSerializable());
 		public ExplorationSettingsSerializable CreateExplorationSettings() => ExplorationSettings ?? (ExplorationSettings = new ExplorationSettingsSerializable());
+		public FactionsSettingsSerializable CreateFactionsSettings() => FactionsSettings ?? (FactionsSettings = new FactionsSettingsSerializable());
 		public FrontierSettingsSerializable CreateFrontierSettings() => FrontierSettings ?? (FrontierSettings = new FrontierSettingsSerializable());
 		public GalaxySettingsSerializable CreateGalaxySettings() => GalaxySettings ?? (GalaxySettings = new GalaxySettingsSerializable());
 		public ShipModSettingsSerializable CreateShipModSettings() => ShipModSettings ?? (ShipModSettings = new ShipModSettingsSerializable());

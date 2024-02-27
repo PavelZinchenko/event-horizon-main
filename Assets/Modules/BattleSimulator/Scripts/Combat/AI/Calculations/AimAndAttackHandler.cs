@@ -3,8 +3,6 @@ using Combat.Component.Ship;
 using Combat.Component.Systems.Weapons;
 using Combat.Component.Unit.Classification;
 using Combat.Ai.BehaviorTree.Utils;
-using Combat.Component.Body;
-using DatabaseMigration.v1.Enums;
 using GameDatabase.Enums;
 
 namespace Combat.Ai.Calculations

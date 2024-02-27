@@ -89,7 +89,7 @@ namespace GameDatabase
     public partial class Database : IDatabase
     {
 		public const int VersionMajor = 1;
-		public const int VersionMinor = 5;
+		public const int VersionMinor = 6;
 
 		public CombatSettings CombatSettings { get; private set; }
 		public DatabaseSettings DatabaseSettings { get; private set; }

@@ -6,29 +6,13 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
-using System;
-using GameDatabase.Model;
-using DatabaseMigration.v1.Enums;
-
-namespace DatabaseMigration.v1.Serializable
+namespace DatabaseMigration.v1.Enums
 {
-	[Serializable]
-	public class QuestSerializable : SerializableItem
+	public enum AiBulletBehavior
 	{
-		public QuestSerializable()
-		{
-			ItemType = ItemType.Quest;
-			FileName = "Quest.json";
-		}
-
-		public string Name;
-		public QuestType QuestType;
-		public StartCondition StartCondition;
-		public float Weight;
-		public QuestOriginSerializable Origin;
-		public RequirementSerializable Requirement;
-		public int Level;
-		public bool UseRandomSeed;
-		public NodeSerializable[] Nodes;
+		Projectile,
+		Homing,
+		Beam,
+		AreaOfEffect,
 	}
 }

@@ -15,10 +15,11 @@ namespace DatabaseMigration.v1.Serializable
 	[Serializable]
 	public class BulletBodySerializable
 	{
-		public BulletType Type;
 		public float Size;
 		public float Length;
 		public float Velocity;
+		public float ParentVelocityEffect = 1f;
+		public bool AttachedToParent;
 		public float Range;
 		public float Lifetime;
 		public float Weight;
@@ -28,5 +29,7 @@ namespace DatabaseMigration.v1.Serializable
 		public float EnergyCost;
 		public bool CanBeDisarmed;
 		public bool FriendlyFire;
+		public AiBulletBehavior AiBulletBehavior;
+		public BulletTypeObsolete Type;
 	}
 }

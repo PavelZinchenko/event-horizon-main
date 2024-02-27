@@ -1,67 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Combat.Component.Features;
-using Combat.Component.Body;
 using Combat.Component.Ship;
 using Combat.Component.Systems.Weapons;
 using Combat.Component.Unit.Classification;
-using DatabaseMigration.v1.Enums;
 using GameDatabase.Enums;
 using UnityEngine;
 using BulletEffectType = Combat.Component.Systems.Weapons.BulletEffectType;
 
 namespace Combat.Ai
 {
-    /*public class AttackDronesAction : IAction
-    {
-        public AttackDronesAction(int weaponId)
-        {
-            _weaponId = weaponId;
-        }
-
-        public void Perform(Context context, ShipControls controls)
-        {
-            var ship = context.Ship;
-            var enemy = context.Enemy;
-            if (enemy.IsDrone())
-                Perform(ship, enemy, controls);
-            var targets = context.Targets.Items;
-            for (var i = 0; i < targets.Count; i++)
-                if (targets[i].IsDrone())
-                    Perform(ship, targets[i], controls);
-        }
-
-        public void Perform(IShipCombatModel ship, IShipCombatModel enemy, ShipControls controls)
-        {
-            var targetAngle = 0f;
-            var targetDeltaAngle = 10000f;
-            var setCourse = false;
-
-            var weapon = ship.Weapons[_weaponId];
-            if (weapon.Cooldown > 0) return;
-
-            Position target;
-            if (!AttackHelpers.TryGetTarget(weapon, ship, enemy, out target)) return;
-
-            var course = Helpers.TargetCourse(ship, target, weapon.Platform);
-            var spread = weapon.Spread / 2 + Mathf.Asin(0.4f * enemy.Size / Position.Distance(enemy.Position, ship.Position)) * Mathf.Rad2Deg;
-            var delta = Mathf.Abs(Mathf.DeltaAngle(course, ship.Rotation)) - weapon.Platform.AutoAimingAngle;
-
-            if (delta < spread)
-                controls.ActivateWeapon(_weaponId, weapon.Type != WeaponType.Charged);
-            if (delta < 0 || delta > targetDeltaAngle)
-                return;
-
-            targetAngle = course;
-            setCourse = true;
-
-            if (setCourse)
-                controls.Course = targetAngle;
-        }
-
-        private readonly int _weaponId;
-    }*/
-
     public class TrackTargetAction : IAction
 	{
 		public TrackTargetAction(bool trackAlways = false)

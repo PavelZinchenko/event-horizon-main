@@ -19,5 +19,6 @@ namespace DatabaseMigration.v1.Serializable
 		public bool NotForOrganicShips;
 		public bool NotForMechanicShips;
 		public string UniqueComponentTag;
+		public int MaxComponentAmount;
 	}
 }

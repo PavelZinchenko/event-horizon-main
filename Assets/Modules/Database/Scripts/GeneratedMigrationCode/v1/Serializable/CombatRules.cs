@@ -23,6 +23,7 @@ namespace DatabaseMigration.v1.Serializable
 
 		public string InitialEnemyShips = "1";
 		public string MaxEnemyShips = "12";
+		public int BattleMapSize = 200;
 		public string TimeLimit = "MAX(40, 100 - level)";
 		public TimeOutMode TimeOutMode;
 		public RewardCondition LootCondition;

@@ -13,22 +13,11 @@ using DatabaseMigration.v1.Enums;
 namespace DatabaseMigration.v1.Serializable
 {
 	[Serializable]
-	public class QuestSerializable : SerializableItem
+	public class BulletControllerSerializable
 	{
-		public QuestSerializable()
-		{
-			ItemType = ItemType.Quest;
-			FileName = "Quest.json";
-		}
-
-		public string Name;
-		public QuestType QuestType;
-		public StartCondition StartCondition;
-		public float Weight;
-		public QuestOriginSerializable Origin;
-		public RequirementSerializable Requirement;
-		public int Level;
-		public bool UseRandomSeed;
-		public NodeSerializable[] Nodes;
+		public BulletControllerType Type;
+		public float StartingVelocityModifier = 0.1f;
+		public bool IgnoreRotation;
+		public bool SmartAim;
 	}
 }

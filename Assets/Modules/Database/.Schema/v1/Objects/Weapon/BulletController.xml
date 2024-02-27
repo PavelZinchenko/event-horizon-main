@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data name="BulletController" type="struct" switch="Type" >
     <member name="Type" type="enum" typeid="BulletControllerType" />
-    <member name="StartingVelocityModifier" type="float" minvalue="0" maxvalue="1000" default="0.1" case="Homing" />
+    <member name="StartingVelocityModifier" type="float" minvalue="0" maxvalue="1000" default="1" case="Homing" />
     <member name="IgnoreRotation" type="bool" case="Homing" />
     <member name="SmartAim" type="bool" case="Homing" />
 </data>

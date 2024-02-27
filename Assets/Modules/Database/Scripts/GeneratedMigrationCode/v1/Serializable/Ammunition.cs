@@ -22,6 +22,7 @@ namespace DatabaseMigration.v1.Serializable
 		}
 
 		public BulletBodySerializable Body;
+		public BulletControllerSerializable Controller;
 		public BulletTriggerSerializable[] Triggers;
 		public BulletImpactType ImpactType;
 		public ImpactEffectSerializable[] Effects;

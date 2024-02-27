@@ -12,5 +12,7 @@ namespace DatabaseMigration.v1.Enums
 	{
 		Undefined = 0,
 		WormTailSegment = 1,
+		CircularSpriteObject = 2,
+		CircularOutlineObject = 3,
 	}
 }
