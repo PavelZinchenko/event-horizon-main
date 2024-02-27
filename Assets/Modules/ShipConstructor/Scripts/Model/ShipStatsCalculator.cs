@@ -87,7 +87,7 @@ namespace Constructor.Model
 
         public Layout Layout => BaseStats.Layout;
 
-        public int CellCount => _ship.Layout.CellCount; // exclude additional cells to prevent them from impacting weight and speed
+        public int CellCount => Layout.CellCount;
 
         public ImmutableCollection<Device> BuiltinDevices => BaseStats.BuiltinDevices;
 
