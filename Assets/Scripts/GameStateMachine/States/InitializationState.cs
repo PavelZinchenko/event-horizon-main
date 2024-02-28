@@ -1,10 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using GameServices.SceneManager;
 using Constructor;
 using Constructor.Ships;
-using Diagnostics;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;

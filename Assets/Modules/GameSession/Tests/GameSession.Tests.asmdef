@@ -1,19 +1,25 @@
-﻿{
-  "name": "GameSession.Tests",
-  "references": [
-    "GameSession"
-  ],
-  "optionalUnityReferences": [
-    "TestAssemblies"
-  ],
-  "includePlatforms": [
-    "Editor"
-  ],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": false,
-  "defineConstraints": [],
-  "versionDefines": []
+{
+    "name": "GameSession.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GameSession",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Utilites"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

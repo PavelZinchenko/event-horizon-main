@@ -10,7 +10,7 @@ namespace Domain.Quests
     {
         private readonly ISessionData _session;
         private readonly GameTime _gameTime;
-        private readonly CommonComponents.PcgRandom _random = new();
+        private readonly Utilites.PcgRandom _random = new();
 
         public QuestDataProvider(ISessionData session, GameTime gameTime)
         {

@@ -6,7 +6,8 @@
         "Zenject",
         "CommonComponents",
         "Database",
-        "ShipConstructor"
+        "ShipConstructor",
+        "Utilites"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -33,7 +33,7 @@ namespace Domain.Quests
 
         public Quest CreateRandomWeighted(QuestFactory questFactory, int seed)
         {
-            var random = new CommonComponents.PcgRandom(seed);
+            var random = new Utilites.PcgRandom(seed);
             var value = random.NextFloat() * (_totalWeight < 1f ? 1f : _totalWeight);
 
             foreach (var item in _allowedQuests)

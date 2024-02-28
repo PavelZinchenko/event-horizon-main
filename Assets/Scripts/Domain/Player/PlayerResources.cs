@@ -52,7 +52,7 @@ namespace GameServices.Player
             set { _session.Resources.Fuel = Clamp(value, _skills.MainFuelCapacity); }
         }
 
-        public IEnumerable<ItemId<QuestItem>> Resources { get { return _session.Resources.Resources.Items.Select(item => new ItemId<QuestItem>(item.Key)); } }
+        public IEnumerable<ItemId<QuestItem>> Resources { get { return _session.Resources.Resources.Select(item => new ItemId<QuestItem>(item.Key)); } }
 
         public int GetResource(ItemId<QuestItem> id)
         {

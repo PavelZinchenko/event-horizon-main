@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "Zenject",
-        "AppConfiguration"
+        "AppConfiguration",
+        "Utilites"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

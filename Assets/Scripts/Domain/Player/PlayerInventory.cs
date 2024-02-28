@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using Constructor;
-using Diagnostics;
+﻿using Constructor;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
@@ -8,7 +6,6 @@ using GameServices.GameManager;
 using Session;
 using CommonComponents.Utils;
 using Zenject;
-using Domain.Quests;
 
 namespace GameServices.Player
 {
@@ -41,7 +38,7 @@ namespace GameServices.Player
             Clear();
 
             var random = new System.Random(_session.Game.Seed);
-            foreach (var item in _session.Inventory.Components.Items)
+            foreach (var item in _session.Inventory.Components)
             {
                 var componentInfo = item.Key.ToComponentInfo(_database);
                 if (!componentInfo)
@@ -59,7 +56,7 @@ namespace GameServices.Player
                 _components.Add(componentInfo, item.Value);
             }
 
-            foreach (var item in _session.Inventory.Satellites.Items)
+            foreach (var item in _session.Inventory.Satellites)
                 _satellites.Add(_database.GetSatellite(new ItemId<Satellite>(item.Key)), item.Value);
 
             _components.IsDirty = false;

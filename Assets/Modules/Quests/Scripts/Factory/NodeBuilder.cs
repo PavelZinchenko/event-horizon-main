@@ -191,7 +191,7 @@ namespace Domain.Quests
 
         public INode Create(Node_StartQuest content)
         {
-            var seed = _context.QuestModel.UseRandomSeed ? new CommonComponents.PcgRandom().Next() : content.Id;
+            var seed = _context.QuestModel.UseRandomSeed ? new Utilites.PcgRandom().Next() : content.Id;
             var node = new StartQuestNode(content.Id, content.Quest, seed);
             _nodes.Add(node.Id, node);
             node.TargetNode = CreateNode(content.Transition);

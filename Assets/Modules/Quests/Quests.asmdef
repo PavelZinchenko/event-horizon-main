@@ -6,7 +6,8 @@
         "CommonComponents",
         "Database",
         "Localization",
-        "Diagnostics"
+        "Diagnostics",
+        "Utilites"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
