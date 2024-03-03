@@ -36,11 +36,8 @@ namespace Combat.Collision.Behaviour.Action
                 _isAlive = _impactType == BulletImpactType.HitAllTargets;
             }
 
-            if (target.Type.Class == UnitClass.Ship || target.Type.Class == UnitClass.Drone)
-			{
-				var ship = (IShip)target;
+            if ((target.Type.Class == UnitClass.Ship || target.Type.Class == UnitClass.Drone) && target is IShip ship)
 				selfImpact.Repair += ship.Stats.Resistance.ModifyDamage(_damageType, damage) * _conversionFactor;
-			}
 		}
 
         public void Dispose() { }
