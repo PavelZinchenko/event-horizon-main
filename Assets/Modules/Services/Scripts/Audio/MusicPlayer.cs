@@ -11,7 +11,7 @@ namespace Services.Audio
 		[Inject]
 	    private void Initialize(
 			IGameSettings gameSettings, 
-			IAssetLoader assetLoader, 
+			IAssetLoader assetLoader,
 			AppActivatedSignal appActivatedSignal)
 	    {
             _appActivatedSignal = appActivatedSignal;
@@ -25,20 +25,24 @@ namespace Services.Audio
 			if (Volume > 0) LoadMusicBundle();
         }
 
-        public void SetPlaylist(IMusicPlaylist playlist)
-		{
-			_playlist = playlist;
-			Play(_activeTrack);
-		}
+        public IMusicPlaylist Playlist 
+        {
+            get => _defaultPlaylist ?? _customPlaylist;
+            set 
+            { 
+                _customPlaylist = value; 
+                Play(_activeTrack); 
+            }  
+        }
 
         public void Play(AudioTrackType track)
         {
 			_activeTrack = track;
-			if (_playlist == null) return;
+			if (Playlist == null) return;
 
 			Mute(false);
 
-			var audioClip = _playlist?.GetAudioClip(track);
+			var audioClip = _customPlaylist?.GetAudioClip(track) ?? _defaultPlaylist?.GetAudioClip(track);
 
 			if (_audioSource.clip == audioClip)
 				return;
@@ -60,7 +64,8 @@ namespace Services.Audio
 				_audioSource.volume = _volume;
 				_gameSettings.MusicVolume = _volume;
 
-                if (Volume > 0) LoadMusicBundle();
+                if (Volume > 0 && _defaultPlaylist == null)
+                    LoadMusicBundle();
             }
         }
 
@@ -114,9 +119,19 @@ namespace Services.Audio
             _assetLoader.LoadMusicBundle(SetPlaylist);
         }
 
-		private bool _muted;
+        private void SetPlaylist(IMusicPlaylist playlist)
+        {
+            _defaultPlaylist = playlist;
+
+            if (!_isPlaying)
+                Play(_activeTrack);
+        }
+
+        private bool _muted;
 		private bool _applicationActive = true;
 
+        private IMusicPlaylist _customPlaylist;
+        private IMusicPlaylist _defaultPlaylist;
         private bool _bundleLoadStarted = false;
         private IAssetLoader _assetLoader;
 		private AudioTrackType _activeTrack;
@@ -124,7 +139,6 @@ namespace Services.Audio
 		private float _volume;
 		private AudioClip _clipToPlay;
 		private AudioSource _audioSource;
-		private IMusicPlaylist _playlist;
         private IGameSettings _gameSettings;
         private AppActivatedSignal _appActivatedSignal;
 	}

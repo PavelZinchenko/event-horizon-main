@@ -11,19 +11,21 @@ using GameDatabase.DataModel;
 using Database.Legacy;
 using Session;
 using Model.Military;
+using GameServices.Audio;
 
 namespace GameStateMachine.States
 {
     public class QuickCombatState : BaseState
     {
         public QuickCombatState(
-			Settings settings,
+            Settings settings,
             IStateMachine stateMachine,
             GameStateFactory stateFactory,
-			IDatabase database,
-			ISessionData session,
-			CombatModelBuilder.Factory combatModelBuilderFactory,
+            IDatabase database,
+            ISessionData session,
+            CombatModelBuilder.Factory combatModelBuilderFactory,
             IMusicPlayer musicPlayer,
+            DatabaseMusicPlaylist playlist,
 			ExitSignal exitSignal)
             : base(stateMachine, stateFactory)
         {
@@ -32,6 +34,7 @@ namespace GameStateMachine.States
 			_database = database;
             _musicPlayer = musicPlayer;
 			_combatModelBuilderFactory = combatModelBuilderFactory;
+            _playlist = playlist;
 
             _exitSignal = exitSignal;
             _exitSignal.Event += OnCombatCompleted;
@@ -48,6 +51,8 @@ namespace GameStateMachine.States
 
 		protected override void OnLoad()
         {
+            var rules = _database.GalaxySettings.QuickCombatRules ?? _database.CombatSettings.DefaultCombatRules;
+            _playlist.SetCustomCombatPlaylist(rules.CustomSoundtrack);
             _musicPlayer.Play(AudioTrackType.Combat);
         }
 
@@ -128,8 +133,9 @@ namespace GameStateMachine.States
 		private readonly ExitSignal _exitSignal;
         private readonly IMusicPlayer _musicPlayer;
 		private readonly CombatModelBuilder.Factory _combatModelBuilderFactory;
+        private readonly DatabaseMusicPlaylist _playlist;
 
-		public class Factory : Factory<Settings, QuickCombatState> { }
+        public class Factory : Factory<Settings, QuickCombatState> { }
 
 		public struct Settings
 		{

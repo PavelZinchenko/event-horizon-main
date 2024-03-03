@@ -1,4 +1,5 @@
 ﻿using GameDatabase.Enums;
+using GameDatabase.Model;
 
 namespace GameDatabase.DataModel
 {
@@ -41,5 +42,6 @@ namespace GameDatabase.DataModel
         public bool DisablePlanet => _combatRules.DisablePlanet;
         public bool NextEnemyButton => _combatRules.NextEnemyButton;
         public bool KillThemAllButton => _combatRules.KillThemAllButton;
+        public ImmutableCollection<SoundTrack> CustomSoundtrack => _combatRules.CustomSoundtrack;
     }
 }

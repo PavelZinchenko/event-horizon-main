@@ -49,6 +49,7 @@ namespace GameDatabase.DataModel
 			DisablePlanet = serializable.DisablePlanet;
 			NextEnemyButton = serializable.NextEnemyButton;
 			KillThemAllButton = serializable.KillThemAllButton;
+			CustomSoundtrack = new ImmutableCollection<SoundTrack>(serializable.CustomSoundtrack?.Select(item => SoundTrack.Create(item, loader)));
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -75,6 +76,7 @@ namespace GameDatabase.DataModel
 		public bool DisablePlanet { get; private set; }
 		public bool NextEnemyButton { get; private set; }
 		public bool KillThemAllButton { get; private set; }
+		public ImmutableCollection<SoundTrack> CustomSoundtrack { get; private set; }
 
 		public static CombatRules DefaultValue { get; private set; }
 

@@ -13,22 +13,8 @@ using GameDatabase.Model;
 namespace GameDatabase.Serializable
 {
 	[Serializable]
-	public class CombatRulesSerializable : SerializableItem
+	public class SoundTrackSerializable
 	{
-		public string InitialEnemyShips = "1";
-		public string MaxEnemyShips = "12";
-		public int BattleMapSize = 200;
-		public string TimeLimit = "MAX(40, 100 - level)";
-		public TimeOutMode TimeOutMode;
-		public RewardCondition LootCondition;
-		public RewardCondition ExpCondition;
-		public PlayerShipSelectionMode ShipSelection;
-		public bool DisableSkillBonuses;
-		public bool DisableRandomLoot;
-		public bool DisableAsteroids;
-		public bool DisablePlanet;
-		public bool NextEnemyButton = true;
-		public bool KillThemAllButton;
-		public SoundTrackSerializable[] CustomSoundtrack;
+		public string Audio;
 	}
 }

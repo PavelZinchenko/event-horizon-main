@@ -21,6 +21,12 @@ namespace GameDatabase.Model
             int offset = 0;
             while ((count = vorbis.ReadSamples(readBuffer, 0, readBuffer.Length)) > 0)
             {
+                if (offset >= length)
+                {
+                    GameDiagnostics.Trace.LogError($"Audioclip contains more data than expected, truncating");
+                    break;
+                }
+
                 audioClip.SetData(readBuffer, offset);
                 offset += count / channels;
             }

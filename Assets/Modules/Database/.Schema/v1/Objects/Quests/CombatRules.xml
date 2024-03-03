@@ -14,4 +14,5 @@
     <member name="DisablePlanet" type="bool" />
     <member name="NextEnemyButton" type="bool" default="true" />
     <member name="KillThemAllButton" type="bool">For debug purposes</member>
+    <member name="CustomSoundtrack" type="struct_list" typeid="SoundTrack" />
 </data>

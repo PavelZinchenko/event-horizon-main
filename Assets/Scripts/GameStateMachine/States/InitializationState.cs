@@ -14,6 +14,8 @@ using Services.Advertisements;
 using Services.Storage;
 using Services.Localization;
 using Zenject;
+using Services.Audio;
+using GameServices.Audio;
 
 namespace GameStateMachine.States
 {
@@ -28,7 +30,9 @@ namespace GameStateMachine.States
 			GameSettings settings, 
 			IAccount account, 
 			IDatabase database, 
-            IAdsManager adsManager, 
+            IAdsManager adsManager,
+            IMusicPlayer musicPlayer,
+            DatabaseMusicPlaylist databaseMusicPlaylist,
 			ILocalization localization)
             : base(stateMachine, stateFactory)
         {
@@ -39,6 +43,8 @@ namespace GameStateMachine.States
             _account = account;
             _adsManager = adsManager;
             _localization = localization;
+            _musicPlayer = musicPlayer;
+            _databaseMusicPlaylist = databaseMusicPlaylist;
         }
 
         public override StateType Type { get { return StateType.Initialization; } }
@@ -129,6 +135,8 @@ namespace GameStateMachine.States
             if (!_sessionData.Purchases.RemoveAds)
                 _adsManager.ShowInterstitial();
 
+            _musicPlayer.Playlist = _databaseMusicPlaylist;
+
             LoadStateAdditive(StateFactory.CreateMainMenuState());
         }
 
@@ -155,7 +163,9 @@ namespace GameStateMachine.States
         private readonly GameSettings _settings;
         private readonly IAccount _account;
         private readonly IAdsManager _adsManager;
+        private readonly IMusicPlayer _musicPlayer;
         private readonly ILocalization _localization;
+        private readonly DatabaseMusicPlaylist _databaseMusicPlaylist;
 
         public class Factory : Factory<InitializationState> { }
     }

@@ -7,6 +7,7 @@ using GameServices.Player;
 using Services.Audio;
 using CommonComponents.Signals;
 using Zenject;
+using GameServices.Audio;
 
 namespace GameStateMachine.States
 {
@@ -21,6 +22,7 @@ namespace GameStateMachine.States
             PlayerSkills playerSkills,
             MotherShip motherShip,
             IMusicPlayer musicPlayer,
+            DatabaseMusicPlaylist playlist,
             GameServices.Economy.LootGenerator lootGenerator,
             
             ExitSignal exitSignal,
@@ -34,6 +36,7 @@ namespace GameStateMachine.States
             _playerSkills = playerSkills;
             _musicPlayer = musicPlayer;
             _onCompleteAction = onCompleteAction;
+            _playlist = playlist;
 
             _exitSignal = exitSignal;
             _exitSignal.Event += OnCombatCompleted;
@@ -50,6 +53,7 @@ namespace GameStateMachine.States
 
 		protected override void OnLoad()
         {
+            _playlist.SetCustomCombatPlaylist(_combatModel.Rules.CustomSoundtrack);
             _musicPlayer.Play(AudioTrackType.Combat);
         }
 
@@ -88,6 +92,7 @@ namespace GameStateMachine.States
         private readonly IMusicPlayer _musicPlayer;
         private readonly CombatCompletedSignal.Trigger _combatCompletedTrigger;
         private readonly PlayerSkills _playerSkills;
+        private readonly DatabaseMusicPlaylist _playlist;
 
         public class Factory : Factory<ICombatModel, Action<ICombatModel>, CombatState> { }
     }

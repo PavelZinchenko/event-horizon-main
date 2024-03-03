@@ -19,6 +19,7 @@ using GameServices.SceneManager;
 using GameServices.Settings;
 using GameServices.Gui;
 using CommonComponents.Signals;
+using GameServices.Audio;
 
 namespace Installers
 {
@@ -68,6 +69,7 @@ namespace Installers
 
 			Container.Bind<IMusicPlayer>().To<MusicPlayer>().FromInstance(_musicPlayer);
             Container.Bind<ISoundPlayer>().To<SoundPlayer>().FromInstance(_soundPlayer);
+            Container.Bind<DatabaseMusicPlaylist>().AsSingle();
 
 #if UNITY_WEBGL
             Container.Bind<IApplication>().To<WebGlApplication>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();

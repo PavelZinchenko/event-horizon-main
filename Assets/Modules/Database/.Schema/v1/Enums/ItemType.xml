@@ -39,4 +39,5 @@
     <item name="CombatSettings" value="109" />
     <item name="UiSettings" value="110" />
     <item name="FactionsSettings" value="111" />
+    <item name="MusicPlaylist" value="112" />
 </data>

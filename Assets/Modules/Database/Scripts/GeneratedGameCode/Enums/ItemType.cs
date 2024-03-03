@@ -48,5 +48,6 @@ namespace GameDatabase.Enums
 		CombatSettings = 109,
 		UiSettings = 110,
 		FactionsSettings = 111,
+		MusicPlaylist = 112,
 	}
 }

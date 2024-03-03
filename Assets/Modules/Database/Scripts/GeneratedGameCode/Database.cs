@@ -23,6 +23,7 @@ namespace GameDatabase
 		FactionsSettings FactionsSettings { get; }
 		FrontierSettings FrontierSettings { get; }
 		GalaxySettings GalaxySettings { get; }
+		MusicPlaylist MusicPlaylist { get; }
 		ShipModSettings ShipModSettings { get; }
 		ShipSettings ShipSettings { get; }
 		SkillSettings SkillSettings { get; }
@@ -98,6 +99,7 @@ namespace GameDatabase
 		public FactionsSettings FactionsSettings { get; private set; }
 		public FrontierSettings FrontierSettings { get; private set; }
 		public GalaxySettings GalaxySettings { get; private set; }
+		public MusicPlaylist MusicPlaylist { get; private set; }
 		public ShipModSettings ShipModSettings { get; private set; }
 		public ShipSettings ShipSettings { get; private set; }
 		public SkillSettings SkillSettings { get; private set; }
@@ -195,6 +197,7 @@ namespace GameDatabase
 			FactionsSettings = null;
 			FrontierSettings = null;
 			GalaxySettings = null;
+			MusicPlaylist = null;
 			ShipModSettings = null;
 			ShipSettings = null;
 			SkillSettings = null;
@@ -354,6 +357,8 @@ namespace GameDatabase
 					_database.FrontierSettings = FrontierSettings.Create(_content.FrontierSettings ?? new Serializable.FrontierSettingsSerializable { ItemType = Enums.ItemType.FrontierSettings }, this);
 				if (_database.GalaxySettings == null)
 					_database.GalaxySettings = GalaxySettings.Create(_content.GalaxySettings ?? new Serializable.GalaxySettingsSerializable { ItemType = Enums.ItemType.GalaxySettings }, this);
+				if (_database.MusicPlaylist == null)
+					_database.MusicPlaylist = MusicPlaylist.Create(_content.MusicPlaylist ?? new Serializable.MusicPlaylistSerializable { ItemType = Enums.ItemType.MusicPlaylist }, this);
 				if (_database.ShipModSettings == null)
 					_database.ShipModSettings = ShipModSettings.Create(_content.ShipModSettings ?? new Serializable.ShipModSettingsSerializable { ItemType = Enums.ItemType.ShipModSettings }, this);
 				if (_database.ShipSettings == null)

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="MusicPlaylist" type="settings" typeid="MusicPlaylist">
+    <member name="MainMenuMusic" type="struct_list" typeid="SoundTrack" />
+    <member name="GalaxyMapMusic" type="struct_list" typeid="SoundTrack" />
+    <member name="CombatMusic" type="struct_list" typeid="SoundTrack" />
+    <member name="ExplorationMusic" type="struct_list" typeid="SoundTrack" />
+</data>
