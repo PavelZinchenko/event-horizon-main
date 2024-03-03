@@ -14,7 +14,8 @@ namespace Combat.Component.Features
             UpdateData();
         }
 
-        public TargetPriority TargetPriority { get { return _data.TargetPriority; } }
+        public TargetPriority TargetPriority => _data.TargetPriority;
+        public bool ImmuneToEffects => _data.ImmuneToEffects;
 
         public Color Color
         {
@@ -26,7 +27,7 @@ namespace Combat.Component.Features
             }
         }
 
-        public float Opacity { get { return _data.Opacity; } }
+        public float Opacity => _data.Opacity;
 
         public void UpdatePhysics(float elapsedTime, ICollider collider)
         {
@@ -39,7 +40,7 @@ namespace Combat.Component.Features
             view.Color = Color;
         }
 
-        public Modifications<FeaturesData> Modifications { get { return _modifications; } }
+        public Modifications<FeaturesData> Modifications => _modifications;
 
         public float ChanceToAvoidDrone => _data.ChanceToAvoidDrone;
         public float ChanceToAvoidMissile => _data.ChanceToAvoidMissile;

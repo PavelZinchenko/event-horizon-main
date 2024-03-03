@@ -1,4 +1,3 @@
-using Combat.Component.Body;
 using Combat.Component.Ship;
 using Combat.Unit;
 using UnityEngine;
@@ -50,6 +49,5 @@ namespace Combat.Ai
 		
 		private readonly int _weaponId;
 	    private readonly bool _secondaryTargets;
-
 	}
 }

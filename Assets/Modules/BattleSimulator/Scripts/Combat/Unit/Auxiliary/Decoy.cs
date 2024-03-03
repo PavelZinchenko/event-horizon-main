@@ -39,7 +39,7 @@ namespace Combat.Component.Unit
 
         public override void OnCollision(Impact impact, IUnit target, CollisionData collisionData)
         {
-            Affect(impact);
+            Affect(impact, target);
         }
 
         protected override void OnUpdateView(float elapsedTime)
@@ -71,7 +71,7 @@ namespace Combat.Component.Unit
 
         public int SpawnerId => 0;
 
-        public void Affect(Impact impact)
+        public void Affect(Impact impact, IUnit source)
         {
             impact.ApplyImpulse(Body);
             _hitPoints -= impact.GetTotalDamage(Resistance.Empty);

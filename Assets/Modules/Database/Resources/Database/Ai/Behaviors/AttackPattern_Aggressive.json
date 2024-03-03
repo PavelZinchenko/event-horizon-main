@@ -8,15 +8,8 @@
         "Type": 10,
         "Nodes": [
           {
-            "Type": 4,
-            "Nodes": [
-              {
-                "Type": 102
-              },
-              {
-                "Type": 127
-              }
-            ]
+            "Type": 1,
+            "ItemId": 137
           },
           {
             "Type": 113,

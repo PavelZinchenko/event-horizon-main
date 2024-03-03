@@ -54,12 +54,19 @@ namespace Combat.Ai
 			}
 		}
 
-	    public void ActivateSystem(int index, bool active = true)
+        public void DisableSystems()
+        {
+            _systems.Clear();
+        }
+
+        public void ActivateSystem(int index, bool active = true)
 	    {
 			_systems[index] = active;
 	    }
 
-		private bool _thrustLocked;
+        public bool IsSystemActivated(int index) => _systems[index];
+
+        private bool _thrustLocked;
 		private float _thrust;
 		private bool _courseLocked;
 		private float? _course;
@@ -75,10 +82,10 @@ namespace Combat.Ai
 	        Threats = threats;
 	        CurrentTime = currentTime;
 	        UnusedEnergy = new FloatReference { Value = Ship.Stats.Energy.Value };
-	        Targets = secondaryTargets;
-	    }
+            Targets = secondaryTargets;
+        }
 
-		public float CurrentTime;
+        public float CurrentTime;
 		public IShip Ship;
         public ThreatList Threats;
         public TargetList Targets;

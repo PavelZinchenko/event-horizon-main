@@ -27,6 +27,7 @@ using Zenject;
 using IShip = Combat.Component.Ship.IShip;
 using Ship = Combat.Component.Ship.Ship;
 using Collider2DOptimization;
+using Combat.Component.Unit;
 
 namespace Combat.Factory
 {
@@ -322,22 +323,22 @@ namespace Combat.Factory
 
         private IWeaponPlatform CreatePlatform(Ship ship, IWeaponPlatformData data, float cooldown, ColorScheme color)
         {
-            var parent = data.Companion == null ? ship : _satelliteFactory.CreateSatellite(ship, data, cooldown);
+            var satellite = _satelliteFactory.CreateSatellite(ship, data);
+            var parent = (IUnit)satellite ?? ship;
             var position = data.Position * 0.5f;
             var rotation = data.Rotation;
             var offset = (data.Offset + data.Size) * 0.5f;
             var isTurret = (bool)data.Image && (data.Weapons.Any() || data.WeaponsObsolete.Any());
 
             IWeaponPlatform platform;
-
-            if (data.AutoAimingArc > 0)
+            if (data.AutoAimingArc > 0 && (satellite == null || isTurret))
             {
-                platform = new AutoAimingPlatform(ship, parent, _scene, position, rotation, offset, data.AutoAimingArc, cooldown, data.RotationSpeed);
+                platform = new AutoAimingPlatform(ship, parent, _scene, position, rotation, offset, data.AutoAimingArc, cooldown, data.RotationSpeed, isTurret);
             }
             else
             {
                 var body = SimpleBody.Create(parent.Body, position, rotation, 1f / parent.Body.Scale, 0, offset);
-                platform = new FixedPlatform(ship, body, cooldown);
+                platform = new FixedPlatform(ship, body, cooldown, satellite?.AimingSystem);
             }
 
             if (isTurret)

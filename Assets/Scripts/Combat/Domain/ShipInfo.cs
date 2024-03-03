@@ -121,7 +121,7 @@ namespace Combat.Domain
             public IShipSpecification Specification { get { return null; } }
 
             public void Dispose() { }
-            public void Affect(Impact impact) { }
+            public void Affect(Impact impact, IUnit source) { }
             public void AddPlatform(IWeaponPlatform platform) { }
             public void AddSystem(ISystem system) { }
             public void AddEffect(IShipEffect shipEffect) { }

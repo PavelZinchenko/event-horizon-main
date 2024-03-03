@@ -8,7 +8,9 @@
       "DeviceClass": 10
     },
     "Nodes": [
-      {}
+      {
+        "Type": 9
+      }
     ]
   }
 }

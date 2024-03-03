@@ -5,5 +5,7 @@
     <member name="DifficultyLevel" type="enum" typeid="AiDifficultyLevel" case="AiLevel,MinAiLevel">AiLevel rises with the level of enemies. Always High for drones and autopilot</member>
     <member name="SizeClass" type="enum" typeid="SizeClass" case="SizeClass" />
     <member name="Value" type="float" case="HasHighManeuverability,HasKineticResistance" minvalue="0" default="1" />
+    <member name="Value" type="float" case="HasHighRammingDamage" minvalue="0" />
+    <member name="Value" type="float" case="HasLongRangeWeapon" alias="Range" minvalue="0" />
     <member name="Requirements" type="struct_list" typeid="BehaviorNodeRequirement" case="Any,All,None" />
 </data>

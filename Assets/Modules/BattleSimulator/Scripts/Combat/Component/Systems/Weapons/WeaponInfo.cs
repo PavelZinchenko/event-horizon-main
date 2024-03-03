@@ -1,8 +1,6 @@
-﻿using Combat.Component.Body;
-using Combat.Component.Platform;
+﻿using Combat.Component.Platform;
 using Combat.Factory;
 using GameDatabase.Enums;
-using UnityEngine;
 
 namespace Combat.Component.Systems.Weapons
 {
@@ -46,13 +44,14 @@ namespace Combat.Component.Systems.Weapons
         }
 
 		public WeaponType WeaponType => _weaponType;
-		public AiBulletBehavior BulletType => _bulletFactory.Stats.BehaviorType;
+        public AiBulletBehavior BulletType => _bulletFactory.Stats.BehaviorType;
+        public bool RequiresAiming => BulletType != AiBulletBehavior.AreaOfEffect;
 		public WeaponCapability Capability => _bulletFactory.Stats.Capability;
 		[System.Obsolete] public BulletEffectType BulletEffectType => _bulletFactory.Stats.EffectType;
 		public float Range => _bulletFactory.Stats.BulletHitRange;
 		public float Spread => _spread;
-		public float RelativeVelocityEffect => _bulletFactory.Stats.RelativeVelocityEffect;
-		public float BulletSpeed => _bulletFactory.Stats.BulletSpeed;
+        public float RelativeVelocityEffect => _bulletFactory.Stats.RelativeVelocityEffect;
+        public float BulletSpeed => _bulletFactory.Stats.BulletSpeed;
 		public float EnergyCost => _bulletFactory.Stats.EnergyCost;
 		public float Recoil { get; private set; }
 

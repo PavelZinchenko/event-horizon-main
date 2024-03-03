@@ -63,14 +63,14 @@ namespace Combat.Component.Ship
 
         public override void OnCollision(Impact impact, IUnit target, CollisionData collisionData)
         {
-            Affect(impact);
+            Affect(impact, target);
             InvokeTriggers(ConditionType.OnHit);
         }
 
-        public void Affect(Impact impact)
+        public void Affect(Impact impact, IUnit source)
         {
             impact.ApplyImpulse(Body);
-            Stats.ApplyDamage(impact);
+            Stats.ApplyDamage(impact, this, source);
 
             Systems.OnEvent(SystemEventType.DamageTaken);
         }

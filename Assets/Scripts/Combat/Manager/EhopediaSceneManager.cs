@@ -107,7 +107,7 @@ namespace Combat.Manager
         {
             foreach (var ship in _scene.Ships.Items)
                 if (ship.Type.Side.IsEnemy(UnitSide.Player))
-                    ship.Affect(new Impact { Effects = CollisionEffect.Destroy });
+                    ship.Affect(new Impact { Effects = CollisionEffect.Destroy }, null);
         }
 
         public void Initialize()

@@ -11,6 +11,7 @@ namespace Combat.Component.Features
         public Color Color;
         public float Opacity;
         public bool Invulnerable;
+        public bool ImmuneToEffects;
     }
 
     public interface IFeaturesModification : IModification<FeaturesData> {}

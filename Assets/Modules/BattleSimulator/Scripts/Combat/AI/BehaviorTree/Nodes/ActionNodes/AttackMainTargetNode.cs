@@ -7,10 +7,12 @@ namespace Combat.Ai.BehaviorTree.Nodes
 	public class AttackMainTargetNode : INode
 	{
 		private readonly bool _directOnly;
+        private readonly bool _allowRotation;
 
-		public AttackMainTargetNode(AiDifficultyLevel aiLevel)
+        public AttackMainTargetNode(AiDifficultyLevel aiLevel, bool allowRotation)
 		{
 			_directOnly = aiLevel < AiDifficultyLevel.Hard;
+            _allowRotation = allowRotation;
 		}
 
 		public NodeState Evaluate(Context context)
@@ -20,8 +22,17 @@ namespace Combat.Ai.BehaviorTree.Nodes
 
 			UpdateTargetForTurrets(context);
 
-			var result = AimAndAttackHandler.AttackWithAllWeapons(context.Ship, context.TargetShip,
-				_directOnly, context.SelectedWeapons, context.Controls);
+            AimAndAttackHandler.State result;
+            if (_allowRotation)
+            {
+                result = AimAndAttackHandler.AttackWithAllWeapons(context.Ship, context.TargetShip,
+                    _directOnly, context.SelectedWeapons, context.Controls);
+            }
+            else
+            {
+                result = AimAndAttackHandler.AttackWhileStandingStill(context.Ship,
+                    context.TargetShip, _directOnly, context.SelectedWeapons, context.Controls);
+            }
 
 			if (HasFlag(result, AimAndAttackHandler.State.Attacking)) return NodeState.Success;
 			if (HasFlag(result, AimAndAttackHandler.State.Aiming)) return NodeState.Running;

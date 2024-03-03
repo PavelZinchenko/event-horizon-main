@@ -11,9 +11,10 @@ namespace Combat.Component.Platform
 {
     public sealed class AutoAimingPlatform : IWeaponPlatform
     {
-        public AutoAimingPlatform(IShip ship, IUnit parent, IScene scene, Vector2 position, float rotation, float offset, float maxAngle, float cooldown, float rotationSpeed)
+        public AutoAimingPlatform(IShip ship, IUnit parent, IScene scene, Vector2 position, 
+            float rotation, float offset, float maxAngle, float cooldown, float rotationSpeed, bool hasTurret)
         {
-            _body = WeaponPlatformBody.Create(scene, parent, position, rotation, offset, maxAngle, rotationSpeed);
+            _body = WeaponPlatformBody.Create(scene, parent, position, rotation, offset, maxAngle, rotationSpeed, hasTurret);
             _cooldown = cooldown;
             _ship = ship;
         }
@@ -27,17 +28,17 @@ namespace Combat.Component.Platform
         public bool IsReady { get { return _timeFromLastShot > _cooldown; } }
         public float Cooldown { get { return Mathf.Clamp01(1f - _timeFromLastShot / _cooldown); } }
 
-        public float FixedRotation { get { return _body.FixedRotation; } }
-        public float AutoAimingAngle { get { return _body.AutoAimingAngle; } }
+        public float MountAngle => _body.FixedRotation;
+        public float AutoAimingAngle => _body.AutoAimingAngle;
 
-		public IUnit ActiveTarget { get => _body.ActiveTarget; set => _body.ActiveTarget = value; }
+		public IShip ActiveTarget { get => _body.ActiveTarget; set => _body.ActiveTarget = value; }
 
 		public void SetView(IView view, UnityEngine.Color color)
         {
             _view = view;
             _color = color;
         }
-        
+
         public void Aim(float bulletVelocity, float weaponRange, float relativeEffect)
         {
             _body.Aim(bulletVelocity, weaponRange, relativeEffect);

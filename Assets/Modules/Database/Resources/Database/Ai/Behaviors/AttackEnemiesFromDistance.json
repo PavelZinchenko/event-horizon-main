@@ -1,0 +1,47 @@
+{
+  "ItemType": 28,
+  "Id": 131,
+  "RootNode": {
+    "Type": 3,
+    "Requirement": {
+      "Type": 11
+    },
+    "Nodes": [
+      {
+        "Type": 103
+      },
+      {
+        "Type": 4,
+        "Nodes": [
+          {
+            "Type": 100,
+            "MinValue": 0.5,
+            "MaxValue": 5.0,
+            "NoDrones": true
+          },
+          {
+            "Type": 111,
+            "Cooldown": 0.1
+          }
+        ]
+      },
+      {
+        "Type": 12,
+        "Nodes": [
+          {
+            "Type": 55,
+            "MinValue": 1.2
+          },
+          {
+            "Type": 1,
+            "ItemId": 138
+          },
+          {
+            "Type": 1,
+            "ItemId": 136
+          }
+        ]
+      }
+    ]
+  }
+}

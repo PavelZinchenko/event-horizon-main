@@ -12,11 +12,11 @@ namespace Combat.Component.DamageHandler
             _canRepair = canRepair;
         }
 
-        public CollisionEffect ApplyDamage(Impact impact)
+        public CollisionEffect ApplyDamage(Impact impact, IUnit source)
         {
             if (_canRepair && impact.Repair > 0)
                 if (_unit.Type.Owner.IsActive())
-                    _unit.Type.Owner.Affect(new Impact { Repair = impact.Repair });
+                    _unit.Type.Owner.Affect(new Impact { Repair = impact.Repair }, null);
 
             return CollisionEffect.None;
         }

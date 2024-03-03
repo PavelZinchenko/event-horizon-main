@@ -1,4 +1,5 @@
 ﻿using Combat.Collision.Manager;
+using Combat.Component.Ship;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using GameDatabase.Enums;
@@ -24,8 +25,16 @@ namespace Combat.Collision.Behaviour.Action
             if (!_isAlive || !collisionData.IsNew)
                 return;
 
-            if (target.Type.Class != UnitClass.Drone && target.Type.Class != UnitClass.Missile)
-                return;
+            switch (target.Type.Class)
+            {
+                case UnitClass.Drone:
+                    if (target is IShip ship && ship.Features.ImmuneToEffects) return;
+                    break;
+                case UnitClass.Missile:
+                    break;
+                default:
+                    return;
+            }
 
             switch (_effectType)
             {

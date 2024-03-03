@@ -33,9 +33,10 @@ namespace Combat.Factory
         [Inject] private readonly PrefabCache _prefabCache;
         [Inject] private readonly IResourceLocator _resourceLocator;
 
-        public IUnit CreateSatellite(IShip ship, IWeaponPlatformData data, float cooldown)
+        public ISatellite CreateSatellite(IShip ship, IWeaponPlatformData data)
         {
             var satelliteData = data.Companion;
+            if (satelliteData == null) return null;
 
             var prefab = _prefabCache.LoadResourcePrefab("Combat/Satellites/" + satelliteData.Satellite.ModelImage.Id, true);
 
@@ -87,7 +88,11 @@ namespace Combat.Factory
             if (data.AutoAimingArc < 10 || isTurret)
                 satellite.Controller = new SatelliteController(ship, satellite, position, data.Rotation);
             else
-                satellite.Controller = new AutoAimingSatelliteController(ship, satellite, position, data.Rotation, minAngle, maxAngle, _scene);
+            {
+                var controller = new AutoAimingSatelliteController(ship, satellite, position, data.Rotation, minAngle, maxAngle, _scene);
+                satellite.Controller = controller;
+                satellite.AimingSystem = controller;
+            }
 
             satellite.AddTrigger(new DroneExplosionAction(satellite, _effectFactory, _soundPlayer));
 

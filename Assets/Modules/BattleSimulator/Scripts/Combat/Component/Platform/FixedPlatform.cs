@@ -27,10 +27,10 @@ namespace Combat.Component.Platform
         public bool IsReady { get { return _timeFromLastShot > _cooldown; } }
         public float Cooldown { get { return Mathf.Clamp01(1f - _timeFromLastShot / _cooldown); } }
 
-        public float FixedRotation { get { return _body.WorldRotation(); } }
-        public float AutoAimingAngle { get { return 0; } }
+        public float MountAngle => _body.Rotation;
+        public float AutoAimingAngle => 0;
 
-		public IUnit ActiveTarget
+		public IShip ActiveTarget
 		{
 			get => _aimingSystem?.ActiveTarget;
 			set

@@ -23,7 +23,7 @@ namespace Combat.Component.Ship
 
 		void Broadcast(string message, UnityEngine.Color color);
 
-        void Affect(Impact impact);
+        void Affect(Impact impact, IUnit source);
         void AddPlatform(IWeaponPlatform platform);
         void AddSystem(ISystem system);
         void AddEffect(IShipEffect shipEffect);

@@ -1,4 +1,5 @@
-﻿using Combat.Component.Systems.Weapons;
+﻿using Combat.Component.Platform;
+using Combat.Component.Systems.Weapons;
 using GameDatabase.Enums;
 
 namespace Combat.Ai.BehaviorTree.Nodes
@@ -24,7 +25,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 				if (context.TargetShip != null)
 					if (AttackHelpers.TryGetTarget(weapon, ship, context.TargetShip, out var target))
 					{
-						context.Controls.Course = Helpers.TargetCourse(ship, target, weapon.Platform);
+						context.Controls.Course = weapon.Platform.OptimalShipCourse(target);
 						return NodeState.Running;
 					}
 
@@ -33,7 +34,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 					var enemy = context.SecondaryTargets[j];
 					if (AttackHelpers.TryGetTarget(weapon, ship, enemy, out var target))
 					{
-						context.Controls.Course = Helpers.TargetCourse(ship, target, weapon.Platform);
+						context.Controls.Course = weapon.Platform.OptimalShipCourse(target);
 						return NodeState.Running;
 					}
 				}

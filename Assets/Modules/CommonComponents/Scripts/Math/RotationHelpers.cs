@@ -9,7 +9,6 @@ public static class RotationHelpers
 
 	public static float Angle(Vector2 direction)
 	{
-		
 		var result = Mathf.Atan2(direction.y, direction.x);
 		if (result < 0) result += Mathf.PI*2;
 		return result*Mathf.Rad2Deg;
@@ -36,5 +35,26 @@ public static class RotationHelpers
         float boundWidth = height * sinAngle + width * cosAngle;
         float boundHeight = height * cosAngle + width * sinAngle;
         return new Vector2(boundWidth, boundHeight);
+    }
+
+    public static bool IsRotationInArc(float rotation, float minAngle, float maxAngle)
+    {
+        rotation = NormalizeAngle(rotation);
+        minAngle = NormalizeAngle(minAngle);
+        maxAngle = NormalizeAngle(maxAngle);
+
+        if (minAngle < maxAngle)
+            return rotation >= minAngle && rotation <= maxAngle;
+        else
+            // The arc crosses 0 degrees
+            return rotation >= minAngle || rotation <= maxAngle;
+    }
+
+    public static float NormalizeAngle(float angle)
+    {
+        if (angle >= 0 && angle < 360) return angle;
+
+        angle %= 360;
+        return angle < 0 ? angle + 360 : angle;
     }
 }

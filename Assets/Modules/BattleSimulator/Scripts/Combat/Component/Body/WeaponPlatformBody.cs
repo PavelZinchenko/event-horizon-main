@@ -11,12 +11,12 @@ namespace Combat.Component.Platform
 {
     public class WeaponPlatformBody : MonoBehaviour, IWeaponPlatformBody
     {
-        public static WeaponPlatformBody Create(IScene scene, IUnit parent, Vector2 position, float rotation, float offset, float maxAngle, float rotationSpeed)
+        public static WeaponPlatformBody Create(IScene scene, IUnit parent, Vector2 position, float rotation, float offset, float maxAngle, float rotationSpeed, bool hasTurret)
         {
             var gameobject = new GameObject("Body");
             parent.Body.AddChild(gameobject.transform);
             var body = gameobject.AddComponent<WeaponPlatformBody>();
-            body.Initialize(scene, parent, position, rotation, offset, maxAngle, rotationSpeed);
+            body.Initialize(scene, parent, position, rotation, offset, maxAngle, rotationSpeed, hasTurret);
             return body;
         }
 
@@ -25,12 +25,20 @@ namespace Combat.Component.Platform
         public float Rotation => _rotation;
         public float Offset => _offset;
         public Vector2 Velocity => Vector2.zero;
-        public float AngularVelocity => 0f;
+        public float AngularVelocity => _angularVelocity;
         public float Weight => 0.0f;
         public float Scale => _scale;
         public Vector2 VisualPosition => _position;
-        public float VisualRotation => _rotation;
 
+        public float VisualRotation 
+        {
+            get 
+            {
+                if (Mathf.Approximately(_angularVelocity, 0)) return _rotation;
+                var deltaTime = (float)(Time.timeAsDouble - Time.fixedTimeAsDouble);
+                return _rotation + _angularVelocity*deltaTime;
+            }
+        }
 
         public void Move(Vector2 position) {}
         public void Turn(float rotation) {}
@@ -50,18 +58,22 @@ namespace Combat.Component.Platform
             Destroy(gameObject);
         }
 
-        public float FixedRotation => Parent.WorldRotation() + _initialRotation;
+        public float FixedRotation => _initialRotation;
         public float AutoAimingAngle => _maxAngle;
 
         public void UpdatePhysics(float elapsedTime)
         {
             _timeFromTargetUpdate += elapsedTime;
-            _targetingTime += elapsedTime;
+            _idleTime += elapsedTime;
+            UpdateRotation(elapsedTime);
+
+            if (_hasTurret && _weaponRange > 0)
+                Aim(_bulletVelocity, _weaponRange, _relativeEffect);
         }
 
         public void UpdateView(float elapsedTime)
         {
-            UpdateRotation(elapsedTime);
+            transform.localEulerAngles = new Vector3(0, 0, VisualRotation);
         }
 
         public void AddChild(Transform child)
@@ -69,13 +81,15 @@ namespace Combat.Component.Platform
             child.parent = transform;
         }
 
-		public IUnit ActiveTarget 
+		public IShip ActiveTarget 
 		{
 			get => _target; 
 			set
 			{
-				_target = value;
-				_timeFromTargetUpdate = 0f;
+                _timeFromTargetUpdate = 0f;
+                if (_target == value) return;
+                _target = value;
+                UpdateRotataionOnTargetChange();
 			} 
 		}
 
@@ -91,7 +105,8 @@ namespace Combat.Component.Platform
             if (_timeFromTargetUpdate < _targetFindCooldown) return;
             if (_timeFromTargetUpdate < _targetUpdateCooldown && _target.IsActive()) return;
 
-			ActiveTarget = _scene.Ships.GetEnemy(_parent, EnemyMatchingOptions.EnemyForTurret(), _initialRotation, _maxAngle, _weaponRange);
+			ActiveTarget = _scene.Ships.GetEnemyForTurret(_parent, ((IBody)this).WorldPosition(),
+                _parent.Body.WorldRotation() + _initialRotation, _maxAngle, _weaponRange);
         }
 
 		private bool IsValidTarget(IUnit target)
@@ -103,7 +118,7 @@ namespace Combat.Component.Platform
 			return true;
 		}
 
-        private void Initialize(IScene scene, IUnit parent, Vector2 position, float rotation, float offset, float maxAngle, float rotationSpeed)
+        private void Initialize(IScene scene, IUnit parent, Vector2 position, float rotation, float offset, float maxAngle, float rotationSpeed, bool hasTurret)
         {
             _scene = scene;
             _parent = parent;
@@ -113,44 +128,48 @@ namespace Combat.Component.Platform
             _maxAngle = maxAngle;
             _scale = 1f / parent.Body.Scale;
             _rotationSpeed = rotationSpeed > 0 ? rotationSpeed : 360;
+            _hasTurret = hasTurret;
 
             transform.localPosition = _position;
             transform.localScale = Vector3.one*_scale;
         }
 
+        private void UpdateRotataionOnTargetChange()
+        {
+            if (_hasTurret) return;
+            if (_idleTime <= 0) return;
+            if (!_target.IsActive()) return;
+            UpdateRotation(_idleTime);
+            _idleTime = 0;
+        }
+
         private void UpdateRotation(float elapsedTime)
         {
-            var currentFrame = Time.frameCount;
-            if (_updateFrameId == currentFrame)
-                return;
-
-            _updateFrameId = currentFrame;
             var targetRotation = _initialRotation;
+            float rotation;
 
             if (!_target.IsActive())
             {
-                _rotation = Mathf.MoveTowardsAngle(_rotation, targetRotation, _rotationSpeed * elapsedTime);
-                transform.localEulerAngles = new Vector3(0, 0, _rotation);
+                rotation = Mathf.MoveTowardsAngle(_rotation, targetRotation, _rotationSpeed * elapsedTime);
+                _angularVelocity = Mathf.DeltaAngle(_rotation, rotation) / elapsedTime;
+                _rotation = rotation;
                 return;
             }
 
             var targetPosition = _target.Body.WorldPosition();
             var platformPosition = ((IBody)this).WorldPosition();
-            float rotation;
 
             if (_bulletVelocity > 0)
             {
                 var velocity = _target.Body.WorldVelocity() - Parent.WorldVelocity() * _relativeEffect;
 
-                Vector2 target;
-                float timeInterval;
                 if (!Geometry.GetTargetPosition(
                     targetPosition,
                     velocity,
                     platformPosition,
                     _bulletVelocity,
-                    out target,
-                    out timeInterval))
+                    out Vector2 target,
+                    out float timeInterval))
                 {
                     target = targetPosition;
                 }
@@ -170,21 +189,24 @@ namespace Combat.Component.Platform
             else
                 targetRotation = rotation;
 
-            _rotation = Mathf.MoveTowardsAngle(_rotation, targetRotation, _rotationSpeed * elapsedTime);
+            rotation = Mathf.MoveTowardsAngle(_rotation, targetRotation, _rotationSpeed * elapsedTime);
+            _angularVelocity = Mathf.DeltaAngle(_rotation, rotation) / elapsedTime;
+            _rotation = rotation;
+            _idleTime = 0;
 
-            transform.localEulerAngles = new Vector3(0,0,_rotation);
         }
 
         private float _bulletVelocity;
         private float _weaponRange;
         private float _relativeEffect = 1;
 
-        private int _updateFrameId;
         private float _timeFromTargetUpdate = _targetUpdateCooldown;
-        private IUnit _target;
+        private IShip _target;
 
         private float _rotation;
+        private float _angularVelocity;
 
+        private bool _hasTurret;
         private Vector2 _position;
         private float _initialRotation;
         private float _maxAngle;
@@ -192,11 +214,10 @@ namespace Combat.Component.Platform
         private float _scale;
         private IUnit _parent;
         private IScene _scene;
-        private float _targetingTime;
+        private float _idleTime;
         private float _rotationSpeed;
 
         private const float _targetUpdateCooldown = 1.0f;
         private const float _targetFindCooldown = 0.1f;
-        private const int _minSpread = 14;
     }
 }

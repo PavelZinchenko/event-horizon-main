@@ -33,7 +33,8 @@
         "Type": 3,
         "Nodes": [
           {
-            "Type": 206
+            "Type": 206,
+            "MaxValue": 0.0
           },
           {
             "Type": 204

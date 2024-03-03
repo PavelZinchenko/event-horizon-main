@@ -33,7 +33,7 @@ namespace Combat.Component.Unit
         public override void OnCollision(Impact impact, IUnit target, CollisionData collisionData)
         {
             _timeFromLastHit = 0;
-            DamageHandler.ApplyDamage(impact);
+            DamageHandler.ApplyDamage(impact, target);
         }
 
         public bool Active { get; set; }

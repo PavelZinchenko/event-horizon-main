@@ -1,10 +1,10 @@
-﻿using Combat.Component.Unit;
+﻿using Combat.Component.Ship;
 
 namespace Combat.Component.Platform
 {
     public interface IAimingSystem
     {
-		IUnit ActiveTarget { get; set; }
-		void Aim(float bulletVelocity, float weaponRange, float relativeEffect);
+		IShip ActiveTarget { get; set; }
+        void Aim(float bulletVelocity, float weaponRange, float relativeEffect);
     }
 }

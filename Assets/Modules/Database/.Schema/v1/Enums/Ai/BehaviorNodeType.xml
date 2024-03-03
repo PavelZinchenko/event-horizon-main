@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data type="enum" name="BehaviorNodeType">
-    <item name="Undefined" value="0">Always returs SUCCESS</item>
+    <item name="Success" value="0">Always returs SUCCESS</item>
+    <item name="Failure" value="9">Always returs FAILURE</item>
     <item name="SubTree" value="1" />
     <item name="Selector" value="2">Executes nodes sequentially, stops when the first node returns SUCCESS or RUNNING</item>
     <item name="Sequence" value="3">Executes nodes sequentially, stops when the first node returns FAILURE or RUNNING</item>
@@ -11,6 +12,7 @@
     <item name="Execute" value="8">Executes node until condition met, returns 'Result' after that</item>
     <item name="ParallelSequence" value="10">Executes nodes sequentially, stops when the first node returns FAILURE</item>
     <item name="PreserveTarget" value="11">Memorizes the primary target, runs the child node, then restores the original target. Returns the result of the node's execution</item>
+    <item name="IfThenElse" value="12">If the first node returns SUCCESS, executes the second node, executes the thirid node otherwise</item>
 
     <item name="HasEnoughEnergy" value="50" />
     <item name="IsLowOnHp" value="51" />
@@ -59,6 +61,7 @@
     <item name="TargetAllyStarbase" value="128">Targets an ally starbase. Returns SUCCESS if it exists and alive, otherwise FAILURE</item>
     <item name="TargetEnemyStarbase" value="129">Targets an enemy starbase. Returns SUCCESS if it exists and alive, otherwise FAILURE</item>
     <item name="BypassObstacles" value="130">Tries to bypass obstacle if any. Returns FAILURE if there are no obstacles, RUNNING otherwise</item>
+    <item name="AttackTurretTargets" value="131">Attacks targets that tracked by auto-aiming turrets, returning SUCCESS upon firing, FAILURE otherwise</item>
 
     <item name="EnginePropulsionForce" value="150">Returns SUCCESS when [forward acceleration]/[max acceleration] > MinValue</item>
 

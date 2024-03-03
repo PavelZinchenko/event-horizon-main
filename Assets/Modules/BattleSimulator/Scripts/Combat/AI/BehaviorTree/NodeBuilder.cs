@@ -46,6 +46,17 @@ namespace Combat.Ai.BehaviorTree
 			private float RandomValue => (float)Random.NextDouble();
 			private float RandomRange(float min, float max) => min + (max - min) * RandomValue;
 
+            private bool CanMove 
+            {
+                get
+                {
+                    if (Ship.Specification.Stats.ShipModel.ShipType == GameDatabase.Enums.ShipType.Starbase) return false;
+                    if (Ship.Specification.Stats.EnginePower < 0.1f) return false;
+                    if (Ship.Specification.Stats.TurnRate < 0.1f) return false;
+                    return true;
+                }
+            }
+
 			private int StrinToId(string name) => _builder._identifiersMap.GetMessageId(name);
 
 			public NodeFactory(NodeBuilder builder)
@@ -54,8 +65,9 @@ namespace Combat.Ai.BehaviorTree
 				_random = new();
 			}
 
-			public INode Create(BehaviorTreeNode_Undefined content) => EmptyNode.Success;
-			public INode Create(BehaviorTreeNode_SubTree content) => _builder.Build(content.BehaviourTree?.RootNode);
+            public INode Create(BehaviorTreeNode_Success content) => EmptyNode.Success;
+            public INode Create(BehaviorTreeNode_Failure content) => EmptyNode.Failure;
+            public INode Create(BehaviorTreeNode_SubTree content) => _builder.Build(content.BehaviourTree?.RootNode);
 			public INode Create(BehaviorTreeNode_Invertor content) => InvertorNode.Create(_builder.Build(content.Node));
 			public INode Create(BehaviorTreeNode_Cooldown content) => CooldownNode.Create(_builder.Build(content.Node),
 				content.ExecutionMode, content.Cooldown, content.Result ? NodeState.Success : NodeState.Failure);
@@ -79,7 +91,28 @@ namespace Combat.Ai.BehaviorTree
 				return selector;
 			}
 
-			public INode Create(BehaviorTreeNode_Sequence content)
+            public INode Create(BehaviorTreeNode_IfThenElse content)
+            {
+                var count = content.Nodes.Count;
+                if (count != 3)
+                    throw new System.InvalidOperationException("IfThenElse node requires 3 child nodes");
+
+                var condition = _builder.Build(content.Nodes[0]);
+                if (condition == EmptyNode.Success)
+                    return _builder.Build(content.Nodes[1]);
+                else if (condition == EmptyNode.Failure)
+                    return _builder.Build(content.Nodes[2]);
+                else if (condition == EmptyNode.Running)
+                    return EmptyNode.Running;
+
+                var selector = new IfThenElseNode();
+                selector.Nodes.Add(condition);
+                selector.Nodes.Add(_builder.Build(content.Nodes[1]));
+                selector.Nodes.Add(_builder.Build(content.Nodes[2]));
+                return selector;
+            }
+
+            public INode Create(BehaviorTreeNode_Sequence content)
 			{
 				var sequence = new SequenceNode();
 				for (int i = 0; i < content.Nodes.Count; ++i)
@@ -213,8 +246,9 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_ForgetSavedTarget content) => new ForgetTargetNode(StrinToId(content.Name));
 			public INode Create(BehaviorTreeNode_EscapeTargetAttackRadius content) => new EscapeAttackRadiusNode();
 			public INode Create(BehaviorTreeNode_HasAdditionalTargets content) => new HasSecondaryTargetsNode();
-			public INode Create(BehaviorTreeNode_AttackMainTarget content) => new AttackMainTargetNode(Settings.AiLevel);
-			public INode Create(BehaviorTreeNode_AttackAdditionalTargets content) => new AttackSecondaryTargetsNode(Settings.AiLevel);
+			public INode Create(BehaviorTreeNode_AttackMainTarget content) => new AttackMainTargetNode(Settings.AiLevel, CanMove && !content.NotMoving);
+			public INode Create(BehaviorTreeNode_AttackAdditionalTargets content) => new AttackSecondaryTargetsNode(Settings.AiLevel, CanMove && !content.NotMoving);
+            public INode Create(BehaviorTreeNode_AttackTurretTargets content) => new AttackTurretTargets();
             public INode Create(BehaviorTreeNode_HasMothership content) => new MothershipAlive();
             public INode Create(BehaviorTreeNode_TargetAllyStarbase content) => new TargetStarbaseNode(true);
             public INode Create(BehaviorTreeNode_TargetEnemyStarbase content) => new TargetStarbaseNode(false);

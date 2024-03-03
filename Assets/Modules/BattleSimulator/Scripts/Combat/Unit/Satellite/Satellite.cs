@@ -4,6 +4,7 @@ using Combat.Collision.Manager;
 using Combat.Component.Body;
 using Combat.Component.Collider;
 using Combat.Component.Controller;
+using Combat.Component.Platform;
 using Combat.Component.Triggers;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
@@ -20,6 +21,7 @@ namespace Combat.Component.Satellite
         }
 
         public IController Controller { get; set; }
+        public IAimingSystem AimingSystem { get; set; }
 
         public override ICollisionBehaviour CollisionBehaviour { get { return null; } }
 

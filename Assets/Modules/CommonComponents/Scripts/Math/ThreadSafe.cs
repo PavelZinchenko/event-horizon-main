@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Threading;
+﻿using System.Threading;
 
 public static class ThreadSafe
 {
@@ -17,22 +16,26 @@ public static class ThreadSafe
 		}
 	}
 
-	public static void AddClamp(ref float target, float value, float min, float max)
+	public static float AddClamp(ref float target, float value, float min, float max)
 	{
-		float newCurrentValue = target;
+	    float addedValue;
 		while (true)
 		{
+		    var newCurrentValue = target;
 			var currentValue = newCurrentValue;
-
 			var newValue = currentValue + value;
-			if (newValue < min) newValue = min;
-			if (newValue > max) newValue = max;
 
-			newCurrentValue = Interlocked.CompareExchange(ref target, newValue, currentValue);
+		    if (newValue < min) newValue = min;
+            if (newValue > max) newValue = max;
+
+		    addedValue = newValue - currentValue;
+            newCurrentValue = Interlocked.CompareExchange(ref target, newValue, currentValue);
 
 			if (newCurrentValue == currentValue)
 				break;
 		}
+
+	    return addedValue;
 	}
 
 	public delegate bool Function<T>(ref T value);

@@ -62,8 +62,19 @@
         },
         "Nodes": [
           {
-            "Type": 63,
-            "MinValue": 1.2
+            "Type": 2,
+            "Nodes": [
+              {
+                "Requirement": {
+                  "Type": 17,
+                  "Value": 50.0
+                }
+              },
+              {
+                "Type": 63,
+                "MinValue": 1.2
+              }
+            ]
           },
           {
             "Type": 1,

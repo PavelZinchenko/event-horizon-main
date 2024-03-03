@@ -26,8 +26,10 @@ namespace GameDatabase.DataModel
 
 			switch (serializable.Type)
 		    {
-				case BehaviorNodeType.Undefined:
-					return new BehaviorTreeNode_Undefined(serializable, loader);
+				case BehaviorNodeType.Success:
+					return new BehaviorTreeNode_Success(serializable, loader);
+				case BehaviorNodeType.Failure:
+					return new BehaviorTreeNode_Failure(serializable, loader);
 				case BehaviorNodeType.SubTree:
 					return new BehaviorTreeNode_SubTree(serializable, loader);
 				case BehaviorNodeType.Selector:
@@ -48,6 +50,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_ParallelSequence(serializable, loader);
 				case BehaviorNodeType.PreserveTarget:
 					return new BehaviorTreeNode_PreserveTarget(serializable, loader);
+				case BehaviorNodeType.IfThenElse:
+					return new BehaviorTreeNode_IfThenElse(serializable, loader);
 				case BehaviorNodeType.HasEnoughEnergy:
 					return new BehaviorTreeNode_HasEnoughEnergy(serializable, loader);
 				case BehaviorNodeType.IsLowOnHp:
@@ -138,6 +142,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_TargetEnemyStarbase(serializable, loader);
 				case BehaviorNodeType.BypassObstacles:
 					return new BehaviorTreeNode_BypassObstacles(serializable, loader);
+				case BehaviorNodeType.AttackTurretTargets:
+					return new BehaviorTreeNode_AttackTurretTargets(serializable, loader);
 				case BehaviorNodeType.EnginePropulsionForce:
 					return new BehaviorTreeNode_EnginePropulsionForce(serializable, loader);
 				case BehaviorNodeType.MotherShipRetreated:
@@ -202,7 +208,8 @@ namespace GameDatabase.DataModel
 
 	public interface IBehaviorTreeNodeFactory<T>
     {
-	    T Create(BehaviorTreeNode_Undefined content);
+	    T Create(BehaviorTreeNode_Success content);
+	    T Create(BehaviorTreeNode_Failure content);
 	    T Create(BehaviorTreeNode_SubTree content);
 	    T Create(BehaviorTreeNode_Selector content);
 	    T Create(BehaviorTreeNode_Sequence content);
@@ -213,6 +220,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_Execute content);
 	    T Create(BehaviorTreeNode_ParallelSequence content);
 	    T Create(BehaviorTreeNode_PreserveTarget content);
+	    T Create(BehaviorTreeNode_IfThenElse content);
 	    T Create(BehaviorTreeNode_HasEnoughEnergy content);
 	    T Create(BehaviorTreeNode_IsLowOnHp content);
 	    T Create(BehaviorTreeNode_IsControledByPlayer content);
@@ -258,6 +266,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_TargetAllyStarbase content);
 	    T Create(BehaviorTreeNode_TargetEnemyStarbase content);
 	    T Create(BehaviorTreeNode_BypassObstacles content);
+	    T Create(BehaviorTreeNode_AttackTurretTargets content);
 	    T Create(BehaviorTreeNode_EnginePropulsionForce content);
 	    T Create(BehaviorTreeNode_MotherShipRetreated content);
 	    T Create(BehaviorTreeNode_MotherShipDestroyed content);
@@ -280,11 +289,30 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_ForgetSavedTarget content);
     }
 
-    public partial class BehaviorTreeNode_Undefined : BehaviorTreeNode
+    public partial class BehaviorTreeNode_Success : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
-  		public BehaviorTreeNode_Undefined(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+  		public BehaviorTreeNode_Success(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+
+
+    }
+    public partial class BehaviorTreeNode_Failure : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_Failure(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 
@@ -518,6 +546,27 @@ namespace GameDatabase.DataModel
         }
 
 		public BehaviorTreeNode Node { get; private set; }
+
+
+    }
+    public partial class BehaviorTreeNode_IfThenElse : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_IfThenElse(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Nodes = new ImmutableCollection<BehaviorTreeNode>(serializable.Nodes?.Select(item => BehaviorTreeNode.Create(item, loader)));
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public ImmutableCollection<BehaviorTreeNode> Nodes { get; private set; }
 
 
     }
@@ -860,6 +909,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_AttackMainTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
+			NotMoving = serializable.InRange;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -869,6 +919,7 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+		public bool NotMoving { get; private set; }
 
 
     }
@@ -1367,6 +1418,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_AttackAdditionalTargets(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
+			NotMoving = serializable.InRange;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1376,6 +1428,7 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+		public bool NotMoving { get; private set; }
 
 
     }
@@ -1422,6 +1475,25 @@ namespace GameDatabase.DataModel
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
   		public BehaviorTreeNode_BypassObstacles(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+
+
+    }
+    public partial class BehaviorTreeNode_AttackTurretTargets : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_AttackTurretTargets(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 

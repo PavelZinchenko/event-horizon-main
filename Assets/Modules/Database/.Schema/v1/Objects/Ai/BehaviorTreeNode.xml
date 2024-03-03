@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data name="BehaviorTreeNode" type="struct" switch="Type" >
     <member name="Type" type="enum" typeid="BehaviorNodeType" />
-    <member name="Requirement" type="struct" typeid="BehaviorNodeRequirement" />
+    <member name="Requirement" type="struct" typeid="BehaviorNodeRequirement">The node will not execute and will return FAILURE if the requirement is not met</member>
 
-    <member name="Nodes" type="struct_list" typeid="BehaviorTreeNode" case="Selector,Sequence,Parallel,RandomSelector,ParallelSequence" />
+    <member name="Nodes" type="struct_list" typeid="BehaviorTreeNode" case="Selector,Sequence,Parallel,RandomSelector,ParallelSequence,IfThenElse" />
     <member name="Node" type="struct" typeid="BehaviorTreeNode" case="Invertor,Cooldown,Execute,PreserveTarget" />
     <member name="ItemId" type="object" typeid="BehaviorTree" case="SubTree" alias="BehaviourTree" />
     <member name="WeaponType" type="enum" typeid="AiWeaponCategory" case="SelectWeapon" />
@@ -22,6 +22,7 @@
     <member name="MaxValue" type="float" case="FindEnemy" alias="MaxCooldown" minvalue="0" default="5" />
     <member name="InRange" type="bool" case="FindEnemy,DetonateShip" alias="InAttackRange" />
     <member name="InRange" type="bool" case="Wait" alias="ResetIfInterrupted" />
+    <member name="InRange" type="bool" case="AttackMainTarget,AttackAdditionalTargets" alias="NotMoving" />
     <member name="NoDrones" type="bool" case="FindEnemy" alias="IgnoreDrones" />
     <member name="UseSystems" type="bool" case="Ram" alias="UseShipSystems" />
     <member name="MinValue" type="float" case="MoveToAttackRange, MaintainAttackRange, MainTargetWithinAttackRange" alias="MinMaxLerp" minvalue="0" maxvalue="1" default="1">Linear interpolation between shortest and longest weapon ranges</member>

@@ -1,6 +1,4 @@
 using System.Linq;
-using Combat.Component.Body;
-using Combat.Component.Platform;
 using Combat.Component.Ship;
 using Combat.Component.Systems.Weapons;
 using Combat.Component.Unit;
@@ -13,11 +11,6 @@ namespace Combat.Ai
 		public static float Distance(IUnit first, IUnit second)
 		{
 		    return Mathf.Max(0.001f, Vector2.Distance(first.Body.Position, second.Body.Position) - first.Body.Scale/2 - second.Body.Scale/2);
-		}
-
-		public static float TargetCourse(IUnit ship, Vector2 target, IWeaponPlatform platform)
-		{
-			return RotationHelpers.Angle(platform.Body.WorldPosition().Direction(target)) + ship.Body.Rotation - platform.FixedRotation;
 		}
 
 		public static float ShipMinRange(IShip ship)
@@ -71,7 +64,7 @@ namespace Combat.Ai
 			
 			foreach (var weapon in ship.Systems.All.OfType<IWeapon>())
 			{
-				var rotation = Mathf.DeltaAngle(shipRotation, weapon.Platform.FixedRotation);
+				var rotation = weapon.Platform.MountAngle;
 				
 				if (rotation > 90)
 					rotation = 180 - rotation;

@@ -11,7 +11,7 @@ namespace Combat.Component.DamageHandler
             _hitPoints = hitPoints;
         }
 
-        public CollisionEffect ApplyDamage(Impact impact)
+        public CollisionEffect ApplyDamage(Impact impact, IUnit source)
         {
             impact.ApplyImpulse(_unit.Body);
             var damage = impact.GetTotalDamage(Resistance.Empty);

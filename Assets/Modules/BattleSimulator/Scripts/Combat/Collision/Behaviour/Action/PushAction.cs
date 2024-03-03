@@ -1,6 +1,5 @@
 ﻿using Combat.Collision.Manager;
 using Combat.Component.Body;
-using Combat.Component.Systems.Weapons;
 using Combat.Component.Unit;
 using GameDatabase.Enums;
 
@@ -30,7 +29,7 @@ namespace Combat.Collision.Behaviour.Action
                     return;
 
                 var impulse = self.Body.Velocity * _impulse;
-                targetImpact.AddImpulse(collisionData.Position, impulse);
+                targetImpact.AddImpulse(target.Body.WorldPosition(), impulse);
 
                 _isAlive = _impactType == BulletImpactType.HitAllTargets;
             }

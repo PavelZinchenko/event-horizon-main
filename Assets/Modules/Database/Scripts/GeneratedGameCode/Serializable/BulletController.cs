@@ -16,7 +16,7 @@ namespace GameDatabase.Serializable
 	public class BulletControllerSerializable
 	{
 		public BulletControllerType Type;
-		public float StartingVelocityModifier = 0.1f;
+		public float StartingVelocityModifier = 1f;
 		public bool IgnoreRotation;
 		public bool SmartAim;
 	}

@@ -50,7 +50,7 @@ namespace Combat.Component.Bullet
                 return;
 
             if (DamageHandler != null)
-                impact.Effects |= DamageHandler.ApplyDamage(impact);
+                impact.Effects |= DamageHandler.ApplyDamage(impact, target);
 
             impact.Effects |= InvokeActions(ConditionType.OnCollide);
             if (impact.Effects.Contains(CollisionEffect.Disarm) && CanBeDisarmed)

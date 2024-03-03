@@ -1,5 +1,8 @@
 ﻿using Combat.Collision;
 using Combat.Component.Mods;
+using Combat.Component.Unit;
+using Combat.Component.Unit.Classification;
+using Combat.Unit;
 using Combat.Unit.HitPoints;
 using Constructor;
 
@@ -37,11 +40,11 @@ namespace Combat.Component.Stats
             _energyPoints = new Energy(stats.EnergyPoints, stats.EnergyRechargeRate, stats.EnergyRechargeCooldown);
         }
 
-        public bool IsAlive { get { return _armorPoints.Value > 0; } }
+        public bool IsAlive => _armorPoints.Value > 0;
 
-        public IResourcePoints Armor { get { return _armorPoints; } }
-        public IResourcePoints Shield { get { return _shieldPoints; } }
-        public IResourcePoints Energy { get { return _energyPoints; } }
+        public IResourcePoints Armor => _armorPoints;
+        public IResourcePoints Shield => _shieldPoints;
+        public IResourcePoints Energy => _energyPoints;
 
         public float WeaponDamageMultiplier { get; private set; }
         public float RammingDamageMultiplier { get; private set; }
@@ -57,13 +60,12 @@ namespace Combat.Component.Stats
             }
         }
 
-        public Modifications<Resistance> Modifications { get { return _modifications; } }
-
+        public Modifications<Resistance> Modifications => _modifications;
         public IDamageIndicator DamageIndicator { get; set; }
-
+        public ShipPerformance Performance { get; } = new();
         public float TimeFromLastHit { get; private set; }
 
-        public void ApplyDamage(Impact impact)
+        public void ApplyDamage(Impact impact, IUnit self, IUnit source)
         {
 			if (!IsAlive)
 				return;
@@ -88,12 +90,45 @@ namespace Combat.Component.Stats
             }
 
             damage -= impact.Repair;
-            Armor.Get(damage);
-            Energy.Get(impact.EnergyDrain);
-            Shield.Get(impact.ShieldDamage);
+            var damageDealt = Armor.Get(damage);
+            var energyDamage = Energy.Get(impact.EnergyDrain);
+            var shieldDamage = Shield.Get(impact.ShieldDamage);
 
             if (impact.Effects.Contains(CollisionEffect.Destroy))
-                Armor.Get(Armor.MaxValue);
+                damageDealt = Armor.Get(Armor.MaxValue);
+
+            UpdateStatistics(self, source, damageDealt, shieldDamage);
+        }
+
+        private void UpdateStatistics(IUnit self, IUnit source, float armorDamage, float shieldDamage)
+        {
+            var owner = source.GetOwnerShip();
+
+            if (armorDamage > 0)
+                Performance.OnArmorDamageReceived(armorDamage);
+            if (shieldDamage > 0)
+                Performance.OnShieldDamageReceived(armorDamage);
+
+            if (owner == null) return;
+            var isAlly = owner.Type.Side.IsAlly(self.Type.Side);
+            var enemyPerformance = owner.Stats.Performance;
+
+            if (isAlly)
+            {
+                if (armorDamage > 0) enemyPerformance.OnDamageAlly(armorDamage);
+                if (shieldDamage > 0) enemyPerformance.OnDamageAlly(shieldDamage);
+            }
+            else
+            {
+                if (armorDamage > 0) enemyPerformance.OnDamageArmor(armorDamage);
+                if (shieldDamage > 0) enemyPerformance.OnDamageShield(shieldDamage);
+            }
+
+            if (armorDamage > 0 && !isAlly && !IsAlive && self.Type.Class == UnitClass.Ship)
+                enemyPerformance.OnEnemyKilled();
+
+            if (armorDamage < 0)
+                enemyPerformance.OnDamageRepaired(-armorDamage);
         }
 
         public void UpdatePhysics(float elapsedTime)

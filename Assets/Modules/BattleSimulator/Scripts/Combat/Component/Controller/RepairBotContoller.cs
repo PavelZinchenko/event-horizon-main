@@ -42,7 +42,7 @@ namespace Combat.Component.Controller
 
             _repairBot.Active = active;
             if (active)
-                _ship.Affect(new Impact { Repair = _repairRate*elapsedTime });
+                _ship.Affect(new Impact { Repair = _repairRate*elapsedTime }, null);
 
             if (!enabled && _repairBot.Body.WorldPosition().Distance(requiredPosition) < _repairBot.Body.Scale)
                 _repairBot.Vanish();

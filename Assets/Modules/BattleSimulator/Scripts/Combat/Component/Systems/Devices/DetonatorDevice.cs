@@ -75,7 +75,7 @@ namespace Combat.Component.Systems.Devices
                 _active = false;
                 _factory.CreateStrongExplosion(_ship.Body.WorldPosition(), _range, DamageType.Heat, _damage, _ship, _color, 1.0f, Mathf.Sqrt(_ship.Body.Weight));
                 TimeFromLastUse = 0;
-                _ship.Affect(new Impact { Effects = CollisionEffect.Destroy });
+                _ship.Affect(new Impact { Effects = CollisionEffect.Destroy }, null);
             }
             else if (Active && CanBeActivated && _ship.Stats.Energy.TryGet(_energyCost))
             {

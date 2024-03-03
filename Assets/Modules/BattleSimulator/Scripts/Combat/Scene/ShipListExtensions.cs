@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Combat.Component.Body;
 using Combat.Component.Features;
 using Combat.Component.Ship;
+using Combat.Component.Platform;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Unit;
@@ -65,23 +67,11 @@ namespace Combat.Scene
                 UsePriority = false,
             };
         }
-
-        public static EnemyMatchingOptions EnemyForTurret(/*int seed*/)
-        {
-            return new EnemyMatchingOptions
-            {
-                IgnoreDecoyChance = 50,
-                TakeDecoyChance = 0,
-                IgnoreDrones = false,
-                UsePriority = true,
-                //Seed = seed,
-            };
-        }
     }
 
     public static class ShipListExtensions
     {
-        public static IShip GetEnemy(this IUnitList<IShip> shipList, IUnit unit, EnemyMatchingOptions options, float rotation = 0, float maxDeviation = 180, float maxRange = float.MaxValue)
+        public static IShip GetEnemy(this IUnitList<IShip> shipList, IUnit unit, EnemyMatchingOptions options)
         {
             IShip enemy = null;
 			var random = new LazyRandom();
@@ -116,13 +106,6 @@ namespace Combat.Scene
                             continue;
                     }
 
-                    if (maxDeviation < 180)
-                    {
-                        var deviation = Mathf.Abs(Mathf.DeltaAngle(RotationHelpers.Angle(dir), unit.Body.Rotation + rotation));
-                        if (deviation > maxDeviation)
-                            continue;
-                    }
-
                     if (enemy == null)
                     {
                         minRange = range;
@@ -137,14 +120,66 @@ namespace Combat.Scene
                         continue;
                     }
 
-                    if (options.UsePriority && minRange < maxRange && ship.Features.TargetPriority < enemy.Features.TargetPriority)
+                    if (options.UsePriority && ship.Features.TargetPriority < enemy.Features.TargetPriority)
                         continue;
 
-                    if (range < minRange || (range < maxRange && options.UsePriority && ship.Features.TargetPriority > enemy.Features.TargetPriority))
+                    if (range < minRange || (options.UsePriority && ship.Features.TargetPriority > enemy.Features.TargetPriority))
                     {
                         minRange = range;
                         enemy = ship;
                     }
+                }
+            }
+
+            return enemy;
+        }
+
+        public static IShip GetEnemyForTurret(this IUnitList<IShip> shipList, IUnit unit, Vector2 turretPosition,
+            float turretMountAngle, float turningRange, float maxDistance, bool ignoreUnreachable = false)
+        {
+            const float maxTrackingDistance = 2f;
+
+            IShip enemy = null;
+            float enemyDistance = float.MaxValue;
+            bool validEnemyFound = false;
+
+            lock (shipList.LockObject)
+            {
+                foreach (var ship in shipList.Items)
+                {
+                    if (!ship.IsActive() || ship.Type.Side.IsAlly(unit.Type.Side) || ship.Features.TargetPriority == TargetPriority.None || ship.Type.Class == UnitClass.Limb)
+                        continue;
+
+                    var direction = turretPosition.Direction(ship.Body.Position);
+                    var distance = direction.magnitude - ship.Body.Scale/2;
+
+                    var isValidTarget = true;
+                    if (distance > maxDistance)
+                    {
+                        if (validEnemyFound || ignoreUnreachable || distance > maxDistance*maxTrackingDistance) continue;
+                        isValidTarget = false;
+                    }
+
+                    if (turningRange < 180)
+                    {
+                        var targetAngle = RotationHelpers.Angle(direction);
+                        var deltaAngle = Mathf.Abs(Mathf.DeltaAngle(targetAngle, turretMountAngle));
+                        if (deltaAngle > turningRange)
+                        {
+                            if (validEnemyFound || ignoreUnreachable) continue;
+                            isValidTarget = false;
+                        }
+                    }
+
+                    if (isValidTarget == validEnemyFound)
+                    {
+                        var priority = enemy == null ? 0 : ship.Features.TargetPriority - enemy.Features.TargetPriority;
+                        if (priority < 0 || priority == 0 && distance >= enemyDistance) continue;
+                    }
+
+                    enemy = ship;
+                    enemyDistance = distance;
+                    validEnemyFound |= isValidTarget;
                 }
             }
 

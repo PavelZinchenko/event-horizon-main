@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Combat.Component.Body;
 using Combat.Component.Collider;
 using Combat.Component.Ship;
 using Combat.Component.Unit;
@@ -18,15 +17,13 @@ namespace Combat.Ai
         private const float UpdateInterval = 0.1f;
         private readonly IScene _scene;
         private readonly List<IUnit> _threats;
-        private IUnit _obstacle;
-
+        
         public ThreatList(IScene scene)
         {
             _scene = scene;
 			_threats = new List<IUnit>();
         }
 
-        public IUnit Obstacle => _obstacle;
         public IReadOnlyList<IUnit> Units => _threats;
         public float TimeToHit => _timeToHit;
 

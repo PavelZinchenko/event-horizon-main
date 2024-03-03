@@ -6,6 +6,7 @@ using Combat.Component.Systems.Weapons;
 using Combat.Component.Unit.Classification;
 using GameDatabase.Enums;
 using UnityEngine;
+using Combat.Component.Platform;
 using BulletEffectType = Combat.Component.Systems.Weapons.BulletEffectType;
 
 namespace Combat.Ai
@@ -25,13 +26,13 @@ namespace Combat.Ai
 			foreach (var weapon in ship.Systems.All.OfType<IWeapon>())
 			{
                 if (!(_trackAlways || weapon.Info.BulletType == AiBulletBehavior.Beam && weapon.Active))
-					continue;
+                    continue;
 
                 Vector2 target;
 				if (!AttackHelpers.TryGetTarget(weapon, ship, enemy, out target))
 					continue;
 
-				controls.Course = Helpers.TargetCourse(ship, target, weapon.Platform);
+				controls.Course = weapon.Platform.OptimalShipCourse(target);
 				break;
 			}
 		}
@@ -96,17 +97,17 @@ namespace Combat.Ai
                 if (weapon.Info.BulletEffectType == BulletEffectType.ForDronesOnly && enemy.Type.Class != UnitClass.Drone) continue;
 
 				Vector2 target;
-				if (!AttackHelpers.TryGetTarget(weapon, ship, enemy, weapon.Info.BulletType == AiBulletBehavior.Projectile && _directOnly ? AiBulletBehavior.Beam : weapon.Info.BulletType, out target))
-					continue;
+                if (!AttackHelpers.TryGetTarget(weapon, ship, enemy, weapon.Info.BulletType == AiBulletBehavior.Projectile && _directOnly ? AiBulletBehavior.Beam : weapon.Info.BulletType, out target))
+                    continue;
 
-			    var shotImmediately = weapon.Info.BulletType == AiBulletBehavior.Homing || weapon.Info.BulletType == AiBulletBehavior.AreaOfEffect;
-			    var shouldTrackTarget = weapon.Info.BulletType != AiBulletBehavior.AreaOfEffect;
-                
-                var course = Helpers.TargetCourse(ship, target, weapon.Platform);
-			    var spread = weapon.Info.Spread/2 + Mathf.Asin(0.3f * enemy.Body.Scale / Vector2.Distance(enemy.Body.Position, ship.Body.Position))*Mathf.Rad2Deg;
+                var shotImmediately = weapon.Info.BulletType == AiBulletBehavior.Homing || weapon.Info.BulletType == AiBulletBehavior.AreaOfEffect;
+                var shouldTrackTarget = weapon.Info.BulletType != AiBulletBehavior.AreaOfEffect;
+
+                var course = weapon.Platform.OptimalShipCourse(target);
+                var spread = weapon.Info.Spread/2 + Mathf.Asin(0.3f * enemy.Body.Scale / Vector2.Distance(enemy.Body.Position, ship.Body.Position))*Mathf.Rad2Deg;
 				var delta = Mathf.Abs(Mathf.DeltaAngle(course, ship.Body.Rotation)) - weapon.Platform.AutoAimingAngle;
 
-                if (delta < spread + 1 || shotImmediately)
+				if (delta < spread + 1 || shotImmediately)
                 {
                     if (weapon.Info.WeaponType == WeaponType.RequiredCharging)
                     {
@@ -118,7 +119,7 @@ namespace Combat.Ai
                         controls.ActivateSystem(id, true);
                     }
                 }
-				if (delta < 0 || delta > targetDeltaAngle)
+                if (delta < 0 || delta > targetDeltaAngle)
 					continue;
 
 				targetAngle = course;
@@ -144,8 +145,8 @@ namespace Combat.Ai
 
 		public virtual void Perform(Context context, ShipControls controls)
 		{
-			if (AttackHelpers.CantDetectTarget(context.Ship, context.Enemy))
-				return;
+            if (AttackHelpers.CantDetectTarget(context.Ship, context.Enemy))
+                return;
 
             var ship = context.Ship;
 			var weapon = ship.Systems.All.Weapon(_weaponId);
@@ -158,7 +159,7 @@ namespace Combat.Ai
 
 			if (weapon.Info.Range < distance) return;
 
-			var course = Helpers.TargetCourse(ship, enemyPosition, weapon.Platform);
+			var course = weapon.Platform.OptimalShipCourse(enemyPosition);
 			var spread = weapon.Info.Spread/2 + weapon.Platform.AutoAimingAngle + Mathf.Asin(0.4f * enemySize / Vector2.Distance(enemyPosition, ship.Body.Position))*Mathf.Rad2Deg;
 			var fire = Mathf.Abs(Mathf.DeltaAngle(course, ship.Body.Rotation)) < spread;
 			
@@ -204,7 +205,7 @@ namespace Combat.Ai
 
             if (weapon.Info.Range + 0.1f * (ship.Body.Scale + enemy.Body.Scale) < timeInterval * weapon.Info.BulletSpeed) return;
 
-            var course = Helpers.TargetCourse(ship, target, weapon.Platform);
+            var course = weapon.Platform.OptimalShipCourse(target);
             var spread = weapon.Info.Spread / 4 + weapon.Platform.AutoAimingAngle + Mathf.Asin(0.3f * enemy.Body.Scale / Vector2.Distance(ship.Body.Position, target)) * Mathf.Rad2Deg;
             var fire = Mathf.Abs(Mathf.DeltaAngle(course, ship.Body.Rotation)) < spread;
 
@@ -226,8 +227,8 @@ namespace Combat.Ai
 		
 		public void Perform(Context context, ShipControls controls)
 		{
-			if (AttackHelpers.CantDetectTarget(context.Ship, context.Enemy))
-				return;
+            if (AttackHelpers.CantDetectTarget(context.Ship, context.Enemy))
+                return;
 
 			var ship = context.Ship;
 			var enemy = context.Enemy;
@@ -241,8 +242,8 @@ namespace Combat.Ai
 			if (weapon.Info.Range < distance1 && weapon.Info.Range < distance2) return;
 			if (distance2 - distance1 > weapon.Info.BulletSpeed) return;
 			
-			controls.Course = Helpers.TargetCourse(ship, enemy.Body.Position, weapon.Platform);
-			controls.ActivateSystem(_weaponId, true);
+			controls.Course = weapon.Platform.OptimalShipCourse(enemy.Body.Position);
+            controls.ActivateSystem(_weaponId, true);
 		}
 		
 		private readonly int _weaponId;
@@ -277,8 +278,8 @@ namespace Combat.Ai
         {
             if (enemy == null)
                 return true;
-			if (ship.Type.Side.IsAlly(enemy.Type.Side))
-				return false;
+            if (ship.Type.Side.IsAlly(enemy.Type.Side))
+                return false;
             if (enemy.Features.TargetPriority != TargetPriority.None)
                 return false;
 

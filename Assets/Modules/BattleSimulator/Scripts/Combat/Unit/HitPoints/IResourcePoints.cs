@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Combat.Unit.HitPoints
 {
@@ -16,33 +14,31 @@ namespace Combat.Unit.HitPoints
         bool Exists { get; }
 
 		bool TryGet(float value);
-		void Get(float value);
+		float Get(float value);
 	}
 
     public class EmptyResources : IResourcePoints
     {
-        public float Value { get { return 0.0f; } }
-        public float MaxValue { get { return 1.0f; } }
-        public float Percentage { get { return 0.0f; } }
-        public float RechargeRate { get { return 0.0f; } }
+        public float Value => 0.0f;
+        public float MaxValue => 1.0f;
+        public float Percentage => 0.0f;
+        public float RechargeRate => 0.0f;
         public void Update(float elapsedTime) { }
-        public bool TryGet(float value) { return true; }
-        public void Get(float value) { }
-        public bool Exists { get { return false; } }
+        public bool TryGet(float value) => true;
+        public float Get(float value) => 0.0f;
+        public bool Exists => false;
     }
 
     public class UnlimitedEnergy : IResourcePoints
 	{
-		public float Value { get { return 100f; } }
-		public float MaxValue { get { return 100f; } }
-		public float Percentage { get { return 1.0f; } }		
-		public float RechargeRate { get { return 0.0f; } }		
+		public float Value => 100f;
+		public float MaxValue => 100f;
+		public float Percentage => 1.0f;
+		public float RechargeRate => 0.0f;
 		public void Update(float elapsedTime) {}
-		public IEnumerable<byte> Serialize() { return Enumerable.Empty<byte>(); }
-		public void Deserialize(byte[] data, ref int index) {}
-		public bool TryGet(float value) { return true; }
-		public void Get(float value) {}
-        public bool Exists { get { return true; } }
+		public bool TryGet(float value) => true;
+		public float Get(float value) => value;
+        public bool Exists => true;
     }
 
 	public class Energy : IResourcePoints
@@ -56,10 +52,10 @@ namespace Combat.Unit.HitPoints
 			_delay = 0.0f;
 		}
 		
-		public float Value { get { return MaxValue*_value; } }
-		public float Percentage { get { return _value; } }
+		public float Value => MaxValue*_value;
+		public float Percentage => _value;
 		public float MaxValue { get; private set; }
-		public float RechargeRate { get { return _rechargeRate; } }
+		public float RechargeRate => _rechargeRate;
 
 		public void Update(float elapsedTime)
 		{
@@ -88,7 +84,7 @@ namespace Combat.Unit.HitPoints
 
 			if (ThreadSafe.ChangeValue(ref _value, func))
 			{
-				if (how > 0)
+				if (how > 0 && _rechargeRate > 0)
 					_delay = _rechargeDelay;
 				return true;
 			}
@@ -96,20 +92,17 @@ namespace Combat.Unit.HitPoints
 			return false;
 		}
 
-		public void Get(float how)
+		public float Get(float how)
 		{
-            if (MaxValue > 0)
-			    ThreadSafe.AddClamp(ref _value, -how/MaxValue, 0, 1);
-
-			if (how > 0)
+			if (how > 0 && _rechargeRate > 0)
 				_delay = _rechargeDelay;
-		}
-		
-		public readonly static Energy Zero = new Energy(0,1,1);
 
-	    public bool Exists { get { return MaxValue > 0; } }
+            return MaxValue > 0 ? -ThreadSafe.AddClamp(ref _value, -how / MaxValue, 0, 1)*MaxValue : 0f;
+        }
 
-	    public static int SerializedSize { get { return 2*sizeof(float); } }
+        public readonly static Energy Zero = new Energy(0,1,1);
+
+	    public bool Exists => MaxValue > 0;
 
 		private float _value;
 		private float _delay;
@@ -126,16 +119,16 @@ namespace Combat.Unit.HitPoints
 			_max = Mathf.Max(max, 1);
 		}
 		
-		public float Value { get { return -_value*_max; } }
-		public float MaxValue { get { return _max; } }
-		public float Percentage { get { return -_value; } }
-		public float RechargeRate { get { return 0; } }
+		public float Value => -_value*_max;
+		public float MaxValue => _max;
+		public float Percentage => -_value;
+		public float RechargeRate => 0;
 
 		public void Update(float elapsedTime) {}
 
-		public void Get(float how)
+		public float Get(float how)
 		{
-			ThreadSafe.AddClamp(ref _value, how/_max, -1, 0);
+			return ThreadSafe.AddClamp(ref _value, how/_max, -1, 0) * _max;
 		}
 		
 		public bool TryGet(float how)
@@ -143,7 +136,6 @@ namespace Combat.Unit.HitPoints
 			throw new System.NotImplementedException();
 		}
 
-		public static int SerializedSize { get { return sizeof(float); } }
         public bool Exists { get { return true; } }
 
         private float _value;

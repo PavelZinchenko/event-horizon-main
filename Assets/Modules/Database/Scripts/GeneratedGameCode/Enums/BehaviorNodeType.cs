@@ -10,7 +10,8 @@ namespace GameDatabase.Enums
 {
 	public enum BehaviorNodeType
 	{
-		Undefined = 0,
+		Success = 0,
+		Failure = 9,
 		SubTree = 1,
 		Selector = 2,
 		Sequence = 3,
@@ -21,6 +22,7 @@ namespace GameDatabase.Enums
 		Execute = 8,
 		ParallelSequence = 10,
 		PreserveTarget = 11,
+		IfThenElse = 12,
 		HasEnoughEnergy = 50,
 		IsLowOnHp = 51,
 		IsControledByPlayer = 52,
@@ -66,6 +68,7 @@ namespace GameDatabase.Enums
 		TargetAllyStarbase = 128,
 		TargetEnemyStarbase = 129,
 		BypassObstacles = 130,
+		AttackTurretTargets = 131,
 		EnginePropulsionForce = 150,
 		MotherShipRetreated = 200,
 		MotherShipDestroyed = 201,

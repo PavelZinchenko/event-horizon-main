@@ -19,6 +19,7 @@ namespace Combat.Component.Features
     public interface IFeatures : IDisposable
     {
         TargetPriority TargetPriority { get; }
+        bool ImmuneToEffects { get; }
         float ChanceToAvoidDrone { get; }
         float ChanceToAvoidMissile { get; }
         Color Color { get; }

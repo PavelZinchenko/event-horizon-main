@@ -1,4 +1,4 @@
-﻿using Combat.Component.Unit;
+﻿using Combat.Component.Ship;
 
 namespace Combat.Component.Body
 {
@@ -7,6 +7,6 @@ namespace Combat.Component.Body
         float FixedRotation { get; }
         float AutoAimingAngle { get; }
         void Aim(float bulletVelocity, float weaponRange, float relativeEffect);
-		IUnit ActiveTarget { get; set; }
+        IShip ActiveTarget { get; set; }
 	}
 }

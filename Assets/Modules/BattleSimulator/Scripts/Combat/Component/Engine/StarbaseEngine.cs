@@ -40,7 +40,7 @@ namespace Combat.Component.Engine
         private void ApplyAngularAcceleration(IBody body, float elapsedTime)
         {
             var angularVelocity = body.AngularVelocity;
-            var acceleration = Mathf.DeltaAngle(angularVelocity, _angularVelocity) * elapsedTime;
+            var acceleration = (_angularVelocity - angularVelocity) * elapsedTime;
             if (acceleration < 0.001f && acceleration > -0.001f)
                 return;
 

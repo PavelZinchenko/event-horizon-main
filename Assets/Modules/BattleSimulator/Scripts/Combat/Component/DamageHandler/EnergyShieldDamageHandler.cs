@@ -1,4 +1,6 @@
 ﻿using Combat.Collision;
+using Combat.Component.Unit;
+using Combat.Unit;
 using Combat.Unit.Auxiliary;
 
 namespace Combat.Component.DamageHandler
@@ -11,7 +13,7 @@ namespace Combat.Component.DamageHandler
             _energyConsumption = energyConsumption;
         }
 
-        public CollisionEffect ApplyDamage(Impact impact)
+        public CollisionEffect ApplyDamage(Impact impact, IUnit source)
         {
             impact.ApplyImpulse(_shield.Body);
             impact.RemoveImpulse();
@@ -21,20 +23,24 @@ namespace Combat.Component.DamageHandler
                 return CollisionEffect.None;
 
             var damage = impact.GetTotalDamage(Resistance.Empty);
+            var owner = source.GetOwnerShip();
 
             if (parent.Stats.Energy.TryGet(damage*_energyConsumption))
             {
                 impact.RemoveDamage();
+                owner?.Stats.Performance.OnDamageShield(damage);
             }
             else
             {
                 var energy = parent.Stats.Energy.Value;
                 parent.Stats.Energy.Get(energy);
-                impact.RemoveDamage(energy / _energyConsumption, Resistance.Empty);
+                var absorbed = energy/_energyConsumption;
+                owner?.Stats.Performance.OnDamageShield(absorbed);
+                impact.RemoveDamage(absorbed, Resistance.Empty);
                 _shield.Enabled = false;
             }
 
-            parent.Affect(impact);
+            parent.Affect(impact, source);
 
             return CollisionEffect.None;
         }

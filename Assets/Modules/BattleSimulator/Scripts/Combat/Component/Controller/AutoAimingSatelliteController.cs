@@ -52,27 +52,28 @@ namespace Combat.Component.Controller
             return _ship.Body.WorldPosition() + RotationHelpers.Transform(_position, _ship.Body.WorldRotation());
         }
 
-
-		public IUnit ActiveTarget
+		public IShip ActiveTarget
 		{
 			get => _target;
 			set
 			{
-				_target = value;
+                _target = value;
 				_timeFromTargetUpdate = 0;
 			}
 		}
 
 		private float GetTargetCourse()
         {
+            var platformPosition = GetRequiredPosition();
+            var platformRotation = _ship.Body.WorldRotation() + _defaultRotation + (_maxAngle - _minAngle) / 2;
+
             if (_timeFromTargetUpdate > _targetUpdateCooldown || (_timeFromTargetUpdate > _targetFindCooldown && !_target.IsActive()))
-                ActiveTarget = _scene.Ships.GetEnemy(_ship, EnemyMatchingOptions.EnemyForTurret(), _defaultRotation + (_maxAngle - _minAngle) / 2, _maxAngle - _minAngle, _weaponRange);
+                ActiveTarget = _scene.Ships.GetEnemyForTurret(_ship, platformPosition, platformRotation, _maxAngle - _minAngle, _weaponRange);
 
             if (!_target.IsActive())
                 return _defaultRotation;
 
             var targetPosition = _target.Body.WorldPosition();
-            var platformPosition = GetRequiredPosition();
             float rotation;
 
             if (_bulletVelocity > 0)
@@ -99,12 +100,8 @@ namespace Combat.Component.Controller
                 rotation = RotationHelpers.Angle(platformPosition.Direction(targetPosition)) - _ship.Body.WorldRotation();
             }
 
-            if (rotation < _defaultRotation + _minAngle)
-                rotation = _defaultRotation;
-            else if (rotation > _defaultRotation + _maxAngle)
-                rotation = _defaultRotation;
-
-            return rotation;
+            return RotationHelpers.IsRotationInArc(rotation, _defaultRotation + _minAngle, _defaultRotation + _maxAngle) ? 
+                rotation : _defaultRotation;
         }
 
         private float _bulletVelocity;
@@ -112,7 +109,7 @@ namespace Combat.Component.Controller
         private float _relativeEffect = 1f;
         private float _timeFromTargetUpdate;
 
-        private IUnit _target;
+        private IShip _target;
         private readonly float _minAngle;
         private readonly float _maxAngle;
         private readonly float _defaultRotation;

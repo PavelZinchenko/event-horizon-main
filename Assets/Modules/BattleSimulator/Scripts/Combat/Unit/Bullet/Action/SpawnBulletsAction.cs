@@ -2,6 +2,7 @@
 using Combat.Component.Body;
 using Combat.Component.Platform;
 using Combat.Component.Systems.Weapons;
+using Combat.Component.Ship;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Component.View;
@@ -61,16 +62,15 @@ namespace Combat.Component.Bullet.Action
         }
 
         public UnitType Type => Owner.Type;
-        public IBody Body { get { return _body; } }
+        public IBody Body => _body;
         public IUnit Owner { get; }
         public IResourcePoints EnergyPoints { get; private set; }
         public IBulletCompositeDisposable Bullets { get; }
-        public bool IsTemporary { get { return true; } }
-        public float FixedRotation { get { return 0; } }
-        public bool IsReady { get { return true; } }
-        public float Cooldown { get { return 0; } }
-        public float AutoAimingAngle { get { return 0; } }
-		public IUnit ActiveTarget { get => null; set {} }
+        public float MountAngle => 0;
+        public bool IsReady => true;
+        public float Cooldown => 0;
+        public float AutoAimingAngle => 0;
+        public IShip ActiveTarget { get => null; set {} }
 
 		public void Aim(float bulletVelocity, float weaponRange, float relativeEffect) {}
         public void OnShot() {}

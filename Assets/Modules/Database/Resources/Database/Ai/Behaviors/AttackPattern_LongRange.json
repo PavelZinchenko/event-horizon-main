@@ -1,0 +1,21 @@
+{
+  "ItemType": 28,
+  "Id": 130,
+  "RootNode": {
+    "Type": 10,
+    "Nodes": [
+      {
+        "Type": 101,
+        "MinValue": 1.0
+      },
+      {
+        "Type": 1,
+        "ItemId": 137
+      },
+      {
+        "Type": 113,
+        "MaxValue": 0.1
+      }
+    ]
+  }
+}

@@ -61,7 +61,7 @@ namespace Combat.Component.Unit
 
         public override void OnCollision(Impact impact, IUnit target, CollisionData collisionData)
         {
-            Affect(impact);
+            Affect(impact, target);
         }
 
         protected override void OnUpdateView(float elapsedTime)
@@ -92,7 +92,7 @@ namespace Combat.Component.Unit
             var direction = RotationHelpers.Direction(Body.Rotation);
             var sideDirection = new Vector2(direction.y, -direction.x);
             var sideVelocity = Vector2.Dot(velocity, sideDirection);
-            Body.ApplyAcceleration(-5f * sideVelocity * elapsedTime * sideDirection);
+            Body.ApplyAcceleration(-5f*sideVelocity*elapsedTime*sideDirection);
         }
 
         private bool EnsurePositionValid()
@@ -146,7 +146,7 @@ namespace Combat.Component.Unit
         public void AddSystem(ISystem system) { }
         public void AddEffect(IShipEffect shipEffect) { }
 
-        public void Affect(Impact impact)
+        public void Affect(Impact impact, IUnit source)
         {
             if (!_isActive)
                 return;
