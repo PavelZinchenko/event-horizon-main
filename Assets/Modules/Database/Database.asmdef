@@ -6,7 +6,8 @@
         "SecurityStub",
         "CommonComponents",
         "CodeWriter.ExpressionParser",
-        "Diagnostics"
+        "Diagnostics",
+        "NVorbis"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

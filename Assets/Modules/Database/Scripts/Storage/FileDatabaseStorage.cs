@@ -75,7 +75,13 @@ namespace GameDatabase.Storage
                 {
                     var key = content.ReadString();
                     var audioClip = content.ReadByteArray();
-                    loader.LoadAudioClip(key, new LazyAudioDataLoader(audioClip));
+                    loader.LoadAudioClip(key, new LazyAudioDataLoader(audioClip, LazyAudioDataLoader.Format.Wav));
+                }
+                else if (type == 5) // ogg audioClip
+                {
+                    var key = content.ReadString();
+                    var audioClip = content.ReadByteArray();
+                    loader.LoadAudioClip(key, new LazyAudioDataLoader(audioClip, LazyAudioDataLoader.Format.Ogg));
                 }
             }
 
@@ -164,8 +170,15 @@ namespace GameDatabase.Storage
 
     public class LazyAudioDataLoader : Model.IAudioClipData
     {
+        public enum Format
+        {
+            Wav,
+            Ogg,
+        }
+
+        private readonly Format _format;
         private byte[] _rawData;
-        private Model.AudioClipData _audioClipData;
+        private Model.IAudioClipData _audioClipData;
 
         public AudioClip AudioClip
         {
@@ -173,7 +186,18 @@ namespace GameDatabase.Storage
             {
                 if (_audioClipData == null)
                 {
-                    _audioClipData = new(_rawData);
+                    switch (_format)
+                    {
+                        case Format.Wav:
+                            _audioClipData = new Model.AudioClipData(_rawData);
+                            break;
+                        case Format.Ogg:
+                            _audioClipData = new Model.OggAudioClip(_rawData);
+                            break;
+                        default:
+                            throw new InvalidOperationException();
+                    }
+
                     _rawData = null;
                 }
 
@@ -181,9 +205,10 @@ namespace GameDatabase.Storage
             }
         }
 
-        public LazyAudioDataLoader(byte[] rawData)
+        public LazyAudioDataLoader(byte[] rawData, Format format)
         {
             _rawData = rawData;
+            _format = format;
         }
     }
 }

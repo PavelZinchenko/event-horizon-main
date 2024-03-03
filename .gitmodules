@@ -16,3 +16,6 @@
 [submodule "Assets/ModulesShared"]
 	path = Assets/ModulesShared
 	url = https://github.com/PavelZinchenko/event-horizon-modules
+[submodule "Assets/Modules/Database/Plugins/NVorbis"]
+	path = Assets/Modules/Database/Plugins/NVorbis
+	url = https://github.com/PavelZinchenko/NVorbis

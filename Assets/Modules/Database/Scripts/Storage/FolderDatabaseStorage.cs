@@ -64,7 +64,11 @@ namespace GameDatabase.Storage
                 }
                 else if (fileInfo.Extension.Equals(".wav", StringComparison.OrdinalIgnoreCase))
                 {
-                    loader.LoadAudioClip(Path.GetFileNameWithoutExtension(file), new LazyAudioFileLoader(file));
+                    loader.LoadAudioClip(Path.GetFileNameWithoutExtension(file), new LazyAudioFileLoader(file, LazyAudioFileLoader.Format.Wav));
+                }
+                else if (fileInfo.Extension.Equals(".ogg", StringComparison.OrdinalIgnoreCase))
+                {
+                    loader.LoadAudioClip(Path.GetFileNameWithoutExtension(file), new LazyAudioFileLoader(file, LazyAudioFileLoader.Format.Ogg));
                 }
                 else if (fileInfo.Extension.Equals(".xml", StringComparison.OrdinalIgnoreCase))
                 {
@@ -147,8 +151,15 @@ namespace GameDatabase.Storage
 
     public class LazyAudioFileLoader : Model.IAudioClipData
     {
+        public enum Format
+        {
+            Wav,
+            Ogg,
+        }
+
         private readonly string _filename;
-        private Model.AudioClipData _audioClipData;
+        private Model.IAudioClipData _audioClipData;
+        private readonly Format _format;
 
         public AudioClip AudioClip
         {
@@ -161,7 +172,18 @@ namespace GameDatabase.Storage
                     try
                     {
                         var rawData = File.ReadAllBytes(_filename);
-                        _audioClipData = new(rawData);
+
+                        switch (_format)
+                        {
+                            case Format.Wav:
+                                _audioClipData = new Model.AudioClipData(rawData);
+                                break;
+                            case Format.Ogg:
+                                _audioClipData = new Model.OggAudioClip(rawData);
+                                break;
+                            default:
+                                throw new InvalidOperationException();
+                        }
                     }
                     catch (Exception e)
                     {
@@ -174,9 +196,10 @@ namespace GameDatabase.Storage
             }
         }
 
-        public LazyAudioFileLoader(string fliename)
+        public LazyAudioFileLoader(string fliename, Format format)
         {
             _filename = fliename;
+            _format = format;
         }
     }
 }
