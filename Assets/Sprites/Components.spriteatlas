@@ -64,6 +64,7 @@ SpriteAtlas:
   m_PackedSprites:
   - {fileID: 21300000, guid: bb8ee240ea4898f4792f705ff465e24e, type: 3}
   - {fileID: 21300000, guid: 8055c8904aee8ff42a79089efabcd4e9, type: 3}
+  - {fileID: 21300000, guid: e84cbeb00cbdb294aa6c62e29ffda4d8, type: 3}
   - {fileID: 21300000, guid: 57843ac0e48380a4bb7af46bf75ca19e, type: 3}
   - {fileID: 21300000, guid: 55ec28d0fa72bd84582a7dbf2f7d566d, type: 3}
   - {fileID: 21300000, guid: b51a9ad0dd2605347a2ef55217083427, type: 3}
@@ -121,6 +122,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4cae709786cc1074b9e515457f97e68a, type: 3}
   - {fileID: 21300000, guid: fd1876972262e2b47b617f82514f94f5, type: 3}
   - {fileID: 21300000, guid: d70095b73b9fd984f8d8d79ba70707bd, type: 3}
+  - {fileID: 21300000, guid: c87bd5b76dbde7a449b5a16bb085391d, type: 3}
   - {fileID: 21300000, guid: 1e7697b7fd8565b46910c87cfbc2799c, type: 3}
   - {fileID: 21300000, guid: 657e8128ab1a36c45a136475208f665d, type: 3}
   - {fileID: 21300000, guid: 2e2db648ca1880f4cb9660b66d26aac2, type: 3}
@@ -189,6 +191,7 @@ SpriteAtlas:
   m_PackedSpriteNamesToIndex:
   - reactor21
   - focus2
+  - engine6
   - TargetingUnit
   - torpedo4
   - fueltank12
@@ -246,6 +249,7 @@ SpriteAtlas:
   - gun7
   - armor22
   - shield_capacitor2
+  - engine7
   - armor61
   - ArmoredTank2
   - armor32

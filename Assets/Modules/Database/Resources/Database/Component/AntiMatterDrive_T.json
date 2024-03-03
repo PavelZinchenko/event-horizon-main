@@ -1,0 +1,17 @@
+{
+  "ItemType": 1,
+  "Id": 203,
+  "Name": "$AntiMatterDrive_T",
+  "DisplayCategory": 4,
+  "Availability": 5,
+  "ComponentStatsId": 203,
+  "Level": 500,
+  "Icon": "engine7",
+  "Layout": "000000111111111111111111011110000000",
+  "CellType": "5",
+  "PossibleModifications": [
+    2,
+    11,
+    1
+  ]
+}
