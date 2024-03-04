@@ -23,6 +23,9 @@ namespace Combat.Component.Body
                 Velocity = velocity;
                 AngularVelocity = angularVelocity;
             }
+
+            // Required to properly calculate all cached variables
+            UpdatePhysics(0);
         }
         
         public IBody Parent
