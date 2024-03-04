@@ -166,13 +166,22 @@ namespace Combat.Component.Bullet
             if (State != UnitState.Active)
                 return;
 
-            InvokeActions(ConditionType.OnDetonate);
             Destroy();
+            // Invoke triggers *after* marking as destroyed, to avoid spawning
+            // attached ammo that gets cleaned up immediately
+            InvokeActions(ConditionType.OnDetonate);
         }
 
         private void Expire()
         {
+            // Temporarily mark ammunition as destroyed, to avoid the trigger
+            // spawning attached ammo that gets cleaned up immediately 
+            var oldState = State;
+            State = UnitState.Destroyed;
+            
             var effect = InvokeActions(ConditionType.OnExpire);
+            
+            State = oldState;
 
             if (effect == CollisionEffect.Destroy)
                 Detonate();
@@ -182,16 +191,22 @@ namespace Combat.Component.Bullet
 
         private void Disarm()
         {
+            MarkAsDestroyed();
+            // Invoke triggers *after* marking as destroyed, to avoid spawning
+            // attached ammo that gets cleaned up immediately
             InvokeActions(ConditionType.OnDisarm);
-
-            if (State == UnitState.Active)
-                State = UnitState.Destroyed;
         }
 
         private void Destroy()
         {
+            MarkAsDestroyed();
+            // Invoke triggers *after* marking as destroyed, to avoid spawning
+            // attached ammo that gets cleaned up immediately
             InvokeActions(ConditionType.OnDestroy);
+        }
 
+        private void MarkAsDestroyed()
+        {
             if (State == UnitState.Active)
                 State = UnitState.Destroyed;
         }
