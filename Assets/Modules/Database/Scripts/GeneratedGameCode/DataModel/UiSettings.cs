@@ -63,6 +63,8 @@ namespace GameDatabase.DataModel
 			MoneyColor = new ColorData(serializable.MoneyColor);
 			FuelColor = new ColorData(serializable.FuelColor);
 			TokensColor = new ColorData(serializable.TokensColor);
+			MainMenuBackgroundImage = new SpriteId(serializable.MainMenuBackgroundImage, SpriteId.Type.Default);
+			NoCreditsText = serializable.NoCreditsText;
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -103,6 +105,8 @@ namespace GameDatabase.DataModel
 		public ColorData MoneyColor { get; private set; }
 		public ColorData FuelColor { get; private set; }
 		public ColorData TokensColor { get; private set; }
+		public SpriteId MainMenuBackgroundImage { get; private set; }
+		public bool NoCreditsText { get; private set; }
 
 		public static UiSettings DefaultValue { get; private set; }
 	}

@@ -51,5 +51,7 @@ namespace GameDatabase.Serializable
 		public string MoneyColor = "#FFF0A0";
 		public string FuelColor = "#00FFFF";
 		public string TokensColor = "#8080FF";
+		public string MainMenuBackgroundImage;
+		public bool NoCreditsText;
 	}
 }

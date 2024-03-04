@@ -15,6 +15,7 @@ using Services.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using Services.Resources;
 
 namespace Gui.MainMenu
 {
@@ -26,6 +27,7 @@ namespace Gui.MainMenu
         [Inject] private readonly IDatabase _database;
         [Inject] private readonly GuiHelper _guiHelper;
         [Inject] private readonly ILocalization _localization;
+        [Inject] private readonly IResourceLocator _resourceLocator;
         [Inject] private readonly OpenGameSettingsSignal.Trigger _openSettingsTrigger;
 
         [Inject]
@@ -48,8 +50,8 @@ namespace Gui.MainMenu
             _inputField.text = _gameSettings.EditorText;
 
             messenger.AddListener(EventType.SessionCreated, UpdateButtons);
-            messenger.AddListener(EventType.DatabaseLoaded, UpdateButtons);
-            UpdateButtons();
+            messenger.AddListener(EventType.DatabaseLoaded, OnDatabaseLoaded);
+            OnDatabaseLoaded();
         }
 
         [SerializeField] private Button _startGameButton;
@@ -57,6 +59,9 @@ namespace Gui.MainMenu
         [SerializeField] private Button _constructorButton;
         [SerializeField] private Button _reloadDatabaseButton;
         [SerializeField] private InputField _inputField;
+        [SerializeField] private GameObject _animatedBackground;
+        [SerializeField] private GameObject _credits;
+        [SerializeField] private BackgroundImage _backgroundImage;
 
         public void StartGame()
         {
@@ -142,11 +147,31 @@ namespace Gui.MainMenu
             }
         }
 
+        private void OnDatabaseLoaded()
+        {
+            var backgroundImage = _database.UiSettings.MainMenuBackgroundImage;
+            if (backgroundImage)
+            {
+                var sprite = _resourceLocator.GetSprite(backgroundImage);
+                _backgroundImage.gameObject.SetActive(true);
+                _backgroundImage.SetImage(sprite?.texture);
+                _animatedBackground.SetActive(false);
+            }
+            else
+            {
+                _backgroundImage.gameObject.SetActive(false);
+                _animatedBackground.SetActive(true);
+            }
+
+            if (_database.UiSettings.NoCreditsText)
+                _credits.gameObject.SetActive(false);
+
+            UpdateButtons();
+        }
+
         private void UpdateButtons()
         {
             var gameExists = _gameSession.IsGameStarted();
-            UnityEngine.Debug.Log("MainMenu.UpdateButtons - " + gameExists);
-
             _startGameButton.gameObject.SetActive(!gameExists);
             _continueGameButton.gameObject.SetActive(gameExists);
             _constructorButton.gameObject.SetActive(_database.IsEditable);

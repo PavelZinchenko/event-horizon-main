@@ -125,8 +125,6 @@ namespace GameDatabase.Storage
             {
                 if (_imageData == null)
                 {
-                    Debug.Log($"Loading image: {_filename}");
-
                     try 
                     {
                         var rawData = File.ReadAllBytes(_filename);

@@ -44,4 +44,7 @@
     <member name="MoneyColor" type="color" default="#FFF0A0" />
     <member name="FuelColor" type="color" default="#00FFFF" />
     <member name="TokensColor" type="color" default="#8080FF" />
+
+    <member name="MainMenuBackgroundImage" type="image" typeid="Default" />
+    <member name="NoCreditsText" type="bool" />
 </data>
