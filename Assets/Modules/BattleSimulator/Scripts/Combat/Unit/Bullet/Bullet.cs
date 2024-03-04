@@ -100,8 +100,19 @@ namespace Combat.Component.Bullet
         public IBody GetUnitSizedBody()
         {
             if (_unitSizedBody != null) return _unitSizedBody;
-            var obj = new GameObject("SizedBody");
-            var body = obj.AddComponent<GameObjectBody>();
+            const string sizedObjectName = "UnitSizedBody";
+            
+            var obj = _body.FindChild(sizedObjectName)?.gameObject;
+            GameObjectBody body;
+            if (Equals(obj, null))
+            {
+                obj = new GameObject(sizedObjectName); 
+                body = obj.AddComponent<GameObjectBody>();
+            }
+            else
+            {
+                body = obj.GetComponent<GameObjectBody>();
+            }
             body.Initialize(_body, Vector2.zero, 0, 1, Vector2.zero, 0, 0);
             body.Scale = 1 / _body.WorldScale();
             _unitSizedBody = body;

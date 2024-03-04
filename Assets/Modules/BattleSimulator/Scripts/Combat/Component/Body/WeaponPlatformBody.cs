@@ -81,7 +81,12 @@ namespace Combat.Component.Platform
             child.parent = transform;
         }
 
-		public IShip ActiveTarget 
+        public Transform FindChild(string childName)
+        {
+            return transform.Find(childName);
+        }
+
+        public IShip ActiveTarget 
 		{
 			get => _target; 
 			set

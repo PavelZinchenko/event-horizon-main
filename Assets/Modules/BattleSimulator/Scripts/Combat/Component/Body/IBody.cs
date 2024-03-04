@@ -33,6 +33,13 @@ namespace Combat.Component.Body
 
         void AddChild(Transform child);
         
+        /// <summary>
+        /// Looks up children transforms to find transform with the matching name
+        /// </summary>
+        /// <param name="childName">name of this child GameObject</param>
+        /// <returns>Transform of the found child, or null otherwise</returns>
+        public Transform FindChild(string childName);
+        
         public Vector2 WorldPosition()
         {
             var position = Position + RotationHelpers.Direction(Rotation)*Offset;

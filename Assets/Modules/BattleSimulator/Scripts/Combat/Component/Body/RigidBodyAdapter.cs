@@ -24,7 +24,7 @@ namespace Combat.Component.Body
                 AngularVelocity = angularVelocity;
             }
         }
-
+        
         public IBody Parent
         {
             get { return _parent; }
@@ -190,6 +190,11 @@ namespace Combat.Component.Body
         public void AddChild(Transform child)
         {
             child.parent = transform;
+        }
+        
+        public Transform FindChild(string childName)
+        {
+            return transform.Find(childName);
         }
 
         private void Awake()
