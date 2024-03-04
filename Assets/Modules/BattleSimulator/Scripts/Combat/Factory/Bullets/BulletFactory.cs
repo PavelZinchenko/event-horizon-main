@@ -76,7 +76,8 @@ namespace Combat.Factory
             _scene.AddUnit(bullet);
             bullet.UpdateView(0);
             bullet.AddResource(bulletGameObject);
-            parent.Bullets?.Add(bullet);
+            if(bullet.Body.Parent != null)
+                parent.Bullets?.Add(bullet);
             return bullet;
         }
 
