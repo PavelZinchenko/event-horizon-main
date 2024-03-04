@@ -5,9 +5,9 @@
   "DisplayCategory": 4,
   "Availability": 2,
   "ComponentStatsId": 217,
-  "Level": 500,
+  "Level": 350,
   "Icon": "engine6",
-  "Layout": "0110011001100110",
+  "Layout": "1110111011100100",
   "CellType": "5",
   "PossibleModifications": [
     2,
