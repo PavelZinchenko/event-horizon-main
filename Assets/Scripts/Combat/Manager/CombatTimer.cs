@@ -165,11 +165,15 @@ namespace Combat.Manager
             if (_isAlarmEnabled != value)
             {
                 _isAlarmEnabled = value;
-                _musicPlayer.Mute(value);
                 if (_isAlarmEnabled)
+                {
+                    _musicPlayer.Stop();
                     _soundPlayer.Play(_settings.AlarmSound, GetHashCode(), true);
+                }
                 else
+                {
                     _soundPlayer.Stop(GetHashCode());
+                }
             }
         }
 

@@ -30,34 +30,29 @@ namespace Services.Audio
             get => _defaultPlaylist ?? _customPlaylist;
             set 
             { 
-                _customPlaylist = value; 
-                Play(_activeTrack); 
+                _customPlaylist = value;
+                var track = _activeTrack;
+                Stop();
+                Play(track);
             }  
+        }
+
+        public void Stop()
+        {
+            _activeTrack = AudioTrackType.None;
+            _audioSource.Stop();
         }
 
         public void Play(AudioTrackType track)
         {
-			_activeTrack = track;
-			if (Playlist == null) return;
-
-			Mute(false);
-
-			var audioClip = _customPlaylist?.GetAudioClip(track) ?? _defaultPlaylist?.GetAudioClip(track);
-
-			if (_audioSource.clip == audioClip)
-				return;
-
-			_isPlaying = false;
-			_audioSource.Stop();
-			_clipToPlay = audioClip;
+            if (_activeTrack == track) return;
+            _audioSource.Stop();
+            _activeTrack = track;
 		}
 
         public float Volume
 		{
-			get
-			{
-				return _volume;
-			}
+			get => _volume;
 			set
 			{
 				_volume = value;
@@ -69,45 +64,28 @@ namespace Services.Audio
             }
         }
 
-		public void Mute(bool mute)
+        private AudioClip NextAudioClip => _customPlaylist?.GetAudioClip(_activeTrack) ?? _defaultPlaylist?.GetAudioClip(_activeTrack);
+
+        public void OnAppActivated(bool active)
 		{
-			_muted = mute;
-			OnMute();
-		}
-
-		private void OnMute()
-		{
-            _audioSource.mute = _muted || !_applicationActive;
-		}
-
-		//public void Pause()
-		//{
-		//	_audioSource.Pause();
-		//}
-
-		//public void Resume()
-		//{
-		//	if (!_audioSource.isPlaying)
-		//		_audioSource.UnPause();
-		//}
-
-		public void OnAppActivated(bool active)
-		{
-			_applicationActive = active;
-			OnMute();
+            _audioSource.mute = !active;
 		}
 
 		private void Update()
 		{
-			if (!_isPlaying && _clipToPlay != null && _volume > 0f)
+            if (_audioSource.mute) return;
+
+			if (!_audioSource.isPlaying && _activeTrack != AudioTrackType.None && Volume > 0f)
 			{
-				_isPlaying = true;
-				_audioSource.clip = _clipToPlay;
-				_audioSource.Play();
+                var clip = NextAudioClip;
+                if (clip != null)
+                {
+                    _audioSource.clip = clip;
+                    _audioSource.Play();
+                }
 			}
-			else if (_isPlaying && _volume <= 0f)
+			else if (_audioSource.isPlaying && Volume <= 0f)
 			{
-				_isPlaying = false;
 				_audioSource.Stop();
 			}
 		}
@@ -123,21 +101,16 @@ namespace Services.Audio
         {
             _defaultPlaylist = playlist;
 
-            if (!_isPlaying)
+            if (!_audioSource.isPlaying)
                 Play(_activeTrack);
         }
-
-        private bool _muted;
-		private bool _applicationActive = true;
 
         private IMusicPlaylist _customPlaylist;
         private IMusicPlaylist _defaultPlaylist;
         private bool _bundleLoadStarted = false;
         private IAssetLoader _assetLoader;
 		private AudioTrackType _activeTrack;
-        private bool _isPlaying;
 		private float _volume;
-		private AudioClip _clipToPlay;
 		private AudioSource _audioSource;
         private IGameSettings _gameSettings;
         private AppActivatedSignal _appActivatedSignal;

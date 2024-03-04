@@ -179,7 +179,7 @@ namespace GameDatabase.Storage
                                 _audioClipData = new Model.AudioClipData(rawData);
                                 break;
                             case Format.Ogg:
-                                _audioClipData = new Model.OggAudioClip(rawData);
+                                _audioClipData = Model.OggAudioClip.Create(rawData);
                                 break;
                             default:
                                 throw new InvalidOperationException();

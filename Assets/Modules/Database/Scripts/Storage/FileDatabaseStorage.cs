@@ -192,7 +192,7 @@ namespace GameDatabase.Storage
                             _audioClipData = new Model.AudioClipData(_rawData);
                             break;
                         case Format.Ogg:
-                            _audioClipData = new Model.OggAudioClip(_rawData);
+                            _audioClipData = Model.OggAudioClip.Create(_rawData);
                             break;
                         default:
                             throw new InvalidOperationException();
