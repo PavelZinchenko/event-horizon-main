@@ -76,7 +76,8 @@ namespace Combat.Factory
             _scene.AddUnit(bullet);
             bullet.UpdateView(0);
             bullet.AddResource(bulletGameObject);
-            parent.Bullets?.Add(bullet);
+            if(bullet.Body.Parent != null)
+                parent.Bullets?.Add(bullet);
             return bullet;
         }
 
@@ -258,14 +259,15 @@ namespace Combat.Factory
                     }
                     break;
                 case BulletController_Beam:
-                    controller = new BeamController(bullet, spread, rotationOffset);
+                    var offset = rotationOffset;
+                    controller = new BeamController(bullet, spread, rotationOffset + bullet.Body.Rotation);
                     break;
                 default:
                     Debug.LogError($"Unknown controller: {_ammunition.Controller.GetType().Name}");
                     break;
             }
             
-            if (BulletShape.IsBeam() && bullet.Body.Parent == null)
+            if (BulletShape.IsBeam() && !_ammunition.Controller.Continuous)
             {
                 var length = _ammunition.Body.Length > 0 ? _stats.Length : _stats.BodySize;
                 var velocity = parent.Body.WorldVelocity() * _ammunition.Body.ParentVelocityEffect;

@@ -100,8 +100,19 @@ namespace Combat.Component.Bullet
         public IBody GetUnitSizedBody()
         {
             if (_unitSizedBody != null) return _unitSizedBody;
-            var obj = new GameObject("SizedBody");
-            var body = obj.AddComponent<GameObjectBody>();
+            const string sizedObjectName = "UnitSizedBody";
+            
+            var obj = _body.FindChild(sizedObjectName)?.gameObject;
+            GameObjectBody body;
+            if (Equals(obj, null))
+            {
+                obj = new GameObject(sizedObjectName); 
+                body = obj.AddComponent<GameObjectBody>();
+            }
+            else
+            {
+                body = obj.GetComponent<GameObjectBody>();
+            }
             body.Initialize(_body, Vector2.zero, 0, 1, Vector2.zero, 0, 0);
             body.Scale = 1 / _body.WorldScale();
             _unitSizedBody = body;
@@ -155,13 +166,22 @@ namespace Combat.Component.Bullet
             if (State != UnitState.Active)
                 return;
 
-            InvokeActions(ConditionType.OnDetonate);
             Destroy();
+            // Invoke triggers *after* marking as destroyed, to avoid spawning
+            // attached ammo that gets cleaned up immediately
+            InvokeActions(ConditionType.OnDetonate);
         }
 
         private void Expire()
         {
+            // Temporarily mark ammunition as destroyed, to avoid the trigger
+            // spawning attached ammo that gets cleaned up immediately 
+            var oldState = State;
+            State = UnitState.Destroyed;
+            
             var effect = InvokeActions(ConditionType.OnExpire);
+            
+            State = oldState;
 
             if (effect == CollisionEffect.Destroy)
                 Detonate();
@@ -171,16 +191,22 @@ namespace Combat.Component.Bullet
 
         private void Disarm()
         {
+            MarkAsDestroyed();
+            // Invoke triggers *after* marking as destroyed, to avoid spawning
+            // attached ammo that gets cleaned up immediately
             InvokeActions(ConditionType.OnDisarm);
-
-            if (State == UnitState.Active)
-                State = UnitState.Destroyed;
         }
 
         private void Destroy()
         {
+            MarkAsDestroyed();
+            // Invoke triggers *after* marking as destroyed, to avoid spawning
+            // attached ammo that gets cleaned up immediately
             InvokeActions(ConditionType.OnDestroy);
+        }
 
+        private void MarkAsDestroyed()
+        {
             if (State == UnitState.Active)
                 State = UnitState.Destroyed;
         }

@@ -10,11 +10,26 @@ namespace DatabaseMigration.v1
             GameDiagnostics.Trace.LogWarning("Database migration: v1.5 -> v1.6");
 
             foreach (var item in Content.AmmunitionList)
-                UpgradeAmmunition(item);
+            {
+                try
+                {
+                    UpgradeAmmunition(item);
+                }
+                catch (DatabaseException ex)
+                {
+                    throw new DatabaseException($"Failed to upgrade ammunition {item.Id} in {item.FileName}", ex);
+                }
+            }
 		}
-
+        private static readonly BulletBodySerializable DefaultSerializable = new();
         private static void UpgradeBulletBody(BulletBodySerializable bulletBody)
         {
+            if (bulletBody.ParentVelocityEffect != DefaultSerializable.ParentVelocityEffect || 
+                bulletBody.AttachedToParent != DefaultSerializable.AttachedToParent ||
+                bulletBody.AiBulletBehavior != DefaultSerializable.AiBulletBehavior)
+            {
+                throw new DatabaseException("BulletBody.AttachedToParent, BulletBody.ParentVelocityEffect, and BulletBody.AiBulletBehavior fields can not be used when obsolete BulletBody.Type field is used");
+            }
             switch (bulletBody.Type)
             {
                 case BulletTypeObsolete.Projectile:
@@ -47,6 +62,11 @@ namespace DatabaseMigration.v1
             if (ammunition.Body.Type == BulletTypeObsolete.Projectile)
                 return;
 
+            if (ammunition.Controller.Type != BulletControllerType.Projectile)
+            {
+                throw new DatabaseException("Ammunition.Controller field can not be used when obsolete BulletBody.Type field is used in the Ammunition.Body");
+            }
+            
             UpgradeBulletBody(ammunition.Body);
             switch (ammunition.Body.Type)
             {

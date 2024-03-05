@@ -38,6 +38,11 @@ namespace Combat.Component.Bullet.Action
             _body.AddChild(child);
         }
 
+        public Transform FindChild(string childName)
+        {
+            return _body.FindChild(childName);
+        }
+
         private float _rotation;
         private readonly IBody _body;
     }
