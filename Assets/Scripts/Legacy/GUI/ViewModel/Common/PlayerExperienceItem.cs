@@ -9,6 +9,7 @@ using GameServices.Player;
 using ViewModel.Quests;
 using Zenject;
 using Services.Localization;
+using Gui.Theme;
 
 namespace ViewModel
 {
@@ -22,10 +23,10 @@ namespace ViewModel
             [SerializeField] Text ExperienceText;
             [SerializeField] GameObject RankPanel;
             [SerializeField] Text RankText;
-            [SerializeField] private Color _textColor;
+            [SerializeField] private ThemeColor _textColor;
 
             public string Name { get; private set; }
-            public Color Color { get { return _textColor; } }
+            public Color Color => UiTheme.Current.GetColor(_textColor);
 
             public void Initialize(ExperienceData data)
             {

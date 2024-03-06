@@ -21,7 +21,7 @@
     <member name="PremiumButtonIconColor" type="color" default="#FFFFC0" />
 
     <member name="TextColor" type="color" default="#80FFFF" />
-    <member name="ErrorTextColor" type="color" default="#FFC000" />
+    <member name="ErrorTextColor" type="color" default="#FF4040" />
     <member name="HeaderTextColor" type="color" default="#FFFFC0" />
     <member name="PaleTextColor" type="color" default="#A0FFFFFF" />
     <member name="BrightTextColor" type="color" default="#FFFFFF" />

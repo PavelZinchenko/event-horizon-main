@@ -32,7 +32,7 @@ namespace GameDatabase.Serializable
 		public string PremiumButtonTextColor = "#FFFFE0";
 		public string PremiumButtonIconColor = "#FFFFC0";
 		public string TextColor = "#80FFFF";
-		public string ErrorTextColor = "#FFC000";
+		public string ErrorTextColor = "#FF4040";
 		public string HeaderTextColor = "#FFFFC0";
 		public string PaleTextColor = "#A0FFFFFF";
 		public string BrightTextColor = "#FFFFFF";

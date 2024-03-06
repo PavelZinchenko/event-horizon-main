@@ -42,7 +42,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 500, y: -222.5}
+  m_AnchoredPosition: {x: 500, y: -239}
   m_SizeDelta: {x: 1000, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5634008633673985797
@@ -786,6 +786,7 @@ MonoBehaviour:
   _class: 4
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 1
+  _initiallyHidden: 0
   _escapeKeyAction: 2
   OnInitializedEvent:
     m_PersistentCalls:
@@ -1389,7 +1390,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 500, y: -386.5}
+  m_AnchoredPosition: {x: 500, y: -403}
   m_SizeDelta: {x: 790, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5634008634210308779
@@ -1925,7 +1926,7 @@ MonoBehaviour:
   ExperienceText: {fileID: 5634008633848867859}
   RankPanel: {fileID: 5634008634166022205}
   RankText: {fileID: 5634008635528475165}
-  _textColor: {r: 0.5019608, g: 1, b: 1, a: 1}
+  _textColor: 100
 --- !u!1 &5634008634850647158
 GameObject:
   m_ObjectHideFlags: 0
