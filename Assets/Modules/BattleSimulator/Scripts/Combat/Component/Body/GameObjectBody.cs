@@ -143,6 +143,11 @@ namespace Combat.Component.Body
         {
             child.parent = transform;
         }
+        
+		public Transform FindChild(string childName)
+		{
+			return transform.Find(childName);
+		}
 
 		//private void Awake()
 		//{

@@ -23,8 +23,11 @@ namespace Combat.Component.Body
                 Velocity = velocity;
                 AngularVelocity = angularVelocity;
             }
-        }
 
+            // Required to properly calculate all cached variables
+            UpdatePhysics(0);
+        }
+        
         public IBody Parent
         {
             get { return _parent; }
@@ -190,6 +193,11 @@ namespace Combat.Component.Body
         public void AddChild(Transform child)
         {
             child.parent = transform;
+        }
+        
+        public Transform FindChild(string childName)
+        {
+            return transform.Find(childName);
         }
 
         private void Awake()

@@ -77,6 +77,11 @@ namespace Combat.Component.Body
         {
             child.parent = transform;
         }
+        
+        public Transform FindChild(string childName)
+        {
+            return transform.Find(childName);
+        }
 
         private void Initialize(IBody parent, Vector2 position, float rotation, float scale, float weight, float offset)
         {

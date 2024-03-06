@@ -67,5 +67,10 @@ namespace Combat.Component.Body
         {
             throw new InvalidOperationException();
         }
+
+        public Transform FindChild(string childName)
+        {
+            throw new InvalidOperationException();
+        }
     }
 }
