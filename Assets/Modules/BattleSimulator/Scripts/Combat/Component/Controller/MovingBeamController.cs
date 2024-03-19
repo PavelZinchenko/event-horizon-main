@@ -1,4 +1,5 @@
-﻿using Combat.Component.Bullet;
+﻿using System;
+using Combat.Component.Bullet;
 using UnityEngine;
 
 namespace Combat.Component.Controller
@@ -10,10 +11,20 @@ namespace Combat.Component.Controller
             _unit = unit;
 			_bulletSpeed = bulletSpeed;
 			_parentVelocity = parentVelicity;
-			_collider = _unit.Collider as Collider.RayCastCollider;
+			
+			_collider = _unit.Collider as Collider.RayCastCollider ??
+			            throw new ArgumentException($"MovingBeamController only accepts units RayCastCollider, but got unit with {_unit.Collider.GetType()} collider instead", nameof(unit));
+			
 			_maxLength = maxLength;
 			_collider.MaxRange = 0;
 			_parentController = parentController;
+			
+			// If bullet has zero speed it won't grow, so just set length directly and mark as completed
+			if (bulletSpeed <= 0)
+			{
+				_collider.MaxRange = maxLength;
+				_completed = true;
+			} 
         }
 
         public void Dispose() { }
