@@ -4,4 +4,11 @@
     <member name="StartingVelocityModifier" type="float" minvalue="0" maxvalue="1000" default="1" case="Homing" />
     <member name="IgnoreRotation" type="bool" case="Homing" />
     <member name="SmartAim" type="bool" case="Homing" />
+
+    <!-- Parametric -->
+    <member name="X" type="expression" typeid="FloatToFloat" arguments="t" default="0" case="Parametric" />
+    <member name="Y" type="expression" typeid="FloatToFloat" arguments="t" default="0" case="Parametric" />
+    <member name="Rotation" type="expression" typeid="FloatToFloat" arguments="t" default="0" case="Parametric" />
+    <member name="Size" type="expression" typeid="FloatToFloat" arguments="t" default="1" case="Parametric" />
+    <member name="Length" type="expression" typeid="FloatToFloat" arguments="t" default="1" case="Parametric" />
 </data>

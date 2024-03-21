@@ -3,4 +3,5 @@
     <item name="Projectile" />
     <item name="Homing" />
     <item name="Beam" />
+    <item name="Parametric" />
 </data>

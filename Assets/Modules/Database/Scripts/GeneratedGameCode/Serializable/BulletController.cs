@@ -19,5 +19,10 @@ namespace GameDatabase.Serializable
 		public float StartingVelocityModifier = 1f;
 		public bool IgnoreRotation;
 		public bool SmartAim;
+		public string X = "0";
+		public string Y = "0";
+		public string Rotation = "0";
+		public string Size = "1";
+		public string Length = "1";
 	}
 }

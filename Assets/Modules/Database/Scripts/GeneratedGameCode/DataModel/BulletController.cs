@@ -13,10 +13,11 @@ using System.Linq;
 using GameDatabase.Enums;
 using GameDatabase.Serializable;
 using GameDatabase.Model;
+using CodeWriter.ExpressionParser;
 
 namespace GameDatabase.DataModel
 {
-	public abstract partial class BulletController 
+	public abstract partial class BulletController : IDefaultVariablesResolver
 	{
 		partial void OnDataDeserialized(BulletControllerSerializable serializable, Database.Loader loader);
 
@@ -32,6 +33,8 @@ namespace GameDatabase.DataModel
 					return new BulletController_Homing(serializable, loader);
 				case BulletControllerType.Beam:
 					return new BulletController_Beam(serializable, loader);
+				case BulletControllerType.Parametric:
+					return new BulletController_Parametric(serializable, loader);
 				default:
                     throw new DatabaseException("BulletController: Invalid content type - " + serializable.Type);
 			}
@@ -41,11 +44,29 @@ namespace GameDatabase.DataModel
 
 		protected BulletController(BulletControllerSerializable serializable, Database.Loader loader)
 		{
+			var variableResolver = GetVariableResolver();
 			Type = serializable.Type;
 
 			OnDataDeserialized(serializable, loader);
 		}
 
+		protected abstract IVariableResolver GetVariableResolver();
+
+		protected abstract class BaseVariableResolver : IVariableResolver
+		{
+			protected abstract BulletController Context { get; }
+
+			public virtual IFunction<Variant> ResolveFunction(string name)
+            {
+				return ((IVariableResolver)Context).ResolveFunction(name);
+			}
+
+			public virtual Expression<Variant> ResolveVariable(string name)
+			{
+				return ((IVariableResolver)Context).ResolveVariable(name);
+			}
+
+		}
 
 		public BulletControllerType Type { get; private set; }
 
@@ -57,6 +78,7 @@ namespace GameDatabase.DataModel
 	    T Create(BulletController_Projectile content);
 	    T Create(BulletController_Homing content);
 	    T Create(BulletController_Beam content);
+	    T Create(BulletController_Parametric content);
     }
 
     public partial class BulletController_Projectile : BulletController
@@ -66,6 +88,7 @@ namespace GameDatabase.DataModel
   		public BulletController_Projectile(BulletControllerSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
+			var variableResolver = GetVariableResolver();
 
             OnDataDeserialized(serializable, loader);
         }
@@ -76,6 +99,35 @@ namespace GameDatabase.DataModel
         }
 
 
+		private IVariableResolver _iVariableResolver;
+		protected override IVariableResolver GetVariableResolver() {
+			if(_iVariableResolver == null)
+				_iVariableResolver = new VariableResolver(this);
+			return _iVariableResolver;
+		}
+
+		private class VariableResolver : BaseVariableResolver
+		{
+			private BulletController_Projectile _context;
+			
+			protected override BulletController Context => _context;
+
+			public VariableResolver(BulletController_Projectile context)
+			{
+				_context = context;
+			}
+
+			public override IFunction<Variant> ResolveFunction(string name)
+            {
+				return base.ResolveFunction(name);
+			}
+
+			public override Expression<Variant> ResolveVariable(string name)
+			{
+				return base.ResolveVariable(name);
+			}
+
+		}
 
     }
     public partial class BulletController_Homing : BulletController
@@ -85,6 +137,7 @@ namespace GameDatabase.DataModel
   		public BulletController_Homing(BulletControllerSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
+			var variableResolver = GetVariableResolver();
 			StartingVelocityModifier = UnityEngine.Mathf.Clamp(serializable.StartingVelocityModifier, 0f, 1000f);
 			IgnoreRotation = serializable.IgnoreRotation;
 			SmartAim = serializable.SmartAim;
@@ -101,6 +154,41 @@ namespace GameDatabase.DataModel
 		public bool IgnoreRotation { get; private set; }
 		public bool SmartAim { get; private set; }
 
+		private IVariableResolver _iVariableResolver;
+		protected override IVariableResolver GetVariableResolver() {
+			if(_iVariableResolver == null)
+				_iVariableResolver = new VariableResolver(this);
+			return _iVariableResolver;
+		}
+
+		private class VariableResolver : BaseVariableResolver
+		{
+			private BulletController_Homing _context;
+			
+			protected override BulletController Context => _context;
+
+			public VariableResolver(BulletController_Homing context)
+			{
+				_context = context;
+			}
+
+			public override IFunction<Variant> ResolveFunction(string name)
+            {
+				return base.ResolveFunction(name);
+			}
+
+			public override Expression<Variant> ResolveVariable(string name)
+			{
+				if (name == "StartingVelocityModifier") return GetStartingVelocityModifier;
+				if (name == "IgnoreRotation") return GetIgnoreRotation;
+				if (name == "SmartAim") return GetSmartAim;
+				return base.ResolveVariable(name);
+			}
+
+			private Variant GetStartingVelocityModifier() => _context.StartingVelocityModifier;
+			private Variant GetIgnoreRotation() => _context.IgnoreRotation;
+			private Variant GetSmartAim() => _context.SmartAim;
+		}
 
     }
     public partial class BulletController_Beam : BulletController
@@ -110,6 +198,7 @@ namespace GameDatabase.DataModel
   		public BulletController_Beam(BulletControllerSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
+			var variableResolver = GetVariableResolver();
 
             OnDataDeserialized(serializable, loader);
         }
@@ -120,6 +209,114 @@ namespace GameDatabase.DataModel
         }
 
 
+		private IVariableResolver _iVariableResolver;
+		protected override IVariableResolver GetVariableResolver() {
+			if(_iVariableResolver == null)
+				_iVariableResolver = new VariableResolver(this);
+			return _iVariableResolver;
+		}
+
+		private class VariableResolver : BaseVariableResolver
+		{
+			private BulletController_Beam _context;
+			
+			protected override BulletController Context => _context;
+
+			public VariableResolver(BulletController_Beam context)
+			{
+				_context = context;
+			}
+
+			public override IFunction<Variant> ResolveFunction(string name)
+            {
+				return base.ResolveFunction(name);
+			}
+
+			public override Expression<Variant> ResolveVariable(string name)
+			{
+				return base.ResolveVariable(name);
+			}
+
+		}
+
+    }
+    public partial class BulletController_Parametric : BulletController
+    {
+		partial void OnDataDeserialized(BulletControllerSerializable serializable, Database.Loader loader);
+
+  		public BulletController_Parametric(BulletControllerSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			var variableResolver = GetVariableResolver();
+			_x = new Expressions.FloatToFloat(serializable.X, -2147483648, 2147483647, variableResolver) { ParamName1 = "t" };
+			X = _x.Evaluate;
+			_y = new Expressions.FloatToFloat(serializable.Y, -2147483648, 2147483647, variableResolver) { ParamName1 = "t" };
+			Y = _y.Evaluate;
+			_rotation = new Expressions.FloatToFloat(serializable.Rotation, -2147483648, 2147483647, variableResolver) { ParamName1 = "t" };
+			Rotation = _rotation.Evaluate;
+			_size = new Expressions.FloatToFloat(serializable.Size, -2147483648, 2147483647, variableResolver) { ParamName1 = "t" };
+			Size = _size.Evaluate;
+			_length = new Expressions.FloatToFloat(serializable.Length, -2147483648, 2147483647, variableResolver) { ParamName1 = "t" };
+			Length = _length.Evaluate;
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBulletControllerFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		private readonly Expressions.FloatToFloat _x;
+		public delegate float XDelegate(float t);
+		public XDelegate X { get; private set; }
+		private readonly Expressions.FloatToFloat _y;
+		public delegate float YDelegate(float t);
+		public YDelegate Y { get; private set; }
+		private readonly Expressions.FloatToFloat _rotation;
+		public delegate float RotationDelegate(float t);
+		public RotationDelegate Rotation { get; private set; }
+		private readonly Expressions.FloatToFloat _size;
+		public delegate float SizeDelegate(float t);
+		public SizeDelegate Size { get; private set; }
+		private readonly Expressions.FloatToFloat _length;
+		public delegate float LengthDelegate(float t);
+		public LengthDelegate Length { get; private set; }
+
+		private IVariableResolver _iVariableResolver;
+		protected override IVariableResolver GetVariableResolver() {
+			if(_iVariableResolver == null)
+				_iVariableResolver = new VariableResolver(this);
+			return _iVariableResolver;
+		}
+
+		private class VariableResolver : BaseVariableResolver
+		{
+			private BulletController_Parametric _context;
+			
+			protected override BulletController Context => _context;
+
+			public VariableResolver(BulletController_Parametric context)
+			{
+				_context = context;
+			}
+
+			public override IFunction<Variant> ResolveFunction(string name)
+            {
+				if (name == "X") return _context._x;
+				if (name == "Y") return _context._y;
+				if (name == "Rotation") return _context._rotation;
+				if (name == "Size") return _context._size;
+				if (name == "Length") return _context._length;
+				return base.ResolveFunction(name);
+			}
+
+			public override Expression<Variant> ResolveVariable(string name)
+			{
+				return base.ResolveVariable(name);
+			}
+
+		}
 
     }
 

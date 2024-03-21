@@ -13,5 +13,6 @@ namespace GameDatabase.Enums
 		Projectile,
 		Homing,
 		Beam,
+		Parametric,
 	}
 }

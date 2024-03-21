@@ -240,7 +240,7 @@ namespace Combat.Factory
         {
             var range = _stats.Range;
             var weight = _stats.Weight;
-
+            
             IController controller = null;
             switch (_ammunition.Controller)
             {
@@ -261,6 +261,9 @@ namespace Combat.Factory
                 case BulletController_Beam:
                     var offset = rotationOffset;
                     controller = new BeamController(bullet, spread, rotationOffset + bullet.Body.Rotation);
+                    break;
+                case BulletController_Parametric controllerParametric:
+                    controller = new ParametricController(bullet, controllerParametric);
                     break;
                 default:
                     Debug.LogError($"Unknown controller: {_ammunition.Controller.GetType().Name}");

@@ -20,8 +20,28 @@ namespace Combat.Component.Body
         Vector2 VisualPosition { get; }
         float VisualRotation { get; }
 
+        /// <summary>
+        /// Moves the body to a new position, in local space
+        ///
+        /// If body has no parent, position is in world coordinates
+        /// </summary>
+        /// <param name="position">New position of the body</param>
         void Move(Vector2 position);
+        
+        /// <summary>
+        /// Changes the rotation of the body, in local space
+        ///
+        /// If body has no parent, rotation is in world space
+        /// </summary>
+        /// <param name="rotation">New rotation of the body</param>
         void Turn(float rotation);
+        
+        /// <summary>
+        /// Changes the size of the body, in local space
+        ///
+        /// If body has no parent, size is in world units
+        /// </summary>
+        /// <param name="size">New size of the body</param>
         void SetSize(float size);
         void ApplyAcceleration(Vector2 acceleration);
         void ApplyAngularAcceleration(float acceleration);
