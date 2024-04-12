@@ -19,6 +19,12 @@ namespace Combat.Component.Systems.Devices
             _ship = ship;
             _activeColor = deviceSpec.Color;
             _energyCost = deviceSpec.EnergyConsumption;
+
+            _power = deviceSpec.Power / 100;
+            if (_power == 0)
+            {
+                _power = 0.5f;
+            }
         }
 
 		public GameDatabase.Enums.DeviceClass DeviceClass { get; }
@@ -29,9 +35,15 @@ namespace Combat.Component.Systems.Devices
         {
             if (_isEnabled)
             {
-                data.Energy = 0.5f + data.Energy*0.5f;
-                data.Heat = 0.5f + data.Heat * 0.5f;
-                data.Kinetic = 0.5f + data.Kinetic * 0.5f;
+                // We don't want to get into weird territory with the original
+                // resistances, so in case if the fortification device has
+                // power over 1, the original ship resistances are just
+                // ignored, since the multiplier is clamped to 0
+                var resMult = Mathf.Clamp01(1 - _power);
+                
+                data.Energy = _power + data.Energy * resMult;
+                data.Heat = _power + data.Heat * resMult;
+                data.Kinetic = _power + data.Kinetic * resMult;
             }
 
             return true;
@@ -82,6 +94,7 @@ namespace Combat.Component.Systems.Devices
         private Color _color = Color.white;
         private readonly Color _activeColor;
         private readonly float _energyCost;
+        private readonly float _power;
         private readonly IShip _ship;
     }
 }
