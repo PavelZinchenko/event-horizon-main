@@ -125,9 +125,6 @@ namespace Services.Audio
 					continue;
 				}
 
-				if (data.Id != 0 && IsPlaying(data.Id))
-					continue;
-				
 				if (data.AudioClip.loadState == AudioDataLoadState.Loading)
 				{
                     _loadingObjects.Add(data);
