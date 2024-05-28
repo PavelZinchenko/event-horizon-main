@@ -12,6 +12,7 @@
       "Type": 3,
       "Image": "CloudWhite",
       "ColorMode": 2,
+      "Quantity": 3,
       "GrowthRate": 0.5,
       "Lifetime": 0.5
     },

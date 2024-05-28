@@ -1,0 +1,124 @@
+{
+  "ItemType": 8,
+  "Id": 375,
+  "ShipId": 137,
+  "AvailableForPlayer": false,
+  "AvailableForEnemy": false,
+  "DifficultyClass": 1,
+  "Components": [
+    {
+      "ComponentId": 202,
+      "Modification": 5,
+      "Quality": 5,
+      "X": 2
+    },
+    {
+      "ComponentId": 166,
+      "Modification": 16,
+      "Quality": 5,
+      "X": 3
+    },
+    {
+      "ComponentId": 69,
+      "X": 2,
+      "Y": 3
+    },
+    {
+      "ComponentId": 74,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 2,
+      "Y": 3
+    },
+    {
+      "ComponentId": 67,
+      "X": 4,
+      "Y": 3
+    },
+    {
+      "ComponentId": 67,
+      "X": 5,
+      "Y": 3
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 1,
+      "Y": 4
+    },
+    {
+      "ComponentId": 69,
+      "X": 5,
+      "Y": 4
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 6,
+      "Y": 4
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "Y": 5
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 1,
+      "Y": 5
+    },
+    {
+      "ComponentId": 56,
+      "X": 2,
+      "Y": 5
+    },
+    {
+      "ComponentId": 69,
+      "X": 4,
+      "Y": 5
+    },
+    {
+      "ComponentId": 60,
+      "X": 5,
+      "Y": 5
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 6,
+      "Y": 5
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 7,
+      "Y": 5
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "Y": 6
+    },
+    {
+      "ComponentId": 60,
+      "X": 5,
+      "Y": 6
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 7,
+      "Y": 6
+    }
+  ],
+  "Perks": {}
+}

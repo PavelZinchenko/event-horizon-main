@@ -26,7 +26,7 @@
       "Color": "#FF80FF",
       "ColorMode": 1,
       "Size": 30.0,
-      "PowerMultiplier": 10000.0,
+      "PowerMultiplier": 1000.0,
       "Rotation": "0",
       "OffsetX": "0"
     },

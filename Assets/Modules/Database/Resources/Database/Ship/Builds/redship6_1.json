@@ -1,0 +1,281 @@
+{
+  "ItemType": 8,
+  "Id": 366,
+  "ShipId": 151,
+  "AvailableForPlayer": false,
+  "DifficultyClass": 1,
+  "Components": [
+    {
+      "ComponentId": 75,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 5,
+      "Y": 6
+    },
+    {
+      "ComponentId": 278,
+      "Modification": 14,
+      "Quality": 5,
+      "X": 6
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 8,
+      "Y": 5
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 7,
+      "Y": 5
+    },
+    {
+      "ComponentId": 217,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 5,
+      "Y": 11
+    },
+    {
+      "ComponentId": 66,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 8,
+      "Y": 11
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 8,
+      "Y": 14
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 9,
+      "Y": 13
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 8,
+      "Y": 13
+    },
+    {
+      "ComponentId": 10,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 10,
+      "Y": 11
+    },
+    {
+      "ComponentId": 10,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 10,
+      "Y": 7
+    },
+    {
+      "ComponentId": 10,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 2,
+      "Y": 7
+    },
+    {
+      "ComponentId": 10,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 2,
+      "Y": 11
+    },
+    {
+      "ComponentId": 11,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 13,
+      "Y": 6
+    },
+    {
+      "ComponentId": 11,
+      "Modification": 3,
+      "Quality": 5,
+      "Y": 6
+    },
+    {
+      "ComponentId": 12,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 13,
+      "Y": 12
+    },
+    {
+      "ComponentId": 12,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 1,
+      "Y": 12
+    },
+    {
+      "ComponentId": 12,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 11,
+      "Y": 10
+    },
+    {
+      "ComponentId": 12,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 10,
+      "Y": 10
+    },
+    {
+      "ComponentId": 12,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 13,
+      "Y": 8
+    },
+    {
+      "ComponentId": 12,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 13,
+      "Y": 5
+    },
+    {
+      "ComponentId": 12,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 12,
+      "Y": 6
+    },
+    {
+      "ComponentId": 12,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 1,
+      "Y": 8
+    },
+    {
+      "ComponentId": 12,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 2,
+      "Y": 6
+    },
+    {
+      "ComponentId": 12,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 1,
+      "Y": 5
+    },
+    {
+      "ComponentId": 12,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 4,
+      "Y": 10
+    },
+    {
+      "ComponentId": 12,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 3,
+      "Y": 10
+    },
+    {
+      "ComponentId": 11,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 9,
+      "Y": 5
+    },
+    {
+      "ComponentId": 11,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 4,
+      "Y": 5
+    },
+    {
+      "ComponentId": 80,
+      "Modification": 10,
+      "Quality": 5,
+      "X": 7,
+      "Y": 10
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 9,
+      "Y": 10
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 5,
+      "Y": 10
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 9,
+      "Y": 8
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 5,
+      "Y": 8
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 6,
+      "Y": 5
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 7,
+      "Y": 6
+    },
+    {
+      "ComponentId": 66,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 6,
+      "Y": 3
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 8,
+      "Y": 4
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 8,
+      "Y": 3
+    }
+  ],
+  "Perks": {}
+}

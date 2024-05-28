@@ -10,7 +10,7 @@
   "Icon": "teleporter",
   "Layout": "010111010",
   "CellType": "2",
-  "DeviceId": 15,
+  "DeviceId": 32,
   "PossibleModifications": [
     2,
     7,

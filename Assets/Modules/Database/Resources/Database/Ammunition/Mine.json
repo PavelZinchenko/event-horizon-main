@@ -4,19 +4,16 @@
   "Body": {
     "Size": 0.7,
     "ParentVelocityEffect": 0.0,
-    "Lifetime": 30.0,
+    "Lifetime": 20.0,
     "Weight": 0.5,
     "HitPoints": 10,
     "Color": "#C0C0C0",
     "BulletPrefab": 9,
-    "CanBeDisarmed": true,
-    "FriendlyFire": true,
-    "Type": 2
+    "CanBeDisarmed": true
   },
-  "Controller": {},
   "Triggers": [
     {
-      "Condition": 2,
+      "Condition": 6,
       "EffectType": 2,
       "AudioClip": "explosion_04",
       "Ammunition": 111,
@@ -24,7 +21,16 @@
       "ColorMode": 2,
       "Quantity": 1,
       "Size": 10.0,
-      "PowerMultiplier": 40.0
+      "PowerMultiplier": 100.0,
+      "Rotation": "0",
+      "OffsetX": "0"
+    },
+    {
+      "Condition": 5,
+      "EffectType": 1,
+      "VisualEffect": 1,
+      "Size": 2.0,
+      "Lifetime": 0.2
     }
   ]
 }

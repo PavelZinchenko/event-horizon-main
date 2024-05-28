@@ -1,0 +1,32 @@
+{
+  "ItemType": 28,
+  "Id": 300,
+  "RootNode": {
+    "Type": 3,
+    "Requirement": {
+      "Type": 6,
+      "DifficultyLevel": 1
+    },
+    "Nodes": [
+      {
+        "Type": 2,
+        "Nodes": [
+          {
+            "Requirement": {
+              "Type": 17,
+              "Value": 50.0
+            }
+          },
+          {
+            "Type": 63,
+            "Requirement": {
+              "Type": 17,
+              "Value": 30.0
+            },
+            "MinValue": 1.2
+          }
+        ]
+      }
+    ]
+  }
+}

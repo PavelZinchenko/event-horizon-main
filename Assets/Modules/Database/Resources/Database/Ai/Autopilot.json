@@ -5,19 +5,12 @@
     "Type": 3,
     "Nodes": [
       {
-        "Type": 6,
-        "Node": {
-          "Type": 52
-        }
-      },
-      {
-        "Type": 109,
-        "Cooldown": 2.0,
-        "InRange": true
+        "Type": 52,
+        "Cooldown": 2.0
       },
       {
         "Type": 1,
-        "ItemId": 17
+        "ItemId": 24
       }
     ]
   }

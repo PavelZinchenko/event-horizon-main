@@ -1,0 +1,18 @@
+{
+  "ItemType": 7,
+  "Id": 24,
+  "Name": "$IronBall",
+  "ModelImage": "ironball",
+  "ModelScale": 1.2,
+  "SizeClass": 4,
+  "Layout": "0033300013331033444333344433334443301333100033300",
+  "Barrels": [
+    {
+      "AutoAimingArc": 360.0,
+      "RotationSpeed": 90.0,
+      "WeaponClass": "L",
+      "Image": "ironball",
+      "Size": 1.0
+    }
+  ]
+}

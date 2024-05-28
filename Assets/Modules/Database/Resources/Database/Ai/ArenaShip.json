@@ -1,0 +1,86 @@
+{
+  "ItemType": 28,
+  "Id": 25,
+  "RootNode": {
+    "Type": 2,
+    "Nodes": [
+      {
+        "Type": 1,
+        "Requirement": {
+          "Type": 19
+        },
+        "ItemId": 22
+      },
+      {
+        "Type": 1,
+        "Requirement": {
+          "Type": 2,
+          "Requirements": [
+            {
+              "Type": 1,
+              "Requirements": [
+                {
+                  "Type": 100,
+                  "Value": 0.5
+                },
+                {
+                  "Type": 10,
+                  "DeviceClass": 13
+                }
+              ]
+            },
+            {
+              "Type": 1,
+              "Requirements": [
+                {
+                  "Type": 101,
+                  "Value": 8.0
+                },
+                {
+                  "Type": 10
+                }
+              ]
+            }
+          ]
+        },
+        "ItemId": 13
+      },
+      {
+        "Type": 1,
+        "Requirement": {
+          "Type": 2,
+          "Requirements": [
+            {
+              "Type": 11
+            },
+            {
+              "Type": 7,
+              "SizeClass": 4
+            },
+            {
+              "Type": 3,
+              "Requirements": [
+                {
+                  "Type": 101,
+                  "Value": 5.0
+                }
+              ]
+            }
+          ]
+        },
+        "ItemId": 24
+      },
+      {
+        "Type": 1,
+        "Requirement": {
+          "Type": 11
+        },
+        "ItemId": 11
+      },
+      {
+        "Type": 1,
+        "ItemId": 14
+      }
+    ]
+  }
+}

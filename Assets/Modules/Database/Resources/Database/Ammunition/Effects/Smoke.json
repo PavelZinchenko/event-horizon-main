@@ -5,6 +5,7 @@
     {
       "Type": 3,
       "Image": "CloudWhite",
+      "Quantity": 3,
       "GrowthRate": 0.5,
       "TurnRate": 30.0
     }

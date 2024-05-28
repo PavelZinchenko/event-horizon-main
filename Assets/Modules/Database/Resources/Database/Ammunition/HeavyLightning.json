@@ -9,8 +9,7 @@
     "Color": "#7ACFFF",
     "BulletPrefab": 5,
     "EnergyCost": 5.0,
-    "AiBulletBehavior": 2,
-    "Type": 3
+    "AiBulletBehavior": 2
   },
   "Controller": {
     "Type": 2
@@ -26,25 +25,24 @@
       "Condition": 3,
       "EffectType": 2,
       "Ammunition": 106,
-      "Quantity": 10,
-      "Size": 1.0,
+      "Quantity": 9,
       "Cooldown": 0.5,
       "RandomFactor": 0.75,
-      "Rotation": "RANDOM(0, 360)",
-      "OffsetX": "Size/2"
+      "Rotation": "RANDOM(0,360)",
+      "OffsetX": "0.5"
     }
   ],
-  "ImpactType": 2,
+  "ImpactType": 1,
   "Effects": [
     {
       "DamageType": 1,
-      "Power": 100.0,
+      "Power": 10.0,
       "Factor": 1.0
     },
     {
       "Type": 3,
       "DamageType": 1,
-      "Power": 10.0
+      "Power": 1.0
     }
   ]
 }

@@ -3,6 +3,7 @@
   "Id": 85,
   "Name": "$ProjectileCannon_L",
   "DisplayCategory": 1,
+  "Availability": 1,
   "ComponentStatsId": 1,
   "Faction": 1,
   "Icon": "gun6",

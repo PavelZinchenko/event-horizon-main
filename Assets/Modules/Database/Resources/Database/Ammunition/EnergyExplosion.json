@@ -16,7 +16,7 @@
       "EffectType": 1,
       "VisualEffect": 2,
       "Size": 1.0,
-      "Lifetime": 1.0
+      "Lifetime": 0.5
     }
   ],
   "ImpactType": 1,

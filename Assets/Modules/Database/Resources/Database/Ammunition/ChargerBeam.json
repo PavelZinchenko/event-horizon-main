@@ -1,0 +1,53 @@
+{
+  "ItemType": 25,
+  "Id": 148,
+  "Body": {
+    "Size": 1.0,
+    "AttachedToParent": true,
+    "Range": 15.0,
+    "Lifetime": 0.1,
+    "Color": "#0080FF",
+    "BulletPrefab": 6,
+    "EnergyCost": 20.0,
+    "FriendlyFire": true,
+    "AiBulletBehavior": 2
+  },
+  "Controller": {
+    "Type": 2
+  },
+  "Triggers": [
+    {
+      "Condition": 3,
+      "EffectType": 1,
+      "VisualEffect": 1,
+      "Color": "#31EBFF",
+      "ColorMode": 1,
+      "Size": 1.0,
+      "Lifetime": 0.2
+    },
+    {
+      "Condition": 3,
+      "EffectType": 4,
+      "VisualEffect": 11,
+      "ColorMode": 1,
+      "Size": 2.0,
+      "Lifetime": 1.0,
+      "Cooldown": 0.2
+    }
+  ],
+  "ImpactType": 2,
+  "Effects": [
+    {
+      "Type": 14,
+      "DamageType": 1,
+      "Power": 120.0,
+      "Factor": 2.0
+    },
+    {
+      "Type": 15,
+      "DamageType": 1,
+      "Power": 20.0,
+      "Factor": 2.0
+    }
+  ]
+}

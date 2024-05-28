@@ -1,0 +1,50 @@
+{
+  "ItemType": 6,
+  "Id": 147,
+  "SizeClass": 2,
+  "Name": "$redship3",
+  "Faction": 19,
+  "IconImage": "red_ship3",
+  "IconScale": 1.0,
+  "ModelImage": "red_ship3",
+  "ModelScale": 4.0,
+  "EngineColor": "#40FF1000",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.34,
+        "y": 0.8
+      },
+      "Size": 0.5
+    },
+    {
+      "Position": {
+        "x": -0.34,
+        "y": -0.8
+      },
+      "Size": 0.5
+    }
+  ],
+  "Layout": "0000000000000000001110000000000111000000000111110000440122222104444112222211444411222221144441122222114444112222211440011155511100001015551010000000555000000000005000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.33,
+        "y": 0.78
+      },
+      "WeaponClass": "CS"
+    },
+    {
+      "Position": {
+        "x": 0.33,
+        "y": -0.78
+      },
+      "WeaponClass": "TL"
+    }
+  ],
+  "Features": {
+    "ShipWeightBonus": 0.3,
+    "EquipmentWeightBonus": 0.3,
+    "ArmorBonus": 1.0
+  }
+}

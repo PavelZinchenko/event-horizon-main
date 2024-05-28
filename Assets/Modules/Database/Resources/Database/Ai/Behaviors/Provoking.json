@@ -1,0 +1,34 @@
+{
+  "ItemType": 28,
+  "Id": 143,
+  "RootNode": {
+    "Type": 5,
+    "Nodes": [
+      {
+        "Type": 300,
+        "Text": "$Provoking1"
+      },
+      {
+        "Type": 300,
+        "Text": "$Provoking2"
+      },
+      {
+        "Type": 300,
+        "Text": "$Provoking3"
+      },
+      {
+        "Type": 300,
+        "Text": "$Provoking4"
+      },
+      {
+        "Type": 300,
+        "Text": "$Provoking5"
+      },
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  }
+}

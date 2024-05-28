@@ -7,7 +7,7 @@
   "DamageMultiplier": 1.0,
   "DefenseMultiplier": 1.0,
   "SpeedMultiplier": 1.0,
-  "BuildExtraCycles": 9,
+  "BuildExtraCycles": 7,
   "Capacity": 1,
   "ActivationType": 2,
   "LaunchSound": "launch_08",

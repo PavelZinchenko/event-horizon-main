@@ -7,34 +7,28 @@
     {
       "ComponentId": 78,
       "X": 1,
-      "Y": 1,
-      "BarrelId": -1
+      "Y": 1
     },
     {
       "ComponentId": 67,
       "X": 1,
-      "Y": 2,
-      "BarrelId": -1
+      "Y": 2
     },
     {
       "ComponentId": 72,
       "X": 2,
-      "Y": 1,
-      "BarrelId": -1
+      "Y": 1
     },
     {
       "ComponentId": 72,
-      "X": 2,
-      "BarrelId": -1
+      "X": 2
+    },
+    {
+      "ComponentId": 72
     },
     {
       "ComponentId": 72,
-      "BarrelId": -1
-    },
-    {
-      "ComponentId": 72,
-      "Y": 1,
-      "BarrelId": -1
+      "Y": 1
     },
     {
       "ComponentId": 128,

@@ -3,7 +3,7 @@
   "Id": 148,
   "Name": "$ChargedTorpedo_L_1",
   "DisplayCategory": 1,
-  "Availability": 1,
+  "Availability": 2,
   "ComponentStatsId": 1,
   "Faction": 10,
   "Level": 165,
@@ -12,7 +12,7 @@
   "Layout": "0110011001100110",
   "CellType": "4",
   "WeaponId": 11,
-  "AmmunitionId": 11,
+  "AmmunitionId": 142,
   "WeaponSlotType": "T",
   "PossibleModifications": [
     14,

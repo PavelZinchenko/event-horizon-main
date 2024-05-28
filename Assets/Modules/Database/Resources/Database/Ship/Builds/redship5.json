@@ -1,0 +1,59 @@
+{
+  "ItemType": 8,
+  "Id": 351,
+  "ShipId": 149,
+  "AvailableForEnemy": false,
+  "Components": [
+    {
+      "ComponentId": 75,
+      "X": 4,
+      "Y": 4
+    },
+    {
+      "ComponentId": 61,
+      "X": 5,
+      "Y": 9
+    },
+    {
+      "ComponentId": 57,
+      "X": 6,
+      "Y": 12
+    },
+    {
+      "ComponentId": 62,
+      "X": 9,
+      "Y": 7
+    },
+    {
+      "ComponentId": 62,
+      "X": 1,
+      "Y": 7
+    },
+    {
+      "ComponentId": 63,
+      "X": 10,
+      "Y": 10
+    },
+    {
+      "ComponentId": 63,
+      "X": 8,
+      "Y": 10
+    },
+    {
+      "ComponentId": 63,
+      "X": 3,
+      "Y": 10
+    },
+    {
+      "ComponentId": 63,
+      "X": 1,
+      "Y": 10
+    },
+    {
+      "ComponentId": 258,
+      "X": 5,
+      "Y": 1
+    }
+  ],
+  "Perks": {}
+}

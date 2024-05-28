@@ -2,9 +2,11 @@
   "ItemType": 3,
   "Id": 8,
   "WeaponClass": 5,
-  "FireRate": 0.05,
+  "FireRate": 0.125,
   "ActivationType": 1,
+  "ShotSound": "launch_04",
   "ChargeSound": "launch_03",
-  "ShotEffectPrefab": "Charge1",
+  "VisualEffect": 16,
+  "EffectSize": 2.5,
   "ControlButtonIcon": "controls_laser"
 }

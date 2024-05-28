@@ -1,0 +1,157 @@
+{
+  "ItemType": 8,
+  "Id": 347,
+  "ShipId": 145,
+  "AvailableForEnemy": false,
+  "Components": [
+    {
+      "ComponentId": 203,
+      "X": 12,
+      "Y": 25
+    },
+    {
+      "ComponentId": 75,
+      "X": 8,
+      "Y": 21
+    },
+    {
+      "ComponentId": 75,
+      "X": 17,
+      "Y": 21
+    },
+    {
+      "ComponentId": 75,
+      "X": 9,
+      "Y": 17
+    },
+    {
+      "ComponentId": 75,
+      "X": 16,
+      "Y": 17
+    },
+    {
+      "ComponentId": 62,
+      "Y": 20
+    },
+    {
+      "ComponentId": 62,
+      "Y": 17
+    },
+    {
+      "ComponentId": 62,
+      "Y": 14
+    },
+    {
+      "ComponentId": 62,
+      "X": 27,
+      "Y": 20
+    },
+    {
+      "ComponentId": 62,
+      "X": 27,
+      "Y": 17
+    },
+    {
+      "ComponentId": 62,
+      "X": 27,
+      "Y": 14
+    },
+    {
+      "ComponentId": 271,
+      "X": 23,
+      "Y": 13,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 271,
+      "X": 3,
+      "Y": 13
+    },
+    {
+      "ComponentId": 277,
+      "X": 23,
+      "Y": 25
+    },
+    {
+      "ComponentId": 277,
+      "X": 4,
+      "Y": 25
+    },
+    {
+      "ComponentId": 62,
+      "X": 8,
+      "Y": 9
+    },
+    {
+      "ComponentId": 62,
+      "X": 19,
+      "Y": 9
+    },
+    {
+      "ComponentId": 62,
+      "X": 11,
+      "Y": 7
+    },
+    {
+      "ComponentId": 62,
+      "X": 16,
+      "Y": 7
+    },
+    {
+      "ComponentId": 63,
+      "X": 14
+    },
+    {
+      "ComponentId": 63,
+      "X": 15,
+      "Y": 2
+    },
+    {
+      "ComponentId": 63,
+      "X": 13,
+      "Y": 2
+    },
+    {
+      "ComponentId": 63,
+      "X": 15,
+      "Y": 4
+    },
+    {
+      "ComponentId": 63,
+      "X": 13,
+      "Y": 4
+    },
+    {
+      "ComponentId": 62,
+      "X": 16,
+      "Y": 10
+    },
+    {
+      "ComponentId": 62,
+      "X": 11,
+      "Y": 10
+    },
+    {
+      "ComponentId": 62,
+      "X": 19,
+      "Y": 12
+    },
+    {
+      "ComponentId": 62,
+      "X": 8,
+      "Y": 12
+    },
+    {
+      "ComponentId": 271,
+      "X": 3,
+      "Y": 18
+    },
+    {
+      "ComponentId": 271,
+      "X": 23,
+      "Y": 18,
+      "BarrelId": 1
+    }
+  ],
+  "Perks": {}
+}

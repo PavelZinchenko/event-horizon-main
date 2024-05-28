@@ -1,0 +1,361 @@
+{
+  "ItemType": 8,
+  "Id": 358,
+  "ShipId": 146,
+  "AvailableForPlayer": false,
+  "DifficultyClass": 2,
+  "Components": [
+    {
+      "ComponentId": 217,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 8,
+      "Y": 14
+    },
+    {
+      "ComponentId": 75,
+      "Modification": 1,
+      "Quality": 5,
+      "X": 7,
+      "Y": 9
+    },
+    {
+      "ComponentId": 75,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 7,
+      "Y": 3
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 13,
+      "Y": 11,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 13,
+      "Y": 10,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 7,
+      "Y": 5
+    },
+    {
+      "ComponentId": 91,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 5,
+      "Y": 10
+    },
+    {
+      "ComponentId": 62,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 1,
+      "Y": 9
+    },
+    {
+      "ComponentId": 62,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 15,
+      "Y": 9
+    },
+    {
+      "ComponentId": 63,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 14,
+      "Y": 12
+    },
+    {
+      "ComponentId": 63,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 3,
+      "Y": 12
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 16,
+      "Y": 12
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 17,
+      "Y": 12
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 14,
+      "Y": 11
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 14,
+      "Y": 10
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 14,
+      "Y": 9
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 15,
+      "Y": 8
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 14,
+      "Y": 8
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 3,
+      "Y": 8
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 4,
+      "Y": 8
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 4,
+      "Y": 10
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 4,
+      "Y": 9
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 4,
+      "Y": 11
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 2,
+      "Y": 12
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 1,
+      "Y": 12
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 11,
+      "Y": 16
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 11,
+      "Y": 15
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 10,
+      "Y": 17
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 8,
+      "Y": 17
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 7,
+      "Y": 16
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 7,
+      "Y": 15
+    },
+    {
+      "ComponentId": 74,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 8,
+      "Y": 7
+    },
+    {
+      "ComponentId": 74,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 8,
+      "Y": 1
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 7,
+      "Y": 7
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 6,
+      "Y": 10
+    },
+    {
+      "ComponentId": 91,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 12,
+      "Y": 10,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 7,
+      "Y": 11
+    },
+    {
+      "ComponentId": 275,
+      "Modification": 7,
+      "Quality": 5,
+      "X": 4,
+      "Y": 6
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 12,
+      "Y": 11,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 7,
+      "Y": 8
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 7,
+      "Y": 9
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 11,
+      "Y": 9
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 11,
+      "Y": 11
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 11,
+      "Y": 8
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 11,
+      "Y": 7
+    },
+    {
+      "ComponentId": 159,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 11,
+      "Y": 5
+    },
+    {
+      "ComponentId": 271,
+      "Modification": 16,
+      "Quality": 5,
+      "X": 4,
+      "Y": 11
+    },
+    {
+      "ComponentId": 272,
+      "Modification": 5,
+      "Quality": 5,
+      "X": 11,
+      "Y": 6,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 272,
+      "Modification": 5,
+      "Quality": 5,
+      "X": 11,
+      "Y": 12,
+      "BarrelId": 1
+    }
+  ],
+  "Perks": {},
+  "LeftSatelliteBuild": 32,
+  "RightSatelliteBuild": 32
+}

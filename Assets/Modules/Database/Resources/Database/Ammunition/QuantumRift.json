@@ -1,0 +1,29 @@
+{
+  "ItemType": 25,
+  "Id": 130,
+  "Body": {
+    "Size": 1.0,
+    "ParentVelocityEffect": 0.0,
+    "Lifetime": 0.5,
+    "EnergyCost": 1.0
+  },
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "VisualEffect": 13,
+      "AudioClip": "explosion_06",
+      "Size": 2.0
+    }
+  ],
+  "ImpactType": 1,
+  "Effects": [
+    {
+      "Type": 10,
+      "Power": 100.0
+    },
+    {
+      "Power": 1.0
+    }
+  ]
+}

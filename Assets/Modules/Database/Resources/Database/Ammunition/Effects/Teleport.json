@@ -1,0 +1,15 @@
+{
+  "ItemType": 26,
+  "Id": 17,
+  "Elements": [
+    {
+      "Image": "twirl",
+      "GrowthRate": 2.0,
+      "TurnRate": -360.0
+    },
+    {
+      "Image": "star",
+      "Size": 1.5
+    }
+  ]
+}

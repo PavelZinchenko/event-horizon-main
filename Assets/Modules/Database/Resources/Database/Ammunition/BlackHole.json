@@ -1,0 +1,48 @@
+{
+  "ItemType": 25,
+  "Id": 146,
+  "Body": {
+    "Size": 4.0,
+    "ParentVelocityEffect": 0.0,
+    "Lifetime": 10.0,
+    "Weight": 100.0,
+    "Color": "#C345FF",
+    "BulletPrefab": 20
+  },
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 5,
+      "Size": 30.0,
+      "PowerMultiplier": 200.0
+    },
+    {
+      "Condition": 8,
+      "EffectType": 1,
+      "VisualEffect": 14,
+      "Size": 10.0,
+      "Lifetime": 0.5,
+      "Cooldown": 2.0
+    },
+    {
+      "Condition": 2,
+      "EffectType": 4,
+      "VisualEffect": 2,
+      "Size": 5.0,
+      "Lifetime": 1.0
+    }
+  ],
+  "ImpactType": 1,
+  "Effects": [
+    {
+      "Type": 9,
+      "DamageType": 1,
+      "Power": 50.0
+    },
+    {
+      "Type": 10,
+      "DamageType": 1,
+      "Power": 100.0
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "ItemType": 25,
+  "Id": 141,
+  "Body": {
+    "Size": 4.0,
+    "Length": 100.0,
+    "Velocity": 100.0,
+    "Range": 80.0,
+    "Color": "#FF20FF",
+    "BulletPrefab": 19,
+    "EnergyCost": 200.0
+  },
+  "Triggers": [
+    {
+      "Condition": 3,
+      "EffectType": 4,
+      "VisualEffect": 2,
+      "ColorMode": 2,
+      "Size": 2.5,
+      "Lifetime": 0.5,
+      "OncePerCollision": true
+    }
+  ],
+  "ImpactType": 2,
+  "Effects": [
+    {
+      "DamageType": 3,
+      "Power": 500.0
+    }
+  ]
+}

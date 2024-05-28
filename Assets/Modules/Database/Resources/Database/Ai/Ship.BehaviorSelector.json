@@ -5,76 +5,44 @@
     "Type": 2,
     "Nodes": [
       {
-        "Type": 1,
-        "Requirement": {
-          "Type": 2,
-          "Requirements": [
-            {
-              "Type": 13
-            },
-            {
-              "Type": 101,
-              "Value": 5.0
-            }
-          ]
-        },
-        "ItemId": 12
+        "Type": 3,
+        "Nodes": [
+          {
+            "Type": 1,
+            "ItemId": 301
+          },
+          {
+            "Type": 1,
+            "ItemId": 12
+          }
+        ]
       },
       {
         "Type": 1,
         "Requirement": {
-          "Type": 2,
-          "Requirements": [
-            {
-              "Type": 1,
-              "Requirements": [
-                {
-                  "Type": 100,
-                  "Value": 0.5
-                },
-                {
-                  "Type": 10,
-                  "DeviceClass": 13
-                }
-              ]
-            },
-            {
-              "Type": 1,
-              "Requirements": [
-                {
-                  "Type": 101,
-                  "Value": 8.0
-                },
-                {
-                  "Type": 10
-                }
-              ]
-            }
-          ]
+          "Type": 19
         },
-        "ItemId": 13
+        "ItemId": 22
       },
       {
         "Type": 3,
-        "Requirement": {
-          "Type": 6,
-          "DifficultyLevel": 1
-        },
         "Nodes": [
           {
-            "Type": 2,
-            "Nodes": [
-              {
-                "Requirement": {
-                  "Type": 17,
-                  "Value": 50.0
-                }
-              },
-              {
-                "Type": 63,
-                "MinValue": 1.2
-              }
-            ]
+            "Type": 1,
+            "ItemId": 302
+          },
+          {
+            "Type": 1,
+            "ItemId": 13
+          }
+        ]
+      },
+      {
+        "Type": 3,
+        "Nodes": [
+          {
+            "Type": 1,
+            "ItemId": 300
           },
           {
             "Type": 1,
@@ -83,7 +51,23 @@
         ]
       },
       {
+        "Type": 3,
+        "Nodes": [
+          {
+            "Type": 1,
+            "ItemId": 303
+          },
+          {
+            "Type": 1,
+            "ItemId": 24
+          }
+        ]
+      },
+      {
         "Type": 1,
+        "Requirement": {
+          "Type": 11
+        },
         "ItemId": 11
       }
     ]

@@ -9,28 +9,31 @@
     "HitPoints": 10,
     "Color": "#FFE1B5",
     "BulletPrefab": 8,
-    "EnergyCost": 50.0
+    "EnergyCost": 60.0,
+    "AiBulletBehavior": 4
   },
   "Triggers": [
     {
-      "Condition": 2,
-      "EffectType": 1,
-      "VisualEffect": 3,
-      "AudioClip": "hit_01",
+      "Condition": 6,
+      "EffectType": 2,
+      "AudioClip": "explosion_04",
+      "Ammunition": 111,
+      "Color": "#FFBE00",
       "ColorMode": 2,
-      "Size": 5.0
+      "Quantity": 1,
+      "Size": 10.0,
+      "PowerMultiplier": 100.0,
+      "Rotation": "0",
+      "OffsetX": "0"
     },
     {
       "Condition": 5,
       "EffectType": 2,
       "Ammunition": 110,
       "Quantity": 8,
-      "RandomFactor": 1.0
-    }
-  ],
-  "Effects": [
-    {
-      "Power": 20.0
+      "RandomFactor": 1.0,
+      "Rotation": "RANDOM(0, 360)",
+      "OffsetX": "0.5"
     }
   ]
 }

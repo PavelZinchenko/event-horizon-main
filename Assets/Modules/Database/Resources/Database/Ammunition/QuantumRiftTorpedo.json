@@ -1,0 +1,31 @@
+{
+  "ItemType": 25,
+  "Id": 129,
+  "Body": {
+    "Size": 4.0,
+    "Velocity": 15.0,
+    "Range": 45.0,
+    "Weight": 0.1,
+    "Color": "#7F00FF",
+    "BulletPrefab": 4,
+    "EnergyCost": 25.0
+  },
+  "Triggers": [
+    {
+      "Condition": 2,
+      "EffectType": 2,
+      "Ammunition": 130,
+      "Quantity": 1,
+      "Size": 5.0,
+      "PowerMultiplier": 50.0,
+      "Rotation": "0",
+      "OffsetX": "0"
+    },
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "VisualEffect": 12,
+      "Size": 2.0
+    }
+  ]
+}

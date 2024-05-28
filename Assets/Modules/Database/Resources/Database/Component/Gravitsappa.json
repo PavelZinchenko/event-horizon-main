@@ -1,0 +1,18 @@
+{
+  "ItemType": 1,
+  "Id": 277,
+  "Name": "$Gravitsappa",
+  "DisplayCategory": 4,
+  "Availability": 2,
+  "ComponentStatsId": 277,
+  "Faction": 19,
+  "Level": 300,
+  "Icon": "intertial_damper2",
+  "Color": "#80C080",
+  "Layout": "111111111",
+  "CellType": "5",
+  "PossibleModifications": [
+    11,
+    1
+  ]
+}

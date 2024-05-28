@@ -1,0 +1,22 @@
+{
+  "ItemType": 1,
+  "Id": 278,
+  "Name": "$CircularSaw",
+  "DisplayCategory": 1,
+  "Availability": 2,
+  "ComponentStatsId": 278,
+  "Faction": 19,
+  "Level": 500,
+  "Icon": "detonator1",
+  "Color": "#8080FF",
+  "Layout": "111111111",
+  "CellType": "4",
+  "WeaponId": 128,
+  "AmmunitionId": 135,
+  "WeaponSlotType": "S",
+  "PossibleModifications": [
+    14,
+    5,
+    1
+  ]
+}

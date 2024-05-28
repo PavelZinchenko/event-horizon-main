@@ -1,0 +1,33 @@
+{
+  "ItemType": 6,
+  "Id": 149,
+  "SizeClass": 1,
+  "Name": "$redship5",
+  "Faction": 19,
+  "IconImage": "red_ship5",
+  "IconScale": 1.0,
+  "ModelImage": "red_ship5",
+  "ModelScale": 3.0,
+  "EngineColor": "#40FF1000",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.83
+      },
+      "Size": 0.5
+    }
+  ],
+  "Layout": "0000000000000000004440000000000444000000000044400000000022222000000002222200000100222220010011122222111001112222211100111155511110011115551111011111555111110000005000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.9
+      }
+    }
+  ],
+  "Features": {
+    "ShipWeightBonus": 0.3,
+    "EquipmentWeightBonus": 0.3,
+    "ArmorBonus": 1.0
+  }
+}

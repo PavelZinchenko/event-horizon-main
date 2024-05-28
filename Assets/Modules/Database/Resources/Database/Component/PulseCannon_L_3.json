@@ -1,0 +1,28 @@
+{
+  "ItemType": 1,
+  "Id": 282,
+  "Name": "$PulseCannon_L_3",
+  "DisplayCategory": 1,
+  "Availability": 2,
+  "ComponentStatsId": 1,
+  "Faction": 1,
+  "Level": 200,
+  "Icon": "cannon_1x6",
+  "Color": "#808080",
+  "Layout": "001000001000001000001000001000001000",
+  "CellType": "4",
+  "WeaponId": 129,
+  "AmmunitionId": 147,
+  "WeaponSlotType": "C",
+  "PossibleModifications": [
+    13,
+    8,
+    21,
+    6,
+    16,
+    5,
+    2,
+    7,
+    1
+  ]
+}

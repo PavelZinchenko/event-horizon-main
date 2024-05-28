@@ -1,0 +1,35 @@
+{
+  "ItemType": 6,
+  "Id": 151,
+  "SizeClass": 2,
+  "Name": "$redship6",
+  "Faction": 19,
+  "IconImage": "red_ship6",
+  "IconScale": 1.0,
+  "ModelImage": "red_ship6",
+  "ModelScale": 3.0,
+  "EngineColor": "#40FF1000",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.83
+      },
+      "Size": 0.5
+    }
+  ],
+  "Layout": "000000444000000000000444000000000000444000000000000444000000000000444000000010013333310010111013333310111111113333311111011113333311110001113333311100000113333311000001115555511100011115555511110001115555511100000000505000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.9
+      },
+      "WeaponClass": "ST"
+    }
+  ],
+  "Features": {
+    "ShipWeightBonus": 0.3,
+    "EquipmentWeightBonus": 0.3,
+    "TurnRateBonus": 1.0,
+    "ArmorBonus": 1.0
+  }
+}

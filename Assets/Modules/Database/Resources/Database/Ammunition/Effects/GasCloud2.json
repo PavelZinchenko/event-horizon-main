@@ -1,0 +1,52 @@
+{
+  "ItemType": 26,
+  "Id": 15,
+  "Elements": [
+    {
+      "Image": "cloud",
+      "ColorMode": 2,
+      "Color": "#01FFCE00",
+      "Size": 1.2,
+      "Lifetime": 0.1
+    },
+    {
+      "Type": 2,
+      "Image": "wave",
+      "ColorMode": 2,
+      "Color": "#01FFCE00",
+      "Size": 1.2,
+      "Lifetime": 0.05
+    },
+    {
+      "Type": 3,
+      "Image": "smoke",
+      "ColorMode": 3,
+      "Color": "#80FF8080",
+      "Size": 1.2,
+      "TurnRate": 2.0,
+      "ParticleSize": 0.5
+    },
+    {
+      "Type": 3,
+      "Image": "CloudWhite",
+      "ColorMode": 3,
+      "Color": "#40808080",
+      "Size": 1.2,
+      "GrowthRate": -0.8,
+      "TurnRate": 5.0,
+      "ParticleSize": 0.5,
+      "Inverse": true
+    },
+    {
+      "Type": 3,
+      "Image": "CloudWhite",
+      "ColorMode": 3,
+      "Color": "#40808080",
+      "Size": 1.2,
+      "GrowthRate": -0.7,
+      "TurnRate": -5.0,
+      "ParticleSize": 0.5,
+      "Inverse": true
+    }
+  ]
+}

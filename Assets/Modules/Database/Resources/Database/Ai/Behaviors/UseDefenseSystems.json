@@ -75,6 +75,10 @@
                   {
                     "Type": 114,
                     "DeviceClass": 3
+                  },
+                  {
+                    "Type": 114,
+                    "DeviceClass": 21
                   }
                 ]
               }

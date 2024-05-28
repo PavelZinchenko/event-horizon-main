@@ -7,18 +7,19 @@
     "Velocity": 100.0,
     "Range": 50.0,
     "Color": "#FF4117",
-    "BulletPrefab": 2,
+    "BulletPrefab": 19,
     "EnergyCost": 40.0
   },
   "Triggers": [
     {
       "Condition": 3,
-      "EffectType": 1,
+      "EffectType": 4,
       "VisualEffect": 2,
       "AudioClip": "hit_01",
-      "Color": "#00000000",
       "Size": 2.0,
-      "Lifetime": 0.5
+      "Lifetime": 0.5,
+      "Cooldown": 0.1,
+      "OncePerCollision": true
     }
   ],
   "ImpactType": 1,

@@ -8,7 +8,8 @@
       "Size": 1.5
     },
     {
-      "ColorMode": 1
+      "ColorMode": 1,
+      "Size": 1.2
     },
     {
       "Type": 2,
@@ -22,7 +23,8 @@
       "ColorMode": 2,
       "Color": "#0000FF",
       "Quantity": 6,
-      "ParticleSize": 2.0
+      "Size": 1.2,
+      "ParticleSize": 1.5
     },
     {
       "Type": 5,

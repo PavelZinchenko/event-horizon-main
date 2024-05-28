@@ -1,0 +1,19 @@
+{
+  "ItemType": 26,
+  "Id": 12,
+  "Elements": [
+    {
+      "Type": 1,
+      "Image": "cloud",
+      "ColorMode": 2,
+      "Size": 0.1
+    },
+    {
+      "Type": 7,
+      "Image": "beam",
+      "ColorMode": 2,
+      "Quantity": 2,
+      "ParticleSize": 2.0
+    }
+  ]
+}

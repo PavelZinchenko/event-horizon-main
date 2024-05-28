@@ -1,0 +1,34 @@
+{
+  "ItemType": 25,
+  "Id": 140,
+  "Body": {
+    "Size": 3.0,
+    "AttachedToParent": true,
+    "Range": 80.0,
+    "Lifetime": 2.0,
+    "Color": "#4A96FF",
+    "BulletPrefab": 2,
+    "EnergyCost": 200.0,
+    "AiBulletBehavior": 2
+  },
+  "Controller": {
+    "Type": 2
+  },
+  "Triggers": [
+    {
+      "Condition": 3,
+      "EffectType": 1,
+      "VisualEffect": 1,
+      "ColorMode": 2,
+      "Size": 1.0,
+      "Lifetime": 0.2
+    }
+  ],
+  "ImpactType": 2,
+  "Effects": [
+    {
+      "DamageType": 2,
+      "Power": 500.0
+    }
+  ]
+}

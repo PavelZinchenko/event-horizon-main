@@ -4,7 +4,9 @@
   "WeaponClass": 5,
   "FireRate": 0.05,
   "ActivationType": 1,
+  "ShotSound": "launch_04",
   "ChargeSound": "launch_03",
-  "ShotEffectPrefab": "Charge1",
+  "VisualEffect": 16,
+  "EffectSize": 2.0,
   "ControlButtonIcon": "controls_laser"
 }

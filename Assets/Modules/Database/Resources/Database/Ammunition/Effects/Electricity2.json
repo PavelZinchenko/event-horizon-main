@@ -1,0 +1,12 @@
+{
+  "ItemType": 26,
+  "Id": 19,
+  "Elements": [
+    {
+      "Type": 7,
+      "Image": "beam",
+      "Loop": true,
+      "UseRealTime": true
+    }
+  ]
+}

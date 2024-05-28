@@ -1,0 +1,28 @@
+{
+  "ItemType": 26,
+  "Id": 16,
+  "Elements": [
+    {
+      "Type": 2,
+      "Image": "wave",
+      "ColorMode": 3,
+      "Color": "#80FFFFFF",
+      "Lifetime": 0.25,
+      "Loop": true,
+      "Inverse": true
+    },
+    {
+      "Type": 1,
+      "Image": "cloud",
+      "ColorMode": 2,
+      "Size": 0.4,
+      "GrowthRate": -1.0
+    },
+    {
+      "Type": 1,
+      "Image": "star",
+      "ColorMode": 2,
+      "Color": "#00000000"
+    }
+  ]
+}

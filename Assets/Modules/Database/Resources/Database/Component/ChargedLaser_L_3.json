@@ -3,7 +3,7 @@
   "Id": 119,
   "Name": "$ChargedLaser_L_3",
   "DisplayCategory": 1,
-  "Availability": 3,
+  "Availability": 2,
   "ComponentStatsId": 1,
   "Faction": 10,
   "Level": 300,
@@ -12,7 +12,7 @@
   "Layout": "0111001110011100111001110",
   "CellType": "4",
   "WeaponId": 9,
-  "AmmunitionId": 9,
+  "AmmunitionId": 140,
   "WeaponSlotType": "L",
   "PossibleModifications": [
     6,

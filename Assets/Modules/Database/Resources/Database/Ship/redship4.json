@@ -1,0 +1,37 @@
+{
+  "ItemType": 6,
+  "Id": 148,
+  "Name": "$redship4",
+  "Faction": 19,
+  "IconImage": "red_ship4",
+  "IconScale": 1.0,
+  "ModelImage": "red_ship4",
+  "ModelScale": 2.0,
+  "EngineColor": "#40FF1000",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.95
+      },
+      "Size": 0.5
+    }
+  ],
+  "Layout": "0000000000000004440000000144410000001444100000011111000000111110000001111100000011111000000555550000005555500000555555500",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.75
+      },
+      "AutoAimingArc": 60.0
+    }
+  ],
+  "Features": {
+    "KineticResistance": 1.0,
+    "HeatResistance": 1.0,
+    "ShipWeightBonus": 0.3,
+    "EquipmentWeightBonus": 0.3,
+    "VelocityBonus": 0.5,
+    "TurnRateBonus": 0.5,
+    "EnergyBonus": -0.5
+  }
+}

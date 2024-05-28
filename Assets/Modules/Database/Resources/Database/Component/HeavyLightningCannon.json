@@ -3,7 +3,7 @@
   "Id": 250,
   "Name": "$HeavyLightningCannon",
   "DisplayCategory": 1,
-  "Availability": 1,
+  "Availability": 2,
   "ComponentStatsId": 1,
   "Faction": 15,
   "Level": 200,
