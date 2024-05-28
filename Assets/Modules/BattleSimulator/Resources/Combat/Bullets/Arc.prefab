@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1192946445688640272}
   - component: {fileID: 9057261358212283824}
   - component: {fileID: -3172269112989878956}
+  - component: {fileID: 2472538758852565435}
   m_Layer: 0
   m_Name: Arc
   m_TagString: Untagged
@@ -29,6 +30,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3445522938480407447}
   m_Father: {fileID: 0}
@@ -46,6 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a21f0647fd18802448fad8a3a33aa00d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _interpolation: 1
 --- !u!114 &9057261358212283824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,6 +85,22 @@ MonoBehaviour:
   LaserView: {fileID: 0}
   LightningView: {fileID: 0}
   ArcView: {fileID: 9057261358212283824}
+--- !u!114 &2472538758852565435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231942929414280080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5c990cb10f9d134485822ceef04b932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _commonCollider: {fileID: 7865515571733987160}
+  _circleCollider: {fileID: 0}
+  _rayCastCollider: {fileID: 0}
+  _trailView: {fileID: 0}
 --- !u!1 &8706401865920067318
 GameObject:
   m_ObjectHideFlags: 0
@@ -111,6 +130,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230896592440639888}
   m_RootOrder: 0
@@ -126,6 +146,7 @@ LineRenderer:
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 0
+  m_StaticShadowCaster: 0
   m_MotionVectors: 0
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
@@ -287,3 +308,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isStatic: 0
+  _preciseTriggerHitPoint: 0
+  _ignoreTriggerStayEvent: 0

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 114917086099957676}
   - component: {fileID: 114199047567375388}
   - component: {fileID: 114184730873293322}
+  - component: {fileID: -7840151749972540480}
   m_Layer: 0
   m_Name: CommonProjectile
   m_TagString: Untagged
@@ -100,6 +101,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isStatic: 0
+  _preciseTriggerHitPoint: 0
+  _ignoreTriggerStayEvent: 0
 --- !u!114 &114199047567375388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,6 +139,23 @@ MonoBehaviour:
   BulletObject: {fileID: 4568808411076558}
   EngineObject: {fileID: 0}
   TrailObject: {fileID: 0}
+  JointVisualizer: {fileID: 0}
+--- !u!114 &-7840151749972540480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151418086076064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5c990cb10f9d134485822ceef04b932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _commonCollider: {fileID: 114917086099957676}
+  _circleCollider: {fileID: 0}
+  _rayCastCollider: {fileID: 0}
+  _trailView: {fileID: 0}
 --- !u!1 &1362035776007708
 GameObject:
   m_ObjectHideFlags: 0

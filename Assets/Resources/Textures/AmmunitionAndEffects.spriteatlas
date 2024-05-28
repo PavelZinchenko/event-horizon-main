@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AmmunitionAndEffects
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 2
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 100
+      m_CrunchedCompression: 1
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 21300000, guid: 7a60ff85a54450242a4f06d5f2a120b7, type: 3}
+    - {fileID: 21300000, guid: f4f645ea959ac7e4b858f143b1cc6c79, type: 3}
+    - {fileID: 21300000, guid: 82358cebddc696c4880b24b384d1a591, type: 3}
+    - {fileID: 21300000, guid: 46941c900b093da438709ea49dac4770, type: 3}
+    - {fileID: 21300000, guid: 57c04174c3d4a0d49aae2bae28ef1dbc, type: 3}
+    - {fileID: 21300000, guid: ba0d297a03e3033439a4045bf4cadd87, type: 3}
+    - {fileID: 21300000, guid: c225586405bea144fbdf68262d0f38e8, type: 3}
+    - {fileID: 21300000, guid: f8cf525834b328e49ac9b80bfb387c63, type: 3}
+    - {fileID: 21300000, guid: 89853811b8ddd5d47a27e7dd9097acb8, type: 3}
+    - {fileID: 21300000, guid: d31d5fcc9f612414593d21a0fe914ce9, type: 3}
+    - {fileID: 21300000, guid: e6d788de14992cc4cb674ddd67e50d15, type: 3}
+    - {fileID: 21300000, guid: 3bd9eba72b898ba45a49e0ffb64f7f29, type: 3}
+    - {fileID: 21300000, guid: 3eedf2316e137f242bc0e72f703d3d38, type: 3}
+    - {fileID: 21300000, guid: 37b7648b021715d41b196da630063c19, type: 3}
+    - {fileID: 21300000, guid: c657ae431d8bfb74fa3083f97e6dbcb7, type: 3}
+    - {fileID: 21300000, guid: 103a41dc78df13d4da15afb42b85d5da, type: 3}
+    - {fileID: 21300000, guid: d611984d4ec1ad24aa9874d1a6c57e7a, type: 3}
+    - {fileID: 21300000, guid: f49c548b64b9cc24e9a640eec8480604, type: 3}
+    - {fileID: 21300000, guid: 63239b0bc7e580f409e6b42fc932d25c, type: 3}
+    - {fileID: 21300000, guid: efee01b3b8defaa40a84777f53821465, type: 3}
+    - {fileID: 21300000, guid: d9d314c5542ba3c46bda77f687c6c62c, type: 3}
+    - {fileID: 21300000, guid: 4ac9c538812554343bf8299f30f059a4, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 46941c900b093da438709ea49dac4770, type: 3}
+  - {fileID: 21300000, guid: 89853811b8ddd5d47a27e7dd9097acb8, type: 3}
+  - {fileID: 21300000, guid: 3eedf2316e137f242bc0e72f703d3d38, type: 3}
+  - {fileID: 21300000, guid: c657ae431d8bfb74fa3083f97e6dbcb7, type: 3}
+  - {fileID: 21300000, guid: efee01b3b8defaa40a84777f53821465, type: 3}
+  - {fileID: 21300000, guid: c225586405bea144fbdf68262d0f38e8, type: 3}
+  - {fileID: 21300000, guid: 57c04174c3d4a0d49aae2bae28ef1dbc, type: 3}
+  - {fileID: 21300000, guid: 7a60ff85a54450242a4f06d5f2a120b7, type: 3}
+  - {fileID: 21300000, guid: d9d314c5542ba3c46bda77f687c6c62c, type: 3}
+  - {fileID: 21300000, guid: 3bd9eba72b898ba45a49e0ffb64f7f29, type: 3}
+  - {fileID: 21300000, guid: 4ac9c538812554343bf8299f30f059a4, type: 3}
+  - {fileID: 21300000, guid: f8cf525834b328e49ac9b80bfb387c63, type: 3}
+  - {fileID: 21300000, guid: ba0d297a03e3033439a4045bf4cadd87, type: 3}
+  - {fileID: 21300000, guid: f4f645ea959ac7e4b858f143b1cc6c79, type: 3}
+  - {fileID: 21300000, guid: 63239b0bc7e580f409e6b42fc932d25c, type: 3}
+  - {fileID: 21300000, guid: f49c548b64b9cc24e9a640eec8480604, type: 3}
+  - {fileID: 21300000, guid: 37b7648b021715d41b196da630063c19, type: 3}
+  - {fileID: 21300000, guid: 82358cebddc696c4880b24b384d1a591, type: 3}
+  - {fileID: 21300000, guid: d31d5fcc9f612414593d21a0fe914ce9, type: 3}
+  - {fileID: 21300000, guid: 103a41dc78df13d4da15afb42b85d5da, type: 3}
+  - {fileID: 21300000, guid: d611984d4ec1ad24aa9874d1a6c57e7a, type: 3}
+  - {fileID: 21300000, guid: e6d788de14992cc4cb674ddd67e50d15, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - energy1
+  - plasma
+  - rocket3
+  - tutorial_bullet
+  - star
+  - mine
+  - fragment
+  - ball
+  - shield
+  - rocket2
+  - smoke
+  - parasite
+  - hotspot1
+  - bomb
+  - engine_light
+  - CloudWhite
+  - star
+  - saw256
+  - plasma2
+  - vortex
+  - cloud
+  - rocket
+  m_RenderDataMap: {}
+  m_Tag: AmmunitionAndEffects
+  m_IsVariant: 0

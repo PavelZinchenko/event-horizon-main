@@ -98,6 +98,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 19ac418331a70524cb7ba4a27d0bee04, type: 3}
   - {fileID: 21300000, guid: 5070b1b3422c313498278640eb26d1bf, type: 3}
   - {fileID: 21300000, guid: f06224d3aa140f047aa85affc8dee5cf, type: 3}
+  - {fileID: 21300000, guid: 5614bb046224daf459421ff101221af1, type: 3}
   - {fileID: 21300000, guid: c663de448b332dd429052c3299d97a8c, type: 3}
   - {fileID: 21300000, guid: 87de8954ab188a14c89a48cacf9a440b, type: 3}
   - {fileID: 21300000, guid: 8257f7b4f33ce3145b7565cfbcadd5e4, type: 3}
@@ -225,6 +226,7 @@ SpriteAtlas:
   - armor62
   - pointdefense
   - shield_generator1
+  - cannon_1x6
   - shotgun2
   - missile2
   - armor13

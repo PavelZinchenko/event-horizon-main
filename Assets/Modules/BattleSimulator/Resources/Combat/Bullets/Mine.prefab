@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 114245712079638562}
   - component: {fileID: 114655833882548724}
   - component: {fileID: 114062564498765380}
+  - component: {fileID: 6789280478436460944}
   m_Layer: 0
   m_Name: Mine
   m_TagString: Untagged
@@ -58,7 +59,7 @@ Rigidbody2D:
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!58 &58222967078550208
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -100,6 +101,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isStatic: 0
+  _preciseTriggerHitPoint: 0
+  _ignoreTriggerStayEvent: 0
 --- !u!114 &114655833882548724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,6 +143,23 @@ MonoBehaviour:
   BulletObject: {fileID: 4172119290742146}
   EngineObject: {fileID: 0}
   TrailObject: {fileID: 0}
+  JointVisualizer: {fileID: 0}
+--- !u!114 &6789280478436460944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1237796320432366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5c990cb10f9d134485822ceef04b932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _commonCollider: {fileID: 114245712079638562}
+  _circleCollider: {fileID: 0}
+  _rayCastCollider: {fileID: 0}
+  _trailView: {fileID: 0}
 --- !u!1 &1322306166505260
 GameObject:
   m_ObjectHideFlags: 0

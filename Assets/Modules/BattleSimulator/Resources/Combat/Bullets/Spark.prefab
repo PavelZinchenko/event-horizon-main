@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 114432803521927064}
   - component: {fileID: 114997928533383960}
   - component: {fileID: 114449889997603888}
+  - component: {fileID: -8977306448321755412}
   m_Layer: 0
   m_Name: Spark
   m_TagString: Untagged
@@ -142,7 +143,7 @@ Rigidbody2D:
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!58 &58417705093741974
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -184,6 +185,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isStatic: 0
+  _preciseTriggerHitPoint: 0
+  _ignoreTriggerStayEvent: 0
 --- !u!114 &114997928533383960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,3 +227,20 @@ MonoBehaviour:
   BulletObject: {fileID: 4189101699732210}
   EngineObject: {fileID: 0}
   TrailObject: {fileID: 0}
+  JointVisualizer: {fileID: 0}
+--- !u!114 &-8977306448321755412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1722842051486574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5c990cb10f9d134485822ceef04b932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _commonCollider: {fileID: 114432803521927064}
+  _circleCollider: {fileID: 0}
+  _rayCastCollider: {fileID: 0}
+  _trailView: {fileID: 0}

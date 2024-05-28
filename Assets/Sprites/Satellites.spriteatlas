@@ -53,6 +53,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: be14a810bc7c4e440b71173306939a33, type: 3}
   - {fileID: 21300000, guid: b885c3206fc36394594144589f369727, type: 3}
   - {fileID: 21300000, guid: dc192d5031a20d449a1870272445cec9, type: 3}
+  - {fileID: 21300000, guid: d76c0141cdd2d2943b2b91219b13b134, type: 3}
   - {fileID: 21300000, guid: 3f7da4510520a2047978d555ed779d10, type: 3}
   - {fileID: 21300000, guid: bf95ce51c0722cd4b91d6553575b02b9, type: 3}
   - {fileID: 21300000, guid: 4a10c9c11ca204c498f4aa67ad808bde, type: 3}
@@ -63,17 +64,20 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 558a2558915084d4eb1442550c94e775, type: 3}
   - {fileID: 21300000, guid: 88cd21e8689c29e4abc6deeb5b04defc, type: 3}
   - {fileID: 21300000, guid: 7502be5a1ad63f74b89655414f13becd, type: 3}
+  - {fileID: 21300000, guid: 9aebfa7a77c73064794f108e6f59256a, type: 3}
   - {fileID: 21300000, guid: 8e55648b7a979074d9d3df38373298c7, type: 3}
   - {fileID: 21300000, guid: 97b0d17cefeb7614390d609b9768bed9, type: 3}
   - {fileID: 21300000, guid: f5637dac1bfc5e448a39b46c823d9fb2, type: 3}
   - {fileID: 21300000, guid: 4f060f7d488430b4588ef5243ddb9bed, type: 3}
   - {fileID: 21300000, guid: ae4beb5ed2528e845984b023ce93554f, type: 3}
   - {fileID: 21300000, guid: 45ab3a8e5a440644599e3d68d7a0240d, type: 3}
+  - {fileID: 21300000, guid: 4189c59f52e8b6249be892c9c95e5fc0, type: 3}
   - {fileID: 21300000, guid: 1523dfef8f5d10b4da569fd9c1286ce8, type: 3}
   m_PackedSpriteNamesToIndex:
   - satellite5
   - purple_turret
   - santa_gun
+  - powerbank
   - holy_gun
   - worm_segment
   - satellite1
@@ -84,12 +88,14 @@ SpriteAtlas:
   - hovertank
   - turret
   - satellite4
+  - turret_red
   - hovertank_gun
   - worm_joint
   - satellite6
   - worm_joint2
   - worm_segment2
   - devourer_turret
+  - ironball
   - repair_bot
   m_RenderDataMap: {}
   m_Tag: Satellites
