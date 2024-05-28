@@ -35,6 +35,8 @@ namespace GameDatabase.DataModel
 					return new BulletController_Beam(serializable, loader);
 				case BulletControllerType.Parametric:
 					return new BulletController_Parametric(serializable, loader);
+				case BulletControllerType.Harpoon:
+					return new BulletController_Harpoon(serializable, loader);
 				default:
                     throw new DatabaseException("BulletController: Invalid content type - " + serializable.Type);
 			}
@@ -79,6 +81,7 @@ namespace GameDatabase.DataModel
 	    T Create(BulletController_Homing content);
 	    T Create(BulletController_Beam content);
 	    T Create(BulletController_Parametric content);
+	    T Create(BulletController_Harpoon content);
     }
 
     public partial class BulletController_Projectile : BulletController
@@ -308,6 +311,55 @@ namespace GameDatabase.DataModel
 				if (name == "Rotation") return _context._rotation;
 				if (name == "Size") return _context._size;
 				if (name == "Length") return _context._length;
+				return base.ResolveFunction(name);
+			}
+
+			public override Expression<Variant> ResolveVariable(string name)
+			{
+				return base.ResolveVariable(name);
+			}
+
+		}
+
+    }
+    public partial class BulletController_Harpoon : BulletController
+    {
+		partial void OnDataDeserialized(BulletControllerSerializable serializable, Database.Loader loader);
+
+  		public BulletController_Harpoon(BulletControllerSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			var variableResolver = GetVariableResolver();
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBulletControllerFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+
+		private IVariableResolver _iVariableResolver;
+		protected override IVariableResolver GetVariableResolver() {
+			if(_iVariableResolver == null)
+				_iVariableResolver = new VariableResolver(this);
+			return _iVariableResolver;
+		}
+
+		private class VariableResolver : BaseVariableResolver
+		{
+			private BulletController_Harpoon _context;
+			
+			protected override BulletController Context => _context;
+
+			public VariableResolver(BulletController_Harpoon context)
+			{
+				_context = context;
+			}
+
+			public override IFunction<Variant> ResolveFunction(string name)
+            {
 				return base.ResolveFunction(name);
 			}
 

@@ -11,7 +11,7 @@ namespace Combat.Ai
 
     public interface IController
     {
-	    void Update(float deltaTime);
+        void Update(float deltaTime, in AiManager.Options options);
         ControllerStatus Status { get; }
     }
 

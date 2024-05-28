@@ -9,4 +9,7 @@
     <item name="Mine" />
     <item name="Wave" />
     <item name="BlackHole" />
+    <item name="Harpoon" />
+    <item name="CircularSaw" />
+    <item name="PiercingLaser" />
 </data>

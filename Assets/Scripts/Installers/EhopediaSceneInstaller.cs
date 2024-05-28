@@ -17,6 +17,7 @@ namespace Installers
     {
         [SerializeField] private Settings _settings;
         [SerializeField] private TrailRendererPool _trailRendererPool;
+        [SerializeField] private MaterialCache _materialCache;
 
         public override void InstallBindings()
         {
@@ -41,6 +42,8 @@ namespace Installers
 			Container.Bind<IGameObjectFactory>().To<GameObjectFactory>().AsCached();
 			Container.Bind<Combat.Ai.BehaviorTree.BehaviorTreeBuilder>().AsSingle();
 			Container.BindInterfacesAndSelfTo<Combat.Helpers.RadioTransmitter>().AsSingle();
+            Container.BindInterfacesTo<GameServicesProvider>().AsSingle();
+            Container.BindInterfacesAndSelfTo<MaterialCache>().FromInstance(_materialCache);
 		}
 	}
 }

@@ -16,6 +16,7 @@ using Services.Localization;
 using Zenject;
 using Services.Audio;
 using GameServices.Audio;
+using Constructor.Model;
 
 namespace GameStateMachine.States
 {
@@ -87,13 +88,13 @@ namespace GameStateMachine.States
                 
                 foreach (var item in _database.ShipBuildList)
 		        {
-                    var ship = new CommonShip(item);
-		            var layout = new Constructor.ShipLayout(item.Ship.Layout, item.Ship.Barrels, ship.Components);
-		            if (layout.Components.Count() != ship.Components.Count)
+                    var ship = new CommonShip(item, _database);
+                    var layout = new ShipLayoutObsolete(ship.Model.Layout, ship.Model.Barrels, ship.Components);
+                    if (layout.Components.Count() != ship.Components.Count)
 		                GameDiagnostics.Trace.LogError("invalid ship layout: " + item.Id);
 
 		            if ((item.Ship.ShipType == ShipType.Common || item.Ship.ShipType == ShipType.Drone) && (item.AvailableForPlayer || item.AvailableForEnemy) &&
-		                !ShipValidator.IsShipViable(new CommonShip(item), _database.ShipSettings))
+		                !ShipValidator.IsShipViable(new CommonShip(item, _database), _database.ShipSettings))
 		            {
 		                GameDiagnostics.Trace.LogError("invalid build: " + item.Id);
 		            }
@@ -104,8 +105,8 @@ namespace GameStateMachine.States
 		        {
 		            var components = item.Components
 		                .Select<InstalledComponent, IntegratedComponent>(ComponentExtensions.FromDatabase).ToArray();
-		            var layout = new ShipLayout(item.Satellite.Layout, item.Satellite.Barrels, components);
-		            if (layout.Components.Count() != components.Length)
+                    var layout = new ShipLayoutObsolete(new ShipLayoutAdapter(item.Satellite.Layout), item.Satellite.Barrels, components);
+                    if (layout.Components.Count() != components.Length)
 		                GameDiagnostics.Trace.LogError("invalid satellite layout: " + item.Id);
 		        }
 

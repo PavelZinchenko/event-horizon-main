@@ -56,8 +56,8 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_HasEnoughEnergy(serializable, loader);
 				case BehaviorNodeType.IsLowOnHp:
 					return new BehaviorTreeNode_IsLowOnHp(serializable, loader);
-				case BehaviorNodeType.IsControledByPlayer:
-					return new BehaviorTreeNode_IsControledByPlayer(serializable, loader);
+				case BehaviorNodeType.IsNotControledByPlayer:
+					return new BehaviorTreeNode_IsNotControledByPlayer(serializable, loader);
 				case BehaviorNodeType.HasIncomingThreat:
 					return new BehaviorTreeNode_HasIncomingThreat(serializable, loader);
 				case BehaviorNodeType.HasAdditionalTargets:
@@ -144,6 +144,10 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_BypassObstacles(serializable, loader);
 				case BehaviorNodeType.AttackTurretTargets:
 					return new BehaviorTreeNode_AttackTurretTargets(serializable, loader);
+				case BehaviorNodeType.HoldHarpoon:
+					return new BehaviorTreeNode_HoldHarpoon(serializable, loader);
+				case BehaviorNodeType.FindDamagedAlly:
+					return new BehaviorTreeNode_FindDamagedAlly(serializable, loader);
 				case BehaviorNodeType.EnginePropulsionForce:
 					return new BehaviorTreeNode_EnginePropulsionForce(serializable, loader);
 				case BehaviorNodeType.MotherShipRetreated:
@@ -162,6 +166,10 @@ namespace GameDatabase.DataModel
 					return new BehaviorTreeNode_MothershipDistanceExceeded(serializable, loader);
 				case BehaviorNodeType.MakeTargetMothership:
 					return new BehaviorTreeNode_MakeTargetMothership(serializable, loader);
+				case BehaviorNodeType.MothershipLowEnergy:
+					return new BehaviorTreeNode_MothershipLowEnergy(serializable, loader);
+				case BehaviorNodeType.MothershipLowShield:
+					return new BehaviorTreeNode_MothershipLowShield(serializable, loader);
 				case BehaviorNodeType.ShowMessage:
 					return new BehaviorTreeNode_ShowMessage(serializable, loader);
 				case BehaviorNodeType.DebugLog:
@@ -223,7 +231,7 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_IfThenElse content);
 	    T Create(BehaviorTreeNode_HasEnoughEnergy content);
 	    T Create(BehaviorTreeNode_IsLowOnHp content);
-	    T Create(BehaviorTreeNode_IsControledByPlayer content);
+	    T Create(BehaviorTreeNode_IsNotControledByPlayer content);
 	    T Create(BehaviorTreeNode_HasIncomingThreat content);
 	    T Create(BehaviorTreeNode_HasAdditionalTargets content);
 	    T Create(BehaviorTreeNode_IsFasterThanTarget content);
@@ -267,6 +275,8 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_TargetEnemyStarbase content);
 	    T Create(BehaviorTreeNode_BypassObstacles content);
 	    T Create(BehaviorTreeNode_AttackTurretTargets content);
+	    T Create(BehaviorTreeNode_HoldHarpoon content);
+	    T Create(BehaviorTreeNode_FindDamagedAlly content);
 	    T Create(BehaviorTreeNode_EnginePropulsionForce content);
 	    T Create(BehaviorTreeNode_MotherShipRetreated content);
 	    T Create(BehaviorTreeNode_MotherShipDestroyed content);
@@ -276,6 +286,8 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorTreeNode_MothershipLowHp content);
 	    T Create(BehaviorTreeNode_MothershipDistanceExceeded content);
 	    T Create(BehaviorTreeNode_MakeTargetMothership content);
+	    T Create(BehaviorTreeNode_MothershipLowEnergy content);
+	    T Create(BehaviorTreeNode_MothershipLowShield content);
 	    T Create(BehaviorTreeNode_ShowMessage content);
 	    T Create(BehaviorTreeNode_DebugLog content);
 	    T Create(BehaviorTreeNode_SetValue content);
@@ -612,13 +624,14 @@ namespace GameDatabase.DataModel
 
 
     }
-    public partial class BehaviorTreeNode_IsControledByPlayer : BehaviorTreeNode
+    public partial class BehaviorTreeNode_IsNotControledByPlayer : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
 
-  		public BehaviorTreeNode_IsControledByPlayer(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+  		public BehaviorTreeNode_IsNotControledByPlayer(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
+			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0.1f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -628,6 +641,7 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+		public float Cooldown { get; private set; }
 
 
     }
@@ -1357,8 +1371,8 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_KeepDistance(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinDistance = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 100f);
-			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 100f);
+			MinDistance = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1000f);
+			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 1000f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1508,6 +1522,50 @@ namespace GameDatabase.DataModel
 
 
     }
+    public partial class BehaviorTreeNode_HoldHarpoon : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_HoldHarpoon(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+
+
+    }
+    public partial class BehaviorTreeNode_FindDamagedAlly : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_FindDamagedAlly(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			MinCooldown = UnityEngine.Mathf.Clamp(serializable.MinValue, 0.5f, 3.402823E+38f);
+			MaxCooldown = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 3.402823E+38f);
+			InAttackRange = serializable.InRange;
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public float MinCooldown { get; private set; }
+		public float MaxCooldown { get; private set; }
+		public bool InAttackRange { get; private set; }
+
+
+    }
     public partial class BehaviorTreeNode_EnginePropulsionForce : BehaviorTreeNode
     {
 		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
@@ -1574,8 +1632,8 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_FlyAroundMothership(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinDistance = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 100f);
-			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 100f);
+			MinDistance = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1000f);
+			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 1000f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1686,6 +1744,48 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+
+
+    }
+    public partial class BehaviorTreeNode_MothershipLowEnergy : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_MothershipLowEnergy(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public float MinValue { get; private set; }
+
+
+    }
+    public partial class BehaviorTreeNode_MothershipLowShield : BehaviorTreeNode
+    {
+		partial void OnDataDeserialized(BehaviorTreeNodeSerializable serializable, Database.Loader loader);
+
+  		public BehaviorTreeNode_MothershipLowShield(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorTreeNodeFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public float MinValue { get; private set; }
 
 
     }

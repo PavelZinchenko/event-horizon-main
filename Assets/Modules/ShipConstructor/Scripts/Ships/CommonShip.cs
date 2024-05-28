@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Constructor.Ships.Modification;
+using Constructor.Satellites;
 using GameDatabase.DataModel;
 using CommonComponents.Utils;
 
@@ -22,11 +22,23 @@ namespace Constructor.Ships
             _components.DataChangedEvent += OnDataChanged;
         }
 
-        public CommonShip(ShipBuild data, params IShipModification[] modifications)
-            : base(new ShipModel(data.Ship, modifications, data.BuildFaction), data.CustomAI)
+        public CommonShip(ShipBuild build, GameDatabase.IDatabase database)
+            : base(new ShipModel(build, database), build.CustomAI)
         {
-            _components.Assign(data.Components.Select<InstalledComponent,IntegratedComponent>(ComponentExtensions.FromDatabase));
+            if (build.LeftSatelliteBuild != null)
+                FirstSatellite = new CommonSatellite(build.LeftSatelliteBuild);
+            if (build.RightSatelliteBuild != null)
+                SecondSatellite = new CommonSatellite(build.RightSatelliteBuild);
+
+            _components.Assign(build.Components.Select<InstalledComponent,IntegratedComponent>(ComponentExtensions.FromDatabase));
             _components.DataChangedEvent += OnDataChanged;
+
+            if (build.RandomColor)
+            {
+                ColorScheme.Type = ShipColorScheme.SchemeType.Hsv;
+                ColorScheme.Hue = UnityEngine.Random.value;
+                ColorScheme.Saturation = UnityEngine.Random.value;
+            }
         }
 
         public override string Name

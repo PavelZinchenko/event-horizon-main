@@ -7,7 +7,7 @@ namespace Combat.Ai.Calculations
 	{
 		public static bool FlyAround(IShip ship, IShip target, float min, float max, int spin, ShipControls controls)
 		{
-			var minDistance = min + ship.Body.Scale/2 + target.Body.Scale/2;
+			var minDistance = min + ship.Body.Scale/3 + target.Body.Scale/3;
 			var maxDistance = minDistance - min + max;
 
 			var direction = ship.Body.Position.Direction(target.Body.Position);
@@ -54,7 +54,7 @@ namespace Combat.Ai.Calculations
 		{
 			var maxVelocity = ship.Engine.MaxVelocity;
 
-            var shipSummarySize = ship.Body.Scale/2 + target.Body.Scale/2;
+            var shipSummarySize = ship.Body.Scale/3 + target.Body.Scale/3;
             var minDistance = min + shipSummarySize;
 			var maxDistance = max + shipSummarySize;
 
@@ -62,6 +62,8 @@ namespace Combat.Ai.Calculations
             var distance = direction.magnitude;
             if (distance >= minDistance && distance <= maxDistance)
                 return true;
+
+            //UnityEngine.Debug.LogError($"KeepDistance {distance} [{minDistance}..{maxDistance}]");
 
             if (controls.MovementLocked)
                 return false;
@@ -74,18 +76,21 @@ namespace Combat.Ai.Calculations
 			}
 			else
 			{
-				var excess = (1 + distance - maxDistance) / (1 + maxDistance);
-				requiredVelocity = direction.normalized * excess * maxVelocity;
+				var length = distance - maxDistance;
+                var acceleration = ship.Engine.Propulsion;
+                var speed = Mathf.Sqrt(2*length*acceleration);
+                requiredVelocity = direction.normalized*speed;
+                //UnityEngine.Debug.LogError($"s={length} a={acceleration} v={speed}/{ship.Body.Velocity.magnitude}");
 			}
 
 			var newVelocity = requiredVelocity - ship.Body.Velocity;
 			var course = RotationHelpers.Angle(newVelocity);
 
-			controls.Course = course;
-			if (Mathf.Abs(Mathf.DeltaAngle(course, ship.Body.Rotation)) < 10)
-				controls.Thrust = newVelocity.magnitude / maxVelocity;
+            controls.Course = course;
+            if (Mathf.Abs(Mathf.DeltaAngle(course, ship.Body.Rotation)) < 10)
+                controls.Thrust = newVelocity.magnitude / ship.Engine.Propulsion;
 
-			return false;
+            return false;
 		}
 
 		public enum Status
@@ -94,29 +99,29 @@ namespace Combat.Ai.Calculations
 			Following,
 			Chasing,
 			FullThrottle,
-			AboutToHit,
+			//AboutToHit,
 		}
 
-		public static Status ChaseAndRam(IShip ship, IShip enemy, ShipControls controls)
+		public static Status ChaseAndRam(IShip ship, IShip enemy, ShipControls controls, out float timeToHit, out float deltaAngle)
 		{
+            deltaAngle = float.MaxValue;
+            timeToHit = float.MaxValue;
 			if (AttackHelpers.CantDetectTarget(ship, enemy)) return Status.NoTarget;
 			if (controls.MovementLocked) return Status.Chasing;
 
-			var canHit = TryInterceptTarget(ship, enemy, out var target, out var timeToHit);
+			var canHit = TryInterceptTarget(ship, enemy, out var target, out timeToHit);
 			var status = canHit ? Status.Chasing : Status.Following;
 
 			var direction = ship.Body.Position.Direction(target);
 			var course = RotationHelpers.Angle(direction);
 			controls.Course = course;
 
-			if (Mathf.Abs(Mathf.DeltaAngle(ship.Body.Rotation, course)) < 30)
+            deltaAngle = Mathf.Abs(Mathf.DeltaAngle(ship.Body.Rotation, course));
+            if (deltaAngle < 30)
 			{
 				status = Status.FullThrottle;
 				controls.Thrust = 1.0f;
 			}
-
-			if (timeToHit < 1f)
-				status = Status.AboutToHit;
 
 			return status;
 		}

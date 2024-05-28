@@ -1,16 +1,16 @@
-﻿using UnityEngine;
+﻿using Combat.Services;
+using UnityEngine;
 
 namespace Combat.Component.View
 {
     public sealed class ShipSegmentView : BaseView
     {
-        [SerializeField] private Material HsvMaterial;
-        [SerializeField] private Material DefaultMaterial;
-
         [SerializeField] private GameObject _normalView;
         [SerializeField] private GameObject _wreckView;
 
         [SerializeField] private SpriteRenderer[] _renderers;
+
+        private Material _defaultMaterial;
 
         protected override void OnGameObjectCreated()
         {
@@ -19,31 +19,25 @@ namespace Combat.Component.View
             _wreckView.SetActive(false);
         }
 
-        public override void ApplyHsv(float hue, float saturation)
+        public override void ApplyHsv(float hue, float saturation, MaterialCache materialCache)
         {
-            if (!HsvMaterial) return;
-
-            if (!_hsvMaterialInstance)
-                _hsvMaterialInstance = Instantiate(HsvMaterial);
-
-            _hsvMaterialInstance.SetColor("_HSVAAdjust", new Color(hue, saturation, 0));
+            _defaultMaterial = materialCache.GetDefaultMaterial();
+            var material = materialCache.GetHsvMaterial(hue, saturation);
 
             if (_renderers != null && _renderers.Length > 0)
                 foreach (var item in _renderers)
-                    item.sharedMaterial = _hsvMaterialInstance;
+                    item.sharedMaterial = material;
         }
 
         public override void Dispose()
         {
-            if (this && DefaultMaterial && _renderers != null && _renderers.Length > 0)
+            if (this && _defaultMaterial && _renderers != null && _renderers.Length > 0)
                 foreach (var item in _renderers)
-                    item.sharedMaterial = DefaultMaterial;
+                    item.sharedMaterial = _defaultMaterial;
         }
 
         protected override void OnGameObjectDestroyed()
         {
-            if (_hsvMaterialInstance)
-                Destroy(_hsvMaterialInstance);
         }
 
         protected override void UpdateLife(float life)
@@ -69,6 +63,5 @@ namespace Combat.Component.View
         protected override void UpdateColor(Color color) {}
 
         private GameObject _activeView;
-        private Material _hsvMaterialInstance;
     }
 }

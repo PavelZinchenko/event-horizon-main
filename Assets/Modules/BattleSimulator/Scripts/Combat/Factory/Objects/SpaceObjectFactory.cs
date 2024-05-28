@@ -17,7 +17,6 @@ using Combat.Unit;
 using Combat.Unit.Object;
 using Constructor.Model;
 using GameDatabase.Enums;
-using GameDatabase.Model;
 using Services.Audio;
 using Services.ObjectPool;
 using UnityEngine;
@@ -32,6 +31,7 @@ namespace Combat.Factory
         [Inject] private readonly ISoundPlayer _soundPlayer;
         [Inject] private readonly EffectFactory _effectFactory;
         [Inject] private readonly PrefabCache _prefabCache;
+        [Inject] private readonly Services.MaterialCache _materialCache;
 
         public IUnit CreateExplosion(Vector2 position, float radius, DamageType damageType, float damage, IShip owner, Color color, float impulseMultiplier = 1.0f)
         {
@@ -241,7 +241,7 @@ namespace Combat.Factory
                 var physics = gameObject.GetComponent<PhysicsManager>();
                 var collider = gameObject.GetComponent<ICollider>();
                 var view = gameObject.GetComponent<IView>();
-                view.ApplyHsv(colorScheme.Hue, colorScheme.Saturation);
+                view.ApplyHsv(colorScheme.Hue, colorScheme.Saturation, _materialCache);
                 var unit = new WormSegment(parent, body, view, collider, physics, hitPoints *= 0.95f);
                 unit.AddResource(gameObject);
                 unit.AddTrigger(new DroneExplosionAction(unit, _effectFactory, _soundPlayer));

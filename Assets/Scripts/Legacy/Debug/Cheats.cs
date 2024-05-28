@@ -60,20 +60,20 @@ public class Cheats
 		#if UNITY_EDITOR
 		if (command == "123")
 		{
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(49))) { Experience = Maths.Experience.FromLevel(100) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(19))) { Experience = Maths.Experience.FromLevel(100) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(80))) { Experience = Maths.Experience.FromLevel(100) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(78))) { Experience = Maths.Experience.FromLevel(100) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(65))) { Experience = Maths.Experience.FromLevel(100) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(85))) { Experience = Maths.Experience.FromLevel(100) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(99))) { Experience = Maths.Experience.FromLevel(50) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(25))) { Experience = Maths.Experience.FromLevel(50) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(28))) { Experience = Maths.Experience.FromLevel(100) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(7))) { Experience = Maths.Experience.FromLevel(100) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(16))) { Experience = Maths.Experience.FromLevel(100) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(10))) { Experience = Maths.Experience.FromLevel(100) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(31))) { Experience = Maths.Experience.FromLevel(100) });
-		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(22))) { Experience = Maths.Experience.FromLevel(100) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(49)), _database) { Experience = Maths.Experience.FromLevel(100) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(19)), _database) { Experience = Maths.Experience.FromLevel(100) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(80)), _database) { Experience = Maths.Experience.FromLevel(100) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(78)), _database) { Experience = Maths.Experience.FromLevel(100) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(65)), _database) { Experience = Maths.Experience.FromLevel(100) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(85)), _database) { Experience = Maths.Experience.FromLevel(100) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(99)), _database) { Experience = Maths.Experience.FromLevel(50) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(25)), _database) { Experience = Maths.Experience.FromLevel(50) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(28)), _database) { Experience = Maths.Experience.FromLevel(100) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(7)), _database) { Experience = Maths.Experience.FromLevel(100) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(16)), _database) { Experience = Maths.Experience.FromLevel(100) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(10)), _database) { Experience = Maths.Experience.FromLevel(100) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(31)), _database) { Experience = Maths.Experience.FromLevel(100) });
+		    _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(22)), _database) { Experience = Maths.Experience.FromLevel(100) });
 
             foreach (var item in _database.ComponentList.CommonAndRare())
                 _playerInventory.Components.Add(new ComponentInfo(item), 25);
@@ -99,18 +99,18 @@ public class Cheats
             var experience = Experience.FromLevel(200);
             for (var i = 0; i < 3; ++i)
             {
-                _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(LegacyShipBuildNames.GetId("MyInvader1"))) { Experience = experience });
-                _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(LegacyShipBuildNames.GetId("MyInvader2"))) { Experience = experience });
-                _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(LegacyShipBuildNames.GetId("MyInvader3"))) { Experience = experience });
-                _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(LegacyShipBuildNames.GetId("MyInvader4"))) { Experience = experience });
+                _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(LegacyShipBuildNames.GetId("MyInvader1")), _database) { Experience = experience });
+                _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(LegacyShipBuildNames.GetId("MyInvader2")), _database) { Experience = experience });
+                _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(LegacyShipBuildNames.GetId("MyInvader3")), _database) { Experience = experience });
+                _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(LegacyShipBuildNames.GetId("MyInvader4")), _database) { Experience = experience });
             }
         }
         else if (command == "667")
         {
-            _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(265))));
-            _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(266))));
-            _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(267))));
-            _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(235))));
+            _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(265)), _database));
+            _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(266)), _database));
+            _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(267)), _database));
+            _playerFleet.Ships.Add(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(235)), _database));
         }
         #endif
 
@@ -138,7 +138,7 @@ public class Cheats
 
                 //new Product(_itemTypeFactory.CreatePurchasedStarsItem(), 200),
                 //new Product(_itemTypeFactory.CreateShipItem(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(94))))), // easter egg
-                CommonProduct.Create(_itemTypeFactory.CreateMarketShipItem(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(262))))), // veletz
+                CommonProduct.Create(_itemTypeFactory.CreateMarketShipItem(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(262)), _database))), // veletz
                 //new Product(_itemTypeFactory.CreateShipItem(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(38))).OfLevel(25))),
 
                 //new Product(_itemTypeFactory.CreateComponentItem(ComponentInfo.CreateRandomModification(_database.GetComponent(LegacyComponentNames.GetId("XmasBomb_M_1")), random, ModificationQuality.P3)), 10)
@@ -188,15 +188,15 @@ public class Cheats
 			break;
 		case 6:
 			foreach (var ship in ShipBuildQuery.PlayerShips(_database).All)
-                _playerFleet.Ships.Add(new CommonShip(ship));
+                _playerFleet.Ships.Add(new CommonShip(ship, _database));
 			break;
 		case 7:
 			foreach (var ship in ShipBuildQuery.Drones(_database).All)
-                _playerFleet.Ships.Add(new CommonShip(ship));
+                _playerFleet.Ships.Add(new CommonShip(ship, _database));
 			break;
 		case 8:
 			foreach (var ship in ShipBuildQuery.AllShips(_database).Flagships().All)
-                _playerFleet.Ships.Add(new CommonShip(ship));
+                _playerFleet.Ships.Add(new CommonShip(ship, _database));
 			break;
 		case 9:
 			foreach (var ship in _playerFleet.ActiveShipGroup.Ships)
@@ -237,7 +237,7 @@ public class Cheats
 		case 18:
 			foreach (var ship in _database.ShipBuildList.Where(build => build.Ship.ShipType == ShipType.Drone))
 			{
-				var gameShip = new CommonShip(ship);
+				var gameShip = new CommonShip(ship, _database);
 				foreach (var item in gameShip.Components)
 					item.Locked = false;
                 _playerFleet.Ships.Add(gameShip);

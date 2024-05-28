@@ -8,4 +8,9 @@
     <member name="CustomAI" type="object" typeid="BehaviorTree" />
     <member name="Components" type="struct_list" typeid="InstalledComponent" />
     <member name="NotAvailableInGame" type="bool" options="obsolete" />
+    <member name="Perks" type="struct" typeid="ShipBuildPerks" />
+    <member name="ExtendedLayout" type="bool" />
+    <member name="RandomColor" type="bool" />
+    <member name="LeftSatelliteBuild" type="object" typeid="SatelliteBuild" />
+    <member name="RightSatelliteBuild" type="object" typeid="SatelliteBuild" />
 </data>

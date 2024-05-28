@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Combat.Services;
+using System;
 using UnityEngine;
 
 namespace Combat.Component.View
 {
     public interface IView : IDisposable
     {
-        void ApplyHsv(float hue, float saturation);
+        void ApplyHsv(float hue, float saturation, MaterialCache materialCache);
 
         Vector2 Position { get; set; }
         float Rotation { get; set; }

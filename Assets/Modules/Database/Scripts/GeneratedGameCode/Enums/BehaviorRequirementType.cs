@@ -26,6 +26,8 @@ namespace GameDatabase.Enums
 		HasRemotelyControlledWeapon = 16,
 		HasLongRangeWeapon = 17,
 		HasEngine = 18,
+		HasHarpoon = 19,
+		CanRechargeAllies = 20,
 		IsDrone = 50,
 		HasKineticResistance = 100,
 		HasHighManeuverability = 101,

@@ -2,6 +2,7 @@
 using Combat.Component.Systems;
 using Combat.Component.Systems.Weapons;
 using Combat.Component.Systems.Devices;
+using GameDatabase.Enums;
 
 namespace Combat.Ai.BehaviorTree.Utils
 {
@@ -52,7 +53,17 @@ namespace Combat.Ai.BehaviorTree.Utils
 			return systems;
 		}
 
-		public static bool HasWeapon(this IReadOnlyList<ISystem> systems, WeaponCapability capability = WeaponCapability.None)
+        public static ShipSystemList<IWeapon> FindWeaponsByBulletType(this IReadOnlyList<ISystem> shipSystems, AiBulletBehavior bulletType)
+        {
+            var systems = new ShipSystemList<IWeapon>();
+            for (int i = 0; i < shipSystems.Count; ++i)
+                if (shipSystems[i] is IWeapon weapon && weapon.Info.BulletType == bulletType)
+                    systems.Add(weapon, i);
+
+            return systems;
+        }
+
+        public static bool HasWeapon(this IReadOnlyList<ISystem> systems, WeaponCapability capability = WeaponCapability.None)
 		{
 			foreach (var item in systems)
 				if (item is IWeapon weapon)
@@ -72,7 +83,17 @@ namespace Combat.Ai.BehaviorTree.Utils
 			return false;
 		}
 
-		public static bool HasDevice(this IReadOnlyList<ISystem> shipSystems, GameDatabase.Enums.DeviceClass deviceClass)
+        public static bool HasWeapon(this IReadOnlyList<ISystem> systems, AiBulletBehavior bulletType)
+        {
+            foreach (var item in systems)
+                if (item is IWeapon weapon)
+                    if (weapon.Info.BulletType == bulletType)
+                        return true;
+
+            return false;
+        }
+
+        public static bool HasDevice(this IReadOnlyList<ISystem> shipSystems, DeviceClass deviceClass)
 		{
 			var systems = new ShipSystemList<IDevice>();
 			for (int i = 0; i < shipSystems.Count; ++i)

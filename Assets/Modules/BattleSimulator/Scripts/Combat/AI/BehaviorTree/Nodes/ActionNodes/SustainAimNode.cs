@@ -17,9 +17,9 @@ namespace Combat.Ai.BehaviorTree.Nodes
 		{
 			var ship = context.Ship;
 
-			for (int i = 0; i < context.SelectedWeapons.Count; ++i)
+			for (int i = 0; i < context.SelectedWeapons.List.Count; ++i)
 			{
-				var weapon = context.SelectedWeapons.GetWeaponByIndex(i);
+				var weapon = context.SelectedWeapons.List[i].Weapon;
 				if (!ShouldTrack(weapon)) continue;
 
 				if (context.TargetShip != null)
@@ -29,7 +29,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 						return NodeState.Running;
 					}
 
-				for (int j = 0; j < context.SecondaryTargets.Count; ++i)
+				for (int j = 0; j < context.SecondaryTargets.Count; ++j)
 				{
 					var enemy = context.SecondaryTargets[j];
 					if (AttackHelpers.TryGetTarget(weapon, ship, enemy, out var target))
@@ -40,7 +40,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 				}
 			}
 
-			return NodeState.Success;
+			return NodeState.Failure;
 		}
 
 		private bool ShouldTrack(IWeapon weapon)
@@ -53,8 +53,10 @@ namespace Combat.Ai.BehaviorTree.Nodes
 					if (!weapon.Active) return false;
 					break;
 				case WeaponType.Manageable:
-				case WeaponType.RequiredCharging:
-					return false;
+                    return false;
+                case WeaponType.RequiredCharging:
+                    if (weapon.ActiveBullet == null) return false;
+                    break;
 			}
 
 			var bulletType = weapon.Info.BulletType;

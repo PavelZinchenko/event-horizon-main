@@ -1,17 +1,14 @@
-﻿using GameDatabase.Enums;
-using Combat.Ai.Calculations;
-using Combat.Component.Ship;
+﻿using Combat.Ai.Calculations;
+using Combat.Component.Unit.Classification;
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
 	public class AttackMainTargetNode : INode
 	{
-		private readonly bool _directOnly;
         private readonly bool _allowRotation;
 
-        public AttackMainTargetNode(AiDifficultyLevel aiLevel, bool allowRotation)
+        public AttackMainTargetNode(bool allowRotation)
 		{
-			_directOnly = aiLevel < AiDifficultyLevel.Hard;
             _allowRotation = allowRotation;
 		}
 
@@ -26,12 +23,12 @@ namespace Combat.Ai.BehaviorTree.Nodes
             if (_allowRotation)
             {
                 result = AimAndAttackHandler.AttackWithAllWeapons(context.Ship, context.TargetShip,
-                    _directOnly, context.SelectedWeapons, context.Controls);
+                    context.SelectedWeapons, context.Controls);
             }
             else
             {
                 result = AimAndAttackHandler.AttackWhileStandingStill(context.Ship,
-                    context.TargetShip, _directOnly, context.SelectedWeapons, context.Controls);
+                    context.TargetShip, context.SelectedWeapons, context.Controls);
             }
 
 			if (HasFlag(result, AimAndAttackHandler.State.Attacking)) return NodeState.Success;
@@ -41,10 +38,13 @@ namespace Combat.Ai.BehaviorTree.Nodes
 
 		private void UpdateTargetForTurrets(Context context)
 		{
-			var weapons = context.SelectedWeapons;
-			for (int i = 0; i < weapons.Count; ++i)
+            if (context.TargetShip == null) return;
+            if (context.TargetShip.Type.Side.IsEnemy(context.Ship.Type.Side)) return;
+
+            var weapons = context.SelectedWeapons;
+			for (int i = 0; i < weapons.List.Count; ++i)
 			{
-				var weapon = weapons.GetWeaponByIndex(i);
+				var weapon = weapons.List[i].Weapon;
 				weapon.Platform.ActiveTarget = context.TargetShip;
 			}
 		}

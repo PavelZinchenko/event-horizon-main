@@ -38,8 +38,11 @@ namespace GameDatabase.DataModel
 			BaseShieldRechargeRate = UnityEngine.Mathf.Clamp(serializable.BaseShieldRechargeRate, 0f, 1000000f);
 			ShieldRechargeCooldown = UnityEngine.Mathf.Clamp(serializable.ShieldRechargeCooldown, 0f, 60f);
 			BaseDroneReconstructionSpeed = UnityEngine.Mathf.Clamp(serializable.BaseDroneReconstructionSpeed, 0f, 100f);
-			MaxVelocity = UnityEngine.Mathf.Clamp(serializable.MaxVelocity, 5f, 30f);
-			MaxTurnRate = UnityEngine.Mathf.Clamp(serializable.MaxTurnRate, 5f, 30f);
+			ShieldCorrosiveResistance = UnityEngine.Mathf.Clamp(serializable.ShieldCorrosiveResistance, 0f, 1f);
+			MaxVelocity = UnityEngine.Mathf.Clamp(serializable.MaxVelocity, 5f, 100f);
+			MaxAngularVelocity = UnityEngine.Mathf.Clamp(serializable.MaxAngularVelocity, 5f, 100f);
+			MaxAcceleration = UnityEngine.Mathf.Clamp(serializable.MaxAcceleration, 5f, 1000f);
+			MaxAngularAcceleration = UnityEngine.Mathf.Clamp(serializable.MaxAngularAcceleration, 5f, 1000f);
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -55,8 +58,11 @@ namespace GameDatabase.DataModel
 		public float BaseShieldRechargeRate { get; private set; }
 		public float ShieldRechargeCooldown { get; private set; }
 		public float BaseDroneReconstructionSpeed { get; private set; }
+		public float ShieldCorrosiveResistance { get; private set; }
 		public float MaxVelocity { get; private set; }
-		public float MaxTurnRate { get; private set; }
+		public float MaxAngularVelocity { get; private set; }
+		public float MaxAcceleration { get; private set; }
+		public float MaxAngularAcceleration { get; private set; }
 
 		public static ShipSettings DefaultValue { get; private set; }
 	}

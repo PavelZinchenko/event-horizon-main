@@ -118,8 +118,17 @@ namespace Combat.Factory
                     break;
                 case DeviceClass.Teleporter:
                     device = new TeleporterDevice(ship, stats, deviceData.KeyBinding);
-                    if (stats.EffectPrefab)
-                        device.AddTrigger(new FlashMultipleEffect(stats.EffectPrefab, _effectFactory, ship.Body, 0.5f, stats.Size*ship.Body.Scale, 0f, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
+                    if (stats.VisualEffect != null)
+                        device.AddTrigger(new StaticEffect(stats.VisualEffect, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
+                    else if (stats.EffectPrefab)
+                        device.AddTrigger(new StaticEffect(stats.EffectPrefab, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
+                    break;
+                case DeviceClass.TeleporterV2:
+                    device = new WarpDrive(ship, stats, deviceData.KeyBinding);
+                    if (stats.VisualEffect != null)
+                        device.AddTrigger(new StaticEffect(stats.VisualEffect, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
+                    else if (stats.EffectPrefab)
+                        device.AddTrigger(new StaticEffect(stats.EffectPrefab, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
                     break;
                 case DeviceClass.Brake:
                     device = new BrakeDevice(ship, stats, ship.Body.Weight);
@@ -159,10 +168,14 @@ namespace Combat.Factory
 
         private IEffect CreateEffect(DeviceStats stats, IShip ship)
         {
-            if (!stats.EffectPrefab)
+            IEffect effect;
+            if (stats.VisualEffect != null)
+                effect = CompositeEffect.Create(stats.VisualEffect, _effectFactory, null);
+            else if (stats.EffectPrefab)
+                effect = _effectFactory.CreateEffect(stats.EffectPrefab);
+            else
                 return null;
 
-            var effect = _effectFactory.CreateEffect(stats.EffectPrefab);
             effect.Color = stats.Color;
             effect.Size = stats.Size * ship.Body.Scale;
 

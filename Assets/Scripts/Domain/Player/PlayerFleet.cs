@@ -11,6 +11,7 @@ using GameDatabase.Enums;
 using UnityEngine.Assertions;
 using CommonComponents.Utils;
 using Services.InAppPurchasing;
+using Constructor.Model;
 
 namespace GameServices.Player
 {
@@ -94,20 +95,20 @@ namespace GameServices.Player
             foreach (var ship in _ships)
             {
                 var empty = Enumerable.Empty<IntegratedComponent>();
-                if (TryRemoveInvalidComponents(new ShipLayout(ship.Model.Layout, ship.Model.Barrels, empty), ship.Components, components))
+                if (TryRemoveInvalidComponents(new ShipLayoutObsolete(ship.Model.Layout, ship.Model.Barrels, empty), ship.Components, components))
 	                ship.Components.Assign(components);
 
                 if (ship.FirstSatellite != null)
                 {
-                    if (TryRemoveInvalidComponents(new ShipLayout(ship.FirstSatellite.Information.Layout, ship.FirstSatellite.Information.Barrels, 
-                        empty), ship.FirstSatellite.Components, components))
+                    if (TryRemoveInvalidComponents(new ShipLayoutObsolete(new ShipLayoutAdapter(ship.FirstSatellite.Information.Layout), 
+                        ship.FirstSatellite.Information.Barrels, empty), ship.FirstSatellite.Components, components))
 	                    ship.FirstSatellite.Components.Assign(components);
                 }
 
                 if (ship.SecondSatellite != null)
                 {
-                    if (TryRemoveInvalidComponents(new ShipLayout(ship.SecondSatellite.Information.Layout, ship.SecondSatellite.Information.Barrels,
-                        empty), ship.SecondSatellite.Components, components))
+                    if (TryRemoveInvalidComponents(new ShipLayoutObsolete(new ShipLayoutAdapter(ship.SecondSatellite.Information.Layout),
+                        ship.SecondSatellite.Information.Barrels, empty), ship.SecondSatellite.Components, components))
 	                    ship.SecondSatellite.Components.Assign(components);
                 }
             }
@@ -115,7 +116,7 @@ namespace GameServices.Player
             _activeShips.CheckIfValid(_playerSkills, true);
         }
 
-        private bool TryRemoveInvalidComponents(ShipLayout layout, IEnumerable<IntegratedComponent> components, IList<IntegratedComponent> validComponents)
+        private bool TryRemoveInvalidComponents(ShipLayoutObsolete layout, IEnumerable<IntegratedComponent> components, IList<IntegratedComponent> validComponents)
         {
             validComponents.Clear();
             var random = new System.Random(_session.Game.Seed);
@@ -228,7 +229,7 @@ namespace GameServices.Player
             if (falcon == null) return;
 
             if (_ships.FindIndex(item => item.Id == falcon.Ship.Id) < 0)
-                _ships.Add(new CommonShip(falcon));
+                _ships.Add(new CommonShip(falcon, _database));
         }
 
         private void OnSessionAboutToSave()

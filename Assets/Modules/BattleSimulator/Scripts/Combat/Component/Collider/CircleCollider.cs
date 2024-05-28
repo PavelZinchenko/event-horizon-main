@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Combat.Collision.Manager;
-using Combat.Component.Body;
 using Combat.Component.Unit;
 using UnityEngine;
 using Zenject;
@@ -9,8 +8,7 @@ namespace Combat.Component.Collider
 {
     public class CircleCollider : MonoBehaviour, ICollider
     {
-        [Inject]
-        private readonly ICollisionManager _collisionManager;
+        [Inject] private ICollisionManager _collisionManager;
 
         public bool Enabled { get { return _enabled; } set { _enabled = value; } }
 
@@ -20,8 +18,16 @@ namespace Combat.Component.Collider
         public float MaxRange { get; set; }
 
         public IUnit ActiveCollision { get; private set; }
+        public IUnit ActiveTrigger => ActiveCollision;
         public Vector2 LastContactPoint { get; private set; }
         public IUnit LastCollision { get; private set; }
+        public bool OneHitOnly { get; set; }
+        public float StuckTime => 0;
+
+        public void Initialize(ICollisionManager collisionManager)
+        {
+            _collisionManager = collisionManager;
+        }
 
         public void UpdatePhysics(float elapsedTime)
         {
@@ -52,8 +58,8 @@ namespace Combat.Component.Collider
                 LastCollision = target;
                 LastContactPoint = target.Body.WorldPosition();
                 _activeCollisions.Add(target);
-
-                _collisionManager.OnCollision(Unit, target, CollisionData.FromObjects(Unit, target, LastContactPoint, !_lastActiveCollisions.Contains(target), elapsedTime));
+                var isNew = !_lastActiveCollisions.Contains(target);
+                _collisionManager.OnCollision(Unit, target, CollisionData.FromObjects(Unit, target, LastContactPoint, isNew, elapsedTime));
             }
         }
 
@@ -63,6 +69,7 @@ namespace Combat.Component.Collider
 			Source = null;
             ActiveCollision = null;
             LastCollision = null;
+            OneHitOnly = false;
             _activeCollisions.Clear();
             MaxRange = 0;
             _enabled = true;

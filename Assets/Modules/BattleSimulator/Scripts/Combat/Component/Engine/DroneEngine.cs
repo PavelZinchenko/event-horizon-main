@@ -1,19 +1,15 @@
 ﻿using Combat.Component.Body;
 using Combat.Component.Mods;
+using Constructor.Model;
 using UnityEngine;
 
 namespace Combat.Component.Engine
 {
     public class DroneEngine : IEngine
     {
-        public DroneEngine(float propulsion, float turnRate, float velocity, float angularVelocity, float maxVelocity, float maxAngularVelocity)
+        public DroneEngine(EngineStats engineStats)
         {
-            _propulsion = propulsion;
-            _turnRate = turnRate;
-            _velocity = velocity;
-            _angularVelocity = angularVelocity;
-            _maxVelocity = maxVelocity;
-            _maxAngularVelocity = maxAngularVelocity;
+            _engineStats = engineStats;
             UpdateData();
         }
 
@@ -50,8 +46,14 @@ namespace Combat.Component.Engine
 
         public Modifications<EngineData> Modifications { get { return _modifications; } }
 
-        public void Update(float elapsedTime, IBody body)
+        public void Update(float elapsedTime, IBody body, bool hasEnergy)
         {
+            if (!hasEnergy)
+            {
+                Throttle = 0;
+                return;
+            }
+
             UpdateData();
 
 			ForwardAcceleration = Throttle > 0.01f ? ApplyAcceleration(body, elapsedTime) : 0f;
@@ -67,18 +69,18 @@ namespace Combat.Component.Engine
 
         private void UpdateData()
         {
-            _engineData.AngularVelocity = _angularVelocity;
-            _engineData.Velocity = _velocity;
-            _engineData.TurnRate = _turnRate;
-            _engineData.Propulsion = _propulsion;
+            _engineData.AngularVelocity = _engineStats.AngularVelocity;
+            _engineData.Velocity = _engineStats.Velocity;
+            _engineData.TurnRate = _engineStats.TurnRate;
+            _engineData.Propulsion = _engineStats.Propulsion;
             _engineData.Deceleration = 0;
 
             _modifications.Apply(ref _engineData);
 
-            if (_engineData.Velocity > _maxVelocity)
-                _engineData.Velocity = _maxVelocity;
-            if (_engineData.AngularVelocity > _maxAngularVelocity)
-                _engineData.AngularVelocity = _maxAngularVelocity;
+            if (_engineData.Velocity > _engineStats.VelocityLimit)
+                _engineData.Velocity = _engineStats.VelocityLimit;
+            if (_engineData.AngularVelocity > _engineStats.AngularVelocityLimit)
+                _engineData.AngularVelocity = _engineStats.AngularVelocityLimit;
         }
 
         private float ApplyAcceleration(IBody body, float elapsedTime)
@@ -141,12 +143,7 @@ namespace Combat.Component.Engine
 
         private EngineData _engineData;
 
-        private readonly float _propulsion;
-        private readonly float _turnRate;
-        private readonly float _velocity;
-        private readonly float _angularVelocity;
-        private readonly float _maxAngularVelocity;
-        private readonly float _maxVelocity;
+        private readonly EngineStats _engineStats;
         private readonly Modifications<EngineData> _modifications = new Modifications<EngineData>();
     }
 }

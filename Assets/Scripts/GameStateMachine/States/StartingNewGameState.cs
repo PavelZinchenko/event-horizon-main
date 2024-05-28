@@ -67,7 +67,7 @@ namespace GameStateMachine.States
             var startingBuilds = _database.GalaxySettings.StartingShipBuilds;
             foreach (var build in startingBuilds)
             {
-                var ship = new CommonShip(build);
+                var ship = new CommonShip(build, _database);
                 _playerFleet.Ships.Add(ship);
                 _playerFleet.ActiveShipGroup.Add(ship);
             }

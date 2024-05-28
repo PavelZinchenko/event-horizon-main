@@ -2,6 +2,7 @@
 using Combat.Component.Body;
 using Combat.Component.Unit;
 using Combat.Component.View;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -9,17 +10,23 @@ namespace Combat.Component.Collider
 {
     public class RayCastCollider : MonoBehaviour, ICollider
     {
-        [Inject] private readonly ICollisionManager _collisionManager;
+        [Inject] private ICollisionManager _collisionManager;
 
         [SerializeField] private BaseView _view;
         [SerializeField] private GameObjectBody _body;
+        [SerializeField] private bool _passThrough;
 
         public bool Enabled { get { return _enabled; } set { _enabled = value; } }
 
 		public IUnit Source { get; set; }
 		public IUnit Unit { get; set; }
 
-		public float MaxRange
+        public void Initialize(ICollisionManager collisionManager)
+        {
+            _collisionManager = collisionManager;
+        }
+
+        public float MaxRange
         {
             get { return _maxRange; }
             set
@@ -29,11 +36,12 @@ namespace Combat.Component.Collider
             }
         }
 
-        //public bool IsTrigger { get; set; }
-
         public IUnit ActiveCollision { get; private set; }
+        public IUnit ActiveTrigger => ActiveCollision;
         public Vector2 LastContactPoint { get; private set; }
         public IUnit LastCollision { get; private set; }
+        public bool OneHitOnly { get; set; }
+        public float StuckTime => 0;
 
         public void UpdatePhysics(float elapsedTime)
         {
@@ -46,70 +54,65 @@ namespace Combat.Component.Collider
             var position = Unit.Body.WorldPositionNoOffset();
             var direction = RotationHelpers.Direction(Unit.Body.WorldRotation());
 
-            //if (IsTrigger)
-            //{
-            //    if (_hitsBuffer == null)
-            //        _hitsBuffer = new RaycastHit2D[32];
+            var hits = Physics2D.RaycastNonAlloc(position, direction, _buffer, MaxRange, Unit.Type.CollisionMask);
+            bool collisionFound = false;
+			for (int i = 0; i < hits; ++i)
+			{
+                ref var hit = ref _buffer[_passThrough ? hits - i - 1 : i];
+				var collider = hit.collider;
+				if (collider == null) continue;
+				var target = collider.GetComponent<ICollider>();
 
-            //    var hits = Physics2D.RaycastNonAlloc(position, direction, _hitsBuffer, MaxRange, Unit.Type.CollisionMask);
-            //    for (var i = 0; i < hits; ++i)
-            //    {
-            //        var hit = _hitsBuffer[i];
-            //        var other = hit.collider.GetComponent<ICollider>();
-            //        ActiveCollision = other.Unit;
-            //        _collisionManager.OnCollisionEnter(Unit, other.Unit, CollisionData.FromRaycastHit2D(hit));
-            //        LastContactPoint = hit.point;
-            //    }
+                if (target == null) 
+                    continue;
+				if (Source != null && (target.Unit == Source || target.Unit.Type.Owner == Source))
+					continue;
 
-            //    _view.Size = MaxRange;
-            //}
-            //else
-            {
-                var hits = Physics2D.RaycastNonAlloc(position, direction, _buffer, MaxRange, Unit.Type.CollisionMask);
-
-				var point = Vector2.zero;
-				ICollider other = null;
-				for (int i = 0; i < hits; ++i)
-				{
-					var collider = _buffer[i].collider;
-					if (collider == null) continue;
-					var target = collider.GetComponent<ICollider>();
-					if (Source != null && (target.Unit == Source || target.Unit.Type.Owner == Source))
-						continue;
-
-					other = target;
-					point = _buffer[i].point;
-					break;
-				}
-
-                if (other != null)
-                {
-                    var distance = Vector2.Distance(position, point);
-
-                    if (other.Unit == Unit.Type.Owner)
-                    {
-                        ActiveCollision = null;
-                        _view.Size = distance;
-                        if (_body != null) _body.Offset = distance;
-                        return;
-                    }
-
-                    var isNew = ActiveCollision != other.Unit;
-                    ActiveCollision = other.Unit;
-                    LastCollision = other.Unit;
-                    LastContactPoint = point;
-                    _view.Size = distance;
-                    if (_body != null) _body.Offset = distance;
-                    _collisionManager.OnCollision(Unit, other.Unit, CollisionData.FromRaycastHit2D(point, isNew, elapsedTime));
-                }
-                else if (ActiveCollision != null || _needUpdateView)
-                {
-                    _view.Size = MaxRange;
-                    if (_body != null) _body.Offset = MaxRange;
-
-                    ActiveCollision = null;
-                }
+                ProcessCollision(target, position, hit.point, elapsedTime, !collisionFound);
+                collisionFound = true;
+                if (!_passThrough) break;
             }
+
+            if (!collisionFound && ActiveCollision != null)
+            {
+                ActiveCollision = null;
+                UpdateLength(MaxRange);
+            }
+
+            if (_needUpdateView)
+                UpdateLength(MaxRange);
+        }
+
+        private void ProcessCollision(ICollider target, Vector2 position, Vector2 hitPoint, float elapsedTime, bool isFirst)
+        {
+            var distance = Vector2.Distance(position, hitPoint);
+
+            if (!_passThrough && target.Unit == Unit.Type.Owner)
+            {
+                ActiveCollision = null;
+                UpdateLength(distance);
+                return;
+            }
+
+            var isNew = isFirst && ActiveCollision != target.Unit;
+            if (isFirst)
+            {
+                ActiveCollision = target.Unit;
+                LastCollision = target.Unit;
+                LastContactPoint = hitPoint;
+            }
+
+            if (!_passThrough) UpdateLength(distance);
+
+            if (isNew || !OneHitOnly)
+                _collisionManager.OnCollision(Unit, target.Unit, CollisionData.FromRaycastHit2D(hitPoint, isNew, elapsedTime));
+        }
+
+        private void UpdateLength(float length)
+        {
+            _view.Size = length;
+            if (_body != null) _body.Offset = length;
+            _needUpdateView = false;
         }
 
         public void Dispose()
@@ -118,11 +121,14 @@ namespace Combat.Component.Collider
 			Source = null;
             ActiveCollision = null;
             LastCollision = null;
+            OneHitOnly = false;
             MaxRange = 0;
             _enabled = true;
+            _collisions.Clear();
         }
 
-        private RaycastHit2D[] _buffer = new RaycastHit2D[4];
+        private HashSet<IUnit> _collisions = new();
+        private RaycastHit2D[] _buffer = new RaycastHit2D[8];
         private float _maxRange;
         private bool _needUpdateView;
         private bool _enabled = true;

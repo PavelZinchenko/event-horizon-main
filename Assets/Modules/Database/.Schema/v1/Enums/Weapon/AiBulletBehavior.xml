@@ -4,4 +4,6 @@
     <item name="Homing" />
     <item name="Beam" />
     <item name="AreaOfEffect" />
+    <item name="Trap" />
+    <item name="Harpoon" />
 </data>

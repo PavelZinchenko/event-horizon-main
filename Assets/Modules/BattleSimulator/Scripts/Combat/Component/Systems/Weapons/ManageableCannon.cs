@@ -16,7 +16,6 @@ namespace Combat.Component.Systems.Weapons
             _energyConsumption = bulletFactory.Stats.EnergyCost;
         }
 
-        public override float ActivationCost { get { return _energyConsumption; } }
         public override bool CanBeActivated { get { return base.CanBeActivated && Platform.IsReady && (HasActiveBullet || Platform.EnergyPoints.Value >= _energyConsumption); } }
         public override float Cooldown { get { return Mathf.Max(base.Cooldown, Platform.Cooldown); } }
         public override IBullet ActiveBullet => HasActiveBullet ? _activeBullet : null;
@@ -39,7 +38,7 @@ namespace Combat.Component.Systems.Weapons
                     _activeBullet.Detonate();
                 }
             }
-            else if (Active && CanBeActivated && Platform.EnergyPoints.TryGet(_energyConsumption))
+            else if (Active && CanBeActivated && TryConsumeEnergy(_energyConsumption))
             {
                 Shot();
                 InvokeTriggers(ConditionType.OnActivate);

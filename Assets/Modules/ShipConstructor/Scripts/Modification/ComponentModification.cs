@@ -98,13 +98,17 @@ namespace Constructor.Modification
 							stats.KineticResistance *= value;
 						break;
 					case StatModificationType.EnginePower:
-						if (stats.EnginePower > 0)
-							stats.EnginePower *= value;
-						break;
+                        if (stats.EnginePower > 0)
+                            stats.EnginePower *= value;
+                        if (stats.EnginePowerWithoutEnergy > 0)
+                            stats.EnginePowerWithoutEnergy *= value;
+                        break;
 					case StatModificationType.EngineTurnRate:
 						if (stats.TurnRate > 0)
 							stats.TurnRate *= value;
-						break;
+                        if (stats.TurnRateWithoutEnergy > 0)
+                            stats.TurnRateWithoutEnergy *= value;
+                        break;
 					case StatModificationType.Mass:
 						if (stats.Weight > 0)
 							stats.Weight *= value;

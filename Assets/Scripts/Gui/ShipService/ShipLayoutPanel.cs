@@ -2,7 +2,6 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
-using Constructor;
 using GameDatabase.Enums;
 using GameDatabase.Model;
 using Services.Resources;
@@ -10,6 +9,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using ViewModel;
 using Zenject;
+using Constructor.Model;
 
 namespace Gui.ShipService
 {
@@ -36,7 +36,7 @@ namespace Gui.ShipService
 
         public void Reset()
         {
-            _layout = new Layout(string.Empty);
+            _layout = new ShipLayoutAdapter(new Layout(string.Empty));
             Cleanup();
 
             var layoutElement = GetComponent<LayoutElement>();
@@ -44,7 +44,7 @@ namespace Gui.ShipService
             layoutElement.minHeight = 0;
         }
 
-        public void Initialize(Layout layout)
+        public void Initialize(IShipLayout layout)
         {
             _layout = layout;
             Cleanup();
@@ -100,11 +100,11 @@ namespace Gui.ShipService
 
             _blocks.Clear();
 
-            for (int i = 0; i < _layout.Size; ++i)
+            for (int i = _layout.Rect.yMin; i <= _layout.Rect.yMax; ++i)
             {
-                for (int j = 0; j < _layout.Size; ++j)
+                for (int j = _layout.Rect.xMin; j <= _layout.Rect.xMax; ++j)
                 {
-                    var item = CreateBlock((CellType)_layout[j, i]);
+                    var item = CreateBlock(_layout[j, i]);
                     _blocks.Add(item);
                     if (item == null)
                         continue;
@@ -179,7 +179,7 @@ namespace Gui.ShipService
             }
         }
 
-        private Layout _layout;
+        private IShipLayout _layout;
         private float _width;
         private float _height;
         private RectTransform _rectTransform;

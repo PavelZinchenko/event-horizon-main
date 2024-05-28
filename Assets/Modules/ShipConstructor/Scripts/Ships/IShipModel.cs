@@ -16,14 +16,13 @@ namespace Constructor.Ships
         ShipRarity ShipRarity { get; }
         string OriginalName { get; }
         Faction Faction { get; }
-        Layout Layout { get; }
+        IShipLayout Layout { get; }
         ImmutableCollection<Barrel> Barrels { get; }
         SpriteId ModelImage { get; }
         SpriteId IconImage { get; }
         float ModelScale { get; }
         float IconScale { get; }
         bool IsBionic { get; }
-        IEnumerable<Device> BuiltinDevices { get; }
 
         ShipBaseStats Stats { get; }
 

@@ -19,5 +19,8 @@ namespace GameDatabase.Enums
 		Mine,
 		Wave,
 		BlackHole,
+		Harpoon,
+		CircularSaw,
+		PiercingLaser,
 	}
 }

@@ -22,12 +22,13 @@ namespace Combat.Component.Systems.Weapons
         public override float Cooldown => Platform.Cooldown;
 
         public override float PowerLevel => Mathf.Clamp01(_chargeTime / _chargeTotalTime);
+        public override IBullet ActiveBullet => HasActiveBullet ? _activeBullet : null;
 
         protected override void OnUpdateView(float elapsedTime) {}
 
         protected override void OnUpdatePhysics(float elapsedTime)
         {
-            if (Active && CanBeActivated && _chargeTime > 0 && (_chargeTime > _chargeTotalTime || Platform.EnergyPoints.TryGet(_energyConsumption*elapsedTime / _chargeTotalTime)))
+            if (Active && CanBeActivated && _chargeTime > 0 && (_chargeTime > _chargeTotalTime || TryConsumeEnergy(_energyConsumption*elapsedTime / _chargeTotalTime)))
             {
                 Aim();
                 _chargeTime += elapsedTime;

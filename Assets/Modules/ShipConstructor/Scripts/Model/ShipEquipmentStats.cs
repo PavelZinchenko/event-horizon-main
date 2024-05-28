@@ -37,6 +37,9 @@ namespace Constructor.Model
 
         public float EnginePower;
         public float TurnRate;
+        public float EnginePowerWithoutEnergy;
+        public float TurnRateWithoutEnergy;
+        public float EngineEnergyConsumption;
 
         public bool Autopilot;
 
@@ -89,6 +92,13 @@ namespace Constructor.Model
             stats.EnginePower = component.EnginePower * multiplier;
             stats.TurnRate = component.TurnRate * multiplier;
 
+            if (component.EnergyRechargeRate >= 0 && component.EnginePower > 0)
+                stats.EnginePowerWithoutEnergy += component.EnginePower * multiplier;
+            if (component.EnergyRechargeRate >= 0 && component.TurnRate > 0)
+                stats.TurnRateWithoutEnergy += component.TurnRate * multiplier;
+            if (component.EnergyRechargeRate < 0 && component.EnginePower > 0)
+                stats.EngineEnergyConsumption -= component.EnergyRechargeRate;
+
             stats.Autopilot = component.Autopilot;
 
             stats.DroneRangeMultiplier = new StatMultiplier(component.DroneRangeModifier * multiplier);
@@ -106,50 +116,57 @@ namespace Constructor.Model
             return stats;
         }
 
-        public static ShipEquipmentStats operator +(ShipEquipmentStats first, ShipEquipmentStats second)
+        public void AddNegativeStatsOnly(in ShipEquipmentStats other)
         {
-            first.ArmorPoints += second.ArmorPoints;
-            first.ArmorRepairRate += second.ArmorRepairRate;
-            first.ArmorRepairCooldownMultiplier += second.ArmorRepairCooldownMultiplier;
+            EnergyConsumption += other.EnergyConsumption;
+            Weight += other.Weight;
+        }
 
-            first.EnergyPoints += second.EnergyPoints;
-            first.EnergyRecharge += second.EnergyRecharge;
-            first.EnergyConsumption += second.EnergyConsumption;
-            first.EnergyRechargeCooldownMultiplier += second.EnergyRechargeCooldownMultiplier;
+        public void AddStats(in ShipEquipmentStats other)
+        {
+            ArmorPoints += other.ArmorPoints;
+            ArmorRepairRate += other.ArmorRepairRate;
+            ArmorRepairCooldownMultiplier += other.ArmorRepairCooldownMultiplier;
 
-            first.ShieldPoints += second.ShieldPoints;
-            first.ShieldRechargeRate += second.ShieldRechargeRate;
-            first.ShieldRechargeCooldownMultiplier += second.ShieldRechargeCooldownMultiplier;
+            EnergyPoints += other.EnergyPoints;
+            EnergyRecharge += other.EnergyRecharge;
+            EnergyConsumption += other.EnergyConsumption;
+            EnergyRechargeCooldownMultiplier += other.EnergyRechargeCooldownMultiplier;
 
-            first.Weight += second.Weight;
-            first.WeightReduction += second.WeightReduction;
+            ShieldPoints += other.ShieldPoints;
+            ShieldRechargeRate += other.ShieldRechargeRate;
+            ShieldRechargeCooldownMultiplier += other.ShieldRechargeCooldownMultiplier;
 
-            first.EnergyAbsorption += second.EnergyAbsorption;
-            first.RammingDamage += second.RammingDamage;
-            first.RammingDamageMultiplier += second.RammingDamageMultiplier;
+            Weight += other.Weight;
+            WeightReduction += other.WeightReduction;
 
-            first.KineticResistance += second.KineticResistance;
-            first.EnergyResistance += second.EnergyResistance;
-            first.ThermalResistance += second.ThermalResistance;
+            EnergyAbsorption += other.EnergyAbsorption;
+            RammingDamage += other.RammingDamage;
+            RammingDamageMultiplier += other.RammingDamageMultiplier;
 
-            first.EnginePower += second.EnginePower;
-            first.TurnRate += second.TurnRate;
+            KineticResistance += other.KineticResistance;
+            EnergyResistance += other.EnergyResistance;
+            ThermalResistance += other.ThermalResistance;
 
-            first.Autopilot |= second.Autopilot;
+            EnginePower += other.EnginePower;
+            TurnRate += other.TurnRate;
+            EnginePowerWithoutEnergy += other.EnginePowerWithoutEnergy;
+            TurnRateWithoutEnergy += other.TurnRateWithoutEnergy;
+            EngineEnergyConsumption += other.EngineEnergyConsumption;
 
-            first.DroneRangeMultiplier += second.DroneRangeMultiplier;
-            first.DroneDamageMultiplier += second.DroneDamageMultiplier;
-            first.DroneDefenseMultiplier += second.DroneDefenseMultiplier;
-            first.DroneSpeedMultiplier += second.DroneSpeedMultiplier;
-            first.DroneReconstructionSpeed += second.DroneReconstructionSpeed;
-            first.DroneReconstructionTimeMultiplier += second.DroneReconstructionTimeMultiplier;
+            Autopilot |= other.Autopilot;
 
-            first.WeaponFireRateMultiplier += second.WeaponFireRateMultiplier;
-            first.WeaponDamageMultiplier += second.WeaponDamageMultiplier;
-            first.WeaponRangeMultiplier += second.WeaponRangeMultiplier;
-            first.WeaponEnergyCostMultiplier += second.WeaponEnergyCostMultiplier;
+            DroneRangeMultiplier += other.DroneRangeMultiplier;
+            DroneDamageMultiplier += other.DroneDamageMultiplier;
+            DroneDefenseMultiplier += other.DroneDefenseMultiplier;
+            DroneSpeedMultiplier += other.DroneSpeedMultiplier;
+            DroneReconstructionSpeed += other.DroneReconstructionSpeed;
+            DroneReconstructionTimeMultiplier += other.DroneReconstructionTimeMultiplier;
 
-            return first;
+            WeaponFireRateMultiplier += other.WeaponFireRateMultiplier;
+            WeaponDamageMultiplier += other.WeaponDamageMultiplier;
+            WeaponRangeMultiplier += other.WeaponRangeMultiplier;
+            WeaponEnergyCostMultiplier += other.WeaponEnergyCostMultiplier;
         }
     }
 }

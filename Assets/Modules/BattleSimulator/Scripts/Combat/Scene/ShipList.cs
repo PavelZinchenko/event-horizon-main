@@ -9,11 +9,10 @@ namespace Combat.Scene
         {
             _lockObject = new object();
             _ships = new List<IShip>();
-            _shipsReadOnly = _ships.AsReadOnly();
         }
 
-        public IList<IShip> Items { get { return _shipsReadOnly; } }
-        public object LockObject { get { return _lockObject; } }
+        public IReadOnlyList<IShip> Items => _ships;
+        public object LockObject => _lockObject;
 
         public void Add(IShip ship)
         {
@@ -27,7 +26,8 @@ namespace Combat.Scene
         {
             lock (_lockObject)
             {
-                _ships.Remove(ship);
+                var index = _ships.IndexOf(ship);
+                _ships.QuickRemove(index);
             }
         }
 
@@ -41,6 +41,5 @@ namespace Combat.Scene
 
         private readonly object _lockObject;
         private readonly List<IShip> _ships;
-        private readonly IList<IShip> _shipsReadOnly;
     }
 }

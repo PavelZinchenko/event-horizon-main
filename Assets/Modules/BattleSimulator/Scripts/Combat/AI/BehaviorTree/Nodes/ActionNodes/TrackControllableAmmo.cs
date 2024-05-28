@@ -4,6 +4,9 @@ using Combat.Unit;
 using Combat.Component.Body;
 using Combat.Ai.BehaviorTree.Utils;
 using Combat.Component.Systems.Weapons;
+using System.Collections.Generic;
+using Combat.Component.Systems;
+using GameDatabase.Enums;
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
@@ -14,12 +17,12 @@ namespace Combat.Ai.BehaviorTree.Nodes
 
 		public static INode Create(IShip ship, bool secondaryTargets)
 		{
-			var weapons = ship.Systems.All.FindWeaponsByType(WeaponType.Manageable);
+			var weapons = FindSuitableWeapons(ship.Systems.All);
 			if (weapons.Count == 0) return EmptyNode.Failure;
 			return new TrackControllableAmmo(weapons, secondaryTargets);
 		}
 
-		public NodeState Evaluate(Context context)
+        public NodeState Evaluate(Context context)
 		{
 			var enemy = context.TargetShip;
 			var result = NodeState.Failure;
@@ -63,7 +66,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			var dir = bullet.Body.WorldPosition().Direction(enemy.Body.Position).normalized;
 			var delta = Vector2.Dot(bullet.Body.WorldVelocity(), dir) - Vector2.Dot(enemy.Body.WorldVelocity(), dir);
 
-			return delta >= 0;
+			return delta >= -0.1f;
 		}
 
 		private TrackControllableAmmo(ShipSystemList<IWeapon> weapons, bool secondaryTargets)
@@ -71,5 +74,36 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			_weapons = weapons;
 			_secondaryTargets = secondaryTargets;
 		}
-	}
+
+        private static ShipSystemList<IWeapon> FindSuitableWeapons(IReadOnlyList<ISystem> shipSystems)
+        {
+            var systems = new ShipSystemList<IWeapon>();
+            for (int i = 0; i < shipSystems.Count; ++i)
+            {
+                if (shipSystems[i] is not IWeapon weapon) continue;
+
+                switch (weapon.Info.WeaponType)
+                {
+                    case WeaponType.Manageable:
+                    case WeaponType.Continuous:
+                        break;
+                    default:
+                        continue;
+                }
+
+                switch (weapon.Info.BulletType)
+                {
+                    case AiBulletBehavior.Beam:
+                    case AiBulletBehavior.AreaOfEffect:
+                        continue;
+                    default:
+                        break;
+                }
+
+                systems.Add(weapon, i);
+            }
+
+            return systems;
+        }
+    }
 }

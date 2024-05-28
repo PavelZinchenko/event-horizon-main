@@ -10,7 +10,7 @@ namespace Combat.Ai
 		    _ship = ship;
 	    }
 
-	    public void Update(float deltaTime) {}
+	    public void Update(float deltaTime, in AiManager.Options options) {}
         public ControllerStatus Status => _ship.IsActive() ? ControllerStatus.Idle : ControllerStatus.Dead;
 
         private readonly IShip _ship;

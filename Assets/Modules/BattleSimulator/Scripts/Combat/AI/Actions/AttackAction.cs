@@ -73,7 +73,7 @@ namespace Combat.Ai
 
 	        if (_secondaryTargets && context.Targets != null)
 	        {
-	            var targets = context.Targets.Items;
+	            var targets = context.Targets.Enemies;
 	            for (var i = 0; i < targets.Count; i++)
 	                Perform(ship, targets[i], controls);
 	        }

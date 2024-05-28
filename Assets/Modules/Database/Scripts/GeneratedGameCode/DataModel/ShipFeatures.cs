@@ -37,6 +37,9 @@ namespace GameDatabase.DataModel
 			ArmorBonus = UnityEngine.Mathf.Clamp(serializable.ArmorBonus, -1f, 10f);
 			ShieldBonus = UnityEngine.Mathf.Clamp(serializable.ShieldBonus, -1f, 10f);
 			EnergyBonus = UnityEngine.Mathf.Clamp(serializable.EnergyBonus, -1f, 10f);
+			DroneBuildSpeedBonus = UnityEngine.Mathf.Clamp(serializable.DroneBuildSpeedBonus, -1f, 10f);
+			DroneAttackBonus = UnityEngine.Mathf.Clamp(serializable.DroneAttackBonus, -1f, 10f);
+			DroneDefenseBonus = UnityEngine.Mathf.Clamp(serializable.DroneDefenseBonus, -1f, 10f);
 			Regeneration = serializable.Regeneration;
 			BuiltinDevices = new ImmutableCollection<Device>(serializable.BuiltinDevices?.Select(item => loader.GetDevice(new ItemId<Device>(item), true)));
 
@@ -53,6 +56,9 @@ namespace GameDatabase.DataModel
 		public float ArmorBonus { get; private set; }
 		public float ShieldBonus { get; private set; }
 		public float EnergyBonus { get; private set; }
+		public float DroneBuildSpeedBonus { get; private set; }
+		public float DroneAttackBonus { get; private set; }
+		public float DroneDefenseBonus { get; private set; }
 		public bool Regeneration { get; private set; }
 		public ImmutableCollection<Device> BuiltinDevices { get; private set; }
 

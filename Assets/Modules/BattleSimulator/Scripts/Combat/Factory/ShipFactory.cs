@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Combat.Ai;
 using Combat.Component.Body;
@@ -10,6 +11,7 @@ using Combat.Component.Platform;
 using Combat.Component.Stats;
 using Combat.Component.Systems.DroneBays;
 using Combat.Component.Unit.Classification;
+using Combat.Component.Systems.Devices;
 using Combat.Component.Triggers;
 using Combat.Component.View;
 using Combat.Helpers;
@@ -28,6 +30,7 @@ using IShip = Combat.Component.Ship.IShip;
 using Ship = Combat.Component.Ship.Ship;
 using Collider2DOptimization;
 using Combat.Component.Unit;
+using Combat.Collision.Manager;
 
 namespace Combat.Factory
 {
@@ -44,13 +47,16 @@ namespace Combat.Factory
 		[Inject] private readonly DroneBayFactory _droneBayFactory;
 		[Inject] private readonly SatelliteFactory _satelliteFactory;
 		[Inject] private readonly PrefabCache _prefabCache;
-		[Inject] private readonly EffectFactory _effectFactory;
+        [Inject] private readonly Services.MaterialCache _materialCache;
+        [Inject] private readonly ICollisionManager _collisionManager;
+        [Inject] private readonly EffectFactory _effectFactory;
 		[Inject] private readonly RadioTransmitter _radioTransmitter;
         [Inject] private readonly ControllerFactory _controllerFactory;
 		private const float _droneBayPlatformCooldown = 0.4f;
 		private readonly Settings _settings;
+        private int _droneBayUniqueId = 1;
 
-		public ShipFactory(Settings settings)
+        public ShipFactory(Settings settings)
         {
             _settings = settings;
         }
@@ -130,14 +136,42 @@ namespace Combat.Factory
 
             foreach (var item in spec.Devices)
             {
-                if (isDrone && item.Device.DeviceClass == DeviceClass.ClonningCenter) continue; // TODO: 
-
                 var device = _deviceFactory.Create(item, ship, spec);
+
                 if (device != null)
                     ship.AddSystem(device);
             }
 
-            if (spec.DroneBays.Any() && motherShip == null)
+            if (!isDrone)
+                CreateDroneBays(ship, spec);
+
+            shipGameObject.IsActive = true;
+
+            _scene.AddUnit(ship);
+            _aiManager.Add(controllerFactory.Create(ship));
+
+            if (!_settings.NoEnemyMessages)
+                ship.RadioTransmitter = _radioTransmitter;
+
+            return ship;
+        }
+
+        private void CreateDroneBays(IShip ship, IShipSpecification spec)
+        {
+            foreach (var item in spec.ClonningCenters)
+            {
+                var clonningCenter = _deviceFactory.Create(item, ship, spec);
+                ship.AddSystem(clonningCenter);
+            }
+
+            IWeaponPlatform droneBayPlatform = null;
+            if (spec.DroneBays.Any())
+            {
+                droneBayPlatform = CreateDroneBayPlatform(ship);
+                ship.AddPlatform(droneBayPlatform);
+            }
+
+            if (spec.DroneBays.Any())
             {
                 IDroneReplicator droneReplicator = null;
                 if (spec.Stats.DroneBuildSpeed > 0)
@@ -146,7 +180,8 @@ namespace Combat.Factory
                     ship.AddSystem(droneReplicator);
                 }
 
-                var droneBayPlatform = CreateDroneBayPlatform(ship);
+                if (droneBayPlatform == null)
+                    droneBayPlatform = CreateDroneBayPlatform(ship);
                 ship.AddPlatform(droneBayPlatform);
 
                 foreach (var item in spec.DroneBays)
@@ -155,19 +190,6 @@ namespace Combat.Factory
                     ship.AddSystem(droneBay);
                 }
             }
-
-            shipGameObject.IsActive = true;
-
-            _scene.AddUnit(ship);
-            _aiManager.Add(controllerFactory.Create(ship));
-
-			if (stats.Autopilot)
-				_aiManager.Add(_controllerFactory.CreateAutopilotController().Create(ship));
-
-			if (!_settings.NoEnemyMessages)
-				ship.RadioTransmitter = _radioTransmitter;
-
-			return ship;
         }
 
         private IWeaponPlatform CreateDroneBayPlatform(IShip ship)
@@ -217,12 +239,12 @@ namespace Combat.Factory
             var prefab = _prefabCache.LoadResourcePrefab("Combat/Ships/" + stats.ShipModel.ModelImage.Id, true);
             if (prefab != null)
             {
-                gameObject = new GameObjectHolder(prefab, _objectPool);
+                gameObject = new GameObjectHolder(prefab, _objectPool, false);
             }
             else
             {
                 prefab = _prefabCache.LoadResourcePrefab("Combat/Ships/Default");
-                gameObject = new GameObjectHolder(prefab, _objectPool);
+                gameObject = new GameObjectHolder(prefab, _objectPool, false);
                 var sprite = _resourceLocator.GetSprite(stats.ShipModel.ModelImage);
                 gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
 
@@ -235,8 +257,10 @@ namespace Combat.Factory
                 }
             }
 
+            gameObject.GetComponent<ICollider>().Initialize(_collisionManager);
+
             if (colorScheme.IsHsv)
-                gameObject.GetComponent<IView>().ApplyHsv(colorScheme.Hue, colorScheme.Saturation);
+                gameObject.GetComponent<IView>().ApplyHsv(colorScheme.Hue, colorScheme.Saturation, _materialCache);
 
             return gameObject;
         }
@@ -252,19 +276,17 @@ namespace Combat.Factory
 
         public IEngine CreateEngine(IShipStats stats, bool isDrone = false)
         {
-            var propulsion = 2 * stats.EnginePower / Mathf.Sqrt(stats.Weight);
-            var turnRate = stats.TurnRate * 120 / stats.Weight;
-            var velocity = stats.EnginePower;
-            var angularVelocity = stats.TurnRate * 30f;
-
-            var settings = _database.ShipSettings;
-            var maxVelocity = settings.MaxVelocity;
-            var maxAngularVelocity = settings.MaxTurnRate * 30f;
+            var engineStats = new EngineStats(stats.EnginePower, stats.TurnRate, stats.Weight, stats.Layout.CellCount, _database.ShipSettings);
 
             if (isDrone)
-                return new DroneEngine(propulsion, turnRate, velocity, angularVelocity, maxVelocity, maxAngularVelocity);
+                return new DroneEngine(engineStats);
             else
-                return new ShipEngine(propulsion, turnRate, velocity, angularVelocity, maxVelocity, maxAngularVelocity);
+            {
+                var engineStatsWithoutEnergy = new EngineStats(stats.EnginePowerWihoutEnergy, stats.TurnRateWihoutEnergy,
+                    stats.Weight, stats.Layout.CellCount, _database.ShipSettings);
+
+                return new ShipEngine(engineStats, engineStatsWithoutEnergy);
+            }
         }
 
         public static IBody CreateBody(GameObjectHolder gameObjectHolder, IShipStats stats, Vector2 position, float rotation)
@@ -331,7 +353,7 @@ namespace Combat.Factory
             var isTurret = (bool)data.Image && (data.Weapons.Any() || data.WeaponsObsolete.Any());
 
             IWeaponPlatform platform;
-            if (data.AutoAimingArc > 0 && (satellite == null || isTurret))
+            if (data.AutoAimingArc > 0 && satellite?.AimingSystem == null)
             {
                 platform = new AutoAimingPlatform(ship, parent, _scene, position, rotation, offset, data.AutoAimingArc, cooldown, data.RotationSpeed, isTurret);
             }
@@ -344,14 +366,14 @@ namespace Combat.Factory
             if (isTurret)
             {
                 var prefab = _prefabCache.LoadResourcePrefab("Combat/Guns/turret");
-                var gameObject = new GameObjectHolder(prefab, _objectPool);
+                var gameObject = new GameObjectHolder(prefab, _objectPool, false);
                 var sprite = _resourceLocator.GetSprite(data.Image);
                 var x = sprite.pivot.x / sprite.rect.width;
                 var y = sprite.pivot.y / sprite.rect.height;
                 var scale = 0.5f / Mathf.Max(Mathf.Max(x, 1f - x), Mathf.Max(y, 1f - y));
                 var view = gameObject.GetComponent<IView>();
                 gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
-                if (color.IsHsv) view.ApplyHsv(color.Hue, color.Saturation);
+                view.ApplyHsv(color.Hue, color.Saturation, _materialCache);
                 platform.SetView(view, color.Color);
                 gameObject.GetComponent<IBodyComponent>().Initialize(platform.Body, new Vector2(-0.5f * data.Size * parent.Body.Scale, 0), 0, scale * data.Size * parent.Body.Scale, Vector2.zero, 0, 0);
                 gameObject.IsActive = true;

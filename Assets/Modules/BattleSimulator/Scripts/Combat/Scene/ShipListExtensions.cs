@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using Combat.Component.Body;
 using Combat.Component.Features;
 using Combat.Component.Ship;
-using Combat.Component.Platform;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Unit;
@@ -15,7 +13,6 @@ namespace Combat.Scene
         public float MaxDistance;
 
         public bool IgnoreDrones;
-        public bool UsePriority;
 		public bool UseDroneCamouflage;
 		public bool UseMissileCamouflage;
 
@@ -32,7 +29,6 @@ namespace Combat.Scene
                 TakeDecoyChance = 30,
 
                 IgnoreDrones = false,
-                UsePriority = false,
 				UseDroneCamouflage = true,
 
 				MaxDistance = maxDistance,
@@ -49,7 +45,6 @@ namespace Combat.Scene
                 TakeDecoyChance = 0,
 
                 IgnoreDrones = false,
-                UsePriority = false,
 
                 MaxDistance = maxDistance,
 
@@ -64,26 +59,34 @@ namespace Combat.Scene
                 IgnoreDecoyChance = 0,
                 TakeDecoyChance = 0,
                 IgnoreDrones = false,
-                UsePriority = false,
             };
         }
     }
 
     public static class ShipListExtensions
     {
-        public static IShip GetEnemy(this IUnitList<IShip> shipList, IUnit unit, EnemyMatchingOptions options)
+        public static IShip GetEnemy(this IUnitList<IShip> shipList, IUnit unit, in EnemyMatchingOptions options)
+        {
+            if (unit.Type.Class == UnitClass.Drone)
+                return GetEnemy(shipList, unit, unit.Type.Owner, options);
+            else
+                return GetEnemy(shipList, unit, null, options);
+        }
+
+        public static IShip GetEnemy(this IUnitList<IShip> shipList, IUnit unit, IUnit whereToLook, in EnemyMatchingOptions options)
         {
             IShip enemy = null;
 			var random = new LazyRandom();
-			float minRange = float.MaxValue;
-			var ignoreDecoy = options.IgnoreDecoyChance >= 100 || options.IgnoreDecoyChance > 0 && random.Random.Percentage(options.IgnoreDecoyChance);
+            var enemyStats = TargetStats.None;
+            var ignoreDecoy = options.IgnoreDecoyChance >= 100 || options.IgnoreDecoyChance > 0 && random.Random.Percentage(options.IgnoreDecoyChance);
 			var takeDecoy = options.TakeDecoyChance >= 100 || options.TakeDecoyChance > 0 && random.Random.Percentage(options.TakeDecoyChance);
 
 			lock (shipList.LockObject)
             {
-                foreach (var ship in shipList.Items)
+                for (int i = 0; i < shipList.Items.Count; ++i)
                 {
-                    if (!ship.IsActive() || ship.Type.Side.IsAlly(unit.Type.Side) || ship.Features.TargetPriority == TargetPriority.None || ship.Type.Class == UnitClass.Limb)
+                    var ship = shipList.Items[i];
+                    if (!ship.IsActive() || ship.Type.Side.IsAlly(unit.Type.Side) || ship.Features.TargetPriority == TargetPriority.None)
                         continue;
                     if (options.IgnoreDrones && ship.Type.Class == UnitClass.Drone)
                         continue;
@@ -92,41 +95,34 @@ namespace Combat.Scene
 					if (options.UseDroneCamouflage && ship.Features.ChanceToAvoidDrone > 0f && random.Random.Percentage(ship.Features.ChanceToAvoidDrone))
 						continue;
 
-					var dir = unit.Body.Position.Direction(ship.Body.Position);
-                    var range = dir.magnitude - unit.Body.Scale/2 - ship.Body.Scale/2;
+                    var shipsSummarySize = unit.Body.Scale/3 + ship.Body.Scale/3;
+                    var distanceToShip = unit.Body.Position.Direction(ship.Body.Position).magnitude - shipsSummarySize;
 
                     if (options.MaxDistance > 0)
                     {
-                        if (ship.Type.Class == UnitClass.Drone)
-                        {
-                            if (ship.Type.Owner != null && ship.Type.Owner.Body.Position.Distance(ship.Body.Position) > options.MaxDistance)
-                                continue;
-                        }
-                        else if (range > options.MaxDistance)
+                        var distance = whereToLook == null ? distanceToShip :
+                            whereToLook.Body.Position.Direction(ship.Body.Position).magnitude - shipsSummarySize;
+
+                        if (distance > options.MaxDistance)
                             continue;
                     }
 
+                    var stats = new TargetStats(ship, distanceToShip);
+
                     if (enemy == null)
                     {
-                        minRange = range;
                         enemy = ship;
-                        continue;
+                        enemyStats = stats;
                     }
-
-                    if (takeDecoy && ship.Type.Class == UnitClass.Decoy && enemy.Type.Class != UnitClass.Decoy)
+                    else if (takeDecoy && ship.Type.Class == UnitClass.Decoy && enemy.Type.Class != UnitClass.Decoy)
                     {
                         enemy = ship;
-                        minRange = range;
-                        continue;
+                        enemyStats = stats;
                     }
-
-                    if (options.UsePriority && ship.Features.TargetPriority < enemy.Features.TargetPriority)
-                        continue;
-
-                    if (range < minRange || (options.UsePriority && ship.Features.TargetPriority > enemy.Features.TargetPriority))
+                    else if (stats.IsBetterThan(enemyStats))
                     {
-                        minRange = range;
                         enemy = ship;
+                        enemyStats = stats;
                     }
                 }
             }
@@ -134,21 +130,22 @@ namespace Combat.Scene
             return enemy;
         }
 
-        public static IShip GetEnemyForTurret(this IUnitList<IShip> shipList, IUnit unit, Vector2 turretPosition,
-            float turretMountAngle, float turningRange, float maxDistance, bool ignoreUnreachable = false)
+        public static IShip GetEnemyForTurret(this IUnitList<IShip> shipList, IUnit unit, in Vector2 turretPosition,
+            float turretMountAngle, float turningRange, float maxDistance, bool ignoreUnreachable = false, bool ignoreStarbases = false)
         {
             const float maxTrackingDistance = 2f;
 
             IShip enemy = null;
-            float enemyDistance = float.MaxValue;
+            var enemyStats = TargetStats.None;
             bool validEnemyFound = false;
 
             lock (shipList.LockObject)
             {
-                foreach (var ship in shipList.Items)
+                for (int i = 0; i < shipList.Items.Count; ++i)
                 {
-                    if (!ship.IsActive() || ship.Type.Side.IsAlly(unit.Type.Side) || ship.Features.TargetPriority == TargetPriority.None || ship.Type.Class == UnitClass.Limb)
-                        continue;
+                    var ship = shipList.Items[i];
+                    if (!ship.IsActive() || ship.Type.Side.IsAlly(unit.Type.Side) || ship.Features.TargetPriority == TargetPriority.None) continue;
+                    if (ignoreStarbases && ship.Specification != null && ship.Specification.Stats.ShipModel.ShipType == GameDatabase.Enums.ShipType.Starbase) continue;
 
                     var direction = turretPosition.Direction(ship.Body.Position);
                     var distance = direction.magnitude - ship.Body.Scale/2;
@@ -171,22 +168,22 @@ namespace Combat.Scene
                         }
                     }
 
+                    if (!isValidTarget && validEnemyFound) continue;
+
+                    var stats = new TargetStats(ship, distance);
                     if (isValidTarget == validEnemyFound)
-                    {
-                        var priority = enemy == null ? 0 : ship.Features.TargetPriority - enemy.Features.TargetPriority;
-                        if (priority < 0 || priority == 0 && distance >= enemyDistance) continue;
-                    }
+                        if (enemyStats.IsBetterThan(stats)) continue;
 
                     enemy = ship;
-                    enemyDistance = distance;
-                    validEnemyFound |= isValidTarget;
+                    enemyStats = stats;
+                    validEnemyFound = isValidTarget;
                 }
             }
 
             return enemy;
         }
 
-        public static IShip GetEnemy(this IUnitList<IShip> shipList, IUnit unit, float rotation, float maxRange, float maxDeviation, bool trueVision, bool ignoreDrones)
+        public static IShip GetEnemyForMissile(this IUnitList<IShip> shipList, IUnit unit, float rotation, float maxRange, float maxDeviation, bool trueVision, bool ignoreDrones)
         {
             IShip enemy = null;
             float minRange = float.MaxValue;
@@ -195,9 +192,10 @@ namespace Combat.Scene
 
             lock (shipList.LockObject)
             {
-                foreach (var ship in shipList.Items)
+                for (int i = 0; i < shipList.Items.Count; ++i)
                 {
-                    if (!ship.IsActive() || ship.Type.Side.IsAlly(unit.Type.Side) || ship.Type.Class == UnitClass.Limb)
+                    var ship = shipList.Items[i];
+                    if (!ship.IsActive() || ship.Type.Side.IsAlly(unit.Type.Side))
                         continue;
 
                     if (trueVision && ship.Type.Class == UnitClass.Decoy)
@@ -255,25 +253,6 @@ namespace Combat.Scene
             return enemy;
         }
 
-        public static void GetEnemyShips(this IUnitList<IShip> shipList, IList<IShip> targetList, UnitSide side)
-        {
-            lock (shipList.LockObject)
-            {
-                var ships = shipList.Items;
-                var count = ships.Count;
-                targetList.Clear();
-
-                for (var i = 0; i < count; ++i)
-                {
-                    var ship = ships[i];
-                    if (ship.Type.Class == UnitClass.Limb)
-                        continue;
-                    if (ship.Type.Side.IsEnemy(side))
-                        targetList.Add(ship);
-                }
-            }
-        }
-
         /// <summary>
         /// Returns list of all objects WITHOUT PARENTS within a specified radius around the center point
         /// </summary>
@@ -300,7 +279,6 @@ namespace Combat.Scene
                 }
             }
         }
-        
 
         /// <summary>
         /// Functionally identical to GetObjectsInRange, but also returns objects with parents as a separate list and
@@ -342,6 +320,41 @@ namespace Combat.Scene
             private System.Random _random;
 
             public System.Random Random => _random ??= new();
+        }
+
+        private readonly struct TargetStats
+        {
+            public static readonly TargetStats None = new(null, float.MaxValue);
+
+            public readonly float Distance;
+            public readonly float Size;
+            public readonly int Priority;
+
+            public TargetStats(IShip target, float distance)
+            {
+                Distance = distance;
+                var features = target?.Features;
+                Priority = features != null ? (int)features.TargetPriority : 0;
+                Size = target != null ? target.Body.Scale : 0;
+            }
+
+            public bool IsBetterThan(in TargetStats other)
+            {
+                float totalScores = 0;
+                
+                totalScores += (Priority - other.Priority) * 300;
+                totalScores += Compare(other.Distance, Distance) * 300;
+                totalScores += Compare(Size, other.Size) * 200;
+
+                return totalScores > 0;
+            }
+
+            private static float Compare(float first, float second)
+            {
+                var max = first > second ? first : second;
+                if (max <= 0) return 0f;
+                return (first - second) / max;
+            }
         }
     }
 }

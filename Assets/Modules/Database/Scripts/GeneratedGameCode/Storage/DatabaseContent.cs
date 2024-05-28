@@ -85,6 +85,19 @@ namespace GameDatabase.Storage
                 if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate ComponentStats ID - " + item.Id + " (" + name + ")");
             }
+            else if (type == ItemType.ComponentStatUpgrade)
+            {
+			    if (!_componentStatUpgradeMap.ContainsKey(item.Id))
+                {
+                    var data = _serializer.FromJson<ComponentStatUpgradeSerializable>(content);
+                    data.FileName = name;
+                    _componentStatUpgradeMap.Add(data.Id, data);
+                    return;
+                }
+
+                if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate ComponentStatUpgrade ID - " + item.Id + " (" + name + ")");
+            }
             else if (type == ItemType.Device)
             {
 			    if (!_deviceMap.ContainsKey(item.Id))
@@ -189,18 +202,18 @@ namespace GameDatabase.Storage
                 if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate ShipBuild ID - " + item.Id + " (" + name + ")");
             }
-            else if (type == ItemType.Skill)
+            else if (type == ItemType.StatUpgradeTemplate)
             {
-			    if (!_skillMap.ContainsKey(item.Id))
+			    if (!_statUpgradeTemplateMap.ContainsKey(item.Id))
                 {
-                    var data = _serializer.FromJson<SkillSerializable>(content);
+                    var data = _serializer.FromJson<StatUpgradeTemplateSerializable>(content);
                     data.FileName = name;
-                    _skillMap.Add(data.Id, data);
+                    _statUpgradeTemplateMap.Add(data.Id, data);
                     return;
                 }
 
                 if (!_allowDuplicates)
-                    throw new DatabaseException("Duplicate Skill ID - " + item.Id + " (" + name + ")");
+                    throw new DatabaseException("Duplicate StatUpgradeTemplate ID - " + item.Id + " (" + name + ")");
             }
             else if (type == ItemType.Technology)
             {
@@ -423,19 +436,6 @@ namespace GameDatabase.Storage
 				if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate FactionsSettings file found - " + name);
             }
-            else if (type == ItemType.FrontierSettings)
-            {
-                if (FrontierSettings == null)
-                {
-                    var data = _serializer.FromJson<FrontierSettingsSerializable>(content);
-                    data.FileName = name;
-                    FrontierSettings = data;
-                    return;
-                }
-
-				if (!_allowDuplicates)
-                    throw new DatabaseException("Duplicate FrontierSettings file found - " + name);
-            }
             else if (type == ItemType.GalaxySettings)
             {
                 if (GalaxySettings == null)
@@ -553,7 +553,6 @@ namespace GameDatabase.Storage
 		public DebugSettingsSerializable DebugSettings { get; private set; }
 		public ExplorationSettingsSerializable ExplorationSettings { get; private set; }
 		public FactionsSettingsSerializable FactionsSettings { get; private set; }
-		public FrontierSettingsSerializable FrontierSettings { get; private set; }
 		public GalaxySettingsSerializable GalaxySettings { get; private set; }
 		public MusicPlaylistSerializable MusicPlaylist { get; private set; }
 		public ShipModSettingsSerializable ShipModSettings { get; private set; }
@@ -566,6 +565,7 @@ namespace GameDatabase.Storage
 		public IEnumerable<ComponentSerializable> ComponentList => _componentMap.Values;
 		public IEnumerable<ComponentModSerializable> ComponentModList => _componentModMap.Values;
 		public IEnumerable<ComponentStatsSerializable> ComponentStatsList => _componentStatsMap.Values;
+		public IEnumerable<ComponentStatUpgradeSerializable> ComponentStatUpgradeList => _componentStatUpgradeMap.Values;
 		public IEnumerable<DeviceSerializable> DeviceList => _deviceMap.Values;
 		public IEnumerable<DroneBaySerializable> DroneBayList => _droneBayMap.Values;
 		public IEnumerable<FactionSerializable> FactionList => _factionMap.Values;
@@ -574,7 +574,7 @@ namespace GameDatabase.Storage
 		public IEnumerable<SatelliteBuildSerializable> SatelliteBuildList => _satelliteBuildMap.Values;
 		public IEnumerable<ShipSerializable> ShipList => _shipMap.Values;
 		public IEnumerable<ShipBuildSerializable> ShipBuildList => _shipBuildMap.Values;
-		public IEnumerable<SkillSerializable> SkillList => _skillMap.Values;
+		public IEnumerable<StatUpgradeTemplateSerializable> StatUpgradeTemplateList => _statUpgradeTemplateMap.Values;
 		public IEnumerable<TechnologySerializable> TechnologyList => _technologyMap.Values;
 		public IEnumerable<BehaviorTreeSerializable> BehaviorTreeList => _behaviorTreeMap.Values;
 		public IEnumerable<CharacterSerializable> CharacterList => _characterMap.Values;
@@ -592,6 +592,7 @@ namespace GameDatabase.Storage
 		public ComponentSerializable GetComponent(int id) { return _componentMap.TryGetValue(id, out var item) ? item : null; }
 		public ComponentModSerializable GetComponentMod(int id) { return _componentModMap.TryGetValue(id, out var item) ? item : null; }
 		public ComponentStatsSerializable GetComponentStats(int id) { return _componentStatsMap.TryGetValue(id, out var item) ? item : null; }
+		public ComponentStatUpgradeSerializable GetComponentStatUpgrade(int id) { return _componentStatUpgradeMap.TryGetValue(id, out var item) ? item : null; }
 		public DeviceSerializable GetDevice(int id) { return _deviceMap.TryGetValue(id, out var item) ? item : null; }
 		public DroneBaySerializable GetDroneBay(int id) { return _droneBayMap.TryGetValue(id, out var item) ? item : null; }
 		public FactionSerializable GetFaction(int id) { return _factionMap.TryGetValue(id, out var item) ? item : null; }
@@ -600,7 +601,7 @@ namespace GameDatabase.Storage
 		public SatelliteBuildSerializable GetSatelliteBuild(int id) { return _satelliteBuildMap.TryGetValue(id, out var item) ? item : null; }
 		public ShipSerializable GetShip(int id) { return _shipMap.TryGetValue(id, out var item) ? item : null; }
 		public ShipBuildSerializable GetShipBuild(int id) { return _shipBuildMap.TryGetValue(id, out var item) ? item : null; }
-		public SkillSerializable GetSkill(int id) { return _skillMap.TryGetValue(id, out var item) ? item : null; }
+		public StatUpgradeTemplateSerializable GetStatUpgradeTemplate(int id) { return _statUpgradeTemplateMap.TryGetValue(id, out var item) ? item : null; }
 		public TechnologySerializable GetTechnology(int id) { return _technologyMap.TryGetValue(id, out var item) ? item : null; }
 		public BehaviorTreeSerializable GetBehaviorTree(int id) { return _behaviorTreeMap.TryGetValue(id, out var item) ? item : null; }
 		public CharacterSerializable GetCharacter(int id) { return _characterMap.TryGetValue(id, out var item) ? item : null; }
@@ -625,6 +626,7 @@ namespace GameDatabase.Storage
 		private readonly Dictionary<int, ComponentSerializable> _componentMap = new();
 		private readonly Dictionary<int, ComponentModSerializable> _componentModMap = new();
 		private readonly Dictionary<int, ComponentStatsSerializable> _componentStatsMap = new();
+		private readonly Dictionary<int, ComponentStatUpgradeSerializable> _componentStatUpgradeMap = new();
 		private readonly Dictionary<int, DeviceSerializable> _deviceMap = new();
 		private readonly Dictionary<int, DroneBaySerializable> _droneBayMap = new();
 		private readonly Dictionary<int, FactionSerializable> _factionMap = new();
@@ -633,7 +635,7 @@ namespace GameDatabase.Storage
 		private readonly Dictionary<int, SatelliteBuildSerializable> _satelliteBuildMap = new();
 		private readonly Dictionary<int, ShipSerializable> _shipMap = new();
 		private readonly Dictionary<int, ShipBuildSerializable> _shipBuildMap = new();
-		private readonly Dictionary<int, SkillSerializable> _skillMap = new();
+		private readonly Dictionary<int, StatUpgradeTemplateSerializable> _statUpgradeTemplateMap = new();
 		private readonly Dictionary<int, TechnologySerializable> _technologyMap = new();
 		private readonly Dictionary<int, BehaviorTreeSerializable> _behaviorTreeMap = new();
 		private readonly Dictionary<int, CharacterSerializable> _characterMap = new();

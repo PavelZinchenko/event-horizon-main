@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using Combat.Services;
+using UnityEngine;
 
 namespace Combat.Component.View
 {
     public class EmptyView : IView
     {
-        public void ApplyHsv(float hue, float saturation) { throw new System.NotImplementedException(); }
+        public void ApplyHsv(float hue, float saturation, MaterialCache materialCache) { throw new System.NotImplementedException(); }
         public void Dispose() {}
 
         public Vector2 Position { get; set; }

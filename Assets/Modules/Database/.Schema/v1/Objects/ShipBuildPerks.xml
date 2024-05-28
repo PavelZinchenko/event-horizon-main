@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ShipBuildPerks" type="struct" >
+    <member name="Perk1" type="enum" typeid="ShipPerkType" />
+    <member name="Perk2" type="enum" typeid="ShipPerkType" />
+    <member name="Perk3" type="enum" typeid="ShipPerkType" />
+</data>

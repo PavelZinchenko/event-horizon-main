@@ -5,7 +5,7 @@ namespace Constructor
 {
 	public static class DeviceClassExtension
 	{
-	    public static bool IsSuitable(this DeviceClass type, Constructor.Ships.IShipModel ship)
+	    public static bool IsSuitable(this DeviceClass type, Ships.IShipModel ship)
 	    {
 	        switch (type)
 	        {
@@ -13,7 +13,7 @@ namespace Constructor
 	                return !ship.IsBionic;
 	        }
 
-            return ship.BuiltinDevices.All(item => item.Stats.DeviceClass != type);
+            return ship.Stats.BuiltinDevices.All(item => item.Stats.DeviceClass != type);
 	    }
 	}
 }

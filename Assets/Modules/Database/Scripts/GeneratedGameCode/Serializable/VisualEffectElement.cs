@@ -27,5 +27,7 @@ namespace GameDatabase.Serializable
 		public float Lifetime = 1f;
 		public float ParticleSize = 1f;
 		public bool Loop;
+		public bool Inverse;
+		public bool UseRealTime;
 	}
 }

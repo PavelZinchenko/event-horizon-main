@@ -13,7 +13,7 @@ public class ModificationFactory
     public IShipModification Create(ModificationType type, int seed = -1)
     {
         if (seed < 0)
-            seed = new System.Random().Next();
+            seed = (_random ??= new()).Next();
 
         switch (type)
         {
@@ -27,8 +27,10 @@ public class ModificationFactory
                 return new EnergyDefenseModification(seed, _database.ShipModSettings.EnergyDefenseValue);
             case ModificationType.KineticDefense:
                 return new KineticDefenseModification(seed, _database.ShipModSettings.KineticDefenseValue);
+
             case ModificationType.ExtraBlueCells:
-                return new ExtraCellsModification(seed);
+                return new EmptyModification();
+
             case ModificationType.Infected:
                 return new InfectedModification(seed, _database);
             case ModificationType.LightWeight:
@@ -37,6 +39,12 @@ public class ModificationFactory
             //    return new UnlimitedRespawnModification();
             case ModificationType.WeaponClass:
                 return new WeaponClassMod(_database.ShipModSettings.AttackReduction);
+            //case ModificationType.SatelliteSize:
+            //    return new SatelliteSizeMod();
+            //case ModificationType.EnergyRechargeCooldown:
+            //    return new EnergyRechargeCooldownMod(_database.ShipModSettings.EnergyReduction);
+            //case ModificationType.ShieldRechargeCooldown:
+            //    return new ShieldRechargeCooldownMod(_database.ShipModSettings.ShieldReduction);
             default:
                 throw new InvalidEnumArgumentException();
         }
@@ -53,11 +61,16 @@ public class ModificationFactory
             yield return Create(ModificationType.EnergyDefense);
             yield return Create(ModificationType.LightWeight);
             yield return Create(ModificationType.Infected);
-            //yield return Create(ModificationType.UnlimitedRespawn);
+            //if (!_database.ShipModSettings.RemoveUnlimitedRespawnMod)
+            //    yield return Create(ModificationType.UnlimitedRespawn);
             if (!_database.ShipModSettings.RemoveWeaponSlotMod)
                 yield return Create(ModificationType.WeaponClass);
+            //yield return Create(ModificationType.SatelliteSize);
+            //yield return Create(ModificationType.EnergyRechargeCooldown);
+            //yield return Create(ModificationType.ShieldRechargeCooldown);
         }
     }
 
+    private System.Random _random;
     private readonly IDatabase _database;
 }

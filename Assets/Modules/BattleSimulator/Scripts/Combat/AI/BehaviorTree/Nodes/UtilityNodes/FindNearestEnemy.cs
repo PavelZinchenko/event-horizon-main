@@ -1,5 +1,4 @@
 ﻿using Combat.Unit;
-using Combat.Scene;
 using Combat.Component.Ship;
 using Combat.Component.Unit.Classification;
 
@@ -7,19 +6,22 @@ namespace Combat.Ai.BehaviorTree.Nodes
 {
 	public class FindNearestEnemy : FindEnemyNodeBase
 	{
+        private readonly ShipTargetLocator _targetLocator;
 		private readonly bool _ignoreDrones;
 
-        public FindNearestEnemy(float findEnemyCooldown, float changeEnemyCooldown, bool ignoreDrones)
+        public FindNearestEnemy(ShipTargetLocator targetLocator, float findEnemyCooldown, float changeEnemyCooldown, bool ignoreDrones)
 			: base(findEnemyCooldown, changeEnemyCooldown)
 		{
+            _targetLocator = targetLocator;
 			_ignoreDrones = ignoreDrones;
         }
 
         protected override IShip FindNewEnemy(Context context)
 		{
-			var options = context.IsDrone ? EnemyMatchingOptions.EnemyForDrone(0) : EnemyMatchingOptions.EnemyForShip(0);
-			options.IgnoreDrones = _ignoreDrones;
-			return context.Scene.Ships.GetEnemy(context.Ship, options);
+            if (context.IsDrone)
+                return _targetLocator.FindEnemyForHomelessDrone(context.Ship, _ignoreDrones);
+            else 
+                return _targetLocator.FindEnemyForShip(context.Ship, _ignoreDrones);
 		}
 
 		protected override bool IsValidEnemy(IShip enemy, Context context)

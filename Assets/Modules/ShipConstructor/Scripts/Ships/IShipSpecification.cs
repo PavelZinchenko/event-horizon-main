@@ -12,7 +12,8 @@ namespace Constructor
 	    Model.IShipStats Stats { get; }
 		IEnumerable<IWeaponPlatformData> Platforms { get; }
 		IEnumerable<IDeviceData> Devices { get; }
-		IEnumerable<IDroneBayData> DroneBays { get; }
+        IEnumerable<IDeviceData> ClonningCenters { get; }
+        IEnumerable<IDroneBayData> DroneBays { get; }
 		BehaviorTreeModel CustomAi { get; }
 	}
 
@@ -95,7 +96,7 @@ namespace Constructor
 	{
 		DroneBayStats DroneBay { get; }
 		ShipBuild Drone { get; }
-		int KeyBinding { get; }
+        int KeyBinding { get; }
         DroneBehaviour Behaviour { get; }
 	}
 }

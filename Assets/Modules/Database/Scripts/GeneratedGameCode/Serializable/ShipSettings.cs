@@ -26,7 +26,10 @@ namespace GameDatabase.Serializable
 		public float BaseShieldRechargeRate;
 		public float ShieldRechargeCooldown;
 		public float BaseDroneReconstructionSpeed;
+		public float ShieldCorrosiveResistance = 0.9f;
 		public float MaxVelocity;
-		public float MaxTurnRate;
+		public float MaxAngularVelocity;
+		public float MaxAcceleration;
+		public float MaxAngularAcceleration;
 	}
 }

@@ -4,6 +4,7 @@ using Combat.Collision.Manager;
 using Combat.Component.Body;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
+using Combat.Unit;
 using UnityEngine;
 using Zenject;
 
@@ -11,9 +12,11 @@ namespace Combat.Component.Collider
 {
     public class CommonCollider : MonoBehaviour, ICollider
     {
-        [Inject] private readonly ICollisionManager _collisionManager;
+        [Inject] private ICollisionManager _collisionManager;
 
         [SerializeField] private bool _isStatic;
+        [SerializeField] private bool _preciseTriggerHitPoint;
+        [SerializeField] private bool _ignoreTriggerStayEvent;
 
         public bool Enabled
         {
@@ -49,22 +52,17 @@ namespace Combat.Component.Collider
             }
         }
 
-        public float MaxRange { get; set; }
+        public void Initialize(ICollisionManager collisionManager)
+        {
+            _collisionManager = collisionManager;
+        }
 
-        //public bool IsTrigger
-        //{
-        //    get
-        //    {
-        //        return AllColliders.All(item => item.isTrigger);
-        //    }
-        //    set
-        //    {
-        //        foreach (var item in AllColliders)
-        //            item.isTrigger = value;
-        //    }
-        //}
+        public float MaxRange { get; set; }
+        public bool OneHitOnly { get; set; }
+        public float StuckTime => _activeCollisionFrameCount * Time.fixedDeltaTime;
 
         public IUnit ActiveCollision { get { return _activeCollision ?? (_activeCollision = _activeCollisions.FirstOrDefault().Key); } }
+        public IUnit ActiveTrigger { get; private set; }
         public IUnit LastCollision { get; private set; }
         public Vector2 LastContactPoint { get; private set; }
 
@@ -85,6 +83,7 @@ namespace Combat.Component.Collider
             Unit = null;
 			Source = null;
             LastCollision = null;
+            OneHitOnly = _ignoreTriggerStayEvent;
             _activeCollision = null;
             _cachedColliders = null;
             _recentTrigger = null;
@@ -112,29 +111,69 @@ namespace Combat.Component.Collider
             var other = collider.gameObject.GetComponent<ICollider>();
             if (!IsValidCollider(other)) return;
 
+            if (ShouldReplaceActiveTrigger(ActiveTrigger, other.Unit))
+                ActiveTrigger = other.Unit;
+
             var isNew = _recentTrigger != other.Unit;
             _recentTrigger = other.Unit;
 
-            LastContactPoint = Unit.Body.WorldPosition();// + RotationHelpers.Direction(Unit.Body.WorldRotation())*Unit.Body.Scale/2;
+            LastContactPoint = GetTriggerContactPoint(collider);
             var hitPoint = LastContactPoint + Unit.Body.WorldVelocity().normalized*Unit.Body.Scale/2;
             _collisionManager.OnCollision(Unit, other.Unit, CollisionData.FromObjects(Unit, other.Unit, hitPoint, isNew, _timeInterval));
         }
 
         private void OnTriggerStay2D(Collider2D collider)
         {
+            if (OneHitOnly || _ignoreTriggerStayEvent) return;
+
             if (_collisionManager == null || _unit == null || !collider)
                 return;
 
             var other = collider.gameObject.GetComponent<ICollider>();
             if (!IsValidCollider(other)) return;
 
-            LastContactPoint = Unit.Body.WorldPosition();// + RotationHelpers.Direction(Unit.Body.WorldRotation())*Unit.Body.Scale/2;
+            if (ShouldReplaceActiveTrigger(ActiveTrigger, other.Unit))
+                ActiveTrigger = other.Unit;
+
+            LastContactPoint = GetTriggerContactPoint(collider);
             var hitPoint = LastContactPoint + Unit.Body.WorldVelocity().normalized * Unit.Body.Scale/2;
+
             _collisionManager.OnCollision(Unit, other.Unit, CollisionData.FromObjects(Unit, other.Unit, hitPoint, false, _timeInterval));
         }
 
         private void OnTriggerExit2D(Collider2D collider)
         {
+            var other = collider.gameObject.GetComponent<ICollider>();
+            if (other == null || other.Unit == null)
+                return;
+
+            if (ActiveTrigger == other.Unit)
+                ActiveTrigger = null;
+        }
+
+        private Vector2 GetTriggerContactPoint(Collider2D target)
+        {
+            if (_preciseTriggerHitPoint)
+                return AllColliders[0].ClosestPoint(target.transform.position);
+            else
+                return Unit.Body.WorldPosition();
+        }
+
+        private bool ShouldReplaceActiveTrigger(IUnit currentUnit, IUnit newUnit)
+        {
+            if (!currentUnit.IsActive())
+                return true;
+            if (newUnit.Type.Class == UnitClass.Ship)
+            {
+                if (currentUnit.Type.Class != UnitClass.Ship)
+                    return true;
+                if (currentUnit.GetOwnerShip() == newUnit)
+                    return true;
+                if (newUnit.Type.Owner == null && currentUnit.Type.Owner != null)
+                    return true;
+            }
+
+            return false;
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -168,6 +207,8 @@ namespace Combat.Component.Collider
 
         private void OnCollisionStay2D(Collision2D collision)
         {
+            if (OneHitOnly) return;
+
             if (_unit == null)
                 return;
 

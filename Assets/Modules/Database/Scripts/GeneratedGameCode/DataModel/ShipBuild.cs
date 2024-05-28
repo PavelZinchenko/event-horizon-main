@@ -39,6 +39,11 @@ namespace GameDatabase.DataModel
 			BuildFaction = loader?.GetFaction(new ItemId<Faction>(serializable.BuildFaction)) ?? Faction.DefaultValue;
 			CustomAI = loader?.GetBehaviorTree(new ItemId<BehaviorTreeModel>(serializable.CustomAI)) ?? BehaviorTreeModel.DefaultValue;
 			Components = new ImmutableCollection<InstalledComponent>(serializable.Components?.Select(item => InstalledComponent.Create(item, loader)));
+			Perks = ShipBuildPerks.Create(serializable.Perks, loader);
+			ExtendedLayout = serializable.ExtendedLayout;
+			RandomColor = serializable.RandomColor;
+			LeftSatelliteBuild = loader?.GetSatelliteBuild(new ItemId<SatelliteBuild>(serializable.LeftSatelliteBuild)) ?? SatelliteBuild.DefaultValue;
+			RightSatelliteBuild = loader?.GetSatelliteBuild(new ItemId<SatelliteBuild>(serializable.RightSatelliteBuild)) ?? SatelliteBuild.DefaultValue;
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -52,6 +57,11 @@ namespace GameDatabase.DataModel
 		public Faction BuildFaction { get; private set; }
 		public BehaviorTreeModel CustomAI { get; private set; }
 		public ImmutableCollection<InstalledComponent> Components { get; private set; }
+		public ShipBuildPerks Perks { get; private set; }
+		public bool ExtendedLayout { get; private set; }
+		public bool RandomColor { get; private set; }
+		public SatelliteBuild LeftSatelliteBuild { get; private set; }
+		public SatelliteBuild RightSatelliteBuild { get; private set; }
 
 		public static ShipBuild DefaultValue { get; private set; }
 	}

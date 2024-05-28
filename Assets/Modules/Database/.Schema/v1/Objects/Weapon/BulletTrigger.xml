@@ -14,6 +14,8 @@
     <member name="RandomFactor" type="float" minvalue="0" maxvalue="1" case="SpawnBullet" />
     <member name="PowerMultiplier" type="float" minvalue="0" case="SpawnBullet,GravityField" />
     <member name="MaxNestingLevel" type="int" minvalue="0" maxvalue="100" case="SpawnBullet" />
+    <member name="OncePerCollision" type="bool" case="SpawnStaticSfx" />
+    <member name="UseBulletPosition" type="bool" case="PlaySfx" />
     <member name="Rotation" type="expression" typeid="IntToFloat" arguments="i"
             default="IF(Quantity == 1, 0, RANDOM(0, 360))" case="SpawnBullet" />
     <member name="OffsetX" type="expression" typeid="IntToFloat" arguments="i"

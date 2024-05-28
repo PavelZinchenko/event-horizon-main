@@ -1,5 +1,4 @@
 ﻿using Combat.Component.Ship;
-using Combat.Component.Unit.Classification;
 using Combat.Scene;
 using Combat.Unit;
 
@@ -14,7 +13,7 @@ namespace Combat.Ai
 			_scene = scene;
 			_autopilotMode = autopilotMode;
 			_attackRange = Helpers.ShipMaxRange(_ship);
-			_targets = new TargetList(_scene, ship.Type.Side == UnitSide.Player);
+			_targets = new TargetList(_scene);
 			_threats = new ThreatList(_scene);
 		}
 
@@ -28,7 +27,7 @@ namespace Combat.Ai
 			}
 		}
 
-		public void Update(float deltaTime)
+		public void Update(float deltaTime, in AiManager.Options options)
 		{
 			if (_autopilotMode)
 			{
@@ -99,7 +98,7 @@ namespace Combat.Ai
 
 			_enemyUpdateCooldown = EnemyUpdateInterval;
 
-			var newEnemy = _scene.Ships.GetEnemy(_ship, 0, _attackRange, 360, true, true);
+			var newEnemy = _scene.Ships.GetEnemyForMissile(_ship, 0, _attackRange, 360, true, true);
 			if (newEnemy != _enemy)
 				_strategy = null;
 

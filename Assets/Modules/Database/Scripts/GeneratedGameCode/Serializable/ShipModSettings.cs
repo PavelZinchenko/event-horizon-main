@@ -16,6 +16,7 @@ namespace GameDatabase.Serializable
 	public class ShipModSettingsSerializable : SerializableItem
 	{
 		public bool RemoveWeaponSlotMod;
+		public bool RemoveUnlimitedRespawnMod;
 		public float HeatDefenseValue = 0.5f;
 		public float KineticDefenseValue = 0.5f;
 		public float EnergyDefenseValue = 0.5f;
@@ -23,5 +24,7 @@ namespace GameDatabase.Serializable
 		public float RegenerationArmor = 0.85f;
 		public float WeightReduction = 0.8f;
 		public float AttackReduction = 0.2f;
+		public float EnergyReduction = 0.5f;
+		public float ShieldReduction = 0.5f;
 	}
 }

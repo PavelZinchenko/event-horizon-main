@@ -4,7 +4,6 @@ using Constructor.Modification;
 using Constructor.Ships;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameDatabase.Model;
 
 namespace Constructor.Component
 {
@@ -16,7 +15,7 @@ namespace Constructor.Component
 
     public interface IComponent
 	{
-		void UpdateStats(ref ShipEquipmentStats stats);
+        ShipEquipmentStats GetStats();
 		void UpdateWeaponPlatform(IWeaponPlatformStats stats);
 	    IEnumerable<WeaponData> Weapons { get; }
 	    IEnumerable<KeyValuePair<WeaponStats, AmmunitionObsoleteStats>> WeaponsObsolete { get; }
@@ -24,9 +23,9 @@ namespace Constructor.Component
         IEnumerable<DeviceStats> Devices { get; }
         ActivationType ActivationType { get; }
 		bool IsSuitable(IShipModel ship);
-
-	    int UpgradeLevel { get; set; }
-	    IModification Modification { get; set; }
+        float PassiveEnergyConsumption { get; }
+        IComponentUpgrades Upgrades { get; set; }
+        IModification Modification { get; set; }
 	}
 
     public struct WeaponData
@@ -34,5 +33,10 @@ namespace Constructor.Component
         public Weapon Weapon;
         public Ammunition Ammunition;
         public WeaponStatModifier StatModifier;
+    }
+
+    public static class ComponentExtensions
+    {
+        public static bool RequiresEnergyToInstall(this IComponent component) => component.PassiveEnergyConsumption > 0;
     }
 }

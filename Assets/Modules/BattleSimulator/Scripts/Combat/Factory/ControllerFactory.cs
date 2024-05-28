@@ -14,22 +14,25 @@ namespace Combat.Factory
         private readonly BehaviorTreeBuilder _behaviorTreeBuilder;
         private readonly IKeyboard _keyboard;
         private readonly IMouse _mouse;
+        private readonly PlayerInputSignal.Trigger _playerInputTrigger;
 
         public ControllerFactory(
-            IScene scene, 
+            IScene scene,
             IDatabase database, 
             BehaviorTreeBuilder behaviorTreeBuilder, 
             IKeyboard keyboard, 
-            IMouse mouse)
+            IMouse mouse,
+            PlayerInputSignal.Trigger playerInputTrigger)
         {
             _scene = scene;
             _database = database;
             _behaviorTreeBuilder = behaviorTreeBuilder;
             _keyboard = keyboard;
             _mouse = mouse;
+            _playerInputTrigger = playerInputTrigger;
         }
 
-        public IControllerFactory CreateKeyboardController() => new KeyboardController.Factory(_keyboard, _mouse);
+        public IControllerFactory CreateKeyboardController() => new KeyboardController.Factory(_keyboard, _mouse, _playerInputTrigger);
 
         public IControllerFactory CreateDefaultAiController(int aiLevel, BehaviorTreeModel customAi)
         {

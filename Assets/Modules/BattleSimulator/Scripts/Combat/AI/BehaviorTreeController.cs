@@ -18,10 +18,12 @@ namespace Combat.Ai
 
 		public ControllerStatus Status => _ship.IsActive() ? ControllerStatus.Active : ControllerStatus.Dead;
 
-        public void Update(float deltaTime)
+        public void Update(float deltaTime, in AiManager.Options options)
         {
-            _behaviorTree.Update(deltaTime);
-            _ship.Controls.DataChanged = false;
+            _behaviorTree.Update(deltaTime, options);
+
+            if (options.CeaseFire)
+                _ship.Controls.Systems.Clear();
         }
 
         public class Factory : IControllerFactory

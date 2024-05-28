@@ -35,7 +35,6 @@ namespace Combat.Component.Ship
         protected Ship(IShipSpecification spec, UnitType type, IBody body, IView view, IStats stats, ICollider collider, PhysicsManager physics)
             : base(type, body, view, collider, physics)
         {
-            body.SetVelocityLimit(50f); // TODO
             AddResource(_systems = new ShipSystems(this));
             AddResource(_effects = new ShipEffects(this));
             AddResource(CollisionBehaviour = new DefaultCollisionBehaviour(spec.Stats.RammingDamageMultiplier));
@@ -77,16 +76,10 @@ namespace Combat.Component.Ship
 
         protected override void OnUpdatePhysics(float elapsedTime)
         {
-            if (Stats.Energy.Value > 0)
-            {
-                Engine.Course = Controls.Course;
-                Engine.Throttle = Controls.Throttle;
-                Engine.Update(elapsedTime, Body);
-            }
-            else
-            {
-                Engine.Throttle = 0;
-            }
+            var hasEnergy = Stats.Energy.Value > 0;
+            Engine.Course = Controls.Course;
+            Engine.Throttle = Controls.Throttle;
+            Engine.Update(elapsedTime, Body, hasEnergy);
 
             Features.UpdatePhysics(elapsedTime, Collider);
             UpdateSystems(elapsedTime);

@@ -36,6 +36,10 @@ namespace GameDatabase.Enums
 		BehaviorTree = 28,
 		GameObjectPrefab = 29,
 		CombatRules = 30,
+		ComponentStatUpgrade = 31,
+		StatUpgradeTemplate = 32,
+		FrontierLevel = 33,
+		FrontierCommonLevel = 34,
 		ShipSettings = 100,
 		GalaxySettings = 101,
 		DatabaseSettings = 102,
@@ -49,5 +53,9 @@ namespace GameDatabase.Enums
 		UiSettings = 110,
 		FactionsSettings = 111,
 		MusicPlaylist = 112,
+		ResearchSetting = 113,
+		PvpSettings = 114,
+		FrontierNpcSettings = 115,
+		FrontierLevelSettings = 116,
 	}
 }

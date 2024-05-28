@@ -1,6 +1,5 @@
 ﻿using Combat.Ai.BehaviorTree.Nodes;
 using Combat.Component.Ship;
-using Combat.Scene;
 
 namespace Combat.Ai.BehaviorTree
 {
@@ -9,18 +8,19 @@ namespace Combat.Ai.BehaviorTree
 		private readonly Context _context;
 		private readonly INode _rootNode;
 		private readonly IShip _ship;
-		private bool _lastResult;
+        private bool _lastResult;
 
-		public ShipBehaviorTree(IShip ship, IScene scene, INode rootNode)
+		public ShipBehaviorTree(IShip ship, INode rootNode, Context context)
 		{
 			_ship = ship;
 			_rootNode = rootNode;
-			_context = new Context(ship, scene);
+			_context = context;
 		}
 
-		public void Update(float deltaTime)
+		public void Update(float deltaTime, in AiManager.Options options)
 		{
-			_context.Update(deltaTime);
+			_context.Update(deltaTime, options);
+
 			var result = _rootNode.Evaluate(_context) != NodeState.Failure;
 			if (result)
 			{

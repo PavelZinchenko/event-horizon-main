@@ -27,7 +27,7 @@ namespace Model
 					}
 
 					if (count == 0)
-						yield return new CommonShip(_database.GetShipBuild(LegacyShipBuildNames.GetId("mothership_1")));
+						yield return new CommonShip(_database.GetShipBuild(LegacyShipBuildNames.GetId("mothership_1")), _database);
 				}
 			}
 

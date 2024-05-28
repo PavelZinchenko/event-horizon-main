@@ -12,17 +12,27 @@ namespace Combat.Ai.BehaviorTree
 		private readonly RequirementChecker _requirementChecker;
 		private readonly ILocalization _localization;
 		private readonly MessageHub _messageHub;
-		private readonly AiSettings _settings;
+        private readonly ShipTargetLocator _targetLocator;
+        private readonly AiSettings _settings;
 		private readonly IShip _ship;
+        private readonly ShipCapabilities _capabilities;
 		private readonly IdentifiersMap _identifiersMap = new();
 
-		public NodeBuilder(IShip ship, AiSettings settings, MessageHub messageHub, ILocalization localization)
+		public NodeBuilder(
+            IShip ship,
+            ShipCapabilities capabilities,
+            AiSettings settings,
+            MessageHub messageHub,
+            ShipTargetLocator targetLocator,
+            ILocalization localization)
 		{
 			_ship = ship;
 			_settings = settings;
 			_messageHub = messageHub;
+            _targetLocator = targetLocator;
 			_localization = localization;
-			_requirementChecker = new RequirementChecker(ship, settings);
+            _capabilities = capabilities;
+			_requirementChecker = new RequirementChecker(ship, settings, _capabilities);
 			_factory = new NodeFactory(this);
 		}
 
@@ -39,8 +49,10 @@ namespace Combat.Ai.BehaviorTree
 			private readonly NodeBuilder _builder;
 			private System.Random _random;
 			private IShip Ship => _builder._ship;
+            private ShipCapabilities Capabilities => _builder._capabilities;
 			private AiSettings Settings => _builder._settings;
 			private MessageHub MessageHub => _builder._messageHub;
+            private ShipTargetLocator TargetLocator => _builder._targetLocator;
 			private ILocalization Localization => _builder._localization;
 			private System.Random Random => _random ??= new();
 			private float RandomValue => (float)Random.NextDouble();
@@ -179,21 +191,29 @@ namespace Combat.Ai.BehaviorTree
                 var isDefensiveDrone = isDrone && content.InAttackRange;
 
                 if (content.InAttackRange && !isDrone)
-                    return new FindEnemyInAttackRange(content.MinCooldown, content.MaxCooldown, content.IgnoreDrones);
+                    return new FindEnemyInAttackRange(TargetLocator, content.MinCooldown, content.MaxCooldown, content.IgnoreDrones);
 
                 if (Settings.LimitedRange > 0)
                 {
                     var range = isDefensiveDrone ? Settings.LimitedRange / 4 : Settings.LimitedRange;
-                    return new FindEnemyNearMothership(content.MinCooldown, content.MaxCooldown, range, content.IgnoreDrones);
+                    return new FindEnemyNearMothership(TargetLocator, content.MinCooldown, content.MaxCooldown, range, content.IgnoreDrones);
                 }
 
-                return new FindNearestEnemy(content.MinCooldown, content.MaxCooldown, content.IgnoreDrones);
+                return new FindNearestEnemy(TargetLocator, content.MinCooldown, content.MaxCooldown, content.IgnoreDrones);
+            }
+
+            public INode Create(BehaviorTreeNode_FindDamagedAlly content)
+            {
+                var isDrone = Ship.Type.Class == Component.Unit.Classification.UnitClass.Drone && Settings.LimitedRange > 0;
+                var isDefensiveDrone = isDrone && content.InAttackRange;
+                var range = isDefensiveDrone ? Settings.LimitedRange / 4 : Settings.LimitedRange;
+                return new FindDamagedAlly(TargetLocator, content.MinCooldown, content.MaxCooldown, range);
             }
 
             public INode Create(BehaviorTreeNode_MoveToAttackRange content) => new MoveToAttackRange(content.MinMaxLerp, content.Multiplier > 0 ? content.Multiplier : 1.0f);
 			public INode Create(BehaviorTreeNode_FlyAroundMothership content) => new FlyAroundMothership(RandomRange(content.MinDistance, content.MaxDistance));
 			public INode Create(BehaviorTreeNode_HasEnoughEnergy content) => new HaveEnoughEnergy(content.FailIfLess);
-			public INode Create(BehaviorTreeNode_SelectWeapon content) => SelectWeaponNode.Create(Ship, content.WeaponType);
+			public INode Create(BehaviorTreeNode_SelectWeapon content) => SelectWeaponNode.Create(Capabilities, content.WeaponType);
 			public INode Create(BehaviorTreeNode_SpawnDrones content) => new SpawnDronesNode(Ship);
 			public INode Create(BehaviorTreeNode_Ram content) => new RamNode(Ship, content.UseShipSystems);
 			public INode Create(BehaviorTreeNode_DetonateShip content) => new DetonateShipNode(Ship, content.InAttackRange);
@@ -205,8 +225,7 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_TargetMothership content) => new TargetMothershipNode();
 			public INode Create(BehaviorTreeNode_MaintainAttackRange content) => new MaintainAttackRange(content.MinMaxLerp, content.Tolerance);
 			public INode Create(BehaviorTreeNode_MainTargetWithinAttackRange content) => new IsWithinAttackRange(content.MinMaxLerp);
-			public INode Create(BehaviorTreeNode_MothershipLowHp content) => new MothershipLowHpNode(content.MinValue);
-			public INode Create(BehaviorTreeNode_IsControledByPlayer content) => new IsPlayerControlled();
+			public INode Create(BehaviorTreeNode_IsNotControledByPlayer content) => new IsNotPlayerControlled(content.Cooldown);
 			public INode Create(BehaviorTreeNode_Wait content) => new WaitNode(content.Cooldown, content.ResetIfInterrupted);
 			public INode Create(BehaviorTreeNode_LookAtTarget content) => new LookAtTargetNode();
 			public INode Create(BehaviorTreeNode_LookForAdditionalTargets content) => new UpdateSecondaryTargets(content.Cooldown);
@@ -215,7 +234,7 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_RechargeEnergy content) => new RechargeEnergy(content.FailIfLess, content.RestoreUntil);
 			public INode Create(BehaviorTreeNode_SustainAim content) => new SustainAimNode(false);
 			public INode Create(BehaviorTreeNode_ChargeWeapons content) => ChargeWeaponsNode.Create(Ship);
-			public INode Create(BehaviorTreeNode_Chase content) => new ChaseNode();
+			public INode Create(BehaviorTreeNode_Chase content) => new ChaseNode(Ship, true);
             public INode Create(BehaviorTreeNode_AvoidThreats content) => new AvoidThreatsNode();
             public INode Create(BehaviorTreeNode_BypassObstacles content) => new BypassObstaclesNode();
             public INode Create(BehaviorTreeNode_HasIncomingThreat content) => new HasIncomingThreatNode(content.TimeToCollision);
@@ -246,8 +265,8 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_ForgetSavedTarget content) => new ForgetTargetNode(StrinToId(content.Name));
 			public INode Create(BehaviorTreeNode_EscapeTargetAttackRadius content) => new EscapeAttackRadiusNode();
 			public INode Create(BehaviorTreeNode_HasAdditionalTargets content) => new HasSecondaryTargetsNode();
-			public INode Create(BehaviorTreeNode_AttackMainTarget content) => new AttackMainTargetNode(Settings.AiLevel, CanMove && !content.NotMoving);
-			public INode Create(BehaviorTreeNode_AttackAdditionalTargets content) => new AttackSecondaryTargetsNode(Settings.AiLevel, CanMove && !content.NotMoving);
+			public INode Create(BehaviorTreeNode_AttackMainTarget content) => new AttackMainTargetNode(CanMove && !content.NotMoving);
+			public INode Create(BehaviorTreeNode_AttackAdditionalTargets content) => new AttackSecondaryTargetsNode(CanMove && !content.NotMoving);
             public INode Create(BehaviorTreeNode_AttackTurretTargets content) => new AttackTurretTargets();
             public INode Create(BehaviorTreeNode_HasMothership content) => new MothershipAlive();
             public INode Create(BehaviorTreeNode_TargetAllyStarbase content) => new TargetStarbaseNode(true);
@@ -255,6 +274,10 @@ namespace Combat.Ai.BehaviorTree
             public INode Create(BehaviorTreeNode_MakeTargetMothership content) => new SetMothershipNode();
             public INode Create(BehaviorTreeNode_TargetDistance content) => new DistanceToTargetNode(content.MaxDistance > 0 ? content.MaxDistance : Settings.LimitedRange);
             public INode Create(BehaviorTreeNode_HasLongerAttackRange content) => new HasBetterAttackRange(content.Multiplier);
+            public INode Create(BehaviorTreeNode_HoldHarpoon content) => HoldHarpoonNode.Create(Ship);
+            public INode Create(BehaviorTreeNode_MothershipLowHp content) => new MothershipLowHpNode(content.MinValue);
+            public INode Create(BehaviorTreeNode_MothershipLowEnergy content) => new MothershipLowEnergyNode(content.MinValue);
+            public INode Create(BehaviorTreeNode_MothershipLowShield content) => new MothershipLowShieldNode(content.MinValue);
         }
-	}
+    }
 }

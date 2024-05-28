@@ -7,28 +7,32 @@ namespace Combat.Ai.BehaviorTree.Nodes
 {
 	public class FindEnemyNearMothership : FindEnemyNodeBase
 	{
-		private const float _minDistance = 5f;
+        private readonly ShipTargetLocator _targetLocator;
+        private const float _minDistance = 5f;
 		private readonly float _distance;
 		private readonly bool _ignoreDrones;
 
-		public FindEnemyNearMothership(float findEnemyCooldown, float changeEnemyCooldown, float distance, bool ignoreDrones)
+		public FindEnemyNearMothership(ShipTargetLocator targetLocator, float findEnemyCooldown, float changeEnemyCooldown, float distance, bool ignoreDrones)
 			: base(findEnemyCooldown, changeEnemyCooldown)
 		{
+            _targetLocator = targetLocator;
 			_ignoreDrones = ignoreDrones;
             _distance = distance < _minDistance ? _minDistance : distance;
 		}
 
 		protected override IShip FindNewEnemy(Context context)
 		{
-            EnemyMatchingOptions options;
             if (context.Mothership.IsActive())
-                options = context.IsDrone ? EnemyMatchingOptions.EnemyForDrone(context.AttackRangeMax + _distance) :
-                    EnemyMatchingOptions.EnemyForShip(context.AttackRangeMax + _distance);
+            {
+                if (context.IsDrone)
+                    return _targetLocator.FindEnemyForDrone(context.Ship, context.Mothership, _ignoreDrones, _distance + context.AttackRangeMax);
+                else
+                    return _targetLocator.FindEnemyForDefenderShip(context.Ship, context.Mothership, _ignoreDrones, _distance + context.AttackRangeMax);
+            }
+            else if (context.IsDrone)
+                return _targetLocator.FindEnemyForHomelessDrone(context.Ship, _ignoreDrones);
             else
-                options = context.IsDrone ? EnemyMatchingOptions.EnemyForDrone(0) : EnemyMatchingOptions.EnemyForShip(0);
-
-            options.IgnoreDrones = _ignoreDrones;
-            return context.Scene.Ships.GetEnemy(context.Ship, options);
+                return _targetLocator.FindEnemyForShip(context.Ship, _ignoreDrones);
         }
 
         protected override bool IsValidEnemy(IShip enemy, Context context)

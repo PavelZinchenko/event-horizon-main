@@ -79,7 +79,7 @@ namespace Galaxy.StarContent
 
             var level = _starData.GetLevel(starId);
 
-            var playerFleet = new Model.Military.SingleShip(new CommonShip(GetPlayerShip(starId)));
+            var playerFleet = new Model.Military.SingleShip(new CommonShip(GetPlayerShip(starId), _database));
 
             var ailevel = 104; // TODO
             var enemyFleet = new Model.Military.SingleShip(new EnemyShip(GetEnemyShip(starId)), ailevel);

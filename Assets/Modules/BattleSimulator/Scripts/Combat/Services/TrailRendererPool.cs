@@ -22,13 +22,14 @@ namespace Combat.Services
 
             TrailRenderer renderer = null;
 
-            foreach (var item in _trailRenderers)
+            for (int i = 0; i < _trailRenderers.Count; ++i)
             {
-                if (Time.time - item.Value < item.Key.time)
+                var item = _trailRenderers[i];
+                if (Time.time - item.LastUpdateTime < item.Renderer.time)
                     continue;
 
-                renderer = item.Key;
-                _trailRenderers.Remove(renderer);
+                renderer = item.Renderer;
+                _trailRenderers.QuickRemove(i);
                 break;
             }
 
@@ -40,9 +41,9 @@ namespace Combat.Services
             renderer.Clear();
             renderer.startWidth = startWidth;
             renderer.endWidth = endWidth;
-            renderer.material.color = color;
             renderer.time = duration;
-
+            renderer.startColor = color;
+            renderer.endColor = new Color(color.r, color.g, color.b, 0);
             return renderer;
         }
 
@@ -55,24 +56,30 @@ namespace Combat.Services
             }
 
             renderer.transform.parent = transform;
-            _trailRenderers.Add(renderer, Time.time);
+            _trailRenderers.Add(new TrailRendererInfo { Renderer = renderer, LastUpdateTime = Time.time });
         }
 
         private void OnDestroy()
         {
-            foreach (var renderer in _trailRenderers.Keys)
+            foreach (var item in _trailRenderers)
             {
-                foreach (var item in renderer.materials)
-                    GameObject.DestroyImmediate(item);
+                foreach (var material in item.Renderer.materials)
+                    GameObject.DestroyImmediate(material);
 
-                GameObject.Destroy(renderer.gameObject);
+                GameObject.Destroy(item.Renderer.gameObject);
             }
 
             _trailRenderers.Clear();
         }
 
 
-        private readonly Dictionary<TrailRenderer, float> _trailRenderers = new Dictionary<TrailRenderer, float>();
+        private readonly List<TrailRendererInfo> _trailRenderers = new();
         private bool _powerSavingMode;
+
+        private struct TrailRendererInfo
+        {
+            public TrailRenderer Renderer;
+            public float LastUpdateTime;
+        }
     }
 }

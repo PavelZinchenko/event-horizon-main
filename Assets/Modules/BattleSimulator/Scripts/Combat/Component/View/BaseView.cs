@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Combat.Services;
+using System;
 using UnityEngine;
 
 namespace Combat.Component.View
 {
     public abstract class BaseView : MonoBehaviour, IView
     {
-        public virtual void ApplyHsv(float hue, float saturation) { throw new NotImplementedException(); }
+        public virtual void ApplyHsv(float hue, float saturation, MaterialCache materialCache) { throw new NotImplementedException(); }
 
         public Vector2 Position { get { return _position; } set { _position = value; _positionChanged = true; } }
         public float Rotation { get { return _rotation; } set { _rotation = value; _rotationChanged = true; } }

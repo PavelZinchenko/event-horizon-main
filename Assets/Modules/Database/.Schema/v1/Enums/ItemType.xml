@@ -26,6 +26,10 @@
     <item name="BehaviorTree" value="28" />
     <item name="GameObjectPrefab" value="29" />
     <item name="CombatRules" value="30" />
+    <item name="ComponentStatUpgrade" value="31" />
+    <item name="StatUpgradeTemplate" value="32" />
+    <item name="FrontierLevel" value="33" />
+    <item name="FrontierCommonLevel" value="34" />
 
     <item name="ShipSettings" value="100" />
     <item name="GalaxySettings" value="101" />
@@ -40,4 +44,8 @@
     <item name="UiSettings" value="110" />
     <item name="FactionsSettings" value="111" />
     <item name="MusicPlaylist" value="112" />
+    <item name="ResearchSetting" value="113" />
+    <item name="PvpSettings" value="114" />
+    <item name="FrontierNpcSettings" value="115" />
+    <item name="FrontierLevelSettings" value="116" />
 </data>

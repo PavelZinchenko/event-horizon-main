@@ -5,42 +5,49 @@ using Constructor.Ships;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Extensions;
-using GameDatabase.Model;
 
 namespace Constructor.Component
 {
     public class CommonComponent : IComponent
     {
+        private const float _shipSizeEnergyCostFactor = 0.05f;
+
         public CommonComponent(GameDatabase.DataModel.Component data, int shipSize)
         {
             _shipSize = shipSize;
             _component = data;
         }
 
-        public void UpdateStats(ref ShipEquipmentStats shipStats)
+        public ShipEquipmentStats GetStats()
         {
             var stats = ShipEquipmentStats.FromComponent(_component.Stats, _component.Layout.CellCount);
 
-            if (UpgradeLevel > 0)
-            {
-                var multiplier = 1f + 0.1f * UpgradeLevel;
-                stats.ArmorPoints *= multiplier;
-                stats.ShieldPoints *= multiplier;
-                stats.EnergyResistance *= multiplier;
-                stats.KineticResistance *= multiplier;
-                stats.ThermalResistance *= multiplier;
-            }
-
             if (_component.Device != null)
-                stats.EnergyConsumption += _component.Device.Stats.PassiveEnergyConsumption*_shipSize*0.05f;
+                stats.EnergyConsumption += DevicePassiveEnergyConsumption(_component.Device.Stats, _shipSize);
 
             if (_component.DroneBay != null)
-                stats.EnergyConsumption += _component.DroneBay.Stats.PassiveEnergyConsumption*(0.5f + _shipSize*0.005f);
+                stats.EnergyConsumption += _component.DroneBay.Stats.PassiveEnergyConsumption * (0.5f + _shipSize * 0.005f);
 
             if (Modification != null)
                 Modification.Apply(ref stats);
 
-            shipStats += stats;
+            return stats;
+        }
+
+        public float PassiveEnergyConsumption
+        {
+            get
+            {
+                var energyConsumption = 0f;
+                if (_component.Stats.EnergyRechargeRate < 0)
+                    energyConsumption = -_component.Stats.EnergyRechargeRate;
+                if (_component.Device != null)
+                    energyConsumption += DevicePassiveEnergyConsumption(_component.Device.Stats, _shipSize);
+                if (_component.DroneBay != null)
+                    energyConsumption += _component.DroneBay.Stats.PassiveEnergyConsumption;
+
+                return energyConsumption;
+            }
         }
 
         public bool IsSuitable(IShipModel ship)
@@ -64,12 +71,6 @@ namespace Constructor.Component
                 {
                     var statModifiers = new WeaponStatModifier();
 
-                    if (UpgradeLevel > 0)
-                    {
-                        statModifiers.HitPointsMultiplier *= 1f + 0.1f * UpgradeLevel;
-                        statModifiers.DamageMultiplier *= 1f + 0.1f * UpgradeLevel;
-                    }
-
                     if (Modification != null)
                         Modification.Apply(ref statModifiers);
 
@@ -87,9 +88,6 @@ namespace Constructor.Component
                     var weaponStats = _component.Weapon.Stats;
                     var ammoStats = _component.AmmunitionObsolete.Stats;
 
-                    if (UpgradeLevel > 0)
-                        ammoStats.Damage *= 1f + 0.1f * UpgradeLevel;
-
                     if (Modification != null)
                         Modification.Apply(ref weaponStats, ref ammoStats);
 
@@ -105,8 +103,7 @@ namespace Constructor.Component
                 if (_component.Device != null)
                 {
                     var stats = _component.Device.Stats;
-
-                    stats.EnergyConsumption *= _shipSize*0.05f;
+                    stats.EnergyConsumption = DeviceEnergyConsumption(stats, _shipSize);
 
                     if (Modification != null)
                         Modification.Apply(ref stats);
@@ -124,9 +121,6 @@ namespace Constructor.Component
                 {
                     var stats = _component.DroneBay.Stats;
 
-                    if (UpgradeLevel > 0)
-                        stats.DamageMultiplier *= 1f + 0.1f*UpgradeLevel;
-
                     if (Modification != null)
                         Modification.Apply(ref stats);
 
@@ -135,9 +129,27 @@ namespace Constructor.Component
             }
         }
 
-		public ActivationType ActivationType => _component.GetActivationType();
+        private float DevicePassiveEnergyConsumption(in DeviceStats stats, int shipSize)
+        {
+            var energy = stats.PassiveEnergyConsumption;
+            if (stats.ScaleEnergyWithShipSize)
+                energy *= _shipSizeEnergyCostFactor * shipSize;
+
+            return energy;
+        }
+
+        private float DeviceEnergyConsumption(in DeviceStats stats, int shipSize)
+        {
+            var energy = stats.EnergyConsumption;
+            if (stats.ScaleEnergyWithShipSize)
+                energy *= _shipSizeEnergyCostFactor * shipSize;
+
+            return energy;
+        }
+
+        public ActivationType ActivationType => _component.GetActivationType();
+        public IComponentUpgrades Upgrades { get; set; }
         public IModification Modification { get; set; }
-        public int UpgradeLevel { get; set; }
 
         private readonly int _shipSize;
         private readonly GameDatabase.DataModel.Component _component;

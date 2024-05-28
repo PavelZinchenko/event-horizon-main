@@ -29,6 +29,7 @@ namespace Installers
         [SerializeField] private CombatBackground _background;
         [SerializeField] private TrailRendererPool _trailRendererPool;
         [SerializeField] private Camera _camera;
+        [SerializeField] private MaterialCache _materialCache;
 
         [Inject] private readonly IGameSettings _gameSettings;
         [Inject] private readonly Combat.Domain.ICombatModel _combatModel;
@@ -68,6 +69,8 @@ namespace Installers
             Container.Bind<DeviceFactory>().AsSingle();
             Container.Bind<DroneBayFactory>().AsSingle();
             Container.Bind<SatelliteFactory>().AsSingle();
+            Container.BindInterfacesTo<GameServicesProvider>().AsSingle();
+            Container.BindInterfacesAndSelfTo<MaterialCache>().FromInstance(_materialCache);
 			Container.Bind<EffectFactory>().AsSingle();
 			Container.BindInterfacesAndSelfTo<Combat.Helpers.RadioTransmitter>().AsSingle();
 			Container.BindInterfacesAndSelfTo<GameObjectPool>().AsSingle();

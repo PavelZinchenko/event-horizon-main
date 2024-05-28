@@ -13,10 +13,11 @@ namespace Combat.Ai.BehaviorTree
 
 		private readonly ShipWeaponList _allWeapons;
 
+        private AiManager.Options _aiOptions;
         private IShip _mothership;
         private float _elapsedTime;
 		private ShipWeaponList _selectedWeapons;
-		private TargetList _targetList;
+		private EnemyList _targetList;
 		private ThreatList _threatList;
 		private float _targetListUpdateTime = _initialTime;
 		private float _threatListUpdateTime = _initialTime;
@@ -47,12 +48,12 @@ namespace Combat.Ai.BehaviorTree
 		public float LastTargetUpdateTime { get; set; } = _initialTime;
 		public float LastTextMessageTime { get; set; } = _initialTime;
 
-		public IReadOnlyList<IShip> SecondaryTargets => _targetList?.Items ?? EmptyList<IShip>.Instance;
+		public IReadOnlyList<IShip> SecondaryTargets => _targetList?.Enemies ?? System.Array.Empty<IShip>();
+		public IReadOnlyList<IUnit> Threats => _aiOptions.DisableThreats || _threatList == null ? System.Array.Empty<IUnit>() : _threatList.Units;
+		public float TimeToCollision => _aiOptions.DisableThreats || _threatList == null ? float.MaxValue : _threatList.TimeToHit;
+        public float TimeSinceLastPlayerInput => _aiOptions.TimeSinceLastPlayerInput;
 
-		public IReadOnlyList<IUnit> Threats => _threatList?.Units ?? EmptyList<IUnit>.Instance;
-		public float TimeToCollision => _threatList != null ? _threatList.TimeToHit : float.MaxValue;
-
-		public bool HaveWeapons => _allWeapons.Count > 0;
+		public bool HaveWeapons => _allWeapons.List.Count > 0;
 		public float AttackRangeMax => _allWeapons.RangeMax;
 		public float AttackRangeMin => _allWeapons.RangeMin;
 
@@ -66,15 +67,16 @@ namespace Combat.Ai.BehaviorTree
 		public bool RestoringEnergy { get; set; }
 		public ShipWeaponList SelectedWeapons { get => _selectedWeapons ?? _allWeapons; set => _selectedWeapons = value; }
 
-		public Context(IShip ship, IScene scene)
+		public Context(IShip ship, ShipCapabilities capabilities, IScene scene)
 		{
 			Scene = scene;
 			Ship = ship;
-			_allWeapons = new ShipWeaponList(ship);
+			_allWeapons = new ShipWeaponList(capabilities);
 		}
 
-		public void Update(float deltaTime) 
+		public void Update(float deltaTime, in AiManager.Options options)
 		{
+            _aiOptions = options;
 			_elapsedTime += deltaTime;
 			DeltaTime = deltaTime;
 			FrameId++;
@@ -93,7 +95,9 @@ namespace Combat.Ai.BehaviorTree
 
 		public void UpdateThreatList(IThreatAnalyzer threatAnalyzer, float cooldown)
 		{
-			if (_threatList == null)
+            if (_aiOptions.DisableThreats) return;
+
+            if (_threatList == null)
 				_threatList = new(Scene);
 
 			if (_elapsedTime - _threatListUpdateTime < cooldown) return;

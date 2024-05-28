@@ -2,6 +2,7 @@
 using Constructor;
 using Constructor.Ships;
 using DataModel.Technology;
+using GameDatabase;
 using GameDatabase.DataModel;
 using GameModel;
 using GameServices.Player;
@@ -18,6 +19,7 @@ namespace Economy.ItemType
         [Inject] private readonly RegionMap _regionMap;
         [Inject] private readonly IRandom _random;
         [Inject] private readonly PlayerResources _playerResources;
+        [Inject] private readonly IDatabase _database;
 
         public IItemType CreateEmptyShipItem(IShipModel ship)
         {
@@ -37,6 +39,11 @@ namespace Economy.ItemType
         public IItemType CreateQuestShipItem(IShip ship)
         {
             return _container.Instantiate<QuestShipItem>(new object[] { ship });
+        }
+
+        public IItemType CreateQuestShipItem(ShipBuild build)
+        {
+            return _container.Instantiate<QuestShipItem>(new object[] { new CommonShip(build, _database) });;
         }
 
         public IItemType CreateDamagedShipItem(ShipBuild build, int seed)

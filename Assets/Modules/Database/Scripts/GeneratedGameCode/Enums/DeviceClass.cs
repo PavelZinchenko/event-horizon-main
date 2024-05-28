@@ -31,5 +31,6 @@ namespace GameDatabase.Enums
 		Jammer,
 		DroneCamouflage,
 		MissileCamouflage,
+		TeleporterV2,
 	}
 }

@@ -16,7 +16,7 @@
 
     <item name="HasEnoughEnergy" value="50" />
     <item name="IsLowOnHp" value="51" />
-    <item name="IsControledByPlayer" value="52">SUCCESS if player did any action this frame</item>
+    <item name="IsNotControledByPlayer" value="52">Returns FAILURE if the time since the last player action is under the Cooldown, SUCCESS otherwise</item>
     <item name="HasIncomingThreat" value="53">Requires threat list. Returns SUCCESS if time to collision less than value</item>
     <item name="HasAdditionalTargets" value="54">Returns SUCCESS if has any targets found by LookForAdditionalTargets node</item>
 
@@ -46,7 +46,7 @@
     <item name="MatchVelocityWithTarget" value="113">Aligns ship's movement speed and direction to the target's. Returns SUCCESS on reaching, FAILURE on errors, and RUNNING otherwise</item>
     <item name="ActivateDevice" value="114">Activates device. Returns SUCCESS if activated, FAILURE otherwise</item>
     <item name="RechargeEnergy" value="115">If energy level drops below FailIfLess, enters recharging state and returns FAILURE until energy level reaches RestoreUntil, otherwise returns SUCCESS</item>
-    <item name="SustainAim" value="116">If any directional weapon active, maintain focus on target and returns RUNNING. Returns SUCCESS otherwise</item>
+    <item name="SustainAim" value="116">If any directional weapon active, maintain focus on target and returns RUNNING. Returns FAILURE otherwise</item>
     <item name="ChargeWeapons" value="117">Charges all weapons that require charging, reserves energy needed to fully charge. Returns FAILURE if not possible, SUCCESS if fully charged, RUNNING otherwise</item>
     <item name="Chase" value="118">Follows the target. Returns FAILURE if there is no target, RUNNING otherwise</item>
     <item name="AvoidThreats" value="119">Changes the ship's trajectory to avoid collision. Requires threat list. Returns SUCCESS if there are no threats, RUNNING otherwise</item>
@@ -62,6 +62,8 @@
     <item name="TargetEnemyStarbase" value="129">Targets an enemy starbase. Returns SUCCESS if it exists and alive, otherwise FAILURE</item>
     <item name="BypassObstacles" value="130">Tries to bypass obstacle if any. Returns FAILURE if there are no obstacles, RUNNING otherwise</item>
     <item name="AttackTurretTargets" value="131">Attacks targets that tracked by auto-aiming turrets, returning SUCCESS upon firing, FAILURE otherwise</item>
+    <item name="HoldHarpoon" value="132">Keeps harpoon active upon hitting the enemy. Returns SUCCESS if it remains attached to the enemy, returns FAILURE otherwise</item>
+    <item name="FindDamagedAlly" value="133">Looks for nearest damaged ally. Changes target every MaxCooldown sec if it's defined. SUCCESS if found, FAILURE otherwise</item>
 
     <item name="EnginePropulsionForce" value="150">Returns SUCCESS when [forward acceleration]/[max acceleration] > MinValue</item>
 
@@ -73,6 +75,8 @@
     <item name="MothershipLowHp" value="205" />
     <item name="MothershipDistanceExceeded" value="206">Returns SUCCESS if ship is too far from the mothership</item>
     <item name="MakeTargetMothership" value="207">Makes primary target a new mothership. Returns FAILURE if target is absent or already a mothership, otherwise SUCCESS</item>
+    <item name="MothershipLowEnergy" value="208" />
+    <item name="MothershipLowShield" value="209" />
 
     <item name="ShowMessage" value="300">Spawns text over the ship sprite that disappears shortly. Retruns SUCCESS if spawned, RUNNING if on cooldown</item>
     <item name="DebugLog" value="301">Writes message to the log file (https://docs.unity3d.com/Manual/LogFiles.html). Retruns SUCCESS</item>

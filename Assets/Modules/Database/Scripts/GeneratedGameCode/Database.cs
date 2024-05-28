@@ -21,7 +21,6 @@ namespace GameDatabase
 		DebugSettings DebugSettings { get; }
 		ExplorationSettings ExplorationSettings { get; }
 		FactionsSettings FactionsSettings { get; }
-		FrontierSettings FrontierSettings { get; }
 		GalaxySettings GalaxySettings { get; }
 		MusicPlaylist MusicPlaylist { get; }
 		ShipModSettings ShipModSettings { get; }
@@ -34,6 +33,7 @@ namespace GameDatabase
 		IEnumerable<Component> ComponentList { get; }
 		IEnumerable<ComponentMod> ComponentModList { get; }
 		IEnumerable<ComponentStats> ComponentStatsList { get; }
+		IEnumerable<ComponentStatUpgrade> ComponentStatUpgradeList { get; }
 		IEnumerable<Device> DeviceList { get; }
 		IEnumerable<DroneBay> DroneBayList { get; }
 		IEnumerable<Faction> FactionList { get; }
@@ -42,7 +42,7 @@ namespace GameDatabase
 		IEnumerable<SatelliteBuild> SatelliteBuildList { get; }
 		IEnumerable<Ship> ShipList { get; }
 		IEnumerable<ShipBuild> ShipBuildList { get; }
-		IEnumerable<Skill> SkillList { get; }
+		IEnumerable<StatUpgradeTemplate> StatUpgradeTemplateList { get; }
 		IEnumerable<Technology> TechnologyList { get; }
 		IEnumerable<BehaviorTreeModel> BehaviorTreeList { get; }
 		IEnumerable<Character> CharacterList { get; }
@@ -60,6 +60,7 @@ namespace GameDatabase
 		Component GetComponent(ItemId<Component> id);
 		ComponentMod GetComponentMod(ItemId<ComponentMod> id);
 		ComponentStats GetComponentStats(ItemId<ComponentStats> id);
+		ComponentStatUpgrade GetComponentStatUpgrade(ItemId<ComponentStatUpgrade> id);
 		Device GetDevice(ItemId<Device> id);
 		DroneBay GetDroneBay(ItemId<DroneBay> id);
 		Faction GetFaction(ItemId<Faction> id);
@@ -68,7 +69,7 @@ namespace GameDatabase
 		SatelliteBuild GetSatelliteBuild(ItemId<SatelliteBuild> id);
 		Ship GetShip(ItemId<Ship> id);
 		ShipBuild GetShipBuild(ItemId<ShipBuild> id);
-		Skill GetSkill(ItemId<Skill> id);
+		StatUpgradeTemplate GetStatUpgradeTemplate(ItemId<StatUpgradeTemplate> id);
 		Technology GetTechnology(ItemId<Technology> id);
 		BehaviorTreeModel GetBehaviorTree(ItemId<BehaviorTreeModel> id);
 		Character GetCharacter(ItemId<Character> id);
@@ -97,7 +98,6 @@ namespace GameDatabase
 		public DebugSettings DebugSettings { get; private set; }
 		public ExplorationSettings ExplorationSettings { get; private set; }
 		public FactionsSettings FactionsSettings { get; private set; }
-		public FrontierSettings FrontierSettings { get; private set; }
 		public GalaxySettings GalaxySettings { get; private set; }
 		public MusicPlaylist MusicPlaylist { get; private set; }
 		public ShipModSettings ShipModSettings { get; private set; }
@@ -110,6 +110,7 @@ namespace GameDatabase
 		public IEnumerable<Component> ComponentList => _componentMap.Values;
 		public IEnumerable<ComponentMod> ComponentModList => _componentModMap.Values;
 		public IEnumerable<ComponentStats> ComponentStatsList => _componentStatsMap.Values;
+		public IEnumerable<ComponentStatUpgrade> ComponentStatUpgradeList => _componentStatUpgradeMap.Values;
 		public IEnumerable<Device> DeviceList => _deviceMap.Values;
 		public IEnumerable<DroneBay> DroneBayList => _droneBayMap.Values;
 		public IEnumerable<Faction> FactionList => _factionMap.Values;
@@ -118,7 +119,7 @@ namespace GameDatabase
 		public IEnumerable<SatelliteBuild> SatelliteBuildList => _satelliteBuildMap.Values;
 		public IEnumerable<Ship> ShipList => _shipMap.Values;
 		public IEnumerable<ShipBuild> ShipBuildList => _shipBuildMap.Values;
-		public IEnumerable<Skill> SkillList => _skillMap.Values;
+		public IEnumerable<StatUpgradeTemplate> StatUpgradeTemplateList => _statUpgradeTemplateMap.Values;
 		public IEnumerable<Technology> TechnologyList => _technologyMap.Values;
 		public IEnumerable<BehaviorTreeModel> BehaviorTreeList => _behaviorTreeMap.Values;
 		public IEnumerable<Character> CharacterList => _characterMap.Values;
@@ -136,6 +137,7 @@ namespace GameDatabase
 		public Component GetComponent(ItemId<Component> id) { return (_componentMap.TryGetValue(id.Value, out var item)) ? item : Component.DefaultValue; }
 		public ComponentMod GetComponentMod(ItemId<ComponentMod> id) { return (_componentModMap.TryGetValue(id.Value, out var item)) ? item : ComponentMod.DefaultValue; }
 		public ComponentStats GetComponentStats(ItemId<ComponentStats> id) { return (_componentStatsMap.TryGetValue(id.Value, out var item)) ? item : ComponentStats.DefaultValue; }
+		public ComponentStatUpgrade GetComponentStatUpgrade(ItemId<ComponentStatUpgrade> id) { return (_componentStatUpgradeMap.TryGetValue(id.Value, out var item)) ? item : ComponentStatUpgrade.DefaultValue; }
 		public Device GetDevice(ItemId<Device> id) { return (_deviceMap.TryGetValue(id.Value, out var item)) ? item : Device.DefaultValue; }
 		public DroneBay GetDroneBay(ItemId<DroneBay> id) { return (_droneBayMap.TryGetValue(id.Value, out var item)) ? item : DroneBay.DefaultValue; }
 		public Faction GetFaction(ItemId<Faction> id) { return (_factionMap.TryGetValue(id.Value, out var item)) ? item : Faction.DefaultValue; }
@@ -144,7 +146,7 @@ namespace GameDatabase
 		public SatelliteBuild GetSatelliteBuild(ItemId<SatelliteBuild> id) { return (_satelliteBuildMap.TryGetValue(id.Value, out var item)) ? item : SatelliteBuild.DefaultValue; }
 		public Ship GetShip(ItemId<Ship> id) { return (_shipMap.TryGetValue(id.Value, out var item)) ? item : Ship.DefaultValue; }
 		public ShipBuild GetShipBuild(ItemId<ShipBuild> id) { return (_shipBuildMap.TryGetValue(id.Value, out var item)) ? item : ShipBuild.DefaultValue; }
-		public Skill GetSkill(ItemId<Skill> id) { return (_skillMap.TryGetValue(id.Value, out var item)) ? item : Skill.DefaultValue; }
+		public StatUpgradeTemplate GetStatUpgradeTemplate(ItemId<StatUpgradeTemplate> id) { return (_statUpgradeTemplateMap.TryGetValue(id.Value, out var item)) ? item : StatUpgradeTemplate.DefaultValue; }
 		public Technology GetTechnology(ItemId<Technology> id) { return (_technologyMap.TryGetValue(id.Value, out var item)) ? item : Technology.DefaultValue; }
 		public BehaviorTreeModel GetBehaviorTree(ItemId<BehaviorTreeModel> id) { return (_behaviorTreeMap.TryGetValue(id.Value, out var item)) ? item : BehaviorTreeModel.DefaultValue; }
 		public Character GetCharacter(ItemId<Character> id) { return (_characterMap.TryGetValue(id.Value, out var item)) ? item : Character.DefaultValue; }
@@ -168,6 +170,7 @@ namespace GameDatabase
 			_componentMap.Clear();
 			_componentModMap.Clear();
 			_componentStatsMap.Clear();
+			_componentStatUpgradeMap.Clear();
 			_deviceMap.Clear();
 			_droneBayMap.Clear();
 			_factionMap.Clear();
@@ -176,7 +179,7 @@ namespace GameDatabase
 			_satelliteBuildMap.Clear();
 			_shipMap.Clear();
 			_shipBuildMap.Clear();
-			_skillMap.Clear();
+			_statUpgradeTemplateMap.Clear();
 			_technologyMap.Clear();
 			_behaviorTreeMap.Clear();
 			_characterMap.Clear();
@@ -195,7 +198,6 @@ namespace GameDatabase
 			DebugSettings = null;
 			ExplorationSettings = null;
 			FactionsSettings = null;
-			FrontierSettings = null;
 			GalaxySettings = null;
 			MusicPlaylist = null;
 			ShipModSettings = null;
@@ -213,6 +215,7 @@ namespace GameDatabase
 		private readonly Dictionary<int, Component> _componentMap = new();
 		private readonly Dictionary<int, ComponentMod> _componentModMap = new();
 		private readonly Dictionary<int, ComponentStats> _componentStatsMap = new();
+		private readonly Dictionary<int, ComponentStatUpgrade> _componentStatUpgradeMap = new();
 		private readonly Dictionary<int, Device> _deviceMap = new();
 		private readonly Dictionary<int, DroneBay> _droneBayMap = new();
 		private readonly Dictionary<int, Faction> _factionMap = new();
@@ -221,7 +224,7 @@ namespace GameDatabase
 		private readonly Dictionary<int, SatelliteBuild> _satelliteBuildMap = new();
 		private readonly Dictionary<int, Ship> _shipMap = new();
 		private readonly Dictionary<int, ShipBuild> _shipBuildMap = new();
-		private readonly Dictionary<int, Skill> _skillMap = new();
+		private readonly Dictionary<int, StatUpgradeTemplate> _statUpgradeTemplateMap = new();
 		private readonly Dictionary<int, Technology> _technologyMap = new();
 		private readonly Dictionary<int, BehaviorTreeModel> _behaviorTreeMap = new();
 		private readonly Dictionary<int, Character> _characterMap = new();
@@ -267,6 +270,9 @@ namespace GameDatabase
 				foreach (var item in _content.ComponentStatsList)
 					if (!item.Disabled && !_database._componentStatsMap.ContainsKey(item.Id))
 						ComponentStats.Create(item, this);
+				foreach (var item in _content.ComponentStatUpgradeList)
+					if (!item.Disabled && !_database._componentStatUpgradeMap.ContainsKey(item.Id))
+						ComponentStatUpgrade.Create(item, this);
 				foreach (var item in _content.DeviceList)
 					if (!item.Disabled && !_database._deviceMap.ContainsKey(item.Id))
 						Device.Create(item, this);
@@ -291,9 +297,9 @@ namespace GameDatabase
 				foreach (var item in _content.ShipBuildList)
 					if (!item.Disabled && !_database._shipBuildMap.ContainsKey(item.Id))
 						ShipBuild.Create(item, this);
-				foreach (var item in _content.SkillList)
-					if (!item.Disabled && !_database._skillMap.ContainsKey(item.Id))
-						Skill.Create(item, this);
+				foreach (var item in _content.StatUpgradeTemplateList)
+					if (!item.Disabled && !_database._statUpgradeTemplateMap.ContainsKey(item.Id))
+						StatUpgradeTemplate.Create(item, this);
 				foreach (var item in _content.TechnologyList)
 					if (!item.Disabled && !_database._technologyMap.ContainsKey(item.Id))
 						Technology.Create(item, this);
@@ -353,8 +359,6 @@ namespace GameDatabase
 					_database.ExplorationSettings = ExplorationSettings.Create(_content.ExplorationSettings ?? new Serializable.ExplorationSettingsSerializable { ItemType = Enums.ItemType.ExplorationSettings }, this);
 				if (_database.FactionsSettings == null)
 					_database.FactionsSettings = FactionsSettings.Create(_content.FactionsSettings ?? new Serializable.FactionsSettingsSerializable { ItemType = Enums.ItemType.FactionsSettings }, this);
-				if (_database.FrontierSettings == null)
-					_database.FrontierSettings = FrontierSettings.Create(_content.FrontierSettings ?? new Serializable.FrontierSettingsSerializable { ItemType = Enums.ItemType.FrontierSettings }, this);
 				if (_database.GalaxySettings == null)
 					_database.GalaxySettings = GalaxySettings.Create(_content.GalaxySettings ?? new Serializable.GalaxySettingsSerializable { ItemType = Enums.ItemType.GalaxySettings }, this);
 				if (_database.MusicPlaylist == null)
@@ -408,6 +412,16 @@ namespace GameDatabase
                 if (serializable != null && !serializable.Disabled) return ComponentStats.Create(serializable, this);
 
 				var value = ComponentStats.DefaultValue;
+				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
+                return value;
+			}
+			public ComponentStatUpgrade GetComponentStatUpgrade(ItemId<ComponentStatUpgrade> id, bool notNull = false)
+			{
+				if (_database._componentStatUpgradeMap.TryGetValue(id.Value, out var item)) return item;
+                var serializable = _content.GetComponentStatUpgrade(id.Value);
+                if (serializable != null && !serializable.Disabled) return ComponentStatUpgrade.Create(serializable, this);
+
+				var value = ComponentStatUpgrade.DefaultValue;
 				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
                 return value;
 			}
@@ -491,13 +505,13 @@ namespace GameDatabase
 				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
                 return value;
 			}
-			public Skill GetSkill(ItemId<Skill> id, bool notNull = false)
+			public StatUpgradeTemplate GetStatUpgradeTemplate(ItemId<StatUpgradeTemplate> id, bool notNull = false)
 			{
-				if (_database._skillMap.TryGetValue(id.Value, out var item)) return item;
-                var serializable = _content.GetSkill(id.Value);
-                if (serializable != null && !serializable.Disabled) return Skill.Create(serializable, this);
+				if (_database._statUpgradeTemplateMap.TryGetValue(id.Value, out var item)) return item;
+                var serializable = _content.GetStatUpgradeTemplate(id.Value);
+                if (serializable != null && !serializable.Disabled) return StatUpgradeTemplate.Create(serializable, this);
 
-				var value = Skill.DefaultValue;
+				var value = StatUpgradeTemplate.DefaultValue;
 				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
                 return value;
 			}
@@ -627,6 +641,7 @@ namespace GameDatabase
 			public void AddComponent(int id, Component item) { _database._componentMap.Add(id, item); }
 			public void AddComponentMod(int id, ComponentMod item) { _database._componentModMap.Add(id, item); }
 			public void AddComponentStats(int id, ComponentStats item) { _database._componentStatsMap.Add(id, item); }
+			public void AddComponentStatUpgrade(int id, ComponentStatUpgrade item) { _database._componentStatUpgradeMap.Add(id, item); }
 			public void AddDevice(int id, Device item) { _database._deviceMap.Add(id, item); }
 			public void AddDroneBay(int id, DroneBay item) { _database._droneBayMap.Add(id, item); }
 			public void AddFaction(int id, Faction item) { _database._factionMap.Add(id, item); }
@@ -635,7 +650,7 @@ namespace GameDatabase
 			public void AddSatelliteBuild(int id, SatelliteBuild item) { _database._satelliteBuildMap.Add(id, item); }
 			public void AddShip(int id, Ship item) { _database._shipMap.Add(id, item); }
 			public void AddShipBuild(int id, ShipBuild item) { _database._shipBuildMap.Add(id, item); }
-			public void AddSkill(int id, Skill item) { _database._skillMap.Add(id, item); }
+			public void AddStatUpgradeTemplate(int id, StatUpgradeTemplate item) { _database._statUpgradeTemplateMap.Add(id, item); }
 			public void AddTechnology(int id, Technology item) { _database._technologyMap.Add(id, item); }
 			public void AddBehaviorTree(int id, BehaviorTreeModel item) { _database._behaviorTreeMap.Add(id, item); }
 			public void AddCharacter(int id, Character item) { _database._characterMap.Add(id, item); }

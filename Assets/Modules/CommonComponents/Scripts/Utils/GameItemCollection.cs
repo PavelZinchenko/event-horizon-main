@@ -7,7 +7,7 @@ namespace CommonComponents.Utils
     public interface IReadOnlyGameItemCollection<T>
     {
         IEnumerable<KeyValuePair<T, ObscuredInt>> Items { get; }
-        IEnumerable<T> Keys { get; }
+        IReadOnlyCollection<T> Keys { get; }
         int GetQuantity(T item);
         int Count { get; }
     }
@@ -116,10 +116,7 @@ namespace CommonComponents.Utils
             get { return _collection; }
         }
 
-        public IEnumerable<T> Keys
-        {
-            get { return _collection.Keys; }
-        }
+        public IReadOnlyCollection<T> Keys => _collection.Keys;
 
         public bool IsDirty
         {

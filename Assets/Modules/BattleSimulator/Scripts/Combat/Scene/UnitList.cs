@@ -6,20 +6,16 @@ namespace Combat.Scene
     public class UnitList<T> : IUnitList<T>
         where T : IDisposable
     {
-        public UnitList()
-        {
-            _itemsLock = new object();
-            _addedItems = new Queue<T>();
-            _deletedItems = new List<T>();
-            _items = new List<T>();
-            _itemsReadOnly = _items.AsReadOnly();
-        } 
+        private readonly object _itemsLock = new();
+        private readonly Queue<T> _addedItems = new();
+        private readonly List<T> _deletedItems = new();
+        private readonly List<T> _items = new();
 
         public event Action<T> UnitAdded;
         public event Action<T> UnitRemoved;
 
-        public IList<T> Items { get { return _itemsReadOnly; } }
-        public object LockObject { get { return _itemsLock; } }
+        public IReadOnlyList<T> Items => _items;
+        public object LockObject => _itemsLock;
 
         public void Add(T item)
         {
@@ -41,8 +37,8 @@ namespace Combat.Scene
 
             if (_deletedItems.Count > 0)
             {
-                foreach (var item in _deletedItems)
-                    item.Dispose();
+                for (int i = 0; i < _deletedItems.Count; ++i)
+                    _deletedItems[i].Dispose();
 
                 _deletedItems.Clear();
             }
@@ -100,11 +96,5 @@ namespace Combat.Scene
                 _items.Clear();
             }
         }
-
-        private readonly object _itemsLock;
-        private readonly Queue<T> _addedItems;
-        private readonly List<T> _deletedItems;
-        private readonly List<T> _items;
-        private readonly IList<T> _itemsReadOnly;
     }
 }

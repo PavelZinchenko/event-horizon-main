@@ -7,6 +7,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 	{
 		private readonly float _lerpMinMax;
 		private readonly float _tolerance;
+        private readonly float _rangeLimit;
 
 		public MaintainAttackRange(float lerpMinMax, float tolerance)
 		{
@@ -22,6 +23,12 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			var min = context.SelectedWeapons.RangeMin;
 			var max = context.SelectedWeapons.RangeMax;
 			float maxDistance = Mathf.Lerp(min, max, _lerpMinMax);
+
+            var distanceLimit = 0.5f * context.Scene.Settings.AreaWidth;
+
+            if (maxDistance > distanceLimit)
+                maxDistance = distanceLimit;
+
 			float minDistance = maxDistance - maxDistance*_tolerance;
 
 			var ship = context.Ship;

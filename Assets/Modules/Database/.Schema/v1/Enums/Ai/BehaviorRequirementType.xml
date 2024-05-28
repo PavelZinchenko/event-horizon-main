@@ -18,10 +18,12 @@
     <item name="HasRemotelyControlledWeapon" value="16" />
     <item name="HasLongRangeWeapon" value="17" />
     <item name="HasEngine" value="18" />
+    <item name="HasHarpoon" value="19" />
+    <item name="CanRechargeAllies" value="20" />
 
     <item name="IsDrone" value="50" />
 
     <item name="HasKineticResistance" value="100" />
-    <item name="HasHighManeuverability" value="101">Condition met when EnginePower/sqrt(Mass) > Value</item>
+    <item name="HasHighManeuverability" value="101">Condition met when forward acceleration > Value</item>
     <item name="HasHighRammingDamage" value="102" />
 </data>

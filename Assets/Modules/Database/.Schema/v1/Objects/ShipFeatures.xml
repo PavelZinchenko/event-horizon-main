@@ -12,6 +12,10 @@
     <member name="ShieldBonus" type="float" minvalue="-1" maxvalue="10" />
     <member name="EnergyBonus" type="float" minvalue="-1" maxvalue="10" /> 
 
+    <member name="DroneBuildSpeedBonus" type="float" minvalue="-1" maxvalue="10" /> 
+    <member name="DroneAttackBonus" type="float" minvalue="-1" maxvalue="10" /> 
+    <member name="DroneDefenseBonus" type="float" minvalue="-1" maxvalue="10" /> 
+
     <member name="Regeneration" type="bool" />
 
     <!-- member name="DamageBonusC" type="float" minvalue="-1" maxvalue="10" /> 

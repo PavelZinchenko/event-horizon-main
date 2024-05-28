@@ -23,10 +23,13 @@ namespace Constructor.Model
         float ShieldRechargeRate { get; }
         float ArmorRepairRate { get; }
 
-        Layout Layout { get; }
+        IShipLayout Layout { get; }
         float Weight { get; }
         float EnginePower { get; }
         float TurnRate { get; }
+        float EnginePowerWihoutEnergy { get; }
+        float TurnRateWihoutEnergy { get; }
+        float EngineEnergyConsumption { get; }
 
         StatMultiplier WeaponDamageMultiplier { get; }
         StatMultiplier WeaponFireRateMultiplier { get; }
@@ -54,6 +57,8 @@ namespace Constructor.Model
         float KineticResistancePercentage { get; }
         float EnergyResistancePercentage { get; }
         float ThermalResistancePercentage { get; }
+
+        float ShieldCorrosiveResistancePercentage { get; }
 
         bool Autopilot { get; }
 
@@ -85,7 +90,7 @@ namespace Constructor.Model
         public StatMultiplier ArmorMultiplier => Bonuses.ArmorPointsMultiplier * BaseStats.ArmorMultiplier;
         public StatMultiplier ShieldMultiplier => Bonuses.ShieldPointsMultiplier * BaseStats.ShieldMultiplier;
 
-        public Layout Layout => BaseStats.Layout;
+        public IShipLayout Layout => BaseStats.Layout;
 
         public int CellCount => Layout.CellCount;
 
@@ -150,9 +155,13 @@ namespace Constructor.Model
             }
         }
 
+        public float EngineEnergyConsumption => EquipmentStats.EngineEnergyConsumption;
+
+        public float ShieldCorrosiveResistancePercentage => ShipSettings.ShieldCorrosiveResistance;
+
         public float ArmorRepairCooldown => (EquipmentStats.ArmorRepairBaseCooldown + ShipSettings.ArmorRepairCooldown) * Mathf.Max(EquipmentStats.ArmorRepairCooldownMultiplier.Value, 0);
-        public float EnergyRechargeCooldown => (EquipmentStats.EnergyRechargeBaseCooldown + ShipSettings.EnergyRechargeCooldown) * Mathf.Max(EquipmentStats.EnergyRechargeCooldownMultiplier.Value, 0);
-        public float ShieldRechargeCooldown => (EquipmentStats.ShieldRechargeBaseCooldown + ShipSettings.ShieldRechargeCooldown) * Mathf.Max(EquipmentStats.ShieldRechargeCooldownMultiplier.Value, 0);
+        public float EnergyRechargeCooldown => (EquipmentStats.EnergyRechargeBaseCooldown + ShipSettings.EnergyRechargeCooldown) * Mathf.Max(EquipmentStats.EnergyRechargeCooldownMultiplier.Value * BaseStats.EnergyRechargeCooldownMultiplier.Value, 0);
+        public float ShieldRechargeCooldown => (EquipmentStats.ShieldRechargeBaseCooldown + ShipSettings.ShieldRechargeCooldown) * Mathf.Max(EquipmentStats.ShieldRechargeCooldownMultiplier.Value * BaseStats.ShieldRechargeCooldownMultiplier.Value, 0);
 
         public float EnergyAbsorptionPercentage => EnergyAbsorption / (ArmorPoints + EnergyAbsorption);
         public float KineticResistancePercentage => KineticResistance / (ArmorPoints + KineticResistance);
@@ -173,23 +182,10 @@ namespace Constructor.Model
             }
         }
 
-        public float EnginePower
-        {
-            get
-            {
-                var enginePower = Bonuses.VelocityMultiplier.Value * BaseStats.VelocityMultiplier.Value * EquipmentStats.EnginePower;
-                return Mathf.Clamp(enginePower * 50f / (Mathf.Sqrt(Weight)*CellCount), 0, ShipSettings.MaxVelocity);
-            }
-        }
-
-        public float TurnRate
-        {
-            get
-            {
-                var turnRate = Bonuses.TurnRateMultiplier.Value * BaseStats.TurnRateMultiplier.Value * EquipmentStats.TurnRate;
-                return Mathf.Clamp(turnRate * 50f / (Mathf.Sqrt(Weight) * CellCount), 0, ShipSettings.MaxTurnRate);
-            }
-        }
+        public float EnginePower => Bonuses.VelocityMultiplier.Value * BaseStats.VelocityMultiplier.Value * EquipmentStats.EnginePower;
+        public float TurnRate => Bonuses.TurnRateMultiplier.Value * BaseStats.TurnRateMultiplier.Value * EquipmentStats.TurnRate;
+        public float EnginePowerWihoutEnergy => Bonuses.VelocityMultiplier.Value * BaseStats.VelocityMultiplier.Value * EquipmentStats.EnginePowerWithoutEnergy;
+        public float TurnRateWihoutEnergy => Bonuses.TurnRateMultiplier.Value * BaseStats.TurnRateMultiplier.Value * EquipmentStats.TurnRateWithoutEnergy;
 
         public bool Autopilot => EquipmentStats.Autopilot;
 
@@ -198,8 +194,8 @@ namespace Constructor.Model
         public StatMultiplier WeaponEnergyCostMultiplier => EquipmentStats.WeaponEnergyCostMultiplier;
         public StatMultiplier WeaponRangeMultiplier => EquipmentStats.WeaponRangeMultiplier;
 
-        public StatMultiplier DroneDamageMultiplier => EquipmentStats.DroneDamageMultiplier;
-        public StatMultiplier DroneDefenseMultiplier => EquipmentStats.DroneDefenseMultiplier;
+        public StatMultiplier DroneDamageMultiplier => EquipmentStats.DroneDamageMultiplier + BaseStats.DroneAttackMultiplier;
+        public StatMultiplier DroneDefenseMultiplier => EquipmentStats.DroneDefenseMultiplier + BaseStats.DroneDefenseMultiplier;
         public StatMultiplier DroneSpeedMultiplier => EquipmentStats.DroneSpeedMultiplier;
         public StatMultiplier DroneRangeMultiplier => EquipmentStats.DroneRangeMultiplier;
 
@@ -220,7 +216,7 @@ namespace Constructor.Model
         {
             get
             {
-                var speed = ShipSettings.BaseDroneReconstructionSpeed + EquipmentStats.DroneReconstructionSpeed;
+                var speed = DroneReconstructionSpeed;
                 return speed > 0 ? EquipmentStats.DroneReconstructionTimeMultiplier.Value / speed : 0f;
             }
         }
@@ -229,10 +225,13 @@ namespace Constructor.Model
         {
             get
             {
-                var speed = ShipSettings.BaseDroneReconstructionSpeed + EquipmentStats.DroneReconstructionSpeed;
+                var speed = DroneReconstructionSpeed;
                 return speed / EquipmentStats.DroneReconstructionTimeMultiplier.Value;
             }
         }
+
+        private float DroneReconstructionSpeed => (ShipSettings.BaseDroneReconstructionSpeed + 
+            EquipmentStats.DroneReconstructionSpeed) * BaseStats.DroneBuildSpeedMultiplier.Value;
 
         public Ship ShipModel => _ship;
 

@@ -72,7 +72,33 @@ public static class Geometry
 		return false;
 	}
 
-	public static void ElasticCollision(Vector2 position1, Vector2 velocity1, float weight1,
+    public static bool GetTargetPosition(
+        Vector2 enemyPosition, Vector2 enemyVelocity, Vector2 gunPosition, float bulletSpeed, float enemyRadius,
+        out Vector2 position, out float timeInterval)
+    {
+        var v0 = enemyVelocity;
+        var p0 = enemyPosition;
+        var p = gunPosition;
+        var v = bulletSpeed;
+
+        var a = v0.x * v0.x + v0.y * v0.y - v * v;
+        var b = 2 * (p0.x - p.x) * v0.x + 2 * (p0.y - p.y) * v0.y;
+        var c = (p0.x - p.x) * (p0.x - p.x) + (p0.y - p.y) * (p0.y - p.y) - enemyRadius*enemyRadius;
+
+        float t1, t2;
+        if (SolveQuadraticEquation(a, b, c, out t1, out t2) && (t1 >= 0 || t2 >= 0))
+        {
+            timeInterval = t1 < 0 ? t2 : t2 < 0 ? t1 : Mathf.Min(t1, t2);
+            position = p0 + v0 * timeInterval;
+            return true;
+        }
+
+        position = Vector2.zero;
+        timeInterval = 0;
+        return false;
+    }
+
+    public static void ElasticCollision(Vector2 position1, Vector2 velocity1, float weight1,
 	                                    Vector2 position2, Vector2 velocity2, float weight2,
 	                                    out Vector2 impulse1, out Vector2 impulse2)
 	{

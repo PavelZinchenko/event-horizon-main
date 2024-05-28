@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="StatUpgradeTemplate" type="object" typeid="StatUpgradeTemplate" >
+    <member name="MaxLevel" type="int" minvalue="0" default="20" />
+    <member name="Stars" type="expression" typeid="IntToInt" arguments="level" />
+    <member name="Credits" type="expression" typeid="IntToInt" arguments="level" />
+    <member name="Resources" type="expression" typeid="IntToInt" arguments="level" />
+</data>

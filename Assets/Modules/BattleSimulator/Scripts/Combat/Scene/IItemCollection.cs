@@ -5,7 +5,7 @@ namespace Combat.Scene
 {
     public interface IUnitList<T> where T : IDisposable
     {
-        IList<T> Items { get; }
+        IReadOnlyList<T> Items { get; }
         object LockObject { get; }
     }
 }

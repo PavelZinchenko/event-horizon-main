@@ -32,6 +32,7 @@ using UnityEngine;
 using Zenject;
 using CommonComponents.Signals;
 using PlayerInventory = GameServices.Player.PlayerInventory;
+using Combat.Ai;
 
 namespace Installers
 {
@@ -318,6 +319,10 @@ namespace Installers
 			Container.BindTrigger<ReloadUiSignal.Trigger>();
 			Container.BindSignal<OpenGameSettingsSignal>();
 			Container.BindTrigger<OpenGameSettingsSignal.Trigger>();
+            Container.BindSignal<CeasefireSignal>();
+            Container.BindTrigger<CeasefireSignal.Trigger>();
+            Container.BindSignal<PlayerInputSignal>();
+            Container.BindTrigger<PlayerInputSignal.Trigger>();
 		}
 
         private void BindLegacyServices()

@@ -42,6 +42,7 @@ namespace GameDatabase.DataModel
 			DeviceClass = serializable.DeviceClass;
 			EnergyConsumption = UnityEngine.Mathf.Clamp(serializable.EnergyConsumption, 0f, 1E+09f);
 			PassiveEnergyConsumption = UnityEngine.Mathf.Clamp(serializable.PassiveEnergyConsumption, 0f, 1E+09f);
+			ScaleEnergyWithShipSize = serializable.ScaleEnergyWithShipSize;
 			Power = UnityEngine.Mathf.Clamp(serializable.Power, 0f, 1000f);
 			Range = UnityEngine.Mathf.Clamp(serializable.Range, 0f, 1000f);
 			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 1000f);
@@ -52,6 +53,7 @@ namespace GameDatabase.DataModel
 			Color = new ColorData(serializable.Color);
 			Sound = new AudioClipId(serializable.Sound);
 			EffectPrefab = new PrefabId(serializable.EffectPrefab, PrefabId.Type.Effect);
+			VisualEffect = loader?.GetVisualEffect(new ItemId<VisualEffect>(serializable.VisualEffect)) ?? VisualEffect.DefaultValue;
 			ObjectPrefab = new PrefabId(serializable.ObjectPrefab, PrefabId.Type.Object);
 			Prefab = loader?.GetGameObjectPrefab(new ItemId<GameObjectPrefab>(serializable.Prefab)) ?? GameObjectPrefab.DefaultValue;
 			ControlButtonIcon = new SpriteId(serializable.ControlButtonIcon, SpriteId.Type.ActionButton);
@@ -62,6 +64,7 @@ namespace GameDatabase.DataModel
 		public DeviceClass DeviceClass;
 		public float EnergyConsumption;
 		public float PassiveEnergyConsumption;
+		public bool ScaleEnergyWithShipSize;
 		public float Power;
 		public float Range;
 		public float Size;
@@ -72,6 +75,7 @@ namespace GameDatabase.DataModel
 		public ColorData Color;
 		public AudioClipId Sound;
 		public PrefabId EffectPrefab;
+		public VisualEffect VisualEffect;
 		public PrefabId ObjectPrefab;
 		public GameObjectPrefab Prefab;
 		public SpriteId ControlButtonIcon;

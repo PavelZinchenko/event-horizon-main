@@ -24,6 +24,7 @@ namespace Installers
         [SerializeField] private Settings _settings;
         [SerializeField] private TrailRendererPool _trailRendererPool;
         [SerializeField] private Camera _camera;
+        [SerializeField] private MaterialCache _materialCache;
 
         public override void InstallBindings()
         {
@@ -55,6 +56,8 @@ namespace Installers
             Container.BindInterfacesTo<InputSystemKeyboard>().AsSingle();
 			Container.Bind<Combat.Ai.BehaviorTree.BehaviorTreeBuilder>().AsSingle();
 			Container.BindInterfacesAndSelfTo<Combat.Helpers.RadioTransmitter>().AsSingle();
+            Container.BindInterfacesTo<GameServicesProvider>().AsSingle();
+            Container.BindInterfacesAndSelfTo<MaterialCache>().FromInstance(_materialCache);
 		}
 	}
 }

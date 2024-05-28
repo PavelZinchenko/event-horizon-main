@@ -1,49 +1,46 @@
-﻿using UnityEngine;
+﻿using Combat.Services;
+using UnityEngine;
 
 namespace Combat.Component.View
 {
     [RequireComponent(typeof(SpriteRenderer))]
     public class ShipView : BaseView
     {
-        [SerializeField] private Material HsvMaterial;
-        [SerializeField] private Material DefaultMaterial;
         [SerializeField] private SpriteRenderer[] _extraRenderers;
 
-        public override void ApplyHsv(float hue, float saturation)
+        private Material _defaultMaterial;
+        private SpriteRenderer _renderer;
+
+        public override void ApplyHsv(float hue, float saturation, MaterialCache materialCache)
         {
-            if (!HsvMaterial) return;
+            _defaultMaterial = materialCache.GetDefaultMaterial();
+            var material = materialCache.GetHsvMaterial(hue, saturation);
 
-            if (!_hsvMaterialInstance)
-                _hsvMaterialInstance = Instantiate(HsvMaterial);
-
-            _hsvMaterialInstance.SetColor("_HSVAAdjust", new Color(hue, saturation, 0));
-
-            var renderer = GetComponent<SpriteRenderer>();
-            renderer.sharedMaterial = _hsvMaterialInstance;
+            Renderer.sharedMaterial = material;
 
             if (_extraRenderers != null && _extraRenderers.Length > 0)
                 foreach (var item in _extraRenderers)
-                    item.sharedMaterial = _hsvMaterialInstance;
+                    item.sharedMaterial = material;
         }
 
         public override void Dispose()
         {
-            if (this && DefaultMaterial)
+            if (this && _defaultMaterial)
             {
-                GetComponent<SpriteRenderer>().sharedMaterial = DefaultMaterial;
+                Renderer.sharedMaterial = _defaultMaterial;
 
                 if (_extraRenderers != null && _extraRenderers.Length > 0)
                     foreach (var item in _extraRenderers)
-                        item.sharedMaterial = DefaultMaterial;
+                        item.sharedMaterial = _defaultMaterial;
             }
         }
+
+        protected SpriteRenderer Renderer => _renderer == null ? _renderer = GetComponent<SpriteRenderer>() : _renderer;
 
         protected override void OnGameObjectCreated() {}
 
         protected override void OnGameObjectDestroyed()
         {
-            if (_hsvMaterialInstance)
-                Destroy(_hsvMaterialInstance);
         }
 
         protected override void UpdateLife(float life) {}
@@ -53,9 +50,7 @@ namespace Combat.Component.View
 
         protected override void UpdateColor(Color color)
         {
-            GetComponent<SpriteRenderer>().color = color;
+            Renderer.color = color;
         }
-
-        protected Material _hsvMaterialInstance;
     }
 }

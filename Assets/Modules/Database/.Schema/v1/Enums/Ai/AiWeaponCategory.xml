@@ -4,4 +4,5 @@
     <item name="Repair" value="1" />
     <item name="Damage" value="2" />
     <item name="CaptureDrone" value="3" />
+    <item name="Recharge" value="4" />
 </data>

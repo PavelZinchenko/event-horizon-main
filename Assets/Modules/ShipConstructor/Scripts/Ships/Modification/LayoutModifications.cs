@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Constructor.Model;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
@@ -8,16 +9,16 @@ namespace Constructor.Ships.Modification
 {
     public class LayoutModifications
     {
-        public event Action DataChangedEvent = () => { };
+        public event Action DataChangedEvent;
 
         public LayoutModifications(Ship ship)
         {
             _layout = new(ship.Layout);
         }
 
-        public Layout BuildLayout()
+        public IShipLayout BuildLayout()
         {
-            return _layout.BuildLayout();
+            return _layout;
         }
 
         public bool TryAddCell(int x, int y, CellType cellType)
@@ -25,25 +26,30 @@ namespace Constructor.Ships.Modification
 			if (!_layout.TryModifyCell(x, y, cellType))
 				return false;
 
-            DataChangedEvent.Invoke();
+            DataChangedEvent?.Invoke();
 
             return true;
         }
 
+        public void FullyUpgrade()
+        {
+            _layout.FullyUpgrade();
+        }
+
         public int TotalExtraCells()
         {
-			return _layout.ModifiedCellCount(false);
+			return _layout.CustomizableCellCount;
         }
 
         public int ExtraCells()
         {
-			return _layout.ModifiedCellCount(true);
+            return _layout.AddedCellCount;
         }
 
         public void Reset()
         {
             _layout.Reset();
-            DataChangedEvent.Invoke();
+            DataChangedEvent?.Invoke();
         }
 
         public void Deserialize(byte[] data)
@@ -54,9 +60,10 @@ namespace Constructor.Ships.Modification
                 return;
             }
 
-			_layout.Deserialize(data);
+            if (!_layout.TryDeserialize(data))
+                _layout.DeserializeObsolete(data);
 
-            DataChangedEvent.Invoke();
+            DataChangedEvent?.Invoke();
         }
 
         public IEnumerable<byte> Serialize()
@@ -71,27 +78,67 @@ namespace Constructor.Ships.Modification
 
 		private readonly CustomLayout _layout;
 
-		private readonly struct CustomLayout
+		private class CustomLayout : IShipLayout
 		{
-			public CustomLayout(Layout stockLayout)
+            private readonly Layout _stockLayout;
+            private readonly char[] _layout;
+            private readonly LayoutRect _rect;
+            private int _customizableCellCount;
+            private int _addedCellCount;
+
+            public CustomLayout(Layout stockLayout)
 			{
 				_stockLayout = stockLayout;
-				_layout = new char[_stockLayout.Size * _stockLayout.Size];
+                var size = _stockLayout.Size;
+                var data = _stockLayout.Data;
 
+                bool top = false, bottom = false, left = false, right = false;
+                for (int i = 0; i < size; ++i)
+                {
+                    if (data[i] != (char)CellType.Empty) top = true;
+                    if (data[size*size - i - 1] != (char)CellType.Empty) bottom = true;
+                    if (data[i*size] != (char)CellType.Empty) left = true;
+                    if (data[(i+1)*size - 1] != (char)CellType.Empty) right = true;
+                }
+
+                _rect = new LayoutRect(left ? -1 : 0, top ? -1 : 0, right ? size : size-1, bottom ? size : size-1);
+				_layout = new char[_rect.Square];
 				Reset();
 			}
 
-			public bool IsCustomizable(int index) => _stockLayout.Data[index] == (char)CellType.Empty && _layout[index] != (char)CellType.Empty;
+            public void FullyUpgrade()
+            {
+                for (int y = _rect.yMin; y <= _rect.yMax; ++y)
+                {
+                    for (int x = _rect.xMin; x <= _rect.xMax; ++x)
+                    {
+                        var index = _rect.ToArrayIndex(x, y);
+                        if (_layout[index] != (char)Layout.CustomizableCell) continue;
 
-			public bool IsValidModification(int x, int y, CellType value)
+                        var l = (CellType)_stockLayout[x - 1, y];
+                        var r = (CellType)_stockLayout[x + 1, y];
+                        var t = (CellType)_stockLayout[x, y - 1];
+                        var b = (CellType)_stockLayout[x, y + 1];
+
+                        if (l == CellType.Weapon || r == CellType.Weapon || t == CellType.Weapon || b == CellType.Weapon)
+                            _layout[index] = (char)Layout.CustomWeaponCell;
+                        else if (l == CellType.Inner || r == CellType.Inner || t == CellType.Inner || b == CellType.Inner)
+                            _layout[index] = (char)CellType.Inner;
+                        else if (l == CellType.Engine || r == CellType.Engine || t == CellType.Engine || b == CellType.Engine)
+                            _layout[index] = (char)CellType.Engine;
+                        else
+                            _layout[index] = (char)CellType.Outer;
+                    }
+                }
+            }
+
+            public bool IsValidModification(int x, int y, CellType value)
 			{
-				var size = _stockLayout.Size;
+                if (!_rect.IsInsideRect(x,y))
+                    return false;
 
-				if (x < 0 || y < 0 || x >= size || y >= size)
-					return false;
-
-				var index = x + y * size;
-				if (!IsCustomizable(index)) return false;
+                if (!IsCustomizable(x, y))
+                    return false;
 
 				if (value == CellType.Outer)
 					return true;
@@ -111,54 +158,53 @@ namespace Constructor.Ships.Modification
 				if (value == CellType.Weapon)
 					value = Layout.CustomWeaponCell;
 
-				_layout[x + y * _stockLayout.Size] = (char)value;
+				_layout[_rect.ToArrayIndex(x, y)] = (char)value;
+                _addedCellCount++;
 				return true;
 			}
 
 			public IEnumerable<byte> Serialize()
 			{
-				if (ModifiedCellCount(true) == 0)
+				if (_addedCellCount == 0)
 					yield break;
 
-				byte emptyCells = 0;
-				for (var i = 0; i < _layout.Length; ++i)
-				{
-					var isEmpty = _layout[i] == (char)Layout.CustomizableCell || _layout[i] == (char)CellType.Empty || _layout[i] == _stockLayout.Data[i];
-					if (isEmpty)
-					{
-						if (emptyCells == 0)
-							yield return (byte)CellType.Empty;
+                for (int i = _rect.yMin; i <= _rect.yMax; ++i)
+                {
+                    for (int j = _rect.xMin; j <= _rect.xMax; ++j)
+                    {
+                        if (!IsCustomizable(j, i)) continue;
+                        yield return CellTypeConveter.ToByte((CellType)_layout[_rect.ToArrayIndex(j,i)]);
+                    }
+                }
+            }
 
-						if (emptyCells == 0xff)
-						{
-							yield return emptyCells;
-							emptyCells = 0;
-							yield return (byte)CellType.Empty;
-						}
+            public bool TryDeserialize(byte[] data)
+            {
+                Reset();
 
-						emptyCells++;
-					}
-					else
-					{
-						if (emptyCells > 0)
-						{
-							yield return emptyCells;
-							emptyCells = 0;
-						}
+                if (data.Length == 0)
+                    return true;
 
-						var value = (byte)_layout[i];
-						if (value == (byte)Layout.CustomWeaponCell)
-							value = (byte)CellType.Weapon;
+                var index = 0;
+                for (int i = _rect.yMin; i <= _rect.yMax; ++i)
+                {
+                    for (int j = _rect.xMin; j <= _rect.xMax; ++j)
+                    {
+                        if (index >= data.Length) break;
+                        if (_layout[_rect.ToArrayIndex(j, i)] != (char)Layout.CustomizableCell) continue;
+                        if (!CellTypeConveter.TryConvert(data[index++], out var cellType))
+                            return false;
+                        if (cellType == CellType.Empty)
+                            continue;
+                        if (!TryModifyCell(j, i, cellType))
+                            UnityEngine.Debug.LogError($"Invalid modification - {cellType} [{j},{i}]");
+                    }
+                }
 
-						yield return value;
-					}
-				}
+                return true;
+            }
 
-				if (emptyCells > 0)
-					yield return emptyCells;
-			}
-
-			public void Deserialize(byte[] data)
+            public void DeserializeObsolete(byte[] data)
 			{
 				Reset();
 
@@ -178,7 +224,8 @@ namespace Constructor.Ships.Modification
 					var x = index % size;
 					var y = index / size;
 
-					TryModifyCell(x, y, (CellType)data[dataIndex]);
+					if (!TryModifyCell(x, y, (CellType)data[dataIndex]))
+                        UnityEngine.Debug.LogError($"Invalid modification [{x},{y}]");
 
 					index++;
 					dataIndex++;
@@ -187,56 +234,100 @@ namespace Constructor.Ships.Modification
 
 			public void Reset()
 			{
-				var size = _stockLayout.Size;
+                _addedCellCount = 0;
+                _customizableCellCount = 0;
 
-				for (var i = 0; i < size; ++i)
+				for (var i = _rect.yMin; i <= _rect.yMax; ++i)
 				{
-					for (var j = 0; j < size; ++j)
+					for (var j = _rect.xMin; j <= _rect.xMax; ++j)
 					{
 						var x = j;
 						var y = i;
 
-						var cellType = _stockLayout[x, y];
+                        var index = _rect.ToArrayIndex(x, y);
+                        var cellType = _stockLayout[x, y];
 						if (cellType != (char)CellType.Empty)
 						{
-							_layout[i * size + j] = cellType;
+							_layout[index] = cellType;
 						}
 						else if (_stockLayout[x, y - 1] != (char)CellType.Empty || _stockLayout[x - 1, y] != (char)CellType.Empty ||
 							_stockLayout[x + 1, y] != (char)CellType.Empty || _stockLayout[x, y + 1] != (char)CellType.Empty)
 						{
-							_layout[i * size + j] = (char)Layout.CustomizableCell;
+							_layout[index] = (char)Layout.CustomizableCell;
+                            _customizableCellCount++;
 						}
 						else
 						{
-							_layout[i * size + j] = (char)CellType.Empty;
+							_layout[index] = (char)CellType.Empty;
 						}
 					}
 				}
 			}
 
-			public int ModifiedCellCount(bool skipEmpty)
-			{
-				var data = _stockLayout.Data;
+            public int AddedCellCount => _addedCellCount;
+            public int CustomizableCellCount => _customizableCellCount;
 
-				int count = 0;
-				for (int i = 0; i < _layout.Length; i++)
-				{
-					var cell = _layout[i];
-					if (cell == (char)Layout.CustomizableCell && skipEmpty) continue;
-					if (cell == data[i]) continue;
-					count++;
-				}
+            private bool IsCustomizable(int x, int y) => _stockLayout[x,y] == (char)CellType.Empty && _layout[_rect.ToArrayIndex(x,y)] != (char)CellType.Empty;
+            public ref readonly LayoutRect Rect => ref _rect;
+            public int GetCellCount(CellType cellType) => 0;
+            public int CellCount => _stockLayout.CellCount + _addedCellCount;
+            public int Size => _stockLayout.Size;
+            public CellType this[int x, int y] => (CellType)_layout[_rect.ToArrayIndex(x, y)];
 
-				return count;
-			}
+            private static class CellTypeConveter
+            {
+                public const byte EmptyCell = 0;
+                public const byte OuterCell = 1;
+                public const byte InnerCell = 2;
+                public const byte EngineCell = 3;
+                public const byte WeaponCell = 4;
 
-			public Layout BuildLayout()
-			{
-				return new Layout(new string(_layout));
-			}
+                public static byte ToByte(CellType cellType)
+                {
+                    switch (cellType)
+                    {
+                        case CellType.Outer: 
+                            return OuterCell;
+                        case CellType.Inner: 
+                            return InnerCell;
+                        case CellType.Engine: 
+                            return EngineCell;
+                        case CellType.Weapon:
+                        case Layout.CustomWeaponCell:
+                            return WeaponCell;
+                        case CellType.Empty:
+                        case Layout.CustomizableCell:
+                            return EmptyCell;
+                        default:
+                            throw new System.InvalidOperationException();
+                    }
+                }
 
-			private readonly Layout _stockLayout;
-			private readonly char[] _layout;
-		}
+                public static bool TryConvert(byte value, out CellType cellType)
+                {
+                    switch (value)
+                    {
+                        case OuterCell:
+                            cellType = CellType.Outer;
+                            return true;
+                        case InnerCell:
+                            cellType = CellType.Inner;
+                            return true;
+                        case EngineCell:
+                            cellType = CellType.Engine;
+                            return true;
+                        case WeaponCell:
+                            cellType = CellType.Weapon;
+                            return true;
+                        case EmptyCell:
+                            cellType = CellType.Empty;
+                            return true;
+                        default:
+                            cellType = CellType.Empty;
+                            return false;
+                    }
+                }
+            }
+        }
 	}
 }

@@ -14,5 +14,7 @@ namespace GameDatabase.Enums
 		Homing,
 		Beam,
 		AreaOfEffect,
+		Trap,
+		Harpoon,
 	}
 }

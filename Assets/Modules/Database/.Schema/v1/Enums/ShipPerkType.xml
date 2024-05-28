@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="ShipPerkType">
+    <item name="Empty" value="0" />
+    <item name="AutoTargeting" value="1" />
+    <item name="HeatDefense" value="2" />
+    <item name="KineticDefense" value="3" />
+    <item name="EnergyDefense" value="4" />
+    <item name="LightWeight" value="5" />
+    <item name="Infected" value="6" />
+    <item name="UnlimitedRespawn" value="7" />
+    <item name="WeaponClass" value="8" />
+    <item name="SatelliteSize" value="9" />
+    <item name="EnergyRechargeCooldown" value="10" />
+    <item name="ShieldRechargeCooldown" value="11" />
+</data>

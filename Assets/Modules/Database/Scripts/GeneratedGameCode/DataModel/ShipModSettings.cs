@@ -28,18 +28,22 @@ namespace GameDatabase.DataModel
 		private ShipModSettings(ShipModSettingsSerializable serializable, Database.Loader loader)
 		{
 			RemoveWeaponSlotMod = serializable.RemoveWeaponSlotMod;
-			HeatDefenseValue = UnityEngine.Mathf.Clamp(serializable.HeatDefenseValue, 0f, 1f);
-			KineticDefenseValue = UnityEngine.Mathf.Clamp(serializable.KineticDefenseValue, 0f, 1f);
-			EnergyDefenseValue = UnityEngine.Mathf.Clamp(serializable.EnergyDefenseValue, 0f, 1f);
+			RemoveUnlimitedRespawnMod = serializable.RemoveUnlimitedRespawnMod;
+			HeatDefenseValue = UnityEngine.Mathf.Clamp(serializable.HeatDefenseValue, 0f, 10f);
+			KineticDefenseValue = UnityEngine.Mathf.Clamp(serializable.KineticDefenseValue, 0f, 10f);
+			EnergyDefenseValue = UnityEngine.Mathf.Clamp(serializable.EnergyDefenseValue, 0f, 10f);
 			RegenerationValue = UnityEngine.Mathf.Clamp(serializable.RegenerationValue, 0f, 1f);
 			RegenerationArmor = UnityEngine.Mathf.Clamp(serializable.RegenerationArmor, 0f, 1f);
 			WeightReduction = UnityEngine.Mathf.Clamp(serializable.WeightReduction, 0f, 1f);
 			AttackReduction = UnityEngine.Mathf.Clamp(serializable.AttackReduction, 0f, 1f);
+			EnergyReduction = UnityEngine.Mathf.Clamp(serializable.EnergyReduction, 0f, 1f);
+			ShieldReduction = UnityEngine.Mathf.Clamp(serializable.ShieldReduction, 0f, 1f);
 
 			OnDataDeserialized(serializable, loader);
 		}
 
 		public bool RemoveWeaponSlotMod { get; private set; }
+		public bool RemoveUnlimitedRespawnMod { get; private set; }
 		public float HeatDefenseValue { get; private set; }
 		public float KineticDefenseValue { get; private set; }
 		public float EnergyDefenseValue { get; private set; }
@@ -47,6 +51,8 @@ namespace GameDatabase.DataModel
 		public float RegenerationArmor { get; private set; }
 		public float WeightReduction { get; private set; }
 		public float AttackReduction { get; private set; }
+		public float EnergyReduction { get; private set; }
+		public float ShieldReduction { get; private set; }
 
 		public static ShipModSettings DefaultValue { get; private set; }
 	}

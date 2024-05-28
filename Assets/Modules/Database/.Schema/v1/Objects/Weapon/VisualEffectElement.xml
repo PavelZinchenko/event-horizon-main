@@ -12,4 +12,6 @@
     <member name="Lifetime" type="float" minvalue="0" maxvalue="1000" default="1" />
     <member name="ParticleSize" type="float" minvalue="0.001" maxvalue="100" default="1" />
     <member name="Loop" type="bool" />
+    <member name="Inverse" type="bool" />
+    <member name="UseRealTime" type="bool" />
 </data>

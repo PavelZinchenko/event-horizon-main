@@ -17,6 +17,6 @@ namespace Combat.Component.Engine
 
         Modifications<EngineData> Modifications { get; }
 
-        void Update(float elapsedTime, IBody body);
+        void Update(float elapsedTime, IBody body, bool hasEnergy);
     }
 }

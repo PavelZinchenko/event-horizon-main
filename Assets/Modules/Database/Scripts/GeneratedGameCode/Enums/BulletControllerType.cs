@@ -14,5 +14,6 @@ namespace GameDatabase.Enums
 		Homing,
 		Beam,
 		Parametric,
+		Harpoon,
 	}
 }

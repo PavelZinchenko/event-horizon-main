@@ -58,6 +58,10 @@ namespace GameDatabase.DataModel
 					return new BehaviorNodeRequirement_HasLongRangeWeapon(serializable, loader);
 				case BehaviorRequirementType.HasEngine:
 					return new BehaviorNodeRequirement_HasEngine(serializable, loader);
+				case BehaviorRequirementType.HasHarpoon:
+					return new BehaviorNodeRequirement_HasHarpoon(serializable, loader);
+				case BehaviorRequirementType.CanRechargeAllies:
+					return new BehaviorNodeRequirement_CanRechargeAllies(serializable, loader);
 				case BehaviorRequirementType.IsDrone:
 					return new BehaviorNodeRequirement_IsDrone(serializable, loader);
 				case BehaviorRequirementType.HasKineticResistance:
@@ -104,6 +108,8 @@ namespace GameDatabase.DataModel
 	    T Create(BehaviorNodeRequirement_HasRemotelyControlledWeapon content);
 	    T Create(BehaviorNodeRequirement_HasLongRangeWeapon content);
 	    T Create(BehaviorNodeRequirement_HasEngine content);
+	    T Create(BehaviorNodeRequirement_HasHarpoon content);
+	    T Create(BehaviorNodeRequirement_CanRechargeAllies content);
 	    T Create(BehaviorNodeRequirement_IsDrone content);
 	    T Create(BehaviorNodeRequirement_HasKineticResistance content);
 	    T Create(BehaviorNodeRequirement_HasHighManeuverability content);
@@ -416,6 +422,44 @@ namespace GameDatabase.DataModel
 		partial void OnDataDeserialized(BehaviorNodeRequirementSerializable serializable, Database.Loader loader);
 
   		public BehaviorNodeRequirement_HasEngine(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorNodeRequirementFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+
+
+    }
+    public partial class BehaviorNodeRequirement_HasHarpoon : BehaviorNodeRequirement
+    {
+		partial void OnDataDeserialized(BehaviorNodeRequirementSerializable serializable, Database.Loader loader);
+
+  		public BehaviorNodeRequirement_HasHarpoon(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBehaviorNodeRequirementFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+
+
+    }
+    public partial class BehaviorNodeRequirement_CanRechargeAllies : BehaviorNodeRequirement
+    {
+		partial void OnDataDeserialized(BehaviorNodeRequirementSerializable serializable, Database.Loader loader);
+
+  		public BehaviorNodeRequirement_CanRechargeAllies(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
 

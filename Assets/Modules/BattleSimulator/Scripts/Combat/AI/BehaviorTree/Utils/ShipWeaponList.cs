@@ -1,44 +1,39 @@
 ﻿using System.Collections.Generic;
-using Combat.Component.Systems.Weapons;
-using Combat.Component.Ship;
 
 namespace Combat.Ai.BehaviorTree.Utils
 {
 	public class ShipWeaponList
 	{
-		private readonly IReadOnlyList<int> _ids;
-		private readonly IShip _ship;
+		private readonly IReadOnlyList<WeaponWrapper> _weapons;
 		private readonly float _rangeMin;
 		private readonly float _rangeMax;
 
 		public float RangeMax => _rangeMax;
 		public float RangeMin => _rangeMin;
 
-		public int Count => _ids.Count;
-		public IReadOnlyList<int> Ids => _ids;
-		public IWeapon GetWeaponById(int id) => _ship.Systems.All.Weapon(id);
-		public IWeapon GetWeaponByIndex(int index) => _ship.Systems.All.Weapon(_ids[index]);
+		public IReadOnlyList<WeaponWrapper> List => _weapons;
 
-		public ShipWeaponList(IShip ship)
+		public ShipWeaponList(ShipCapabilities shipCapabilities)
 		{
-			_ship = ship;
-			var list = new List<int>();
-			var systems = ship.Systems.All;
-			for (int i = 0; i < systems.Count; ++i)
-				if (systems.UpdateAttackRangeIfWeapon(i, ref _rangeMin, ref _rangeMax))
-					list.Add(i);
-
-			_ids = list.AsReadOnly();
+            _weapons = shipCapabilities.Weapons;
+            UpdateAttackRange(ref _rangeMin, ref _rangeMax);
 		}
 
-		public ShipWeaponList(IShip ship, IReadOnlyList<int> weapons)
+		public ShipWeaponList(IReadOnlyList<WeaponWrapper> weapons)
 		{
-			_ship = ship;
-			_ids = weapons ?? EmptyList<int>.Instance;
+			_weapons = weapons ?? System.Array.Empty<WeaponWrapper>();
+            UpdateAttackRange(ref _rangeMin, ref _rangeMax);
+        }
 
-			var systems = ship.Systems.All;
-			for (int i = 0; i < weapons.Count; ++i)
-				systems.UpdateAttackRangeIfWeapon(weapons[i], ref _rangeMin, ref _rangeMax);
-		}
-	}
+        private void UpdateAttackRange(ref float rangeMin, ref float rangeMax)
+        {
+            for (int i = 0; i < _weapons.Count; ++i)
+            {
+                var data = _weapons[i];
+                var range = data.Weapon.Info.Range;
+                if (range > rangeMax) rangeMax = range;
+                if (range < rangeMin || rangeMin <= 0) rangeMin = range;
+            }
+        }
+    }
 }

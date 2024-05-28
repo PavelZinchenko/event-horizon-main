@@ -156,6 +156,7 @@ namespace GameDatabase.DataModel
 			ColorMode = serializable.ColorMode;
 			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 100f);
 			Lifetime = UnityEngine.Mathf.Clamp(serializable.Lifetime, 0f, 1000f);
+			UseBulletPosition = serializable.UseBulletPosition;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -171,6 +172,7 @@ namespace GameDatabase.DataModel
 		public ColorMode ColorMode { get; private set; }
 		public float Size { get; private set; }
 		public float Lifetime { get; private set; }
+		public bool UseBulletPosition { get; private set; }
 
 		private IVariableResolver _iVariableResolver;
 		protected override IVariableResolver GetVariableResolver() {
@@ -199,11 +201,13 @@ namespace GameDatabase.DataModel
 			{
 				if (name == "Size") return GetSize;
 				if (name == "Lifetime") return GetLifetime;
+				if (name == "UseBulletPosition") return GetUseBulletPosition;
 				return base.ResolveVariable(name);
 			}
 
 			private Variant GetSize() => _context.Size;
 			private Variant GetLifetime() => _context.Lifetime;
+			private Variant GetUseBulletPosition() => _context.UseBulletPosition;
 		}
 
     }
@@ -365,6 +369,7 @@ namespace GameDatabase.DataModel
 			ColorMode = serializable.ColorMode;
 			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 100f);
 			Lifetime = UnityEngine.Mathf.Clamp(serializable.Lifetime, 0f, 1000f);
+			OncePerCollision = serializable.OncePerCollision;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -380,6 +385,7 @@ namespace GameDatabase.DataModel
 		public ColorMode ColorMode { get; private set; }
 		public float Size { get; private set; }
 		public float Lifetime { get; private set; }
+		public bool OncePerCollision { get; private set; }
 
 		private IVariableResolver _iVariableResolver;
 		protected override IVariableResolver GetVariableResolver() {
@@ -408,11 +414,13 @@ namespace GameDatabase.DataModel
 			{
 				if (name == "Size") return GetSize;
 				if (name == "Lifetime") return GetLifetime;
+				if (name == "OncePerCollision") return GetOncePerCollision;
 				return base.ResolveVariable(name);
 			}
 
 			private Variant GetSize() => _context.Size;
 			private Variant GetLifetime() => _context.Lifetime;
+			private Variant GetOncePerCollision() => _context.OncePerCollision;
 		}
 
     }

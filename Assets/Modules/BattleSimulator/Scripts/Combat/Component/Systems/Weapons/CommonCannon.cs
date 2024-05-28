@@ -16,7 +16,6 @@ namespace Combat.Component.Systems.Weapons
 			_bullets = BulletCompositeDisposable.Create(BulletFactory.Stats);
         }
 
-        public override float ActivationCost { get { return _energyConsumption; } }
         public override bool CanBeActivated { get { return base.CanBeActivated && Platform.IsReady && Platform.EnergyPoints.Value >= _energyConsumption; } }
         public override float Cooldown { get { return Mathf.Max(Platform.Cooldown, base.Cooldown); } }
 

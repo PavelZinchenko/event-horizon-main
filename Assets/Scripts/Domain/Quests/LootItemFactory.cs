@@ -64,7 +64,7 @@ namespace Domain.Quests
 
         public LootItem CreateShip(ShipBuild shipBuild)
         {
-            return new LootItem(_itemTypeFactory.CreateQuestShipItem(new CommonShip(shipBuild)));
+            return new LootItem(_itemTypeFactory.CreateQuestShipItem(shipBuild));
         }
 
         public LootItem CreateShip(Ship ship)

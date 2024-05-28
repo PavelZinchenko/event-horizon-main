@@ -18,35 +18,39 @@ namespace Constructor
 		public ShipBuilder(ShipBuild ship)
             : this(new ShipModel(ship.Ship, ship.BuildFaction), ship.Components.Select<InstalledComponent, IntegratedComponent>(ComponentExtensions.FromDatabase))
 		{
-            var boost = 1f + 0.5f*(int)ship.DifficultyClass;
-			Bonuses.DamageMultiplier *= boost;
-			Bonuses.ArmorPointsMultiplier *= boost;
+            var boost = 1f + 0.5f * (int)ship.DifficultyClass;
+            Bonuses.DamageMultiplier *= boost;
+            Bonuses.ArmorPointsMultiplier *= boost;
             Bonuses.ShieldPointsMultiplier *= boost;
-		    //Bonuses.RammingDamageMultiplier *= boost;
-            _shipClass = ship.DifficultyClass;
-			CustomAi = ship.CustomAI;
-		}
+            //Bonuses.RammingDamageMultiplier *= boost;
+            ShipVisualDifficulty = ship.DifficultyClass;
+            CustomAi = ship.CustomAI;
+        }
 
-	    public ShipBuilder(IShipModel model, IEnumerable<IntegratedComponent> components)
+        public ShipBuilder(IShipModel model, IEnumerable<IntegratedComponent> components)
 	    {
 	        _ship = model;
 	        _shipComponents = new List<IntegratedComponent>(components);
-	    }
+        }
 
         public ShipBuilder(IShip ship)
             : this(ship.Model, ship.Components)
 		{
-		    _shipLevel = ship.Experience.Level;
-		    _shipClass = ship.ExtraThreatLevel;
+		    ShipVisualLevel = ship.Experience.Level;
 			CustomAi = ship.CustomAi;
+            ShipVisualDifficulty = ship.ExtraThreatLevel;
             TurretColor = ShipColor = new ColorScheme(ship.ColorScheme.Color, ship.ColorScheme.Hue, ship.ColorScheme.Saturation);
 		}
 
-		public ShipBonuses Bonuses;
+        public int ShipVisualLevel { get; set; } // Doesn't affect stats, pure visual
+        public DifficultyClass ShipVisualDifficulty { get; set; } = DifficultyClass.Default; // Doesn't affect stats, pure visual
+        public int ExtraDroneBayCapacity { get; set; }
+        public ShipBonuses Bonuses;
 	    public ColorScheme ShipColor;
 	    public ColorScheme TurretColor;
 		public StatMultiplier SizeMultiplier;
-		public BehaviorTreeModel CustomAi { get; set; }
+
+        public BehaviorTreeModel CustomAi { get; set; }
 
 		//public List<IntegratedComponent> ShipComponents { get { return _shipComponents; } }
 
@@ -70,69 +74,87 @@ namespace Constructor
 			stats.SizeMultiplier = SizeMultiplier;
 
             data.Stats = stats;
-			data.Info = new ShipInfo(_ship.Id, _shipClass, _shipLevel, size);
+			data.Info = new ShipInfo(_ship.Id, ShipVisualDifficulty, ShipVisualLevel, size);
 			data.CustomAi = CustomAi;
-			data._platforms.AddRange(GetPlatforms(settings));
 
-		    foreach (var item in stats.BuiltinDevices)
-		        data._devices.Add(new DeviceData(item.Stats, item.Stats.ActivationType == ActivationType.Manual ? 5 : -1));
+            foreach (var platform in GetPlatforms(settings))
+                data.AddPlatform(platform);
+
+            foreach (var item in stats.BuiltinDevices)
+		        data.AddDevice(new DeviceData(item.Stats, item.Stats.ActivationType == ActivationType.Manual ? 5 : -1));
 
 		    var uniqueComponents = new HashSet<string>();
 
-			foreach (var item in Components)
-			{
-			    var uniqueKey = item.Info.Data.GetUniqueKey();
+            var energyDependentComponents = new List<(ComponentSpec spec, IComponent component)>();
+            var energyIndependentComponents = new List<(ComponentSpec spec, IComponent component)>();
+            foreach (var item in Components)
+            {
+                var uniqueKey = item.Info.Data.GetUniqueKey();
                 if (!string.IsNullOrEmpty(uniqueKey))
-					if (!uniqueComponents.Add(uniqueKey))
-						continue;
+                    if (!uniqueComponents.Add(uniqueKey))
+                        continue;
 
-			    var component = item.Info.CreateComponent(_ship.Layout.CellCount);
-				if (component == null || !component.IsSuitable(_ship))
-					continue;
-
-                component.UpdateStats(ref stats.EquipmentStats);
-
-                foreach (var spec in component.Devices)
-                    data._devices.Add(new DeviceData(spec, item.KeyBinding));
-                foreach (var spec in component.DroneBays)
-                    data._droneBays.Add(new DroneBayData(spec.Key, spec.Value, item.KeyBinding, (DroneBehaviour)item.Behaviour));
-
-                if (item.BarrelId < 0)
-                    continue;
-				var platform = data._platforms.Find(obj => obj.BarrelId == item.BarrelId);
-                if (platform == null)
+                var component = item.Info.CreateComponent(_ship.Layout.CellCount);
+                if (component == null || !component.IsSuitable(_ship))
                     continue;
 
-                component.UpdateWeaponPlatform(platform);
-			    foreach (var spec in component.Weapons)
-			        platform.AddWeapon(spec.Weapon, spec.Ammunition, spec.StatModifier, item.KeyBinding);
-                foreach (var spec in component.WeaponsObsolete)
-                    platform.AddWeapon(spec.Key, spec.Value, item.KeyBinding);
-			}
+                if (component.RequiresEnergyToInstall())
+                    energyDependentComponents.Add((item,component));
+                else
+                    energyIndependentComponents.Add((item, component));
+            }
 
-			foreach (var platform in data._platforms)
-			{
-				platform.DamageMultiplier = stats.WeaponDamageMultiplier.Value;
-				platform.FireRateMultiplier = stats.WeaponFireRateMultiplier.Value;
-				platform.EnergyConsumptionMultiplier = stats.WeaponEnergyCostMultiplier.Value;
-				platform.RangeMultiplier = stats.WeaponRangeMultiplier.Value;
-			}
+            foreach (var item in energyIndependentComponents)
+                InstallComponent(ref data, ref stats, item.spec, item.component, false);
+            foreach (var item in energyDependentComponents)
+                InstallComponent(ref data, ref stats, item.spec, item.component, true);
 
-			foreach (var droneBay in data._droneBays)
-			{
-			    droneBay.TotalDamageMultiplier = stats.Bonuses.DamageMultiplier.Value;
-			    droneBay.TotalDefenseMultiplier = stats.Bonuses.ArmorPointsMultiplier.Value;
-
-                droneBay.DroneDamageModifier = stats.DroneDamageMultiplier.Bonus;
-                droneBay.DroneDefenseModifier = stats.DroneDefenseMultiplier.Bonus;
-                droneBay.DroneSpeedModifier = stats.DroneSpeedMultiplier.Bonus;
-				droneBay.DroneRangeModifier = stats.DroneRangeMultiplier.Bonus;
-			}
+            data.ApplyStats(stats);
 
 			return data;
 		}
 
-		private int Size
+        private void InstallComponent(ref ShipBuilderResult data, ref ShipStatsCalculator stats, in ComponentSpec item, IComponent component, bool ifEnoughEnergy)
+        {
+            var componentStats = component.GetStats();
+
+            if (ifEnoughEnergy)
+            {
+                if (stats.EnergyRechargeRate < componentStats.EnergyConsumption)
+                {
+                    stats.EquipmentStats.AddNegativeStatsOnly(componentStats);
+                    return;
+                }
+            }
+
+            stats.EquipmentStats.AddStats(componentStats);
+
+            foreach (var spec in component.Devices)
+                data.AddDevice(new DeviceData(spec, item.KeyBinding));
+            foreach (var spec in component.DroneBays)
+            {
+                var droneBayStats = spec.Key;
+                droneBayStats.Capacity += ExtraDroneBayCapacity;
+                data.AddDroneBay(new DroneBayData(droneBayStats, spec.Value, item.KeyBinding, (DroneBehaviour)item.Behaviour));
+            }
+
+            if (item.BarrelId < 0)
+                return;
+            var platform = data.FindPlatform(item.BarrelId);
+            if (platform == null)
+                return;
+
+            component.UpdateWeaponPlatform(platform);
+            foreach (var spec in component.Weapons)
+            {
+                platform.AddWeapon(spec.Weapon, spec.Ammunition, spec.StatModifier, item.KeyBinding);
+            }
+
+            foreach (var spec in component.WeaponsObsolete)
+                platform.AddWeapon(spec.Key, spec.Value, item.KeyBinding);
+        }
+
+        private int Size
 		{
 			get
 			{
@@ -189,9 +211,7 @@ namespace Constructor
 		}
 
         private IComponentConverter _converter = DefaultComponentConverter.Instance;
-	    private readonly int _shipLevel;
         private readonly IShipModel _ship;
-	    private readonly DifficultyClass _shipClass = DifficultyClass.Default;
 		private readonly List<IntegratedComponent> _shipComponents;
 		private readonly List<KeyValuePair<ISatellite, CompanionLocation>> _satellites = new List<KeyValuePair<ISatellite, CompanionLocation>>();
 	}
@@ -206,11 +226,11 @@ namespace Constructor
 
 		public DeviceStats Device { get; private set; }
 		public int KeyBinding { get; private set; }
-	}
+    }
 
 	public class DroneBayData : IDroneBayData
 	{
-		public DroneBayData(DroneBayStats spec, ShipBuild drone, int key, DroneBehaviour behaviour)
+		public DroneBayData(in DroneBayStats spec, ShipBuild drone, int key, DroneBehaviour behaviour)
 		{
 			_droneBay = spec;
 			Drone = drone;
@@ -327,12 +347,12 @@ namespace Constructor
 				}
 			}
 			
-			public void AddWeapon(WeaponStats weapon, AmmunitionObsoleteStats ammunition, int key)
+			public void AddWeapon(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition, int key)
 			{
 				_weaponsObsolete.Add(new WeaponDataObsolete(weapon, ammunition, key));
 			}
 
-		    public void AddWeapon(Weapon weapon, Ammunition ammunition, WeaponStatModifier stats, int key)
+		    public void AddWeapon(Weapon weapon, Ammunition ammunition, in WeaponStatModifier stats, int key)
 		    {
 		        _weapons.Add(new WeaponData(weapon, ammunition, stats, key));
 		    }
@@ -342,7 +362,7 @@ namespace Constructor
 
 		    public class WeaponData : IWeaponData
 		    {
-		        public WeaponData(Weapon weapon, Ammunition ammunition, WeaponStatModifier stats, int key)
+		        public WeaponData(Weapon weapon, Ammunition ammunition, in WeaponStatModifier stats, int key)
 		        {
 		            _weapon = weapon;
 		            _ammunition = ammunition;
@@ -379,8 +399,8 @@ namespace Constructor
 		    }
 
             public class WeaponDataObsolete : IWeaponDataObsolete
-			{
-				public WeaponDataObsolete(WeaponStats weapon, AmmunitionObsoleteStats ammunition, int key)
+            {
+				public WeaponDataObsolete(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition, int key)
 				{
 					_weapon = weapon;
 				    _ammunition = ammunition;
@@ -415,28 +435,74 @@ namespace Constructor
 				public float FireRateMultiplier { get; set; }
 				public float EnergyConsumptionMultiplier { get; set; }
 				public float RangeMultiplier { get; set; }
-				
-				private readonly WeaponStats _weapon;
+
+                private readonly WeaponStats _weapon;
                 private readonly AmmunitionObsoleteStats _ammunition;
             }
 		}
 		
 		public class ShipBuilderResult : IShipSpecification
 		{
-		    public ShipInfo Info { get; set; }
+            private readonly List<WeaponPlatform> _platforms = new List<WeaponPlatform>();
+            private readonly List<DeviceData> _devices = new List<DeviceData>();
+            private readonly List<DeviceData> _clonningCenters = new List<DeviceData>();
+            private readonly List<DroneBayData> _droneBays = new List<DroneBayData>();
+            
+            public ShipInfo Info { get; set; }
 			public IShipStats Stats { get; set; }
-            public IEnumerable<IWeaponPlatformData> Platforms { get { return _platforms.Cast<IWeaponPlatformData>(); } }
-			public IEnumerable<IDeviceData> Devices { get { return _devices.Cast<IDeviceData>(); } }
-			public IEnumerable<IDroneBayData> DroneBays { get { return _droneBays.Cast<IDroneBayData>(); } }
-			
-			public readonly List<WeaponPlatform> _platforms = new List<WeaponPlatform>();
-			public readonly List<DeviceData> _devices = new List<DeviceData>();
-			public readonly List<DroneBayData> _droneBays = new List<DroneBayData>();
+            public IEnumerable<IWeaponPlatformData> Platforms => _platforms.Cast<IWeaponPlatformData>();
+            public IEnumerable<IDeviceData> Devices => _devices.Cast<IDeviceData>();
+            public IEnumerable<IDeviceData> ClonningCenters => _clonningCenters.Cast<IDeviceData>();
+            public IEnumerable<IDroneBayData> DroneBays => _droneBays.Cast<IDroneBayData>();
+            public BehaviorTreeModel CustomAi { get; set; }
 
-			public BehaviorTreeModel CustomAi { get; set; }
-		}
+            public WeaponPlatform FindPlatform(int barrelId)
+            {
+                return _platforms.Find(item => item.BarrelId == barrelId);
+            }
 
-		public class CompanionSpec : ICompanionData
+            public void AddPlatform(WeaponPlatform data)
+            {
+                _platforms.Add(data);
+            }
+
+            public void AddDevice(DeviceData data)
+            {
+                if (data.Device.DeviceClass == DeviceClass.ClonningCenter)
+                    _clonningCenters.Add(data);
+                else
+                    _devices.Add(data);
+            }
+
+            public void AddDroneBay(DroneBayData data)
+            {
+                _droneBays.Add(data);
+            }
+            
+            public void ApplyStats(ShipStatsCalculator stats)
+            {
+                foreach (var platform in _platforms)
+                {
+                    platform.DamageMultiplier = stats.WeaponDamageMultiplier.Value;
+                    platform.FireRateMultiplier = stats.WeaponFireRateMultiplier.Value;
+                    platform.EnergyConsumptionMultiplier = stats.WeaponEnergyCostMultiplier.Value;
+                    platform.RangeMultiplier = stats.WeaponRangeMultiplier.Value;
+                }
+
+                foreach (var droneBay in _droneBays)
+                {
+                    droneBay.TotalDamageMultiplier = stats.Bonuses.DamageMultiplier.Value;
+                    droneBay.TotalDefenseMultiplier = stats.Bonuses.ArmorPointsMultiplier.Value;
+
+                    droneBay.DroneDamageModifier = stats.DroneDamageMultiplier.Bonus;
+                    droneBay.DroneDefenseModifier = stats.DroneDefenseMultiplier.Bonus;
+                    droneBay.DroneSpeedModifier = stats.DroneSpeedMultiplier.Bonus;
+                    droneBay.DroneRangeModifier = stats.DroneRangeMultiplier.Bonus;
+                }
+            }
+        }
+
+        public class CompanionSpec : ICompanionData
 		{
 			public CompanionSpec(Satellite satellite, CompanionLocation location, ShipSettings settings)
 			{

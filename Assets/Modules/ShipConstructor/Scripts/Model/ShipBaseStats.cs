@@ -1,4 +1,5 @@
 ﻿using GameDatabase.DataModel;
+using GameDatabase.Enums;
 using GameDatabase.Model;
 
 namespace Constructor.Model
@@ -16,9 +17,17 @@ namespace Constructor.Model
         public StatMultiplier EnergyResistanceMultiplier;
         public StatMultiplier HeatResistanceMultiplier;
         public StatMultiplier KineticResistanceMultiplier;
+        public StatMultiplier ShieldRechargeCooldownMultiplier;
+        public StatMultiplier EnergyRechargeCooldownMultiplier;
+        public StatMultiplier DroneBuildSpeedMultiplier;
+        public StatMultiplier DroneAttackMultiplier;
+        public StatMultiplier DroneDefenseMultiplier;
         public float RegenerationRate;
-        public Layout Layout;
+        public bool UnlimitedRespawn;
+        public IShipLayout Layout;
+
         public ImmutableCollection<Device> BuiltinDevices;
 		public ImmutableCollection<Barrel> Barrels;
+        public SizeClass MaxSatelliteSize;
     }
 }

@@ -399,7 +399,7 @@ namespace GameServices.Economy
         {
             var ship = ShipBuildQuery.PlayerShips(_database).Common().BelongToFaction(faction).
 				FilterByStarDistance(distance, ShipBuildQuery.FilterMode.Size).Random(random);
-            return ship != null ? _factory.CreateMarketShipItem(new CommonShip(ship)) : null;
+            return ship != null ? _factory.CreateMarketShipItem(new CommonShip(ship, _database)) : null;
         }
 
         private IEnumerable<IItemType> RandomComponents(int distance, int count, Faction faction, System.Random random, bool allowRare, ComponentQuality maxQuality = ComponentQuality.P3)

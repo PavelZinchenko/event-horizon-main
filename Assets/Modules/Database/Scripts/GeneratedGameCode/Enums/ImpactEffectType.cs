@@ -23,5 +23,9 @@ namespace GameDatabase.Enums
 		Teleport,
 		DrainShield,
 		DriveDronesCrazy,
+		IgnoreShield,
+		RechargeShield,
+		RechargeEnergy,
+		ProgressiveDamage,
 	}
 }

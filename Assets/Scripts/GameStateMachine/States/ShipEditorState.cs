@@ -4,7 +4,6 @@ using GameServices.Player;
 using Constructor.Ships;
 using Zenject;
 using ShipEditor.Context;
-using CommonComponents.Utils;
 using Constructor.Satellites;
 using Constructor;
 using GameDatabase.DataModel;
@@ -80,6 +79,7 @@ namespace GameStateMachine.States
 				_research = research;
 				_technologies = technologies;
                 ShipPresetStorage = presetStorage;
+                UpgradesProvider = new UpgradesProvider();
 			}
 
 			public IShip Ship { get; }
@@ -87,6 +87,7 @@ namespace GameStateMachine.States
             public IShipDataProvider ShipDataProvider => new EmptyDataProvider();
             public bool IsShipNameEditable => true;
             public IShipPresetStorage ShipPresetStorage { get; }
+            public IComponentUpgradesProvider UpgradesProvider { get; }
 
             public bool CanBeUnlocked(Component component)
             {
@@ -97,6 +98,12 @@ namespace GameStateMachine.States
 				return _technologies.TryGetComponentTechnology(component, out var tech) && _research.IsTechResearched(tech);
 			}
 		}
+
+        private class UpgradesProvider : IComponentUpgradesProvider
+        {
+            public IEnumerable<ComponentUpgradeLevel> GetAllUpgrades() => Enumerable.Empty<ComponentUpgradeLevel>();
+            public IComponentUpgrades GetComponentUpgrades(Component component) => null;
+        }
 
         private class PresetStorage : IShipPresetStorage, IDisposable
         {
@@ -134,59 +141,43 @@ namespace GameStateMachine.States
             }
         }
 
-		private class InventoryProvider : IInventoryProvider
-		{
-			private readonly PlayerInventory _playerInventory;
-			private readonly PlayerFleet _playerFleet;
-			private readonly PlayerResources _playerResources;
+        private class InventoryProvider : IInventoryProvider
+        {
+            private readonly PlayerInventory _playerInventory;
+            private readonly PlayerFleet _playerFleet;
+            private readonly PlayerResources _playerResources;
 
-			public IReadOnlyGameItemCollection<ComponentInfo> Components => _playerInventory.Components;
-			public IReadOnlyGameItemCollection<Satellite> Satellites => _playerInventory.Satellites;
-			public IReadOnlyCollection<ISatellite> SatelliteBuilds => System.Array.Empty<ISatellite>();
-			public IEnumerable<IShip> Ships => _playerFleet.Ships;
+            public IReadOnlyCollection<ISatellite> SatelliteBuilds => Array.Empty<ISatellite>();
+            public IEnumerable<IShip> Ships => _playerFleet.Ships;
 
-			public InventoryProvider(PlayerInventory playerInventory, PlayerFleet playerFleet, PlayerResources playerResources)
-			{
-				_playerInventory = playerInventory;
-				_playerResources = playerResources;
-				_playerFleet = playerFleet;
-			}
+            public InventoryProvider(PlayerInventory playerInventory, PlayerFleet playerFleet, PlayerResources playerResources)
+            {
+                _playerInventory = playerInventory;
+                _playerResources = playerResources;
+                _playerFleet = playerFleet;
+            }
 
-			public void AddComponent(ComponentInfo component)
-			{
-				_playerInventory.Components.Add(component);
-			}
+            public IReadOnlyCollection<ComponentInfo> Components => _playerInventory.Components.Keys;
+            public int GetQuantity(ComponentInfo component) => _playerInventory.Components.GetQuantity(component);
+            public void AddComponent(ComponentInfo component) => _playerInventory.Components.Add(component);
+            public bool TryRemoveComponent(ComponentInfo component) => _playerInventory.Components.Remove(component) > 0;
 
-			public bool TryRemoveComponent(ComponentInfo component)
-			{
-				if (_playerInventory.Components.GetQuantity(component) == 0) return false;
-				_playerInventory.Components.Remove(component);
-				return true;
-			}
+            public IReadOnlyCollection<Satellite> Satellites => _playerInventory.Satellites.Keys;
+            public int GetQuantity(Satellite satellite) => _playerInventory.Satellites.GetQuantity(satellite);
+            public void AddSatellite(Satellite satellite) => _playerInventory.Satellites.Add(satellite);
+            public bool TryRemoveSatellite(Satellite satellite) => _playerInventory.Satellites.Remove(satellite) > 0;
 
-			public void AddSatellite(Satellite satellite)
-			{
-				_playerInventory.Satellites.Add(satellite);
-			}
+            public Price GetUnlockPrice(ComponentInfo component)
+            {
+                return component.Price * 2;
+            }
 
-			public bool TryRemoveSatellite(Satellite satellite)
-			{
-				if (_playerInventory.Satellites.GetQuantity(satellite) == 0) return false;
-				_playerInventory.Satellites.Remove(satellite);
-				return true;
-			}
+            public bool TryPayForUnlock(ComponentInfo component)
+            {
+                return GetUnlockPrice(component).TryWithdraw(_playerResources);
+            }
+        }
 
-			public Price GetUnlockPrice(ComponentInfo component)
-			{
-				return component.Price * 2;
-			}
-
-			public bool TryPayForUnlock(ComponentInfo component)
-			{
-				return GetUnlockPrice(component).TryWithdraw(_playerResources);
-			}
-		}
-
-		public class Factory : PlaceholderFactory<Context, ShipEditorState> { }
+        public class Factory : PlaceholderFactory<Context, ShipEditorState> { }
     }
 }

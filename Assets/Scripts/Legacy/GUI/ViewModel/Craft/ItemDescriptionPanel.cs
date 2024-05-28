@@ -169,7 +169,7 @@ namespace ViewModel.Craft
         {
             var size = ship.Model.Layout.CellCount;
             yield return new KeyValuePair<string, string>("$CellCount", size.ToString());
-            yield return new KeyValuePair<string, string>("$EngineSize", ship.Model.Layout.Data.Count(value => value == (char)CellType.Engine).ToString());
+            yield return new KeyValuePair<string, string>("$EngineSize", ship.Model.Layout.GetCellCount(CellType.Engine).ToString());
 
             var data = ship.Model.OriginalShip;
             var kineticResistance = CalculateResistance(data.Features.KineticResistance);

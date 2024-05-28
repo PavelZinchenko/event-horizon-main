@@ -13,14 +13,14 @@
 
     <member name="MinValue" type="float" case="HasEnoughEnergy,RechargeEnergy" alias="FailIfLess" minvalue="0" maxvalue="1" default="0.1" />
     <member name="MaxValue" type="float" case="RechargeEnergy" alias="RestoreUntil" minvalue="0" maxvalue="1" default="0.9" />
-    <member name="MinValue" type="float" case="IsLowOnHp,MothershipLowHp,MainTargetLowHp,EnginePropulsionForce" minvalue="0" maxvalue="1" />
+    <member name="MinValue" type="float" case="IsLowOnHp,MothershipLowHp,MainTargetLowHp,EnginePropulsionForce,MothershipLowEnergy,MothershipLowShield" minvalue="0" maxvalue="1" />
 
     <member name="Cooldown" type="float" case="RandomSelector,Wait,Cooldown" minvalue="0" />
-    <member name="Cooldown" type="float" case="LookForAdditionalTargets,LookForThreats" alias="Cooldown" minvalue="0.1" />
+    <member name="Cooldown" type="float" case="LookForAdditionalTargets,LookForThreats,IsNotControledByPlayer" alias="Cooldown" minvalue="0.1" />
     <member name="Cooldown" type="float" case="HasIncomingThreat" alias="TimeToCollision" minvalue="0" default="5" />
-    <member name="MinValue" type="float" case="FindEnemy" alias="MinCooldown" minvalue="0.5" />
-    <member name="MaxValue" type="float" case="FindEnemy" alias="MaxCooldown" minvalue="0" default="5" />
-    <member name="InRange" type="bool" case="FindEnemy,DetonateShip" alias="InAttackRange" />
+    <member name="MinValue" type="float" case="FindEnemy,FindDamagedAlly" alias="MinCooldown" minvalue="0.5" />
+    <member name="MaxValue" type="float" case="FindEnemy,FindDamagedAlly" alias="MaxCooldown" minvalue="0" default="5" />
+    <member name="InRange" type="bool" case="FindEnemy,FindDamagedAlly,DetonateShip" alias="InAttackRange" />
     <member name="InRange" type="bool" case="Wait" alias="ResetIfInterrupted" />
     <member name="InRange" type="bool" case="AttackMainTarget,AttackAdditionalTargets" alias="NotMoving" />
     <member name="NoDrones" type="bool" case="FindEnemy" alias="IgnoreDrones" />
@@ -29,8 +29,8 @@
     <member name="MaxValue" type="float" case="MoveToAttackRange" alias="Multiplier" minvalue="0" maxvalue="1" default="1" />
     <member name="MaxValue" type="float" case="MaintainAttackRange" alias="Tolerance" minvalue="0" maxvalue="1" default="0.2">A valid distance between ships will be [range*(1-tolerance) .. range]</member>
     <member name="MaxValue" type="float" case="SlowDown,MatchVelocityWithTarget" alias="Tolerance" minvalue="0" maxvalue="1" default="0.2">Acceptable speed deviation</member>
-    <member name="MinValue" type="float" case="FlyAroundMothership,KeepDistance" alias="MinDistance" minvalue="0" maxvalue="100" default="2.5" />
-    <member name="MaxValue" type="float" case="FlyAroundMothership,KeepDistance" alias="MaxDistance" minvalue="0" maxvalue="100" default="3.5" />
+    <member name="MinValue" type="float" case="FlyAroundMothership,KeepDistance" alias="MinDistance" minvalue="0" maxvalue="1000" default="2.5" />
+    <member name="MaxValue" type="float" case="FlyAroundMothership,KeepDistance" alias="MaxDistance" minvalue="0" maxvalue="1000" default="3.5" />
     <member name="MaxValue" type="float" case="TargetDistance,MothershipDistanceExceeded" alias="MaxDistance" minvalue="0">Max distance. If value is 0, prefefined value will be used (e.g. DroneBay range)</member>
     <member name="MinValue" type="float" case="IsFasterThanTarget,HasLongerAttackRange" alias="Multiplier" minvalue="1" maxvalue="10" />
     <member name="DeviceClass" type="enum" typeid="DeviceClass" case="ActivateDevice" />

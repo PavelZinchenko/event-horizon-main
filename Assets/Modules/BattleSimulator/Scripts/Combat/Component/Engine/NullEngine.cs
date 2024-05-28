@@ -16,7 +16,7 @@ namespace Combat.Component.Engine
 
 		public Modifications<EngineData> Modifications => _modifications;
 
-		public void Update(float elapsedTime, IBody body)
+		public void Update(float elapsedTime, IBody body, bool hasEnergy)
         {
             ApplyDeceleration(body, elapsedTime);
             ApplyAngularDeceleration(body, elapsedTime);

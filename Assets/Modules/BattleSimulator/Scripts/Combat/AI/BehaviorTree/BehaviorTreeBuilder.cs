@@ -12,18 +12,22 @@ namespace Combat.Ai.BehaviorTree
 		private readonly IScene _scene;
 		private readonly ILocalization _localization;
 		private readonly MessageHub _messageHub;
+        private readonly ShipTargetLocator _targetLocator;
 
 		public BehaviorTreeBuilder(IScene scene, ILocalization localization)
 		{
 			_scene = scene;
 			_localization = localization;
 			_messageHub = new MessageHub();
+            _targetLocator = new ShipTargetLocator(scene);
 		}
 
 		public ShipBehaviorTree Build(IShip ship, BehaviorTreeModel model, AiSettings settings)
 		{
-			var builder = new NodeBuilder(ship, settings, _messageHub, _localization);
-			return new ShipBehaviorTree(ship, _scene, builder.Build(model.RootNode));
+            var capabilities = new ShipCapabilities(ship, settings.AiLevel);
+			var builder = new NodeBuilder(ship, capabilities, settings, _messageHub, _targetLocator, _localization);
+            var context = new Context(ship, capabilities, _scene);
+			return new ShipBehaviorTree(ship, builder.Build(model.RootNode), context);
 		}
 	}
 

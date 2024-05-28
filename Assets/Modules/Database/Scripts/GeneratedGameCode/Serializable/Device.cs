@@ -18,6 +18,7 @@ namespace GameDatabase.Serializable
 		public DeviceClass DeviceClass;
 		public float EnergyConsumption;
 		public float PassiveEnergyConsumption;
+		public bool ScaleEnergyWithShipSize = true;
 		public float Power;
 		public float Range;
 		public float Size;
@@ -28,6 +29,7 @@ namespace GameDatabase.Serializable
 		public string Color;
 		public string Sound;
 		public string EffectPrefab;
+		public int VisualEffect;
 		public string ObjectPrefab;
 		public int Prefab;
 		public string ControlButtonIcon;

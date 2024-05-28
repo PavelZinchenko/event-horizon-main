@@ -13,4 +13,8 @@
     <item name="Teleport" />
     <item name="DrainShield" />
     <item name="DriveDronesCrazy" />
+    <item name="IgnoreShield" />
+    <item name="RechargeShield" />
+    <item name="RechargeEnergy" />
+    <item name="ProgressiveDamage" />
 </data>

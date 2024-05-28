@@ -14,5 +14,6 @@ namespace GameDatabase.Enums
 		Repair = 1,
 		Damage = 2,
 		CaptureDrone = 3,
+		Recharge = 4,
 	}
 }

@@ -15,7 +15,6 @@ namespace Combat.Component.Systems.Weapons
             MaxCooldown = weaponStats.FireRate > 0 ? 1f / weaponStats.FireRate : 0f;
 
             _energyConsumption = bulletFactory.Stats.EnergyCost;
-			_activationCost = bulletFactory.Stats.ActivationCost;
         }
 
 		public override bool CanBeActivated => base.CanBeActivated && (HasActiveBullet || Platform.IsReady);
@@ -31,7 +30,7 @@ namespace Combat.Component.Systems.Weapons
             {
                 Aim();
 
-                if (Active && Platform.EnergyPoints.TryGet(_energyConsumption * elapsedTime))
+                if (Active && TryConsumeEnergy(_energyConsumption * elapsedTime))
                 {
                     _activeBullet.Lifetime.Restore();
                     InvokeTriggers(ConditionType.OnRemainActive);
@@ -42,7 +41,7 @@ namespace Combat.Component.Systems.Weapons
                     InvokeTriggers(ConditionType.OnDeactivate);
                 }
             }
-            else if (Active && CanBeActivated && Platform.EnergyPoints.TryGet(_activationCost))
+            else if (Active && CanBeActivated && TryConsumeEnergy(ActivationCost))
             {
                 Shot();
                 InvokeTriggers(ConditionType.OnActivate);
@@ -66,6 +65,5 @@ namespace Combat.Component.Systems.Weapons
 
 		private IBullet _activeBullet;
         private readonly float _energyConsumption;
-		private readonly float _activationCost;
     }
 }

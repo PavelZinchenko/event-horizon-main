@@ -1,20 +1,19 @@
 ﻿using Combat.Component.Body;
 using Combat.Component.Mods;
+using Constructor.Model;
 using UnityEngine;
 
 namespace Combat.Component.Engine
 {
     public class ShipEngine : IEngine
     {
-        public ShipEngine(float propulsion, float turnRate, float velocity, float angularVelocity, float maxVelocity, float maxAngularVelocity)
+        public ShipEngine(
+            EngineStats engineStats,
+            EngineStats engineStatsWithoutEnergy)
         {
-            _propulsion = propulsion;
-            _turnRate = turnRate;
-            _velocity = velocity;
-            _angularVelocity = angularVelocity;
-            _maxVelocity = maxVelocity;
-            _maxAngularVelocity = maxAngularVelocity;
-            UpdateData();
+            _engineStats = engineStats;
+            _engineStatsWithoutEnergy = engineStatsWithoutEnergy;
+            UpdateData(true);
         }
 
         public float MaxVelocity { get { return _engineData.Velocity; } }
@@ -50,9 +49,15 @@ namespace Combat.Component.Engine
 
         public Modifications<EngineData> Modifications { get { return _modifications; } }
 
-        public void Update(float elapsedTime, IBody body)
+        public void Update(float elapsedTime, IBody body, bool hasEnergy)
         {
-            UpdateData();
+            if (!hasEnergy && _engineStatsWithoutEnergy.IsNull)
+            {
+                Throttle = 0;
+                return;
+            }
+
+            UpdateData(hasEnergy);
 
 			ForwardAcceleration = Throttle > 0.01f ? ApplyAcceleration(body, elapsedTime) : 0f;
 
@@ -65,48 +70,67 @@ namespace Combat.Component.Engine
                 ApplyAngularDeceleration(body, elapsedTime);
         }
 
-        private void UpdateData()
+        private void UpdateData(bool hasEnergy)
         {
-            _engineData.AngularVelocity = _angularVelocity;
-            _engineData.Velocity = _velocity;
-            _engineData.TurnRate = _turnRate;
-            _engineData.Propulsion = _propulsion;
-            _engineData.Deceleration = 0;
+            if (hasEnergy)
+            {
+                _engineData.AngularVelocity = _engineStats.AngularVelocity;
+                _engineData.Velocity = _engineStats.Velocity;
+                _engineData.TurnRate = _engineStats.TurnRate;
+                _engineData.Propulsion = _engineStats.Propulsion;
+            }
+            else
+            {
+                _engineData.AngularVelocity = _engineStatsWithoutEnergy.AngularVelocity;
+                _engineData.Velocity = _engineStatsWithoutEnergy.Velocity;
+                _engineData.TurnRate = _engineStatsWithoutEnergy.TurnRate;
+                _engineData.Propulsion = _engineStatsWithoutEnergy.Propulsion;
+            }
 
+            _engineData.Deceleration = 0;
             _modifications.Apply(ref _engineData);
 
-            if (_engineData.Velocity > _maxVelocity)
-                _engineData.Velocity = _maxVelocity;
-            if (_engineData.AngularVelocity > _maxAngularVelocity)
-                _engineData.AngularVelocity = _maxAngularVelocity;
+            if (hasEnergy)
+            {
+                if (_engineData.Velocity > _engineStats.VelocityLimit)
+                    _engineData.Velocity = _engineStats.VelocityLimit;
+                if (_engineData.AngularVelocity > _engineStats.AngularVelocityLimit)
+                    _engineData.AngularVelocity = _engineStats.AngularVelocityLimit;
+            }
+            else
+            {
+                if (_engineData.Velocity > _engineStatsWithoutEnergy.VelocityLimit)
+                    _engineData.Velocity = _engineStatsWithoutEnergy.VelocityLimit;
+                if (_engineData.AngularVelocity > _engineStatsWithoutEnergy.AngularVelocityLimit)
+                    _engineData.AngularVelocity = _engineStatsWithoutEnergy.AngularVelocityLimit;
+            }
         }
 
         private float ApplyAcceleration(IBody body, float elapsedTime)
         {
             var forward = RotationHelpers.Direction(body.Rotation);
-            var side = new Vector2(forward.y, -forward.x);
             var velocity = body.Velocity;
             var forwardVelocity = Vector2.Dot(velocity, forward);
-            var sideVelocity = Vector2.Dot(velocity, side);
+            var requiredVelocity = CalculateRequiredVelocity(forwardVelocity, MaxVelocity);
+            var propulsionVector = CalculatePropulsionVector(velocity, requiredVelocity * forward, MaxVelocity);
+            var acceleration = Propulsion * Throttle * propulsionVector;
 
-            var extraAcceleration = Mathf.Min(Propulsion * _extraAccelerationScale, _extraAccelerationMax);
-            var maxPropulsion = Propulsion + extraAcceleration;
-            var forwardAcceleration = Throttle * CalculateAcceleration(forwardVelocity, MaxVelocity*0.1f, MaxVelocity, _maxVelocity, Propulsion, extraAcceleration);
-            var sideAcceleration = Mathf.Clamp(-sideVelocity, -maxPropulsion, maxPropulsion) * Throttle;
+            body.ApplyAcceleration(elapsedTime*acceleration);
+			return Vector2.Dot(acceleration, forward);
+        }
 
-            if (forwardAcceleration < 0.01f && sideAcceleration < 0.01f && sideAcceleration > -0.01f)
-                return 0f;
+        private static float CalculateRequiredVelocity(float velocity, float engineMaxVelocity)
+        {
+            if (velocity > engineMaxVelocity) return velocity;
+            return engineMaxVelocity;
+        }
 
-            var sqrMagnitude = (forwardAcceleration*forwardAcceleration + sideAcceleration*sideAcceleration) / (maxPropulsion*maxPropulsion);
-            if (sqrMagnitude > 1.0f)
-            {
-                var magnitude = Mathf.Sqrt(sqrMagnitude);
-                forwardAcceleration /= magnitude;
-                sideAcceleration /= magnitude;
-            }
-
-            body.ApplyAcceleration(elapsedTime*forwardAcceleration*forward + elapsedTime*sideAcceleration*side);
-			return forwardAcceleration;
+        private static Vector2 CalculatePropulsionVector(in Vector2 velocity, in Vector2 requiredVelocity, float maxSpeed)
+        {
+            var direction = requiredVelocity - velocity;
+            var length = direction.magnitude;
+            if (length < 0.001f) return Vector2.zero;
+            return direction / Mathf.Max(0.5f*length, maxSpeed);
         }
 
         private void ApplyDeceleration(IBody body, float elapsedTime)
@@ -134,7 +158,7 @@ namespace Combat.Component.Engine
             else
                 deltaAngle = Mathf.Abs(minDeltaAngle);
 
-            var maxTurnRate = TurnRate + Mathf.Min(_extraAccelerationScale * TurnRate, _extraAccelerationMax);
+            var maxTurnRate = TurnRate;
 
             if (deltaAngle < 120f && deltaAngle < angularVelocity*angularVelocity/TurnRate)
                 acceleration = Mathf.Clamp(-angularVelocity, -TurnRate * elapsedTime, TurnRate * elapsedTime);
@@ -160,46 +184,9 @@ namespace Combat.Component.Engine
             body.ApplyAngularAcceleration(acceleration);
         }
 
-        private static float CalculateAcceleration(float velocity, float minVelocity, float targetVelocity, float maxVelocity, float maxAcceleration, float extraAcceleration)
-        {
-            if (velocity >= maxVelocity)
-                return 0f;
-
-            if (maxAcceleration < 0.01f)
-                return 0f;
-
-            if (velocity < 0)
-                return 2 * maxAcceleration;
-
-            if (velocity < minVelocity)
-            {
-                var scale = (minVelocity - velocity) / minVelocity;
-                return maxAcceleration + extraAcceleration * scale * scale;
-            }
-
-            if (velocity <= targetVelocity)
-                return maxAcceleration;
-
-            if (velocity < maxVelocity - 0.01f)
-            {
-                var scale = 0.1f * (maxVelocity - velocity) / (maxVelocity - targetVelocity);
-                return (maxAcceleration + extraAcceleration) * scale;
-            }
-
-            return 0f;
-        }
-
-
         private EngineData _engineData;
-
-        private readonly float _propulsion;
-        private readonly float _turnRate;
-        private readonly float _velocity;
-        private readonly float _angularVelocity;
-        private readonly float _maxAngularVelocity;
-        private readonly float _maxVelocity;
+        private readonly EngineStats _engineStats;
+        private readonly EngineStats _engineStatsWithoutEnergy;
         private readonly Modifications<EngineData> _modifications = new Modifications<EngineData>();
-        private const float _extraAccelerationScale = 3.0f;
-        private const float _extraAccelerationMax = 2.0f;
     }
 }

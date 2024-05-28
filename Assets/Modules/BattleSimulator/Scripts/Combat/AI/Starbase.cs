@@ -24,7 +24,7 @@ namespace Combat.Ai
 
         public ControllerStatus Status => _ship.IsActive() ? ControllerStatus.Active : ControllerStatus.Dead;
 
-        public void Update(float deltaTime)
+        public void Update(float deltaTime, in AiManager.Options options)
         {
             var context = new Context(_ship, null, _targets, null, _currentTime);
 

@@ -1,22 +1,32 @@
 using System;
 using System.Collections.Generic;
+using CommonComponents.Signals;
 using Zenject;
 
 namespace Combat.Ai
 {
 	public sealed class AiManager : BackgroundTask, IAiManager, IInitializable, IDisposable, IFixedTickable
 	{
+	    public AiManager(CeasefireSignal ceasefireSignal, PlayerInputSignal playerInputSignal)
+	    {
+	        _ceasefireSignal = ceasefireSignal;
+            _playerInputSignal = playerInputSignal;
+	    }
+
 		public void Add(IController item)
 		{
 			lock (_lockObject) 
 			{
-				_recentlyAddedControllers.Add (item);
+				_recentlyAddedControllers.Add(item);
 			}
         }
 
-		public void Initialize()
+        public void Initialize()
 		{
-			_currentFrame = 0;
+            _ceasefireSignal.Event += OnCeasefire;
+            _playerInputSignal.Event += OnPlayerInput;
+            
+            _currentFrame = 0;
 			_lastFrame = -1;
 			_fixedDeltaTime = UnityEngine.Time.fixedDeltaTime;
 
@@ -25,13 +35,21 @@ namespace Combat.Ai
 
 		public void Dispose()
 		{
+            _ceasefireSignal.Event -= OnCeasefire;
+            _playerInputSignal.Event -= OnPlayerInput;
+            
             UnityEngine.Debug.Log("AiManager.Dispose");
 			StopTask();
 		}
 
 		public void FixedTick()
 		{
+#if UNITY_WEBGL
+			_currentFrame++;
+			DoWork();
+#else
 			System.Threading.Interlocked.Increment(ref _currentFrame);
+#endif
 		}
 
 		protected override bool DoWork()
@@ -50,12 +68,16 @@ namespace Combat.Ai
 
 			var needCleanup = false;
 			var count = _controllers.Count;
-			var deltaTime = _fixedDeltaTime * (_currentFrame - _lastFrame);
-			for (var i = 0; i < count; ++i) 
+			var deltaTime = _fixedDeltaTime * (_currentFrame - _lastFrame);            
+            _options.DisableThreats = count > _maxControllersBeforeOptimization;
+            _options.TimeSinceLastPlayerInput = _timeSinceLastPlayerInput;
+            _timeSinceLastPlayerInput += deltaTime;
+
+			for (var i = 0; i < count; ++i)
 			{
-				var controller = _controllers [i];
-				if (controller.Status != ControllerStatus.Dead)
-					controller.Update(deltaTime);
+				var controller = _controllers[i];
+				if (!IsDead(controller))
+					controller.Update(deltaTime, _options);
 				else
 					needCleanup = true;
 			}
@@ -63,7 +85,7 @@ namespace Combat.Ai
 			if (needCleanup)
 				_controllers.RemoveAll(IsDead);
 
-            _lastFrame = _currentFrame;
+			_lastFrame = _currentFrame;
 			return true;
 		}
 
@@ -74,12 +96,38 @@ namespace Combat.Ai
 			System.Threading.Thread.Sleep((int)(_fixedDeltaTime*1000));
 		}
 
+		private void OnCeasefire(bool value)
+		{
+			_options.CeaseFire = value;
+		}
+
+        private void OnPlayerInput()
+        {
+            _timeSinceLastPlayerInput = 0;
+        }
+
+        private float _timeSinceLastPlayerInput;
 		private int _currentFrame;
 		private int _lastFrame;
 		private float _fixedDeltaTime;
+        private Options _options;
 
-		private readonly object _lockObject = new object();
-		private readonly List<IController> _recentlyAddedControllers = new List<IController>();
+        private readonly object _lockObject = new object();
+	    private readonly CeasefireSignal _ceasefireSignal;
+        private readonly PlayerInputSignal _playerInputSignal;
+        private readonly List<IController> _recentlyAddedControllers = new List<IController>();
         private readonly List<IController> _controllers = new List<IController>();
-	}
+
+        private const int _maxControllersBeforeOptimization = 30;
+
+        public struct Options
+        {
+            public bool CeaseFire;
+            public bool DisableThreats;
+            public float TimeSinceLastPlayerInput;
+        }
+    }
+
+    public class CeasefireSignal : Signal<CeasefireSignal, bool> { }
+    public class PlayerInputSignal : Signal<PlayerInputSignal> { }
 }

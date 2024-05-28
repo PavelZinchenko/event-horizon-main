@@ -6,7 +6,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 {
 	public class SpawnDronesNode : INode
 	{
-		private Utils.ShipSystemList<IDroneBay> _droneBays;
+        private Utils.ShipSystemList<IDroneBay> _droneBays;
 		private Utils.ShipSystemList<ClonningDevice> _clonningDevices;
 
 		public SpawnDronesNode(IShip ship)
