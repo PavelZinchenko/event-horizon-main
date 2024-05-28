@@ -34,6 +34,11 @@ namespace Combat.Effects
             Primitives.CreateCircle(_mesh, _radius, _thickness, _segments, (float)_texture.width / (float)_texture.height);
         }
 
+        protected override void SetColor(Color color)
+        {
+            _material.color = color;
+        }
+
         protected override void OnDispose() {}
 
         protected override void OnGameObjectDestroyed()

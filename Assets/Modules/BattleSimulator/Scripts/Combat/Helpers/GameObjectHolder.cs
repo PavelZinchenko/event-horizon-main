@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Combat.Component.Collider;
+using Combat.Component.Helpers;
+using Combat.Services;
 using Services.ObjectPool;
 using UnityEngine;
 
@@ -11,6 +13,13 @@ namespace Combat.Helpers
         {
             _objectPool = objectPool;
             _gameObject = objectPool.GetObject(prefab, injectDependencies);
+        }
+
+        public GameObjectHolder(GameObject prefab, IGameServicesProvider gameServicesProvider)
+        {
+            _objectPool = gameServicesProvider.ObjectPool;
+            _gameObject = _objectPool.GetObject(prefab, false);
+            _gameObject.GetComponent<IDependencyInjector>().Initialize(gameServicesProvider);
         }
 
         public bool IsActive { get { return _gameObject.activeSelf; } set { _gameObject.SetActive(value); } }
@@ -33,14 +42,15 @@ namespace Combat.Helpers
 
         public void Dispose()
         {
-            foreach (var item in _components)
-                Object.Destroy(item);
+            for (int i = 0; i < _components.Count; ++i)
+                Object.Destroy(_components[i]);
+
             _components.Clear();
             _objectPool.ReleaseObject(_gameObject);
         }
 
         private readonly GameObject _gameObject;
         private readonly IObjectPool _objectPool;
-        private readonly IList<UnityEngine.Component> _components = new List<UnityEngine.Component>();
+        private readonly List<UnityEngine.Component> _components = new();
     }
 }

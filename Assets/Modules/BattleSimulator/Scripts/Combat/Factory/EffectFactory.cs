@@ -58,6 +58,8 @@ namespace Combat.Factory
 
         public IEffect CreateDamageTextEffect(float damage, Color color, Vector2 position, Vector2 velocity, IBody parent = null)
         {
+            if (!IsObjectVisible(position, 0)) return null;
+
 			var gameObject = CreateGameObject("DamageText");
 
 			var direction = RotationHelpers.Direction(Random.Range(0f, 360f));
@@ -80,7 +82,7 @@ namespace Combat.Factory
 
 		public IEffect CreateTextEffect(string message, IBody parent = null)
 		{
-			var gameObject = CreateGameObject("MessageText");
+            var gameObject = CreateGameObject("MessageText");
 			gameObject.Name = message;
 			var effect = CreateEffect(gameObject, parent);
 			return effect;
@@ -90,6 +92,16 @@ namespace Combat.Factory
         {
             var distance = Vector2.Distance(position, _scene.ViewPoint) + 20;
             _scene.Shake(Mathf.Min(2.0f * power / Mathf.Sqrt(distance), 5f));
+        }
+
+        public bool IsObjectVisible(Vector2 position, float size)
+        {
+            var rect = _scene.ViewRect;
+            if (position.x + size < rect.xMin) return false;
+            if (position.x - size > rect.xMax) return false;
+            if (position.y + size < rect.yMin) return false;
+            if (position.y - size > rect.yMax) return false;
+            return true;
         }
 
         private GameObjectHolder CreateGameObject(string name)

@@ -8,13 +8,18 @@ namespace Combat.Component.View
 {
     public class TrailView : BaseView
     {
-        [Inject] private readonly TrailRendererPool _trailRendererPool;
-
         [SerializeField] private float _duration = 1.0f;
         [SerializeField] private float _alpha = 1.0f;
         [SerializeField] private bool _useObjectScale = false;
         [SerializeField] private Color _baseColor = Color.white;
         [SerializeField] private ColorMode _colorMode = ColorMode.TakeFromOwner;
+
+        [Inject] private TrailRendererPool _trailRendererPool;
+
+        public void Initialize(TrailRendererPool trailRendererPool)
+        {
+            _trailRendererPool = trailRendererPool;
+        }
 
         public void Initialize(Color color, ColorMode colorMode)
         {

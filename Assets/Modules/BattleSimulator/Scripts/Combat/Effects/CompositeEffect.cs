@@ -31,11 +31,18 @@ namespace Combat.Effects
 
         public void Detach()
         {
-            gameObject.transform.parent = null;
-            gameObject.transform.localPosition = new Vector3(0, 0, -3);
-            Position = _parent.WorldPosition();
-            Rotation = _parent.WorldRotation();
-            _parent = null;
+            if (gameObject.transform.parent != null)
+            {
+                gameObject.transform.parent = null;
+                gameObject.transform.localPosition = new Vector3(0, 0, -3);
+            }
+
+            if (_parent != null)
+            {
+                Position = _parent.WorldPosition();
+                Rotation = _parent.WorldRotation();
+                _parent = null;
+            }
         }
 
         public bool Visible
@@ -77,6 +84,7 @@ namespace Combat.Effects
             _parent = parent;
 
             _lifetimeMax = 0f;
+            _totalElapsedTime = 0;
 
             foreach (var element in effectData.Elements)
             {
@@ -103,18 +111,21 @@ namespace Combat.Effects
         }
 
         public void OnParentSizeChanged() { }
-        public void Restart() { }
+        public void Restart() { _totalElapsedTime = 0; }
 
         private void Update()
         {
             if (!IsAlive)
                 return;
 
+            var deltaTime = Time.deltaTime;
+            _totalElapsedTime += deltaTime;
+
             if (_isAutomatic)
             {
-                Position += _velocity * Time.deltaTime;
-                Rotation += _angularVelocity * Time.deltaTime;
-                Life -= Time.deltaTime / _lifetime;
+                Position += _velocity * deltaTime;
+                Rotation += _angularVelocity * deltaTime;
+                Life -= deltaTime / _lifetime;
 
                 if (Life <= 0)
                 {
@@ -166,7 +177,8 @@ namespace Combat.Effects
                 quantity--;
                 var effect = _effects[i];
 
-                if (time <= element.StartTime || !element.Loop && time >= element.StartTime + element.Lifetime)
+                var elementTime = element.UseRealTime ? _totalElapsedTime : time;
+                if (!IsElementVisible(element, elementTime))
                 {
                     effect.Visible = false;
                     continue;
@@ -174,10 +186,10 @@ namespace Combat.Effects
 
                 effect.Visible = true;
 
-                if (element.Loop)
-                    UpdateLoopingEffectLife(effect, element);
+                if (!element.Loop)
+                    UpdateEffectLife(effect, element, elementTime);
                 else
-                    UpdateEffectLife(effect, element, time);
+                    UpdateLoopingEffectLife(effect, element, elementTime);
 
                 if (element.GrowthRate != 0)
                     effect.Size = element.Size * (1.0f + element.GrowthRate * (1.0f - effect.Life));
@@ -186,24 +198,28 @@ namespace Combat.Effects
             }
         }
 
-        private void UpdateLoopingEffectLife(IEffect effect, VisualEffectElement element)
+        private static bool IsElementVisible(VisualEffectElement element, float time)
         {
-            var deltaTime = Time.deltaTime / (_lifetime * element.Lifetime);
-            var life = effect.Life - deltaTime;
-            if (life <= 0)
-            {
-                effect.Life = 1.0f;
-                effect.Restart();
-            }
-            else
-            {
-                effect.Life = life;
-            }
+            if (element.Loop)
+                return time >= element.StartTime;
+
+            return time >= element.StartTime && time <= element.StartTime + element.Lifetime;
+        }
+
+        private void UpdateLoopingEffectLife(IEffect effect, VisualEffectElement element, float time)
+        {
+            var life = time/element.Lifetime;
+            life -= Mathf.Floor(life);
+            if (element.Inverse) life = 1.0f - life;
+            var delta = life > effect.Life ? life - effect.Life : effect.Life - life;
+            if (delta > 0.5f) effect.Restart();
+            effect.Life = life;
         }
 
         private void UpdateEffectLife(IEffect effect, VisualEffectElement element, float time)
         {
-            effect.Life = 1f - (time - element.StartTime) / element.Lifetime;
+            var elapsedTime = Mathf.Clamp01((time - element.StartTime) / element.Lifetime);
+            effect.Life = element.Inverse ? elapsedTime : 1f - elapsedTime;
         }
 
         private void UpdatePosition()
@@ -277,6 +293,7 @@ namespace Combat.Effects
         private float _lifetime;
         private bool _isAutomatic;
 
+        private float _totalElapsedTime;
         private float _lifetimeMax;
         private VisualEffect _data;
         private readonly List<IEffect> _effects = new List<IEffect>();

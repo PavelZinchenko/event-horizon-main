@@ -56,7 +56,7 @@ namespace Combat.Component.View
         {
             color = _colorMode.Apply(_baseColor, color);
             color.a *= _alphaScale;
-            _spriteRenderer.material.color = color;
+            _spriteRenderer.color = color;
         }
 
         protected override void OnGameObjectCreated()

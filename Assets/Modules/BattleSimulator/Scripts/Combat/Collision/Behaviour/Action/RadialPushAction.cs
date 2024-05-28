@@ -5,9 +5,9 @@ using GameDatabase.Enums;
 
 namespace Combat.Collision.Behaviour.Action
 {
-    public class PushAction : ICollisionAction
+    public class RadialPushAction : ICollisionAction
     {
-        public PushAction(float impulse, BulletImpactType impactType)
+        public RadialPushAction(float impulse, BulletImpactType impactType)
         {
             _impactType = impactType;
             _impulse = impulse;
@@ -17,19 +17,22 @@ namespace Combat.Collision.Behaviour.Action
         {
             if (_impactType == BulletImpactType.DamageOverTime)
             {
-                var impulse = self.Body.Velocity * _impulse * collisionData.TimeInterval;
-                targetImpact.AddImpulse(target.Body.WorldPosition(), impulse);
+                Push(self, target, ref targetImpact, _impulse * collisionData.TimeInterval);
             }
             else
             {
-                if (!collisionData.IsNew || !_isAlive)
-                    return;
-
-                var impulse = self.Body.Velocity * _impulse;
-                targetImpact.AddImpulse(target.Body.WorldPosition(), impulse);
-
+                if (!collisionData.IsNew || !_isAlive) return;
+                Push(self, target, ref targetImpact, _impulse);
                 _isAlive = _impactType == BulletImpactType.HitAllTargets;
             }
+        }
+
+        private void Push(IUnit self, IUnit target, ref Impact targetImpact, float power)
+        {
+            var center = self.Body.WorldPosition();
+            var position = target.Body.WorldPosition();
+            var impulse = (position - center).normalized * power;
+            targetImpact.AddImpulse(center, impulse);
         }
 
         public void Dispose() { }

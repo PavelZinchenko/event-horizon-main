@@ -19,6 +19,12 @@ namespace Combat.Collision
                 body.ApplyForce(_values[i*2], _values[i*2 + 1]);
         }
 
+        public void Apply(IBody body, float multiplier)
+        {
+            for (var i = 0; i < _count; ++i)
+                body.ApplyForce(_values[i * 2], _values[i * 2 + 1] * multiplier);
+        }
+
         public void Append(Vector2 position, Vector2 impulse)
         {
             if (_count + 2 >= _values.Length)
@@ -60,17 +66,18 @@ namespace Combat.Collision
         public float Repair;
         public float ShieldDamage;
         public float EnergyDrain;
+        public bool IgnoresShield;
         public Impulse Impulse;
         public CollisionEffect Effects;
 
-        public float GetTotalDamage(Resistance resistance)
+        public float GetTotalDamage(in Resistance resistance)
         {
-            var minResistance = Mathf.Min(Mathf.Min(resistance.Kinetic, resistance.Energy), resistance.Heat);
 			var damage =
 				resistance.ModifyKineticDamage(KineticDamage) +
 				resistance.ModifyEnergyDamage(EnergyDamage) +
 				resistance.ModifyHeatDamage(HeatDamage) +
 				resistance.ModifyDirectDamage(DirectDamage);
+
             return damage;
         }
 
@@ -91,7 +98,7 @@ namespace Combat.Collision
                 throw new System.ArgumentException("unknown damage type");
         }
 
-        public void AddImpulse(Vector2 position, Vector2 impulse)
+        public void AddImpulse(in Vector2 position, in Vector2 impulse)
         {
             if (Impulse == null)
                 Impulse = new Impulse();
@@ -111,57 +118,43 @@ namespace Combat.Collision
                 Impulse.Clear();
         }
 
-        public Impact GetDamage(Resistance resistance)
+        public Impact GetDamage(in Resistance resistance)
         {
             return new Impact
             {
-                KineticDamage = this.KineticDamage * (1f - resistance.Kinetic),
-                EnergyDamage = this.EnergyDamage * (1f - resistance.Energy),
-                HeatDamage = this.HeatDamage * (1f - resistance.Heat),
-                DirectDamage = this.DirectDamage * (1f - 0.5f * resistance.MinResistance),
-                ShieldDamage = this.ShieldDamage,
-                EnergyDrain = this.EnergyDrain,
-                Impulse = this.Impulse,
-                Repair = this.Repair,
-                Effects = this.Effects
+                KineticDamage = KineticDamage * (1f - resistance.Kinetic),
+                EnergyDamage = EnergyDamage * (1f - resistance.Energy),
+                HeatDamage = HeatDamage * (1f - resistance.Heat),
+                DirectDamage = DirectDamage * (1f - 0.5f * resistance.MinResistance),
+                ShieldDamage = ShieldDamage,
+                EnergyDrain = EnergyDrain,
+                Impulse = Impulse,
+                Repair = Repair,
+                Effects = Effects
             };
         }
 
-        public void ApplyShield(float power)
+        public void ApplyShield(float shieldPoints)
         {
+            if (IgnoresShield || shieldPoints <= 0 || ShieldDamage >= shieldPoints) return;
+
+            if (ShieldDamage > 0)
+                shieldPoints -= ShieldDamage;
+
             var damage = KineticDamage + EnergyDamage + HeatDamage + DirectDamage;
-
-            if (damage <= 0 || power <= 0)
-                return;
-
-            if (damage <= power)
+            if (damage <= 0) return;
+            if (damage <= shieldPoints)
             {
                 RemoveDamage();
                 ShieldDamage += damage;
-            }
-            else
-            {
-                KineticDamage -= power * KineticDamage / damage;
-                EnergyDamage -= power * EnergyDamage / damage;
-                HeatDamage -= power * HeatDamage / damage;
-                DirectDamage -= power * DirectDamage / damage;
-                ShieldDamage += power;
-            }
-        }
-
-        public void RemoveDamage(float amount, Resistance resistance)
-        {
-            var total = GetTotalDamage(resistance);
-            if (total <= amount || total <= 0.000001f)
-            {
-                RemoveDamage();
                 return;
             }
 
-            KineticDamage -= amount * KineticDamage / total;
-            EnergyDamage -= amount * EnergyDamage / total;
-            HeatDamage -= amount * HeatDamage / total;
-            DirectDamage -= amount * DirectDamage / total;
+            KineticDamage -= shieldPoints * KineticDamage / damage;
+            EnergyDamage -= shieldPoints * EnergyDamage / damage;
+            HeatDamage -= shieldPoints * HeatDamage / damage;
+            DirectDamage -= shieldPoints * DirectDamage / damage;
+            ShieldDamage += shieldPoints;
         }
 
         public void RemoveDamage()
@@ -172,7 +165,7 @@ namespace Combat.Collision
             DirectDamage = 0;
         }
 
-        public void Append(Impact second)
+        public void Append(in Impact second)
         {
             KineticDamage += second.KineticDamage;
             EnergyDamage += second.EnergyDamage;

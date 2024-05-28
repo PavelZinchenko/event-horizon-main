@@ -27,9 +27,15 @@ namespace Combat.Component.Bullet.Action
 
         public CollisionEffect Invoke()
         {
+            var position = _unit.Body.WorldPosition();
+
+            if (_lifetime <= ShortEffectMaxLifetime && !_effectFactory.IsObjectVisible(position, _size)) 
+                return CollisionEffect.None;
+
+            var rotation = _unit.Body.WorldRotation();
             var effect = CompositeEffect.Create(_visualEffect, _effectFactory, null);
-            effect.Position = _unit.Body.WorldPosition();
-            effect.Rotation = _unit.Body.WorldRotation();
+            effect.Position = position;
+            effect.Rotation = rotation;
             effect.Color = _color;
             effect.Size = _size;
             effect.Run(_lifetime, Vector2.zero, 0);
@@ -43,5 +49,7 @@ namespace Combat.Component.Bullet.Action
         private readonly float _size;
         private readonly EffectFactory _effectFactory;
         private readonly VisualEffect _visualEffect;
+
+        public const float ShortEffectMaxLifetime = 3.0f;
     }
 }

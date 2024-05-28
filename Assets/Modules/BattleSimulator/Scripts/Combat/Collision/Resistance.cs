@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using GameDatabase.Enums;
+﻿using GameDatabase.Enums;
 
 namespace Combat.Collision
 {
@@ -8,12 +7,14 @@ namespace Combat.Collision
         public float Kinetic;
         public float Energy;
         public float Heat;
-        public float EnergyDrain;
+        public float EnergyAbsorption;
 
-		public float ModifyKineticDamage(float damage) => damage * (1f - Kinetic);
-		public float ModifyEnergyDamage(float damage) => damage * (1f - Energy);
-		public float ModifyHeatDamage(float damage) => damage * (1f - Heat);
-		public float ModifyDirectDamage(float damage) => damage * (1f - 0.5f * MinResistance);
+        public float ModifyKineticDamage(float damage) => ModifyDamage(damage, Kinetic);
+        public float ModifyEnergyDamage(float damage) => ModifyDamage(damage, Energy);
+		public float ModifyHeatDamage(float damage) => ModifyDamage(damage, Heat);
+		public float ModifyDirectDamage(float damage) => ModifyDamage(damage, 0.5f * MinResistance);
+
+        public static float ModifyDamage(float damage, float resistance) => damage > 0 ? damage * (1f - resistance) : damage;
 
 		public float ModifyDamage(DamageType damageType, float damage)
 		{
@@ -40,6 +41,6 @@ namespace Combat.Collision
 			return b < c ? b : c;
 		}
 
-        public static readonly Resistance Empty = new Resistance();
+        public static readonly Resistance Empty = new();
 	}
 }

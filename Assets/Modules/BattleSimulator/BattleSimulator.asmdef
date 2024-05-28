@@ -11,7 +11,8 @@
         "ServicesFacade",
         "GameServices",
         "Diagnostics",
-        "Localization"
+        "Localization",
+        "Utilites"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

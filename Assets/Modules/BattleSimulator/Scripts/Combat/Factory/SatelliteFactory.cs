@@ -1,5 +1,6 @@
 ﻿using Combat.Collision.Behaviour;
 using Combat.Collision.Behaviour.Action;
+using Combat.Collision.Manager;
 using Combat.Component.Body;
 using Combat.Component.Collider;
 using Combat.Component.Controller;
@@ -32,6 +33,7 @@ namespace Combat.Factory
         [Inject] private readonly EffectFactory _effectFactory;
         [Inject] private readonly PrefabCache _prefabCache;
         [Inject] private readonly IResourceLocator _resourceLocator;
+        [Inject] private readonly ICollisionManager _collisionManager;
 
         public ISatellite CreateSatellite(IShip ship, IWeaponPlatformData data)
         {
@@ -47,13 +49,14 @@ namespace Combat.Factory
                 custom = true;
             }
 
-            var gameObject = new GameObjectHolder(prefab, _objectPool);
+            var gameObject = new GameObjectHolder(prefab, _objectPool, false);
 
             var body = gameObject.GetComponent<IBodyComponent>();
             body.Initialize(null, ship.Body.WorldPosition(), ship.Body.WorldRotation(), satelliteData.Satellite.ModelScale, Vector2.zero, 0, satelliteData.Weight);
 
             var view = gameObject.GetComponent<IView>();
             var collider = gameObject.GetComponent<ICollider>();
+            collider.Initialize(_collisionManager);
 
             if (custom)
             {
@@ -83,9 +86,9 @@ namespace Combat.Factory
                 maxAngle = 10;
             }
 
-            var isTurret = (bool)data.Image;
+            var isTurret = (bool)data.Image || data.AutoAimingArc >= 360;
 
-            if (data.AutoAimingArc < 10 || isTurret)
+            if (data.AutoAimingArc < 5 || isTurret)
                 satellite.Controller = new SatelliteController(ship, satellite, position, data.Rotation);
             else
             {
@@ -105,13 +108,14 @@ namespace Combat.Factory
         public IAuxiliaryUnit CreateRepairBot(IShip ship, float repairRate, float deviceSize, float flightRadius, float weight, float hitPoints, Color color, AudioClipId activationSound)
         {
             var prefab = _prefabCache.LoadResourcePrefab("Combat/Objects/RepairBot");
-            var gameObject = new GameObjectHolder(prefab, _objectPool);
+            var gameObject = new GameObjectHolder(prefab, _objectPool, false);
 
             var body = gameObject.GetComponent<IBodyComponent>();
             body.Initialize(null, ship.Body.WorldPosition(), ship.Body.WorldRotation(), deviceSize, Vector2.zero, 0, weight);
 
             var view = gameObject.GetComponent<IView>();
             var collider = gameObject.GetComponent<ICollider>();
+            collider.Initialize(_collisionManager);
 
             var repairBot = new RepairBot(ship, body, view, collider, hitPoints);
             var radius = ship.Body.Scale * 0.5f + flightRadius;
@@ -141,12 +145,13 @@ namespace Combat.Factory
         public IAuxiliaryUnit CreatePointDefense(IShip ship, float energyConsumption, float radius, float damage, float cooldown, AudioClipId activationSound, Color color)
         {
             var prefab = _prefabCache.LoadResourcePrefab("Combat/Objects/PointDefense");
-            var gameObject = new GameObjectHolder(prefab, _objectPool);
+            var gameObject = new GameObjectHolder(prefab, _objectPool, false);
 
             var body = gameObject.GetComponent<IBodyComponent>();
             body.Initialize(ship.Body, Vector2.zero, 0, 2*radius/ship.Body.Scale, Vector2.zero, 0f, 0.1f);
             var view = gameObject.GetComponent<IView>();
             var collider = gameObject.GetComponent<ICollider>();
+            collider.Initialize(_collisionManager);
             collider.MaxRange = radius;
 
             var collisionBehaviour = new BulletCollisionBehaviour();
@@ -176,7 +181,7 @@ namespace Combat.Factory
 
         private IAuxiliaryUnit CreateEnergyShield(IShip ship, float energyConsumption, float size, Vector2 offset, Color color, float defaultOpacity, GameObject prefab)
         {
-            var gameObject = new GameObjectHolder(prefab, _objectPool);
+            var gameObject = new GameObjectHolder(prefab, _objectPool, false);
             gameObject.IsActive = true;
 
             var body = gameObject.GetComponent<IBodyComponent>();
@@ -187,6 +192,7 @@ namespace Combat.Factory
             view.Color = color;
 
             var collider = gameObject.GetComponent<ICollider>();
+            collider.Initialize(_collisionManager);
 
             var energyShield = new EnergyShield(ship, body, view, collider, defaultOpacity);
             energyShield.DamageHandler = new EnergyShieldDamageHandler(energyShield, energyConsumption);

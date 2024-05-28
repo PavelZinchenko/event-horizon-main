@@ -16,6 +16,7 @@ namespace Combat.Component.View
         [SerializeField] private float _bezierAmplitude = 5.0f;
         [SerializeField] private float _pinchFactor = 2.0f;
         [SerializeField] private bool _animated = false;
+        [SerializeField] private bool _fading = true;
         [SerializeField] private Color _startColor = Color.white;
         [SerializeField] private Color _endColor = Color.white;
         [SerializeField] private Color _baseColor = Color.white;
@@ -23,6 +24,7 @@ namespace Combat.Component.View
 
         public float Thickness { get { return _startWidth; } set { _startWidth = value; Size = Size; } }
         public bool Animated { get => _animated; set => _animated = value; }
+        public bool Fading { get => _fading; set => _fading = value; }
 
         public void Initialize(Color baseColor, ColorMode colorMode)
         {
@@ -54,7 +56,8 @@ namespace Combat.Component.View
 
         protected override void UpdateLife(float life)
         {
-            Opacity = Life;
+            if (_fading)
+                Opacity = 1f - (1f - Life) * (1f - Life);
         }
 
         protected override void UpdatePosition(Vector2 position) { }

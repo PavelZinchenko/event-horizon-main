@@ -15,11 +15,10 @@ using Combat.Component.Unit.Classification;
 using Combat.Component.View;
 using Combat.Helpers;
 using Combat.Scene;
+using Combat.Services;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
-using Services.Audio;
-using Services.ObjectPool;
 using UnityEngine;
 using Bullet = Combat.Component.Bullet.Bullet;
 using IBullet = Combat.Component.Bullet.IBullet;
@@ -28,21 +27,16 @@ namespace Combat.Factory
 {
     public class BulletFactoryObsolete : IBulletFactory
     {
-        public BulletFactoryObsolete(AmmunitionObsoleteStats ammunitionStats, IScene scene, ISoundPlayer soundPlayer, IObjectPool objectPool, PrefabCache prefabCache, SpaceObjectFactory spaceObjectFactory, EffectFactory effectFactory, IShip owner)
+        public BulletFactoryObsolete(AmmunitionObsoleteStats ammunitionStats, IScene scene, IGameServicesProvider services, SpaceObjectFactory spaceObjectFactory, EffectFactory effectFactory, IShip owner)
         {
             _stats = ammunitionStats;
             _scene = scene;
-            _soundPlayer = soundPlayer;
-            _objectPool = objectPool;
+            _services = services;
             _spaceObjectFactory = spaceObjectFactory;
             _effectFactory = effectFactory;
-            _prefabCache = prefabCache;
             _owner = owner;
-
-            _prefab = new Lazy<GameObject>(() => _prefabCache.LoadPrefab(_stats.BulletPrefab) ?? (_stats.AmmunitionClass.IsBeam() ?
-                _prefabCache.LoadResourcePrefab("Combat/Bullets/Laser") : _prefabCache.LoadResourcePrefab("Combat/Bullets/Plasma2")));
-
             _bulletStats = new BulletStatsObsolete(ammunitionStats);
+            _prefab = new Lazy<GameObject>(() => _services.PrefabCache.LoadBulletPrefabObsolete(_stats.BulletPrefab, _stats.AmmunitionClass.IsBeam() ? "Combat/Bullets/Laser" : "Combat/Bullets/Plasma2", services));
         }
 
         public IBulletStats Stats { get { return _bulletStats; } }
@@ -76,7 +70,7 @@ namespace Combat.Factory
             var color = _stats.AmmunitionClass == AmmunitionClassObsolete.Fireworks ? Color.Lerp(_stats.Color, new Color(Random.value, Random.value, Random.value), 0.75f) : (UnityEngine.Color)_stats.Color;
             var velocity = GetVelocity();
 
-            var bulletGameObject = new GameObjectHolder(_prefab, _objectPool);
+            var bulletGameObject = new GameObjectHolder(_prefab, _services);
             bulletGameObject.IsActive = true;
             var body = ConfigureBody(bulletGameObject.GetComponent<IBodyComponent>(), parent, spread, velocity, rotation, offset);
             var view = ConfigureView(bulletGameObject.GetComponent<IView>(), color);
@@ -97,9 +91,9 @@ namespace Combat.Factory
             if (_stats.FireSound)
             {
                 if (_stats.FireSound.Loop)
-                    bullet.AddAction(new PlaySoundAction(_soundPlayer, _stats.FireSound, ConditionType.None));
+                    bullet.AddAction(new PlaySoundAction(_services.SoundPlayer, _stats.FireSound, ConditionType.None));
                 else
-                    _soundPlayer.Play(_stats.FireSound);
+                    _services.SoundPlayer.Play(_stats.FireSound);
             }
 
             bullet.Controller = CreateController(parent, bullet, spread, velocity, rotation);
@@ -117,8 +111,10 @@ namespace Combat.Factory
 
         private ICollider ConfigureCollider(ICollider collider, IUnit unit)
         {
+            collider.Initialize(_services.CollisionManager);
             collider.Unit = unit;
 			collider.Source = _owner;
+            collider.OneHitOnly = !_stats.AmmunitionClass.IsDot();
 
             if (_stats.AmmunitionClass.IsBeam())
                 collider.MaxRange = _bulletStats.Range;
@@ -183,7 +179,7 @@ namespace Combat.Factory
             else if (_stats.AmmunitionClass.IsBoundToCannon())
                 return new BeamDamageHandler(bullet, _stats.AmmunitionClass.CanSiphonHitpoint());
             else
-                return new DefaultDamageHandler(bullet, _stats.AmmunitionClass.CanSiphonHitpoint());
+                return new BulletDamageHandler(bullet, _stats.AmmunitionClass.CanSiphonHitpoint());
         }
 
         private IController CreateController(IWeaponPlatform parent, Bullet bullet, float spread, float velocity, float rotationOffset)
@@ -258,7 +254,7 @@ namespace Combat.Factory
         {
             var explodeCondition = _stats.AmmunitionClass.DetonateIfExpired() ? ConditionType.OnExpire | ConditionType.OnDetonate : ConditionType.OnDetonate;
             if (_stats.HitSound)
-                bullet.AddAction(new PlaySoundAction(_soundPlayer, _stats.HitSound, explodeCondition));
+                bullet.AddAction(new PlaySoundAction(_services.SoundPlayer, _stats.HitSound, explodeCondition));
 
             if (_stats.AmmunitionClass.ExplodeIfDetonated(_stats))
                 if (_stats.DamageType == DamageType.Impact)
@@ -276,7 +272,7 @@ namespace Combat.Factory
                 bullet.AddAction(new CreatePlasmaWebAction(bullet, _spaceObjectFactory, _stats.DamageType, _bulletStats.Damage, _bulletStats.AreaOfEffect, _bulletStats.AreaOfEffect * 0.5f, _bulletStats.Lifetime, explodeCondition));
             if (_stats.AmmunitionClass == AmmunitionClassObsolete.BlackHole)
             {
-                bullet.AddAction(new CreateGravitationAction(bullet, _spaceObjectFactory, _bulletStats.Range, 100, _bulletStats.Lifetime, ConditionType.None));
+                bullet.AddAction(new CreateGravitationAction(bullet, _spaceObjectFactory, _bulletStats.Range, 100, _bulletStats.Lifetime, false, ConditionType.None));
                 bullet.AddAction(new CreateStrongExplosionAction(bullet, _spaceObjectFactory, _stats.DamageType, _bulletStats.Damage, _bulletStats.AreaOfEffect, explodeCondition));
             }
             if (_stats.AmmunitionClass == AmmunitionClassObsolete.Explosion)
@@ -286,8 +282,8 @@ namespace Combat.Factory
                 var stats = _stats.CoupledAmmunition.Stats;
                 stats.Damage = _bulletStats.Damage;
                 stats.DamageType = _stats.DamageType;
-                var factory = new BulletFactoryObsolete(stats, _scene, _soundPlayer, _objectPool, _prefabCache, _spaceObjectFactory, _effectFactory, _owner);
-                bullet.AddAction(new SpawnBulletsAction(factory, 1, null, bullet, _soundPlayer, AudioClipId.None, explodeCondition));
+                var factory = new BulletFactoryObsolete(stats, _scene, _services, _spaceObjectFactory, _effectFactory, _owner);
+                bullet.AddAction(new SpawnBulletsAction(factory, 1, null, bullet, _services.SoundPlayer, AudioClipId.None, explodeCondition));
             }
             if (_stats.AmmunitionClass.IsClusterBomb() && _stats.CoupledAmmunition != null)
             {
@@ -295,9 +291,9 @@ namespace Combat.Factory
                 stats.DamageType = _stats.DamageType;
                 stats.Damage = _bulletStats.Damage;
                 stats.Range = _bulletStats.AreaOfEffect;
-                var factory = new BulletFactoryObsolete(stats, _scene, _soundPlayer, _objectPool, _prefabCache, _spaceObjectFactory, _effectFactory, _owner);
+                var factory = new BulletFactoryObsolete(stats, _scene, _services, _spaceObjectFactory, _effectFactory, _owner);
                 factory.Stats.RandomFactor = 0.75f;
-                bullet.AddAction(new SpawnBulletsAction(factory, 20, RandomRotationSpawnSettings.Instance, bullet, _soundPlayer, AudioClipId.None, explodeCondition));
+                bullet.AddAction(new SpawnBulletsAction(factory, 20, RandomRotationSpawnSettings.Instance, bullet, _services.SoundPlayer, AudioClipId.None, explodeCondition));
             }
             if (_stats.AmmunitionClass.EmpIfDetonated())
             {
@@ -312,11 +308,9 @@ namespace Combat.Factory
         private readonly BulletStatsObsolete _bulletStats;
         private readonly AmmunitionObsoleteStats _stats;
         private readonly IScene _scene;
-        private readonly ISoundPlayer _soundPlayer;
-        private readonly IObjectPool _objectPool;
         private readonly SpaceObjectFactory _spaceObjectFactory;
         private readonly EffectFactory _effectFactory;
-        private readonly PrefabCache _prefabCache;
         private readonly IShip _owner;
+        private readonly IGameServicesProvider _services;
     }
 }

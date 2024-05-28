@@ -5,11 +5,10 @@ using Combat.Component.Systems.Weapons;
 using Combat.Component.Triggers;
 using Combat.Effects;
 using Combat.Scene;
+using Combat.Services;
 using Constructor;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using Services.Audio;
-using Services.ObjectPool;
 using UnityEngine;
 using Zenject;
 
@@ -18,15 +17,13 @@ namespace Combat.Factory
     public class WeaponFactory
     {
         [Inject] private readonly IScene _scene;
-        [Inject] private readonly ISoundPlayer _soundPlayer;
-        [Inject] private readonly IObjectPool _objectPool;
         [Inject] private readonly SpaceObjectFactory _spaceObjectFactory;
         [Inject] private readonly EffectFactory _effectFactory;
-        [Inject] private readonly PrefabCache _prefabCache;
+        [Inject] private readonly IGameServicesProvider _services;
 
         public IWeapon Create(IWeaponData weaponData, IWeaponPlatform platform, float hitPointsMultiplier, IShip owner)
         {
-            var bulletFactory = new BulletFactory(weaponData.Ammunition, weaponData.Stats, _scene, _soundPlayer, _objectPool, _prefabCache, _spaceObjectFactory, _effectFactory, owner);
+            var bulletFactory = new BulletFactory(weaponData.Ammunition, weaponData.Stats, _scene, _services, _spaceObjectFactory, _effectFactory, owner);
             bulletFactory.Stats.HitPointsMultiplier = hitPointsMultiplier;
             var stats = weaponData.Weapon.Stats;
             stats.FireRate *= weaponData.Stats.FireRateMultiplier.Value;
@@ -35,7 +32,7 @@ namespace Combat.Factory
 
         public IWeapon Create(IWeaponDataObsolete weaponData, IWeaponPlatform platform, float hitPointsMultiplier, IShip owner)
         {
-            var bulletFactory = new BulletFactoryObsolete(weaponData.Ammunition, _scene, _soundPlayer, _objectPool, _prefabCache, _spaceObjectFactory, _effectFactory, owner);
+            var bulletFactory = new BulletFactoryObsolete(weaponData.Ammunition, _scene, _services, _spaceObjectFactory, _effectFactory, owner);
             bulletFactory.Stats.HitPointsMultiplier = hitPointsMultiplier;
             return Create(weaponData.Weapon, weaponData.KeyBinding, bulletFactory, platform);
         }
@@ -48,7 +45,7 @@ namespace Combat.Factory
                     {
                         var weapon = new ManageableCannon(platform, weaponStats, bulletFactory, keyBinding);
                         if (weaponStats.ShotSound)
-                            weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ShotSound, ConditionType.OnActivate, ConditionType.OnDeactivate));
+                            weapon.AddTrigger(new SoundEffect(_services.SoundPlayer, weaponStats.ShotSound, ConditionType.OnActivate, ConditionType.OnDeactivate));
 
                         var effect = CreateEffect(weaponStats, bulletFactory);
                         if (effect != null)
@@ -60,7 +57,7 @@ namespace Combat.Factory
                     {
                         var weapon = new ContinuousCannon(platform, weaponStats, bulletFactory, keyBinding);
                         if (weaponStats.ShotSound)
-                            weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ShotSound, ConditionType.OnActivate, ConditionType.OnDeactivate));
+                            weapon.AddTrigger(new SoundEffect(_services.SoundPlayer, weaponStats.ShotSound, ConditionType.OnActivate, ConditionType.OnDeactivate));
 
                         var effect = CreateEffect(weaponStats, bulletFactory);
                         if (effect != null)
@@ -73,7 +70,7 @@ namespace Combat.Factory
                         bulletFactory.Stats.RandomFactor = 0.2f;
                         var weapon = new MachineGun(platform, weaponStats, bulletFactory, keyBinding);
                         if (weaponStats.ShotSound)
-                            weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ShotSound, ConditionType.OnActivate));
+                            weapon.AddTrigger(new SoundEffect(_services.SoundPlayer, weaponStats.ShotSound, ConditionType.OnActivate));
 
                         var effect = CreateEffect(weaponStats, bulletFactory);
                         if (effect != null)
@@ -86,7 +83,7 @@ namespace Combat.Factory
                         bulletFactory.Stats.RandomFactor = 0.3f;
                         var weapon = new MultishotCannon(platform, weaponStats, bulletFactory, keyBinding);
                         if (weaponStats.ShotSound)
-                            weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ShotSound, ConditionType.OnActivate));
+                            weapon.AddTrigger(new SoundEffect(_services.SoundPlayer, weaponStats.ShotSound, ConditionType.OnActivate));
 
                         var effect = CreateEffect(weaponStats, bulletFactory);
                         if (effect != null)
@@ -103,16 +100,16 @@ namespace Combat.Factory
                             weapon.AddTrigger(CreatePowerLevelEffect(effect, weapon, bulletFactory));
 
                         if (weaponStats.ShotSound)
-                            weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ShotSound, ConditionType.OnDischarge));
+                            weapon.AddTrigger(new SoundEffect(_services.SoundPlayer, weaponStats.ShotSound, ConditionType.OnDischarge));
                         if (weaponStats.ChargeSound)
-                            weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ChargeSound, ConditionType.OnActivate));
+                            weapon.AddTrigger(new SoundEffect(_services.SoundPlayer, weaponStats.ChargeSound, ConditionType.OnActivate));
                         return weapon;
                     }
                 case WeaponClass.Common:
                     {
                         var weapon = new CommonCannon(platform, weaponStats, bulletFactory, keyBinding);
                         if (weaponStats.ShotSound)
-                            weapon.AddTrigger(new SoundEffect(_soundPlayer, weaponStats.ShotSound, ConditionType.OnActivate));
+                            weapon.AddTrigger(new SoundEffect(_services.SoundPlayer, weaponStats.ShotSound, ConditionType.OnActivate));
 
                         var effect = CreateEffect(weaponStats, bulletFactory);
                         if (effect != null)
@@ -151,7 +148,8 @@ namespace Combat.Factory
 
         private IUnitEffect CreatePowerLevelEffect(IEffect effect, IWeapon weapon, IBulletFactory bulletFactory)
         {
-            return new PowerLevelEffect(weapon, effect, Vector2.zero, bulletFactory.Stats.FlashTime, ConditionType.OnActivate);
+            var lifetime = Mathf.Max(bulletFactory.Stats.FlashTime, 0.5f);
+            return new PowerLevelEffect(weapon, effect, Vector2.zero, lifetime, ConditionType.OnActivate);
         }
     }
 }

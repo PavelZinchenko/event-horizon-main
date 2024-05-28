@@ -10,6 +10,7 @@ namespace Combat.Effects
     {
         [HideInInspector][SerializeField] private float _speed;
         [HideInInspector][SerializeField] private float _sparkSize;
+        [HideInInspector][SerializeField] private float _turnRate;
 
         private Vector2 _velocity;
         private float _angularVelocity;
@@ -22,6 +23,7 @@ namespace Combat.Effects
 
             _speed = data.Size;
             _sparkSize = data.ParticleSize;
+            _turnRate = data.TurnRate;
         }
 
         public override void Restart() => Randomize();
@@ -39,8 +41,13 @@ namespace Combat.Effects
 
         protected override void UpdatePosition()
         {
-            gameObject.Move(Position + _velocity * (1f - Life) * Size);
-            gameObject.transform.localEulerAngles = new Vector3(0, 0, Rotation + _angularVelocity * (1f - Life));
+            var time = 1f - Life;
+            Vector2 position = Position + _velocity * time * Size;
+            if (_turnRate > 0.01f || _turnRate < -0.01f)
+                position = RotationHelpers.Transform(position, _turnRate*time);
+
+            gameObject.Move(position);
+            gameObject.transform.localEulerAngles = new Vector3(0, 0, Rotation + _angularVelocity * time);
         }
 
         protected override void UpdateSize()

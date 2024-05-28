@@ -24,6 +24,7 @@
         }
 
         public float Max => _lifetime;
+        public float Left => _elapsed >= _lifetime ? 0 : _lifetime - _elapsed;
 
         private float _elapsed;
         private readonly float _lifetime;

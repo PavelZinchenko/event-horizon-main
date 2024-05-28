@@ -29,6 +29,8 @@ namespace Combat.Collision.Behaviour.Action
 
         public void Invoke(IUnit self, IUnit target, CollisionData collisionData, ref Impact selfImpact, ref Impact targetImpact)
         {
+            if (!_effectFactory.IsObjectVisible(collisionData.Position, _size)) return;
+
             if (_effect == null || !_effect.IsAlive)
             {
                 _effect = _visualEffect != null ? CompositeEffect.Create(_visualEffect, _effectFactory, null) : _effectFactory.CreateEffect(_prefabId);

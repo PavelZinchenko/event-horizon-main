@@ -1,4 +1,5 @@
 ﻿using Combat.Collision.Manager;
+using Combat.Component.Ship;
 using Combat.Component.Unit;
 using GameDatabase.Enums;
 using UnityEngine;
@@ -29,9 +30,12 @@ namespace Combat.Collision.Behaviour.Action
                 _isAlive = _impactType == BulletImpactType.HitAllTargets;
             }
 
-            power = Mathf.Clamp01(power / Mathf.Sqrt(target.Body.Weight));
-            target.Body.ApplyAcceleration(-target.Body.Velocity * power);
-            target.Body.ApplyAngularAcceleration(-target.Body.AngularVelocity * power);
+            if (target is IShip ship)
+            {
+                power = Mathf.Clamp01(power / Mathf.Sqrt(target.Body.Weight));
+                target.Body.ApplyAcceleration(-target.Body.Velocity * power);
+                target.Body.ApplyAngularAcceleration(-target.Body.AngularVelocity * power);
+            }
         }
 
         public void Dispose() {}

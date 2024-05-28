@@ -40,6 +40,7 @@ namespace Combat.Effects
 
             _view.Initialize(data.Color, data.ColorMode);
             _view.Animated = data.Type == GameDatabase.Enums.VisualEffectType.Lightning;
+            _view.Fading = data.Type == GameDatabase.Enums.VisualEffectType.LightningStrike;
             _thickness = data.ParticleSize;
         }
 

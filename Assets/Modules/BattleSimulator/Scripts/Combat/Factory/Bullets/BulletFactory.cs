@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Combat.Collision.Behaviour;
 using Combat.Collision.Behaviour.Action;
 using Combat.Component.Body;
@@ -16,36 +17,34 @@ using Combat.Component.Unit.Classification;
 using Combat.Component.View;
 using Combat.Helpers;
 using Combat.Scene;
+using Combat.Services;
 using Combat.Unit;
 using Constructor;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Extensions;
 using GameDatabase.Model;
-using Services.Audio;
-using Services.ObjectPool;
 using UnityEngine;
 
 namespace Combat.Factory
 {
     public class BulletFactory : IBulletFactory
     {
-        public BulletFactory(Ammunition ammunition, WeaponStatModifier statModifier, IScene scene,
-            ISoundPlayer soundPlayer, IObjectPool objectPool, PrefabCache prefabCache,
-            SpaceObjectFactory spaceObjectFactory, EffectFactory effectFactory, IShip owner)
+        public BulletFactory(Ammunition ammunition, WeaponStatModifier statModifier, IScene scene, IGameServicesProvider services,
+            SpaceObjectFactory spaceObjectFactory, EffectFactory effectFactory, IShip owner, int nestingLevel = 0)
         {
+            _services = services;
             _ammunition = ammunition;
             _statModifier = statModifier;
             _scene = scene;
-            _soundPlayer = soundPlayer;
-            _objectPool = objectPool;
             _spaceObjectFactory = spaceObjectFactory;
             _effectFactory = effectFactory;
-            _prefabCache = prefabCache;
+            _nestingLevel = nestingLevel;
             _owner = owner;
 
-            _prefab = new Lazy<GameObject>(() => _prefabCache.GetBulletPrefab(_ammunition.Body.BulletPrefab));
-            _stats = new BulletStats(ammunition, statModifier);
+            _prefab = new Lazy<GameObject>(() => _services.PrefabCache.GetBulletPrefab(_ammunition.Body.BulletPrefab));
+            _stats = new BulletStats(ammunition, statModifier, nestingLevel > 0);
+            _triggerBuilder = new(this);
         }
 
         public IBulletStats Stats
@@ -55,7 +54,7 @@ namespace Combat.Factory
 
         public IBullet Create(IWeaponPlatform parent, float spread, float rotation, Vector2 offset)
         {
-            var bulletGameObject = new GameObjectHolder(_prefab, _objectPool);
+            var bulletGameObject = new GameObjectHolder(_prefab, _services);
             bulletGameObject.IsActive = true;
 
             var bulletSpeed = _stats.GetBulletSpeed();
@@ -71,12 +70,11 @@ namespace Combat.Factory
             bullet.Controller = CreateController(parent, bullet, bulletSpeed, spread, rotation);
             bullet.DamageHandler = CreateDamageHandler(bullet);
             bullet.CanBeDisarmed = _ammunition.Body.CanBeDisarmed;
-            BulletTriggerBuilder.Build(this, bullet, collisionBehaviour);
-
+            _triggerBuilder.Build(bullet, collisionBehaviour);
             _scene.AddUnit(bullet);
             bullet.UpdateView(0);
             bullet.AddResource(bulletGameObject);
-            if(bullet.Body.Parent != null)
+            if (bullet.Body.Parent != null)
                 parent.Bullets?.Add(bullet);
             return bullet;
         }
@@ -99,10 +97,12 @@ namespace Combat.Factory
                 var effect = _ammunition.Effects[i];
                 if (effect.Type == ImpactEffectType.Damage)
                     collisionBehaviour.AddAction(new DealDamageAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, impactType));
+                if (effect.Type == ImpactEffectType.ProgressiveDamage)
+                    collisionBehaviour.AddAction(new ProgressiveDamageAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, effect.Factor, impactType));
                 else if (effect.Type == ImpactEffectType.Push)
-                    collisionBehaviour.AddAction(new PushAction(effect.Power, impactType));
+                    collisionBehaviour.AddAction(_ammunition.Body.Velocity > 0 ? new PushAction(effect.Power, impactType) : new RadialPushAction(effect.Power, impactType));
                 else if (effect.Type == ImpactEffectType.Pull)
-                    collisionBehaviour.AddAction(new PushAction(-effect.Power, impactType));
+                    collisionBehaviour.AddAction(_ammunition.Body.Velocity > 0 ? new PushAction(-effect.Power, impactType) : new RadialPushAction(-effect.Power, impactType));
                 else if (effect.Type == ImpactEffectType.DrainEnergy)
                     collisionBehaviour.AddAction(new DrainEnergyAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.SiphonHitPoints)
@@ -114,13 +114,19 @@ namespace Combat.Factory
                 else if (effect.Type == ImpactEffectType.DriveDronesCrazy)
                     collisionBehaviour.AddAction(new AffectDroneAction(impactType, AffectDroneAction.EffectType.DriveCrazy));
                 else if (effect.Type == ImpactEffectType.Repair)
-                    collisionBehaviour.AddAction(new RepairAction(effect.Power*_stats.DamageMultiplier, impactType, effect.DamageType, effect.Factor, _owner.Type.Side));
+                    collisionBehaviour.AddAction(new RepairAction(effect.Power * _stats.DamageMultiplier, impactType, effect.DamageType, effect.Factor, _owner.Type.Side));
+                else if (effect.Type == ImpactEffectType.RechargeShield)
+                    collisionBehaviour.AddAction(new RechargeShieldAction(effect.Power * _stats.DamageMultiplier, impactType, effect.Factor, _owner.Type.Side));
+                else if (effect.Type == ImpactEffectType.RechargeEnergy)
+                    collisionBehaviour.AddAction(new RechargeEnergyAction(effect.Power * _stats.EffectPowerMultiplier * _statModifier.EnergyCostMultiplier.Value, impactType, effect.Factor, _owner.Type.Side));
                 else if (effect.Type == ImpactEffectType.Teleport)
-                    collisionBehaviour.AddAction(new TeleportAction(effect.Power));
+                    collisionBehaviour.AddAction(new TeleportAction(_effectFactory, _stats.Color, effect.Power));
                 else if (effect.Type == ImpactEffectType.DrainShield)
                     collisionBehaviour.AddAction(new DamageShieldAction(impactType, effect.Power * _stats.DamageMultiplier));
                 else if (effect.Type == ImpactEffectType.Devour)
                     collisionBehaviour.AddAction(new DevourAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, impactType));
+                else if (effect.Type == ImpactEffectType.IgnoreShield)
+                    collisionBehaviour.AddAction(new IgnoreShieldAction());
                 else if (effect.Type == ImpactEffectType.RestoreLifetime)
                 {
                     bullet.Lifetime.Take(bullet.Lifetime.Max * effect.Factor);
@@ -181,11 +187,8 @@ namespace Combat.Factory
 
             if (!_ammunition.Controller.Continuous)
             {
-                
                 velocity = RotationHelpers.Direction(rotation) * bulletSpeed;
-                
                 velocity *= _ammunition.Controller.StartingVelocityMultiplier;
-
                 velocity += parent.Body.WorldVelocity() * _ammunition.Body.ParentVelocityEffect;
             }
 
@@ -209,11 +212,12 @@ namespace Combat.Factory
         {
             collider.Unit = unit;
 			collider.Source = weaponPlatform.Owner;
+            collider.OneHitOnly = _ammunition.ImpactType != BulletImpactType.DamageOverTime;
 
             if (_ammunition.Controller.Continuous)
                 collider.MaxRange = _stats.Range;
 
-			return collider;
+            return collider;
         }
 
         private IDamageHandler CreateDamageHandler(Bullet bullet)
@@ -227,7 +231,7 @@ namespace Combat.Factory
             else if (_ammunition.Controller.Continuous)
                 return new BeamDamageHandler(bullet, CanSiphonHitpoints());
             else
-                return new DefaultDamageHandler(bullet, CanSiphonHitpoints());
+                return new BulletDamageHandler(bullet, CanSiphonHitpoints());
         }
 
         private static float WeightToAcceleration(float weight)
@@ -240,22 +244,25 @@ namespace Combat.Factory
         {
             var range = _stats.Range;
             var weight = _stats.Weight;
-            
+
             IController controller = null;
             switch (_ammunition.Controller)
             {
                 case BulletController_Projectile:
                     break;
+                case BulletController_Harpoon:
+                    controller = new HarpoonController(bullet, parent, range);
+                    break;
                 case BulletController_Homing homing:
                     if (homing.IgnoreRotation)
                     {
-                        controller = new MagneticController(bullet, bulletSpeed, bulletSpeed * WeightToAcceleration(weight), range, 
-                            BulletShape.HasDirection(), homing.SmartAim, _scene);            
+                        controller = new MagneticController(bullet, bulletSpeed, bulletSpeed * WeightToAcceleration(weight), range,
+                            BulletShape.HasDirection(), homing.SmartAim, _scene);
                     }
                     else
                     {
                         controller = new HomingController(bullet, bulletSpeed, 120f * WeightToAcceleration(weight),
-                            0.5f * bulletSpeed / (0.2f + weight * 2), range, homing.SmartAim, _scene);                        
+                            0.5f * bulletSpeed / (0.2f + weight * 2), range, homing.SmartAim, _scene);
                     }
                     break;
                 case BulletController_Beam:
@@ -269,26 +276,25 @@ namespace Combat.Factory
                     Debug.LogError($"Unknown controller: {_ammunition.Controller.GetType().Name}");
                     break;
             }
-            
+
             if (BulletShape.IsBeam() && !_ammunition.Controller.Continuous)
-            {
-                var length = _ammunition.Body.Length > 0 ? _stats.Length : _stats.BodySize;
+			{
+				var length = _ammunition.Body.Length > 0 ? _stats.Length : _stats.BodySize;
                 var velocity = parent.Body.WorldVelocity() * _ammunition.Body.ParentVelocityEffect;
-                controller = new MovingBeamController(bullet, length, bulletSpeed, velocity, controller);
-            }
+                controller = new MovingBeamController(bullet, length, bulletSpeed, range, velocity, controller);
+			}
 
             return controller;
         }
 
         private BulletFactory CreateFactory(Ammunition ammunition, WeaponStatModifier stats)
         {
-            var factory = new BulletFactory(ammunition, stats, _scene, _soundPlayer, _objectPool, _prefabCache,
-                _spaceObjectFactory, _effectFactory, _owner);
+            var factory = new BulletFactory(ammunition, stats, _scene, _services,
+                _spaceObjectFactory, _effectFactory, _owner, _nestingLevel + 1);
 
             factory.Stats.PowerLevel = _stats.PowerLevel;
             factory.Stats.HitPointsMultiplier = _stats.HitPointsMultiplier;
             factory.Stats.RandomFactor = _stats.RandomFactor;
-            factory._nestingLevel = _nestingLevel + 1;
 
             return factory;
         }
@@ -296,17 +302,17 @@ namespace Combat.Factory
 		private BulletShape BulletShape => _ammunition.Body.BulletPrefab == null ? BulletShape.Mine : _ammunition.Body.BulletPrefab.Shape;
 
 		private int _nestingLevel;
-		private readonly Lazy<GameObject> _prefab;
+        private readonly IShip _owner;
+        private readonly Lazy<GameObject> _prefab;
         private readonly BulletStats _stats;
         private readonly Ammunition _ammunition;
         private readonly WeaponStatModifier _statModifier;
         private readonly IScene _scene;
-        private readonly ISoundPlayer _soundPlayer;
-        private readonly IObjectPool _objectPool;
+        private readonly IGameServicesProvider _services;
         private readonly SpaceObjectFactory _spaceObjectFactory;
         private readonly EffectFactory _effectFactory;
         private readonly PrefabCache _prefabCache;
-        private readonly IShip _owner;
+        private readonly BulletTriggerBuilder _triggerBuilder;
 
         private const int MaxNestingLevel = 100;
 
@@ -319,20 +325,22 @@ namespace Combat.Factory
                 OutOfAmmo = 2,
             }
 
-            public static void Build(BulletFactory factory, Bullet bullet, BulletCollisionBehaviour collisionBehaviour)
-            {
-                new BulletTriggerBuilder(factory, bullet, collisionBehaviour).Build();
-            }
+            private ConditionType _condition;
+            private Dictionary<BulletTrigger_SpawnBullet, BulletFactory> _factoryCache;
+            private readonly BulletFactory _factory;
+            private Bullet _bullet;
+            private BulletCollisionBehaviour _collisionBehaviour;
 
-            private BulletTriggerBuilder(BulletFactory factory, Bullet bullet, BulletCollisionBehaviour collisionBehaviour)
+            public BulletTriggerBuilder(BulletFactory factory)
             {
                 _factory = factory;
-                _bullet = bullet;
-                _collisionBehaviour = collisionBehaviour;
             }
 
-            private void Build()
+            public void Build(Bullet bullet, BulletCollisionBehaviour collisionBehaviour)
             {
+                _bullet = bullet;
+                _collisionBehaviour = collisionBehaviour;
+
                 var triggers = _factory._ammunition.Triggers;
                 var count = triggers.Count;
 
@@ -416,14 +424,14 @@ namespace Combat.Factory
                 var maxNestingLevel = trigger.MaxNestingLevel > 0 ? trigger.MaxNestingLevel : MaxNestingLevel;
                 if (_factory._nestingLevel >= maxNestingLevel) return Result.OutOfAmmo;
 
-                var factory = CreateFactory(trigger.Ammunition, trigger);
+                var factory = CreateFactory(trigger);
                 var magazine = Math.Max(trigger.Quantity, 1);
                 // TODO: previously, there was `factory._stats.BodySize / 2` bonus for "cluster"-type ammo (more than 1 magazine)
                 // This is currently not replicable with variables exposed to expressions
                 // May be resolved once member access is added, and expressions can do something like
                 // IF(quantity == 1, 0, Ammunition.Body.Size * Size / 2)
                 AddAction(_bullet, trigger, new SpawnBulletsAction(factory, magazine, trigger, _bullet,
-                        factory._soundPlayer, trigger.AudioClip, _condition).WithCooldown(trigger.Cooldown));
+                        factory._services.SoundPlayer, trigger.AudioClip, _condition).WithCooldown(trigger.Cooldown));
 
                 return Result.Ok;
             }
@@ -437,8 +445,13 @@ namespace Combat.Factory
 
             public Result Create(BulletTrigger_GravityField content)
             {
+                var force = content.PowerMultiplier * _factory._statModifier.AoeRadiusMultiplier.Value;
+                var size = content.Size * _factory._statModifier.AoeRadiusMultiplier.Value;
+
                 var condition = FromTriggerCondition(content.Condition);
-                AddAction(_bullet, content, new CreateGravitationAction(_bullet, _factory._spaceObjectFactory, content.Size, content.PowerMultiplier, condition));
+                AddAction(_bullet, content, new CreateGravitationAction(_bullet, _factory._spaceObjectFactory, size, force,
+                    _factory._ammunition.Body.FriendlyFire, condition));
+
                 return Result.Ok;
             }
 
@@ -447,9 +460,9 @@ namespace Combat.Factory
                 if (!audioClip) return;
 
 				if (condition == ConditionType.None && !audioClip.Loop)
-                    _factory._soundPlayer.Play(audioClip);
+                    _factory._services.SoundPlayer.Play(audioClip);
                 else
-                    AddAction(bullet, trigger, new PlaySoundAction(_factory._soundPlayer, audioClip, condition));
+                    AddAction(bullet, trigger, new PlaySoundAction(_factory._services.SoundPlayer, audioClip, condition).WithCooldown(trigger.Cooldown));
             }
 
             private void CreateVisualEffect(Bullet bullet, BulletCollisionBehaviour collisionBehaviour,
@@ -460,12 +473,15 @@ namespace Combat.Factory
                 var color = trigger.ColorMode.Apply(trigger.Color, _factory._stats.Color);
                 var size = trigger.Size > 0 ? trigger.Size : 1.0f;
 
-                if (condition == ConditionType.OnCollide)
+                if (condition == ConditionType.OnCollide && !trigger.UseBulletPosition)
                     collisionBehaviour.AddAction(new ShowHitEffectAction(_factory._effectFactory, trigger.VisualEffect, color,
                         size * _factory._stats.BodySize, trigger.Lifetime));
-                else
+                else if (trigger.Lifetime > 0)
                     AddAction(bullet, trigger, new PlayEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, size,
                         trigger.Lifetime, condition).WithCooldown(trigger.Cooldown));
+                else
+                    AddAction(bullet, trigger, new AttachEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, size,
+                        condition).WithCooldown(trigger.Cooldown));
             }
 
             private void CreateStaticVisualEffect(Bullet bullet, BulletCollisionBehaviour collisionBehaviour,
@@ -478,14 +494,21 @@ namespace Combat.Factory
 
                 if (condition == ConditionType.OnCollide)
                     collisionBehaviour.AddAction(new SpawnHitEffectAction(_factory._effectFactory, trigger.VisualEffect, color,
-                        size * _factory._stats.BodySize, trigger.Lifetime, trigger.Cooldown));
+                        size * _factory._stats.BodySize, trigger.Lifetime, trigger.Cooldown, trigger.OncePerCollision));
                 else
                     AddAction(bullet, trigger, new SpawnEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, 
                         size * _factory._stats.BodySize, trigger.Lifetime, condition).WithCooldown(trigger.Cooldown));
             }
 
-            private BulletFactory CreateFactory(Ammunition ammunition, BulletTrigger_SpawnBullet trigger)
+            private BulletFactory CreateFactory(BulletTrigger_SpawnBullet trigger)
             {
+                BulletFactory factory;
+
+                if (_factoryCache == null)
+                    _factoryCache = new();
+                else if (_factoryCache.TryGetValue(trigger, out factory))
+                    return factory;
+
                 var stats = _factory._statModifier;
                 stats.Color = trigger.ColorMode.Apply(trigger.Color, _factory._stats.Color);
                 if (trigger.PowerMultiplier > 0)
@@ -501,8 +524,9 @@ namespace Combat.Factory
                     stats.RangeMultiplier *= trigger.Size;
                 }
 
-                var factory = _factory.CreateFactory(trigger.Ammunition, stats);
+                factory = _factory.CreateFactory(trigger.Ammunition, stats);
                 factory.Stats.RandomFactor = trigger.RandomFactor;
+                _factoryCache.Add(trigger, factory);
                 return factory;
             }
 
@@ -512,12 +536,6 @@ namespace Combat.Factory
                     ? action.WithCooldown(trigger.Cooldown)
                     : action);
             }
-
-            private ConditionType _condition;
-
-            private readonly BulletFactory _factory;
-            private readonly Bullet _bullet;
-            private readonly BulletCollisionBehaviour _collisionBehaviour;
         }
     }
 }

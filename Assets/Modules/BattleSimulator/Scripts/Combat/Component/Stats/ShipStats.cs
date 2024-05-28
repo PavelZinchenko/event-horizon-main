@@ -17,7 +17,7 @@ namespace Combat.Component.Stats
             _resistance = new Resistance
             {
                 Energy = stats.EnergyResistancePercentage,
-                EnergyDrain = stats.EnergyAbsorptionPercentage,
+                EnergyAbsorption = stats.EnergyAbsorptionPercentage,
                 Heat = stats.ThermalResistancePercentage,
                 Kinetic = stats.KineticResistancePercentage
             };
@@ -83,9 +83,9 @@ namespace Combat.Component.Stats
             if (damage > 0.1f)
                 TimeFromLastHit = 0;
 
-            if (resistance.EnergyDrain > 0.01f)
+            if (resistance.EnergyAbsorption > 0.01f)
             {
-                var energy = resistance.EnergyDrain * impact.EnergyDamage/HitPointsMultiplier;
+                var energy = resistance.EnergyAbsorption * impact.EnergyDamage/HitPointsMultiplier;
                 Energy.Get(-energy);
             }
 

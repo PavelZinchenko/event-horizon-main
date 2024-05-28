@@ -13,6 +13,7 @@ namespace Combat.Component.Helpers
         [SerializeField] private Transform BulletObject;
         [SerializeField] private Transform EngineObject;
         [SerializeField] private Transform TrailObject;
+        [SerializeField] private DistanceJointVisualizer JointVisualizer;
 
         public void Initialize(BulletPrefab data, IResourceLocator resourceLocator)
         {
@@ -29,6 +30,8 @@ namespace Combat.Component.Helpers
 
             if (TrailView) TrailView.Initialize(data.SecondColor, data.SecondColorMode);
             if (TrailObject) TrailObject.localPosition = new Vector3(-data.Margins - 0.1f, 0, 0);
+
+            if (JointVisualizer) JointVisualizer.Color = data.SecondColor;
         }
     }
 }

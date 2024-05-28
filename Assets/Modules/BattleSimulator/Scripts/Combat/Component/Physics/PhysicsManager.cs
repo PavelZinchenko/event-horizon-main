@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using Combat.Component.Physics.Joint;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Combat.Component.Physics
 {
     [RequireComponent(typeof(Rigidbody2D))]
     public class PhysicsManager : MonoBehaviour, IDisposable
     {
+        [SerializeField] private UnityEvent<DistanceJoint2D> _distanceJointCreated;
+        [SerializeField] private UnityEvent<FixedJoint2D> _fixedJointCreated;
+
         public IJoint CreateDistanceJoint(PhysicsManager other, float maxDistance)
         {
             if (other == null)
@@ -15,11 +19,13 @@ namespace Combat.Component.Physics
 
             var joint = gameObject.AddComponent<DistanceJoint2D>();
             joint.connectedBody = other.Rigidbody;
+            joint.autoConfigureDistance = false;
             joint.maxDistanceOnly = true;
             joint.enableCollision = true;
             joint.distance = maxDistance;
 
             _joints.Add(joint);
+            _distanceJointCreated?.Invoke(joint);
             return new Joint<DistanceJoint2D>(joint);
         }
 
@@ -40,7 +46,7 @@ namespace Combat.Component.Physics
             return new Joint.HingeJoint(joint);
         }
 
-        public IJoint CreateFixedJoint(PhysicsManager other, Vector2 position)
+        public IJoint CreateFixedJoint(PhysicsManager other, bool enableCollision)
         {
             if (other == null)
                 return null;
@@ -48,11 +54,31 @@ namespace Combat.Component.Physics
             var joint = gameObject.AddComponent<FixedJoint2D>();
             joint.connectedBody = other.Rigidbody;
             joint.autoConfigureConnectedAnchor = false;
+
+            var position = Rigidbody.position;
+            var size = Rigidbody.transform.localScale.z;
+            var targetPosition = other.Rigidbody.position;
+            var targetRotation = other.Rigidbody.rotation;
+            var targetSize = other.Rigidbody.transform.localScale.z;
+
+            var offset = position - targetPosition;
+            var distance = offset.magnitude;
+            if (distance <= size)
+            {
+                offset = Vector2.zero;
+            }
+            else
+            {
+                offset *= (distance - size) / distance;
+                offset = RotationHelpers.Transform(offset, -targetRotation) / targetSize;
+            }
+
             joint.anchor = Vector2.zero;
-            joint.connectedAnchor = position;
-            joint.dampingRatio = 1.0f;
+            joint.connectedAnchor = offset;
+            joint.enableCollision = enableCollision;
 
             _joints.Add(joint);
+            _fixedJointCreated?.Invoke(joint);
             return new Joint<FixedJoint2D>(joint);
         }
 

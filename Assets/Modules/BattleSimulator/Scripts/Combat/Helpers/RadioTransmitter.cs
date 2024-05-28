@@ -40,9 +40,12 @@ namespace Combat.Helpers
 			{
 				while (_messages.TryDequeue(out var data))
 				{
-					var effect = _effectFactory.CreateTextEffect(data.Text);
+                    var position = data.Unit.Body.Position;
+                    if (!_effectFactory.IsObjectVisible(position, data.Unit.Body.Scale)) continue;
+
+                    var effect = _effectFactory.CreateTextEffect(data.Text);
 					effect.Color = data.Color;
-					effect.Position = data.Unit.Body.Position;
+					effect.Position = position;
 					effect.Run(data.Time, data.Unit.Body.Velocity + _speed*RotationHelpers.Direction(_random.Next(360)), 0);
 				}
 			}

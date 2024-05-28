@@ -8,6 +8,7 @@ using GameDatabase.Model;
 using Services.Resources;
 using GameDatabase;
 using Zenject;
+using Combat.Services;
 
 public class PrefabCache : MonoBehaviour 
 {
@@ -74,6 +75,28 @@ public class PrefabCache : MonoBehaviour
         return prefab;
     }
 
+    [Obsolete]
+    public GameObject LoadBulletPrefabObsolete(PrefabId prefabId, string defaultPrefab, IGameServicesProvider servicesProvider)
+    {
+        var path = prefabId.ToString();
+        GameObject prefab;
+        if (_prefabs.TryGetValue(path, out prefab)) return prefab;
+
+        prefab = Resources.Load<GameObject>(path);
+        if (prefab == null)
+        {
+            if (_prefabs.TryGetValue(defaultPrefab, out prefab))
+                return prefab;
+
+            prefab = Resources.Load<GameObject>(defaultPrefab);
+            if (prefab == null)
+                throw new InvalidOperationException();
+        }
+
+        _prefabs[path] = prefab;
+        return prefab;
+    }
+
     public GameObject LoadPrefab(GameObjectPrefab data)
     {
         if (data == null) return null;
@@ -106,10 +129,13 @@ public class PrefabCache : MonoBehaviour
                 case BulletShape.LaserBeam: commonPrefab = LoadPrefab(new PrefabId("Laser", PrefabId.Type.Bullet)); break;
                 case BulletShape.LightningBolt: commonPrefab = LoadPrefab(new PrefabId("Lightning", PrefabId.Type.Bullet)); break;
                 case BulletShape.EnergyBeam: commonPrefab = LoadPrefab(new PrefabId("EnergyBeam", PrefabId.Type.Bullet)); break;
+                case BulletShape.PiercingLaser: commonPrefab = LoadPrefab(new PrefabId("PiercingLaserBeam", PrefabId.Type.Bullet)); break;
                 case BulletShape.Spark: commonPrefab = LoadPrefab(new PrefabId("Spark", PrefabId.Type.Bullet)); break;
                 case BulletShape.Mine: commonPrefab = LoadPrefab(new PrefabId("Mine", PrefabId.Type.Bullet)); break;
                 case BulletShape.Wave: commonPrefab = LoadPrefab(new PrefabId("Arc", PrefabId.Type.Bullet)); break;
                 case BulletShape.BlackHole: commonPrefab = LoadPrefab(new PrefabId("WormHole", PrefabId.Type.Bullet)); break;
+                case BulletShape.Harpoon: commonPrefab = LoadPrefab(new PrefabId("Hook", PrefabId.Type.Bullet)); break;
+                case BulletShape.CircularSaw: commonPrefab = LoadPrefab(new PrefabId("CircularSaw", PrefabId.Type.Bullet)); break;
                 default: return null;
             }
 
@@ -142,10 +168,10 @@ public class PrefabCache : MonoBehaviour
                 commonPrefab = LoadPrefab(new PrefabId("Wave", PrefabId.Type.Effect)); 
                 break;
             case VisualEffectType.Smoke: 
-                commonPrefab = LoadPrefab(new PrefabId("Smoke", PrefabId.Type.Effect)); 
+                commonPrefab = LoadPrefab(new PrefabId("SmokeSimple", PrefabId.Type.Effect)); 
                 break;
             case VisualEffectType.SmokeAdditive: 
-                commonPrefab = LoadPrefab(new PrefabId("SmokeAdditive", PrefabId.Type.Effect)); 
+                commonPrefab = LoadPrefab(new PrefabId("SmokeSimpleAdditive", PrefabId.Type.Effect)); 
                 break;
             case VisualEffectType.Spark: 
                 commonPrefab = LoadPrefab(new PrefabId("Spark", PrefabId.Type.Effect)); 

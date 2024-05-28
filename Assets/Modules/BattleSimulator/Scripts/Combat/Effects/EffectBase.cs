@@ -3,11 +3,30 @@ using UnityEngine;
 
 namespace Combat.Effects
 {
-    [RequireComponent(typeof(Renderer))]
     public abstract class EffectBase : MonoBehaviour, IEffectComponent
     {
         [SerializeField] private float _alphaScale = 1.0f;
         [SerializeField] private Color _defaultColor = Color.white;
+
+        private Vector2 _position;
+        private float _rotation;
+        private bool _positionChanged;
+
+        private float _size;
+        private float _scale;
+        private bool _sizeChanged;
+
+        private float _opacity;
+        private Color _color;
+        private bool _colorChanged;
+
+        private float _life;
+        private bool _lifeChanged;
+
+        private GameObjectHolder _gameObjectHolder;
+        private Renderer _renderer;
+
+        protected Renderer Renderer => (_renderer != null) ? _renderer : (_renderer = GetComponent<Renderer>());
 
         public bool Visible
         {
@@ -83,11 +102,12 @@ namespace Combat.Effects
 
         protected virtual void SetColor(Color color)
         {
-            //var spriteRenderer = GetComponent<SpriteRenderer>();
-            //if (spriteRenderer != null)
-            //    spriteRenderer.color = color;
+            if (Renderer is SpriteRenderer spriteRenderer)
+                spriteRenderer.color = color;
+            else
+                UnityEngine.Debug.LogError($"SetColor: not a sprite {name}");
             //else
-                GetComponent<Renderer>().material.color = color;
+            //    GetComponent<Renderer>().material.color = color;
         }
 
         protected abstract void OnInitialize();
@@ -108,8 +128,12 @@ namespace Combat.Effects
 
         protected virtual void UpdatePosition()
         {
-            gameObject.Move(Position);
-            gameObject.transform.localEulerAngles = new Vector3(0, 0, Rotation);
+            var transform = gameObject.transform;
+            var position = transform.localPosition;
+            position.x = Position.x;
+            position.y = Position.y;
+            transform.localPosition = position;
+            transform.localRotation = Quaternion.Euler(0, 0, Rotation);
         }
 
         protected virtual void UpdateSize()
@@ -177,22 +201,5 @@ namespace Combat.Effects
 
         protected float Lifetime { get; private set; }
         protected bool IsAutomatic { get; private set; }
-
-        private Vector2 _position;
-        private float _rotation;
-        private bool _positionChanged;
-
-        private float _size;
-        private float _scale;
-        private bool _sizeChanged;
-
-        private float _opacity;
-        private Color _color;
-        private bool _colorChanged;
-
-        private float _life;
-        private bool _lifeChanged;
-
-        private GameObjectHolder _gameObjectHolder;
     }
 }

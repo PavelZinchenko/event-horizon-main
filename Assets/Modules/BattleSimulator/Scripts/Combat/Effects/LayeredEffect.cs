@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Utilites;
 
 namespace Combat.Effects
 {
@@ -6,22 +7,12 @@ namespace Combat.Effects
     public class LayeredEffect : EffectBase
     {
         [SerializeField] private SpriteRenderer[] _children;
-
-        protected override void UpdatePosition()
-        {
-            base.UpdatePosition();
-            var random = new System.Random(_seed);
-            foreach (var child in _children)
-            {
-                var rotation = Rotation*(2*random.NextFloat() - 1) + random.Next(360);
-                child.transform.localEulerAngles = new Vector3(0,0,rotation);
-            }
-        }
+        [SerializeField] private float _rotationSpeed;
 
         protected override void SetColor(Color color)
         {
             base.SetColor(color);
-            var random = new System.Random(_seed);
+            var random = new RandomState { Value = _randomState };
 
             foreach (var child in _children)
                 child.color = new Color(
@@ -34,23 +25,44 @@ namespace Combat.Effects
         protected override void OnInitialize()
         {
             var random = new System.Random();
-            _seed = random.Next();
+            _randomState = RandomState.FromTickCount().Value;
 
             foreach (var child in _children)
-            {
-                child.transform.localScale = Vector3.one * (random.NextFloat()*0.4f + 0.8f);
                 child.gameObject.Move(new Vector2(random.NextFloat()*0.4f - 0.2f, random.NextFloat()*0.4f - 0.2f));
+
+            UpdateChildrenPosition();
+        }
+
+        protected override void UpdateSize()
+        {
+            gameObject.transform.localScale = Size * Scale * Vector3.one;
+        }
+
+        private void UpdateChildrenPosition()
+        {
+            var random = new RandomState { Value = _randomState };
+            foreach (var child in _children)
+            {
+                var rotation = Rotation * (2 * random.NextFloat() - 1) + random.Next() % 360;
+                rotation += (2 * random.NextFloat() - 1) * Time.time * _rotationSpeed;
+                child.transform.localEulerAngles = new Vector3(0, 0, rotation);
+                child.transform.localScale = Vector3.one * (random.NextFloat() * 0.4f + 0.8f);
             }
         }
 
         protected override void OnDispose() {}
         protected override void OnGameObjectDestroyed() {}
 
+        protected override void OnAfterUpdate()
+        {
+            UpdateChildrenPosition();
+        }
+
         protected override void UpdateLife()
         {
             Opacity = 1.0f - Mathf.Pow(1.0f - Life, 4f);
         }
 
-        private int _seed;
+        private ulong _randomState;
     }
 }

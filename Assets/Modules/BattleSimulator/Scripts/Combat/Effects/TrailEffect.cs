@@ -25,7 +25,10 @@ namespace Combat.Effects
         protected override void SetColor(Color color)
         {
             if (_trailRenderer != null)
-                _trailRenderer.material.color = color;
+            {
+                _trailRenderer.startColor = color;
+                _trailRenderer.endColor = new Color(color.r, color.g, color.b, 0);
+            }
         }
 
         protected override void UpdateLife()
@@ -55,7 +58,7 @@ namespace Combat.Effects
                 return;
 
             var position = (Vector2)transform.position;
-            if (Vector2.Distance(_lastPosition, position) > 1.0f)
+            if (Vector2.Distance(_lastPosition, position) > 3.0f)
                 _trailRenderer.Clear();
 
             _lastPosition = position;
