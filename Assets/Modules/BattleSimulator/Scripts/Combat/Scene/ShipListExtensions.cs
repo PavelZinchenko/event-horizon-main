@@ -131,7 +131,7 @@ namespace Combat.Scene
         }
 
         public static IShip GetEnemyForTurret(this IUnitList<IShip> shipList, IUnit unit, in Vector2 turretPosition,
-            float turretMountAngle, float turningRange, float maxDistance, bool ignoreUnreachable = false, bool ignoreStarbases = false)
+            float turretMountAngle, float turningRange, float maxDistance, bool ignoreUnreachable = false)
         {
             const float maxTrackingDistance = 2f;
 
@@ -145,7 +145,6 @@ namespace Combat.Scene
                 {
                     var ship = shipList.Items[i];
                     if (!ship.IsActive() || ship.Type.Side.IsAlly(unit.Type.Side) || ship.Features.TargetPriority == TargetPriority.None) continue;
-                    if (ignoreStarbases && ship.Specification != null && ship.Specification.Stats.ShipModel.ShipType == GameDatabase.Enums.ShipType.Starbase) continue;
 
                     var direction = turretPosition.Direction(ship.Body.Position);
                     var distance = direction.magnitude - ship.Body.Scale/2;

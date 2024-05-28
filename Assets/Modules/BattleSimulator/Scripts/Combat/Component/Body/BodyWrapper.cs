@@ -28,7 +28,6 @@ namespace Combat.Component.Bullet.Action
         public void ApplyAcceleration(Vector2 acceleration) { }
         public void ApplyAngularAcceleration(float acceleration) { }
         public void ApplyForce(Vector2 position, Vector2 force) { }
-        public void SetVelocityLimit(float value) { }
 
         public void UpdatePhysics(float elapsedTime) { }
         public void UpdateView(float elapsedTime) { }

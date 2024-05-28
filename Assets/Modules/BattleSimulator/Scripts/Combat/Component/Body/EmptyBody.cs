@@ -56,10 +56,6 @@ namespace Combat.Component.Body
             Parent?.ApplyForce(position, force);
         }
 
-        public void SetVelocityLimit(float value)
-        {
-        }
-
         public void UpdatePhysics(float elapsedTime) { }
         public void UpdateView(float elapsedTime) { }
 

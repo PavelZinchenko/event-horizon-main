@@ -15,5 +15,6 @@ namespace GameDatabase.Enums
 		Beam,
 		Parametric,
 		Harpoon,
+		AuraEmitter,
 	}
 }

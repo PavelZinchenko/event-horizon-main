@@ -46,7 +46,6 @@ namespace Combat.Component.Body
         void ApplyAcceleration(Vector2 acceleration);
         void ApplyAngularAcceleration(float acceleration);
         void ApplyForce(Vector2 position, Vector2 force);
-        void SetVelocityLimit(float value);
 
         void UpdatePhysics(float elapsedTime);
         void UpdateView(float elapsedTime);

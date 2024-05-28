@@ -76,7 +76,7 @@ namespace Combat.Factory
             var view = ConfigureView(bulletGameObject.GetComponent<IView>(), color);
 
             var lifetime = new Lifetime(_stats.Velocity > 0 && _bulletStats.Range > 0 ? _stats.AmmunitionClass.IsHoming() ? 1.2f * _bulletStats.Range / velocity : _bulletStats.Range / velocity : _bulletStats.Lifetime);
-            var unitType = new UnitType(_stats.HitPoints > 0 ? UnitClass.Missile : _stats.AmmunitionClass.IsProjectile() ? UnitClass.EnergyBolt : UnitClass.AreaOfEffect, UnitSide.Undefined, _stats.AmmunitionClass.CanHitAllies() ? null : _owner);
+            var unitType = new UnitType(_stats.HitPoints > 0 ? UnitClass.Missile : _stats.AmmunitionClass.IsProjectile() ? UnitClass.EnergyBolt : UnitClass.AreaOfEffect, UnitSide.Undefined, _owner, _stats.AmmunitionClass.CanHitAllies());
 
             var bullet = new Bullet(body, view, lifetime, unitType);
             bullet.AddResource(bulletGameObject);

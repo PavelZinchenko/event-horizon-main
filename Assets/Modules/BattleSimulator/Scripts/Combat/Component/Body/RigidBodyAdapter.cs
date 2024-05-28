@@ -135,11 +135,6 @@ namespace Combat.Component.Body
                 _rigidbody.AddForceAtPosition(force, position, ForceMode2D.Impulse);
         }
 
-        public void SetVelocityLimit(float value)
-        {
-            _maxVelocity = value;
-        }
-
         public void Move(Vector2 position)
         {
             Position = position;
@@ -160,9 +155,10 @@ namespace Combat.Component.Body
         public void UpdatePhysics(float elapsedTime)
         {
             var velocity = _rigidbody.velocity;
-            if (_maxVelocity > 0 && velocity.magnitude > _maxVelocity)
+            var speed = velocity.magnitude;
+            if (speed > _velocityHardLimit)
             {
-                velocity = velocity.normalized * _maxVelocity;
+                velocity = velocity * _velocityHardLimit / speed;
                 _rigidbody.velocity = velocity;
             }
             
@@ -233,6 +229,7 @@ namespace Combat.Component.Body
         private float _cachedAngularVelocity;
         private float _scale;
         private IBody _parent;
-        private float _maxVelocity;
+
+        private const float _velocityHardLimit = 120;
     }
 }

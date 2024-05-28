@@ -30,6 +30,18 @@ namespace Combat.Component.Platform
         public float Scale => _scale;
         public Vector2 VisualPosition => _position;
 
+        public Vector2 WorldPosition()
+        {
+            if (_worldPositionUpdateTime != _fixedTime)
+            {
+                var position = _offset == 0 ? _position : _position + RotationHelpers.Direction(_rotation) * _offset;
+                _cachedWorldPosition = Parent.WorldPosition() + RotationHelpers.Transform(position, Parent.WorldRotation()) * Parent.WorldScale();
+                _worldPositionUpdateTime = _fixedTime;
+            }
+
+            return _cachedWorldPosition;
+        }
+
         public float VisualRotation 
         {
             get 
@@ -63,6 +75,7 @@ namespace Combat.Component.Platform
 
         public void UpdatePhysics(float elapsedTime)
         {
+            _fixedTime = Time.fixedTime;
             _timeFromTargetUpdate += elapsedTime;
             _idleTime += elapsedTime;
             UpdateRotation(elapsedTime);
@@ -86,9 +99,9 @@ namespace Combat.Component.Platform
             return transform.Find(childName);
         }
 
-        public IShip ActiveTarget 
-		{
-			get => _target; 
+        public IShip ActiveTarget
+        {
+            get => _target; 
 			set
 			{
                 _timeFromTargetUpdate = 0f;
@@ -110,7 +123,7 @@ namespace Combat.Component.Platform
             if (_timeFromTargetUpdate < _targetFindCooldown) return;
             if (_timeFromTargetUpdate < _targetUpdateCooldown && _target.IsActive()) return;
 
-			ActiveTarget = _scene.Ships.GetEnemyForTurret(_parent, ((IBody)this).WorldPosition(),
+			ActiveTarget = _scene.Ships.GetEnemyForTurret(_parent, WorldPosition(),
                 _parent.Body.WorldRotation() + _initialRotation, _maxAngle, _weaponRange);
         }
 
@@ -162,19 +175,22 @@ namespace Combat.Component.Platform
             }
 
             var targetPosition = _target.Body.WorldPosition();
-            var platformPosition = ((IBody)this).WorldPosition();
+            var platformPosition = this.WorldPosition();
 
             if (_bulletVelocity > 0)
             {
                 var velocity = _target.Body.WorldVelocity() - Parent.WorldVelocity() * _relativeEffect;
 
+                Vector2 target;
+                float timeInterval;
                 if (!Geometry.GetTargetPosition(
                     targetPosition,
                     velocity,
                     platformPosition,
                     _bulletVelocity,
-                    out Vector2 target,
-                    out float timeInterval))
+                    _target.Body.Scale*0.5f,
+                    out target,
+                    out timeInterval))
                 {
                     target = targetPosition;
                 }
@@ -200,6 +216,10 @@ namespace Combat.Component.Platform
             _idleTime = 0;
 
         }
+
+        private float _worldPositionUpdateTime;
+        private float _fixedTime = -1f;
+        private Vector2 _cachedWorldPosition;
 
         private float _bulletVelocity;
         private float _weaponRange;

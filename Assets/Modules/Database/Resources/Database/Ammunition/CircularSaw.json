@@ -9,6 +9,9 @@
     "BulletPrefab": 18,
     "AiBulletBehavior": 3
   },
+  "Controller": {
+    "Type": 5
+  },
   "Triggers": [
     {
       "Condition": 3,

@@ -37,6 +37,8 @@ namespace GameDatabase.DataModel
 					return new BulletController_Parametric(serializable, loader);
 				case BulletControllerType.Harpoon:
 					return new BulletController_Harpoon(serializable, loader);
+				case BulletControllerType.AuraEmitter:
+					return new BulletController_AuraEmitter(serializable, loader);
 				default:
                     throw new DatabaseException("BulletController: Invalid content type - " + serializable.Type);
 			}
@@ -82,6 +84,7 @@ namespace GameDatabase.DataModel
 	    T Create(BulletController_Beam content);
 	    T Create(BulletController_Parametric content);
 	    T Create(BulletController_Harpoon content);
+	    T Create(BulletController_AuraEmitter content);
     }
 
     public partial class BulletController_Projectile : BulletController
@@ -354,6 +357,55 @@ namespace GameDatabase.DataModel
 			protected override BulletController Context => _context;
 
 			public VariableResolver(BulletController_Harpoon context)
+			{
+				_context = context;
+			}
+
+			public override IFunction<Variant> ResolveFunction(string name)
+            {
+				return base.ResolveFunction(name);
+			}
+
+			public override Expression<Variant> ResolveVariable(string name)
+			{
+				return base.ResolveVariable(name);
+			}
+
+		}
+
+    }
+    public partial class BulletController_AuraEmitter : BulletController
+    {
+		partial void OnDataDeserialized(BulletControllerSerializable serializable, Database.Loader loader);
+
+  		public BulletController_AuraEmitter(BulletControllerSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			var variableResolver = GetVariableResolver();
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBulletControllerFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+
+		private IVariableResolver _iVariableResolver;
+		protected override IVariableResolver GetVariableResolver() {
+			if(_iVariableResolver == null)
+				_iVariableResolver = new VariableResolver(this);
+			return _iVariableResolver;
+		}
+
+		private class VariableResolver : BaseVariableResolver
+		{
+			private BulletController_AuraEmitter _context;
+			
+			protected override BulletController Context => _context;
+
+			public VariableResolver(BulletController_AuraEmitter context)
 			{
 				_context = context;
 			}

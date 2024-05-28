@@ -155,7 +155,7 @@ namespace Combat.Factory
             else
                 unitClass = UnitClass.AreaOfEffect;
 
-            var unitType = new UnitType(unitClass, UnitSide.Neutral, _ammunition.Body.FriendlyFire ? null : _owner);
+            var unitType = new UnitType(unitClass, UnitSide.Neutral, _owner, _ammunition.Body.FriendlyFire);
             var bullet = new Bullet(body, view, new Lifetime(_stats.GetBulletLifetime()), unitType);
 
             bullet.Physics = gameObject.GetComponent<PhysicsManager>();
@@ -266,8 +266,10 @@ namespace Combat.Factory
                     }
                     break;
                 case BulletController_Beam:
-                    var offset = rotationOffset;
                     controller = new BeamController(bullet, spread, rotationOffset + bullet.Body.Rotation);
+                    break;
+                case BulletController_AuraEmitter:
+                    controller = new AuraController(bullet, _stats.BodySize, _ammunition.Body.Lifetime);
                     break;
                 case BulletController_Parametric controllerParametric:
                     controller = new ParametricController(bullet, controllerParametric);

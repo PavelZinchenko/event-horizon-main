@@ -17,6 +17,7 @@ namespace GameDatabase.Extensions
                 case BulletShape.LightningBolt:
                 case BulletShape.EnergyBeam:
                 case BulletShape.Wave:
+                case BulletShape.PiercingLaser:
                 default:
                     return true;
             }
@@ -28,8 +29,9 @@ namespace GameDatabase.Extensions
 			{
 				case BulletShape.LaserBeam:
 				case BulletShape.EnergyBeam:
-				case BulletShape.LightningBolt:
-					return true;
+                case BulletShape.LightningBolt:
+                case BulletShape.PiercingLaser:
+                    return true;
 				default:
 					return false;
 			}

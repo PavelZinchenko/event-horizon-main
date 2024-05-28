@@ -118,8 +118,7 @@ namespace Combat.Component.Collider
             _recentTrigger = other.Unit;
 
             LastContactPoint = GetTriggerContactPoint(collider);
-            var hitPoint = LastContactPoint + Unit.Body.WorldVelocity().normalized*Unit.Body.Scale/2;
-            _collisionManager.OnCollision(Unit, other.Unit, CollisionData.FromObjects(Unit, other.Unit, hitPoint, isNew, _timeInterval));
+            _collisionManager.OnCollision(Unit, other.Unit, CollisionData.FromObjects(Unit, other.Unit, LastContactPoint, isNew, _timeInterval));
         }
 
         private void OnTriggerStay2D(Collider2D collider)
@@ -136,9 +135,7 @@ namespace Combat.Component.Collider
                 ActiveTrigger = other.Unit;
 
             LastContactPoint = GetTriggerContactPoint(collider);
-            var hitPoint = LastContactPoint + Unit.Body.WorldVelocity().normalized * Unit.Body.Scale/2;
-
-            _collisionManager.OnCollision(Unit, other.Unit, CollisionData.FromObjects(Unit, other.Unit, hitPoint, false, _timeInterval));
+            _collisionManager.OnCollision(Unit, other.Unit, CollisionData.FromObjects(Unit, other.Unit, LastContactPoint, false, _timeInterval));
         }
 
         private void OnTriggerExit2D(Collider2D collider)

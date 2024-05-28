@@ -29,7 +29,6 @@ namespace Combat.Component.Unit
             _hitPoints = hitPoints;
             _state = UnitState.Active;
             _features = new Features.Features(TargetPriority.High, Color.white);
-            body.SetVelocityLimit(30f); // TODO
         }
 
         public void Connect(IUnit parent, float parentOffset, float offset, float maxAngle)

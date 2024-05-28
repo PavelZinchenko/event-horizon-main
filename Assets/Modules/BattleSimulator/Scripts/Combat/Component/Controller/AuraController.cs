@@ -10,6 +10,7 @@ namespace Combat.Component.Controller
             _bullet = bullet;
             _radius = radius;
             _time = time;
+            _bullet.Body.SetSize(0);
         }
 
         public void Dispose() {}
@@ -17,11 +18,15 @@ namespace Combat.Component.Controller
         public void UpdatePhysics(float elapsedTime)
         {
             var lifetime = _bullet.Lifetime.Value;
-            _power = Mathf.Clamp01(_power + elapsedTime/_time);
-            if (_power > lifetime)
-                _power = lifetime;
+            var power = Mathf.Clamp01(_power + elapsedTime/_time);
+            if (power > lifetime)
+                power = lifetime;
 
-            _bullet.Body.SetSize(2*_radius*_power);
+            if (!Mathf.Approximately(power, _power))
+            {
+                _power = power;
+                _bullet.Body.SetSize(2 * _radius * _power);
+            }
         }
 
         private float _power;

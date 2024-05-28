@@ -87,6 +87,7 @@ namespace Combat.Component.Controller
                     velocity,
                     platformPosition,
                     _bulletVelocity,
+                    _target.Body.Scale*0.5f,
                     out target,
                     out timeInterval))
                 {
