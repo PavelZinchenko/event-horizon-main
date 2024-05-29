@@ -47,8 +47,8 @@ namespace Gui.ShipService
             _ship = ship;
             _faction = faction;
             _level = level;
-            _selectedBlockX = -1;
-            _selectedBlockY = -1;
+            _selectedBlockX = _invalidBlock;
+            _selectedBlockY = _invalidBlock;
             _shipLayout.ClearSelection();
             _shipInfo = new ShipInformation(_ship, _faction, _level);
 
@@ -80,7 +80,7 @@ namespace Gui.ShipService
 
         public void OnAddButtonClicked()
         {
-            var isBlockSelected = _selectedBlockX >= 0 && _selectedBlockY >= 0;
+            var isBlockSelected = _selectedBlockX != _invalidBlock && _selectedBlockY != _invalidBlock;
             if (!isBlockSelected || !_shipInfo.IsShipLevelEnough || !_shipInfo.IsShipyardLevelEnough || 
                 !_shipInfo.Price1.IsEnough(_playerResources) || !_shipInfo.Price2.IsEnough(_playerResources)) return;
             if (!_ship.Model.LayoutModifications.TryAddCell(_selectedBlockX, _selectedBlockY, _selectedCellType)) return;
@@ -89,7 +89,7 @@ namespace Gui.ShipService
             _shipInfo.Price2.Withdraw(_playerResources);
 
             _soundPlayer.Play(_buySound);
-            _selectedBlockX = _selectedBlockY = -1;
+            _selectedBlockX = _selectedBlockY = _invalidBlock;
             _shipInfo = new ShipInformation(_ship, _faction, _level);
             _shipLayout.Initialize(_ship.Model.Layout);
             UpdateControls();
@@ -109,7 +109,7 @@ namespace Gui.ShipService
 
             _shipInfo.ResetPrice.Withdraw(_playerResources);
             _soundPlayer.Play(_buySound);
-            _selectedBlockX = _selectedBlockY = -1;
+            _selectedBlockX = _selectedBlockY = _invalidBlock;
             _shipInfo = new ShipInformation(_ship, _faction, _level);
             _shipLayout.Initialize(_ship.Model.Layout);
             UpdateControls();
@@ -117,7 +117,7 @@ namespace Gui.ShipService
 
         private void UpdateControls()
         {
-            var isBlockSelected = _selectedBlockX >= 0 && _selectedBlockY >= 0;
+            var isBlockSelected = _selectedBlockX != _invalidBlock && _selectedBlockY != _invalidBlock;
 
             if (!_shipInfo.IsShipLevelEnough)
             {
@@ -180,12 +180,13 @@ namespace Gui.ShipService
         }
 
         private CellType _selectedCellType = CellType.Outer;
-        private int _selectedBlockX = -1;
-        private int _selectedBlockY = -1;
+        private int _selectedBlockX = _invalidBlock;
+        private int _selectedBlockY = _invalidBlock;
         private IShip _ship;
         private int _level;
         private Faction _faction;
         private ShipInformation _shipInfo;
+        private const int _invalidBlock = int.MaxValue;
 
         private struct ShipInformation
         {

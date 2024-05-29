@@ -11,7 +11,6 @@ using GameDatabase.Enums;
 using UnityEngine.Assertions;
 using CommonComponents.Utils;
 using Services.InAppPurchasing;
-using Constructor.Model;
 
 namespace GameServices.Player
 {
@@ -91,64 +90,13 @@ namespace GameServices.Player
 
         protected override void OnSessionCreated()
         {
-            var components = new List<IntegratedComponent>();
+            var storage = new Domain.Shipyard.FleetPartsStorage(_inventory);
+
             foreach (var ship in _ships)
-            {
-                var empty = Enumerable.Empty<IntegratedComponent>();
-                if (TryRemoveInvalidComponents(new ShipLayoutObsolete(ship.Model.Layout, ship.Model.Barrels, empty), ship.Components, components))
-	                ship.Components.Assign(components);
-
-                if (ship.FirstSatellite != null)
-                {
-                    if (TryRemoveInvalidComponents(new ShipLayoutObsolete(new ShipLayoutAdapter(ship.FirstSatellite.Information.Layout), 
-                        ship.FirstSatellite.Information.Barrels, empty), ship.FirstSatellite.Components, components))
-	                    ship.FirstSatellite.Components.Assign(components);
-                }
-
-                if (ship.SecondSatellite != null)
-                {
-                    if (TryRemoveInvalidComponents(new ShipLayoutObsolete(new ShipLayoutAdapter(ship.SecondSatellite.Information.Layout),
-                        ship.SecondSatellite.Information.Barrels, empty), ship.SecondSatellite.Components, components))
-	                    ship.SecondSatellite.Components.Assign(components);
-                }
-            }
+                Domain.Shipyard.ShipValidator.RemoveInvalidParts(ship, storage);
 
             _activeShips.CheckIfValid(_playerSkills, true);
         }
-
-        private bool TryRemoveInvalidComponents(ShipLayoutObsolete layout, IEnumerable<IntegratedComponent> components, IList<IntegratedComponent> validComponents)
-        {
-            validComponents.Clear();
-            var random = new System.Random(_session.Game.Seed);
-			var result = false;
-
-            foreach (var item in components)
-            {
-                IntegratedComponent component = item;
-				if (!component.Info)
-				{
-					result = true;
-					continue;
-				}
-
-                if (!item.Info.IsValidModification)
-                {
-                    component = new IntegratedComponent(ComponentInfo.CreateRandomModification(item.Info.Data, random, item.Info.ModificationQuality, item.Info.ModificationQuality), item.X, item.Y, 
-                        item.BarrelId, item.KeyBinding, item.Behaviour, item.Locked);
-                }
-
-                var id = layout.InstallComponent(component.Info, component.X, component.Y);
-				if (id >= 0)
-					validComponents.Add(component);
-				else
-				{
-					result = true;
-					_inventory.Components.Add(component.Info);
-				}
-            }
-
-			return result;
-		}
 
 		private void OnPlayerSkillsReset()
         {
