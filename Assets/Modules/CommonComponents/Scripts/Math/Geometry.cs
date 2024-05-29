@@ -76,26 +76,38 @@ public static class Geometry
         Vector2 enemyPosition, Vector2 enemyVelocity, Vector2 gunPosition, float bulletSpeed, float enemyRadius,
         out Vector2 position, out float timeInterval)
     {
-        var v0 = enemyVelocity;
-        var p0 = enemyPosition;
-        var p = gunPosition;
-        var v = bulletSpeed;
+        const float epsilon = 0.01f;
 
-        var a = v0.x * v0.x + v0.y * v0.y - v * v;
-        var b = 2 * (p0.x - p.x) * v0.x + 2 * (p0.y - p.y) * v0.y;
-        var c = (p0.x - p.x) * (p0.x - p.x) + (p0.y - p.y) * (p0.y - p.y) - enemyRadius*enemyRadius;
-
-        float t1, t2;
-        if (SolveQuadraticEquation(a, b, c, out t1, out t2) && (t1 >= 0 || t2 >= 0))
+        var relativePosition = enemyPosition - gunPosition;
+        var sqrDistance = relativePosition.sqrMagnitude;
+        
+        if (sqrDistance <= enemyRadius*enemyRadius) // point blank
         {
-            timeInterval = t1 < 0 ? t2 : t2 < 0 ? t1 : Mathf.Min(t1, t2);
-            position = p0 + v0 * timeInterval;
+            position = enemyPosition;
+            timeInterval = 0;
             return true;
         }
 
-        position = Vector2.zero;
-        timeInterval = 0;
-        return false;
+        var sqrEnemySpeed = enemyVelocity.sqrMagnitude;
+
+        var a = sqrEnemySpeed - bulletSpeed*bulletSpeed;
+        var b = 2*(relativePosition.x*enemyVelocity.x + relativePosition.y*enemyVelocity.y);
+        var c = sqrDistance;
+
+        if (!SolveQuadraticEquation(a, b, c, out float t1, out float t2) || t1 < 0 && t2 < 0)
+        {
+            position = Vector2.zero;
+            timeInterval = 0;
+            return false;
+        }
+
+        timeInterval = t1 < t2 ? (t1 < 0 ? t2 : t1) : (t2 < 0 ? t1 : t2);
+        position = enemyPosition + enemyVelocity*timeInterval;
+        if (timeInterval <= epsilon) return true;
+
+        var distance = (position - gunPosition).magnitude;
+        timeInterval -= timeInterval*(enemyRadius/distance);
+        return true;
     }
 
     public static void ElasticCollision(Vector2 position1, Vector2 velocity1, float weight1,
@@ -128,13 +140,13 @@ public static class Geometry
 	{
 		x1 = 0;
 		x2 = 0;
-		
-		var d = b*b - 4*a*c;
+
+        var d = b*b - 4*a*c;
 		
 		if (d < 0) 
 			return false;
-		
-		x1 = (-b - Mathf.Sqrt(d))/(2*a);
+
+        x1 = (-b - Mathf.Sqrt(d))/(2*a);
 		x2 = (-b + Mathf.Sqrt(d))/(2*a);
 		
 		return true;

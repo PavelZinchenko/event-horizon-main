@@ -19,43 +19,47 @@ namespace Combat.Ai.Calculations
             return distance > 5 + enemy.Body.Scale;
         }
 
-        public static bool TryGetProjectileTarget(IWeapon weapon, IShip ship, IShip enemy, out Vector2 target)
+        public static bool TryGetProjectileTarget(IWeapon weapon, IShip ship, IShip enemy, out Vector2 target, out float distance)
         {
             if (CantDetectTarget(ship, enemy))
             {
                 target = Vector2.zero;
+                distance = 0;
                 return false;
             }
 
             var position = weapon.Platform.Body.WorldPosition();
-            var velocity = enemy.Body.Velocity - ship.Body.Velocity*weapon.Info.RelativeVelocityEffect;
+            var velocity = enemy.Body.Velocity - ship.Body.Velocity * weapon.Info.RelativeVelocityEffect;
+            var bulletSpeed = weapon.Info.BulletSpeed;
 
-            float timeInterval;
             if (!Geometry.GetTargetPosition(
                 enemy.Body.Position,
                 velocity,
                 position,
-                weapon.Info.BulletSpeed,
-                enemy.Body.Scale * 0.5f,
+                bulletSpeed,
+                enemy.Body.Scale * 0.4f,
                 out target,
-                out timeInterval))
+                out var timeInterval))
             {
+                distance = 0;
                 return false;
             }
 
-            return weapon.Info.Range >= timeInterval * weapon.Info.BulletSpeed;
+            distance = bulletSpeed * timeInterval;
+            return weapon.Info.Range >= distance;
         }
 
-        public static bool TryGetDirectTarget(IWeapon weapon, IShip ship, IShip enemy, out Vector2 target)
+        public static bool TryGetDirectTarget(IWeapon weapon, IShip ship, IShip enemy, out Vector2 target, out float distance)
         {
             if (CantDetectTarget(ship, enemy))
             {
                 target = Vector2.zero;
+                distance = 0;
                 return false;
             }
 
             target = enemy.Body.Position;
-            var distance = Vector2.Distance(weapon.Platform.Body.WorldPosition(), target) - enemy.Body.Scale * 0.4f;
+            distance = Vector2.Distance(weapon.Platform.Body.WorldPosition(), target) - enemy.Body.Scale * 0.4f;
             return weapon.Info.Range >= distance;
         }
     }

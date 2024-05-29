@@ -1,5 +1,4 @@
 ﻿using Combat.Ai.Calculations;
-using Combat.Component.Body;
 using Combat.Component.Platform;
 using Combat.Component.Ship;
 using Combat.Component.Systems.Weapons;
@@ -12,6 +11,7 @@ namespace Combat.Ai.BehaviorTree
     {
         public bool InRange;
         public bool ReadyToFire;
+        public float Distance;
         public float? Angle;
         public Vector2 Position;
     }
@@ -64,10 +64,10 @@ namespace Combat.Ai.BehaviorTree
             switch (data.Aiming)
             {
                 case WeaponWrapper.AimingStrategy.AimDirectly:
-                    aiming.InRange = TargetingHelpers.TryGetDirectTarget(data.Weapon, ship, target, out aiming.Position);
+                    aiming.InRange = TargetingHelpers.TryGetDirectTarget(data.Weapon, ship, target, out aiming.Position, out aiming.Distance);
                     break;
                 case WeaponWrapper.AimingStrategy.AimWithPrediction:
-                    aiming.InRange = TargetingHelpers.TryGetProjectileTarget(data.Weapon, ship, target, out aiming.Position);
+                    aiming.InRange = TargetingHelpers.TryGetProjectileTarget(data.Weapon, ship, target, out aiming.Position, out aiming.Distance);
                     break;
                 case WeaponWrapper.AimingStrategy.NoAiming:
                     aiming.InRange = IsInAttackRange(ship, target, data.Weapon);
@@ -98,8 +98,7 @@ namespace Combat.Ai.BehaviorTree
                 var weapon = data.Weapon;
                 var preciseAiming = data.Activation == WeaponWrapper.ActivationStrategy.WhenAimedPrecisely;
                 var delta = Mathf.Abs(Mathf.DeltaAngle(aiming.Angle.Value, ship.Body.Rotation));
-                var spread = CalculateSpread(weapon.Platform.Body.WorldPosition(),
-                    aiming.Position, target.Body.Scale, aimingAngleErrorMargin + weapon.Info.Spread / 2);
+                var spread = CalculateSpread(aiming.Distance, target.Body.Scale, aimingAngleErrorMargin + weapon.Info.Spread / 2);
 
                 if (!preciseAiming)
                     if (weapon.Platform.ActiveTarget == target || weapon.Platform.ActiveTarget == null)
@@ -123,9 +122,12 @@ namespace Combat.Ai.BehaviorTree
             return distance <= range;
         }
 
-        private static float CalculateSpread(Vector2 turretPosition, Vector2 enemyPosition, float enemySize, float weaponSpread)
+        private static float CalculateSpread(float distance, float enemySize, float weaponSpread)
         {
-            var distance = Vector2.Distance(enemyPosition, turretPosition);
+            const float epsilon = 0.1f;
+            const float MaxSpread = 0.5f * Mathf.PI * Mathf.Rad2Deg;
+
+            if (distance <= epsilon) return MaxSpread + weaponSpread;
             var delta = Mathf.Atan2(enemySize, distance) * Mathf.Rad2Deg;
             return (weaponSpread + delta) * 0.5f;
         }
