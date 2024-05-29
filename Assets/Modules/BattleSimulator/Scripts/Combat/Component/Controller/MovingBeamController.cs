@@ -32,13 +32,6 @@ namespace Combat.Component.Controller
 			_collider.MaxRange = 0;
 			_parentController = parentController;
             _maxRange = maxRange;
-
-            // If bullet has zero speed it won't grow, so just set length directly and mark as completed
-            if (bulletSpeed <= 0)
-            {
-                _collider.MaxRange = maxLength;
-                _state = State.Moving;
-            }
         }
 
         public void Dispose() { }

@@ -279,7 +279,7 @@ namespace Combat.Factory
                     break;
             }
 
-            if (BulletShape.IsBeam() && !_ammunition.Controller.Continuous)
+            if (BulletShape.IsBeam() && !_ammunition.Controller.Continuous && bulletSpeed > 0)
 			{
 				var length = _ammunition.Body.Length > 0 ? _stats.Length : _stats.BodySize;
                 var velocity = parent.Body.WorldVelocity() * _ammunition.Body.ParentVelocityEffect;
