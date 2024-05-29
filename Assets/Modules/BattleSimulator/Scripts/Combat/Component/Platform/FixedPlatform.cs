@@ -59,6 +59,7 @@ namespace Combat.Component.Platform
 
         public void UpdatePhysics(float elapsedTime)
         {
+            _body.UpdatePhysics(elapsedTime);
             _timeFromLastShot += elapsedTime;
         }
 
