@@ -34,7 +34,25 @@ namespace Combat.Component.Unit
 
         public override UnitState State
         {
-            get { return _elapsedTime < _lifetime && (Parent == null || Parent.State == UnitState.Active) ? UnitState.Active : UnitState.Destroyed; }
+            get 
+            {
+                if (_lifetime <= 0)
+                {
+                    return Parent.IsActive() ? UnitState.Active : UnitState.Destroyed;
+                }
+                else if (_elapsedTime >= _lifetime)
+                {
+                    return UnitState.Destroyed;
+                }
+                else if (Parent == null || Parent.State == UnitState.Active)
+                {
+                    return UnitState.Active;
+                }
+                else
+                {
+                    return UnitState.Destroyed;
+                }
+            }
         }
 
         public void SetCollisionBehaviour(ICollisionBehaviour collisionBehaviour)
