@@ -29,5 +29,6 @@ namespace Constructor.Model
         public ImmutableCollection<Device> BuiltinDevices;
 		public ImmutableCollection<Barrel> Barrels;
         public SizeClass MaxSatelliteSize;
+        public float MaxSatelliteModelSize;
     }
 }

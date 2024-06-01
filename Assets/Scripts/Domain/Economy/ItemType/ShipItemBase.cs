@@ -3,6 +3,7 @@ using Services.Localization;
 using Constructor.Ships;
 using GameDatabase.Model;
 using UnityEngine;
+using Constructor.Extensions;
 
 namespace Economy.ItemType
 {

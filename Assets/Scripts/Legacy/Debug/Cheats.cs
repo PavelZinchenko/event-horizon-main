@@ -30,6 +30,7 @@ using GameDatabase.Extensions;
 using GameDatabase.Query;
 using Session.ContentObsolete;
 using Helpers = GameModel.Serialization.Helpers;
+using Constructor.Extensions;
 
 public class Cheats
 {

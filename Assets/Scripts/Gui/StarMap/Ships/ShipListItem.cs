@@ -4,7 +4,7 @@ using Services.Localization;
 using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
-using Economy.ItemType;
+using Constructor.Extensions;
 
 namespace Gui.StarMap
 {

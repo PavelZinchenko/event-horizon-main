@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Constructor.Extensions;
 using Constructor.Ships;
 using GameDatabase;
 using GameDatabase.DataModel;

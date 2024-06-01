@@ -25,9 +25,13 @@ namespace Constructor.Ships.Modification
                 stats.MaxSatelliteSize = GameDatabase.Enums.SizeClass.Cruiser;
             else
                 stats.MaxSatelliteSize++;
+
+            stats.MaxSatelliteModelSize += _satelliteSizeIncrease;
         }
 
         public bool ChangesBarrels => false;
         public int Seed => 0;
+
+        private const float _satelliteSizeIncrease = 0.4f;
     }
 }

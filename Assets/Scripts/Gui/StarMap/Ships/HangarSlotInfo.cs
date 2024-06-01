@@ -1,13 +1,13 @@
 ﻿using GameStateMachine.States;
 using Services.Localization;
 using Constructor.Ships;
-using Economy.ItemType;
 using GameServices.Gui;
 using Services.Resources;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using Gui.Theme;
+using Constructor.Extensions;
 
 namespace Gui.StarMap
 {

@@ -80,6 +80,7 @@ namespace Constructor.Ships
         public float IconScale => _ship.IconScale;
         public bool IsBionic => _ship.Features.Regeneration;// || _stats.RegenerationRate > 0;
         public SizeClass MaxSatelliteSize => _stats.MaxSatelliteSize;
+        public float MaxSatelliteModelSize => _stats.MaxSatelliteModelSize;
         public IEnumerable<Device> BuiltinDevices => _stats.BuiltinDevices;
 
         public event System.Action DataChangedEvent;
@@ -114,20 +115,21 @@ namespace Constructor.Ships
 
         private void OnModificationsChanged()
         {
-			_stats = new ShipBaseStats
-			{
-				ShipWeightMultiplier = new StatMultiplier(_ship.Features.ShipWeightBonus),
-				EquipmentWeightMultiplier = new StatMultiplier(_ship.Features.EquipmentWeightBonus),
-				VelocityMultiplier = new StatMultiplier(_ship.Features.VelocityBonus),
-				TurnRateMultiplier = new StatMultiplier(_ship.Features.TurnRateBonus),
-				ShieldMultiplier = new StatMultiplier(_ship.Features.ShieldBonus),
-				ArmorMultiplier = new StatMultiplier(_ship.Features.ArmorBonus),
-				EnergyMultiplier = new StatMultiplier(_ship.Features.EnergyBonus),
+            _stats = new ShipBaseStats
+            {
+                ShipWeightMultiplier = new StatMultiplier(_ship.Features.ShipWeightBonus),
+                EquipmentWeightMultiplier = new StatMultiplier(_ship.Features.EquipmentWeightBonus),
+                VelocityMultiplier = new StatMultiplier(_ship.Features.VelocityBonus),
+                TurnRateMultiplier = new StatMultiplier(_ship.Features.TurnRateBonus),
+                ShieldMultiplier = new StatMultiplier(_ship.Features.ShieldBonus),
+                ArmorMultiplier = new StatMultiplier(_ship.Features.ArmorBonus),
+                EnergyMultiplier = new StatMultiplier(_ship.Features.EnergyBonus),
                 DroneAttackMultiplier = new StatMultiplier(_ship.Features.DroneAttackBonus),
                 DroneDefenseMultiplier = new StatMultiplier(_ship.Features.DroneDefenseBonus),
                 DroneBuildSpeedMultiplier = new StatMultiplier(_ship.Features.DroneBuildSpeedBonus),
                 MaxSatelliteSize = _ship.SizeClass,
-				Layout = _layoutModifications.BuildLayout(),
+                MaxSatelliteModelSize = _ship.ModelScale,
+                Layout = _layoutModifications.BuildLayout(),
 				BuiltinDevices = _ship.Features.BuiltinDevices,
 				Barrels = _ship.Barrels,
             };

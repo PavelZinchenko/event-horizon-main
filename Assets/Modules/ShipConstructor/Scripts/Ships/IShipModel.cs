@@ -23,6 +23,8 @@ namespace Constructor.Ships
         float ModelScale { get; }
         float IconScale { get; }
         bool IsBionic { get; }
+        public SizeClass MaxSatelliteSize { get; }
+        public float MaxSatelliteModelSize { get; }
 
         ShipBaseStats Stats { get; }
 

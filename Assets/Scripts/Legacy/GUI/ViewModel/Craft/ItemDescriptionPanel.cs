@@ -11,10 +11,10 @@ using Constructor.Ships;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using GameDatabase.Serializable;
 using Services.Resources;
 using Zenject;
 using Gui.Theme;
+using Constructor.Extensions;
 
 namespace ViewModel.Craft
 {

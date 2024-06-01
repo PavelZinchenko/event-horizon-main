@@ -3,8 +3,8 @@ using System.Linq;
 using Economy.ItemType;
 using Economy.Products;
 using GameServices.Player;
-using Constructor.Ships;
 using GameDatabase;
+using Constructor.Extensions;
 
 namespace GameModel
 {

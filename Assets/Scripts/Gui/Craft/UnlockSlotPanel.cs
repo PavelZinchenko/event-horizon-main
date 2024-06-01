@@ -1,4 +1,5 @@
 ﻿using System;
+using Constructor.Extensions;
 using Constructor.Ships;
 using DataModel.Technology;
 using GameDatabase.DataModel;

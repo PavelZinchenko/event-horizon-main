@@ -1,6 +1,6 @@
-﻿using Constructor.Ships;
+﻿using Constructor.Extensions;
+using Constructor.Ships;
 using Economy;
-using Economy.ItemType;
 using GameServices.Player;
 using Services.Localization;
 using Services.Resources;

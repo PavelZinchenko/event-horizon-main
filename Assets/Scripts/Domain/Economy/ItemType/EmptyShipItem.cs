@@ -7,6 +7,7 @@ using Services.Localization;
 using GameDatabase.Model;
 using UnityEngine;
 using Zenject;
+using Constructor.Extensions;
 
 namespace Economy.ItemType
 {

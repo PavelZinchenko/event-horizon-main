@@ -39,12 +39,12 @@ public class ModificationFactory
             //    return new UnlimitedRespawnModification();
             case ModificationType.WeaponClass:
                 return new WeaponClassMod(_database.ShipModSettings.AttackReduction);
-            //case ModificationType.SatelliteSize:
-            //    return new SatelliteSizeMod();
-            //case ModificationType.EnergyRechargeCooldown:
-            //    return new EnergyRechargeCooldownMod(_database.ShipModSettings.EnergyReduction);
-            //case ModificationType.ShieldRechargeCooldown:
-            //    return new ShieldRechargeCooldownMod(_database.ShipModSettings.ShieldReduction);
+            case ModificationType.SatelliteSize:
+                return new SatelliteSizeMod();
+            case ModificationType.EnergyRechargeCooldown:
+                return new EnergyRechargeCooldownMod(_database.ShipModSettings.EnergyReduction);
+            case ModificationType.ShieldRechargeCooldown:
+                return new ShieldRechargeCooldownMod(_database.ShipModSettings.ShieldReduction);
             default:
                 throw new InvalidEnumArgumentException();
         }
