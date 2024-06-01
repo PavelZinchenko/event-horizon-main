@@ -1,0 +1,482 @@
+{
+  "ItemType": 8,
+  "Id": 391,
+  "ShipId": 58,
+  "AvailableForPlayer": false,
+  "DifficultyClass": 3,
+  "Components": [
+    {
+      "ComponentId": 228,
+      "Modification": 7,
+      "Quality": 5,
+      "X": 6,
+      "Y": -1
+    },
+    {
+      "ComponentId": 91,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 6
+    },
+    {
+      "ComponentId": 91,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 9
+    },
+    {
+      "ComponentId": 2,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 5,
+      "Y": 1
+    },
+    {
+      "ComponentId": 2,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 9,
+      "Y": 1
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 4,
+      "Y": 2
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 11,
+      "Y": 2
+    },
+    {
+      "ComponentId": 2,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 4,
+      "Y": 3
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 6,
+      "Y": 3
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 9,
+      "Y": 3
+    },
+    {
+      "ComponentId": 2,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 10,
+      "Y": 3
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 2,
+      "Y": 4,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 3,
+      "Y": 4
+    },
+    {
+      "ComponentId": 74,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 5,
+      "Y": 4
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 7,
+      "Y": 4
+    },
+    {
+      "ComponentId": 74,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 8,
+      "Y": 4
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 8,
+      "Y": 4
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 12,
+      "Y": 4
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 13,
+      "Y": 4,
+      "BarrelId": 2
+    },
+    {
+      "ComponentId": 81,
+      "Modification": 7,
+      "Quality": 5,
+      "Y": 5,
+      "BarrelId": 1,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 3,
+      "Y": 5,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 4,
+      "Y": 5
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 11,
+      "Y": 5
+    },
+    {
+      "ComponentId": 81,
+      "Modification": 7,
+      "Quality": 5,
+      "X": 12,
+      "Y": 5,
+      "BarrelId": 2,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 12,
+      "Y": 5,
+      "BarrelId": 2
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 3,
+      "Y": 6,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 8,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 4,
+      "Y": 6
+    },
+    {
+      "ComponentId": 156,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 7,
+      "Y": 6
+    },
+    {
+      "ComponentId": 8,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 10,
+      "Y": 6
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 12,
+      "Y": 6,
+      "BarrelId": 2
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 3,
+      "Y": 7
+    },
+    {
+      "ComponentId": 74,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 5,
+      "Y": 7
+    },
+    {
+      "ComponentId": 74,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 8,
+      "Y": 7
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 12,
+      "Y": 7
+    },
+    {
+      "ComponentId": 8,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 3,
+      "Y": 8
+    },
+    {
+      "ComponentId": 8,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 11,
+      "Y": 8
+    },
+    {
+      "ComponentId": 91,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 2,
+      "Y": 9,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 5,
+      "Y": 9
+    },
+    {
+      "ComponentId": 156,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 7,
+      "Y": 9
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 10,
+      "Y": 9
+    },
+    {
+      "ComponentId": 91,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 13,
+      "Y": 9,
+      "BarrelId": 2
+    },
+    {
+      "ComponentId": 8,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 3,
+      "Y": 10
+    },
+    {
+      "ComponentId": 74,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 5,
+      "Y": 10
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 5,
+      "Y": 10
+    },
+    {
+      "ComponentId": 74,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 8,
+      "Y": 10
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 10,
+      "Y": 10
+    },
+    {
+      "ComponentId": 8,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 11,
+      "Y": 10
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 3,
+      "Y": 12
+    },
+    {
+      "ComponentId": 2,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 4,
+      "Y": 12
+    },
+    {
+      "ComponentId": 30,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 7,
+      "Y": 12
+    },
+    {
+      "ComponentId": 2,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 10,
+      "Y": 12
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 12,
+      "Y": 12
+    },
+    {
+      "ComponentId": 217,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 6,
+      "Y": 13
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 9,
+      "Y": 13
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 3,
+      "Y": 14
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 4,
+      "Y": 14
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 5,
+      "Y": 14
+    },
+    {
+      "ComponentId": 66,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 9,
+      "Y": 14
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 11,
+      "Y": 14
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 12,
+      "Y": 14
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 4,
+      "Y": 15
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 5,
+      "Y": 15
+    },
+    {
+      "ComponentId": 6,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 11,
+      "Y": 15
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 6,
+      "Y": 16
+    },
+    {
+      "ComponentId": 89,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 8,
+      "Y": 16
+    }
+  ],
+  "Perks": {
+    "Perk1": 2,
+    "Perk2": 3,
+    "Perk3": 4
+  },
+  "ExtendedLayout": true,
+  "RandomColor": true,
+  "LeftSatelliteBuild": 31,
+  "RightSatelliteBuild": 31
+}

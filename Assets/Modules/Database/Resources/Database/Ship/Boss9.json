@@ -89,5 +89,8 @@
       "AutoAimingArc": 20.0,
       "WeaponClass": "C"
     }
-  ]
+  ],
+  "Features": {
+    "ShieldBonus": 0.5
+  }
 }

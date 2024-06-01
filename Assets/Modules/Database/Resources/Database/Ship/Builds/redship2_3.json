@@ -1,0 +1,487 @@
+{
+  "ItemType": 8,
+  "Id": 363,
+  "ShipId": 146,
+  "AvailableForPlayer": false,
+  "DifficultyClass": 3,
+  "Components": [
+    {
+      "ComponentId": 74,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 8
+    },
+    {
+      "ComponentId": 75,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 7,
+      "Y": 2
+    },
+    {
+      "ComponentId": 80,
+      "Modification": 10,
+      "Quality": 5,
+      "X": 7,
+      "Y": 2,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 11,
+      "Y": 2
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 6,
+      "Y": 4
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 7,
+      "Y": 4
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 11,
+      "Y": 4
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 12,
+      "Y": 4
+    },
+    {
+      "ComponentId": 275,
+      "Modification": 8,
+      "Quality": 5,
+      "X": 4,
+      "Y": 5
+    },
+    {
+      "ComponentId": 250,
+      "Modification": 16,
+      "Quality": 5,
+      "X": 11,
+      "Y": 5,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 4,
+      "Y": 6
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 7,
+      "Y": 6
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 9,
+      "Y": 6
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 11,
+      "Y": 6
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 14,
+      "Y": 6,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 3,
+      "Y": 7
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 4,
+      "Y": 7
+    },
+    {
+      "ComponentId": 75,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 7,
+      "Y": 7
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 7,
+      "Y": 7
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 9,
+      "Y": 7
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 11,
+      "Y": 7
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 14,
+      "Y": 7,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 15,
+      "Y": 7
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 1,
+      "Y": 8
+    },
+    {
+      "ComponentId": 62,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 2,
+      "Y": 8
+    },
+    {
+      "ComponentId": 62,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 14,
+      "Y": 8
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 17,
+      "Y": 8
+    },
+    {
+      "ComponentId": 63,
+      "Modification": 3,
+      "Quality": 5,
+      "Y": 9
+    },
+    {
+      "ComponentId": 275,
+      "Modification": 8,
+      "Quality": 5,
+      "X": 4,
+      "Y": 9
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 7,
+      "Y": 9
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 11,
+      "Y": 9
+    },
+    {
+      "ComponentId": 250,
+      "Modification": 16,
+      "Quality": 5,
+      "X": 11,
+      "Y": 9,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 63,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 17,
+      "Y": 9
+    },
+    {
+      "ComponentId": 63,
+      "Modification": 3,
+      "Quality": 5,
+      "Y": 11
+    },
+    {
+      "ComponentId": 62,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 2,
+      "Y": 11
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 7,
+      "Y": 11
+    },
+    {
+      "ComponentId": 74,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 8,
+      "Y": 11
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 11,
+      "Y": 11
+    },
+    {
+      "ComponentId": 62,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 14,
+      "Y": 11
+    },
+    {
+      "ComponentId": 63,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 17,
+      "Y": 11
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 7,
+      "Y": 12
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 11,
+      "Y": 12
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 1,
+      "Y": 13
+    },
+    {
+      "ComponentId": 275,
+      "Modification": 8,
+      "Quality": 5,
+      "X": 4,
+      "Y": 13
+    },
+    {
+      "ComponentId": 91,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 7,
+      "Y": 13
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 8,
+      "Y": 13
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 10,
+      "Y": 13
+    },
+    {
+      "ComponentId": 250,
+      "Modification": 16,
+      "Quality": 5,
+      "X": 11,
+      "Y": 13,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 91,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 11,
+      "Y": 13,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 17,
+      "Y": 13
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 3,
+      "Y": 14
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 4,
+      "Y": 14
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 7,
+      "Y": 14
+    },
+    {
+      "ComponentId": 60,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 8,
+      "Y": 14
+    },
+    {
+      "ComponentId": 60,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 9,
+      "Y": 14
+    },
+    {
+      "ComponentId": 60,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 10,
+      "Y": 14
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 11,
+      "Y": 14,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 14,
+      "Y": 14,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 64,
+      "Modification": 3,
+      "Quality": 5,
+      "X": 15,
+      "Y": 14
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 4,
+      "Y": 15
+    },
+    {
+      "ComponentId": 217,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 7,
+      "Y": 15
+    },
+    {
+      "ComponentId": 60,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 10,
+      "Y": 15
+    },
+    {
+      "ComponentId": 60,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 11,
+      "Y": 15
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 14,
+      "Y": 15,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 58,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 10,
+      "Y": 16
+    },
+    {
+      "ComponentId": 89,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 9,
+      "Y": 18
+    }
+  ],
+  "Perks": {
+    "Perk1": 2,
+    "Perk2": 4,
+    "Perk3": 9
+  },
+  "ExtendedLayout": true,
+  "RandomColor": true,
+  "LeftSatelliteBuild": 39,
+  "RightSatelliteBuild": 39
+}
