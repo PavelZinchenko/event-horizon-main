@@ -114,7 +114,7 @@ namespace Services.Resources
         {
             var prefab = UnityEngine.Resources.Load<ResourceLocator>("ResourceLocator");
 
-            _shipSprites = prefab._shipSprites = LoadAllAssets<Sprite>("/Sprites/Ships").ToArray();
+            _shipSprites = prefab._shipSprites = LoadAllAssets<Sprite>("/Sprites/Ships").Concat(LoadAllAssets<Sprite>("/Sprites/Starbases")).ToArray();
             _shipIconSprites = prefab._shipIconSprites = LoadAllAssets<Sprite>("/Sprites/ShipIcons").ToArray();
             _componentSprites = prefab._componentSprites = LoadAllAssets<Sprite>("/Sprites/Components").ToArray();
             _satelliteSprites = prefab._satelliteSprites = LoadAllAssets<Sprite>("/Sprites/Satellites").ToArray();

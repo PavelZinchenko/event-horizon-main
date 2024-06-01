@@ -1,6 +1,6 @@
 {
   "ItemType": 1,
-  "Id": 279,
+  "Id": 200,
   "Name": "$DroneBay_L_17",
   "DisplayCategory": 5,
   "Availability": 2,
@@ -8,11 +8,11 @@
   "Faction": 17,
   "Level": 250,
   "Icon": "hangar",
-  "Color": "#808080",
+  "Color": "#CBDFFF",
   "Layout": "0000011111111111111111111",
   "CellType": "1",
   "DroneBayId": 6,
-  "DroneId": 375,
+  "DroneId": 299,
   "PossibleModifications": [
     17,
     18,

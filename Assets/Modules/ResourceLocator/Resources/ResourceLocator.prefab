@@ -177,10 +177,11 @@ MonoBehaviour:
   - {fileID: 21300000, guid: a48e68fa8b3cccf408d0f07f2e953c4c, type: 3}
   - {fileID: 21300000, guid: 9e399837e43e52e4ab8979eb0d713d0b, type: 3}
   - {fileID: 21300000, guid: b313c84a62937ee4e988abbe1774cf61, type: 3}
-  - {fileID: 21300000, guid: 16e56297a5e600942b175dc3ff4e4b18, type: 3}
   - {fileID: 21300000, guid: 57dd5b0fff2f2394698987d98deaa8f6, type: 3}
   - {fileID: 21300000, guid: a74ddbf0f339dcd4e8839a1e1505d087, type: 3}
   - {fileID: 21300000, guid: ad2ddd301ddc5ae46a2abb4925c41803, type: 3}
+  - {fileID: 21300000, guid: 16e56297a5e600942b175dc3ff4e4b18, type: 3}
+  - {fileID: 21300000, guid: 32e8aa157dfae1440aed4d2906ee049b, type: 3}
   _shipIconSprites:
   - {fileID: 21300000, guid: 1d157238699f24b459a3f59d9480edd4, type: 3}
   - {fileID: 21300000, guid: ad1f2c15937e4034d95cd94098a021b2, type: 3}

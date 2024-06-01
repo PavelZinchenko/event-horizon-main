@@ -1,11 +1,12 @@
 {
   "ItemType": 10,
-  "Id": 342,
-  "ItemId": 279,
-  "Faction": 18,
+  "Id": 348,
+  "Type": 2,
+  "ItemId": 23,
+  "Faction": 17,
   "Price": 15,
   "Hidden": true,
   "Dependencies": [
-    302
+    307
   ]
 }
