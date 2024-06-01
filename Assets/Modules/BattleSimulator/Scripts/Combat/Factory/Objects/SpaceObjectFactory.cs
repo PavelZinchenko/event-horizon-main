@@ -215,6 +215,36 @@ namespace Combat.Factory
             return unit;
         }
 
+        public T CreateWormTailSegment<T>(GameObject prefab, IShip ship, IUnit parent, float size, float weight,
+            ColorScheme colorScheme, IUnitFactory<T> unitFactory) where T : WormSegmentBase
+        {
+            if (parent == null) parent = ship;
+            var gameObject = new GameObjectHolder(prefab, _objectPool);
+            gameObject.IsActive = true;
+            var body = gameObject.GetComponent<IBodyComponent>();
+            var position = parent.Body.Position - RotationHelpers.Direction(parent.Body.Rotation) * parent.Body.Scale;
+            body.Initialize(null, position, parent.Body.Rotation, size, Vector2.zero, 0.0f, weight);
+            var physics = gameObject.GetComponent<PhysicsManager>();
+            var collider = gameObject.GetComponent<ICollider>();
+            var view = gameObject.GetComponent<IView>();
+            view.ApplyHsv(colorScheme.Hue, colorScheme.Saturation, _materialCache);
+            var unit = unitFactory.Create(ship, body, view, collider, physics);
+            unit.AddResource(gameObject);
+            unit.AddTrigger(new DroneExplosionAction(unit, _effectFactory, _soundPlayer));
+            _scene.AddUnit(unit);
+            return unit;
+        }
+
+        public void CreateSpawnEffect(IBody body, Color color)
+        {
+            var effect = _effectFactory.CreateEffect("OrbAdditive", body);
+            //effect.Position = body.Position;
+            //effect.Rotation = body.Rotation;
+            effect.Size = 2f;
+            effect.Color = color;
+            effect.Run(0.5f, Vector2.zero, 0);
+        }
+
         public IEnumerable<WormSegment> CreateWormTail(IShip parent, int size, float weightScale, float hitPoints, 
             GameObject segmentPrefab, ColorScheme colorScheme)
         {

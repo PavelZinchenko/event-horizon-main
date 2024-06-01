@@ -32,5 +32,6 @@ namespace GameDatabase.Enums
 		DroneCamouflage,
 		MissileCamouflage,
 		TeleporterV2,
+		WormTailV2,
 	}
 }

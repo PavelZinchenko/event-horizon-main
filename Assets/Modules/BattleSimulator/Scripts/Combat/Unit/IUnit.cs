@@ -11,6 +11,11 @@ using Combat.Unit;
 
 namespace Combat.Component.Unit
 {
+    public interface IUnitFactory<out T> where T : IUnit
+    {
+        T Create(Ship.IShip owner, IBody body, IView view, ICollider collider, PhysicsManager physics);
+    }
+
     public interface IUnit : IDisposable
     {
         UnitType Type { get; }
