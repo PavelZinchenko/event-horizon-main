@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 22427384}
   m_Layer: 5
-  m_Name: ShipControlPanel
+  m_Name: ShipControlSettings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

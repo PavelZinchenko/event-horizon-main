@@ -213,7 +213,8 @@ namespace Domain.Shipyard
 
         public bool TryGetComponentReplacement(ComponentInfo original, out ComponentInfo replacement)
         {
-            throw new System.NotImplementedException();
+            replacement = ComponentInfo.Empty;
+            return false;
         }
     }
 }

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using GameServices.Settings;
+using Services.Settings;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -14,15 +14,17 @@ namespace ViewModel
         public Slider SizeSlider;
 		public ToggleGroup ToggleGroup;
 		public Image ControlIcon;
-		public GameObject EnabledPanel;
-		public Toggle EnabledToggle;
-		public Toggle SlideToMove;
-		public Toggle ThrustWithJoystick;
+        public GameObject EnabledPanel;
+        public GameObject DoubleTapPanel;
+        public Toggle EnabledToggle;
+        public Toggle DoubleTapToggle;
+        public Toggle SlideToMove;
+        public Toggle ThrustWithJoystick;
 		public Toggle StopWhenWeaponActive;
 
-		public UnityEvent OnExitEvent = new UnityEvent();
+        public UnityEvent OnExitEvent = new UnityEvent();
 
-        [Inject] private readonly GameSettings _gameSettings;
+        [Inject] private readonly IGameSettings _gameSettings;
 
         public void OnSelected(ButtonLayoutViewModel control)
 		{
@@ -46,6 +48,12 @@ namespace ViewModel
 			if (_selected != null)
 				_selected.gameObject.SetActive(value);
 		}
+
+        public void OnDoubleTapToggleValueChanged(bool value)
+        {
+            if (_selected != null)
+                _selected.DoubleTaps = value;
+        }
 
 		public void OnLoadPreset(int index)
 		{
@@ -97,6 +105,7 @@ namespace ViewModel
 				if (!string.IsNullOrEmpty(layout))
 					layout += ' ';
 				layout += item.name + ',' + Mathf.RoundToInt(item.Position.x) + ',' + Mathf.RoundToInt(item.Position.y) + ',' + Mathf.RoundToInt(item.Size);
+                if (!item.CanBeDisabled && !item.DoubleTaps) layout += ",1";
 			}
 			_gameSettings.ControlsLayout = layout;
 
@@ -157,6 +166,7 @@ namespace ViewModel
 				var x = System.Convert.ToSingle(data[1]);
 				var y = System.Convert.ToSingle(data[2]);
 				var size = System.Convert.ToSingle(data[3]);
+                var doubleTaps = data.Length <= 4 || System.Convert.ToInt32(data[4]) == 0;
 
 				ButtonLayoutViewModel item;
 				if (!buttons.TryGetValue(id, out item))
@@ -165,6 +175,7 @@ namespace ViewModel
                     continue;
                 }
 
+                item.DoubleTaps = doubleTaps;
 				item.gameObject.SetActive(true);
                 item.Size = size;
 				item.Position = new Vector2(x,y);
@@ -182,6 +193,8 @@ namespace ViewModel
             var temp = _selected;
 			_selected = null;
             SizeSlider.value = (temp.Size - _sizeMin)/(_sizeMax - _sizeMin);
+            DoubleTapPanel.SetActive(!temp.CanBeDisabled);
+            DoubleTapToggle.isOn = temp.DoubleTaps;
 			EnabledPanel.SetActive(temp.CanBeDisabled);
 			EnabledToggle.isOn = temp.gameObject.activeSelf;
 			_selected = temp;

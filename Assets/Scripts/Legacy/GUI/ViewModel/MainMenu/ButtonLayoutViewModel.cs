@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +9,7 @@ namespace ViewModel
 		public Color NormalColor = new Color(0.12f,0.15f,0.12f,1f);
 		public Color FocusedColor = new Color(0.15f,0.2f,0.2f,1f);
 		public bool CanBeDisabled = false;
+        public bool DoubleTaps = false;
 
 		public float Size
 		{

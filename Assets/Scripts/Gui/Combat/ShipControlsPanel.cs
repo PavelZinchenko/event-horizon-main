@@ -2,13 +2,13 @@
 using System.Linq;
 using Combat.Component.Ship;
 using Combat.Unit;
-using GameServices.Settings;
+using Services.Settings;
 using Gui.Windows;
 using Services.Gui;
 using Services.Resources;
 using UnityEngine;
-using ViewModel;
 using Zenject;
+using Combat.Ai;
 
 namespace Gui.Combat
 {
@@ -16,7 +16,8 @@ namespace Gui.Combat
     {
         [SerializeField] private ShipNavigationPanel _navigationPanel;
 
-        [Inject] private readonly GameSettings _gameSettings;
+        [Inject] private readonly PlayerInputSignal.Trigger _playerInputTrigger;
+        [Inject] private readonly IGameSettings _gameSettings;
         [Inject] private readonly IResourceLocator _resourceLocator;
 
         public void Load(IShip ship)
@@ -177,6 +178,7 @@ namespace Gui.Combat
                 var x = System.Convert.ToSingle(data[1]);
                 var y = System.Convert.ToSingle(data[2]);
                 var size = System.Convert.ToSingle(data[3]);
+                var doubleTaps = data.Length <= 4 || System.Convert.ToInt32(data[4]) == 0;
 
                 RectTransform item;
                 if (!items.TryGetValue(id, out item))
@@ -184,6 +186,10 @@ namespace Gui.Combat
                     UnityEngine.Debug.Log("Button not found: " + id);
                     continue;
                 }
+
+                var button = item.GetComponent<ActionButton>();
+                if (button != null)
+                    button.EnableDoubleTaps = doubleTaps;
 
                 item.gameObject.SetActive(true);
                 item.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size);
@@ -195,7 +201,7 @@ namespace Gui.Combat
         private void UpdateActionButtons(IShip ship, IDictionary<string, RectTransform> buttons)
         {
             _keyBindings = ship.Systems.All.GetKeyBindings();
-            _cooldowns = new List<ButtonCooldown>();
+            _buttons = new List<ActionButton>();
 
             RectTransform item;
             for (int i = 0; buttons.TryGetValue("Action" + i, out item); i++)
@@ -203,9 +209,10 @@ namespace Gui.Combat
                 if (i < _keyBindings.Count)
                 {
                     item.gameObject.SetActive(true);
-                    var button = item.GetComponent<PushButton>();
-                    button.image.sprite = _resourceLocator.GetSprite(_ship.Systems.All[_keyBindings[i].First()].ControlButtonIcon);
-                    _cooldowns.Add(button.GetComponent<ButtonCooldown>());
+                    var button = item.GetComponent<ActionButton>();
+                    button.Image.sprite = _resourceLocator.GetSprite(_ship.Systems.All[_keyBindings[i].First()].ControlButtonIcon);
+                    button.ReleaseImmediately = _keyBindings[i].Select(id => _ship.Systems.All[id]).ShouReleaseButtonImmediately();
+                    _buttons.Add(button);
                 }
                 else
                 {
@@ -222,27 +229,32 @@ namespace Gui.Combat
                 return;
             }
 
+            bool isActive = ActiveButtons > 0;
             if (_joystickDirection != Vector2.zero)
             {
                 var rotation = RotationHelpers.Angle(_joystickDirection);
                 _ship.Controls.Course = rotation;
                 if (_thrustWithJoystick && !(_stopWhenWeaponActive && _activeButtons > 0))
                     _ship.Controls.Throttle = Mathf.Abs(Mathf.DeltaAngle(_ship.Body.Rotation, rotation)) < 30 ? Mathf.Clamp01(_joystickDirection.magnitude * 2) : 0f;
+
+                isActive = true;
             }
 
             if (_leftPressed)
             {
                 _ship.Controls.Course = _ship.Body.Rotation + 175;
+                isActive = true;
             }
 
             if (_rightPressed)
             {
                 _ship.Controls.Course = _ship.Body.Rotation - 175;
+                isActive = true;
             }
 
             for (int i = 0; i < _keyBindings.Count; ++i)
             {
-                var item = _cooldowns[i];
+                var item = _buttons[i];
                 if (item == null)
                     continue;
 
@@ -260,8 +272,11 @@ namespace Gui.Combat
                         maxCooldown = cooldown;
                 }
 
-                item.SetCooldown(minCooldown, maxCooldown);
+                item.SetCooldown(minCooldown/*, maxCooldown*/);
             }
+
+            if (isActive)
+                _playerInputTrigger.Fire();
         }
 
         private int ActiveButtons
@@ -285,7 +300,7 @@ namespace Gui.Combat
         private AnimatedWindow Window { get { return _window ?? (_window = GetComponent<AnimatedWindow>()); } }
 
         private List<List<int>> _keyBindings;
-        private List<ButtonCooldown> _cooldowns;
+        private List<ActionButton> _buttons;
 
         private int _activeButtons;
         private bool _leftPressed;

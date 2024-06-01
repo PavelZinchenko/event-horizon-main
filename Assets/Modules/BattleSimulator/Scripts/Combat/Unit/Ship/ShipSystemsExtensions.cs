@@ -4,6 +4,7 @@ using Combat.Component.Systems;
 using Combat.Component.Systems.Devices;
 using Combat.Component.Systems.DroneBays;
 using Combat.Component.Systems.Weapons;
+using GameDatabase.Enums;
 
 namespace Combat.Component.Ship
 {
@@ -28,6 +29,40 @@ namespace Combat.Component.Ship
             }
 
             return keys.OrderBy(item => item.Key).Select(item => item.Value).ToList();
+        }
+
+        public static bool ShouReleaseButtonImmediately(this IEnumerable<ISystem> systems)
+        {
+            foreach (var system in systems)
+            {
+                if (system is IDevice device)
+                {
+                    switch (device.DeviceClass)
+                    {
+                        case DeviceClass.TeleporterV2:
+                        case DeviceClass.Teleporter:
+                        case DeviceClass.Detonator:
+                        case DeviceClass.PointDefense:
+                        case DeviceClass.PartialShield:
+                        case DeviceClass.ClonningCenter:
+                        case DeviceClass.TimeMachine:
+                            break;
+                        default:
+                            return false;
+                    }
+                }
+                if (system is IWeapon weapon)
+                {
+                    switch (weapon.Info.WeaponType)
+                    {
+                        case WeaponType.Continuous:
+                            if (weapon.Info.Firerate > 0 && weapon.Info.Firerate < 1.0) return false;
+                            break;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public static IEnumerable<int> GetDroneBayIndices(this IReadOnlyList<ISystem> shipSystems)
