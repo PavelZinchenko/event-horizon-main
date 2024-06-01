@@ -14,7 +14,9 @@ namespace Combat.Component.Systems.Devices
 			DeviceClass = deviceSpec.DeviceClass;
 
             _ship = ship;
-            _energyCost = deviceSpec.EnergyConsumption;
+            _power = deviceSpec.Power;
+
+            _energyCost = UnityEngine.Mathf.Max(1f, deviceSpec.EnergyConsumption * _ship.Specification.Stats.EngineEnergyConsumption);
         }
 
         public override IEngineModification EngineModification { get { return this; } }
@@ -25,8 +27,8 @@ namespace Combat.Component.Systems.Devices
             if (_isEnabled)
             {
                 data.Throttle = 1.0f;
-                data.Propulsion *= 4;
-                data.Velocity *= 8;
+                data.Propulsion *= _power;
+                data.Velocity *= _power;
             }
 
             return true;
@@ -68,6 +70,7 @@ namespace Combat.Component.Systems.Devices
 
         private bool _isEnabled;
         private readonly float _energyCost;
+        private readonly float _power;
         private readonly IShip _ship;
     }
 }
