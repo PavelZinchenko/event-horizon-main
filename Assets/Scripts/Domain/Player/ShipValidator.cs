@@ -116,7 +116,6 @@ namespace Domain.Shipyard
                     GameDiagnostics.Debug.LogError($"Component replaced: {component.Info.Data.Name}");
                 }
 
-                component.Locked = component.Info.Data.Availability == GameDatabase.Enums.Availability.Special;
                 index++;
             }
         }
