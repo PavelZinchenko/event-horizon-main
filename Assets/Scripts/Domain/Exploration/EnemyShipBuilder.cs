@@ -34,7 +34,7 @@ namespace Game.Exploration
             var random = new System.Random(_seed);
 
             var build = _database.GetShipBuild(new ItemId<ShipBuild>(_shipId));
-            var ship = new EnemyShip(build);
+            var ship = new EnemyShip(build, _database);
 
             var shipLevel = _database.GalaxySettings.EnemyLevel(_level);
             shipLevel -= random.Next(shipLevel/3);

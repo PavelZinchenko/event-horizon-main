@@ -6,10 +6,11 @@ using Combat.Unit;
 using GameDatabase.Enums;
 using Services.Resources;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace Gui.Combat
 {
-    public class Radar : MonoBehaviour
+    public class Radar : UIBehaviour
     {
         [SerializeField] private Image ShipIcon;
         [SerializeField] private Image Background;
@@ -18,6 +19,7 @@ namespace Gui.Combat
         [SerializeField] private Color NormalColor;
         [SerializeField] private Color BossColor;
         [SerializeField] private Color StarbaseColor;
+        [SerializeField] private Color DangerColor = Color.red;
 
         public void Open(IShip ship, IScene scene, IResourceLocator resourceLocator)
         {
@@ -37,23 +39,23 @@ namespace Gui.Combat
                 return;
             }
 
-            var itemPosition = _ship.Body.Position;
+            var camera = Camera.main;
+            if (!camera) return;
+
+            var itemPosition = _ship.Body.VisualPosition;
             var position = _scene.ViewPoint.Direction(itemPosition);
-            var cameraHeight = Camera.main.orthographicSize;
-            var cameraWidth = cameraHeight*Camera.main.aspect;
+            var cameraHeight = camera.orthographicSize;
+            var cameraWidth = cameraHeight* camera.aspect;
 
             var x = position.x/cameraWidth;
             var y = position.y/cameraHeight;
 
-            if (x > -1 && x < 1 && y > -1 && y < 1)
-            {
-                ShipIcon.enabled = false;
-                Background.enabled = false;
-                return;
-            }
+            var outOfBounds = x < -1 || x > 1 || y < -1 || y > 1;
+            if (ShipIcon.gameObject.activeSelf != outOfBounds) ShipIcon.gameObject.SetActive(outOfBounds);
+            if (Background.gameObject.activeSelf != outOfBounds) Background.gameObject.SetActive(outOfBounds);
 
-            ShipIcon.enabled = true;
-            Background.enabled = true;
+            if (!outOfBounds)
+                return;
 
             var dx = ((position.x > 0 ? position.x : -position.x) - cameraWidth)/(_scene.Settings.AreaWidth/2 - cameraWidth);
             var dy = ((position.y > 0 ? position.y : -position.y) - cameraHeight)/(_scene.Settings.AreaHeight/2 - cameraHeight);
@@ -65,9 +67,12 @@ namespace Gui.Combat
             x = offset + 0.5f*(x/max + 1)*(_screenSize.x - 2*offset);
             y = offset + 0.5f*(y/max + 1)*(_screenSize.y - 2*offset);
 
+            if (!gameObject.activeSelf)
+                gameObject.SetActive(true);
+
             RectTransform.anchoredPosition = new Vector2(x, y);
             RectTransform.localScale = Vector3.one*scale;
-            ShipIcon.transform.localEulerAngles = new Vector3(0, 0, _ship.Body.Rotation);
+            ShipIcon.transform.localEulerAngles = new Vector3(0, 0, _ship.Body.VisualRotation);
         }
 
         public void Close()
@@ -92,6 +97,7 @@ namespace Gui.Combat
         {
             var model = _ship.Specification.Stats;
             var isAlly = _ship.Type.Side.IsAlly(UnitSide.Player);
+            var isDangerous = _ship.Specification.Info.Class >= DifficultyClass.Class3;
 
             switch (model.ShipModel.SizeClass)
             {
@@ -101,16 +107,26 @@ namespace Gui.Combat
                     break;
                 case SizeClass.Titan:
                     _offset = Size*1.5f;
-                    Background.color = isAlly ? AllyColor : BossColor;
+                    Background.color = isAlly ? AllyColor : isDangerous ? DangerColor : BossColor;
                     break;
                 default:
                     _offset = Size;
-                    Background.color = isAlly ? AllyColor : NormalColor;
+                    Background.color = isAlly ? AllyColor : isDangerous ? DangerColor : NormalColor;
                     break;
             }
 
             ShipIcon.sprite = resourceLocator.GetSprite(model.ShipModel.ModelImage);
 
+            UpdateScreenSize();
+        }
+
+        protected override void OnRectTransformDimensionsChange()
+        {
+            UpdateScreenSize();
+        }
+
+        private void UpdateScreenSize()
+        {
             _screenSize = RectTransform.parent.GetComponent<RectTransform>().rect.size;
 
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _offset*2);

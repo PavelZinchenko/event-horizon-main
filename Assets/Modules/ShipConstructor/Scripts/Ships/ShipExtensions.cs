@@ -95,7 +95,7 @@ namespace Constructor.Ships
         {
             var delta = UnityEngine.Mathf.Min(10, distance / 5);
             var shipLevel = database.GalaxySettings.EnemyLevel(distance + random.Range(-delta, delta));
-            var ship = new EnemyShip(data) { Experience = Maths.Experience.FromLevel(shipLevel) };
+            var ship = new EnemyShip(data, database) { Experience = Maths.Experience.FromLevel(shipLevel) };
 
             if (data.Ship.ShipType != ShipType.Common)
                 return ship;
@@ -106,9 +106,9 @@ namespace Constructor.Ships
 
             if (companions.Any())
             {
-                if (random.Next(3) != 0)
+                if (ship.FirstSatellite == null && random.Next(3) != 0)
                     ship.FirstSatellite = new CommonSatellite(companions.RandomElement(random));
-                if (random.Next(3) != 0)
+                if (ship.SecondSatellite == null && random.Next(3) != 0)
                     ship.SecondSatellite = new CommonSatellite(companions.RandomElement(random));
             }
 

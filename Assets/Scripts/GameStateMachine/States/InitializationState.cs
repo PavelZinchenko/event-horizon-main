@@ -89,10 +89,7 @@ namespace GameStateMachine.States
                 foreach (var item in _database.ShipBuildList)
 		        {
                     var ship = new CommonShip(item, _database);
-                    var layout = new ShipLayoutObsolete(ship.Model.Layout, ship.Model.Barrels, ship.Components);
-                    if (layout.Components.Count() != ship.Components.Count)
-		                GameDiagnostics.Trace.LogError("invalid ship layout: " + item.Id);
-
+                    Domain.Shipyard.ShipValidator.RemoveInvalidParts(ship);
 		            if ((item.Ship.ShipType == ShipType.Common || item.Ship.ShipType == ShipType.Drone) && (item.AvailableForPlayer || item.AvailableForEnemy) &&
 		                !ShipValidator.IsShipViable(new CommonShip(item, _database), _database.ShipSettings))
 		            {

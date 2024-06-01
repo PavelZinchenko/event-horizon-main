@@ -8,10 +8,15 @@ namespace Constructor.Ships
     public class EditorModeShip : BaseShip
     {
         public EditorModeShip(ShipBuild build, IDatabase database)
-            : base(new ShipModel(build.Ship), build.CustomAI)
+            : base(new ShipModel(build, database), build.CustomAI)
         {
             _database = database;
             _shipBuild = build;
+
+            if (build.LeftSatelliteBuild != null)
+                FirstSatellite = new Satellites.EditorModeSatellite(build.LeftSatelliteBuild, database);
+            if (build.RightSatelliteBuild != null)
+                SecondSatellite = new Satellites.EditorModeSatellite(build.RightSatelliteBuild, database);
         }
 
         public override IItemCollection<IntegratedComponent> Components

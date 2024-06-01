@@ -1,23 +1,18 @@
-﻿using System.Linq;
-using GameDatabase.DataModel;
+﻿using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using CommonComponents.Utils;
+using GameDatabase;
 
 namespace Constructor.Ships
 {
-    public class EnemyShip : BaseShip
+    public class EnemyShip : CommonShip
     {
-        public EnemyShip(ShipBuild data) 
-            : base(new ShipModel(data.Ship, data.BuildFaction), data.CustomAI)
+        public EnemyShip(ShipBuild data, IDatabase database) 
+            : base(data, database)
         {
-            
-            _components.Assign(data.Components.Select<InstalledComponent,IntegratedComponent>(ComponentExtensions.FromDatabase));
-            _extraThreatLevel = data.DifficultyClass;
+            ExtraThreatLevel = data.DifficultyClass;
         }
 
-        public override DifficultyClass ExtraThreatLevel { get { return _extraThreatLevel; } }
-
-        public override IItemCollection<IntegratedComponent> Components { get { return _components.AsReadOnly(); } }
+        public override DifficultyClass ExtraThreatLevel { get; }
 
         public override ShipBuilder CreateBuilder()
         {
@@ -28,8 +23,5 @@ namespace Constructor.Ships
 
             return builder;
         }
-
-        private readonly ObservableCollection<IntegratedComponent> _components = new ObservableCollection<IntegratedComponent>();
-        private readonly DifficultyClass _extraThreatLevel;
     }
 }

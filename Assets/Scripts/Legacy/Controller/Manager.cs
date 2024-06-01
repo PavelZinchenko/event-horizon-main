@@ -50,7 +50,7 @@ namespace Controller
             if (!_scene.EnemyShip.IsActive())
             {
                 var enemyBuild = _database.GetShipBuild(new ItemId<ShipBuild>(218)); // TODO: move to database settings
-                _shipFactory.CreateShip(new EnemyShip(enemyBuild).CreateBuilder().Build(_database.ShipSettings),
+                _shipFactory.CreateShip(new EnemyShip(enemyBuild, _database).CreateBuilder().Build(_database.ShipSettings),
                     _controllerFactory.CreateDefaultAiController(10, enemyBuild.CustomAI), UnitSide.Enemy, new Vector2(5, 5), 0);
             }
 
