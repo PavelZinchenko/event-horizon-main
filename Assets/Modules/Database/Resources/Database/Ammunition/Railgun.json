@@ -4,8 +4,8 @@
   "Body": {
     "Size": 2.0,
     "Length": 2.0,
-    "Velocity": 80.0,
-    "Range": 80.0,
+    "Velocity": 100.0,
+    "Range": 100.0,
     "Weight": 0.5,
     "Color": "#A6CCFF",
     "BulletPrefab": 2,
@@ -23,7 +23,7 @@
   ],
   "Effects": [
     {
-      "Power": 200.0
+      "Power": 120.0
     },
     {
       "Type": 1,

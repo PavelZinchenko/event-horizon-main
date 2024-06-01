@@ -44,7 +44,7 @@
       "ColorMode": 2,
       "Quantity": 1,
       "Size": 5.0,
-      "PowerMultiplier": 5.0
+      "PowerMultiplier": 8.0
     },
     {
       "Condition": 7,
@@ -53,7 +53,7 @@
   ],
   "Effects": [
     {
-      "Power": 1.0
+      "Power": 5.0
     }
   ]
 }

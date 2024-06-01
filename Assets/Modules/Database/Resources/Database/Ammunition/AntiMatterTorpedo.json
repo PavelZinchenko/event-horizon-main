@@ -17,7 +17,7 @@
       "AudioClip": "hit_01",
       "Ammunition": 143,
       "Size": 30.0,
-      "PowerMultiplier": 300.0,
+      "PowerMultiplier": 250.0,
       "Rotation": "0",
       "OffsetX": "0"
     },

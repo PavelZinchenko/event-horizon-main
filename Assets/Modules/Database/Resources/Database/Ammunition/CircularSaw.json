@@ -35,7 +35,7 @@
   "ImpactType": 2,
   "Effects": [
     {
-      "Power": 200.0
+      "Power": 500.0
     },
     {
       "Type": 13

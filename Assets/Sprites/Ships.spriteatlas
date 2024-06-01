@@ -117,7 +117,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 5e38f5779943af642911738f7ba53cbf, type: 3}
   - {fileID: 21300000, guid: 0d3a09777f813bf46b3b1941ce7d3268, type: 3}
   - {fileID: 21300000, guid: 864c7987fb502e641b1ace4400ed6b78, type: 3}
-  - {fileID: 21300000, guid: 16e56297a5e600942b175dc3ff4e4b18, type: 3}
   - {fileID: 21300000, guid: 6f52b9389f3f5094796624357c9f8f2a, type: 3}
   - {fileID: 21300000, guid: c5fe9548348b21b4090db0a71bd2e20d, type: 3}
   - {fileID: 21300000, guid: f574af48524356149bac2f1f23f53552, type: 3}
@@ -254,7 +253,6 @@ SpriteAtlas:
   - f6s1
   - f6s2
   - fns9
-  - starbase
   - santa
   - red_ship2
   - f13s3
