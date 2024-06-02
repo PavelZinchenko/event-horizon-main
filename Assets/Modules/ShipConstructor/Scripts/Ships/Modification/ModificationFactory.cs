@@ -65,9 +65,10 @@ public class ModificationFactory
             //    yield return Create(ModificationType.UnlimitedRespawn);
             if (!_database.ShipModSettings.RemoveWeaponSlotMod)
                 yield return Create(ModificationType.WeaponClass);
-            //yield return Create(ModificationType.SatelliteSize);
-            //yield return Create(ModificationType.EnergyRechargeCooldown);
-            //yield return Create(ModificationType.ShieldRechargeCooldown);
+
+            yield return Create(ModificationType.SatelliteSize);
+            yield return Create(ModificationType.EnergyRechargeCooldown);
+            yield return Create(ModificationType.ShieldRechargeCooldown);
         }
     }
 

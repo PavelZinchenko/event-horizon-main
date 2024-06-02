@@ -486,6 +486,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 304f3154309bcff418288d889a26077f, type: 3}
   - {fileID: 21300000, guid: 0a38e2789b2614147b441e84715bf4d8, type: 3}
   - {fileID: 21300000, guid: 66171e02e5f7de84bbdd4d29490c92db, type: 3}
+  - {fileID: 21300000, guid: a1642dc2a34004e4ab424017837abc27, type: 3}
+  - {fileID: 21300000, guid: f61c7f4ea8db058408c8a9333297b260, type: 3}
   _audioClips:
   - {fileID: 8300000, guid: cc05fbd26a41a3d43a69d48f639c4610, type: 3}
   - {fileID: 8300000, guid: f360d80597c51e6479ae7c2c575429f9, type: 3}
