@@ -38,15 +38,13 @@ namespace Constructor.Component
         {
             get
             {
-                var energyConsumption = 0f;
-                if (_component.Stats.EnergyRechargeRate < 0)
-                    energyConsumption = -_component.Stats.EnergyRechargeRate;
+                var energyConsumption = -_component.Stats.EnergyRechargeRate;
                 if (_component.Device != null)
                     energyConsumption += DevicePassiveEnergyConsumption(_component.Device.Stats, _shipSize);
                 if (_component.DroneBay != null)
                     energyConsumption += _component.DroneBay.Stats.PassiveEnergyConsumption;
 
-                return energyConsumption;
+                return energyConsumption > 0 ? energyConsumption : 0f;
             }
         }
 
