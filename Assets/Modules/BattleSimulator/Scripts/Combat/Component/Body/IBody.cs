@@ -61,7 +61,7 @@ namespace Combat.Component.Body
         
         public Vector2 WorldPosition()
         {
-            var position = Position + RotationHelpers.Direction(Rotation)*Offset;
+            var position = Offset == 0 ? Position : Position + RotationHelpers.Direction(Rotation) * Offset;
 
             if (Parent == null)
                 return position;
@@ -72,7 +72,7 @@ namespace Combat.Component.Body
 
         public Vector2 VisualWorldPosition()
         {
-            var position = VisualPosition + RotationHelpers.Direction(VisualRotation) * Offset;
+            var position = Offset == 0 ? VisualPosition : VisualPosition + RotationHelpers.Direction(VisualRotation) * Offset;
 
             if (Parent == null)
                 return position;

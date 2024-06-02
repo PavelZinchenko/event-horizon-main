@@ -48,27 +48,41 @@ namespace Combat.Component.Body
         {
 			get 
             {
-                return _cachedPosition; 
+                if (System.Threading.Thread.CurrentThread != _mainThread || _positionUpdateTime == Time.fixedTime)
+                    return _cachedPosition; // Without this small satellites start rolling
+                else
+                {
+                    _positionUpdateTime = Time.fixedTime;
+                    return _cachedPosition = _rigidbody.position;
+                }
             }
             set
             {
                 _cachedPosition = value;
+                _positionUpdateTime = Time.fixedTime;
                 if (this && transform)
-                    gameObject.Move(value);
+                    gameObject.Move(_parent == null ? value : _parent.ChildPosition(value));
             }
         }
 
         public float Rotation
         {
-			get
+			get 
             {
-                return _cachedRotation;
+                if (System.Threading.Thread.CurrentThread != _mainThread || _rotationUpdateTime == Time.fixedTime)
+                    return _cachedRotation;
+                else
+                {
+                    _rotationUpdateTime = Time.fixedTime;
+                    return _cachedRotation = _rigidbody.rotation;
+                }
             }
             set
             {
                 _cachedRotation = value;
+                _rotationUpdateTime = Time.fixedTime;
                 if (this && transform)
-                    transform.localEulerAngles = new Vector3(0, 0,Mathf.Repeat(value, 360));
+                    transform.localEulerAngles = new Vector3(0, 0, Mathf.Repeat(value, 360));
             }
         }
         
@@ -113,7 +127,7 @@ namespace Combat.Component.Body
             {
                 _scale = value;
                 if (transform)
-                    transform.localScale = Vector3.one * value;
+                    transform.localScale = Parent == null ? Vector3.one * value : Vector3.one * Parent.WorldScale() * value;
             }
         }
 
@@ -162,19 +176,18 @@ namespace Combat.Component.Body
                 _rigidbody.velocity = velocity;
             }
             
-            _cachedWorldPosition = _rigidbody.position;
-            _cachedWorldRotation = _rigidbody.rotation;
-            if (_parent != null)
+            var time = Time.fixedTime;
+            if (_positionUpdateTime != time)
             {
-                _cachedPosition = _parent.WorldPositionToLocal(_cachedWorldPosition);
-                _cachedRotation = _parent.WorldRotationToLocal(_cachedWorldRotation);
+                _cachedPosition = _rigidbody.position;
+                _positionUpdateTime = time;
             }
-            else
+            if (_rotationUpdateTime != time)
             {
-                _cachedPosition = _cachedWorldPosition;
-                _cachedRotation = _cachedWorldRotation;
+                _cachedRotation = _rigidbody.rotation;
+                _rotationUpdateTime = time;
             }
-            
+
             _cachedVelocity = velocity;
             _cachedAngularVelocity = _rigidbody.angularVelocity;
         }
@@ -199,31 +212,19 @@ namespace Combat.Component.Body
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
+            _mainThread = System.Threading.Thread.CurrentThread;
         }
 
-        public Vector2 WorldPosition()
-        {
-            return _cachedWorldPosition +
-                   RotationHelpers.Direction(_cachedWorldRotation) * (Offset * (_parent?.WorldScale() ?? 1));
-        }
 
-        public Vector2 WorldPositionNoOffset()
-        {
-            return _cachedWorldPosition;
-        }
-
-        public float WorldRotation()
-        {
-            return _cachedWorldRotation;
-        }
-        
-        private float _weigth;
-        private Vector2 _viewPosition;
-        private float _viewRotation;
+        private float _positionUpdateTime;
+        private float _rotationUpdateTime;
         private Vector2 _cachedPosition;
         private float _cachedRotation;
-        private Vector2 _cachedWorldPosition;
-        private float _cachedWorldRotation;
+
+        private float _weigth;
+        private System.Threading.Thread _mainThread;
+        private Vector2 _viewPosition;
+        private float _viewRotation;
         private Rigidbody2D _rigidbody;
         private Vector2 _cachedVelocity;
         private float _cachedAngularVelocity;

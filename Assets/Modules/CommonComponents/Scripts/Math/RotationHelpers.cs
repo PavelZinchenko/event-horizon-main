@@ -1,13 +1,29 @@
-﻿using UnityEngine;
+﻿using System.Runtime.CompilerServices;
+using UnityEngine;
 
 public static class RotationHelpers
 {
-	public static Vector2 Direction(float angle)
+    private const int _maxAngle = 360;
+    private const int _angleToIndexFactor = 5;
+    private const int _directionArraySize = _maxAngle*_angleToIndexFactor;
+    private static readonly Vector2[] _directions;
+
+    static RotationHelpers()
+    {
+        _directions = new Vector2[_directionArraySize+1];
+        for (int i = 0; i <= _directionArraySize; ++i)
+            _directions[i] = new Vector2(Mathf.Cos(i*Mathf.Deg2Rad/_angleToIndexFactor), Mathf.Sin(i*Mathf.Deg2Rad/_angleToIndexFactor));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly Vector2 Direction(float angle)
 	{
-		return new Vector2(Mathf.Cos(angle*Mathf.Deg2Rad), Mathf.Sin(angle*Mathf.Deg2Rad));
+        var index = Mathf.RoundToInt(Mathf.Repeat(angle, _maxAngle) *_angleToIndexFactor);
+		return ref _directions[index];
 	}
 
-	public static float Angle(Vector2 direction)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Angle(Vector2 direction)
 	{
 		var result = Mathf.Atan2(direction.y, direction.x);
 		if (result < 0) result += Mathf.PI*2;
@@ -19,13 +35,14 @@ public static class RotationHelpers
 		return Mathf.Approximately(Mathf.DeltaAngle(firstAngle, secondAngle), 0);
 	}
 
-	public static Vector2 Transform(Vector2 point, float angle)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Transform(Vector2 point, float angle)
 	{
-		var angleRadians = angle*Mathf.Deg2Rad;
-		return new Vector2(
-				point.x * Mathf.Cos(angleRadians) - point.y * Mathf.Sin(angleRadians),
-				point.y * Mathf.Cos(angleRadians) + point.x * Mathf.Sin(angleRadians));
-	}
+        var cossin = Direction(angle);
+        return new Vector2(
+                point.x * cossin.x - point.y * cossin.y,
+                point.y * cossin.x + point.x * cossin.y);
+    }
 
     public static Vector2 BoundingRect(float width, float height, float rotation)
     {
