@@ -66,9 +66,12 @@ public class ModificationFactory
             if (!_database.ShipModSettings.RemoveWeaponSlotMod)
                 yield return Create(ModificationType.WeaponClass);
 
-            yield return Create(ModificationType.SatelliteSize);
-            yield return Create(ModificationType.EnergyRechargeCooldown);
-            yield return Create(ModificationType.ShieldRechargeCooldown);
+            if (!_database.ShipModSettings.RemoveBiggerSatellitesMod)
+                yield return Create(ModificationType.SatelliteSize);
+            if (!_database.ShipModSettings.RemoveEnergyRechargeCdMod)
+                yield return Create(ModificationType.EnergyRechargeCooldown);
+            if (!_database.ShipModSettings.RemoveShieldRechargeCdMod)
+                yield return Create(ModificationType.ShieldRechargeCooldown);
         }
     }
 

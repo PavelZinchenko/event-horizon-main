@@ -29,6 +29,9 @@ namespace GameDatabase.DataModel
 		{
 			RemoveWeaponSlotMod = serializable.RemoveWeaponSlotMod;
 			RemoveUnlimitedRespawnMod = serializable.RemoveUnlimitedRespawnMod;
+			RemoveEnergyRechargeCdMod = serializable.RemoveEnergyRechargeCdMod;
+			RemoveShieldRechargeCdMod = serializable.RemoveShieldRechargeCdMod;
+			RemoveBiggerSatellitesMod = serializable.RemoveBiggerSatellitesMod;
 			HeatDefenseValue = UnityEngine.Mathf.Clamp(serializable.HeatDefenseValue, 0f, 10f);
 			KineticDefenseValue = UnityEngine.Mathf.Clamp(serializable.KineticDefenseValue, 0f, 10f);
 			EnergyDefenseValue = UnityEngine.Mathf.Clamp(serializable.EnergyDefenseValue, 0f, 10f);
@@ -44,6 +47,9 @@ namespace GameDatabase.DataModel
 
 		public bool RemoveWeaponSlotMod { get; private set; }
 		public bool RemoveUnlimitedRespawnMod { get; private set; }
+		public bool RemoveEnergyRechargeCdMod { get; private set; }
+		public bool RemoveShieldRechargeCdMod { get; private set; }
+		public bool RemoveBiggerSatellitesMod { get; private set; }
 		public float HeatDefenseValue { get; private set; }
 		public float KineticDefenseValue { get; private set; }
 		public float EnergyDefenseValue { get; private set; }

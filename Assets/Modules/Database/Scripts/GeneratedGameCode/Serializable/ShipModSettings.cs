@@ -17,6 +17,9 @@ namespace GameDatabase.Serializable
 	{
 		public bool RemoveWeaponSlotMod;
 		public bool RemoveUnlimitedRespawnMod;
+		public bool RemoveEnergyRechargeCdMod;
+		public bool RemoveShieldRechargeCdMod;
+		public bool RemoveBiggerSatellitesMod;
 		public float HeatDefenseValue = 0.5f;
 		public float KineticDefenseValue = 0.5f;
 		public float EnergyDefenseValue = 0.5f;

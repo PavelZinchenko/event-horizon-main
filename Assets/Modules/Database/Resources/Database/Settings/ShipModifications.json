@@ -1,3 +1,4 @@
 {
-  "ItemType": 105
+  "ItemType": 105,
+  "RemoveShieldRechargeCdMod": true
 }

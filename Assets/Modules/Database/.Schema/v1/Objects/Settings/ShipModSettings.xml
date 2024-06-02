@@ -2,6 +2,9 @@
 <data name="ShipModSettings" type="settings" typeid="ShipModSettings">
     <member name="RemoveWeaponSlotMod" type="bool" />
     <member name="RemoveUnlimitedRespawnMod" type="bool" />
+    <member name="RemoveEnergyRechargeCdMod" type="bool" />
+    <member name="RemoveShieldRechargeCdMod" type="bool" />
+    <member name="RemoveBiggerSatellitesMod" type="bool" />
     <member name="HeatDefenseValue" type="float" minvalue="0" maxvalue="10" default="0.5" />
     <member name="KineticDefenseValue" type="float" minvalue="0" maxvalue="10" default="0.5" />
     <member name="EnergyDefenseValue" type="float" minvalue="0" maxvalue="10" default="0.5" />
