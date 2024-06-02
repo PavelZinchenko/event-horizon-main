@@ -25,6 +25,8 @@ namespace Constructor.Ships
         public CommonShip(ShipBuild build, GameDatabase.IDatabase database)
             : base(new ShipModel(build, database), build.CustomAI)
         {
+            const float maxSaturation = 0.25f;
+
             if (build.LeftSatelliteBuild != null)
                 FirstSatellite = new CommonSatellite(build.LeftSatelliteBuild);
             if (build.RightSatelliteBuild != null)
@@ -37,7 +39,7 @@ namespace Constructor.Ships
             {
                 ColorScheme.Type = ShipColorScheme.SchemeType.Hsv;
                 ColorScheme.Hue = UnityEngine.Random.value;
-                ColorScheme.Saturation = UnityEngine.Random.value;
+                ColorScheme.Saturation = UnityEngine.Random.value * maxSaturation;
             }
         }
 
