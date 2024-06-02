@@ -12,8 +12,8 @@
     <member name="ShieldRechargeCooldown" type="float" minvalue="0" maxvalue="60" />
     <member name="BaseDroneReconstructionSpeed" type="float" minvalue="0" maxvalue="100" />
     <member name="ShieldCorrosiveResistance" type="float" minvalue="0" maxvalue="1" default="0.9" />
-    <member name="MaxVelocity" type="float" minvalue="5" maxvalue="100" />
-    <member name="MaxAngularVelocity" type="float" minvalue="5" maxvalue="100" />
-    <member name="MaxAcceleration" type="float" minvalue="5" maxvalue="1000" />
-    <member name="MaxAngularAcceleration" type="float" minvalue="5" maxvalue="1000" />
+    <member name="MaxVelocity" type="float" minvalue="5" maxvalue="100" default="30" />
+    <member name="MaxAngularVelocity" type="float" minvalue="5" maxvalue="100" default="30" />
+    <member name="MaxAcceleration" type="float" minvalue="5" maxvalue="1000" default="300" />
+    <member name="MaxAngularAcceleration" type="float" minvalue="5" maxvalue="1000" default="300" />
 </data>
