@@ -476,8 +476,17 @@ namespace Combat.Factory
                 var size = trigger.Size > 0 ? trigger.Size : 1.0f;
 
                 if (condition == ConditionType.OnCollide && !trigger.UseBulletPosition)
-                    collisionBehaviour.AddAction(new ShowHitEffectAction(_factory._effectFactory, trigger.VisualEffect, color,
-                        size * _factory._stats.BodySize, trigger.Lifetime));
+                {
+                    ICollisionAction action;
+                    if (trigger.OncePerCollision)
+                        action = new ShowMultipleHitEffectsAction(_factory._effectFactory, trigger.VisualEffect, color,
+                            size * _factory._stats.BodySize, trigger.Lifetime);
+                    else
+                        action = new ShowHitEffectAction(_factory._effectFactory, trigger.VisualEffect, color,
+                            size * _factory._stats.BodySize, trigger.Lifetime);
+
+                    collisionBehaviour.AddAction(action);
+                }
                 else if (trigger.Lifetime > 0)
                     AddAction(bullet, trigger, new PlayEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, size,
                         trigger.Lifetime, condition).WithCooldown(trigger.Cooldown));
