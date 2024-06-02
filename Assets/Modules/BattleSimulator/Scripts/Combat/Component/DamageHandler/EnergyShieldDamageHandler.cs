@@ -7,10 +7,11 @@ namespace Combat.Component.DamageHandler
 {
     public class EnergyShieldDamageHandler : IDamageHandler
     {
-        public EnergyShieldDamageHandler(IAuxiliaryUnit shield, float energyConsumption)
+        public EnergyShieldDamageHandler(IAuxiliaryUnit shield, float energyConsumption, float corrosiveResistance)
         {
             _shield = shield;
             _energyConsumption = energyConsumption;
+            _corrosiveResistance = corrosiveResistance;
         }
 
         public CollisionEffect ApplyDamage(Impact impact, IUnit source)
@@ -30,7 +31,7 @@ namespace Combat.Component.DamageHandler
             if (parent == null)
                 return CollisionEffect.None;
 
-            var damage = impact.GetTotalDamage(Resistance.Empty);
+            var damage = impact.GetTotalDamageToShield(_corrosiveResistance);
             impact.EnergyDrain = Resistance.ModifyDamage(impact.EnergyDrain, energyDrainResist);
 
             var owner = source.GetOwnerShip();
@@ -58,7 +59,7 @@ namespace Combat.Component.DamageHandler
         {
         }
 
-        public void RemoveDamage(ref Impact impact, float totalAbsorbed)
+        private void RemoveDamage(ref Impact impact, float totalAbsorbed)
         {
             if (impact.ShieldDamage >= totalAbsorbed)
             {
@@ -69,20 +70,27 @@ namespace Combat.Component.DamageHandler
             totalAbsorbed -= impact.ShieldDamage;
             impact.ShieldDamage = 0;
 
-            var total = impact.KineticDamage + impact.EnergyDamage + impact.HeatDamage + impact.DirectDamage;
-            if (total <= totalAbsorbed || total <= 0.000001f)
+            var corrosiveDamage = Resistance.ModifyDamage(impact.CorrosiveDamage, _corrosiveResistance);
+            if (corrosiveDamage >= totalAbsorbed)
             {
-                impact.RemoveDamage();
+                impact.CorrosiveDamage *= (corrosiveDamage - totalAbsorbed)/corrosiveDamage;
                 return;
             }
 
-            impact.KineticDamage -= totalAbsorbed * impact.KineticDamage / total;
-            impact.EnergyDamage -= totalAbsorbed * impact.EnergyDamage / total;
-            impact.HeatDamage -= totalAbsorbed * impact.HeatDamage / total;
-            impact.DirectDamage -= totalAbsorbed * impact.DirectDamage / total;
+            totalAbsorbed -= corrosiveDamage;
+            impact.CorrosiveDamage = 0;
+
+            var normalDamage = impact.KineticDamage + impact.EnergyDamage + impact.HeatDamage;
+            if (normalDamage <= 0) return;
+
+            impact.KineticDamage -= totalAbsorbed * impact.KineticDamage / normalDamage;
+            impact.EnergyDamage -= totalAbsorbed * impact.EnergyDamage / normalDamage;
+            impact.HeatDamage -= totalAbsorbed * impact.HeatDamage / normalDamage;
+            impact.CorrosiveDamage -= totalAbsorbed * impact.CorrosiveDamage / normalDamage;
         }
 
         private readonly IAuxiliaryUnit _shield;
+        private readonly float _corrosiveResistance;
         private readonly float _energyConsumption;
     }
 }

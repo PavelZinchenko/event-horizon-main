@@ -195,7 +195,8 @@ namespace Combat.Factory
             collider.Initialize(_collisionManager);
 
             var energyShield = new EnergyShield(ship, body, view, collider, defaultOpacity);
-            energyShield.DamageHandler = new EnergyShieldDamageHandler(energyShield, energyConsumption);
+            energyShield.DamageHandler = new EnergyShieldDamageHandler(energyShield, energyConsumption,
+                ship.Specification.Stats.ShieldCorrosiveResistancePercentage);
 
             energyShield.AddResource(gameObject);
 

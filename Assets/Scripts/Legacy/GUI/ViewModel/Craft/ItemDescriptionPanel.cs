@@ -117,7 +117,8 @@ namespace ViewModel.Craft
             _modification.color = UiTheme.Current.GetQualityColor(info.ItemQuality);
 
             _stats.gameObject.SetActive(true);
-            _stats.transform.InitializeElements<TextFieldViewModel, KeyValuePair<string, string>>(ShipEditor.UI.ComponentItem.GetDescription(component, _localization), UpdateTextField, _factory);
+            _stats.transform.InitializeElements<TextFieldViewModel, KeyValuePair<string, string>>(
+                ShipEditor.UI.ComponentItem.GetDescription(component, _localization, _database.LocalizationSettings), UpdateTextField, _factory);
             _weaponSlots.gameObject.SetActive(false);
         }
 

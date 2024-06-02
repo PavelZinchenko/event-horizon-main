@@ -38,10 +38,10 @@ namespace Combat.Component.Stats
                 _energy += damage.EnergyDamage;
             }
 
-            if (damage.DirectDamage > 0)
+            if (damage.CorrosiveDamage > 0)
             {
                 _directChanged = true;
-                _direct += damage.DirectDamage;
+                _direct += damage.CorrosiveDamage;
             }
 
             if (damage.ShieldDamage > 0)

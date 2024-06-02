@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="LocalizationSettings" type="settings" typeid="LocalizationSettings">
+    <member name="CorrosiveDamageText" type="string" default="$WeaponDamage" />
+    <member name="CorrosiveDpsText" type="string" default="$WeaponDPS" />
+</data>

@@ -466,8 +466,8 @@ namespace Constructor.Component
                         Heat += damage; break;
                     case DamageType.Energy:
                         Energy += damage; break;
-                    case DamageType.Direct:
-                        Direct += damage; break;
+                    case DamageType.Corrosive:
+                        Corrosive += damage; break;
                 }
                 return this;
             }
@@ -479,7 +479,6 @@ namespace Constructor.Component
                     Energy = first.Energy + second.Energy,
                     Heat = first.Heat + second.Heat,
                     Corrosive = first.Corrosive + second.Corrosive,
-                    Direct = first.Direct + second.Direct,
                     Repair = first.Repair + second.Repair,
                     Shield = first.Shield + second.Shield,
                     EnergyDrain = first.EnergyDrain + second.EnergyDrain,
@@ -496,7 +495,6 @@ namespace Constructor.Component
                     Kinetic = damage.Kinetic * multiplier,
                     Energy = damage.Energy * multiplier,
                     Heat = damage.Heat * multiplier,
-                    Direct = damage.Direct * multiplier,
                     Corrosive = damage.Corrosive * multiplier,
                     Repair = damage.Repair * multiplier,
                     Shield = damage.Shield * multiplier,
@@ -506,12 +504,11 @@ namespace Constructor.Component
             }
 
             public bool Any => Kinetic > 0 || Heat > 0 || Energy > 0 || Corrosive > 0 || Shield > 0 || Repair > 0;
-            public float Total => Kinetic + Heat + Energy + Corrosive + Direct + Repair + (Shield > 0 ? Shield : -Shield);
+            public float Total => Kinetic + Heat + Energy + Corrosive + Repair + (Shield > 0 ? Shield : -Shield);
 
             public float Kinetic;
             public float Heat;
             public float Energy;
-            public float Direct;
             public float Corrosive;
             public float Repair;
             public float Shield;

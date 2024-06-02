@@ -62,7 +62,7 @@ namespace Combat.Collision
         public float KineticDamage;
         public float EnergyDamage;
         public float HeatDamage;
-        public float DirectDamage;
+        public float CorrosiveDamage;
         public float Repair;
         public float ShieldDamage;
         public float EnergyDrain;
@@ -70,13 +70,18 @@ namespace Combat.Collision
         public Impulse Impulse;
         public CollisionEffect Effects;
 
+        public float GetTotalDamageToShield(float corrosiveResistance)
+        {
+            return KineticDamage + EnergyDamage + HeatDamage + Resistance.ModifyDamage(CorrosiveDamage, corrosiveResistance) + ShieldDamage;
+        }
+
         public float GetTotalDamage(in Resistance resistance)
         {
 			var damage =
 				resistance.ModifyKineticDamage(KineticDamage) +
 				resistance.ModifyEnergyDamage(EnergyDamage) +
 				resistance.ModifyHeatDamage(HeatDamage) +
-				resistance.ModifyDirectDamage(DirectDamage);
+				resistance.ModifyCorrosiveDamage(CorrosiveDamage);
 
             return damage;
         }
@@ -86,8 +91,8 @@ namespace Combat.Collision
             if (amount < 0)
                 throw new InvalidOperationException();
 
-            if (type == DamageType.Direct)
-                DirectDamage += amount;
+            if (type == DamageType.Corrosive)
+                CorrosiveDamage += amount;
             else if (type == DamageType.Impact)
                 KineticDamage += amount;
             else if (type == DamageType.Energy)
@@ -125,7 +130,7 @@ namespace Combat.Collision
                 KineticDamage = KineticDamage * (1f - resistance.Kinetic),
                 EnergyDamage = EnergyDamage * (1f - resistance.Energy),
                 HeatDamage = HeatDamage * (1f - resistance.Heat),
-                DirectDamage = DirectDamage * (1f - 0.5f * resistance.MinResistance),
+                CorrosiveDamage = CorrosiveDamage * (1f - 0.5f * resistance.MinResistance),
                 ShieldDamage = ShieldDamage,
                 EnergyDrain = EnergyDrain,
                 Impulse = Impulse,
@@ -134,14 +139,33 @@ namespace Combat.Collision
             };
         }
 
-        public void ApplyShield(float shieldPoints)
+        private void ApplyShieldToCorrosive(ref float shieldPoints, float shieldCorrosiveResistance)
+        {
+            var damage = Resistance.ModifyDamage(CorrosiveDamage, shieldCorrosiveResistance);
+            if (damage <= shieldPoints)
+            {
+                shieldPoints -= damage;
+                CorrosiveDamage = 0;
+                ShieldDamage += damage;
+                return;
+            }
+
+            CorrosiveDamage *= (damage - shieldPoints) / damage;
+            ShieldDamage += shieldPoints;
+            shieldPoints = 0;
+        }
+
+        public void ApplyShield(float shieldPoints, float shieldCorrosiveResistance)
         {
             if (IgnoresShield || shieldPoints <= 0 || ShieldDamage >= shieldPoints) return;
 
             if (ShieldDamage > 0)
                 shieldPoints -= ShieldDamage;
 
-            var damage = KineticDamage + EnergyDamage + HeatDamage + DirectDamage;
+            if (CorrosiveDamage > 0)
+                ApplyShieldToCorrosive(ref shieldPoints, shieldCorrosiveResistance);
+
+            var damage = KineticDamage + EnergyDamage + HeatDamage;
             if (damage <= 0) return;
             if (damage <= shieldPoints)
             {
@@ -153,7 +177,6 @@ namespace Combat.Collision
             KineticDamage -= shieldPoints * KineticDamage / damage;
             EnergyDamage -= shieldPoints * EnergyDamage / damage;
             HeatDamage -= shieldPoints * HeatDamage / damage;
-            DirectDamage -= shieldPoints * DirectDamage / damage;
             ShieldDamage += shieldPoints;
         }
 
@@ -162,7 +185,7 @@ namespace Combat.Collision
             KineticDamage = 0;
             EnergyDamage = 0;
             HeatDamage = 0;
-            DirectDamage = 0;
+            CorrosiveDamage = 0;
         }
 
         public void Append(in Impact second)
@@ -170,7 +193,7 @@ namespace Combat.Collision
             KineticDamage += second.KineticDamage;
             EnergyDamage += second.EnergyDamage;
             HeatDamage += second.HeatDamage;
-            DirectDamage += second.DirectDamage;
+            CorrosiveDamage += second.CorrosiveDamage;
             ShieldDamage += second.ShieldDamage;
             Repair += second.Repair;
             Effects |= second.Effects;

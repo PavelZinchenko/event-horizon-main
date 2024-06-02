@@ -81,7 +81,7 @@ namespace Combat.Factory
             var collider = CreateCollider(shipGameObject);
             var view = CreateView(shipGameObject);
             var physics = shipGameObject.GetComponent<PhysicsManager>();
-            var shipStats = new Component.Stats.ShipStats(spec);
+            var shipStats = new Component.Stats.ShipStats(spec, false);
 
             var ship = isDrone ?
                 new Ship(spec, motherShip, body, view, shipStats, collider, physics) :

@@ -22,6 +22,7 @@ namespace GameDatabase
 		ExplorationSettings ExplorationSettings { get; }
 		FactionsSettings FactionsSettings { get; }
 		GalaxySettings GalaxySettings { get; }
+		LocalizationSettings LocalizationSettings { get; }
 		MusicPlaylist MusicPlaylist { get; }
 		ShipModSettings ShipModSettings { get; }
 		ShipSettings ShipSettings { get; }
@@ -99,6 +100,7 @@ namespace GameDatabase
 		public ExplorationSettings ExplorationSettings { get; private set; }
 		public FactionsSettings FactionsSettings { get; private set; }
 		public GalaxySettings GalaxySettings { get; private set; }
+		public LocalizationSettings LocalizationSettings { get; private set; }
 		public MusicPlaylist MusicPlaylist { get; private set; }
 		public ShipModSettings ShipModSettings { get; private set; }
 		public ShipSettings ShipSettings { get; private set; }
@@ -199,6 +201,7 @@ namespace GameDatabase
 			ExplorationSettings = null;
 			FactionsSettings = null;
 			GalaxySettings = null;
+			LocalizationSettings = null;
 			MusicPlaylist = null;
 			ShipModSettings = null;
 			ShipSettings = null;
@@ -361,6 +364,8 @@ namespace GameDatabase
 					_database.FactionsSettings = FactionsSettings.Create(_content.FactionsSettings ?? new Serializable.FactionsSettingsSerializable { ItemType = Enums.ItemType.FactionsSettings }, this);
 				if (_database.GalaxySettings == null)
 					_database.GalaxySettings = GalaxySettings.Create(_content.GalaxySettings ?? new Serializable.GalaxySettingsSerializable { ItemType = Enums.ItemType.GalaxySettings }, this);
+				if (_database.LocalizationSettings == null)
+					_database.LocalizationSettings = LocalizationSettings.Create(_content.LocalizationSettings ?? new Serializable.LocalizationSettingsSerializable { ItemType = Enums.ItemType.LocalizationSettings }, this);
 				if (_database.MusicPlaylist == null)
 					_database.MusicPlaylist = MusicPlaylist.Create(_content.MusicPlaylist ?? new Serializable.MusicPlaylistSerializable { ItemType = Enums.ItemType.MusicPlaylist }, this);
 				if (_database.ShipModSettings == null)

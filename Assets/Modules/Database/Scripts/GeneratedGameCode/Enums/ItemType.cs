@@ -57,5 +57,6 @@ namespace GameDatabase.Enums
 		PvpSettings = 114,
 		FrontierNpcSettings = 115,
 		FrontierLevelSettings = 116,
+		LocalizationSettings = 117,
 	}
 }

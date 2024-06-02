@@ -449,6 +449,19 @@ namespace GameDatabase.Storage
 				if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate GalaxySettings file found - " + name);
             }
+            else if (type == ItemType.LocalizationSettings)
+            {
+                if (LocalizationSettings == null)
+                {
+                    var data = _serializer.FromJson<LocalizationSettingsSerializable>(content);
+                    data.FileName = name;
+                    LocalizationSettings = data;
+                    return;
+                }
+
+				if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate LocalizationSettings file found - " + name);
+            }
             else if (type == ItemType.MusicPlaylist)
             {
                 if (MusicPlaylist == null)
@@ -554,6 +567,7 @@ namespace GameDatabase.Storage
 		public ExplorationSettingsSerializable ExplorationSettings { get; private set; }
 		public FactionsSettingsSerializable FactionsSettings { get; private set; }
 		public GalaxySettingsSerializable GalaxySettings { get; private set; }
+		public LocalizationSettingsSerializable LocalizationSettings { get; private set; }
 		public MusicPlaylistSerializable MusicPlaylist { get; private set; }
 		public ShipModSettingsSerializable ShipModSettings { get; private set; }
 		public ShipSettingsSerializable ShipSettings { get; private set; }

@@ -10,16 +10,20 @@ namespace Combat.Component.Stats
 {
     public class ShipStats : IStats
     {
-        public ShipStats(IShipSpecification spec)
+        public ShipStats(IShipSpecification spec, bool collectStatistics)
         {
             var stats = spec.Stats;
+
+            if (collectStatistics)
+                _performance = new ShipPerformance();
 
             _resistance = new Resistance
             {
                 Energy = stats.EnergyResistancePercentage,
                 EnergyAbsorption = stats.EnergyAbsorptionPercentage,
                 Heat = stats.ThermalResistancePercentage,
-                Kinetic = stats.KineticResistancePercentage
+                Kinetic = stats.KineticResistancePercentage,
+                ShieldCorrosive = stats.ShieldCorrosiveResistancePercentage
             };
 
             WeaponDamageMultiplier = stats.DamageMultiplier.Value;
@@ -36,7 +40,11 @@ namespace Combat.Component.Stats
             else
                 _armorPoints = new HitPoints(stats.ArmorPoints);
 
-            _shieldPoints = new Energy(stats.ShieldPoints, stats.ShieldRechargeRate, stats.ShieldRechargeCooldown);
+            if (stats.ShieldPoints > 0)
+                _shieldPoints = new Energy(stats.ShieldPoints, stats.ShieldRechargeRate, stats.ShieldRechargeCooldown);
+            else
+                _shieldPoints = new EmptyResources();
+
             _energyPoints = new Energy(stats.EnergyPoints, stats.EnergyRechargeRate, stats.EnergyRechargeCooldown);
         }
 
@@ -62,7 +70,7 @@ namespace Combat.Component.Stats
 
         public Modifications<Resistance> Modifications => _modifications;
         public IDamageIndicator DamageIndicator { get; set; }
-        public ShipPerformance Performance { get; } = new();
+        public ShipPerformance Performance => _performance;
         public float TimeFromLastHit { get; private set; }
 
         public void ApplyDamage(Impact impact, IUnit self, IUnit source)
@@ -70,12 +78,9 @@ namespace Combat.Component.Stats
 			if (!IsAlive)
 				return;
 
-            if (Shield.Exists)
-                impact.ApplyShield(Shield.Value - impact.ShieldDamage);
-            else
-                impact.ShieldDamage = 0;
-
             var resistance = Resistance;
+            
+            impact.ApplyShield(Shield.Value, resistance.ShieldCorrosive);
 
             DamageIndicator?.ApplyDamage(impact.GetDamage(resistance));
 
@@ -102,16 +107,16 @@ namespace Combat.Component.Stats
 
         private void UpdateStatistics(IUnit self, IUnit source, float armorDamage, float shieldDamage)
         {
-            var owner = source.GetOwnerShip();
-
             if (armorDamage > 0)
-                Performance.OnArmorDamageReceived(armorDamage);
+                _performance?.OnArmorDamageReceived(armorDamage);
             if (shieldDamage > 0)
-                Performance.OnShieldDamageReceived(armorDamage);
+                _performance?.OnShieldDamageReceived(armorDamage);
 
+            var owner = source.GetOwnerShip();
             if (owner == null) return;
             var isAlly = owner.Type.Side.IsAlly(self.Type.Side);
             var enemyPerformance = owner.Stats.Performance;
+            if (enemyPerformance == null) return;
 
             if (isAlly)
             {
@@ -151,6 +156,7 @@ namespace Combat.Component.Stats
                 DamageIndicator.Dispose();
         }
 
+        private readonly ShipPerformance _performance;
         private readonly IResourcePoints _armorPoints;
         private readonly IResourcePoints _shieldPoints;
         private readonly IResourcePoints _energyPoints;

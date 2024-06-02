@@ -33,7 +33,7 @@ namespace Combat.Component.Systems.Devices
         public bool TryInvokeAction(ConditionType condition)
         {
             _objectFactory.CreateCloud(_unit.Body.WorldPosition(), _unit.Body.WorldVelocity()*0.02f, _lifetime,
-                _unit.Body.WorldScale()*_size + 1f, DamageType.Direct, _damage, _unit.GetOwnerShip(), _color);
+                _unit.Body.WorldScale()*_size + 1f, DamageType.Corrosive, _damage, _unit.GetOwnerShip(), _color);
 
             return false;
         }

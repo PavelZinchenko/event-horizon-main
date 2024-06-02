@@ -538,7 +538,7 @@ namespace Combat.Factory
             view.Color = color;
 
             var collisionBehaviour = new BulletCollisionBehaviour();
-            collisionBehaviour.AddAction(new DealDamageAction(DamageType.Direct, dps, BulletImpactType.DamageOverTime, true));
+            collisionBehaviour.AddAction(new DealDamageAction(DamageType.Corrosive, dps, BulletImpactType.DamageOverTime, true));
 
             var unit = new SpaceObject(new UnitType(UnitClass.AreaOfEffect, UnitSide.Enemy, null), body, view, collider, collisionBehaviour);
             unit.AddResource(gameObject);

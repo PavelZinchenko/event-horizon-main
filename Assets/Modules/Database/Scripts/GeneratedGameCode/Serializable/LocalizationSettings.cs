@@ -6,13 +6,16 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
-namespace GameDatabase.Enums
+using System;
+using GameDatabase.Enums;
+using GameDatabase.Model;
+
+namespace GameDatabase.Serializable
 {
-	public enum DamageType
+	[Serializable]
+	public class LocalizationSettingsSerializable : SerializableItem
 	{
-		Impact,
-		Energy,
-		Heat,
-		Corrosive,
+		public string CorrosiveDamageText = "$WeaponDamage";
+		public string CorrosiveDpsText = "$WeaponDPS";
 	}
 }
