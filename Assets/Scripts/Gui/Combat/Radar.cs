@@ -51,8 +51,8 @@ namespace Gui.Combat
             var y = position.y/cameraHeight;
 
             var outOfBounds = x < -1 || x > 1 || y < -1 || y > 1;
-            if (ShipIcon.gameObject.activeSelf != outOfBounds) ShipIcon.gameObject.SetActive(outOfBounds);
-            if (Background.gameObject.activeSelf != outOfBounds) Background.gameObject.SetActive(outOfBounds);
+            if (ShipIcon.enabled != outOfBounds) ShipIcon.enabled = outOfBounds;
+            if (Background.enabled != outOfBounds) Background.enabled = outOfBounds;
 
             if (!outOfBounds)
                 return;
