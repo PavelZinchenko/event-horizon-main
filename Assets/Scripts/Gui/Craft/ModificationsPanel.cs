@@ -19,6 +19,7 @@ namespace Gui.Craft
         [Inject] private readonly IResourceLocator _resourceLocator;
         [Inject] private readonly ILocalization _localization;
         [Inject] private readonly PlayerResources _playerResources;
+        [Inject] private readonly PlayerInventory _playerInventory;
         [Inject] private readonly ISoundPlayer _soundPlayer;
         [Inject] private readonly GuiHelper _guiHelper;
         [Inject] private readonly ModificationFactory _modificationFactory;
@@ -86,6 +87,8 @@ namespace Gui.Craft
                     return;
 
                 _selectedShip.Model.Modifications[index] = _modificationFactory.Create(mod.Type);
+                Domain.Shipyard.ShipValidator.RemoveInvalidParts(_selectedShip, new Domain.Shipyard.FleetPartsStorage(_playerInventory));
+
                 InitializeSlots();
                 UpdateActions();
 

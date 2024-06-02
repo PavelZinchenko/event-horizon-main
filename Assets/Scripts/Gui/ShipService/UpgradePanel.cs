@@ -105,7 +105,7 @@ namespace Gui.ShipService
             if (!_shipInfo.CanReset || !_shipInfo.ResetPrice.IsEnough(_playerResources)) return;
 
             _ship.Model.LayoutModifications.Reset();
-            _ship.RemoveInvalidComponents(_playerInventory.Components);
+            Domain.Shipyard.ShipValidator.RemoveInvalidParts(_ship, new Domain.Shipyard.FleetPartsStorage(_playerInventory));
 
             _shipInfo.ResetPrice.Withdraw(_playerResources);
             _soundPlayer.Play(_buySound);

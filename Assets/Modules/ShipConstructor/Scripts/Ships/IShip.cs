@@ -26,7 +26,5 @@ namespace Constructor.Ships
         ShipBuilder CreateBuilder();
 
         bool DataChanged { get; set; }
-
-        int RemoveInvalidComponents(IGameItemCollection<ComponentInfo> inventory);
     }
 }

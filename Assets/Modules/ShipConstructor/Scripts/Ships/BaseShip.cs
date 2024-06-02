@@ -110,30 +110,6 @@ namespace Constructor.Ships
             }
         }
 
-        public int RemoveInvalidComponents(IGameItemCollection<ComponentInfo> inventory)
-        {
-            var layout = new ShipLayoutObsolete(Model.Layout, Model.Barrels, Enumerable.Empty<IntegratedComponent>());
-            var index = 0;
-            var components = Components;
-            var count = 0;
-
-            while (index < components.Count)
-            {
-                var component = components[index];
-                if (layout.InstallComponent(component.Info, component.X, component.Y) >= 0)
-                {
-                    index++;
-                    continue;
-                }
-
-                components.RemoveAt(index);
-                inventory.Add(component.Info);
-                count++;
-            }
-
-            return count;
-        }
-
         private Experience _experience;
         private ISatellite _firstSatellite;
         private ISatellite _secondSatellite;
