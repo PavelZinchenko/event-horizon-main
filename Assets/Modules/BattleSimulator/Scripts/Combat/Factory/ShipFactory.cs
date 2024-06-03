@@ -204,6 +204,17 @@ namespace Combat.Factory
             return CreateShip(spec, _controllerFactory.CreateDefaultAiController(aiLevel, spec.CustomAi), UnitSide.Enemy, position, rotation);
         }
 
+        public Ship CreatePlayerShip(IShipSpecification spec, Vector2 position, float rotation)
+        {
+            var controllerFactory = _controllerFactory.CreateKeyboardController();
+            var ship = CreateShip(spec, controllerFactory, position, rotation, null, UnitSide.Player, _settings.Shadows);
+
+            if (spec.Stats.Autopilot)
+                _aiManager.Add(_controllerFactory.CreateAutopilotController().Create(ship));
+
+            return ship;
+        }
+
         public Ship CreateClone(IShipSpecification spec, Vector2 position, float rotation, IShip motherShip)
         {
             return CreateShip(spec, _controllerFactory.CreateCloneController(spec.CustomAi), position, rotation, motherShip, UnitSide.Undefined, _settings.Shadows);

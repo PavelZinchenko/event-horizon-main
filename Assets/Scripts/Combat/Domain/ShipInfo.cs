@@ -64,16 +64,21 @@ namespace Combat.Domain
 
         public UnitSide Side { get { return _unitSide; } }
 
-        public void Create(Factory.ShipFactory factory, IControllerFactory controllerFactory, Vector2 position)
+        public void Create(Factory.ShipFactory factory, Vector2 position, int aiLevel)
         {
             if (Status != ShipStatus.Ready)
                 return;
 
             var random = new System.Random();
+            var rotation = random.Next(360);
 
-            var ship = _shipData.Model.ShipType == ShipType.Starbase ? 
-                factory.CreateStarbase(_shipSpec, position, random.Next(360), _unitSide) : 
-                factory.CreateShip(_shipSpec, controllerFactory, _unitSide, position, random.Next(360));
+            IShip ship;
+            if (_shipData.Model.ShipType == ShipType.Starbase)
+                ship = factory.CreateStarbase(_shipSpec, position, rotation, _unitSide);
+            else if (_unitSide == UnitSide.Player)
+                ship = factory.CreatePlayerShip(_shipSpec, position, rotation);
+            else
+                ship = factory.CreateEnemyShip(_shipSpec, position, rotation, aiLevel);
 
             if (ShipUnit != null && ShipUnit.State == UnitState.Inactive)
             {

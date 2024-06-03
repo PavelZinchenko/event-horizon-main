@@ -166,9 +166,8 @@ namespace Combat.Manager
 
         private void CreatePlayerShip()
         {
-            var controllerFactory = _controllerFactory.CreateKeyboardController();
             var spec = _playerFleet.ExplorationShip.CreateBuilder().ApplyPlayerSkills(_playerSkills).Build(_database.ShipSettings);
-            var ship = _shipFactory.CreateShip(spec, controllerFactory, UnitSide.Player, Vector2.zero, new System.Random().Next(360));
+            var ship = _shipFactory.CreatePlayerShip(spec, Vector2.zero, new System.Random().Next(360));
 
             _shipControlsPanel.Load(ship);
         }

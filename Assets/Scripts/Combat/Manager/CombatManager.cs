@@ -129,15 +129,7 @@ namespace Combat.Manager
 
         public void CreateShip(IShipInfo ship)
         {
-            var position = _scene.FindFreePlace(40, ship.Side);
-
-			IControllerFactory controllerFactory;
-            if (ship.Side == UnitSide.Player)
-                controllerFactory = _controllerFactory.CreateKeyboardController();
-            else
-                controllerFactory = _controllerFactory.CreateDefaultAiController(_combatModel.EnemyFleet.AiLevel, ship.ShipData.CustomAi);
-
-            ship.Create(_shipFactory, controllerFactory, position);
+            ship.Create(_shipFactory, _scene.FindFreePlace(40, ship.Side), _combatModel.EnemyFleet.AiLevel);
         }
 
         public bool IsGamePaused { get { return _pausedCount > 0; } }

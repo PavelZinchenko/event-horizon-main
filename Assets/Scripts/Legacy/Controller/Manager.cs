@@ -44,8 +44,8 @@ namespace Controller
 		{
 			var playerShip = _scene.PlayerShip;
 			if (!playerShip.IsActive())
-				playerShip = _shipFactory.CreateShip(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(226)), _database).CreateBuilder().Build(_database.ShipSettings), 
-                    _controllerFactory.CreateKeyboardController(), UnitSide.Player, Vector2.zero, 0f);
+				playerShip = _shipFactory.CreatePlayerShip(new CommonShip(_database.GetShipBuild(new ItemId<ShipBuild>(226)), 
+                    _database).CreateBuilder().Build(_database.ShipSettings), Vector2.zero, 0f);
 
             if (!_scene.EnemyShip.IsActive())
             {

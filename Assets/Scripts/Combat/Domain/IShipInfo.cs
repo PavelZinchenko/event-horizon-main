@@ -21,7 +21,7 @@ namespace Combat.Domain
         float ActivationTime { get; }
         UnitSide Side { get; }
 
-        void Create(Factory.ShipFactory factory, IControllerFactory controllerFactory, Vector2 position);
+        void Create(Factory.ShipFactory factory, Vector2 position, int aiLevel);
         void Destroy();
     }
 }
