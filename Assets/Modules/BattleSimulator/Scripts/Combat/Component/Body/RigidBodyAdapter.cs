@@ -48,20 +48,15 @@ namespace Combat.Component.Body
         {
 			get 
             {
-                if (System.Threading.Thread.CurrentThread != _mainThread || _positionUpdateTime == Time.fixedTime)
-                    return _cachedPosition; // Without this small satellites start rolling
-                else
-                {
-                    _positionUpdateTime = Time.fixedTime;
-                    return _cachedPosition = _rigidbody.position;
-                }
+                UpdateCachedPosition();
+                return _cachedPosition;
             }
             set
             {
                 _cachedPosition = value;
                 _positionUpdateTime = Time.fixedTime;
                 if (this && transform)
-                    gameObject.Move(_parent == null ? value : _parent.ChildPosition(value));
+                    gameObject.Move(value);
             }
         }
 
@@ -69,13 +64,8 @@ namespace Combat.Component.Body
         {
 			get 
             {
-                if (System.Threading.Thread.CurrentThread != _mainThread || _rotationUpdateTime == Time.fixedTime)
-                    return _cachedRotation;
-                else
-                {
-                    _rotationUpdateTime = Time.fixedTime;
-                    return _cachedRotation = _rigidbody.rotation;
-                }
+                UpdateCachedRotation();
+                return _cachedRotation;
             }
             set
             {
@@ -127,7 +117,7 @@ namespace Combat.Component.Body
             {
                 _scale = value;
                 if (transform)
-                    transform.localScale = Parent == null ? Vector3.one * value : Vector3.one * Parent.WorldScale() * value;
+                    transform.localScale = Vector3.one * value;
             }
         }
 
@@ -175,21 +165,42 @@ namespace Combat.Component.Body
                 velocity = velocity * _velocityHardLimit / speed;
                 _rigidbody.velocity = velocity;
             }
-            
-            var time = Time.fixedTime;
-            if (_positionUpdateTime != time)
-            {
-                _cachedPosition = _rigidbody.position;
-                _positionUpdateTime = time;
-            }
-            if (_rotationUpdateTime != time)
-            {
-                _cachedRotation = _rigidbody.rotation;
-                _rotationUpdateTime = time;
-            }
+
+            UpdateCachedPosition(true);
+            UpdateCachedRotation(true);
 
             _cachedVelocity = velocity;
             _cachedAngularVelocity = _rigidbody.angularVelocity;
+        }
+
+        private void UpdateCachedPosition(bool noThreadCheck = false)
+        {
+            if (noThreadCheck || System.Threading.Thread.CurrentThread != _mainThread) return;
+            var time = Time.fixedTime;
+            if (_positionUpdateTime == time) return;
+
+            _cachedWorldPosition = _rigidbody.position;
+            _positionUpdateTime = time;
+
+            if (_parent != null)
+                _cachedPosition = _parent.WorldPositionToLocal(_cachedWorldPosition);
+            else
+                _cachedPosition = _cachedWorldPosition;
+        }
+
+        private void UpdateCachedRotation(bool noThreadCheck = false)
+        {
+            if (noThreadCheck || System.Threading.Thread.CurrentThread != _mainThread) return;
+            var time = Time.fixedTime;
+            if (_rotationUpdateTime == time) return;
+
+            _cachedWorldRotation = _rigidbody.rotation;
+            _rotationUpdateTime = time;
+
+            if (_parent != null)
+                _cachedRotation = _parent.WorldRotationToLocal(_cachedWorldRotation);
+            else
+                _cachedRotation = _cachedWorldRotation;
         }
 
         public void UpdateView(float elapsedTime)
@@ -215,6 +226,24 @@ namespace Combat.Component.Body
             _mainThread = System.Threading.Thread.CurrentThread;
         }
 
+        public Vector2 WorldPosition()
+        {
+            UpdateCachedPosition();
+            return _cachedWorldPosition +
+                   RotationHelpers.Direction(_cachedWorldRotation) * (Offset * (_parent?.WorldScale() ?? 1));
+        }
+
+        public Vector2 WorldPositionNoOffset()
+        {
+            UpdateCachedPosition();
+            return _cachedWorldPosition;
+        }
+
+        public float WorldRotation()
+        {
+            UpdateCachedRotation();
+            return _cachedWorldRotation;
+        }
 
         private float _positionUpdateTime;
         private float _rotationUpdateTime;
@@ -225,6 +254,8 @@ namespace Combat.Component.Body
         private System.Threading.Thread _mainThread;
         private Vector2 _viewPosition;
         private float _viewRotation;
+        private Vector2 _cachedWorldPosition;
+        private float _cachedWorldRotation;
         private Rigidbody2D _rigidbody;
         private Vector2 _cachedVelocity;
         private float _cachedAngularVelocity;
