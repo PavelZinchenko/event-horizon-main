@@ -487,12 +487,12 @@ namespace Combat.Factory
 
                     collisionBehaviour.AddAction(action);
                 }
-                else if (trigger.Lifetime > 0)
-                    AddAction(bullet, trigger, new PlayEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, size,
-                        trigger.Lifetime, condition).WithCooldown(trigger.Cooldown));
-                else
+                else if (trigger.SyncLifetimeWithBullet)
                     AddAction(bullet, trigger, new AttachEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, size,
                         condition).WithCooldown(trigger.Cooldown));
+                else
+                    AddAction(bullet, trigger, new PlayEffectAction(bullet, _factory._effectFactory, trigger.VisualEffect, color, size,
+                            trigger.Lifetime, condition).WithCooldown(trigger.Cooldown));
             }
 
             private void CreateStaticVisualEffect(Bullet bullet, BulletCollisionBehaviour collisionBehaviour,

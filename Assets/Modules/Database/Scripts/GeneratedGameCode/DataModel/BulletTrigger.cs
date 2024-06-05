@@ -158,6 +158,7 @@ namespace GameDatabase.DataModel
 			Lifetime = UnityEngine.Mathf.Clamp(serializable.Lifetime, 0f, 1000f);
 			OncePerCollision = serializable.OncePerCollision;
 			UseBulletPosition = serializable.UseBulletPosition;
+			SyncLifetimeWithBullet = serializable.SyncLifetimeWithBullet;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -175,6 +176,7 @@ namespace GameDatabase.DataModel
 		public float Lifetime { get; private set; }
 		public bool OncePerCollision { get; private set; }
 		public bool UseBulletPosition { get; private set; }
+		public bool SyncLifetimeWithBullet { get; private set; }
 
 		private IVariableResolver _iVariableResolver;
 		protected override IVariableResolver GetVariableResolver() {
@@ -205,6 +207,7 @@ namespace GameDatabase.DataModel
 				if (name == "Lifetime") return GetLifetime;
 				if (name == "OncePerCollision") return GetOncePerCollision;
 				if (name == "UseBulletPosition") return GetUseBulletPosition;
+				if (name == "SyncLifetimeWithBullet") return GetSyncLifetimeWithBullet;
 				return base.ResolveVariable(name);
 			}
 
@@ -212,6 +215,7 @@ namespace GameDatabase.DataModel
 			private Variant GetLifetime() => _context.Lifetime;
 			private Variant GetOncePerCollision() => _context.OncePerCollision;
 			private Variant GetUseBulletPosition() => _context.UseBulletPosition;
+			private Variant GetSyncLifetimeWithBullet() => _context.SyncLifetimeWithBullet;
 		}
 
     }

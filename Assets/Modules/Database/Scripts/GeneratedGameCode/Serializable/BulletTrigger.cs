@@ -31,6 +31,7 @@ namespace GameDatabase.Serializable
 		public int MaxNestingLevel;
 		public bool OncePerCollision;
 		public bool UseBulletPosition;
+		public bool SyncLifetimeWithBullet;
 		public string Rotation = "IF(Quantity <= 1, 0, RANDOM(0, 360))";
 		public string OffsetX = "IF(Quantity <= 1, 0, Size / 2)";
 		public string OffsetY = "0";
