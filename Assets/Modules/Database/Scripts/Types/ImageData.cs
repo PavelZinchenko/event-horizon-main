@@ -23,9 +23,15 @@ namespace GameDatabase.Model
                 return;
             }
 
-            texture.Compress(true);
+            if (IsPowerOfTwo(texture.width) && IsPowerOfTwo(texture.height))
+                texture.Compress(true);
+            else
+                GameDiagnostics.Trace.LogError($"Texture dimensions({texture.width},{texture.height}) are not powers of two. Compression will be disabled. Consider resizing it for improved performance and reduced memory usage.") ;
+
             Sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), texture.width);
         }
+
+        private static bool IsPowerOfTwo(int n) => n > 0 && (n & (n - 1)) == 0;
 
         private ImageData() { }
     }
