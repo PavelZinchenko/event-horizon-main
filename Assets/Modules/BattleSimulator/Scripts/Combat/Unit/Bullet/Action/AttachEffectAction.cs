@@ -29,15 +29,6 @@ namespace Combat.Component.Bullet.Action
 
         public CollisionEffect Invoke()
         {
-            var lifetime = _bullet.Lifetime.Left;
-            if (lifetime <= SpawnEffectAction.ShortEffectMaxLifetime)
-            {
-                var position = _bullet.Body.WorldPosition();
-                var size = _bullet.Body.WorldScale() * _size;
-                if (!_effectFactory.IsObjectVisible(position, size))
-                    return CollisionEffect.None;
-            }
-
             if (_effect == null || !_effect.IsAlive)
             {
                 _effect = CompositeEffect.Create(_visualEffect, _effectFactory, _bullet.Body);
@@ -45,7 +36,7 @@ namespace Combat.Component.Bullet.Action
                 _effect.Size = _size;
             }
 
-            _effect.Run(lifetime, Vector2.zero, 0);
+            _effect.Run(_bullet.Lifetime.Left, Vector2.zero, 0);
             return CollisionEffect.None;
         }
 
