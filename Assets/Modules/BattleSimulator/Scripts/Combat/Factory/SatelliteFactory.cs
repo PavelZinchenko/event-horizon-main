@@ -170,6 +170,7 @@ namespace Combat.Factory
 
         public IAuxiliaryUnit CreateEnergyShield(IShip ship, GameObject prefab, float energyConsumption, float size, Color color)
         {
+            if (prefab == null) prefab = _prefabCache.LoadResourcePrefab("Combat/Objects/EnergyShield");
             return CreateEnergyShield(ship, energyConsumption, size, Vector2.zero, color, 0.3f, prefab);
         }
 
