@@ -53,7 +53,7 @@ namespace Combat.Component.Body
             }
             set
             {
-                _cachedPosition = value;
+                SetCachedWorldPosition(value);
                 _positionUpdateTime = Time.fixedTime;
                 if (this && transform)
                     gameObject.Move(value);
@@ -69,7 +69,7 @@ namespace Combat.Component.Body
             }
             set
             {
-                _cachedRotation = value;
+                SetCachedWorldRotation(value);
                 _rotationUpdateTime = Time.fixedTime;
                 if (this && transform)
                     transform.localEulerAngles = new Vector3(0, 0, Mathf.Repeat(value, 360));
@@ -175,32 +175,32 @@ namespace Combat.Component.Body
 
         private void UpdateCachedPosition(bool noThreadCheck = false)
         {
-            if (noThreadCheck || System.Threading.Thread.CurrentThread != _mainThread) return;
+            if (!noThreadCheck && System.Threading.Thread.CurrentThread != _mainThread) return;
             var time = Time.fixedTime;
             if (_positionUpdateTime == time) return;
-
-            _cachedWorldPosition = _rigidbody.position;
+            SetCachedWorldPosition(_rigidbody.position);
             _positionUpdateTime = time;
+        }
 
-            if (_parent != null)
-                _cachedPosition = _parent.WorldPositionToLocal(_cachedWorldPosition);
-            else
-                _cachedPosition = _cachedWorldPosition;
+        private void SetCachedWorldPosition(in Vector2 position)
+        {
+            _cachedWorldPosition = position;
+            _cachedPosition = _parent == null ? _cachedWorldPosition : _parent.WorldPositionToLocal(_cachedWorldPosition);
         }
 
         private void UpdateCachedRotation(bool noThreadCheck = false)
         {
-            if (noThreadCheck || System.Threading.Thread.CurrentThread != _mainThread) return;
+            if (!noThreadCheck && System.Threading.Thread.CurrentThread != _mainThread) return;
             var time = Time.fixedTime;
             if (_rotationUpdateTime == time) return;
-
-            _cachedWorldRotation = _rigidbody.rotation;
+            SetCachedWorldRotation(_rigidbody.rotation);
             _rotationUpdateTime = time;
+        }
 
-            if (_parent != null)
-                _cachedRotation = _parent.WorldRotationToLocal(_cachedWorldRotation);
-            else
-                _cachedRotation = _cachedWorldRotation;
+        private void SetCachedWorldRotation(float rotation)
+        {
+            _cachedWorldRotation = rotation;
+            _cachedRotation = _parent == null ? _cachedWorldRotation : _parent.WorldRotationToLocal(_cachedWorldRotation);
         }
 
         public void UpdateView(float elapsedTime)
@@ -229,6 +229,7 @@ namespace Combat.Component.Body
         public Vector2 WorldPosition()
         {
             UpdateCachedPosition();
+            if (Offset == 0) return _cachedWorldPosition;
             return _cachedWorldPosition +
                    RotationHelpers.Direction(_cachedWorldRotation) * (Offset * (_parent?.WorldScale() ?? 1));
         }
