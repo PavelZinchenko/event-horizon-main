@@ -89,7 +89,16 @@ namespace Constructor.Extensions
 
         public static IEnumerable<IShip> Create(this IEnumerable<ShipBuild> ships, int requiredLevel, Random random, IDatabase database)
         {
-            return ships.Select(item => item.Create(requiredLevel, random, database));
+            foreach (var build in ships)
+            {
+                if (build == null || build.Ship == null)
+                {
+                    GameDiagnostics.Trace.LogError($"Invalid build: {build?.Id} {build?.Ship?.Id}");
+                    continue;
+                }
+
+                yield return build.Create(requiredLevel, random, database);
+            }
         }
 
         public static IShip Create(this ShipBuild data, int distance, Random random, IDatabase database)
