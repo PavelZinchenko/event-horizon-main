@@ -76,6 +76,8 @@ namespace Combat.Factory
             bullet.AddResource(bulletGameObject);
             if (bullet.Body.Parent != null)
                 parent.Bullets?.Add(bullet);
+
+            bullet.UpdatePhysics(0);
             return bullet;
         }
 
