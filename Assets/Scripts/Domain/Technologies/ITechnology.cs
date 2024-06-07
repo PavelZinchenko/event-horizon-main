@@ -77,7 +77,7 @@ namespace DataModel.Technology
 
 	public interface ITechnology
 	{
-        ItemId<GameDatabase.DataModel.Technology> Id { get; }
+        GameDatabase.DataModel.Technology Data { get; }
 	    string GetName(ILocalization localization);
 	    Sprite GetImage(IResourceLocator resourceLocator);
 	    string GetDescription(ILocalization localization);
@@ -97,6 +97,9 @@ namespace DataModel.Technology
     {
         public static int GetWorkshopLevel(this ITechnology technology)
         {
+            if (technology.Data.CustomCraftingLevel > 0)
+                return technology.Data.CustomCraftingLevel;
+
             return technology.Price + technology.Requirements.Sum(item => GetWorkshopLevel(item));
         }
     }

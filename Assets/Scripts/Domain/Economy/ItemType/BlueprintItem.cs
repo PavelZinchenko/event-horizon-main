@@ -17,7 +17,7 @@ namespace Economy.ItemType
             _research = research;
         }
 
-        public string Id { get { return "blueprint_" + _technology.Id; } }
+        public string Id { get { return "blueprint_" + _technology.Data.Id; } }
         public string Name { get { return _localization.GetString("$Blueprint", _technology.GetName(_localization)); } }
         public string Description { get { return string.Empty; } }
         public SpriteId Icon => new("Textures/Icons/icon_blueprint", SpriteId.Type.Default);

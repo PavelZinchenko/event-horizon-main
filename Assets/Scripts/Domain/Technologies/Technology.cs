@@ -23,7 +23,7 @@ namespace DataModel.Technology
 	{
 		protected TechnologyBase(ITechnologies technologies, GameDatabase.DataModel.Technology data)
 		{
-			Id = data.Id;
+			Data = data;
 		    _technologies = technologies;
 			_requirements = data.Dependencies.Select(item => item.Id);
 			Price = data.Price;
@@ -31,9 +31,9 @@ namespace DataModel.Technology
 		    Special = data.Special;
 		}
 
-		public ItemId<GameDatabase.DataModel.Technology> Id { get; private set; }
+        public GameDatabase.DataModel.Technology Data { get; }
 
-	    public IEnumerable<ITechnology> Requirements
+        public IEnumerable<ITechnology> Requirements
 	    {
 	        get
 	        {

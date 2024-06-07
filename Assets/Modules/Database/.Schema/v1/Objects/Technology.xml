@@ -9,4 +9,5 @@
     <member name="Hidden" type="bool" />
     <member name="Special" type="bool" />
     <member name="Dependencies" type="object_list" typeid="Technology" />
+    <member name="CustomCraftingLevel" type="int" minvalue="0" />
 </data>

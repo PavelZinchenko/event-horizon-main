@@ -44,7 +44,7 @@ namespace GameServices.Research
 			_availableTech.Add(technology);
 			var faction = technology.Faction;
 			_session.Research.SetResearchPoints(faction, _session.Research.GetResearchPoints(faction) + technology.Price);
-			_session.Research.AddTechnology(technology.Id);
+			_session.Research.AddTechnology(technology.Data.Id);
 
 			CheckConsistency();
             _messenger.Broadcast(EventType.TechResearched);
@@ -56,7 +56,7 @@ namespace GameServices.Research
 				return;
 
 			_availableTech.Remove(technology);
-			_session.Research.RemoveTechnology(technology.Id);
+			_session.Research.RemoveTechnology(technology.Data.Id);
 
 			CheckConsistency();
 			_messenger.Broadcast(EventType.TechResearched);
@@ -77,7 +77,7 @@ namespace GameServices.Research
 
 			_researchPoints [faction.Id.Value] = points;
 			_availableTech.Add(technology);
-			_session.Research.AddTechnology(technology.Id);
+			_session.Research.AddTechnology(technology.Data.Id);
 
 			CheckConsistency();
             _messenger.Broadcast(EventType.TechResearched);

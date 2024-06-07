@@ -49,6 +49,7 @@ namespace GameDatabase.DataModel
 			Hidden = serializable.Hidden;
 			Special = serializable.Special;
 			Dependencies = new ImmutableCollection<Technology>(serializable.Dependencies?.Select(item => loader.GetTechnology(new ItemId<Technology>(item), true)));
+			CustomCraftingLevel = UnityEngine.Mathf.Clamp(serializable.CustomCraftingLevel, 0, 2147483647);
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -61,6 +62,7 @@ namespace GameDatabase.DataModel
 		public bool Hidden { get; private set; }
 		public bool Special { get; private set; }
 		public ImmutableCollection<Technology> Dependencies { get; private set; }
+		public int CustomCraftingLevel { get; private set; }
 
 		public static Technology DefaultValue { get; private set; }
 	}
