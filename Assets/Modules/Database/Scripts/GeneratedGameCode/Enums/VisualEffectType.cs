@@ -19,5 +19,6 @@ namespace GameDatabase.Enums
 		Spark,
 		Lightning,
 		LightningStrike,
+		Sprite,
 	}
 }

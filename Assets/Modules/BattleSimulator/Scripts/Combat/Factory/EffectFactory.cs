@@ -96,11 +96,11 @@ namespace Combat.Factory
 
         public bool IsObjectVisible(Vector2 position, float size)
         {
-            var rect = _scene.ViewRect;
-            if (position.x + size < rect.xMin) return false;
-            if (position.x - size > rect.xMax) return false;
-            if (position.y + size < rect.yMin) return false;
-            if (position.y - size > rect.yMax) return false;
+            //var rect = _scene.ViewRect;
+            //if (position.x + size < rect.xMin) return false;
+            //if (position.x - size > rect.xMax) return false;
+            //if (position.y + size < rect.yMin) return false;
+            //if (position.y - size > rect.yMax) return false;
             return true;
         }
 
