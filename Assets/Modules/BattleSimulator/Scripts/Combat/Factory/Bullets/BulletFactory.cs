@@ -482,10 +482,10 @@ namespace Combat.Factory
                     ICollisionAction action;
                     if (trigger.OncePerCollision)
                         action = new ShowMultipleHitEffectsAction(_factory._effectFactory, trigger.VisualEffect, color,
-                            size * _factory._stats.BodySize, trigger.Lifetime);
+                            size, trigger.Lifetime);
                     else
                         action = new ShowHitEffectAction(_factory._effectFactory, trigger.VisualEffect, color,
-                            size * _factory._stats.BodySize, trigger.Lifetime);
+                            size, trigger.Lifetime);
 
                     collisionBehaviour.AddAction(action);
                 }

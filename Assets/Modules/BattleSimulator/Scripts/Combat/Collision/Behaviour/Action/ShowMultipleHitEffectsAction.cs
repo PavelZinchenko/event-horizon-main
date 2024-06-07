@@ -26,9 +26,12 @@ namespace Combat.Collision.Behaviour.Action
             {
                 effect = CompositeEffect.Create(_visualEffect, _effectFactory, null);
                 effect.Color = _color;
-                effect.Size = _size;
                 _effects[target] = effect;
             }
+
+            var size = _size * self.Body.WorldScale();
+            if (!Mathf.Approximately(size, effect.Size))
+                effect.Size = size;
 
             effect.Position = collisionData.Position;
             effect.Run(_lifetime, target.Body.Velocity, 0);

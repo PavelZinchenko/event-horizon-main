@@ -35,8 +35,11 @@ namespace Combat.Collision.Behaviour.Action
             {
                 _effect = _visualEffect != null ? CompositeEffect.Create(_visualEffect, _effectFactory, null) : _effectFactory.CreateEffect(_prefabId);
                 _effect.Color = _color;
-                _effect.Size = _size;
             }
+
+            var size = _size * self.Body.WorldScale();
+            if (!Mathf.Approximately(size, _effect.Size))
+                _effect.Size = size;
 
             _effect.Position = collisionData.Position;
             _effect.Run(_lifetime, target.Body.Velocity, 0);
