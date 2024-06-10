@@ -8,79 +8,45 @@ namespace Combat.Component.Body
 
         public void Initialize(IBody parent, Vector2 position, float rotation, float scale, Vector2 velocity, float angularVelocity, float weight)
         {
+            _parent = parent;
             if (parent != null)
                 parent.AddChild(transform);
             else
                 transform.parent = null;
 
-            Parent = parent;
             Position = position;
             Rotation = rotation;
             Scale = scale;
             Velocity = velocity;
             AngularVelocity = angularVelocity;
             Weight = weight;
+            Offset = 0;
         }
 
-        public IBody Parent
-        {
-            get { return _parent; }
-            set
-            {
-                if (_parent == value)
-                    return;
-
-                if (value == null)
-                {
-                    _position = _parent.WorldPosition();
-                    _rotation = _parent.WorldRotation();
-                }
-                else
-                {
-                    _position = Vector2.zero;
-                    _rotation = 0;
-                }
-
-                _parent = value;
-            }
-        }
-
+        public IBody Parent => _parent;
         public Vector2 VisualPosition => _viewPosition;
         public float VisualRotation => _viewRotation;
 
         public Vector2 Position
 		{
-			get { return _position; }
-			set
-			{
-				_position = value;
-				if (this && transform)
-					gameObject.Move(Parent == null ? value : Parent.ChildPosition(value));
-			}
+			get => _position;
+            set => SetPosition(value, Time.fixedTime);
 		}
 
 		public float Rotation
 		{
-			get
-			{
-				return _rotation;
-			}
-			set
-			{
-				_rotation = value;
-				if (this && transform)
-					transform.localEulerAngles = new Vector3(0, 0, Mathf.Repeat(value, 360));
-			}
+			get => _rotation;
+            set => SetRotation(value, Time.fixedTime);
 		}
 
-		public float Offset { get; set; }
+        public float Offset { get; set; }
         public Vector2 Velocity { get; set; }
         public float AngularVelocity { get; set; }
         public float Weight { get; set; }
 
         public float Scale
         {
-            get { return _scale; }
+            get => _scale;
             set
             {
                 _scale = value;
@@ -97,8 +63,6 @@ namespace Combat.Component.Body
             if (Parent != null)
                 Parent.ApplyForce(position, force);
         }
-
-        public void SetVelocityLimit(float value) {}
 
         public void Move(Vector2 position)
         {
@@ -122,21 +86,24 @@ namespace Combat.Component.Body
 			if (Parent != null)
                 return;
 
-            Position += Velocity * elapsedTime;
-            Rotation += AngularVelocity * elapsedTime;
+            var time = Time.fixedTime;
+            if (time > _positionUpdateTime)
+                SetPosition(_position + Velocity * (time - _positionUpdateTime), time);
+            if (time > _rotationUpdateTime)
+                SetRotation(_rotation + AngularVelocity * (time - _rotationUpdateTime), time);
 		}
 
 		public void UpdateView(float elapsedTime) 
 		{
 			if (!_interpolation) return;
-			if (Parent != null) return;
+			if (_parent != null) return;
 			if (!this || !transform) return;
 
 			var deltaTime = (float)(Time.timeAsDouble - Time.fixedTimeAsDouble);
             _viewRotation = _rotation + AngularVelocity*deltaTime;
-			transform.localEulerAngles = new Vector3(0, 0, Mathf.Repeat(_viewRotation, 360));
-			_viewPosition = _position + Velocity * deltaTime;
-			gameObject.Move(Parent == null ? _viewPosition : Parent.ChildPosition(_viewPosition));
+            SetTransformRotation(_viewRotation);
+			_viewPosition = _position + Velocity*deltaTime;
+            SetTransformPosition(_viewPosition);
 		}
 
 		public void AddChild(Transform child)
@@ -149,21 +116,34 @@ namespace Combat.Component.Body
 			return transform.Find(childName);
 		}
 
-		//private void Awake()
-		//{
-		//    _position = transform.localPosition;
-		//    _rotation = transform.localEulerAngles.z;
-		//    _scale = transform.localScale.z;
-		//}
+        private void SetPosition(in Vector2 position, float time)
+        {
+            _position = position;
+            _positionUpdateTime = time;
+            SetTransformPosition(position);
+        }
 
-		//private void Update()
-		//{
-		//    if (Parent == null || transform.parent != null)
-		//        return;
+        private void SetRotation(float rotation, float time)
+        {
+            _rotation = rotation;
+            _rotationUpdateTime = time;
+            SetTransformRotation(rotation);
+        }
 
-		//    transform.localPosition = this.WorldPosition();
-		//    transform.localEulerAngles = new Vector3(0, 0, this.WorldRotation());
-		//}
+        private void SetTransformPosition(Vector2 position)
+        {
+            if (this && transform)
+                gameObject.Move(_parent == null ? position : _parent.ChildPosition(position));
+        }
+
+        private void SetTransformRotation(float rotation)
+        {
+            if (this && transform)
+                transform.localEulerAngles = new Vector3(0, 0, Mathf.Repeat(rotation, 360));
+        }
+
+        private float _positionUpdateTime;
+        private float _rotationUpdateTime;
 
         private Vector2 _position;
         private float _rotation;
