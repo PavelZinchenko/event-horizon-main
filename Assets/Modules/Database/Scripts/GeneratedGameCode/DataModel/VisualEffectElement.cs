@@ -38,6 +38,8 @@ namespace GameDatabase.DataModel
 			StartTime = UnityEngine.Mathf.Clamp(serializable.StartTime, 0f, 1000f);
 			Lifetime = UnityEngine.Mathf.Clamp(serializable.Lifetime, 0f, 1000f);
 			ParticleSize = UnityEngine.Mathf.Clamp(serializable.ParticleSize, 0.001f, 100f);
+			Offset = serializable.Offset;
+			Rotation = UnityEngine.Mathf.Clamp(serializable.Rotation, 0f, 360f);
 			Loop = serializable.Loop;
 			Inverse = serializable.Inverse;
 			UseRealTime = serializable.UseRealTime;
@@ -56,6 +58,8 @@ namespace GameDatabase.DataModel
 		public float StartTime { get; private set; }
 		public float Lifetime { get; private set; }
 		public float ParticleSize { get; private set; }
+		public UnityEngine.Vector2 Offset { get; private set; }
+		public float Rotation { get; private set; }
 		public bool Loop { get; private set; }
 		public bool Inverse { get; private set; }
 		public bool UseRealTime { get; private set; }

@@ -94,6 +94,8 @@ namespace Combat.Effects
                     effect.Visible = false;
                     effect.Color = element.Color;
                     effect.Size = element.Size;
+                    effect.Position = element.Offset;
+                    effect.Rotation = element.Rotation;
                     _effects.Add(effect);
 
                     var lifetime = element.Lifetime + element.StartTime;
@@ -194,7 +196,7 @@ namespace Combat.Effects
                 if (element.GrowthRate != 0)
                     effect.Size = element.Size * (1.0f + element.GrowthRate * (1.0f - effect.Life));
                 if (element.TurnRate != 0)
-                    effect.Rotation = element.TurnRate * (1.0f - effect.Life);
+                    effect.Rotation = element.Rotation + element.TurnRate * (1.0f - effect.Life);
             }
         }
 

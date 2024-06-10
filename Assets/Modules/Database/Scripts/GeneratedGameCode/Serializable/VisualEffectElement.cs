@@ -26,6 +26,8 @@ namespace GameDatabase.Serializable
 		public float StartTime;
 		public float Lifetime = 1f;
 		public float ParticleSize = 1f;
+		public UnityEngine.Vector2 Offset;
+		public float Rotation;
 		public bool Loop;
 		public bool Inverse;
 		public bool UseRealTime;
