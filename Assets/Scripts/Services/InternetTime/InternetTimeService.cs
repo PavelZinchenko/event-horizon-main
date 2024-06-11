@@ -1,17 +1,20 @@
 ﻿using System;
-using System.Globalization;
-using System.IO;
-using System.Net.Sockets;
 using UniRx;
 using UnityEngine;
 using CommonComponents.Signals;
 using Zenject;
+using UnityEngine.Networking;
 
 namespace Services.InternetTime
 {
     public class InternetTimeService : IInitializable, IDisposable
     {
-        [Inject]
+        private const string Url = "https://worldtimeapi.org/api/timezone/Etc/UTC";
+
+        private readonly ServerTimeReceivedSignal.Trigger _timeReceivedTrigger;
+        private IDisposable _timeSubscription;
+        private DateTime _dateTime;
+
         public InternetTimeService(ServerTimeReceivedSignal.Trigger timeReceivedTrigger)
         {
             _timeReceivedTrigger = timeReceivedTrigger;
@@ -24,13 +27,18 @@ namespace Services.InternetTime
 
         public void Initialize()
         {
-            Observable.Timer(DateTimeOffset.Now, TimeSpan.FromHours(1), Scheduler.ThreadPool).Select(RequestTime).Retry().
-                ObserveOnMainThread().Subscribe(OnTimeReceived).AddTo(_disposable);
+            _timeSubscription = Observable.Interval(TimeSpan.FromMinutes(30))
+                .StartWith(0)
+                .SelectMany(_ => GetNetworkTime())
+                .Subscribe(
+                    OnTimeReceived,
+                    error => GameDiagnostics.Trace.LogError($"Error fetching time: {error}")
+                );
         }
 
         public void Dispose()
         {
-            _disposable.Dispose();
+            _timeSubscription?.Dispose();
         }
 
         private void OnTimeReceived(DateTime time)
@@ -38,24 +46,41 @@ namespace Services.InternetTime
             _dateTime = time;
             HasBeenReceived = true;
             _timeReceivedTrigger.Fire(_dateTime);
-            Debug.Log("Internet time received - " + _dateTime);
         }
 
-        private static DateTime RequestTime(long _)
+        private IObservable<DateTime> GetNetworkTime()
         {
-            var client = new TcpClient("time.nist.gov", 13);
-            using (var streamReader = new StreamReader(client.GetStream()))
+            return Observable.Create<DateTime>(observer =>
             {
-                var response = streamReader.ReadToEnd();
-                Debug.Log("InternetTimeService: Response - " + response);
-                var utcDateTimeString = response.Substring(7, 17);
-                return DateTime.ParseExact(utcDateTimeString, "yy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
-            }
+                var webRequest = UnityWebRequest.Get(Url);
+                var operation = webRequest.SendWebRequest();
+
+                return Observable.EveryUpdate()
+                    .Where(_ => operation.isDone)
+                    .Take(1)
+                    .Subscribe(_ =>
+                    {
+                        if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
+                        {
+                            observer.OnError(new Exception(webRequest.error));
+                        }
+                        else
+                        {
+                            var jsonResponse = webRequest.downloadHandler.text;
+                            var timeApiResponse = JsonUtility.FromJson<TimeApiResponse>(jsonResponse);
+                            var networkTime = DateTime.Parse(timeApiResponse.datetime);
+                            observer.OnNext(networkTime);
+                            observer.OnCompleted();
+                        }
+                    });
+            });
         }
 
-        private DateTime _dateTime;
-        private readonly CompositeDisposable _disposable = new CompositeDisposable();
-        private readonly ServerTimeReceivedSignal.Trigger _timeReceivedTrigger;
+        [Serializable]
+        public class TimeApiResponse
+        {
+            public string datetime;
+        }
     }
 
     public class ServerTimeReceivedSignal : SmartWeakSignal<ServerTimeReceivedSignal, DateTime> {}
