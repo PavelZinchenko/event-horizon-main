@@ -30,6 +30,7 @@ namespace GameDatabase.Serializable
 		public string Layout;
 		public BarrelSerializable[] Barrels;
 		public ShipFeaturesSerializable Features;
+		public bool DisableLayoutExpansion;
 		public float ColliderTolerance = 0.02f;
 		public UnityEngine.Vector2 EnginePosition;
 		public float EngineSize;

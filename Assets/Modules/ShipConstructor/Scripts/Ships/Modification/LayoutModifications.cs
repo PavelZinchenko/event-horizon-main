@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Constructor.Model;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
@@ -10,20 +11,25 @@ namespace Constructor.Ships.Modification
     public class LayoutModifications
     {
         public event Action DataChangedEvent;
+        private readonly IShipLayout _shipLayout;
+        private readonly CustomLayout _customLayout;
 
         public LayoutModifications(Ship ship)
         {
-            _layout = new(ship.Layout);
+            if (ship.DisableLayoutExpansion)
+                _shipLayout = new ShipLayoutAdapter(ship.Layout);
+            else
+                _shipLayout = _customLayout = new(ship.Layout);
         }
 
         public IShipLayout BuildLayout()
         {
-            return _layout;
+            return _shipLayout;
         }
 
         public bool TryAddCell(int x, int y, CellType cellType)
         {
-			if (!_layout.TryModifyCell(x, y, cellType))
+			if (_customLayout == null || !_customLayout.TryModifyCell(x, y, cellType))
 				return false;
 
             DataChangedEvent?.Invoke();
@@ -33,50 +39,50 @@ namespace Constructor.Ships.Modification
 
         public void FullyUpgrade()
         {
-            _layout.FullyUpgrade();
+            _customLayout?.FullyUpgrade();
         }
 
         public int TotalExtraCells()
         {
-			return _layout.CustomizableCellCount;
+			return _customLayout == null ? 0 : _customLayout.CustomizableCellCount;
         }
 
         public int ExtraCells()
         {
-            return _layout.AddedCellCount;
+            return _customLayout == null ? 0 : _customLayout.AddedCellCount;
         }
 
         public void Reset()
         {
-            _layout.Reset();
+            _customLayout?.Reset();
             DataChangedEvent?.Invoke();
         }
 
         public void Deserialize(byte[] data)
         {
+            if (_customLayout == null) return;
+
             if (data == null || data.Length == 0)
             {
                 Reset();
                 return;
             }
 
-            if (!_layout.TryDeserialize(data))
-                _layout.DeserializeObsolete(data);
+            if (!_customLayout.TryDeserialize(data))
+                _customLayout.DeserializeObsolete(data);
 
             DataChangedEvent?.Invoke();
         }
 
         public IEnumerable<byte> Serialize()
         {
-			return _layout.Serialize();
+			return _customLayout?.Serialize() ?? Enumerable.Empty<byte>();
         }
 
 		public bool IsCellValid(int x, int y, CellType type)
 		{
-			return _layout.IsValidModification(x, y, type);
+			return _customLayout != null && _customLayout.IsValidModification(x, y, type);
 		}
-
-		private readonly CustomLayout _layout;
 
 		private class CustomLayout : IShipLayout
 		{
