@@ -201,7 +201,7 @@ PlayerSettings:
   uIRequiresFullScreen: 1
   uIStatusBarHidden: 1
   uIExitOnSuspend: 0
-  uIStatusBarStyle: 0
+  uIStatusBarStyle: 1
   appleTVSplashScreen: {fileID: 0}
   appleTVSplashScreen2x: {fileID: 0}
   tvOSSmallIconLayers: []
@@ -717,7 +717,9 @@ PlayerSettings:
   openGLRequireES31: 0
   openGLRequireES31AEP: 0
   openGLRequireES32: 0
-  m_TemplateCustomTags: {}
+  m_TemplateCustomTags:
+    PRODUCT_DESCRIPTION: 
+    RENDER_SCALE: 
   mobileMTRendering:
     Android: 0
     iPhone: 1
@@ -976,10 +978,10 @@ PlayerSettings:
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
-  webGLTemplate: APPLICATION:Default
+  webGLTemplate: PROJECT:FullscreenWindow
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
-  webGLCompressionFormat: 1
+  webGLCompressionFormat: 0
   webGLWasmArithmeticExceptions: 0
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
@@ -992,9 +994,10 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: UNITY_ASSERTIONS;STEAMWORKS_NET;ADS_GOOGLE;IAP_UNITY;LICENSE_OPENSOURCE
-    Standalone: UNITY_ASSERTIONS;NO_GPGS;ADS_DISABLED;IAP_DISABLED;STEAMWORKS_NET;LICENSE_OPENSOURCE
-    iPhone: NO_GPGS;IAP_UNITY;LICENSE_OPENSOURCE;ADS_UNITY
+    Android: UNITY_ASSERTIONS;ADS_GOOGLE;IAP_UNITY;LICENSE_OPENSOURCE;STORE_GOOGLE
+    Standalone: UNITY_ASSERTIONS;NO_GPGS;ADS_DISABLED;IAP_DISABLED;STEAMWORKS_NET;LICENSE_OPENSOURCE;STORE_STEAM
+    WebGL: LICENSE_OPENSOURCE;NO_GPGS;ADS_DISABLED;IAP_DISABLED;STORE_WEB
+    iPhone: NO_GPGS;IAP_UNITY;LICENSE_OPENSOURCE;ADS_UNITY;STORE_APPLE
   additionalCompilerArguments: {}
   platformArchitecture:
     iPhone: 1
@@ -1003,7 +1006,8 @@ PlayerSettings:
     Standalone: 1
     Windows Store Apps: 2
     iPhone: 1
-  il2cppCompilerConfiguration: {}
+  il2cppCompilerConfiguration:
+    Standalone: 1
   il2cppCodeGeneration: {}
   managedStrippingLevel:
     Android: 1

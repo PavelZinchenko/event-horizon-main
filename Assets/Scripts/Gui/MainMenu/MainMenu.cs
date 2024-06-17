@@ -121,7 +121,7 @@ namespace Gui.MainMenu
         {
 #if UNITY_STANDALONE
             _guiHelper.ShowConfirmation(_localization.GetString("$ExitConfirmation"), Application.Quit);
-#else
+#elif !UNITY_WEBGL
             Application.Quit();
 #endif
         }

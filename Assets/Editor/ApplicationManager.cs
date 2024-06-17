@@ -16,14 +16,14 @@ namespace EditorWindows
             GetWindow(typeof(ApplicationManager));
         }
 
-        public enum IapType
-        {
-            Disabled,
-            Unity,
-            Yandex
-        }
+		public enum IapType
+		{
+			Disabled,
+			Unity,
+			Yandex
+		}
 
-        public enum AdsType
+		public enum AdsType
         {
             Disabled,
             Unity,
@@ -39,6 +39,35 @@ namespace EditorWindows
             Commercial
         }
 
+        public enum StoreType
+        {
+            Undefined,
+            Yandex,
+            Google,
+            Apple,
+            Web,
+            Steam,
+        }
+
+        public static string StoreTypeToName(StoreType storeType)
+        {
+            switch (storeType)
+            {
+                case StoreType.Yandex:
+                    return "STORE_YANDEX";
+                case StoreType.Google:
+                    return "STORE_GOOGLE";
+                case StoreType.Apple:
+                    return "STORE_APPLE";
+                case StoreType.Web:
+                    return "STORE_WEB";
+                case StoreType.Steam:
+                    return "STORE_STEAM";
+                default:
+                    return string.Empty;
+            }
+        }
+
         public static string IapTypeToName(IapType iapType)
         {
             switch (iapType)
@@ -47,7 +76,7 @@ namespace EditorWindows
                     return "IAP_UNITY";
                 case IapType.Yandex:
                     return "IAP_YANDEX";
-                case IapType.Disabled:
+				case IapType.Disabled:
                 default:
                     return "IAP_DISABLED";
             }
@@ -85,6 +114,16 @@ namespace EditorWindows
             }
         }
 
+        private void SelectStoreType()
+        {
+            var storeType = (StoreType)EditorGUILayout.EnumPopup("Store", _storeType);
+            if (storeType == _storeType) return;
+
+            RemoveDefineSymbol(StoreTypeToName(_storeType));
+            AddDefineSymbol(StoreTypeToName(storeType));
+
+            _storeType = storeType;
+        }
 
         private void SelectIapType()
         {
@@ -161,6 +200,7 @@ namespace EditorWindows
             if (EditorGUILayout.Toggle("Disable GooglePlay", false)) AddDefineSymbol("NO_GPGS");
 #endif
 
+            SelectStoreType();
             SelectIapType();
             SelectAdsType();
             SelectLicenseType();
@@ -377,6 +417,20 @@ namespace EditorWindows
         private bool _fakeIap = AppConfig.testMode;
         private bool _enableCheats = AppConfig.enableCheats;
 		private bool _alternativeTitle = AppConfig.alternativeTitle;
+
+#if STORE_YANDEX
+        private StoreType _storeType = StoreType.Yandex;
+#elif STORE_GOOGLE
+		private StoreType _storeType = StoreType.Google;
+#elif STORE_APPLE
+        private StoreType _storeType = StoreType.Apple;
+#elif STORE_WEB
+        private StoreType _storeType = StoreType.Web;
+#elif STORE_STEAM
+        private StoreType _storeType = StoreType.Steam;
+#else
+        private StoreType _storeType = StoreType.Undefined;
+#endif
 
 #if IAP_DISABLED
         private IapType _iapType = IapType.Disabled;

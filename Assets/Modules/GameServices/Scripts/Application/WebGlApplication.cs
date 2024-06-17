@@ -1,6 +1,6 @@
 ﻿#if UNITY_WEBGL
 
-using Agava.WebUtility;
+//using Agava.WebUtility;
 using UnityEngine;
 using Zenject;
 
@@ -21,18 +21,18 @@ namespace Services.GameApplication
 
         private void OnEnable()
         {
-            WebApplication.InBackgroundChangeEvent += OnApplicationInBackground;
+            //WebApplication.InBackgroundChangeEvent += OnApplicationInBackground;
         }
 
         private void OnDisable()
         {
-            WebApplication.InBackgroundChangeEvent -= OnApplicationInBackground;
+            //WebApplication.InBackgroundChangeEvent -= OnApplicationInBackground;
         }
 
         private void Start()
         {
 #if !UNITY_EDITOR
-            _applicationInBackground = WebApplication.InBackground;
+            //_applicationInBackground = WebApplication.InBackground;
 #endif
             OnGamePaused();
         }

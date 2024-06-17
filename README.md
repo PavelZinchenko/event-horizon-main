@@ -9,6 +9,7 @@ To get started with **Event Horizon**, you have multiple options to download the
 - [Google Play](https://play.google.com/store/apps/details?id=com.ZipasGames.EventHorizon) - for Android devices
 - [App Store](https://apps.apple.com/us/app/event-horizon-cosmic-rpg/id1098794574) - for iOS devices
 - [Steam](https://store.steampowered.com/app/465000/Event_Horizon/) - for PC
+- [itch.io](https://pavel-zinchenko.itch.io/event-horizon) - free version without ads or in-app purchases for Web/Android/PC
 
 However, for the most up-to-date version of the game, visit the [Releases](https://github.com/PavelZinchenko/event-horizon-main/releases) page here on GitHub. This ensures you have the latest features, bug fixes, and improvements.
 

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>{{{ PRODUCT_NAME }}}</title>
+</head>
+
+<body style="margin: 0px; overflow: hidden;" oncontextmenu="return false;">
+  <canvas id="unity-canvas"
+    style="position: fixed; width: 100%; height: 100%; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}">
+  </canvas>
+
+  <div id="background" style="background-color: black; position: absolute; left: 0%; right: 0%; top: 0%; bottom: 0%;"></div>  
+  <div id="progress-bar" style="position: absolute; left: 2%; right: 98%; top: 95%; bottom: 2%; background-color: white;"></div>
+
+  <script src="Build/{{{ LOADER_FILENAME }}}"></script>
+  <script>
+    const settings = {
+      dataUrl: "Build/{{{ DATA_FILENAME }}}",
+      frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
+      #if USE_WASM
+      codeUrl: "Build/{{{ CODE_FILENAME }}}",
+      #endif
+      #if MEMORY_FILENAME
+      memoryUrl: "Build/{{{ MEMORY_FILENAME }}}",
+      #endif
+      #if SYMBOLS_FILENAME
+      symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
+      #endif
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "{{{ COMPANY_NAME }}}",
+      productName: "{{{ PRODUCT_NAME }}}",
+      productVersion: "{{{ PRODUCT_VERSION }}}",
+      matchWebGLToCanvasSize: true,
+      devicePixelRatio: {{{ parseFloat(RENDER_SCALE) ? parseFloat(RENDER_SCALE) : 1.5 }}},
+    };
+
+    const progressBar = document.querySelector("#progress-bar");
+    const background = document.querySelector("#background");
+
+    var myGameInstance = null;
+
+    setTimeout(() => {
+      createUnityInstance(document.querySelector("#unity-canvas"), settings, (progress) => {
+        progressBar.style.right = 100 * (1 - progress) + "%";
+      }).then((unityInstance) => {
+        progressBar.style.display = "none";
+	background.style.display = "none";
+        myGameInstance = unityInstance;
+      }).catch((message) => {
+        alert(message);
+      });
+    }, 500); // Wait half a second before loading. Makes page more responsive on reload.
+  </script>
+</body>
+
+</html>
