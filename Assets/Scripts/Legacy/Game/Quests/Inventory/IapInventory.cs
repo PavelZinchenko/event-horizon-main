@@ -25,7 +25,7 @@ namespace GameModel.Quests
         {
             get
             {
-                var items = new List<IProduct>(_inAppPurchasing.GetAvailableProducts().Select(item => _productFactory.CreateMarketProduct(item, 1, 0)));
+                var items = new List<IProduct>(_inAppPurchasing.GetAvailableProducts().Select(item => _productFactory.CreateMarketProduct(new IapItemAdapter(item), 1, 0)));
 
                 if (_holidayManager.IsChristmas)
                     items.Add(_productFactory.CreateMarketProduct(_itemTypeFactory.CreateXmasBoxItem()));

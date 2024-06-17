@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Economy.ItemType;
 using CommonComponents.Signals;
+using GameDatabase.Model;
 
 namespace Services.InAppPurchasing
 {
@@ -11,10 +11,15 @@ namespace Services.InAppPurchasing
         void ConfirmRecentPurchases();
     }
 
-    public interface IIapItem : IItemType
+    public interface IIapItem
 	{
-		string PriceText { get; }
-	}
+        string Id { get; }
+        string Name { get; }
+        string Description { get; }
+        string PriceText { get; }
+        SpriteId Icon { get; }
+        void Buy();
+    }
 
     public class IapException : System.Exception
     {

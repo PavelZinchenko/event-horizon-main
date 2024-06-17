@@ -74,7 +74,7 @@ namespace GameModel
 						//if (Model.Regulations.Time.IsCristmas && random.Next(3) == 0)
 						//	_items.Add(_productFactory.CreateRenewableMarketProduct(new XmaxBoxItem(random.Next(), _starId), 1, _starId, Market.GiftBoxRenewalTime, 1));
 						
-						_items.AddRange(_inAppPurchasing.GetAvailableProducts().Select(item => _productFactory.CreateMarketProduct(item, 1, 0)));
+						_items.AddRange(_inAppPurchasing.GetAvailableProducts().Select(item => _productFactory.CreateMarketProduct(new IapItemAdapter(item), 1, 0)));
 					}
 					
 					return _items.Where(item => item.Quantity > 0);

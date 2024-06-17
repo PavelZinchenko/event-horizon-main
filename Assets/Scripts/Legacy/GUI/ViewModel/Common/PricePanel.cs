@@ -43,10 +43,7 @@ namespace ViewModel
 				CurrencyIcon.color = color;
 
 				if (price.Currency == Currency.Money)
-                {
-					var iapProduct = item as Services.InAppPurchasing.IIapItem;
-					PriceText.text = iapProduct != null ? iapProduct.PriceText : string.Empty;
-				}
+					PriceText.text = item is IapItemAdapter iapProduct ? iapProduct.PriceText : string.Empty;
 
 				if (BackgroundImage != null)
 				{
