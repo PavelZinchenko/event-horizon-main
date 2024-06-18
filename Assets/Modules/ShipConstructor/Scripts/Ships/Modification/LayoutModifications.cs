@@ -275,7 +275,6 @@ namespace Constructor.Ships.Modification
 
             private bool IsCustomizable(int x, int y) => _stockLayout[x,y] == (char)CellType.Empty && _layout[_rect.ToArrayIndex(x,y)] != (char)CellType.Empty;
             public ref readonly LayoutRect Rect => ref _rect;
-            public int GetCellCount(CellType cellType) => 0;
             public int CellCount => _stockLayout.CellCount + _addedCellCount;
             public int Size => _stockLayout.Size;
             public CellType this[int x, int y] => (CellType)_layout[_rect.ToArrayIndex(x, y)];

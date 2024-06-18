@@ -15,6 +15,7 @@ using Services.Resources;
 using Zenject;
 using Gui.Theme;
 using Constructor.Extensions;
+using Constructor.Model;
 
 namespace ViewModel.Craft
 {
@@ -170,7 +171,7 @@ namespace ViewModel.Craft
         {
             var size = ship.Model.Layout.CellCount;
             yield return new KeyValuePair<string, string>("$CellCount", size.ToString());
-            yield return new KeyValuePair<string, string>("$EngineSize", ship.Model.Layout.GetCellCount(CellType.Engine).ToString());
+            yield return new KeyValuePair<string, string>("$EngineSize", CalculateEngineSize(ship.Model.Layout).ToString());
 
             var data = ship.Model.OriginalShip;
             var kineticResistance = CalculateResistance(data.Features.KineticResistance);
@@ -256,6 +257,18 @@ namespace ViewModel.Craft
                 default:
                     return deviceClass.ToString();
             }
+        }
+
+        private static int CalculateEngineSize(IShipLayout layout)
+        {
+            int count = 0;
+
+            for (int i = layout.Rect.yMin; i <= layout.Rect.yMax; ++i)
+                for (int j = layout.Rect.xMin; j <= layout.Rect.xMax; ++j)
+                    if (layout[j, i] == CellType.Engine)
+                        count++;
+
+            return count;
         }
     }
 }

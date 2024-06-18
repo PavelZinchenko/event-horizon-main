@@ -9,7 +9,6 @@ namespace Constructor.Model
         ref readonly LayoutRect Rect { get; }
         CellType this[int x, int y] { get; }
 
-        [System.Obsolete] int GetCellCount(CellType cellType);
         [System.Obsolete] int Size { get; }
     }
 
@@ -62,17 +61,6 @@ namespace Constructor.Model
         public int Size => _layout.Size;
 
         public ref readonly LayoutRect Rect => ref _rect;
-
-        public int GetCellCount(CellType cellType)
-        {
-            int count = 0;
-            var data = _layout.Data;
-            for (int i = 0; i < data.Length; ++i)
-                if (data[i] == (char)cellType)
-                    count++;
-
-            return count;
-        }
 
         public ShipLayoutAdapter(Layout layout)
         {
