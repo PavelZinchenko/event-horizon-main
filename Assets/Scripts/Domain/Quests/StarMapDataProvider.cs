@@ -8,6 +8,7 @@ namespace Domain.Quests
 {
     public class StarMapDataProvider : IStarMapDataProvider, IPlayerDataProvider
     {
+        private readonly SessionDataLoadedSignal _sessionDataLoadedSignal;
         private readonly ISessionData _session;
         private readonly RegionMap _regionMap;
 		private readonly Occupants _occupants;
@@ -18,11 +19,14 @@ namespace Domain.Quests
         public StarMapDataProvider(
             ISessionData session,
 			Occupants occupants,
-            RegionMap regionMap)
+            RegionMap regionMap,
+            SessionDataLoadedSignal sessionDataLoadedSignal)
         {
             _session = session;
 			_occupants = occupants;
             _regionMap = regionMap;
+            _sessionDataLoadedSignal = sessionDataLoadedSignal;
+            _sessionDataLoadedSignal.Event += OnSessionDataLoaded;
         }
 
         public IStarDataProvider CurrentStar
@@ -57,6 +61,12 @@ namespace Domain.Quests
 
             foreach (var item in regions)
                 yield return new RegionDataProvider(item);
+        }
+
+        private void OnSessionDataLoaded()
+        {
+            _currentStar = null;
+            _lastStar = null;
         }
     }
 }
