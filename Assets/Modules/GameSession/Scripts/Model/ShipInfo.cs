@@ -53,7 +53,7 @@ namespace Session.Model
 			if (shipData == null)
 				return null;
 
-			var shipModel = new ShipModel(shipData);
+			var shipModel = new ShipModel(shipData, database);
 			var factory = new ModificationFactory(database);
 			shipModel.Modifications.Assign(_modifications.Select(item => ShipModificationExtensions.Deserialize(item, factory)));
 			shipModel.LayoutModifications.Deserialize(_layoutModifications.ToArray());

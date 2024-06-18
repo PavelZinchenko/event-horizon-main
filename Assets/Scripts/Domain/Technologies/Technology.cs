@@ -107,19 +107,19 @@ namespace DataModel.Technology
             switch (quality)
             {
                 case CraftItemQuality.Common:
-                    model = new ShipModel(Ship);
+                    model = new ShipModel(Ship, _database);
                     break;
                 case CraftItemQuality.Improved:
-                    model = new ShipModel(Ship);
+                    model = new ShipModel(Ship, _database);
                     model.Modifications.Add(new EmptyModification());
                     break;
                 case CraftItemQuality.Excellent:
-                    model = new ShipModel(Ship);
+                    model = new ShipModel(Ship, _database);
                     model.Modifications.Add(new EmptyModification());
                     model.Modifications.Add(new EmptyModification());
                     break;
                 case CraftItemQuality.Superior:
-                    model = new ShipModel(Ship);
+                    model = new ShipModel(Ship, _database);
                     model.Modifications.Add(new EmptyModification());
                     model.Modifications.Add(new EmptyModification());
                     model.Modifications.Add(new EmptyModification());

@@ -105,7 +105,7 @@ namespace Session.ContentObsolete
             if (shipWrapper == null)
                 return null;
 
-            var shipModel = new ShipModel(shipWrapper);
+            var shipModel = new ShipModel(shipWrapper, database);
             var factory = new ModificationFactory(database);
             shipModel.Modifications.Assign(shipData.Modifications.Modifications.Select(item => ShipModificationExtensions.Deserialize(item, factory)));
             shipModel.LayoutModifications.Deserialize(shipData.Modifications.Layout.ToArray());
@@ -155,7 +155,7 @@ namespace Session.ContentObsolete
             if (baseShip == null)
                 return null;
 
-            var shipModel = new ShipModel(baseShip);
+            var shipModel = new ShipModel(baseShip, database);
 
             var factory = new ModificationFactory(database);
             shipModel.Modifications.Assign(shipInfo.Modifications.Select(item => ShipModificationExtensions.Deserialize(item, factory)));

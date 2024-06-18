@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="ToggleState">
+    <item name="Default" value="0" />
+    <item name="Enabled" value="1" />
+    <item name="Disabled" value="2" />
+</data>

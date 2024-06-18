@@ -14,9 +14,16 @@ namespace Constructor.Ships.Modification
         private readonly IShipLayout _shipLayout;
         private readonly CustomLayout _customLayout;
 
-        public LayoutModifications(Ship ship)
+        public static bool IsDisabledForShip(Ship ship, ShipSettings shipSettings) => ship.CellsExpansions switch
         {
-            if (ship.DisableLayoutExpansion)
+            ToggleState.Enabled => false,
+            ToggleState.Disabled => true,
+            _ => shipSettings?.DisableCellsExpansions ?? false,
+        };
+
+        public LayoutModifications(Ship ship, bool disableModifications = false)
+        {
+            if (disableModifications)
                 _shipLayout = new ShipLayoutAdapter(ship.Layout);
             else
                 _shipLayout = _customLayout = new(ship.Layout);

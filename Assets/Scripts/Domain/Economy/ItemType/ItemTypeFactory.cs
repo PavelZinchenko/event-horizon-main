@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Linq;
 using Constructor;
 using Constructor.Ships;
 using DataModel.Technology;
@@ -36,9 +37,9 @@ namespace Economy.ItemType
             return _container.Instantiate<MarketShipItem>(new object[] { ship, premium });
         }
 
-        public IItemType CreateQuestShipItem(IShip ship)
+        public IItemType CreateQuestShipItem(Ship ship)
         {
-            return _container.Instantiate<QuestShipItem>(new object[] { ship });
+            return _container.Instantiate<QuestShipItem>(new object[] { new CommonShip(ship, Enumerable.Empty<IntegratedComponent>(), _database) });
         }
 
         public IItemType CreateQuestShipItem(ShipBuild build)

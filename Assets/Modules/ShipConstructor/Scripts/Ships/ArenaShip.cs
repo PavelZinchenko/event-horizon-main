@@ -6,7 +6,7 @@ namespace Constructor.Ships
     public class ArenaShip : BaseShip
     {
         public ArenaShip(IShip ship, float powerMultiplier = 1.0f)
-            : base(ship.Model.Clone(), ship.CustomAi)
+            : base(ship.Model, ship.CustomAi)
         {
             _name = ship.Name;
             _powerMultiplier = powerMultiplier;

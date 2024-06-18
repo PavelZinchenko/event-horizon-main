@@ -16,7 +16,7 @@
     <member name="Barrels" type="struct_list" typeid="Barrel" />
     <member name="Features" type="struct" typeid="ShipFeatures" />
 
-    <member name="DisableLayoutExpansion" type="bool" />
+    <member name="CellsExpansions" type="enum" typeid="ToggleState" />
     <member name="ColliderTolerance" type="float" minvalue="0" maxvalue="1" default="0.02" />
 
     <!-- obsolete -->

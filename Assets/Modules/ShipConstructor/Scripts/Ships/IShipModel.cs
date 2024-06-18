@@ -35,7 +35,5 @@ namespace Constructor.Ships
         LayoutModifications LayoutModifications { get; }
 
         bool DataChanged { get; set; }
-
-        IShipModel Clone();
     }
 }

@@ -16,4 +16,5 @@
     <member name="MaxAngularVelocity" type="float" minvalue="5" maxvalue="100" default="30" />
     <member name="MaxAcceleration" type="float" minvalue="5" maxvalue="1000" default="300" />
     <member name="MaxAngularAcceleration" type="float" minvalue="5" maxvalue="1000" default="300" />
+    <member name="DisableCellsExpansions" type="bool" />
 </data>

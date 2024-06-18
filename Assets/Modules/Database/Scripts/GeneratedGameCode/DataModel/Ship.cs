@@ -45,7 +45,7 @@ namespace GameDatabase.DataModel
 			Layout = new Layout(serializable.Layout);
 			Barrels = new ImmutableCollection<Barrel>(serializable.Barrels?.Select(item => Barrel.Create(item, loader)));
 			Features = ShipFeatures.Create(serializable.Features, loader);
-			DisableLayoutExpansion = serializable.DisableLayoutExpansion;
+			CellsExpansions = serializable.CellsExpansions;
 			ColliderTolerance = UnityEngine.Mathf.Clamp(serializable.ColliderTolerance, 0f, 1f);
 
 			OnDataDeserialized(serializable, loader);
@@ -68,7 +68,7 @@ namespace GameDatabase.DataModel
 		public Layout Layout { get; private set; }
 		public ImmutableCollection<Barrel> Barrels { get; private set; }
 		public ShipFeatures Features { get; private set; }
-		public bool DisableLayoutExpansion { get; private set; }
+		public ToggleState CellsExpansions { get; private set; }
 		public float ColliderTolerance { get; private set; }
 
 		public static Ship DefaultValue { get; private set; }

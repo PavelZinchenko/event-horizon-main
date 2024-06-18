@@ -43,6 +43,7 @@ namespace GameDatabase.DataModel
 			MaxAngularVelocity = UnityEngine.Mathf.Clamp(serializable.MaxAngularVelocity, 5f, 100f);
 			MaxAcceleration = UnityEngine.Mathf.Clamp(serializable.MaxAcceleration, 5f, 1000f);
 			MaxAngularAcceleration = UnityEngine.Mathf.Clamp(serializable.MaxAngularAcceleration, 5f, 1000f);
+			DisableCellsExpansions = serializable.DisableCellsExpansions;
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -63,6 +64,7 @@ namespace GameDatabase.DataModel
 		public float MaxAngularVelocity { get; private set; }
 		public float MaxAcceleration { get; private set; }
 		public float MaxAngularAcceleration { get; private set; }
+		public bool DisableCellsExpansions { get; private set; }
 
 		public static ShipSettings DefaultValue { get; private set; }
 	}

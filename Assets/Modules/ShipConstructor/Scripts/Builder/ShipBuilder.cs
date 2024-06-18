@@ -16,7 +16,7 @@ namespace Constructor
 	public class ShipBuilder
 	{
 		public ShipBuilder(ShipBuild ship)
-            : this(new ShipModel(ship.Ship, ship.BuildFaction), ship.Components.Select<InstalledComponent, IntegratedComponent>(ComponentExtensions.FromDatabase))
+            : this(new ShipModel(ship, null), ship.Components.Select(ComponentExtensions.FromDatabase))
 		{
             var boost = 1f + 0.5f * (int)ship.DifficultyClass;
             Bonuses.DamageMultiplier *= boost;

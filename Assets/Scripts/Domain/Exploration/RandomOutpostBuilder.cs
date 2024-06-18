@@ -27,7 +27,7 @@ namespace Game.Exploration
             var random = new System.Random(_seed);
             var componentLevel = Maths.Distance.ComponentLevel(_level);
 
-            var ship = new CommonShip(new ShipModel(_database.ExplorationSettings.OutpostShip), GetComponents(random));
+            var ship = new CommonShip(new ShipModel(_database.ExplorationSettings.OutpostShip, _database), GetComponents(random));
 
             var shipLevel = _database.GalaxySettings.EnemyLevel(_level);
             ship.Experience = Maths.Experience.FromLevel(shipLevel);

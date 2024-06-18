@@ -6,17 +6,19 @@ using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
 using CommonComponents.Utils;
+using GameDatabase;
 
 namespace Constructor.Ships
 {
     public sealed class ShipModel : IShipModel
     {
-        public ShipModel(ShipBuild build, GameDatabase.IDatabase database)
+        public ShipModel(ShipBuild build, IDatabase database)
         {
             _ship = build.Ship;
             Faction = build.BuildFaction != Faction.Empty ? build.BuildFaction : build.Ship.Faction;
 
-            _layoutModifications = new LayoutModifications(build.Ship);
+            _layoutModifications = new LayoutModifications(build.Ship,
+                LayoutModifications.IsDisabledForShip(build.Ship, database?.ShipSettings));
             if (build.ExtendedLayout)
                 _layoutModifications.FullyUpgrade();
 
@@ -39,12 +41,12 @@ namespace Constructor.Ships
             DataChanged = false;
         }
 
-        public ShipModel(Ship ship)
+        public ShipModel(Ship ship, IDatabase database)
         {
             _ship = ship;
             Faction = ship.Faction;
 
-            _layoutModifications = new LayoutModifications(ship);
+            _layoutModifications = new LayoutModifications(ship, LayoutModifications.IsDisabledForShip(ship, database?.ShipSettings));
             _layoutModifications.DataChangedEvent += OnModificationsChanged;
 
             _modifications = new ObservableCollection<IShipModification>();
@@ -52,18 +54,6 @@ namespace Constructor.Ships
 
             OnModificationsChanged();
             DataChanged = false;
-        }
-
-        public ShipModel(Ship ship, Faction faction) : this(ship)
-        {
-            if (faction != Faction.Empty)
-                Faction = faction;
-        }
-
-        public ShipModel(Ship ship, IEnumerable<IShipModification> modifications, Faction faction) : this(ship, faction)
-        {
-            if (modifications != null)
-                Modifications.Assign(modifications);
         }
 
         public ItemId<Ship> Id => _ship.Id;
@@ -103,15 +93,6 @@ namespace Constructor.Ships
         public ShipBaseStats Stats => _stats;
         public LayoutModifications LayoutModifications => _layoutModifications;
         public IItemCollection<IShipModification> Modifications => _modifications;
-
-        public IShipModel Clone()
-        {
-            var model = new ShipModel(_ship);
-            model.Modifications.Assign(Modifications);
-            model.Faction = Faction;
-            model.LayoutModifications.Deserialize(LayoutModifications.Serialize().ToArray());
-            return model;
-        }
 
         private void OnModificationsChanged()
         {

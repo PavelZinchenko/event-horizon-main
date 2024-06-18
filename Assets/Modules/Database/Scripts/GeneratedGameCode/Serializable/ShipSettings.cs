@@ -31,5 +31,6 @@ namespace GameDatabase.Serializable
 		public float MaxAngularVelocity = 30f;
 		public float MaxAcceleration = 300f;
 		public float MaxAngularAcceleration = 300f;
+		public bool DisableCellsExpansions;
 	}
 }

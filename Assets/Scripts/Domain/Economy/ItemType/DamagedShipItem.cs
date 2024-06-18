@@ -8,17 +8,17 @@ using GameDatabase.DataModel;
 using GameServices.Player;
 using Services.Localization;
 using UnityEngine;
-using Zenject;
+using GameDatabase;
 
 namespace Economy.ItemType
 {
     public class DamagedShipItem : IItemType
     {
-        [Inject]
-        public DamagedShipItem(/*IDatabase database, */PlayerFleet playerFleet, ILocalization localization, ShipBuild ship, int seed)
+        public DamagedShipItem(IDatabase database, PlayerFleet playerFleet, ILocalization localization, ShipBuild ship, int seed)
         {
             _localization = localization;
             _playerFleet = playerFleet;
+            _database = database;
             _build = ship;
             _seed = seed;
         }
@@ -45,9 +45,7 @@ namespace Economy.ItemType
         public void Consume(int amount)
         {
             for (int i = 0; i < amount; ++i)
-            {
-                _playerFleet.Ships.Add(new CommonShip(_build.Ship, GetComponents()));
-            }
+                _playerFleet.Ships.Add(new CommonShip(_build.Ship, GetComponents(), _database));
         }
 
         private static IEnumerable<IntegratedComponent> LimitBySize(IEnumerable<IntegratedComponent> items, int freespace)
@@ -74,6 +72,7 @@ namespace Economy.ItemType
         private readonly int _seed;
         private readonly ShipBuild _build;
         private readonly PlayerFleet _playerFleet;
+        private readonly IDatabase _database;
         private readonly ILocalization _localization;
     }
 }

@@ -15,8 +15,8 @@ namespace Constructor.Ships
             _components.DataChangedEvent += OnDataChanged;
         }
 
-        public CommonShip(Ship data, IEnumerable<IntegratedComponent> components)
-            : base(new ShipModel(data))
+        public CommonShip(Ship data, IEnumerable<IntegratedComponent> components, GameDatabase.IDatabase database)
+            : base(new ShipModel(data, database))
         {
             _components.Assign(components);
             _components.DataChangedEvent += OnDataChanged;
