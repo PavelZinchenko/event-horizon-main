@@ -102,15 +102,19 @@ namespace Combat.Factory
                 if (effect.Type == ImpactEffectType.ProgressiveDamage)
                     collisionBehaviour.AddAction(new ProgressiveDamageAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, effect.Factor, impactType));
                 else if (effect.Type == ImpactEffectType.Push)
-                    collisionBehaviour.AddAction(_ammunition.Body.Velocity > 0 ? new PushAction(effect.Power, impactType) : new RadialPushAction(effect.Power, impactType));
+                    collisionBehaviour.AddAction(new PushAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.Pull)
-                    collisionBehaviour.AddAction(_ammunition.Body.Velocity > 0 ? new PushAction(-effect.Power, impactType) : new RadialPushAction(-effect.Power, impactType));
+                    collisionBehaviour.AddAction(new PushAction(-effect.Power * _stats.EffectPowerMultiplier, impactType));
+                else if (effect.Type == ImpactEffectType.PushFromCenter)
+                    collisionBehaviour.AddAction(new RadialPushAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
+                else if (effect.Type == ImpactEffectType.PullToCenter)
+                    collisionBehaviour.AddAction(new RadialPushAction(-effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.DrainEnergy)
                     collisionBehaviour.AddAction(new DrainEnergyAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.SiphonHitPoints)
                     collisionBehaviour.AddAction(new SiphonHitPointsAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, effect.Factor, impactType));
                 else if (effect.Type == ImpactEffectType.SlowDown)
-                    collisionBehaviour.AddAction(new SlowDownAction(effect.Power, impactType));
+                    collisionBehaviour.AddAction(new SlowDownAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.CaptureDrones)
                     collisionBehaviour.AddAction(new AffectDroneAction(impactType, AffectDroneAction.EffectType.Capture));
                 else if (effect.Type == ImpactEffectType.DriveDronesCrazy)

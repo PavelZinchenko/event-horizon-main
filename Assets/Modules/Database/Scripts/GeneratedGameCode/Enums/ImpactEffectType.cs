@@ -27,5 +27,7 @@ namespace GameDatabase.Enums
 		RechargeShield,
 		RechargeEnergy,
 		ProgressiveDamage,
+		PushFromCenter,
+		PullToCenter,
 	}
 }
