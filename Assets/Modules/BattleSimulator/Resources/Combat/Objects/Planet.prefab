@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1282095623267266}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.05, y: 1.05, z: 1.05}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4567727167097458}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &212177194828436440
 SpriteRenderer:
@@ -101,8 +101,8 @@ MonoBehaviour:
   _alphaScale: 1
   _lifeAffectsOpacity: 0
   _lifeAffectsSize: 0
-  _baseColor: {r: 1, g: 1, b: 1, a: 1}
-  _colorMode: 0
+  _baseColor: {r: 1, g: 1, b: 1, a: 0.5019608}
+  _colorMode: 3
 --- !u!1 &1428543238978056
 GameObject:
   m_ObjectHideFlags: 0
@@ -129,6 +129,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1428543238978056}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -137,7 +138,6 @@ Transform:
   - {fileID: 4557549571796276}
   - {fileID: 4630146296000240}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114145968042975850
 MonoBehaviour:
@@ -171,6 +171,12 @@ Rigidbody2D:
   m_AngularDrag: 0.02
   m_GravityScale: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -213,13 +219,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1482044659361114}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4567727167097458}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &23029930142312534
 MeshRenderer:
@@ -283,9 +289,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb0dabb6d542ace45a8e5a952bd14201, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _meshSize: 0.48
-  _material: {fileID: 0}
+  _baseColor: {r: 1, g: 1, b: 1, a: 1}
+  _rotationSpeed: 0.05
   _detailLevel: 12
+  _meshSize: 0.48
   _noiseFrequency: 0
   _noisePower: 0
-  _rotationSpeed: 0.05
