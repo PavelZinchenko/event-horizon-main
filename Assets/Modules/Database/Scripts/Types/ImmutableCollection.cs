@@ -5,12 +5,13 @@ using System.Linq;
 
 namespace GameDatabase.Model
 {
-    public struct ImmutableCollection<T> : IReadOnlyCollection<T>
+    public readonly struct ImmutableCollection<T> : IReadOnlyCollection<T>
     {
-		private readonly List<T> _items;
+        public static readonly ImmutableCollection<T> Empty = new();
+        private readonly List<T> _items;
 
-		public static ImmutableCollection<T> Empty => new();
 		public int Count => _items?.Count ?? 0;
+        public T FirstOrDefault() => Count > 0 ? _items[0] : default;
 
 		public ImmutableCollection(IEnumerable<T> items)
         {

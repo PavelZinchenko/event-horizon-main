@@ -103,7 +103,8 @@ namespace Domain.Shipyard
                     ComponentInfo replacement;
                     if (storage == null)
                     {
-                        replacement = new ComponentInfo(component.Info.Data, component.Info.Data.PossibleModifications[0], component.Info.ModificationQuality);
+                        replacement = new ComponentInfo(component.Info.Data, 
+                            component.Info.Data.PossibleModifications.FirstOrDefault(), component.Info.ModificationQuality);
                     }
                     else if (!storage.TryGetComponentReplacement(component.Info, out replacement))
                     {
