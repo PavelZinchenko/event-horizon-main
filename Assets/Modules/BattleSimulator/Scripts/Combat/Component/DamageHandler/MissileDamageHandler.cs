@@ -13,9 +13,16 @@ namespace Combat.Component.DamageHandler
 
         public CollisionEffect ApplyDamage(Impact impact, IUnit source)
         {
-            impact.ApplyImpulse(_unit.Body);
             var damage = impact.GetTotalDamage(Resistance.Empty);
-            _hitPoints -= damage;
+
+            switch (source.Type.Class) // fix: prevent harpoon from falling apart after collision with high-level ship
+            {
+                case Unit.Classification.UnitClass.Missile:
+                case Unit.Classification.UnitClass.EnergyBolt:
+                case Unit.Classification.UnitClass.AreaOfEffect:
+                    _hitPoints -= damage;
+                    break;
+            }
             
             return _hitPoints > 0 ? CollisionEffect.None : CollisionEffect.Destroy;
         }
