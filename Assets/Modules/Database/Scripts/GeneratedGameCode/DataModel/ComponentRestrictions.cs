@@ -30,8 +30,8 @@ namespace GameDatabase.DataModel
 			ShipSizes = new ImmutableSet<SizeClass>(serializable.ShipSizes);
 			NotForOrganicShips = serializable.NotForOrganicShips;
 			NotForMechanicShips = serializable.NotForMechanicShips;
-			UniqueComponentTag = serializable.UniqueComponentTag;
 			MaxComponentAmount = UnityEngine.Mathf.Clamp(serializable.MaxComponentAmount, 0, 2147483647);
+			ComponentGroupTag = loader?.GetComponentGroupTag(new ItemId<ComponentGroupTag>(serializable.ComponentGroupTag)) ?? ComponentGroupTag.DefaultValue;
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -39,8 +39,8 @@ namespace GameDatabase.DataModel
 		public ImmutableSet<SizeClass> ShipSizes { get; private set; }
 		public bool NotForOrganicShips { get; private set; }
 		public bool NotForMechanicShips { get; private set; }
-		public string UniqueComponentTag { get; private set; }
 		public int MaxComponentAmount { get; private set; }
+		public ComponentGroupTag ComponentGroupTag { get; private set; }
 
 		public static ComponentRestrictions DefaultValue { get; private set; }= new(new(), null);
 	}

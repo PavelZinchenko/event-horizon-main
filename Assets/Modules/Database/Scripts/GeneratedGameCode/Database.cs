@@ -32,6 +32,7 @@ namespace GameDatabase
 
 		IEnumerable<AmmunitionObsolete> AmmunitionObsoleteList { get; }
 		IEnumerable<Component> ComponentList { get; }
+		IEnumerable<ComponentGroupTag> ComponentGroupTagList { get; }
 		IEnumerable<ComponentMod> ComponentModList { get; }
 		IEnumerable<ComponentStats> ComponentStatsList { get; }
 		IEnumerable<ComponentStatUpgrade> ComponentStatUpgradeList { get; }
@@ -59,6 +60,7 @@ namespace GameDatabase
 
 		AmmunitionObsolete GetAmmunitionObsolete(ItemId<AmmunitionObsolete> id);
 		Component GetComponent(ItemId<Component> id);
+		ComponentGroupTag GetComponentGroupTag(ItemId<ComponentGroupTag> id);
 		ComponentMod GetComponentMod(ItemId<ComponentMod> id);
 		ComponentStats GetComponentStats(ItemId<ComponentStats> id);
 		ComponentStatUpgrade GetComponentStatUpgrade(ItemId<ComponentStatUpgrade> id);
@@ -92,7 +94,7 @@ namespace GameDatabase
     public partial class Database : IDatabase
     {
 		public const int VersionMajor = 1;
-		public const int VersionMinor = 6;
+		public const int VersionMinor = 7;
 
 		public CombatSettings CombatSettings { get; private set; }
 		public DatabaseSettings DatabaseSettings { get; private set; }
@@ -110,6 +112,7 @@ namespace GameDatabase
 
 		public IEnumerable<AmmunitionObsolete> AmmunitionObsoleteList => _ammunitionObsoleteMap.Values;
 		public IEnumerable<Component> ComponentList => _componentMap.Values;
+		public IEnumerable<ComponentGroupTag> ComponentGroupTagList => _componentGroupTagMap.Values;
 		public IEnumerable<ComponentMod> ComponentModList => _componentModMap.Values;
 		public IEnumerable<ComponentStats> ComponentStatsList => _componentStatsMap.Values;
 		public IEnumerable<ComponentStatUpgrade> ComponentStatUpgradeList => _componentStatUpgradeMap.Values;
@@ -137,6 +140,7 @@ namespace GameDatabase
 
 		public AmmunitionObsolete GetAmmunitionObsolete(ItemId<AmmunitionObsolete> id) { return (_ammunitionObsoleteMap.TryGetValue(id.Value, out var item)) ? item : AmmunitionObsolete.DefaultValue; }
 		public Component GetComponent(ItemId<Component> id) { return (_componentMap.TryGetValue(id.Value, out var item)) ? item : Component.DefaultValue; }
+		public ComponentGroupTag GetComponentGroupTag(ItemId<ComponentGroupTag> id) { return (_componentGroupTagMap.TryGetValue(id.Value, out var item)) ? item : ComponentGroupTag.DefaultValue; }
 		public ComponentMod GetComponentMod(ItemId<ComponentMod> id) { return (_componentModMap.TryGetValue(id.Value, out var item)) ? item : ComponentMod.DefaultValue; }
 		public ComponentStats GetComponentStats(ItemId<ComponentStats> id) { return (_componentStatsMap.TryGetValue(id.Value, out var item)) ? item : ComponentStats.DefaultValue; }
 		public ComponentStatUpgrade GetComponentStatUpgrade(ItemId<ComponentStatUpgrade> id) { return (_componentStatUpgradeMap.TryGetValue(id.Value, out var item)) ? item : ComponentStatUpgrade.DefaultValue; }
@@ -170,6 +174,7 @@ namespace GameDatabase
         {
 			_ammunitionObsoleteMap.Clear();
 			_componentMap.Clear();
+			_componentGroupTagMap.Clear();
 			_componentModMap.Clear();
 			_componentStatsMap.Clear();
 			_componentStatUpgradeMap.Clear();
@@ -216,6 +221,7 @@ namespace GameDatabase
 
 		private readonly Dictionary<int, AmmunitionObsolete> _ammunitionObsoleteMap = new();
 		private readonly Dictionary<int, Component> _componentMap = new();
+		private readonly Dictionary<int, ComponentGroupTag> _componentGroupTagMap = new();
 		private readonly Dictionary<int, ComponentMod> _componentModMap = new();
 		private readonly Dictionary<int, ComponentStats> _componentStatsMap = new();
 		private readonly Dictionary<int, ComponentStatUpgrade> _componentStatUpgradeMap = new();
@@ -267,6 +273,9 @@ namespace GameDatabase
 				foreach (var item in _content.ComponentList)
 					if (!item.Disabled && !_database._componentMap.ContainsKey(item.Id))
 						Component.Create(item, this);
+				foreach (var item in _content.ComponentGroupTagList)
+					if (!item.Disabled && !_database._componentGroupTagMap.ContainsKey(item.Id))
+						ComponentGroupTag.Create(item, this);
 				foreach (var item in _content.ComponentModList)
 					if (!item.Disabled && !_database._componentModMap.ContainsKey(item.Id))
 						ComponentMod.Create(item, this);
@@ -397,6 +406,16 @@ namespace GameDatabase
                 if (serializable != null && !serializable.Disabled) return Component.Create(serializable, this);
 
 				var value = Component.DefaultValue;
+				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
+                return value;
+			}
+			public ComponentGroupTag GetComponentGroupTag(ItemId<ComponentGroupTag> id, bool notNull = false)
+			{
+				if (_database._componentGroupTagMap.TryGetValue(id.Value, out var item)) return item;
+                var serializable = _content.GetComponentGroupTag(id.Value);
+                if (serializable != null && !serializable.Disabled) return ComponentGroupTag.Create(serializable, this);
+
+				var value = ComponentGroupTag.DefaultValue;
 				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
                 return value;
 			}
@@ -644,6 +663,7 @@ namespace GameDatabase
 
 			public void AddAmmunitionObsolete(int id, AmmunitionObsolete item) { _database._ammunitionObsoleteMap.Add(id, item); }
 			public void AddComponent(int id, Component item) { _database._componentMap.Add(id, item); }
+			public void AddComponentGroupTag(int id, ComponentGroupTag item) { _database._componentGroupTagMap.Add(id, item); }
 			public void AddComponentMod(int id, ComponentMod item) { _database._componentModMap.Add(id, item); }
 			public void AddComponentStats(int id, ComponentStats item) { _database._componentStatsMap.Add(id, item); }
 			public void AddComponentStatUpgrade(int id, ComponentStatUpgrade item) { _database._componentStatUpgradeMap.Add(id, item); }

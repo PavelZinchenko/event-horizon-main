@@ -19,5 +19,6 @@ namespace DatabaseMigration.v1.Enums
 		Spark,
 		Lightning,
 		LightningStrike,
+		Sprite,
 	}
 }

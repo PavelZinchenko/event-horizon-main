@@ -32,7 +32,11 @@ namespace DatabaseMigration.v1.Serializable
 		public float BaseShieldRechargeRate;
 		public float ShieldRechargeCooldown;
 		public float BaseDroneReconstructionSpeed;
-		public float MaxVelocity;
-		public float MaxTurnRate;
+		public float ShieldCorrosiveResistance = 0.9f;
+		public float MaxVelocity = 30f;
+		public float MaxAngularVelocity = 30f;
+		public float MaxAcceleration = 300f;
+		public float MaxAngularAcceleration = 300f;
+		public bool DisableCellsExpansions;
 	}
 }

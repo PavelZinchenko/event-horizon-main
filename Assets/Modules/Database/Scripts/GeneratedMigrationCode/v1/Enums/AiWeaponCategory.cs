@@ -14,5 +14,6 @@ namespace DatabaseMigration.v1.Enums
 		Repair = 1,
 		Damage = 2,
 		CaptureDrone = 3,
+		Recharge = 4,
 	}
 }

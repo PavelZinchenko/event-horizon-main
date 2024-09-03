@@ -10,6 +10,7 @@ using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
 using UnityEngine;
+using Utilites.Collections;
 
 namespace Constructor
 {
@@ -83,16 +84,29 @@ namespace Constructor
             foreach (var item in stats.BuiltinDevices)
 		        data.AddDevice(new DeviceData(item.Stats, item.Stats.ActivationType == ActivationType.Manual ? 5 : -1));
 
-		    var uniqueComponents = new HashSet<string>();
-
+            var limitedComponents = new SimpleInventory<GameDatabase.DataModel.Component>();
+		    var componentTags = new SimpleInventory<ComponentGroupTag>();
             var energyDependentComponents = new List<(ComponentSpec spec, IComponent component)>();
             var energyIndependentComponents = new List<(ComponentSpec spec, IComponent component)>();
             foreach (var item in Components)
             {
-                var uniqueKey = item.Info.Data.GetUniqueKey();
-                if (!string.IsNullOrEmpty(uniqueKey))
-                    if (!uniqueComponents.Add(uniqueKey))
+                var tag = item.Info.Data.Restrictions.ComponentGroupTag;
+                if (tag != null)
+                {
+                    if (componentTags.GetQuantity(tag) >= tag.MaxInstallableComponents)
                         continue;
+                    else
+                        componentTags.Add(tag);
+                }
+
+                var maxCount = item.Info.Data.Restrictions.MaxComponentAmount;
+                if (maxCount > 0)
+                {
+                    if (limitedComponents.GetQuantity(item.Info.Data) >= maxCount)
+                        continue;
+                    else
+                        limitedComponents.Add(item.Info.Data);
+                }
 
                 var component = item.Info.CreateComponent(_ship.Layout.CellCount);
                 if (component == null || !component.IsSuitable(_ship))

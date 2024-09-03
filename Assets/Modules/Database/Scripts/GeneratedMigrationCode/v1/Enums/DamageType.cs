@@ -13,6 +13,6 @@ namespace DatabaseMigration.v1.Enums
 		Impact,
 		Energy,
 		Heat,
-		Direct,
+		Corrosive,
 	}
 }

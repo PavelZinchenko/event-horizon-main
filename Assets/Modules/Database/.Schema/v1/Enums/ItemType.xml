@@ -30,6 +30,7 @@
     <item name="StatUpgradeTemplate" value="32" />
     <item name="FrontierLevel" value="33" />
     <item name="FrontierCommonLevel" value="34" />
+    <item name="ComponentGroupTag" value="35" />
 
     <item name="ShipSettings" value="100" />
     <item name="GalaxySettings" value="101" />

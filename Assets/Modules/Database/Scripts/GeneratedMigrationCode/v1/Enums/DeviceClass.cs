@@ -31,5 +31,7 @@ namespace DatabaseMigration.v1.Enums
 		Jammer,
 		DroneCamouflage,
 		MissileCamouflage,
+		TeleporterV2,
+		WormTailV2,
 	}
 }

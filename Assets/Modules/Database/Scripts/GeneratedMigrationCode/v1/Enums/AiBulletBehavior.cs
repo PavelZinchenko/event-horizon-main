@@ -14,5 +14,7 @@ namespace DatabaseMigration.v1.Enums
 		Homing,
 		Beam,
 		AreaOfEffect,
+		Trap,
+		Harpoon,
 	}
 }

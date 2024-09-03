@@ -38,7 +38,7 @@ namespace DatabaseMigration.v1.Serializable
 		public string PremiumButtonTextColor = "#FFFFE0";
 		public string PremiumButtonIconColor = "#FFFFC0";
 		public string TextColor = "#80FFFF";
-		public string ErrorTextColor = "#FFC000";
+		public string ErrorTextColor = "#FF4040";
 		public string HeaderTextColor = "#FFFFC0";
 		public string PaleTextColor = "#A0FFFFFF";
 		public string BrightTextColor = "#FFFFFF";
@@ -57,5 +57,7 @@ namespace DatabaseMigration.v1.Serializable
 		public string MoneyColor = "#FFF0A0";
 		public string FuelColor = "#00FFFF";
 		public string TokensColor = "#8080FF";
+		public string MainMenuBackgroundImage;
+		public bool NoCreditsText;
 	}
 }

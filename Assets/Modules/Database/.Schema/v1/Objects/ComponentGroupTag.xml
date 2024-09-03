@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ComponentGroupTag" type="object" typeid="ComponentGroupTag" >
+    <member name="MaxInstallableComponents" type="int" minvalue="1" />
+</data>

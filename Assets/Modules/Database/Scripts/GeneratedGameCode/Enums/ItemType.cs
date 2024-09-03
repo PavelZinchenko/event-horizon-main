@@ -40,6 +40,7 @@ namespace GameDatabase.Enums
 		StatUpgradeTemplate = 32,
 		FrontierLevel = 33,
 		FrontierCommonLevel = 34,
+		ComponentGroupTag = 35,
 		ShipSettings = 100,
 		GalaxySettings = 101,
 		DatabaseSettings = 102,

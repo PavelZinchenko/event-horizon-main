@@ -3,6 +3,8 @@
     <member name="ShipSizes" type="enum_flags" typeid="SizeClass" />
     <member name="NotForOrganicShips" type="bool" />
     <member name="NotForMechanicShips" type="bool" />
-    <member name="UniqueComponentTag" type="string" />
     <member name="MaxComponentAmount" type="int" minvalue="0" />
+    <member name="ComponentGroupTag" type="object" typeid="ComponentGroupTag" />
+
+    <member name="UniqueComponentTag" type="string" options="obsolete" />
 </data>

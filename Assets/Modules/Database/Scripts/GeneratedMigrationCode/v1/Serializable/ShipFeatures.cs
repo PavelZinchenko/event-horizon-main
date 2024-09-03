@@ -25,6 +25,9 @@ namespace DatabaseMigration.v1.Serializable
 		public float ArmorBonus;
 		public float ShieldBonus;
 		public float EnergyBonus;
+		public float DroneBuildSpeedBonus;
+		public float DroneAttackBonus;
+		public float DroneDefenseBonus;
 		public bool Regeneration;
 		public int[] BuiltinDevices;
 	}

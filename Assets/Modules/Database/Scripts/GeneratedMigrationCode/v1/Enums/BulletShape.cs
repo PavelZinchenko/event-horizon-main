@@ -19,5 +19,8 @@ namespace DatabaseMigration.v1.Enums
 		Mine,
 		Wave,
 		BlackHole,
+		Harpoon,
+		CircularSaw,
+		PiercingLaser,
 	}
 }

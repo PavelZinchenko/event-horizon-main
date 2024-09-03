@@ -59,6 +59,19 @@ namespace GameDatabase.Storage
                 if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate Component ID - " + item.Id + " (" + name + ")");
             }
+            else if (type == ItemType.ComponentGroupTag)
+            {
+			    if (!_componentGroupTagMap.ContainsKey(item.Id))
+                {
+                    var data = _serializer.FromJson<ComponentGroupTagSerializable>(content);
+                    data.FileName = name;
+                    _componentGroupTagMap.Add(data.Id, data);
+                    return;
+                }
+
+                if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate ComponentGroupTag ID - " + item.Id + " (" + name + ")");
+            }
             else if (type == ItemType.ComponentMod)
             {
 			    if (!_componentModMap.ContainsKey(item.Id))
@@ -577,6 +590,7 @@ namespace GameDatabase.Storage
 
 		public IEnumerable<AmmunitionObsoleteSerializable> AmmunitionObsoleteList => _ammunitionObsoleteMap.Values;
 		public IEnumerable<ComponentSerializable> ComponentList => _componentMap.Values;
+		public IEnumerable<ComponentGroupTagSerializable> ComponentGroupTagList => _componentGroupTagMap.Values;
 		public IEnumerable<ComponentModSerializable> ComponentModList => _componentModMap.Values;
 		public IEnumerable<ComponentStatsSerializable> ComponentStatsList => _componentStatsMap.Values;
 		public IEnumerable<ComponentStatUpgradeSerializable> ComponentStatUpgradeList => _componentStatUpgradeMap.Values;
@@ -604,6 +618,7 @@ namespace GameDatabase.Storage
 
 		public AmmunitionObsoleteSerializable GetAmmunitionObsolete(int id) { return _ammunitionObsoleteMap.TryGetValue(id, out var item) ? item : null; }
 		public ComponentSerializable GetComponent(int id) { return _componentMap.TryGetValue(id, out var item) ? item : null; }
+		public ComponentGroupTagSerializable GetComponentGroupTag(int id) { return _componentGroupTagMap.TryGetValue(id, out var item) ? item : null; }
 		public ComponentModSerializable GetComponentMod(int id) { return _componentModMap.TryGetValue(id, out var item) ? item : null; }
 		public ComponentStatsSerializable GetComponentStats(int id) { return _componentStatsMap.TryGetValue(id, out var item) ? item : null; }
 		public ComponentStatUpgradeSerializable GetComponentStatUpgrade(int id) { return _componentStatUpgradeMap.TryGetValue(id, out var item) ? item : null; }
@@ -638,6 +653,7 @@ namespace GameDatabase.Storage
 
 		private readonly Dictionary<int, AmmunitionObsoleteSerializable> _ammunitionObsoleteMap = new();
 		private readonly Dictionary<int, ComponentSerializable> _componentMap = new();
+		private readonly Dictionary<int, ComponentGroupTagSerializable> _componentGroupTagMap = new();
 		private readonly Dictionary<int, ComponentModSerializable> _componentModMap = new();
 		private readonly Dictionary<int, ComponentStatsSerializable> _componentStatsMap = new();
 		private readonly Dictionary<int, ComponentStatUpgradeSerializable> _componentStatUpgradeMap = new();

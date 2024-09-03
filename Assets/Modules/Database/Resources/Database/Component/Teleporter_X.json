@@ -10,6 +10,9 @@
   "Layout": "010111010",
   "CellType": "2",
   "DeviceId": 16,
+  "Restrictions": {
+    "ComponentGroupTag": 14
+  },
   "PossibleModifications": [
     2,
     7,

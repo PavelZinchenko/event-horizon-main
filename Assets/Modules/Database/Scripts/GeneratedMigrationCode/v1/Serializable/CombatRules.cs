@@ -35,5 +35,6 @@ namespace DatabaseMigration.v1.Serializable
 		public bool DisablePlanet;
 		public bool NextEnemyButton = true;
 		public bool KillThemAllButton;
+		public SoundTrackSerializable[] CustomSoundtrack;
 	}
 }

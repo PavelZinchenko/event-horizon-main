@@ -36,6 +36,11 @@ namespace DatabaseMigration.v1.Enums
 		BehaviorTree = 28,
 		GameObjectPrefab = 29,
 		CombatRules = 30,
+		ComponentStatUpgrade = 31,
+		StatUpgradeTemplate = 32,
+		FrontierLevel = 33,
+		FrontierCommonLevel = 34,
+		ComponentGroupTag = 35,
 		ShipSettings = 100,
 		GalaxySettings = 101,
 		DatabaseSettings = 102,
@@ -48,5 +53,11 @@ namespace DatabaseMigration.v1.Enums
 		CombatSettings = 109,
 		UiSettings = 110,
 		FactionsSettings = 111,
+		MusicPlaylist = 112,
+		ResearchSetting = 113,
+		PvpSettings = 114,
+		FrontierNpcSettings = 115,
+		FrontierLevelSettings = 116,
+		LocalizationSettings = 117,
 	}
 }

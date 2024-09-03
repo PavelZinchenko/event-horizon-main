@@ -13,5 +13,8 @@ namespace DatabaseMigration.v1.Enums
 		Projectile,
 		Homing,
 		Beam,
+		Parametric,
+		Harpoon,
+		AuraEmitter,
 	}
 }

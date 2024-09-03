@@ -23,5 +23,11 @@ namespace DatabaseMigration.v1.Enums
 		Teleport,
 		DrainShield,
 		DriveDronesCrazy,
+		IgnoreShield,
+		RechargeShield,
+		RechargeEnergy,
+		ProgressiveDamage,
+		PushFromCenter,
+		PullToCenter,
 	}
 }
