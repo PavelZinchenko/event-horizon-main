@@ -8,6 +8,7 @@
     <member name="Price" type="int" minvalue="0" maxvalue="10000" />
     <member name="Hidden" type="bool" />
     <member name="Special" type="bool" />
+    <member name="DoesnPreventUnlocking" type="bool" case="Component">If this flag is set, locked components on ships can be unlocked even if the technology has not yet been researched.</member>
     <member name="Dependencies" type="object_list" typeid="Technology" />
     <member name="CustomCraftingLevel" type="int" minvalue="0" />
 </data>

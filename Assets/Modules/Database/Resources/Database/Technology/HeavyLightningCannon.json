@@ -1,7 +1,8 @@
 {
   "ItemType": 10,
-  "Id": 282,
-  "ItemId": 96,
+  "Id": 309,
+  "ItemId": 250,
+  "Faction": 15,
   "Price": 20,
   "Special": true,
   "DoesnPreventUnlocking": true

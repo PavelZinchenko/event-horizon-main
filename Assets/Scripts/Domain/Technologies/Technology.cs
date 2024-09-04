@@ -48,7 +48,8 @@ namespace DataModel.Technology
 		public abstract UnityEngine.Color Color { get; }
 		public abstract Faction Faction { get; }
 		public abstract IProduct CreateItem(CraftItemQuality quality, System.Random random);
-		public bool Hidden { get; private set; }
+        public virtual bool RequiredToUnlock => true;
+        public bool Hidden { get; private set; }
 	    public bool Special { get; private set; }
         public int Price { get; private set; }
 
@@ -144,9 +145,8 @@ namespace DataModel.Technology
 		public ComponentTechnology(ITechnologies technologies, ItemTypeFactory factory, Technology_Component data)
 			: base(technologies, data)
 		{
-			_faction = data.Faction;
+            _technology = data;
 			_factory = factory;
-		    Component = data.Component;
 		}
 				
 		public override string GetName(ILocalization localization) { return localization.GetString(Component.Name); }
@@ -198,9 +198,10 @@ namespace DataModel.Technology
 	    }
 
         public override UnityEngine.Color Color { get { return Component.Color; } }
-		public override Faction Faction { get { return _faction; } }
+        public override Faction Faction => _technology.Faction;
+        public override bool RequiredToUnlock => !_technology.DoesnPreventUnlocking;
 
-	    public override IProduct CreateItem(CraftItemQuality quality, System.Random random)
+        public override IProduct CreateItem(CraftItemQuality quality, System.Random random)
 	    {
 	        switch (quality)
 	        {
@@ -217,9 +218,9 @@ namespace DataModel.Technology
             }
         }
 
-	    public GameDatabase.DataModel.Component Component { get; private set; }
+	    public GameDatabase.DataModel.Component Component => _technology.Component;
 
-	    private readonly Faction _faction;
+        private readonly Technology_Component _technology;
         private readonly ItemTypeFactory _factory;
 	}
 

@@ -91,11 +91,10 @@ namespace GameStateMachine.States
 
             public bool CanBeUnlocked(Component component)
             {
-				// TODO: 
-				if (component.Id.Value == 96) // Xmas bomb
-					return true;
+                if (!_technologies.TryGetComponentTechnology(component, out var tech))
+                    return false;
 
-				return _technologies.TryGetComponentTechnology(component, out var tech) && _research.IsTechResearched(tech);
+                return !tech.RequiredToUnlock || _research.IsTechResearched(tech);
 			}
 		}
 

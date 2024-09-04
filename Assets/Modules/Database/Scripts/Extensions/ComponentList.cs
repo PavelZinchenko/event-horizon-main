@@ -36,6 +36,7 @@ namespace GameDatabase.Extensions
         {
             return components.CommonAndRare();
         }
+
         public static IEnumerable<Component> LevelLessOrEqual(this IEnumerable<Component> components, int level)
         {
             if (level < 0) level = 0;

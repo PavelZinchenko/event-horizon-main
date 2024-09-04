@@ -133,7 +133,7 @@ namespace Domain.Quests
             var level = Math.Max(0, (int)(_questInfo.Level * content.ValueRatio));
             var amount = _random.Range(content.MinAmount, content.MaxAmount);
             var factionFilter = new FactionFilter(content.Factions, level, _questInfo.Faction);
-            var components = _database.ComponentList.Common().LevelLessOrEqual(level * 3 / 2).Where(item => factionFilter.IsSuitableForLoot(item.Faction));
+            var components = _database.ComponentList.Available().LevelLessOrEqual(level * 3 / 2).Where(item => factionFilter.IsSuitableForLoot(item.Faction));
             return _lootItemFactory.CreateRandomComponents(components, amount, level, _random);
         }
 

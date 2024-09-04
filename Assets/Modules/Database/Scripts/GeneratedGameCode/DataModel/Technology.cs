@@ -85,6 +85,7 @@ namespace GameDatabase.DataModel
 			if (loader != null && Component == null)
 			    throw new DatabaseException("MutableObjectTemplate.Component cannot be null - " + serializable.ItemId);
 			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
+			DoesnPreventUnlocking = serializable.DoesnPreventUnlocking;
 
             OnDataDeserialized(serializable, loader);
         }
@@ -96,6 +97,7 @@ namespace GameDatabase.DataModel
 
 		public Component Component { get; private set; }
 		public Faction Faction { get; private set; }
+		public bool DoesnPreventUnlocking { get; private set; }
 
 
     }

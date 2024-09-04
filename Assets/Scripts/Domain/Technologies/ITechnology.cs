@@ -86,6 +86,7 @@ namespace DataModel.Technology
 		int Price { get; }
 		bool Hidden { get; }
         bool Special { get; }
+        bool RequiredToUnlock { get; }
 
 	    CraftingPrice GetCraftPrice(CraftItemQuality quality);
 		IProduct CreateItem(CraftItemQuality quality = CraftItemQuality.Common, System.Random random = null);
