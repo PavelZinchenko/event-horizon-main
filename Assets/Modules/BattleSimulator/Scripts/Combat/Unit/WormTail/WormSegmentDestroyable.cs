@@ -9,7 +9,7 @@ namespace Combat.Component.Unit
 {
     public class WormSegmentDestroyable : WormSegmentBase
     {
-        private const float _impulseReactionFactor = 0.25f;
+        private const float _impulseReactionFactor = 0.1f;
         private const float _tearUpDamageThreshold = 5f;
 
         private readonly float _maxHitPoints;

@@ -150,7 +150,7 @@ namespace Combat.Component.Unit
             if (!_isActive)
                 return;
 
-            impact.ApplyImpulse(Body);
+            impact.ApplyImpulse(Body, _impulseReactionFactor);
             var damage = impact.GetTotalDamage(Resistance.Empty);
 
             if (_damageIndicator != null)
@@ -196,5 +196,7 @@ namespace Combat.Component.Unit
         private float _parentOffset;
         private IUnit _parent;
         private readonly IFeatures _features;
+
+        private const float _impulseReactionFactor = 0.1f;
     }
 }

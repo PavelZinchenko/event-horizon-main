@@ -117,6 +117,12 @@ namespace Combat.Collision
                 Impulse.Apply(body);
         }
 
+        public void ApplyImpulse(IBody body, float multiplier)
+        {
+            if (Impulse != null)
+                Impulse.Apply(body, multiplier);
+        }
+
         public void RemoveImpulse()
         {
             if (Impulse != null)

@@ -9,7 +9,7 @@ namespace Combat.Component.Unit
 {
     public class FixedWormSegment : WormSegmentBase
     {
-        private const float _impulseReactionFactor = 0.25f;
+        private const float _impulseReactionFactor = 0.1f;
 
         private readonly float _regenerationCooldown;
         private readonly float _maxHitPoints;
