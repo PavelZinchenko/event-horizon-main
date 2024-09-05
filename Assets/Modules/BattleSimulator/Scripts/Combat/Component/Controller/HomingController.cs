@@ -27,7 +27,7 @@ namespace Combat.Component.Controller
 
             if (_timeFromLastUpdate > _targetUpdateCooldown)
             {
-                _target = _scene.Ships.GetEnemyForMissile(_unit, 0f, _maxRange*1.3f, 15f, false, false);
+                _target = _scene.Ships.GetEnemyForMissile(_unit, 0f, _maxRange*1.3f, 30f, false, false);
                 _timeFromLastUpdate = 0;
             }
             
@@ -54,22 +54,22 @@ namespace Combat.Component.Controller
 
         private void UpdateRotation(float elapsedTime)
         {
-            if(_target == null || !_target.IsActive()) return;
-
-            if (!_smartAim || !Geometry.GetTargetPosition(_target.Body.WorldPosition(), _target.Body.Velocity,
-                    _unit.Body.WorldPosition(),
-                    _maxVelocity, out var targetPosition, out _))
+            float requiredAngularVelocity = 0;
+            if (_target.IsActive())
             {
-                targetPosition = _target.Body.WorldPosition();
+                if (!_smartAim || !Geometry.GetTargetPosition(_target.Body.WorldPosition(), _target.Body.Velocity,
+                        _unit.Body.WorldPosition(),
+                        _maxVelocity, out var targetPosition, out _))
+                {
+                    targetPosition = _target.Body.WorldPosition();
+                }            
+            
+                var direction = _unit.Body.WorldPosition().Direction(targetPosition);
+                var target = RotationHelpers.Angle(direction);
+                var rotation = _unit.Body.WorldRotation();
+                var delta = Mathf.DeltaAngle(rotation, target);
+                requiredAngularVelocity = delta > 5 ? _maxAngularVelocity : delta < -5 ? -_maxAngularVelocity : 0f;
             }
-            
-            
-            var direction = _unit.Body.WorldPosition().Direction(targetPosition);
-            var target = RotationHelpers.Angle(direction);
-            var rotation = _unit.Body.WorldRotation();
-            var delta = Mathf.DeltaAngle(rotation, target);
-            var requiredAngularVelocity = delta > 5 ? _maxAngularVelocity : delta < -5 ? -_maxAngularVelocity : 0f;
-            
 
             if (_unit.Body.Parent == null)
             {
