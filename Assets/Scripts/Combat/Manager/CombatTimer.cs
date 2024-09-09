@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Combat.Component.Ship;
 using Combat.Component.Unit.Classification;
 using Combat.Domain;
@@ -11,7 +12,7 @@ using Zenject;
 
 namespace Combat.Manager
 {
-    public class CombatTimer : ITickable
+    public class CombatTimer : ITickable, IDisposable
     {
         [Inject] private readonly Settings _settings;
         [Inject] private readonly ISoundPlayer _soundPlayer;
@@ -175,6 +176,11 @@ namespace Combat.Manager
                     _soundPlayer.Stop(GetHashCode());
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            SetAlarm(false);
         }
 
         private IShip _activePlayerShip;
