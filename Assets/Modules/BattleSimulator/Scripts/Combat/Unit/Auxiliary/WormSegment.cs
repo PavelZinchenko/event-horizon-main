@@ -21,7 +21,7 @@ using UnityEngine;
 
 namespace Combat.Component.Unit
 {
-    public class WormSegment : UnitBase, IShip
+    public class WormSegment : UnitBase
     {
         public WormSegment(IShip owner, IBody body, IView view, ICollider collider, PhysicsManager physics, float hitPoints)
             : base(new UnitType(UnitClass.Limb, owner.Type.Side, owner), body, view, collider, physics)
