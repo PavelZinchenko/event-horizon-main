@@ -163,7 +163,7 @@ namespace Combat.Manager
         public void ChangeShip()
         {
             var player = _scene.PlayerShip;
-            if (player.Effects.All.OfType<ShipRetreatEffect>().Any())
+            if (!player.IsActive() || player.Effects.All.OfType<ShipRetreatEffect>().Any())
                 return;
 
             var chargeEffect = new ShipRetreatingEffect(player, _effectFactory, ConditionType.OnActivate, ConditionType.OnDeactivate);
