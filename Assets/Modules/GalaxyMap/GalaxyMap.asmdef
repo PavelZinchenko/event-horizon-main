@@ -1,0 +1,22 @@
+{
+    "name": "GalaxyMap",
+    "rootNamespace": "",
+    "references": [
+        "AppConfiguration",
+        "Utilites",
+        "Diagnostics",
+        "CommonComponents",
+        "Database",
+        "ShipConstructor",
+        "ServicesFacade"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
