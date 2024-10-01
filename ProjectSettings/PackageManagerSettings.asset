@@ -30,7 +30,7 @@ MonoBehaviour:
     m_Name: package.openupm.com
     m_Url: https://package.openupm.com
     m_Scopes:
-    - com.google.external-dependency-manager
+    - com.google
     m_IsDefault: 0
     m_Capabilities: 0
     m_ConfigSource: 4
