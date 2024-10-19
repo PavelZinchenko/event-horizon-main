@@ -194,7 +194,7 @@ namespace Combat.Factory
                 return new RocketController(bullet, velocity, 1.0f * velocity / (0.1f + _bulletStats.Impulse));
             if (_stats.AmmunitionClass == AmmunitionClassObsolete.Aura)
                 return new AuraController(bullet, _bulletStats.AreaOfEffect, _stats.LifeTime);
-            if (_stats.AmmunitionClass.IsBoundToCannon() && parent.Bullets != null)
+            if (_stats.AmmunitionClass.IsBoundToCannon())
                 return new BeamController(bullet, spread, rotationOffset);
 
             return null;
