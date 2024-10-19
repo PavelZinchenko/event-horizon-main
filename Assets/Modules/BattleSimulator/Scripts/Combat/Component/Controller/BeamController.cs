@@ -16,6 +16,7 @@ namespace Combat.Component.Controller
 
         public void UpdatePhysics(float elapsedTime)
         {
+            if (_unit.Body.Parent == null) return;
             _unit.Body.Turn((Random.value - 0.5f) * _defaultSpread + _rotationOffset);
         }
 
