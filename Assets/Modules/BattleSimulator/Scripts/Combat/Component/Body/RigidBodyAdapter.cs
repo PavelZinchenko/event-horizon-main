@@ -5,6 +5,10 @@ namespace Combat.Component.Body
     [RequireComponent(typeof(Rigidbody2D))]
     public class RigidBodyAdapter : MonoBehaviour, IBodyComponent
     {
+        const float _velocityHardLimit = 120;
+
+        [SerializeField] private bool _limitMaxVelocity = false;
+
         public void Initialize(IBody parent, Vector2 position, float rotation, float scale, Vector2 velocity, float angularVelocity, float weight)
         {
             _rigidbody = GetComponent<Rigidbody2D>();
@@ -173,11 +177,15 @@ namespace Combat.Component.Body
         public void UpdatePhysics(float elapsedTime)
         {
             var velocity = _rigidbody.velocity;
-            var speed = velocity.magnitude;
-            if (speed > _velocityHardLimit)
+
+            if (_limitMaxVelocity)
             {
-                velocity = velocity * _velocityHardLimit / speed;
-                _rigidbody.velocity = velocity;
+                var speed = velocity.magnitude;
+                if (speed > _velocityHardLimit)
+                {
+                    velocity = velocity * _velocityHardLimit / speed;
+                    _rigidbody.velocity = velocity;
+                }
             }
 
             UpdatePosition(true);
@@ -266,7 +274,5 @@ namespace Combat.Component.Body
         private float _cachedAngularVelocity;
         private float _scale;
         private IBody _parent;
-
-        private const float _velocityHardLimit = 120;
     }
 }
