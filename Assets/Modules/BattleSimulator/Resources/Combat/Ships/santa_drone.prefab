@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 114000011597266408}
   - component: {fileID: 114000013775976450}
   - component: {fileID: 60000013232894402}
+  - component: {fileID: 2379144469531506660}
   m_Layer: 0
   m_Name: santa_drone
   m_TagString: Untagged
@@ -30,13 +31,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000010523886238}
-  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.289, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &212000011807907888
 SpriteRenderer:
@@ -78,7 +79,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 9ee2ee9c1ca035346885ebd6e175267d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -107,12 +108,6 @@ Rigidbody2D:
   m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
   m_Interpolate: 1
   m_SleepingMode: 0
   m_CollisionDetection: 0
@@ -129,7 +124,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56ecfa2aee6188e49822ee65bb9bf26c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _limitMaxVelocity: 1
 --- !u!114 &114000011356405018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,7 +151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isStatic: 0
   _preciseTriggerHitPoint: 0
-  _ignoreTriggerStayEvent: 0
+  _ignoreTriggerStayEvent: 1
 --- !u!114 &114000013775976450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,25 +180,6 @@ PolygonCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -224,4 +199,14 @@ PolygonCollider2D:
       - {x: 0.13758337, y: 0.49388576}
       - {x: 0.6038115, y: 0.0011431221}
       - {x: 0.140625, y: -0.48492792}
-  m_UseDelaunayMesh: 0
+--- !u!210 &2379144469531506660
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000010523886238}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 2

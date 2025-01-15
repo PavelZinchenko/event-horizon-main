@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 114000012375099256}
   - component: {fileID: 114000010967429172}
   - component: {fileID: 60000010615592540}
+  - component: {fileID: -7064485682613025497}
   m_Layer: 0
   m_Name: fns9
   m_TagString: Untagged
@@ -30,13 +31,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000013158716558}
-  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3.0876849, y: -0.5174827, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &212000010392426172
 SpriteRenderer:
@@ -107,12 +108,6 @@ Rigidbody2D:
   m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
   m_Interpolate: 1
   m_SleepingMode: 0
   m_CollisionDetection: 0
@@ -129,7 +124,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56ecfa2aee6188e49822ee65bb9bf26c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _limitMaxVelocity: 1
 --- !u!114 &114000012613752382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,7 +151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isStatic: 0
   _preciseTriggerHitPoint: 0
-  _ignoreTriggerStayEvent: 0
+  _ignoreTriggerStayEvent: 1
 --- !u!114 &114000010967429172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,25 +180,6 @@ PolygonCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -241,4 +216,14 @@ PolygonCollider2D:
       - {x: -0.36019802, y: -0.3603438}
       - {x: -0.17578125, y: -0.36328125}
       - {x: -0.1015625, y: -0.18359375}
-  m_UseDelaunayMesh: 0
+--- !u!210 &-7064485682613025497
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013158716558}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0

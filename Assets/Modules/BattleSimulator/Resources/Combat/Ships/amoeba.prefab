@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1271256626385429937}
   - component: {fileID: 2587851915584610749}
   - component: {fileID: 2119104121203556755}
+  - component: {fileID: -5393485133741450126}
   m_Layer: 0
   m_Name: amoeba
   m_TagString: Untagged
@@ -31,13 +32,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 873532223016321526}
-  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5459227340342610856
 SpriteRenderer:
@@ -108,12 +109,6 @@ Rigidbody2D:
   m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
   m_Interpolate: 1
   m_SleepingMode: 0
   m_CollisionDetection: 0
@@ -130,7 +125,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56ecfa2aee6188e49822ee65bb9bf26c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _limitMaxVelocity: 1
 --- !u!114 &2949863504363735382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,7 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isStatic: 0
   _preciseTriggerHitPoint: 0
-  _ignoreTriggerStayEvent: 0
+  _ignoreTriggerStayEvent: 1
 --- !u!114 &1271256626385429937
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,25 +181,6 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -222,25 +197,6 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -257,3 +213,14 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.39, y: 0.45}
   m_EdgeRadius: 0
+--- !u!210 &-5393485133741450126
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 873532223016321526}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
