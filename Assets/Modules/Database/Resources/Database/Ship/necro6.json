@@ -1,0 +1,29 @@
+{
+  "ItemType": 6,
+  "Id": 157,
+  "SizeClass": 1,
+  "Name": "$necroship6",
+  "Faction": 20,
+  "IconImage": "necro6",
+  "IconScale": 1.0,
+  "ModelImage": "necro6",
+  "ModelScale": 2.0,
+  "EngineColor": "#40FFFFFF",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.9
+      },
+      "Size": 0.3
+    }
+  ],
+  "Layout": "0000004400000000000044000000000000440000000000024420000000000222200000000002222000000001022220100000010222201000000112222110000001122221100000010255201000000100550010000001005500100000000055000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.85
+      },
+      "WeaponClass": "L"
+    }
+  ]
+}

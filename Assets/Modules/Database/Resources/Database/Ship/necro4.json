@@ -1,0 +1,28 @@
+{
+  "ItemType": 6,
+  "Id": 155,
+  "Name": "$necroship4",
+  "Faction": 20,
+  "IconImage": "necro4",
+  "IconScale": 1.0,
+  "ModelImage": "necro4",
+  "ModelScale": 2.0,
+  "EngineColor": "#40FFFFFF",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.3
+      },
+      "Size": 0.4
+    }
+  ],
+  "Layout": "0000000000000000400000000004000000000242000000002420000002225222001122555221111005550011000000000000000000000000000000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.45
+      },
+      "WeaponClass": "T"
+    }
+  ]
+}

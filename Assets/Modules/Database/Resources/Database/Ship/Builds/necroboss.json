@@ -1,0 +1,69 @@
+{
+  "ItemType": 8,
+  "Id": 400,
+  "ShipId": 159,
+  "Components": [
+    {
+      "ComponentId": 120,
+      "X": 11,
+      "Y": 5
+    },
+    {
+      "ComponentId": 75,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 9,
+      "Y": 9,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 62,
+      "Modification": 1,
+      "Quality": 5,
+      "X": 5,
+      "Y": 10,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 62,
+      "Modification": 1,
+      "Quality": 5,
+      "X": 17,
+      "Y": 10,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 62,
+      "Modification": 1,
+      "Quality": 5,
+      "X": 5,
+      "Y": 13,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 62,
+      "Modification": 1,
+      "Quality": 5,
+      "X": 17,
+      "Y": 13,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 75,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 9,
+      "Y": 14,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 217,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 11,
+      "Y": 21,
+      "BarrelId": -1
+    }
+  ],
+  "Perks": {}
+}

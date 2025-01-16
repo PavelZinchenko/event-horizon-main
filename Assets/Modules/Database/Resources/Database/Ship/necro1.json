@@ -1,0 +1,29 @@
+{
+  "ItemType": 6,
+  "Id": 154,
+  "SizeClass": 1,
+  "Name": "$necroship1",
+  "Faction": 20,
+  "IconImage": "necro1",
+  "IconScale": 1.0,
+  "ModelImage": "necro1",
+  "ModelScale": 2.0,
+  "EngineColor": "#40FFFFFF",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.6
+      },
+      "Size": 0.3
+    }
+  ],
+  "Layout": "0000000000000000010044001000000100440010000001004400100000001022010000000002222000000100022220001000110222201100000022222200000000222222000000002555520000000115555110000001100001100000010000001000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.9
+      },
+      "WeaponClass": "S"
+    }
+  ]
+}
