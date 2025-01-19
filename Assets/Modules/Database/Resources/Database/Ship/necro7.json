@@ -25,5 +25,13 @@
       },
       "WeaponClass": "C"
     }
-  ]
+  ],
+  "Features": {
+    "BuiltinDevices": [
+      35
+    ]
+  },
+  "VisualEffects": {
+    "LeaveWreck": 2
+  }
 }

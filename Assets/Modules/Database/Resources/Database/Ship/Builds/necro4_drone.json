@@ -1,0 +1,120 @@
+{
+  "ItemType": 8,
+  "Id": 401,
+  "ShipId": 155,
+  "AvailableForPlayer": false,
+  "AvailableForEnemy": false,
+  "Components": [
+    {
+      "ComponentId": 151,
+      "Modification": 7,
+      "Quality": 5,
+      "X": 4,
+      "Y": 1
+    },
+    {
+      "ComponentId": 157,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 4,
+      "Y": 3,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 157,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 6,
+      "Y": 3,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 157,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 4,
+      "Y": 4,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 6,
+      "Y": 4,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 77,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 2,
+      "Y": 5,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 157,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 4,
+      "Y": 5,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 57,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 5,
+      "Y": 5,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 6,
+      "Y": 5,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 156,
+      "Modification": 2,
+      "Quality": 5,
+      "X": 7,
+      "Y": 5,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 63,
+      "Modification": 9,
+      "Quality": 5,
+      "Y": 6,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 58,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 4,
+      "Y": 6,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 56,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 6,
+      "Y": 6,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 63,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 9,
+      "Y": 6,
+      "BarrelId": -1
+    }
+  ],
+  "Perks": {}
+}

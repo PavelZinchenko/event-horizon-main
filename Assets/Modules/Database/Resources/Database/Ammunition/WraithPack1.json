@@ -5,16 +5,17 @@
     "Size": 1.0,
     "ParentVelocityEffect": 0.0,
     "Lifetime": 0.5,
-    "Color": "#8080FF",
     "EnergyCost": 1.0
   },
   "Controller": {},
   "Triggers": [
     {
-      "Condition": 1,
+      "Condition": 5,
       "EffectType": 2,
       "Ammunition": 150,
-      "Quantity": 8,
+      "Color": "#970101",
+      "ColorMode": 1,
+      "Quantity": 3,
       "Size": 1.0,
       "RandomFactor": 0.3,
       "PowerMultiplier": 1.0,
