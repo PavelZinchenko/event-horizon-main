@@ -144,6 +144,8 @@ namespace Combat.Component.Collider
             if (other == null || other.Unit == null)
                 return;
 
+            if (_recentTrigger == other.Unit)
+                _recentTrigger = null;
             if (ActiveTrigger == other.Unit)
                 ActiveTrigger = null;
         }

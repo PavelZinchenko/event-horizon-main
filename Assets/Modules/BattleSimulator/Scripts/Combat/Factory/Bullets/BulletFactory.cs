@@ -412,7 +412,7 @@ namespace Combat.Factory
             public Result Create(BulletTrigger_PlaySfx trigger)
             {
                 var condition = FromTriggerCondition(trigger.Condition);
-                CreateSoundEffect(_bullet, trigger.AudioClip, condition, trigger);
+                CreateSoundEffect(_bullet, _collisionBehaviour, trigger.AudioClip, condition, trigger);
                 CreateVisualEffect(_bullet, _collisionBehaviour, condition, trigger);
                 return Result.Ok;
             }
@@ -420,7 +420,7 @@ namespace Combat.Factory
             public Result Create(BulletTrigger_SpawnStaticSfx trigger)
             {
                 var condition = FromTriggerCondition(trigger.Condition);
-                CreateSoundEffect(_bullet, trigger.AudioClip, condition, trigger);
+                CreateSoundEffect(_bullet, _collisionBehaviour, trigger.AudioClip, condition, trigger);
                 CreateStaticVisualEffect(_bullet, _collisionBehaviour, condition, trigger);
                 return Result.Ok;
             }
@@ -463,11 +463,14 @@ namespace Combat.Factory
                 return Result.Ok;
             }
 
-            private void CreateSoundEffect(Bullet bullet, AudioClipId audioClip, ConditionType condition, BulletTrigger trigger)
+            private void CreateSoundEffect(Bullet bullet, BulletCollisionBehaviour collisionBehaviour, 
+                AudioClipId audioClip, ConditionType condition, BulletTrigger trigger)
             {
                 if (!audioClip) return;
 
-				if (condition == ConditionType.None && !audioClip.Loop)
+                if (condition == ConditionType.OnCollide)
+                    collisionBehaviour.AddAction(new PlayHitSoundAction(_factory._services.SoundPlayer, audioClip, trigger.Cooldown));
+                else if (condition == ConditionType.None && !audioClip.Loop)
                     _factory._services.SoundPlayer.Play(audioClip);
                 else
                     AddAction(bullet, trigger, new PlaySoundAction(_factory._services.SoundPlayer, audioClip, condition).WithCooldown(trigger.Cooldown));

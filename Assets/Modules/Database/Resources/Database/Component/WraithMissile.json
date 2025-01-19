@@ -1,0 +1,28 @@
+{
+  "ItemType": 1,
+  "Id": 284,
+  "Name": "$WraithMissile",
+  "DisplayCategory": 1,
+  "Availability": 1,
+  "ComponentStatsId": 1,
+  "Faction": 20,
+  "Level": 150,
+  "Icon": "rocket2x4",
+  "Color": "#D378CA",
+  "Layout": "0110011001100110",
+  "CellType": "4",
+  "WeaponId": 130,
+  "AmmunitionId": 150,
+  "WeaponSlotType": "M",
+  "PossibleModifications": [
+    13,
+    8,
+    21,
+    6,
+    16,
+    5,
+    2,
+    7,
+    1
+  ]
+}

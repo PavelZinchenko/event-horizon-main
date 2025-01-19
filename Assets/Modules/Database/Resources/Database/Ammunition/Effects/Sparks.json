@@ -1,0 +1,19 @@
+{
+  "ItemType": 26,
+  "Id": 23,
+  "Elements": [
+    {
+      "Type": 6,
+      "Image": "star",
+      "ColorMode": 2,
+      "Quantity": 3,
+      "ParticleSize": 0.25
+    },
+    {
+      "Type": 2,
+      "Image": "wave",
+      "ColorMode": 2,
+      "Color": "#00000000"
+    }
+  ]
+}
