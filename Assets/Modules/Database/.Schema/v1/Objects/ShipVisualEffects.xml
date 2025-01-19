@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ShipVisualEffects" type="struct" >
+    <member name="LeaveWreck" type="enum" typeid="ToggleState" />
+    <member name="CustomExplosionEffect" type="object" typeid="VisualEffect" />
+    <member name="CustomExplosionSound" type="audioclip" />
+</data>

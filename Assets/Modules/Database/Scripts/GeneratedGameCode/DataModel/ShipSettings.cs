@@ -44,6 +44,10 @@ namespace GameDatabase.DataModel
 			MaxAcceleration = UnityEngine.Mathf.Clamp(serializable.MaxAcceleration, 5f, 1000f);
 			MaxAngularAcceleration = UnityEngine.Mathf.Clamp(serializable.MaxAngularAcceleration, 5f, 1000f);
 			DisableCellsExpansions = serializable.DisableCellsExpansions;
+			ShipExplosionEffect = loader?.GetVisualEffect(new ItemId<VisualEffect>(serializable.ShipExplosionEffect)) ?? VisualEffect.DefaultValue;
+			ShipExplosionSound = new AudioClipId(serializable.ShipExplosionSound);
+			DroneExplosionEffect = loader?.GetVisualEffect(new ItemId<VisualEffect>(serializable.DroneExplosionEffect)) ?? VisualEffect.DefaultValue;
+			DroneExplosionSound = new AudioClipId(serializable.DroneExplosionSound);
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -65,6 +69,10 @@ namespace GameDatabase.DataModel
 		public float MaxAcceleration { get; private set; }
 		public float MaxAngularAcceleration { get; private set; }
 		public bool DisableCellsExpansions { get; private set; }
+		public VisualEffect ShipExplosionEffect { get; private set; }
+		public AudioClipId ShipExplosionSound { get; private set; }
+		public VisualEffect DroneExplosionEffect { get; private set; }
+		public AudioClipId DroneExplosionSound { get; private set; }
 
 		public static ShipSettings DefaultValue { get; private set; }
 	}

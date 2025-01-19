@@ -11,5 +11,9 @@
   "MaxVelocity": 40.0,
   "MaxAngularVelocity": 40.0,
   "MaxAcceleration": 400.0,
-  "MaxAngularAcceleration": 400.0
+  "MaxAngularAcceleration": 400.0,
+  "ShipExplosionEffect": 20,
+  "ShipExplosionSound": "explosion_01",
+  "DroneExplosionEffect": 21,
+  "DroneExplosionSound": "explosion_10"
 }

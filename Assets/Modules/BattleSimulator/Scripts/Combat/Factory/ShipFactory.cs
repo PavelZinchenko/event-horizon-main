@@ -31,6 +31,8 @@ using Ship = Combat.Component.Ship.Ship;
 using Collider2DOptimization;
 using Combat.Component.Unit;
 using Combat.Collision.Manager;
+using Combat.Component.Ship;
+using GameDatabase.Extensions;
 
 namespace Combat.Factory
 {
@@ -100,13 +102,7 @@ namespace Combat.Factory
             if (createShadow)
                 ship.AddTrigger(CreateShadow(ship));
 
-            if (stats.ShipModel.ModelScale < 0.9f)
-                ship.AddTrigger(new DroneExplosionAction(ship, _effectFactory, _soundPlayer));
-            else
-            {
-                ship.AddTrigger(new ShipExplosionAction(ship, _effectFactory, _soundPlayer));
-                ship.AddTrigger(new ShipWreckAction(ship, _effectFactory, _resourceLocator.GetSprite(stats.ShipModel.ModelImage), spec.Stats.ShipColor.Color, _settings.StaticWrecks));
-            }
+            CreateDestructionEffect(ship, stats.ShipModel, spec.Stats.ShipColor.Color);
 
             if (spec.Stats.ShieldPoints > 0)
                 ship.AddTrigger(CreateShield(ship, stats.ShipModel.EngineColor));
@@ -283,6 +279,28 @@ namespace Combat.Factory
                 ship.AddTrigger(CreateEngineLight(ship, engine.Position * 0.5f, 0f, 5 * engine.Size / model.ShipModel.ModelScale, model.ShipModel.EngineColor));
                 ship.AddTrigger(CreateTrail(ship, engine.Position * 0.5f, engine.Size, model.ShipModel.EngineColor, effectType));
             }
+        }
+
+        private void CreateDestructionEffect(Ship ship, GameDatabase.DataModel.Ship shipModel, Color shipColor)
+        {
+            var isSmallShip = shipModel.ModelScale < 0.9f; // TODO: add DB parameter
+            var explosionEffect = shipModel.VisualEffects.CustomExplosionEffect;
+            var explosionSound = shipModel.VisualEffects.CustomExplosionSound;
+
+            if (explosionEffect == null)
+                explosionEffect = isSmallShip ? _database.ShipSettings.DroneExplosionEffect : _database.ShipSettings.ShipExplosionEffect;
+            if (!explosionSound)
+                explosionSound = isSmallShip ? _database.ShipSettings.DroneExplosionSound : _database.ShipSettings.ShipExplosionSound;
+
+            if (explosionEffect != null)
+                ship.AddTrigger(new ShipExplosionAction(ship, _effectFactory, _soundPlayer, explosionEffect, explosionSound));
+            else if (isSmallShip)
+                ship.AddTrigger(new DroneExplosionActionObsolete(ship, _effectFactory, _soundPlayer));
+            else
+                ship.AddTrigger(new ShipExplosionActionObsolete(ship, _effectFactory, _soundPlayer));
+
+            if (shipModel.VisualEffects.LeaveWreck.IsEnabled(!isSmallShip))
+                ship.AddTrigger(new ShipWreckAction(ship, _effectFactory, _resourceLocator.GetSprite(shipModel.ModelImage), shipColor, _settings.StaticWrecks));
         }
 
         public IEngine CreateEngine(IShipStats stats, bool isDrone = false)

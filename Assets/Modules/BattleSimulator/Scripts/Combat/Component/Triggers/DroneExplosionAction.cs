@@ -7,9 +7,9 @@ using UnityEngine;
 
 namespace Combat.Component.Triggers
 {
-    public class DroneExplosionAction : IUnitAction
+    public class DroneExplosionActionObsolete : IUnitAction
     {
-        public DroneExplosionAction(IUnit unit, EffectFactory effectFactory, ISoundPlayer soundPlayer)
+        public DroneExplosionActionObsolete(IUnit unit, EffectFactory effectFactory, ISoundPlayer soundPlayer)
         {
             _factory = effectFactory;
             _soundPlayer = soundPlayer;

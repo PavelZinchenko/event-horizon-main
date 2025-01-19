@@ -209,7 +209,7 @@ namespace Combat.Factory
             effect.Run(lifetime, Vector2.zero, 0f);
             effect.Run(0.3f, parent.Body.Velocity, 0);
 
-            unit.AddTrigger(new DroneExplosionAction(unit, _effectFactory, _soundPlayer));
+            unit.AddTrigger(new DroneExplosionActionObsolete(unit, _effectFactory, _soundPlayer));
 
             _scene.AddUnit(unit);
             return unit;
@@ -230,7 +230,7 @@ namespace Combat.Factory
             view.ApplyHsv(colorScheme.Hue, colorScheme.Saturation, _materialCache);
             var unit = unitFactory.Create(ship, body, view, collider, physics);
             unit.AddResource(gameObject);
-            unit.AddTrigger(new DroneExplosionAction(unit, _effectFactory, _soundPlayer));
+            unit.AddTrigger(new DroneExplosionActionObsolete(unit, _effectFactory, _soundPlayer));
             _scene.AddUnit(unit);
             return unit;
         }
@@ -274,7 +274,7 @@ namespace Combat.Factory
                 view.ApplyHsv(colorScheme.Hue, colorScheme.Saturation, _materialCache);
                 var unit = new WormSegment(parent, body, view, collider, physics, hitPoints *= 0.95f);
                 unit.AddResource(gameObject);
-                unit.AddTrigger(new DroneExplosionAction(unit, _effectFactory, _soundPlayer));
+                unit.AddTrigger(new DroneExplosionActionObsolete(unit, _effectFactory, _soundPlayer));
 
                 if (segment != null)
                 {

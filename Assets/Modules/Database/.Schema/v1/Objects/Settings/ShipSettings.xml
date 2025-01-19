@@ -17,4 +17,8 @@
     <member name="MaxAcceleration" type="float" minvalue="5" maxvalue="1000" default="300" />
     <member name="MaxAngularAcceleration" type="float" minvalue="5" maxvalue="1000" default="300" />
     <member name="DisableCellsExpansions" type="bool" />
+    <member name="ShipExplosionEffect" type="object" typeid="VisualEffect" />
+    <member name="ShipExplosionSound" type="audioclip" />
+    <member name="DroneExplosionEffect" type="object" typeid="VisualEffect" />
+    <member name="DroneExplosionSound" type="audioclip" />
 </data>

@@ -1,0 +1,41 @@
+{
+  "ItemType": 26,
+  "Id": 20,
+  "Elements": [
+    {
+      "Type": 2,
+      "Image": "wave",
+      "ColorMode": 1,
+      "Color": "#FFA797",
+      "Size": 6.0
+    },
+    {
+      "Type": 1,
+      "Image": "star",
+      "ColorMode": 1,
+      "Color": "#FFA797",
+      "Size": 4.0
+    },
+    {
+      "Type": 4,
+      "Image": "CloudWhite",
+      "ColorMode": 1,
+      "Color": "#FFA797",
+      "Quantity": 3,
+      "Size": 1.5
+    },
+    {
+      "Type": 3,
+      "Image": "CloudWhite",
+      "ColorMode": 1,
+      "Color": "#801A1A1A",
+      "Quantity": 3,
+      "Size": 2.0,
+      "Lifetime": 3.0
+    },
+    {
+      "Type": 5,
+      "Size": 10.0
+    }
+  ]
+}

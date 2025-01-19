@@ -1,6 +1,8 @@
 ﻿using Combat.Component.Body;
 using Combat.Component.Unit;
+using Combat.Effects;
 using Combat.Factory;
+using GameDatabase.DataModel;
 using GameDatabase.Model;
 using Services.Audio;
 using UnityEngine;
@@ -9,7 +11,50 @@ namespace Combat.Component.Triggers
 {
     public class ShipExplosionAction : IUnitAction
     {
-        public ShipExplosionAction(IUnit unit, EffectFactory effectFactory, ISoundPlayer soundPlayer)
+        public ShipExplosionAction(IUnit unit, EffectFactory effectFactory, ISoundPlayer soundPlayer, VisualEffect visualEffect, AudioClipId audioClip)
+        {
+            _unit = unit;
+            _factory = effectFactory;
+            _soundPlayer = soundPlayer;
+            _audioClip = audioClip;
+            _visualEffect = visualEffect;
+        }
+
+        public ConditionType TriggerCondition { get { return ConditionType.OnDestroy; } }
+
+        public bool TryUpdateAction(float elapsedTime) { return false; }
+
+        public bool TryInvokeAction(ConditionType condition)
+        {
+            var effect = CompositeEffect.Create(_visualEffect, _factory, null);
+            effect.Position = _unit.Body.Position;
+            effect.Rotation = _unit.Body.Rotation;
+            effect.Size = _unit.Body.Scale;
+
+            var lifetime = 0f;
+            foreach (var element in _visualEffect.Elements)
+                if (element.Lifetime > lifetime)
+                    lifetime = element.Lifetime;
+
+            effect.Run(lifetime, _unit.Body.Velocity * 0.05f, 0);
+
+            _soundPlayer.Play(_audioClip);
+
+            return false;
+        }
+
+        public void Dispose() { }
+
+        private readonly EffectFactory _factory;
+        private readonly ISoundPlayer _soundPlayer;
+        private readonly IUnit _unit;
+        private readonly VisualEffect _visualEffect;
+        private readonly AudioClipId _audioClip;
+    }
+
+    public class ShipExplosionActionObsolete : IUnitAction
+    {
+        public ShipExplosionActionObsolete(IUnit unit, EffectFactory effectFactory, ISoundPlayer soundPlayer)
         {
             _factory = effectFactory;
             _soundPlayer = soundPlayer;

@@ -97,7 +97,7 @@ namespace Combat.Factory
                 satellite.AimingSystem = controller;
             }
 
-            satellite.AddTrigger(new DroneExplosionAction(satellite, _effectFactory, _soundPlayer));
+            satellite.AddTrigger(new DroneExplosionActionObsolete(satellite, _effectFactory, _soundPlayer));
 
             gameObject.IsActive = true;
             _scene.AddUnit(satellite);
@@ -123,7 +123,7 @@ namespace Combat.Factory
             repairBot.Controller = new RepairBotContoller(ship, repairBot, radius, repairRate);
             repairBot.AddResource(gameObject);
 
-            repairBot.AddTrigger(new DroneExplosionAction(repairBot, _effectFactory, _soundPlayer));
+            repairBot.AddTrigger(new DroneExplosionActionObsolete(repairBot, _effectFactory, _soundPlayer));
 
             var effect = _effectFactory.CreateEffect("Laser", body);
             effect.Position = new Vector2(deviceSize * 0.4f, 0);
