@@ -33,5 +33,6 @@ namespace GameDatabase.Enums
 		MissileCamouflage,
 		TeleporterV2,
 		WormTailV2,
+		Retribution,
 	}
 }

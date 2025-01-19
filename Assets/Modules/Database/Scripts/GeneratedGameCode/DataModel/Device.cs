@@ -56,6 +56,7 @@ namespace GameDatabase.DataModel
 			VisualEffect = loader?.GetVisualEffect(new ItemId<VisualEffect>(serializable.VisualEffect)) ?? VisualEffect.DefaultValue;
 			ObjectPrefab = new PrefabId(serializable.ObjectPrefab, PrefabId.Type.Object);
 			Prefab = loader?.GetGameObjectPrefab(new ItemId<GameObjectPrefab>(serializable.Prefab)) ?? GameObjectPrefab.DefaultValue;
+			AmmunitionId = loader?.GetAmmunition(new ItemId<Ammunition>(serializable.AmmunitionId)) ?? Ammunition.DefaultValue;
 			ControlButtonIcon = new SpriteId(serializable.ControlButtonIcon, SpriteId.Type.ActionButton);
 
 			OnDataDeserialized(serializable, loader);
@@ -78,6 +79,7 @@ namespace GameDatabase.DataModel
 		public VisualEffect VisualEffect;
 		public PrefabId ObjectPrefab;
 		public GameObjectPrefab Prefab;
+		public Ammunition AmmunitionId;
 		public SpriteId ControlButtonIcon;
 	}
 }

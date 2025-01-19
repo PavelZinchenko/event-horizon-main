@@ -32,6 +32,7 @@ namespace GameDatabase.Serializable
 		public int VisualEffect;
 		public string ObjectPrefab;
 		public int Prefab;
+		public int AmmunitionId;
 		public string ControlButtonIcon;
 	}
 }

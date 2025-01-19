@@ -5,11 +5,11 @@ using Combat.Component.Systems.Devices;
 using Combat.Component.Triggers;
 using Combat.Effects;
 using Combat.Scene;
+using Combat.Services;
 using Constructor;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using Services.Audio;
-using Services.ObjectPool;
+using GameDatabase.Model;
 using UnityEngine;
 using Zenject;
 
@@ -18,13 +18,11 @@ namespace Combat.Factory
     public class DeviceFactory
     {
         [Inject] private readonly IScene _scene;
-        [Inject] private readonly ISoundPlayer _soundPlayer;
-        [Inject] private readonly IObjectPool _objectPool;
         [Inject] private readonly SpaceObjectFactory _spaceObjectFactory;
         [Inject] private readonly SatelliteFactory _satelliteFactory;
         [Inject] private readonly EffectFactory _effectFactory;
         [Inject] private readonly ShipFactory _shipFactory;
-        [Inject] private readonly PrefabCache _prefabCache;
+        [Inject] private readonly IGameServicesProvider _services;
 
         public ISystem Create(IDeviceData deviceData, IShip ship, IShipSpecification shipSpec)
         {
@@ -84,7 +82,7 @@ namespace Combat.Factory
                     break;
                 case DeviceClass.EnergyShield:
                     {
-                        var prefab = stats.Prefab != null ? _prefabCache.LoadPrefab(stats.Prefab) : _prefabCache.LoadPrefab(stats.EffectPrefab);
+                        var prefab = stats.Prefab != null ? _services.PrefabCache.LoadPrefab(stats.Prefab) : _services.PrefabCache.LoadPrefab(stats.EffectPrefab);
                         var energyShield = _satelliteFactory.CreateEnergyShield(ship, prefab, 1f / (stats.Power * shipSpec.Stats.ShieldMultiplier.Value), stats.Size, stats.Color);
                         var energyShieldDevice = new EnergyShieldDevice(ship, stats, deviceData.KeyBinding);
                         device = energyShieldDevice;
@@ -143,12 +141,12 @@ namespace Combat.Factory
                     device = new ToxicWaste(ship, stats, _spaceObjectFactory, shipSpec.Stats.DamageMultiplier.Value);
                     break;
                 case DeviceClass.WormTail:
-                    var tailSegment = stats.Prefab != null ? _prefabCache.LoadPrefab(stats.Prefab) : _prefabCache.LoadPrefab(stats.ObjectPrefab);
+                    var tailSegment = stats.Prefab != null ? _services.PrefabCache.LoadPrefab(stats.Prefab) : _services.PrefabCache.LoadPrefab(stats.ObjectPrefab);
                     device = new WormTailDevice(stats, _spaceObjectFactory.CreateWormTail(ship, Mathf.FloorToInt(stats.Size), 0.1f,
                         ship.Stats.Armor.MaxValue * stats.Power, tailSegment, shipSpec.Stats.ShipColor));
                     break;
                 case DeviceClass.WormTailV2:
-                    var tailSegmentV2 = stats.Prefab != null ? _prefabCache.LoadPrefab(stats.Prefab) : _prefabCache.LoadPrefab(stats.ObjectPrefab);
+                    var tailSegmentV2 = stats.Prefab != null ? _services.PrefabCache.LoadPrefab(stats.Prefab) : _services.PrefabCache.LoadPrefab(stats.ObjectPrefab);
                     device = new WormTailDeviceV2(stats, tailSegmentV2, ship, _spaceObjectFactory);
                     break;
                 case DeviceClass.Jammer:
@@ -159,6 +157,13 @@ namespace Combat.Factory
                     break;
                 case DeviceClass.MissileCamouflage:
                     device = new CamouflageDevice(0f, stats.Power, stats.DeviceClass);
+                    break;
+                case DeviceClass.Retribution:
+                    {
+                        var statModifiers = new WeaponStatModifier { DamageMultiplier = StatMultiplier.FromValue(stats.Power * shipSpec.Stats.DamageMultiplier.Value) };
+                        var bulletFactory = new BulletFactory(stats.AmmunitionId, statModifiers, _scene, _services, _spaceObjectFactory, _effectFactory, ship);
+                        device = new RetributionDevice(ship, bulletFactory);
+                    }
                     break;
                 default:
                     return null;
@@ -188,7 +193,7 @@ namespace Combat.Factory
 
         private SoundEffect CreateSoundEffect(DeviceStats stats, ConditionType condition)
         {
-            return stats.Sound ? new SoundEffect(_soundPlayer, stats.Sound, condition) : null;
+            return stats.Sound ? new SoundEffect(_services.SoundPlayer, stats.Sound, condition) : null;
         }
     }
 }

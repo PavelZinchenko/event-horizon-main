@@ -17,5 +17,6 @@
     <member name="VisualEffect" type="object" typeid="VisualEffect" />
     <member name="ObjectPrefab" type="prefab" typeid="Object" />
     <member name="Prefab" type="object" typeid="GameObjectPrefab" />
+    <member name="AmmunitionId" type="object" typeid="Ammunition" />
     <member name="ControlButtonIcon" type="image" typeid="ActionButton" />
 </data>

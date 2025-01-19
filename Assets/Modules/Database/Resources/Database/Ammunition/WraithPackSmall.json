@@ -1,0 +1,25 @@
+{
+  "ItemType": 25,
+  "Id": 151,
+  "Body": {
+    "Size": 1.0,
+    "ParentVelocityEffect": 0.0,
+    "Lifetime": 0.5,
+    "Color": "#8080FF",
+    "EnergyCost": 1.0
+  },
+  "Controller": {},
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 2,
+      "Ammunition": 150,
+      "Quantity": 8,
+      "Size": 1.0,
+      "RandomFactor": 0.3,
+      "PowerMultiplier": 1.0,
+      "Rotation": "RANDOM(0, 360)",
+      "OffsetX": "0.5"
+    }
+  ]
+}
