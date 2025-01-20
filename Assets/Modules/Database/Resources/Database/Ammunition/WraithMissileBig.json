@@ -9,7 +9,7 @@
     "HitPoints": 50,
     "Color": "#018868",
     "BulletPrefab": 21,
-    "EnergyCost": 30.0,
+    "EnergyCost": 50.0,
     "AiBulletBehavior": 1
   },
   "Controller": {

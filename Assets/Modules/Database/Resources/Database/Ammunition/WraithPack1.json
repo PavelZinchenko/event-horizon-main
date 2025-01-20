@@ -22,5 +22,6 @@
       "Rotation": "RANDOM(0, 360)",
       "OffsetX": "0.5"
     }
-  ]
+  ],
+  "ImpactType": 1
 }
