@@ -1,18 +1,50 @@
 {
   "ItemType": 8,
-  "Id": 396,
+  "Id": 406,
   "ShipId": 155,
+  "AvailableForPlayer": false,
+  "DifficultyClass": 1,
   "Components": [
     {
-      "ComponentId": 151,
+      "ComponentId": 201,
       "X": 4,
       "Y": 1
+    },
+    {
+      "ComponentId": 69,
+      "X": 4,
+      "Y": 3,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 69,
+      "X": 6,
+      "Y": 3,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 69,
+      "X": 4,
+      "Y": 4,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 69,
+      "X": 6,
+      "Y": 4,
+      "BarrelId": -1
     },
     {
       "ComponentId": 77,
       "Modification": 12,
       "Quality": 5,
       "X": 2,
+      "Y": 5,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 69,
+      "X": 4,
       "Y": 5,
       "BarrelId": -1
     },
@@ -25,6 +57,12 @@
       "BarrelId": -1
     },
     {
+      "ComponentId": 69,
+      "X": 6,
+      "Y": 5,
+      "BarrelId": -1
+    },
+    {
       "ComponentId": 77,
       "Modification": 12,
       "Quality": 5,
@@ -33,7 +71,7 @@
       "BarrelId": -1
     },
     {
-      "ComponentId": 66,
+      "ComponentId": 63,
       "Modification": 9,
       "Quality": 5,
       "Y": 6,
@@ -56,7 +94,7 @@
       "BarrelId": -1
     },
     {
-      "ComponentId": 66,
+      "ComponentId": 63,
       "Modification": 9,
       "Quality": 5,
       "X": 9,
