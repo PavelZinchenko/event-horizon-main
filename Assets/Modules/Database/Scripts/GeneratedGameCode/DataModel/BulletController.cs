@@ -39,6 +39,8 @@ namespace GameDatabase.DataModel
 					return new BulletController_Harpoon(serializable, loader);
 				case BulletControllerType.AuraEmitter:
 					return new BulletController_AuraEmitter(serializable, loader);
+				case BulletControllerType.StickyMine:
+					return new BulletController_StickyMine(serializable, loader);
 				default:
                     throw new DatabaseException("BulletController: Invalid content type - " + serializable.Type);
 			}
@@ -85,6 +87,7 @@ namespace GameDatabase.DataModel
 	    T Create(BulletController_Parametric content);
 	    T Create(BulletController_Harpoon content);
 	    T Create(BulletController_AuraEmitter content);
+	    T Create(BulletController_StickyMine content);
     }
 
     public partial class BulletController_Projectile : BulletController
@@ -420,6 +423,59 @@ namespace GameDatabase.DataModel
 				return base.ResolveVariable(name);
 			}
 
+		}
+
+    }
+    public partial class BulletController_StickyMine : BulletController
+    {
+		partial void OnDataDeserialized(BulletControllerSerializable serializable, Database.Loader loader);
+
+  		public BulletController_StickyMine(BulletControllerSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			var variableResolver = GetVariableResolver();
+			Lifetime = UnityEngine.Mathf.Clamp(serializable.Lifetime, 0f, 3.402823E+38f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBulletControllerFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public float Lifetime { get; private set; }
+
+		private IVariableResolver _iVariableResolver;
+		protected override IVariableResolver GetVariableResolver() {
+			if(_iVariableResolver == null)
+				_iVariableResolver = new VariableResolver(this);
+			return _iVariableResolver;
+		}
+
+		private class VariableResolver : BaseVariableResolver
+		{
+			private BulletController_StickyMine _context;
+			
+			protected override BulletController Context => _context;
+
+			public VariableResolver(BulletController_StickyMine context)
+			{
+				_context = context;
+			}
+
+			public override IFunction<Variant> ResolveFunction(string name)
+            {
+				return base.ResolveFunction(name);
+			}
+
+			public override Expression<Variant> ResolveVariable(string name)
+			{
+				if (name == "Lifetime") return GetLifetime;
+				return base.ResolveVariable(name);
+			}
+
+			private Variant GetLifetime() => _context.Lifetime;
 		}
 
     }

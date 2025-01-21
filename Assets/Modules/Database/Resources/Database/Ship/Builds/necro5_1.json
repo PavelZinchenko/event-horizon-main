@@ -6,9 +6,8 @@
   "DifficultyClass": 1,
   "Components": [
     {
-      "ComponentId": 252,
-      "X": 6,
-      "KeyBinding": 1
+      "ComponentId": 285,
+      "X": 6
     },
     {
       "ComponentId": 69,
@@ -18,13 +17,10 @@
       "KeyBinding": 1
     },
     {
-      "ComponentId": 29,
-      "Modification": 2,
-      "Quality": 5,
-      "X": 7,
+      "ComponentId": 74,
+      "X": 6,
       "Y": 4,
-      "BarrelId": -1,
-      "KeyBinding": -2
+      "BarrelId": -1
     },
     {
       "ComponentId": 69,
@@ -35,7 +31,13 @@
     },
     {
       "ComponentId": 69,
-      "X": 6,
+      "X": 9,
+      "Y": 4,
+      "BarrelId": -1
+    },
+    {
+      "ComponentId": 69,
+      "X": 9,
       "Y": 5,
       "BarrelId": -1,
       "KeyBinding": 1
@@ -52,6 +54,12 @@
       "Y": 6,
       "BarrelId": -1,
       "KeyBinding": 1
+    },
+    {
+      "ComponentId": 69,
+      "X": 9,
+      "Y": 6,
+      "BarrelId": -1
     },
     {
       "ComponentId": 69,

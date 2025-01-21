@@ -280,6 +280,9 @@ namespace Combat.Factory
                 case BulletController_Parametric controllerParametric:
                     controller = new ParametricController(bullet, controllerParametric);
                     break;
+                case BulletController_StickyMine stickyMine:
+                    controller = new StickyController(bullet, stickyMine.Lifetime);
+                    break;
                 default:
                     Debug.LogError($"Unknown controller: {_ammunition.Controller.GetType().Name}");
                     break;
@@ -412,7 +415,7 @@ namespace Combat.Factory
             public Result Create(BulletTrigger_PlaySfx trigger)
             {
                 var condition = FromTriggerCondition(trigger.Condition);
-                CreateSoundEffect(_bullet, _collisionBehaviour, trigger.AudioClip, condition, trigger);
+                CreateSoundEffect(_bullet, _collisionBehaviour, trigger.AudioClip, condition, trigger, trigger.OncePerCollision);
                 CreateVisualEffect(_bullet, _collisionBehaviour, condition, trigger);
                 return Result.Ok;
             }
@@ -420,7 +423,7 @@ namespace Combat.Factory
             public Result Create(BulletTrigger_SpawnStaticSfx trigger)
             {
                 var condition = FromTriggerCondition(trigger.Condition);
-                CreateSoundEffect(_bullet, _collisionBehaviour, trigger.AudioClip, condition, trigger);
+                CreateSoundEffect(_bullet, _collisionBehaviour, trigger.AudioClip, condition, trigger, trigger.OncePerCollision);
                 CreateStaticVisualEffect(_bullet, _collisionBehaviour, condition, trigger);
                 return Result.Ok;
             }
@@ -464,12 +467,12 @@ namespace Combat.Factory
             }
 
             private void CreateSoundEffect(Bullet bullet, BulletCollisionBehaviour collisionBehaviour, 
-                AudioClipId audioClip, ConditionType condition, BulletTrigger trigger)
+                AudioClipId audioClip, ConditionType condition, BulletTrigger trigger, bool oncePerCollision)
             {
                 if (!audioClip) return;
 
                 if (condition == ConditionType.OnCollide)
-                    collisionBehaviour.AddAction(new PlayHitSoundAction(_factory._services.SoundPlayer, audioClip, trigger.Cooldown));
+                    collisionBehaviour.AddAction(new PlayHitSoundAction(_factory._services.SoundPlayer, audioClip, trigger.Cooldown, oncePerCollision));
                 else if (condition == ConditionType.None && !audioClip.Loop)
                     _factory._services.SoundPlayer.Play(audioClip);
                 else

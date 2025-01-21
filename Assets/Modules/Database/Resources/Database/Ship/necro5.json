@@ -23,21 +23,21 @@
       "Position": {
         "x": 0.95
       },
-      "WeaponClass": "S"
+      "WeaponClass": "SM"
     },
     {
       "Position": {
         "x": 0.045,
         "y": 0.75
       },
-      "WeaponClass": "M"
+      "WeaponClass": "SM"
     },
     {
       "Position": {
         "x": 0.045,
         "y": -0.75
       },
-      "WeaponClass": "M"
+      "WeaponClass": "SM"
     }
   ],
   "Features": {

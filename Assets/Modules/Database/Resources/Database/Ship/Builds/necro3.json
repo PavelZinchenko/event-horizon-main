@@ -4,19 +4,12 @@
   "ShipId": 152,
   "Components": [
     {
-      "ComponentId": 202,
-      "X": 8,
-      "KeyBinding": 1
+      "ComponentId": 111,
+      "X": 7
     },
     {
-      "ComponentId": 202,
-      "X": 10,
-      "KeyBinding": 1
-    },
-    {
-      "ComponentId": 194,
-      "X": 9,
-      "Y": 2
+      "ComponentId": 111,
+      "X": 9
     },
     {
       "ComponentId": 74,

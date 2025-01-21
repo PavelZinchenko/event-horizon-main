@@ -1,0 +1,25 @@
+{
+  "ItemType": 1,
+  "Id": 287,
+  "Name": "$StickyBomb",
+  "DisplayCategory": 1,
+  "Availability": 2,
+  "ComponentStatsId": 1,
+  "Faction": 19,
+  "Level": 300,
+  "Icon": "launcher2x4",
+  "Color": "#B093FF",
+  "Layout": "0110011001100110",
+  "CellType": "4",
+  "WeaponId": 131,
+  "AmmunitionId": 156,
+  "WeaponSlotType": "S",
+  "PossibleModifications": [
+    5,
+    8,
+    21,
+    6,
+    7,
+    1
+  ]
+}

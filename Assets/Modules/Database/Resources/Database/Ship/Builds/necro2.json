@@ -4,8 +4,9 @@
   "ShipId": 153,
   "Components": [
     {
-      "ComponentId": 168,
-      "X": 6
+      "ComponentId": 284,
+      "X": 7,
+      "Y": 1
     },
     {
       "ComponentId": 74,
