@@ -1,5 +1,9 @@
-﻿using Services.GameApplication;
+﻿using ModestTree;
+using Services.GameApplication;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -35,6 +39,7 @@ namespace GameServices.Settings
             _runInBackground = new BoolDataItem("runInBackground");
             _keyBindings = new StringDataItem("keyBindings");
             _useMouse = new BoolDataItem("mouse", true);
+            _fileList = new FileList("externalMods");
 
             _gamePausedSignal = gamePausedSignal;
             _gamePausedSignal.Event += OnGamePaused;
@@ -208,9 +213,17 @@ namespace GameServices.Settings
             }
         }
 
+        public IList<string> ExternalMods => _fileList;
+
 		public void Dispose()
         {
             PlayerPrefs.Save();
+        }
+
+        private void OnGamePaused(bool paused)
+        {
+            if (paused)
+                PlayerPrefs.Save();
         }
 
         private readonly FloatDataItem _musicVolume;
@@ -240,6 +253,7 @@ namespace GameServices.Settings
         private readonly StringDataItem _activeMod;
         private readonly StringDataItem _keyBindings;
         private readonly BoolDataItem _useMouse;
+        private readonly FileList _fileList;
 
         public struct StringDataItem
         {
@@ -356,10 +370,78 @@ namespace GameServices.Settings
             private const int _false = 0;
         }
 
-        private void OnGamePaused(bool paused)
+        public class FileList : IList<string>
         {
-            if (paused)
-                PlayerPrefs.Save();
+            const char _separator = '\n';
+            private readonly string _key;
+            private readonly List<string> _list;
+
+            public FileList(string key)
+            {
+                _key = key;
+                var data = PlayerPrefs.GetString(_key);
+                _list = data.Split(_separator, StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
+
+            public string this[int index] 
+            {
+                get => _list[index];
+                set
+                {
+                    _list[index] = value;
+                    SaveData();
+                }
+            }
+
+            public int Count => _list.Count;
+            public bool IsReadOnly => false;
+
+            public void Add(string item)
+            {
+                _list.Add(item);
+                SaveData();
+            }
+
+            public void Clear()
+            {
+                _list.Clear();
+                SaveData();
+            }
+
+            public bool Contains(string item) => _list.Contains(item);
+            public void CopyTo(string[] array, int arrayIndex) => _list.CopyTo(array, arrayIndex);
+            public IEnumerator<string> GetEnumerator() => _list.GetEnumerator();
+            public int IndexOf(string item) => _list.IndexOf(item);
+
+            public void Insert(int index, string item)
+            {
+                _list.Insert(index, item);
+                SaveData();
+            }
+
+            public bool Remove(string item)
+            {
+                if (_list.Remove(item))
+                {
+                    SaveData();
+                    return true;
+                }
+
+                return false;
+            }
+
+            public void RemoveAt(int index)
+            {
+                _list.RemoveAt(index);
+                SaveData();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => _list.GetEnumerator();
+
+            private void SaveData()
+            {
+                PlayerPrefs.SetString(_key, string.Join(_separator, _list));
+            }
         }
     }
 }

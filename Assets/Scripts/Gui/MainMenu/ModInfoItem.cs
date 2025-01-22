@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Gui.MainMenu
@@ -8,6 +7,7 @@ namespace Gui.MainMenu
     public class ModInfoItem : MonoBehaviour
     {
         [SerializeField] private Text _name;
+        [SerializeField] private Text _description;
         [SerializeField] private GameObject _activeModMark;
 
         public string Id { get; private set; }

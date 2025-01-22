@@ -27,7 +27,10 @@ namespace DatabaseMigration.v1
                 else if (component.DeviceId != 0)
                 {
                     if (!deviceIds.TryGetValue(component.DeviceId, out var deviceIndex))
-                        throw new DatabaseException($"Unknown device ID {component.DeviceId} in {component.FileName}");
+                    {
+                        GameDiagnostics.Trace.LogError($"Unknown device ID {component.DeviceId} in {component.FileName}");
+                        continue;
+                    }
 
                     var device = Content.DeviceList[deviceIndex];
                     int tag = 0;

@@ -22,7 +22,7 @@ namespace Gui.MainMenu
         [Inject] private readonly ReloadUiSignal.Trigger _reloadGuiTrigger;
         [InjectOptional] private readonly GuiHelper _guiHelper;
 
-		[SerializeField] private LayoutGroup _modsGroup;
+        [SerializeField] private LayoutGroup _modsGroup;
 
         [Inject]
         private void Initialize(IMessenger messenger)
@@ -37,6 +37,26 @@ namespace Gui.MainMenu
                 return;
 
             _guiHelper.ShowConfirmation(_localization.GetString("$LoadModConfirmation"), () => _gameDataManager.LoadMod(item.Id));
+        }
+
+        public void FindModFile()
+        {
+            NativeFilePicker.PickFile(OnFileSelected);
+        }
+
+        private void OnFileSelected(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return;
+            if (_settings.ExternalMods.Contains(path)) return;
+
+            if (!_database.TryAddModFromFile(path))
+            {
+                _guiHelper.ShowMessageBox(_localization.GetString("$InvalidModFile"));
+                return;
+            }
+
+            _settings.ExternalMods.Add(path);
+            UpdateMods();
         }
 
         private void OnDatabaseLoaded()
@@ -63,7 +83,5 @@ namespace Gui.MainMenu
             var active = _database.Id.Equals(mod.Id, StringComparison.OrdinalIgnoreCase);
             item.Initialize(name, mod.Id, active);
         }
-
-        private bool _restoreOnNextLogin = false;
     }
 }

@@ -7,6 +7,7 @@
         public static readonly string BuyConfirmationDialog = "BuyConfirmationDialog";
         public static readonly string AnnouncementWindow = "AnnouncementWindow";
         public static readonly string OutOfFuelDialog = "OutOfFuelDialog";
-		public static readonly string Settings = "Settings";
+        public static readonly string Settings = "Settings";
+        public static readonly string MessageBoxWindow = "MessageBoxWindow";
     }
 }

@@ -31,6 +31,23 @@ namespace GameDatabase
 
         private IDataStorage Storage => _storage ?? _defaultStorage;
 
+        public bool TryAddModFromFile(string path)
+        {
+            try
+            {
+                var mod = new FileDatabaseStorage(path);
+                _mods.Add(new ModInfo(mod.Name, mod.Id, path));
+            }
+            catch (Exception e)
+            {
+                GameDiagnostics.Trace.LogError("invalid mod file - " + path);
+                Debug.LogException(e);
+                return false;
+            }
+
+            return true;
+        }
+
         public void LookForMods()
         {
             _mods.Clear();
@@ -47,18 +64,7 @@ namespace GameDatabase
             {
                 var info = new DirectoryInfo(path);
                 foreach (var fileInfo in info.GetFiles("*", SearchOption.TopDirectoryOnly))
-                {
-                    try
-                    {
-                        var mod = new FileDatabaseStorage(fileInfo.FullName);
-                        _mods.Add(new ModInfo(mod.Name, mod.Id, fileInfo.FullName));
-                    }
-                    catch (Exception e)
-                    {
-                        GameDiagnostics.Trace.LogError("invalid mod file - " + fileInfo.FullName);
-                        Debug.LogException(e);
-                    }
-                }
+                    TryAddModFromFile(fileInfo.FullName);
 
                 foreach (var directoryInfo in info.GetDirectories("*", SearchOption.TopDirectoryOnly))
                 {

@@ -11,6 +11,7 @@ namespace GameDatabase
         event Action DatabaseLoaded;
 
         void LookForMods();
+        bool TryAddModFromFile(string path);
         void LoadDefault();
         bool TryLoad(string id, out string error);
         IEnumerable<ModInfo> AvailableMods { get; }

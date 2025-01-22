@@ -1,4 +1,6 @@
-﻿namespace Services.Settings
+﻿using System.Collections.Generic;
+
+namespace Services.Settings
 {
     public interface IGameSettings
     {
@@ -26,5 +28,6 @@
         public int DontAskAgainId { get; set; }
         public string KeyBindings { get; set; }
         public bool UseMouse { get; set; }
+        public IList<string> ExternalMods { get; }
     }
 }

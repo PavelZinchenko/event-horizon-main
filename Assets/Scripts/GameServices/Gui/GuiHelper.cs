@@ -62,6 +62,11 @@ namespace GameServices.Gui
             });
         }
 
+        public void ShowMessageBox(string text)
+        {
+            _guiManager.OpenWindow(global::Gui.Common.WindowNames.MessageBoxWindow, new WindowArgs(text));
+        }
+
         public void ShowMessage(string message)
         {
             _showMessageTrigger.Fire(message);

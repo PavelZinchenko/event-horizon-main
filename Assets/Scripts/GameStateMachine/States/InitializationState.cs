@@ -68,6 +68,19 @@ namespace GameStateMachine.States
 
             _database.LookForMods();
 
+            var i = 0;
+            while (i < _settings.ExternalMods.Count)
+            {
+                var path = _settings.ExternalMods[i];
+                if (!_database.TryAddModFromFile(path))
+                {
+                    _settings.ExternalMods.RemoveAt(i);
+                    continue;
+                }
+
+                i++;
+            }
+
             var mod = _settings.ActiveMod;
             string error;
             if (!string.IsNullOrEmpty(mod) && _database.TryLoad(mod, out error))
