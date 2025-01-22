@@ -3,18 +3,19 @@
   "Id": 156,
   "Body": {
     "Size": 1.5,
-    "Velocity": 20.0,
+    "Velocity": 30.0,
     "Range": 30.0,
     "Weight": 0.5,
     "HitPoints": 50,
     "Color": "#5803EC",
     "BulletPrefab": 1,
     "EnergyCost": 30.0,
-    "CanBeDisarmed": true
+    "CanBeDisarmed": true,
+    "DetonateWhenDestroyed": false
   },
   "Controller": {
     "Type": 6,
-    "Lifetime": 12.0
+    "Lifetime": 15.0
   },
   "Triggers": [
     {
@@ -40,11 +41,11 @@
       "OffsetX": "0"
     },
     {
-      "Condition": 5,
+      "Condition": 2,
       "EffectType": 1,
       "VisualEffect": 1,
       "Color": "#00000000",
-      "Size": 1.0,
+      "Size": 2.0,
       "Lifetime": 0.2
     }
   ],

@@ -6,10 +6,11 @@
     "Velocity": 20.0,
     "Range": 200.0,
     "Weight": 0.05,
-    "HitPoints": 25,
+    "HitPoints": 15,
     "Color": "#970101",
     "BulletPrefab": 21,
     "EnergyCost": 30.0,
+    "CanBeDisarmed": true,
     "AiBulletBehavior": 1
   },
   "Controller": {

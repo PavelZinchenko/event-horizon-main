@@ -10,6 +10,5 @@
         bool IsExpired { get; }
 
         void Take(float elapsedTime);
-        void Reset(float amount);
     }
 }

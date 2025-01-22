@@ -78,10 +78,9 @@ namespace Combat.Factory
             var lifetime = new Lifetime(_stats.Velocity > 0 && _bulletStats.Range > 0 ? _stats.AmmunitionClass.IsHoming() ? 1.2f * _bulletStats.Range / velocity : _bulletStats.Range / velocity : _bulletStats.Lifetime);
             var unitType = new UnitType(_stats.HitPoints > 0 ? UnitClass.Missile : _stats.AmmunitionClass.IsProjectile() ? UnitClass.EnergyBolt : UnitClass.AreaOfEffect, UnitSide.Undefined, _owner, _stats.AmmunitionClass.CanHitAllies());
 
-            var bullet = new Bullet(body, view, lifetime, unitType);
+            var options = new Bullet.Options { CanBeDisarmed = _stats.AmmunitionClass.CanBeDisarmed() && _bulletStats.Impulse < 0.5f, DetonateWhenDestroyed = true };
+            var bullet = new Bullet(body, view, lifetime, unitType, options);
             bullet.AddResource(bulletGameObject);
-
-            bullet.CanBeDisarmed = _stats.AmmunitionClass.CanBeDisarmed() && _bulletStats.Impulse < 0.5f;
 
             bullet.Collider = ConfigureCollider(bulletGameObject.GetComponent<ICollider>(), bullet);
             bullet.CollisionBehaviour = CreateCollisionBehaviour(_effectFactory, parent, color, lifetime);

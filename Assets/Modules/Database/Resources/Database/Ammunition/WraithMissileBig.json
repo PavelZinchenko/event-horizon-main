@@ -6,7 +6,7 @@
     "Velocity": 30.0,
     "Range": 300.0,
     "Weight": 0.1,
-    "HitPoints": 50,
+    "HitPoints": 30,
     "Color": "#018868",
     "BulletPrefab": 21,
     "EnergyCost": 50.0,

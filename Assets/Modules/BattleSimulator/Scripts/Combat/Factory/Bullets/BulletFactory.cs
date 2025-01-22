@@ -63,13 +63,14 @@ namespace Combat.Factory
                 rotation, offset);
             var view = ConfigureView(bulletGameObject.GetComponent<IView>(), _stats.Color);
 
-            var bullet = CreateUnit(body, view, bulletGameObject);
+            var options = new Bullet.Options { CanBeDisarmed = _ammunition.Body.CanBeDisarmed };
+
+            var bullet = CreateUnit(body, view, bulletGameObject, options);
             var collisionBehaviour = CreateCollisionBehaviour(bullet);
             bullet.Collider = ConfigureCollider(bulletGameObject.GetComponent<ICollider>(true), bullet, parent);
             bullet.CollisionBehaviour = collisionBehaviour;
             bullet.Controller = CreateController(parent, bullet, bulletSpeed, spread, rotation);
             bullet.DamageHandler = CreateDamageHandler(bullet);
-            bullet.CanBeDisarmed = _ammunition.Body.CanBeDisarmed;
             _triggerBuilder.Build(bullet, collisionBehaviour);
             _scene.AddUnit(bullet);
             bullet.UpdateView(0);
@@ -151,7 +152,7 @@ namespace Combat.Factory
             return collisionBehaviour;
         }
 
-        private Bullet CreateUnit(IBody body, IView view, GameObjectHolder gameObject)
+        private Bullet CreateUnit(IBody body, IView view, GameObjectHolder gameObject, in Bullet.Options options)
         {
             UnitClass unitClass;
             if (_ammunition.Body.HitPoints > 0)
@@ -162,7 +163,7 @@ namespace Combat.Factory
                 unitClass = UnitClass.AreaOfEffect;
 
             var unitType = new UnitType(unitClass, UnitSide.Neutral, _owner, _ammunition.Body.FriendlyFire);
-            var bullet = new Bullet(body, view, new Lifetime(_stats.GetBulletLifetime()), unitType);
+            var bullet = new Bullet(body, view, new Lifetime(_stats.GetBulletLifetime()), unitType, options);
 
             bullet.Physics = gameObject.GetComponent<PhysicsManager>();
             return bullet;

@@ -8,7 +8,6 @@ namespace Combat.Component.Bullet
     {
         ILifetime Lifetime { get; }
         void Detonate();
-        bool CanBeDisarmed { get; }
 
         /// <summary>
         /// Returns a body that is attached to this bullet, and has world size of exactly 1

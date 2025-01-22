@@ -20,14 +20,14 @@ namespace Combat.Component.Bullet
 {
     public class Bullet : IBullet
     {
-        public Bullet(IBody body, IView view, ILifetime lifetime, UnitType unitType)
+        public Bullet(IBody body, IView view, ILifetime lifetime, UnitType unitType, in Options options)
         {
             _body = body;
             _view = view;
             _lifetime = lifetime;
             _unitType = unitType;
             State = UnitState.Active;
-            CanBeDisarmed = true;
+            _options = options;
         }
 
         public UnitType Type { get { return _unitType; } }
@@ -42,8 +42,6 @@ namespace Combat.Component.Bullet
 
         public float DefenseMultiplier => _unitType?.Owner?.DefenseMultiplier ?? 1.0f;
 
-        public bool CanBeDisarmed { get; set; }
-
         public void OnCollision(Impact impact, IUnit target, CollisionData collisionData)
         {
             if (State != UnitState.Active)
@@ -53,10 +51,17 @@ namespace Combat.Component.Bullet
                 impact.Effects |= DamageHandler.ApplyDamage(impact, target);
 
             impact.Effects |= InvokeActions(ConditionType.OnCollide);
-            if (impact.Effects.Contains(CollisionEffect.Disarm) && CanBeDisarmed)
+            if (impact.Effects.Contains(CollisionEffect.Disarm) && _options.CanBeDisarmed)
+            {
                 Disarm();
+            }
             else if (impact.Effects.Contains(CollisionEffect.Destroy))
-                Detonate();
+            {
+                if (_options.DetonateWhenDestroyed)
+                    Detonate();
+                else
+                    Destroy();
+            }
         }
 
         public UnitState State { get; private set; }
@@ -226,6 +231,7 @@ namespace Combat.Component.Bullet
         }
 
         private IBody _unitSizedBody;
+        private readonly Options _options;
         private readonly ILifetime _lifetime;
         private readonly UnitType _unitType;
         private readonly IBody _body;
@@ -233,5 +239,11 @@ namespace Combat.Component.Bullet
         private readonly List<IAction> _actions = new List<IAction>();
         private readonly List<IAction> _cooldownActions = new List<IAction>();
         private readonly List<IDisposable> _resources = new List<IDisposable>();
+
+        public struct Options
+        {
+            public bool CanBeDisarmed;
+            public bool DetonateWhenDestroyed;
+        }
     }
 }

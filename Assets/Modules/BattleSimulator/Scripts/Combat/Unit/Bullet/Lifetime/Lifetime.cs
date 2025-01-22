@@ -15,11 +15,6 @@
                 _elapsed -= amount;
         }
 
-        public void Reset(float amount)
-        {
-            _elapsed = _lifetime - amount;
-        }
-
         public float Value { get { return _lifetime <= 0 ? 0 : _elapsed < _lifetime ? 1.0f - _elapsed/_lifetime : 0.0f; } }
         public bool IsExpired { get { return _elapsed > _lifetime; } }
 

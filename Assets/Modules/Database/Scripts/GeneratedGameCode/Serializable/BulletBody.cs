@@ -29,6 +29,7 @@ namespace GameDatabase.Serializable
 		public float EnergyCost;
 		public bool CanBeDisarmed;
 		public bool FriendlyFire;
+		public bool DetonateWhenDestroyed = true;
 		public AiBulletBehavior AiBulletBehavior;
 		public BulletTypeObsolete Type;
 	}

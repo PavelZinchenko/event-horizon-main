@@ -10,10 +10,11 @@ namespace Combat.Component.Controller
         private const float _offsetMultiplier = 0.9f;
 
         private readonly IBullet _bullet;
+        private readonly float _lifetime;
         private IUnit _target;
         private Vector2 _position;
         private float _rotation;
-        private float _lifetime;
+        private float _cooldown;
 
         public StickyController(IBullet bullet, float lifetime)
         {
@@ -32,10 +33,12 @@ namespace Combat.Component.Controller
                 _target = target;
                 _rotation = _bullet.Body.Rotation - target.Body.Rotation;
                 _position = RotationHelpers.Transform(_bullet.Body.Position - _target.Body.Position, -target.Body.Rotation)*_offsetMultiplier;
-                _bullet.Lifetime.Reset(_lifetime);
+                _bullet.Lifetime.Take(-_lifetime);
+                _cooldown = _lifetime;
             }
 
-            if (_bullet.Lifetime.Left <= elapsedTime)
+            _cooldown -= elapsedTime;
+            if (_cooldown <= 0)
             {
                 _bullet.Detonate();
                 return;
