@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameDatabase;
-using GameServices.GameManager;
-using GameServices.Gui;
 using GameStateMachine.States;
 using Services.Settings;
 using Services.Audio;
 using Services.Localization;
 using Services.Messenger;
-using Session;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -20,7 +17,6 @@ namespace Gui.MainMenu
         [SerializeField] Slider _soundVolumeSlider;
         [SerializeField] Slider _musicVolumeSlider;
         [SerializeField] Toggle _runInBackgroundToggle;
-        [SerializeField] GameObject _deleteProgressPanel;
         [SerializeField] private Dropdown _languagesDropdown;
 
         [SerializeField] Toggle _lowQualityToggle;
@@ -32,17 +28,12 @@ namespace Gui.MainMenu
         [Inject] private readonly IMusicPlayer _musicPlayer;
         [Inject] private readonly ILocalization _localization;
         [Inject] private readonly IGameSettings _gameSettings;
-        [Inject] private readonly ISessionData _session;
         [Inject] private readonly IDatabase _database;
-		[Inject] private readonly IGameDataManager _gameDataManager;
 		[Inject] private readonly ReloadUiSignal.Trigger _reloadGuiTrigger;
-		[InjectOptional] private readonly GuiHelper _guiHelper;
 
 		[Inject]
         private void Initialize(IMessenger messenger)
         {
-            messenger.AddListener(EventType.SessionCreated, OnSessionCreated);
-
             _localizations = _localization.LoadLocalizationList();
         }
 
@@ -92,16 +83,6 @@ namespace Gui.MainMenu
             }
         }
 
-        public void CreateNewGameButtonClicked()
-        {
-            _guiHelper.ShowConfirmation(_localization.GetString("$DeleteConfirmationText"), CreateNewGame);
-        }
-
-        private void CreateNewGame()
-        {
-            _gameDataManager.CreateNewGame();
-        }
-
         private void InitializeLanguageDropdown()
         {
             int selectedIndex = 0;
@@ -123,7 +104,6 @@ namespace Gui.MainMenu
 
         private void OnEnable()
         {
-            OnSessionCreated();
             _musicVolumeSlider.value = _musicPlayer.Volume;
             _soundVolumeSlider.value = _soundPlayer.Volume;
             _runInBackgroundToggle.isOn = _gameSettings.RunInBackground;
@@ -140,12 +120,6 @@ namespace Gui.MainMenu
 #if UNITY_STANDALONE
             _fullScreenModeToogle.isOn = Screen.fullScreen;
 #endif
-        }
-
-        private void OnSessionCreated()
-        {
-            if (gameObject.activeSelf)
-                _deleteProgressPanel.gameObject.SetActive(_session.IsGameStarted());
         }
 
         private List<XmlLanguageInfo> _localizations;

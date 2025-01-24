@@ -105,12 +105,16 @@ namespace Installers
             Container.BindInterfacesTo<PlayerPrefsStorage>().AsSingle();
 #elif UNITY_ANDROID && !UNITY_EDITOR
             Container.BindInterfacesTo<AndroidLocalStorage>().AsSingle();
+#elif UNITY_IPHONE && !UNITY_EDITOR
+            Container.BindInterfacesTo<ExportableLocalStorage>().AsSingle();
 #elif UNITY_STANDALONE_OSX && !UNITY_EDITOR
             Container.BindInterfacesTo<MacLocalStorage>().AsSingle();
 #elif UNITY_STANDALONE_WIN && !UNITY_EDITOR
             Container.BindInterfacesTo<WindowsLocalStorage>().AsSingle();
+#elif UNITY_EDITOR
+            Container.BindInterfacesTo<ExportableLocalStorage>().AsSingle();
 #else
-			Container.BindInterfacesTo<LocalStorage>().AsSingle();
+            Container.BindInterfacesTo<LocalStorage>().AsSingle();
 #endif
 
 #if LICENSE_OPENSOURCE
@@ -121,7 +125,7 @@ namespace Installers
 #elif UNITY_IPHONE && !UNITY_EDITOR
             Container.BindInterfacesTo<AppleCloudStorage>().AsSingle();
 #else
-			Container.BindInterfacesTo<EmptyCloudStorage>().AsSingle();
+            Container.BindInterfacesTo<EmptyCloudStorage>().AsSingle();
 #endif
 
 #if ADS_DISABLED || LICENSE_OPENSOURCE

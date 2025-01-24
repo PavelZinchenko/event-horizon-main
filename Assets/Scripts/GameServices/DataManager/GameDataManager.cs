@@ -26,6 +26,7 @@ namespace GameServices.GameManager
             GameSettings gameSettings,
             IapPurchaseProcessor iapProcessor,
             IDatabase database,
+            ISavegameExporter exporter,
             ShowMessageSignal.Trigger showMessageTrigger,
             SceneLoadedSignal sceneLoadedSignal,
             InAppPurchaseCompletedSignal inAppPurchaseCompletedSignal,
@@ -39,6 +40,7 @@ namespace GameServices.GameManager
             _iapProcessor = iapProcessor;
             _iapStorage = iapStorage;
             _gameSettings = gameSettings;
+            _exporter = exporter;
             _showMessageTrigger = showMessageTrigger;
             _sceneLoadedSignal = sceneLoadedSignal;
             _inAppPurchaseCompletedSignal = inAppPurchaseCompletedSignal;
@@ -136,6 +138,16 @@ namespace GameServices.GameManager
             _cloudStorage.TryLoadFromCopy(_sessionData, _database.Id);
         }
 
+        public void ExportProgress(ISavegameExporter.FileExportedCallback callback)
+        {
+            _exporter.Export(callback);
+        }
+
+        public void ImportProgress(ISavegameExporter.FileImportedCallback callback)
+        {
+            _exporter.Import(_sessionData, _database.Id, callback);
+        }
+
         private void SaveSession()
         {
             if (!_sessionData.IsGameStarted())
@@ -215,6 +227,7 @@ namespace GameServices.GameManager
         private ILocalization _localization;
         private SessionData _sessionData;
         private IIapStorage _iapStorage;
+        private ISavegameExporter _exporter;
         private IapPurchaseProcessor _iapProcessor;
         private GameSettings _gameSettings;
         private SceneLoadedSignal _sceneLoadedSignal;

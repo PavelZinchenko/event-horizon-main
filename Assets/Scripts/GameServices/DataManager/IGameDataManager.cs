@@ -14,5 +14,8 @@ namespace GameServices.GameManager
         void LoadGameFromCloud(ISavedGame game);
 
         void LoadGameFromLocalCopy();
+
+        void ImportProgress(ISavegameExporter.FileImportedCallback callback);
+        void ExportProgress(ISavegameExporter.FileExportedCallback callback);
     }
 }
