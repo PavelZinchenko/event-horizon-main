@@ -60,6 +60,7 @@ namespace Combat.Component.Controller
         {
             if (target == null) return false;
             if (target.State != UnitState.Active) return false;
+            if (target.Body.Parent != null) return false;
             if (!target.Collider.Enabled) return false;
             return true;
         }
