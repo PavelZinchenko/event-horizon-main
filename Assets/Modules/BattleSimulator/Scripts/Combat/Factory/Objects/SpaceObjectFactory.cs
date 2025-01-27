@@ -294,9 +294,9 @@ namespace Combat.Factory
             }
         }
 
-        public ShortLivedObject CreateGravitation(IUnit parent, float radius, float lifetime, float gravitation)
+        public ShortLivedObject CreateGravitation(IUnit parent, float radius, float lifetime, float gravitation, string prefabId = "Combat/Objects/Gravitation")
         {
-            var prefab = _prefabCache.LoadResourcePrefab("Combat/Objects/Gravitation");
+            var prefab = _prefabCache.LoadResourcePrefab(prefabId);
             var gameObject = new GameObjectHolder(prefab, _objectPool);
             gameObject.IsActive = true;
             var body = gameObject.GetComponent<IBodyComponent>();

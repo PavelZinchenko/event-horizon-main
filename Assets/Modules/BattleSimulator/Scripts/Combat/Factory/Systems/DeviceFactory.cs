@@ -1,4 +1,5 @@
-﻿using Combat.Component.Features;
+﻿using Combat.Component.Body;
+using Combat.Component.Features;
 using Combat.Component.Ship;
 using Combat.Component.Systems;
 using Combat.Component.Systems.Devices;
@@ -40,7 +41,7 @@ namespace Combat.Factory
                     {
                         device = new InfinityStone(ship, stats, deviceData.KeyBinding);
 
-                        var effect = CreateEffect(stats, ship);
+                        var effect = CreateEffect(stats, ship.Body.Scale);
                         if (effect != null)
                             device.AddTrigger(new FlashEffect(effect, ship.Body, 0.2f, Vector2.zero, ConditionType.OnActivate));
                     }
@@ -51,7 +52,7 @@ namespace Combat.Factory
                         if (stats.EffectPrefab)
                         {
                             foreach (var engine in shipSpec.Stats.ShipModel.Engines)
-                                device.AddTrigger(new FlashEffect(CreateEffect(stats, ship), ship.Body, 0.5f, engine.Position * 0.5f,
+                                device.AddTrigger(new FlashEffect(CreateEffect(stats, ship.Body.Scale), ship.Body, 0.5f, engine.Position * 0.5f,
                                     ConditionType.OnRemainActive | ConditionType.OnActivate));
                         }
                     }
@@ -63,7 +64,7 @@ namespace Combat.Factory
                     {
                         device = new GhostDevice(ship, stats, deviceData.KeyBinding);
                         soundEffectCondition = ConditionType.OnActivate | ConditionType.OnDeactivate;
-                        var effect = CreateEffect(stats, ship);
+                        var effect = CreateEffect(stats, ship.Body.Scale);
                         if (effect != null)
                             device.AddTrigger(new FlashEffect(effect, ship.Body, 0.2f, Vector2.zero, ConditionType.OnDeactivate | ConditionType.OnActivate));
                     }
@@ -78,7 +79,14 @@ namespace Combat.Factory
                     }
                     break;
                 case DeviceClass.GravityGenerator:
-                    device = new GravityGenerator(ship, stats, deviceData.KeyBinding);
+                    {
+                        device = new GravityGenerator(ship, stats, deviceData.KeyBinding);
+                        var effect = CreateEffect(stats, 2*stats.Range/ship.Body.Scale, ship.Body);
+                        if (effect != null)
+                            device.AddTrigger(new UnitEffect(effect, 0.2f, ConditionType.OnActivate, ConditionType.OnDeactivate));
+
+                        device.AddTrigger(new GravityFieldAction(ship, _spaceObjectFactory, stats.Range, stats.Power));
+                    }
                     break;
                 case DeviceClass.EnergyShield:
                     {
@@ -175,18 +183,18 @@ namespace Combat.Factory
             return device;
         }
 
-        private IEffect CreateEffect(DeviceStats stats, IShip ship)
+        private IEffect CreateEffect(DeviceStats stats, float scale, IBody parent = null)
         {
             IEffect effect;
             if (stats.VisualEffect != null)
-                effect = CompositeEffect.Create(stats.VisualEffect, _effectFactory, null);
+                effect = CompositeEffect.Create(stats.VisualEffect, _effectFactory, parent);
             else if (stats.EffectPrefab)
-                effect = _effectFactory.CreateEffect(stats.EffectPrefab);
+                effect = _effectFactory.CreateEffect(stats.EffectPrefab, parent);
             else
                 return null;
 
             effect.Color = stats.Color;
-            effect.Size = stats.Size * ship.Body.Scale;
+            effect.Size = stats.Size * scale;
 
             return effect;
         }

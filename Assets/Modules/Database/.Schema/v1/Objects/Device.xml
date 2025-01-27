@@ -4,7 +4,7 @@
     <member name="EnergyConsumption" type="float" minvalue="0" maxvalue="999999999" />
     <member name="PassiveEnergyConsumption" type="float" minvalue="0" maxvalue="999999999" />
     <member name="ScaleEnergyWithShipSize" type="bool" default="true" />
-    <member name="Power" type="float" minvalue="0" maxvalue="1000" />
+    <member name="Power" type="float" />
     <member name="Range" type="float" minvalue="0" maxvalue="1000" />
     <member name="Size" type="float" minvalue="0" maxvalue="1000" />
     <member name="Cooldown" type="float" minvalue="0" maxvalue="1000" />

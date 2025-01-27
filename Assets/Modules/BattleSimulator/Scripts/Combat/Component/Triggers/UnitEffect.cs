@@ -12,16 +12,24 @@ namespace Combat.Component.Triggers
             _effect.Life = 0;
             _activateCondition = activateCondition;
             _deactivateCondition = deactivateCondition;
+            _effect.Visible = false;
         }
 
         public ConditionType TriggerCondition { get { return _activateCondition | _deactivateCondition; } }
 
         public bool TryUpdateEffect(float elapsedTime)
         {
-            if (!_isActive && _effect.Life <= 0)
-                return false;
+            if (_isActive)
+            {
+                if (!_effect.Visible) _effect.Visible = true;
+                _effect.Life = Mathf.Clamp01(_effect.Life + elapsedTime / _lifetime);
+            }
+            else
+            {
+                _effect.Life = Mathf.Clamp01(_effect.Life - elapsedTime / _lifetime);
+                if (_effect.Life <= 0) _effect.Visible = false;
+            }
 
-            _effect.Life = Mathf.Clamp01(_isActive ? _effect.Life + elapsedTime/_lifetime : _effect.Life - elapsedTime/_lifetime);
             return true;
         }
 

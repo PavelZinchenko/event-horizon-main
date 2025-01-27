@@ -63,6 +63,7 @@ namespace Combat.Component.Unit
         public override void Vanish()
         {
             Destroy();
+            Parent = null;
         }
 
         protected override void OnUpdatePhysics(float elapsedTime)

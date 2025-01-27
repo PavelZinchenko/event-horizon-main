@@ -1,15 +1,17 @@
 {
   "ItemType": 1,
   "Id": 68,
-  "Name": "$GravityGenerator",
+  "Name": "$GravityShield",
   "DisplayCategory": 6,
   "ComponentStatsId": 3,
-  "Faction": 7,
-  "Icon": "reactor2",
+  "Faction": 20,
+  "Level": 150,
+  "Icon": "shield2",
   "Color": "#5665FF",
-  "Layout": "111111111",
+  "Layout": "0101011111111110101000000",
   "CellType": "2",
   "DeviceId": 9,
+  "WeaponSlotType": "\u0000",
   "Restrictions": {
     "ComponentGroupTag": 9
   },

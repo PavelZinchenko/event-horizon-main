@@ -37,7 +37,7 @@ namespace Combat.Component.Systems.Devices
                 InvokeTriggers(ConditionType.OnActivate);
                 _isEnabled = true;
             }
-            else if (Active && _isEnabled && CanBeActivated)
+            else if (Active && _isEnabled && CanBeActivated && _ship.Stats.Energy.TryGet(_energyCost*elapsedTime))
             {
             }
             else if (_isEnabled)
