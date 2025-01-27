@@ -116,6 +116,7 @@ namespace Installers
 #else
             Container.BindInterfacesTo<LocalStorage>().AsSingle();
 #endif
+            Container.Bind<ISavegameExporter>().To<SaveGameExporterStub>().AsSingle().IfNotBound();
 
 #if LICENSE_OPENSOURCE
             Container.BindInterfacesTo<EmptyCloudStorage>().AsSingle();
