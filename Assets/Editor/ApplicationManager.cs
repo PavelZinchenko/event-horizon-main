@@ -274,7 +274,7 @@ namespace EditorWindows
                 ship.GetComponent<SpriteRenderer>().sprite = sprite;
                 ship.AddComponent<PolygonCollider2D>();
 
-                PrefabUtility.SaveAsPrefabAsset(ship, "Assets/Resources/" + prefabPath + ".prefab");
+                PrefabUtility.SaveAsPrefabAsset(ship, "Assets/Modules/BattleSimulator/Resources/" + prefabPath + ".prefab");
                 DestroyImmediate(ship);
             }
         }
