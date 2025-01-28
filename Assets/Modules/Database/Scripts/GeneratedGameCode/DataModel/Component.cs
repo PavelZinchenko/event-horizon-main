@@ -1,6 +1,3 @@
-
-
-
 //-------------------------------------------------------------------------------
 //                                                                               
 //    This code was automatically generated.                                     
@@ -46,6 +43,7 @@ namespace GameDatabase.DataModel
 			Weapon = loader?.GetWeapon(new ItemId<Weapon>(serializable.WeaponId)) ?? Weapon.DefaultValue;
 			Ammunition = loader?.GetAmmunition(new ItemId<Ammunition>(serializable.AmmunitionId)) ?? Ammunition.DefaultValue;
 			AmmunitionObsolete = loader?.GetAmmunitionObsolete(new ItemId<AmmunitionObsolete>(serializable.AmmunitionId)) ?? AmmunitionObsolete.DefaultValue;
+			WeaponSlotType = string.IsNullOrEmpty(serializable.WeaponSlotType) ? default : serializable.WeaponSlotType[0];
 			DroneBay = loader?.GetDroneBay(new ItemId<DroneBay>(serializable.DroneBayId)) ?? DroneBay.DefaultValue;
 			Drone = loader?.GetShipBuild(new ItemId<ShipBuild>(serializable.DroneId)) ?? ShipBuild.DefaultValue;
 			Restrictions = ComponentRestrictions.Create(serializable.Restrictions, loader);
@@ -70,6 +68,7 @@ namespace GameDatabase.DataModel
 		public Weapon Weapon { get; private set; }
 		public Ammunition Ammunition { get; private set; }
 		public AmmunitionObsolete AmmunitionObsolete { get; private set; }
+		public char WeaponSlotType { get; private set; }
 		public DroneBay DroneBay { get; private set; }
 		public ShipBuild Drone { get; private set; }
 		public ComponentRestrictions Restrictions { get; private set; }

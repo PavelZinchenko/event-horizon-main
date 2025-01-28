@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="WeaponSlot" type="struct" >
+    <member name="Letter" type="char" />
+    <member name="Name" type="string" />
+    <member name="Icon" type="image" typeid="GuiIcon" />
+</data>

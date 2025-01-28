@@ -6,15 +6,17 @@
 //                                                                               
 //-------------------------------------------------------------------------------
 
-namespace GameDatabase.Enums
+using System;
+using GameDatabase.Enums;
+using GameDatabase.Model;
+
+namespace GameDatabase.Serializable
 {
-	public enum WeaponSlotType
+	[Serializable]
+	public class WeaponSlotSerializable
 	{
-		Default,
-		Cannon = 'C',
-		Torpedo = 'T',
-		Missile = 'M',
-		Laser = 'L',
-		Special = 'S',
+		public string Letter;
+		public string Name;
+		public string Icon;
 	}
 }

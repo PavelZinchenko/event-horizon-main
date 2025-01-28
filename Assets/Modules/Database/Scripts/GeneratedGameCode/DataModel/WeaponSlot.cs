@@ -13,26 +13,28 @@ using GameDatabase.Model;
 
 namespace GameDatabase.DataModel
 {
-	public partial class ShipToValue 
+	public partial class WeaponSlot 
 	{
-		partial void OnDataDeserialized(ShipToValueSerializable serializable, Database.Loader loader);
+		partial void OnDataDeserialized(WeaponSlotSerializable serializable, Database.Loader loader);
 
-		public static ShipToValue Create(ShipToValueSerializable serializable, Database.Loader loader)
+		public static WeaponSlot Create(WeaponSlotSerializable serializable, Database.Loader loader)
 		{
-			return serializable == null ? DefaultValue : new ShipToValue(serializable, loader);
+			return serializable == null ? DefaultValue : new WeaponSlot(serializable, loader);
 		}
 
-		private ShipToValue(ShipToValueSerializable serializable, Database.Loader loader)
+		private WeaponSlot(WeaponSlotSerializable serializable, Database.Loader loader)
 		{
-			Ship = loader?.GetShip(new ItemId<Ship>(serializable.Ship)) ?? Ship.DefaultValue;
-			Value = UnityEngine.Mathf.Clamp(serializable.Value, 0, 2147483647);
+			Letter = string.IsNullOrEmpty(serializable.Letter) ? default : serializable.Letter[0];
+			Name = serializable.Name;
+			Icon = new SpriteId(serializable.Icon, SpriteId.Type.GuiIcon);
 
 			OnDataDeserialized(serializable, loader);
 		}
 
-		public Ship Ship { get; private set; }
-		public int Value { get; private set; }
+		public char Letter { get; private set; }
+		public string Name { get; private set; }
+		public SpriteId Icon { get; private set; }
 
-		public static ShipToValue DefaultValue { get; private set; }= new(new(), null);
+		public static WeaponSlot DefaultValue { get; private set; }= new(new(), null);
 	}
 }

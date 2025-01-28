@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="WeaponSlots" type="settings" typeid="WeaponSlots">
+    <member name="Slots" type="struct_list" typeid="WeaponSlot" />
+    <member name="DefaultSlotName" type="string" default="$GroupWeaponAny" />
+    <member name="DefaultSlotIcon" type="image" typeid="GuiIcon" default="icon_weapon_x" />
+</data>

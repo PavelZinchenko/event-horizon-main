@@ -12,12 +12,10 @@ namespace GameDatabase.DataModel
         partial void OnDataDeserialized(ComponentSerializable serializable, Database.Loader loader)
         {
             CellType = string.IsNullOrEmpty(serializable.CellType) ? CellType.Empty : (CellType)serializable.CellType.First();
-            WeaponSlotType = string.IsNullOrEmpty(serializable.WeaponSlotType) ? WeaponSlotType.Default : (WeaponSlotType)serializable.WeaponSlotType.First();
         }
 
         private Component() { Id = ItemId<Component>.Empty; }
 
         public CellType CellType { get; private set; }
-        public WeaponSlotType WeaponSlotType { get; private set; }
     }
 }

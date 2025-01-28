@@ -1333,6 +1333,47 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012808199924, guid: 189906a462037724e86a769a89d65c0a,
+        type: 3}
+      propertyPath: _guiIconSprites.Array.size
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012808199924, guid: 189906a462037724e86a769a89d65c0a,
+        type: 3}
+      propertyPath: _guiIconSprites.Array.data[39]
+      value: 
+      objectReference: {fileID: 21300000, guid: ee6f7cbbb9f83444cba2295b7f277883,
+        type: 3}
+    - target: {fileID: 114000012808199924, guid: 189906a462037724e86a769a89d65c0a,
+        type: 3}
+      propertyPath: _guiIconSprites.Array.data[40]
+      value: 
+      objectReference: {fileID: 21300000, guid: 994341ef9e6286e4cad9f8a76016989f,
+        type: 3}
+    - target: {fileID: 114000012808199924, guid: 189906a462037724e86a769a89d65c0a,
+        type: 3}
+      propertyPath: _guiIconSprites.Array.data[41]
+      value: 
+      objectReference: {fileID: 21300000, guid: c9a1b41f2d1945643bc9eb7db5f5b0e4,
+        type: 3}
+    - target: {fileID: 114000012808199924, guid: 189906a462037724e86a769a89d65c0a,
+        type: 3}
+      propertyPath: _guiIconSprites.Array.data[42]
+      value: 
+      objectReference: {fileID: 21300000, guid: c8f217ebaba63d246a322566bff4dfa1,
+        type: 3}
+    - target: {fileID: 114000012808199924, guid: 189906a462037724e86a769a89d65c0a,
+        type: 3}
+      propertyPath: _guiIconSprites.Array.data[43]
+      value: 
+      objectReference: {fileID: 21300000, guid: baf534640dea09c43b7df4f9bd4b511d,
+        type: 3}
+    - target: {fileID: 114000012808199924, guid: 189906a462037724e86a769a89d65c0a,
+        type: 3}
+      propertyPath: _guiIconSprites.Array.data[44]
+      value: 
+      objectReference: {fileID: 21300000, guid: 57068958ea13c5a4591a2a494b4012c5,
+        type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

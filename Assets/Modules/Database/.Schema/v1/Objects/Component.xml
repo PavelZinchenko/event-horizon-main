@@ -15,7 +15,7 @@
     <member name="WeaponId" type="object" typeid="Weapon" alias="Weapon" />
     <member name="AmmunitionId" type="object" typeid="Ammunition" alias="Ammunition" />
     <member name="AmmunitionId" type="object" typeid="AmmunitionObsolete" alias="AmmunitionObsolete" />
-    <member name="WeaponSlotType" type="string" options="obsolete" />
+    <member name="WeaponSlotType" type="char" />
     <member name="DroneBayId" type="object" typeid="DroneBay" alias="DroneBay" />
     <member name="DroneId" type="object" typeid="ShipBuild" alias="Drone" />
     <member name="Restrictions" type="struct" typeid="ComponentRestrictions" />

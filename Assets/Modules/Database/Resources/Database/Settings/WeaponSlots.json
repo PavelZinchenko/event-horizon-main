@@ -1,0 +1,30 @@
+{
+  "ItemType": 118,
+  "Slots": [
+    {
+      "Letter": "C",
+      "Name": "$GroupWeaponC",
+      "Icon": "icon_weapon_c"
+    },
+    {
+      "Letter": "L",
+      "Name": "$GroupWeaponL",
+      "Icon": "icon_weapon_l"
+    },
+    {
+      "Letter": "M",
+      "Name": "$GroupWeaponM",
+      "Icon": "icon_weapon_m"
+    },
+    {
+      "Letter": "T",
+      "Name": "$GroupWeaponT",
+      "Icon": "icon_weapon_t"
+    },
+    {
+      "Letter": "S",
+      "Name": "$GroupWeaponS",
+      "Icon": "icon_weapon_s"
+    }
+  ]
+}

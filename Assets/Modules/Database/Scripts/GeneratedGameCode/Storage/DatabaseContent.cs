@@ -553,6 +553,19 @@ namespace GameDatabase.Storage
 				if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate UiSettings file found - " + name);
             }
+            else if (type == ItemType.WeaponSlots)
+            {
+                if (WeaponSlots == null)
+                {
+                    var data = _serializer.FromJson<WeaponSlotsSerializable>(content);
+                    data.FileName = name;
+                    WeaponSlots = data;
+                    return;
+                }
+
+				if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate WeaponSlots file found - " + name);
+            }
             else
             {
                 throw new DatabaseException("Unknown file type - " + type + "(" + name + ")");
@@ -587,6 +600,7 @@ namespace GameDatabase.Storage
 		public SkillSettingsSerializable SkillSettings { get; private set; }
 		public SpecialEventSettingsSerializable SpecialEventSettings { get; private set; }
 		public UiSettingsSerializable UiSettings { get; private set; }
+		public WeaponSlotsSerializable WeaponSlots { get; private set; }
 
 		public IEnumerable<AmmunitionObsoleteSerializable> AmmunitionObsoleteList => _ammunitionObsoleteMap.Values;
 		public IEnumerable<ComponentSerializable> ComponentList => _componentMap.Values;

@@ -50,4 +50,5 @@
     <item name="FrontierNpcSettings" value="115" />
     <item name="FrontierLevelSettings" value="116" />
     <item name="LocalizationSettings" value="117" />
+    <item name="WeaponSlots" value="118" />
 </data>
