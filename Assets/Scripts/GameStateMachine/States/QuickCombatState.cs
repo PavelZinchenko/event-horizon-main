@@ -12,6 +12,7 @@ using Database.Legacy;
 using Session;
 using Model.Military;
 using GameServices.Audio;
+using System.Text.RegularExpressions;
 
 namespace GameStateMachine.States
 {
@@ -65,28 +66,40 @@ namespace GameStateMachine.States
 		{
 			IFleet firstFleet, secondFleet;
 
-			int shipId;
-			ShipBuild testShip = null;
-			if (int.TryParse(_settings.TestShipId.Replace("*", string.Empty), out shipId))
-				testShip = _database.GetShipBuild(new ItemId<ShipBuild>(shipId));
+            var testShips = new Queue<ShipBuild>();
+            var matches = Regex.Matches(_settings.TestShipId, @"\d+");
+            for (int i = 0; i < matches.Count; ++i)
+            {
+                if (!int.TryParse(matches[i].Value, out var id)) continue;
+                var build = _database.GetShipBuild(new ItemId<ShipBuild>(id));
+                if (build == null) continue;
+                testShips.Enqueue(build);
+            }
 
 			var random = new System.Random();
 			var fleet1 = _database.ShipBuildList.RandomUniqueElements(12, random);
 			var fleet2 = _database.ShipBuildList.RandomUniqueElements(12, random);
 
 #if UNITY_EDITOR
-			if (testShip != null)
+			if (testShips.Count > 0)
 #else
-            if (_database.IsEditable && testShip != null)
+            if (_database.IsEditable && testShips.Count > 0)
 #endif
-			{
-				var playerFleet = Enumerable.Repeat(testShip, 1).Concat(fleet1);
-				var enemyFleet = _settings.TestShipId.Contains('*') ? Enumerable.Repeat(testShip, 1) : Enumerable.Repeat(testShip, 1).Concat(fleet2);
+            {
+                var playerFleet = fleet1;
+				var enemyFleet = fleet2;
 
-				var aiLevel = _settings.TestShipId.Contains("**") ? -1 : (_settings.EasyMode ? 0 : 100);
+                if (testShips.TryDequeue(out var playerShip))
+                {
+                    playerFleet = playerFleet.Prepend(playerShip);
+                    enemyFleet = enemyFleet.Prepend(playerShip);
+                }
+
+                while (testShips.TryDequeue(out var enemyShip))
+                    enemyFleet = enemyFleet.Prepend(enemyShip);
 
 				firstFleet = new TestFleet(_database, playerFleet, 100);
-				secondFleet = new TestFleet(_database, enemyFleet, aiLevel);
+				secondFleet = new TestFleet(_database, enemyFleet, _settings.EasyMode ? 0 : 100);
 			}
 			else
 			{
