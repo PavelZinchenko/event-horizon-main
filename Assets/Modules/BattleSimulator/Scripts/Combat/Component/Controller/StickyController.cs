@@ -32,7 +32,7 @@ namespace Combat.Component.Controller
                 if (!IsTargetValid(target)) return;
                 _target = target;
                 _rotation = _bullet.Body.Rotation - target.Body.Rotation;
-                _position = RotationHelpers.Transform(_bullet.Body.Position - _target.Body.Position, -target.Body.Rotation)*_offsetMultiplier;
+                _position = RotationHelpers.Transform(_bullet.Body.Position - _target.Body.WorldPosition(), -target.Body.WorldRotation())*_offsetMultiplier;
                 _bullet.Lifetime.Take(-_lifetime);
                 _cooldown = _lifetime;
             }
@@ -50,18 +50,35 @@ namespace Combat.Component.Controller
                 return;
             }
 
-            _bullet.Body.Turn(_target.Body.Rotation + _rotation);
-            _bullet.Body.Move(_target.Body.Position + RotationHelpers.Transform(_position, _target.Body.Rotation));
-            _bullet.Body.ApplyAcceleration(_target.Body.Velocity - _bullet.Body.Velocity);
-            _bullet.Body.ApplyAngularAcceleration(_target.Body.AngularVelocity - _bullet.Body.AngularVelocity);
+            var targetRotation = _target.Body.WorldRotation();
+            var targetPosition = _target.Body.WorldPosition();
+
+            _bullet.Body.Turn(targetRotation + _rotation);
+            _bullet.Body.Move(targetPosition + RotationHelpers.Transform(_position, targetRotation));
+            _bullet.Body.ApplyAcceleration(_target.Body.WorldVelocity() - _bullet.Body.Velocity);
+            _bullet.Body.ApplyAngularAcceleration(_target.Body.WorldAngularVelocity() - _bullet.Body.AngularVelocity);
         }
 
         private bool IsTargetValid(IUnit target)
         {
             if (target == null) return false;
             if (target.State != UnitState.Active) return false;
-            if (target.Body.Parent != null) return false;
             if (!target.Collider.Enabled) return false;
+
+            switch (target.Type.Class)
+            {
+                case Unit.Classification.UnitClass.SpaceObject:
+                case Unit.Classification.UnitClass.Ship:
+                case Unit.Classification.UnitClass.Drone:
+                case Unit.Classification.UnitClass.Decoy:
+                case Unit.Classification.UnitClass.Platform:
+                case Unit.Classification.UnitClass.Limb:
+                case Unit.Classification.UnitClass.Shield:
+                    break;
+                default: 
+                    return false;
+            }
+
             return true;
         }
     }
