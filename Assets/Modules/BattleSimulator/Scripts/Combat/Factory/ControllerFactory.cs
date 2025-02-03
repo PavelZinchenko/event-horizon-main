@@ -36,6 +36,9 @@ namespace Combat.Factory
 
         public IControllerFactory CreateDefaultAiController(int aiLevel, BehaviorTreeModel customAi)
         {
+            if (aiLevel < 0) // for testing purposes
+                return new EmptyController.Factory();
+
             var aiModel = customAi ?? _database.CombatSettings.EnemyAI;
             if (aiModel != null)
                 return new BehaviorTreeController.Factory(aiModel, AiSettings.FromAiLevel(aiLevel), _behaviorTreeBuilder);

@@ -86,20 +86,24 @@ namespace GameStateMachine.States
             if (_database.IsEditable && testShips.Count > 0)
 #endif
             {
+                var noRandomEnemies = _settings.TestShipId.Contains('*');
+                var disableEnemyAi = _settings.TestShipId.Contains('#');
+
                 var playerFleet = fleet1;
-				var enemyFleet = fleet2;
+				var enemyFleet = noRandomEnemies ? Enumerable.Empty<ShipBuild>() : fleet2;
 
                 if (testShips.TryDequeue(out var playerShip))
-                {
                     playerFleet = playerFleet.Prepend(playerShip);
-                    enemyFleet = enemyFleet.Prepend(playerShip);
-                }
 
-                while (testShips.TryDequeue(out var enemyShip))
+                if (testShips.Count == 0)
+                    enemyFleet = enemyFleet.Prepend(playerShip);
+                else while (testShips.TryDequeue(out var enemyShip))
                     enemyFleet = enemyFleet.Prepend(enemyShip);
 
+                var aiLevel = disableEnemyAi ? -1 : _settings.EasyMode ? 0 : 100; // TODO: get rid of magic numbers
+
 				firstFleet = new TestFleet(_database, playerFleet, 100);
-				secondFleet = new TestFleet(_database, enemyFleet, _settings.EasyMode ? 0 : 100);
+				secondFleet = new TestFleet(_database, enemyFleet, aiLevel);
 			}
 			else
 			{

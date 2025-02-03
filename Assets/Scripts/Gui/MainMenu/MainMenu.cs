@@ -16,6 +16,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using Services.Resources;
+using System.Text.RegularExpressions;
 
 namespace Gui.MainMenu
 {
@@ -82,18 +83,13 @@ namespace Gui.MainMenu
         {
             _gameSettings.EditorText = _inputField.text;
 
-            int shipId;
             ShipBuild build = null;
-            if (!int.TryParse(_inputField.text.Replace("*", string.Empty), out shipId))
-                UnityEngine.Debug.Log("invalid id: " + _inputField.text);
-            else
-                build = _database.GetShipBuild(new ItemId<ShipBuild>(shipId));
 
-            if (build == null)
-            {
-                UnityEngine.Debug.Log("ship not found: " + _inputField.text);
-                build = _database.ShipBuildList.FirstOrDefault();
-            }
+            var matches = Regex.Matches(_inputField.text, @"\d+");
+            if (matches.Count > 0)
+                build = _database.GetShipBuild(new ItemId<ShipBuild>(int.Parse(matches[0].Value)));
+
+            build ??= _database.ShipBuildList.FirstOrDefault();
 
             if (build == null)
                 return;
