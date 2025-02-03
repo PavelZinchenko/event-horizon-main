@@ -16,8 +16,7 @@
           {
             "Type": 100,
             "MinValue": 0.5,
-            "MaxValue": 5.0,
-            "NoDrones": true
+            "MaxValue": 5.0
           },
           {
             "Type": 111,
