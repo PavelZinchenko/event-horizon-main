@@ -36,7 +36,7 @@ namespace GameDatabase.DataModel
 			IconImage = new SpriteId(serializable.IconImage, SpriteId.Type.ShipIcon);
 			IconScale = UnityEngine.Mathf.Clamp(serializable.IconScale, 0.1f, 100f);
 			ModelImage = new SpriteId(serializable.ModelImage, SpriteId.Type.Ship);
-			ModelScale = UnityEngine.Mathf.Clamp(serializable.ModelScale, 0.1f, 100f);
+			ModelScale = UnityEngine.Mathf.Clamp(serializable.ModelScale, 0.1f, 500f);
 			EngineColor = new ColorData(serializable.EngineColor);
 			Engines = new ImmutableCollection<Engine>(serializable.Engines?.Select(item => Engine.Create(item, loader)));
 			Layout = new Layout(serializable.Layout);

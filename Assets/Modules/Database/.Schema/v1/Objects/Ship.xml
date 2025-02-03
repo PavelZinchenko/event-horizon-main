@@ -9,7 +9,7 @@
     <member name="IconImage" type="image" typeid="ShipIcon" />
     <member name="IconScale" type="float" minvalue="0.1" maxvalue="100" />
     <member name="ModelImage" type="image" typeid="Ship" />
-    <member name="ModelScale" type="float" minvalue="0.1" maxvalue="100" />
+    <member name="ModelScale" type="float" minvalue="0.1" maxvalue="500" />
     <member name="EngineColor" type="color" />
     <member name="Engines" type="struct_list" typeid="Engine" />
     <member name="Layout" type="layout" />
