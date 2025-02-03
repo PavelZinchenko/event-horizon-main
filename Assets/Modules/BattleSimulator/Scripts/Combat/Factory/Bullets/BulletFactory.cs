@@ -63,7 +63,11 @@ namespace Combat.Factory
                 rotation, offset);
             var view = ConfigureView(bulletGameObject.GetComponent<IView>(), _stats.Color);
 
-            var options = new Bullet.Options { CanBeDisarmed = _ammunition.Body.CanBeDisarmed };
+            var options = new Bullet.Options 
+            {
+                CanBeDisarmed = _ammunition.Body.CanBeDisarmed, 
+                DetonateWhenDestroyed = _ammunition.Body.DetonateWhenDestroyed 
+            };
 
             var bullet = CreateUnit(body, view, bulletGameObject, options);
             var collisionBehaviour = CreateCollisionBehaviour(bullet);
