@@ -188,7 +188,7 @@ namespace Game.Exploration
 
         public IEnemyShipBuilder GetHive(int seed)
         {
-            return new EnemyShipBuilder(new ItemId<ShipBuild>(275), _database, _planet.Level, seed, true);
+            return new EnemyShipBuilder(_database.ExplorationSettings.HiveShipBuild.Id, _database, _planet.Level, seed, true);
         }
 
         public IEnemyShipBuilder GetHiveGuardian(System.Random random)
