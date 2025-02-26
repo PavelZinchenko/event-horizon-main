@@ -42,7 +42,7 @@ namespace GameDatabase.Model
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogException(e);
+                GameDiagnostics.Trace.LogError($"Invalid color: {color}");
                 return UnityEngine.Color.white;
             }
 

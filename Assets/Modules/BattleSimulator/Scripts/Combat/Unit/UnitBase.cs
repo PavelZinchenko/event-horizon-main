@@ -66,11 +66,8 @@ namespace Combat.Component.Unit
 
             OnUpdatePhysics(elapsedTime);
 
-            Body.UpdatePhysics(elapsedTime);
-
-            if (Collider != null)
-                Collider.UpdatePhysics(elapsedTime);
-
+            _body?.UpdatePhysics(elapsedTime);
+            _collider?.UpdatePhysics(elapsedTime);
             _triggers.UpdatePhysics(elapsedTime);
         }
 
@@ -81,11 +78,8 @@ namespace Combat.Component.Unit
 
             OnUpdateView(elapsedTime);
 
-            Body.UpdateView(elapsedTime);
-
-            if (View != null)
-                View.UpdateView(elapsedTime);
-
+            _body?.UpdateView(elapsedTime);
+            _view?.UpdateView(elapsedTime);
             _triggers.UpdateView(elapsedTime);
         }
 
@@ -98,8 +92,7 @@ namespace Combat.Component.Unit
 
             OnDispose();
 
-            if (_collider != null)
-                _collider.Dispose();
+            _collider?.Dispose();
         }
 
         protected void InvokeTriggers(ConditionType condition)

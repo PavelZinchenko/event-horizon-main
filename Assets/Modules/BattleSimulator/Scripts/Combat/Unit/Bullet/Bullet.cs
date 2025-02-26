@@ -79,7 +79,7 @@ namespace Combat.Component.Bullet
             _unitSizedBody?.SetSize(1 / _body.WorldScale());
 
             Lifetime.Take(elapsedTime);
-            Collider.UpdatePhysics(elapsedTime);
+            Collider?.UpdatePhysics(elapsedTime);
             
             foreach (var action in _cooldownActions)
             {
@@ -141,8 +141,7 @@ namespace Combat.Component.Bullet
             foreach (var item in _resources)
                 item.Dispose();
 
-            if (Collider != null)
-                Collider.Dispose();
+            Collider?.Dispose();
             
             if(_unitSizedBody != null)
                 _unitSizedBody.Dispose();

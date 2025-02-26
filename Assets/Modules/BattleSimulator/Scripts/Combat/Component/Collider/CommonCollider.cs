@@ -61,7 +61,7 @@ namespace Combat.Component.Collider
         public bool OneHitOnly { get; set; }
         public float StuckTime => _activeCollisionFrameCount * Time.fixedDeltaTime;
 
-        public IUnit ActiveCollision { get { return _activeCollision ?? (_activeCollision = _activeCollisions.FirstOrDefault().Key); } }
+        public IUnit ActiveCollision => _activeCollision;
         public IUnit ActiveTrigger { get; private set; }
         public IUnit LastCollision { get; private set; }
         public Vector2 LastContactPoint { get; private set; }
@@ -84,10 +84,10 @@ namespace Combat.Component.Collider
 			Source = null;
             LastCollision = null;
             OneHitOnly = _ignoreTriggerStayEvent;
+            if (this) Enabled = true;
             _activeCollision = null;
             _cachedColliders = null;
             _recentTrigger = null;
-            if (this) Enabled = true;
             _activeCollisions.Clear();
         }
 
@@ -152,7 +152,7 @@ namespace Combat.Component.Collider
 
         private Vector2 GetTriggerContactPoint(Collider2D target)
         {
-            if (_preciseTriggerHitPoint)
+            if (_preciseTriggerHitPoint && AllColliders.Length > 0)
                 return AllColliders[0].ClosestPoint(target.transform.position);
             else
                 return Unit.Body.WorldPosition();
@@ -278,10 +278,10 @@ namespace Combat.Component.Collider
 
             _activeCollisions.Remove(unit);
             if (unit == _activeCollision)
-                _activeCollision = null;
+                _activeCollision = _activeCollisions.Keys.FirstOrDefault();
         }
 
-        private Collider2D[] AllColliders { get { return _cachedColliders ?? (_cachedColliders = GetComponents<Collider2D>()); } }
+        private Collider2D[] AllColliders => _cachedColliders ??= GetComponents<Collider2D>();
 
         //private readonly ContactPoint2D[] _contacts = new ContactPoint2D[1];
         private IUnit _recentTrigger;

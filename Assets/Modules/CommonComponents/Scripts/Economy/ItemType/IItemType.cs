@@ -27,4 +27,20 @@ namespace Economy.ItemType
         int MaxItemsToConsume { get; }
         int MaxItemsToWithdraw { get; }
     }
+
+    public class UnknownItem : IItemType
+    {
+        public string Id => string.Empty;
+        public string Name => "???";
+        public string Description => string.Empty;
+        public SpriteId Icon => SpriteId.Empty;
+        public Color Color => Color.white;
+        public Price Price => new();
+        public ItemQuality Quality => ItemQuality.Common;
+        public int MaxItemsToConsume => int.MaxValue;
+        public int MaxItemsToWithdraw => int.MaxValue;
+
+        public void Consume(int amount) {}
+        public void Withdraw(int amount) {}
+    }
 }

@@ -24,31 +24,37 @@ namespace Economy.ItemType
 
         public IItemType CreateEmptyShipItem(IShipModel ship)
         {
+            if (ship == null) return new UnknownItem();
             return _container.Instantiate<EmptyShipItem>(new object[] { ship });
         }
 
         public IItemType CreatePlayerShipItem(IShip ship)
         {
+            if (ship == null) return new UnknownItem();
             return _container.Instantiate<PlayerShipItem>(new object[] { ship });
         }
 
         public IItemType CreateMarketShipItem(IShip ship, bool premium = false)
         {
+            if (ship == null) return new UnknownItem();
             return _container.Instantiate<MarketShipItem>(new object[] { ship, premium });
         }
 
         public IItemType CreateQuestShipItem(Ship ship)
         {
+            if (ship == null) return new UnknownItem();
             return _container.Instantiate<QuestShipItem>(new object[] { new CommonShip(ship, Enumerable.Empty<IntegratedComponent>(), _database) });
         }
 
         public IItemType CreateQuestShipItem(ShipBuild build)
         {
+            if (build == null) return new UnknownItem();
             return _container.Instantiate<QuestShipItem>(new object[] { new CommonShip(build, _database) });;
         }
 
         public IItemType CreateDamagedShipItem(ShipBuild build, int seed)
         {
+            if (build == null) return new UnknownItem();
             return _container.Instantiate<DamagedShipItem>(new object[] { build, seed });
         }
 
@@ -71,6 +77,7 @@ namespace Economy.ItemType
 
         public IItemType CreateArtifactItem(QuestItem questItem)
         {
+            if (questItem == null) return new UnknownItem();
             return _container.Instantiate<ArtifactItem>(new object[] { questItem });
         }
 
@@ -81,6 +88,7 @@ namespace Economy.ItemType
 
         public IItemType CreateBlueprintItem(ITechnology technology)
         {
+            if (technology == null) return new UnknownItem();
             return _container.Instantiate<BlueprintItem>(new object[] { technology });
         }
 
@@ -112,16 +120,19 @@ namespace Economy.ItemType
 
         public IItemType CreateComponentItem(ComponentInfo component, bool premium = false)
         {
+            if (component.Data == null) return new UnknownItem();
             return _container.Instantiate<ComponentItem>(new object[] { component, premium });
         }
 
         public IItemType CreateSatelliteItem(Satellite satellite, bool premium = false)
         {
+            if (satellite == null) return new UnknownItem();
             return _container.Instantiate<SatelliteItem>(new object[] { satellite, premium });
         }
 
         public IItemType CreateResearchItem(Faction faction)
         {
+            if (faction == null) return new UnknownItem();
             return _container.Instantiate<ResearchItem>(new object[] { faction });
         }
         public IItemType CreatePurchasedStarsItem()

@@ -50,6 +50,9 @@ namespace Combat.Component.Collider
             {
                 var collider = _buffer[i];
                 var other = collider.GetComponent<ICollider>();
+                if (other == null)
+                    continue;
+
 				if (Source != null && (other.Unit == Source || other.Unit.Type.Owner == Source))
 					continue;
 
@@ -77,7 +80,7 @@ namespace Combat.Component.Collider
 
         private bool _enabled = true;
         private readonly Collider2D[] _buffer = new Collider2D[32];
-        private HashSet<IUnit> _activeCollisions = new HashSet<IUnit>();
-        private HashSet<IUnit> _lastActiveCollisions = new HashSet<IUnit>();
+        private HashSet<IUnit> _activeCollisions = new();
+        private HashSet<IUnit> _lastActiveCollisions = new();
     }
 }
