@@ -111,12 +111,14 @@ namespace Combat.Ai
                 }
                 else if (collider is CommonCollider)
                 {
-                    if (sqrDistance <= item.Body.Scale * item.Body.Scale / 4)
+                    var contactDistance = 0.5f*(ship.Body.Scale + item.Body.Scale);
+                    if (sqrDistance <= contactDistance*contactDistance)
                     {
                         _threats[index++] = item;
                         _timeToHit = 0;
                     }
-                } else if (collider is CircleCollider)
+                }
+                else if (collider is CircleCollider)
                 {
                     if (sqrDistance <= collider.MaxRange * collider.MaxRange)
                     {

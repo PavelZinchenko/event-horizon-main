@@ -58,6 +58,10 @@
                 "Nodes": [
                   {
                     "Type": 114,
+                    "DeviceClass": 4
+                  },
+                  {
+                    "Type": 114,
                     "DeviceClass": 10
                   },
                   {
