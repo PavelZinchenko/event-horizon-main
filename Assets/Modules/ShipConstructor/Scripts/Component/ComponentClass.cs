@@ -1,5 +1,4 @@
 using Constructor.Component;
-using GameDatabase.Enums;
 
 namespace Constructor
 {

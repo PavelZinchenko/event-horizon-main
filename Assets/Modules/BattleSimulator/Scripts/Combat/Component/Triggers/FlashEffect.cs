@@ -12,6 +12,7 @@ namespace Combat.Component.Triggers
             _lifetime = lifetime;
             _effect = effect;
             _effect.Life = 0;
+            _effect.Visible = false;
             _position = position;
             TriggerCondition = conditionType;
         }
@@ -21,7 +22,10 @@ namespace Combat.Component.Triggers
         public bool TryUpdateEffect(float elapsedTime)
         {
             if (_effect.Life <= 0)
+            {
+                _effect.Visible = false;
                 return false;
+            }
 
             _effect.Life -= elapsedTime/_lifetime;
             _effect.Rotation = _body.WorldRotation();
@@ -37,6 +41,7 @@ namespace Combat.Component.Triggers
 
         public bool TryInvokeEffect(ConditionType condition)
         {
+            _effect.Visible = true;
             _effect.Life = 1.0f;
             return true;
         }

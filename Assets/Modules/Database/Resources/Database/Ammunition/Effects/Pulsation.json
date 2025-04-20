@@ -9,6 +9,15 @@
       "Loop": true,
       "Inverse": true,
       "UseRealTime": true
+    },
+    {
+      "Type": 2,
+      "Image": "wave",
+      "Color": "#000000",
+      "StartTime": 0.5,
+      "Loop": true,
+      "Inverse": true,
+      "UseRealTime": true
     }
   ]
 }

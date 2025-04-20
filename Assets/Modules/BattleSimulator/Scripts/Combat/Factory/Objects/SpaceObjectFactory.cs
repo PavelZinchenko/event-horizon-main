@@ -294,6 +294,22 @@ namespace Combat.Factory
             }
         }
 
+        public ShortLivedObject CreateGravityBomb(IShip owner, float radius, float lifetime, float power)
+        {
+            var prefab = _prefabCache.LoadResourcePrefab("Combat/Objects/Area");
+            var gameObject = new GameObjectHolder(prefab, _objectPool);
+            var body = gameObject.GetComponent<IBodyComponent>();
+            body.Initialize(null, owner.Body.WorldPosition(), 0f, 2 * radius, Vector2.zero, 0f, 1.0f);
+            var collider = gameObject.GetComponent<ICollider>();
+            var side = UnitSide.Undefined; //owner.Type.Side;
+            var unit = new ShortLivedObject(body, new EmptyView(), collider, lifetime, new UnitType(UnitClass.Drone, side, owner, true));
+            unit.AddResource(gameObject);
+            unit.SetCollisionBehaviour(new GravityBombCollisionBehaviour(power));
+            gameObject.IsActive = true;
+            _scene.AddUnit(unit);
+            return unit;
+        }
+
         public ShortLivedObject CreateGravitation(IUnit parent, float radius, float lifetime, float gravitation, string prefabId = "Combat/Objects/Gravitation")
         {
             var prefab = _prefabCache.LoadResourcePrefab(prefabId);

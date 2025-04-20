@@ -36,22 +36,15 @@ namespace Combat.Component.Unit
         {
             get 
             {
+                if (_isDead)
+                    return UnitState.Destroyed;
+
                 if (_lifetime <= 0)
-                {
-                    return Parent.IsActive() ? UnitState.Active : UnitState.Destroyed;
-                }
+                    _isDead = !Parent.IsActive();
                 else if (_elapsedTime >= _lifetime)
-                {
-                    return UnitState.Destroyed;
-                }
-                else if (Parent == null || Parent.State == UnitState.Active)
-                {
-                    return UnitState.Active;
-                }
-                else
-                {
-                    return UnitState.Destroyed;
-                }
+                    _isDead = true;
+
+                return _isDead ? UnitState.Destroyed : UnitState.Active;
             }
         }
 
@@ -84,9 +77,10 @@ namespace Combat.Component.Unit
 
         private void Destroy()
         {
-            _elapsedTime = _lifetime;
+            _isDead = true;
         }
 
+        private bool _isDead;
         private ICollisionBehaviour _collisionBehaviour;
         private float _elapsedTime;
         private readonly float _lifetime;

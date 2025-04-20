@@ -1,7 +1,7 @@
 {
   "ItemType": 1,
   "Id": 68,
-  "Name": "$GravityShield",
+  "Name": "$GravityBomb",
   "DisplayCategory": 6,
   "ComponentStatsId": 3,
   "Faction": 20,
@@ -11,12 +11,12 @@
   "Layout": "0101011111111110101000000",
   "CellType": "2",
   "DeviceId": 9,
-  "WeaponSlotType": "\u0000",
   "Restrictions": {
     "ComponentGroupTag": 9
   },
   "PossibleModifications": [
     2,
-    1
+    1,
+    6
   ]
 }

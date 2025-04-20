@@ -80,12 +80,10 @@ namespace Combat.Factory
                     break;
                 case DeviceClass.GravityGenerator:
                     {
-                        device = new GravityGenerator(ship, stats, deviceData.KeyBinding);
-                        var effect = CreateEffect(stats, 2*stats.Range/ship.Body.Scale, ship.Body);
+                        device = new GravityGenerator(ship, _spaceObjectFactory, stats, deviceData.KeyBinding);
+                        var effect = CreateEffect(stats, 2*stats.Range);
                         if (effect != null)
-                            device.AddTrigger(new UnitEffect(effect, 0.2f, ConditionType.OnActivate, ConditionType.OnDeactivate));
-
-                        device.AddTrigger(new GravityFieldAction(ship, _spaceObjectFactory, stats.Range, stats.Power));
+                            device.AddTrigger(new FlashEffect(effect, ship.Body, stats.Lifetime, Vector2.zero, ConditionType.OnActivate));
                     }
                     break;
                 case DeviceClass.EnergyShield:

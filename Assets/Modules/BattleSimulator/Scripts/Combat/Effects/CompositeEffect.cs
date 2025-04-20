@@ -210,7 +210,7 @@ namespace Combat.Effects
 
         private void UpdateLoopingEffectLife(IEffect effect, VisualEffectElement element, float time)
         {
-            var life = time/element.Lifetime;
+            var life = (time - element.StartTime)/element.Lifetime;
             life -= Mathf.Floor(life);
             if (element.Inverse) life = 1.0f - life;
             var delta = life > effect.Life ? life - effect.Life : effect.Life - life;
@@ -271,6 +271,11 @@ namespace Combat.Effects
 
             Destroy(gameObject);
             IsAlive = false;
+        }
+
+        public void ApplyHsv(float hue, float saturation)
+        {
+            throw new System.NotImplementedException();
         }
 
         private IBody _parent;
