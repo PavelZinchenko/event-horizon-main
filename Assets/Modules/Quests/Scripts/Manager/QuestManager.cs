@@ -76,7 +76,7 @@ namespace Domain.Quests
             if (_context.GameDataProvider.TotalPlayTime - _lastUpdateTime > UpdateCooldown)
             {
                 _lastUpdateTime = _context.GameDataProvider.TotalPlayTime;
-				OnQuestEvent(new SimpleEventData(QuestEventType.Timer));
+				OnQuestEvent(SimpleEventData.Timer);
             }
         }
 
@@ -152,7 +152,7 @@ namespace Domain.Quests
 	        }
 
             Add(_factory.Create(questModel, starId, seedIncrement));
-	    }
+        }
 
         private void Add(Quest quest)
 	    {
@@ -165,15 +165,15 @@ namespace Domain.Quests
 	        UnityEngine.Debug.Log("new quest: " + quest.Model.Name);
 
 	        _quests.Add(quest);
+            SaveQuestProgress(quest);
 
-			_recentlyUpdatedQuests.Add(quest);
+            _recentlyUpdatedQuests.Add(quest);
 			_context.EventProvider.FireQuestsUpdatedEvent();
 	    }
 
         private void OnQuestUpdated(Quest quest)
         {
-			if (quest.Model.QuestType != QuestType.Temporary)
-				_context.QuestDataStorage.SetQuestProgress(new QuestProgress(quest.Id, quest.StarId, quest.NodeId, quest.Seed));
+            SaveQuestProgress(quest);
 
             if (quest.Status.IsFinished())
             {
@@ -237,7 +237,7 @@ namespace Domain.Quests
 			_quests.Remove(quest);
 	        _recentlyUpdatedQuests.Remove(quest);
 
-			if (quest.Model.QuestType == QuestType.Temporary) return;
+            if (quest.Model.QuestType == QuestType.Temporary) return; 
 
 	        switch (quest.Status)
 	        {
@@ -258,8 +258,9 @@ namespace Domain.Quests
                     break;
             }
 
-			_context.EventProvider.FireQuestsUpdatedEvent();
-		}
+            ProcessQuestEvent(SimpleEventData.Timer);
+            _context.EventProvider.FireQuestsUpdatedEvent();
+        }
 
         private void OnQuestEvent(IQuestEventData data)
 	    {
@@ -315,11 +316,17 @@ namespace Domain.Quests
 			ProcessQuestEvent(data);
 	    }
 
-	    private void ProcessQuestEvent(IQuestEventData data)
+        private void ProcessQuestEvent(IQuestEventData data)
 	    {
 	        foreach (var quest in _quests)
 	            if (quest.TryProcessEvent(data) && !_recentlyUpdatedQuests.Contains(quest))
 	                _recentlyUpdatedQuests.Add(quest);
+        }
+
+        private void SaveQuestProgress(Quest quest)
+        {
+            if (quest.Model.QuestType != QuestType.Temporary)
+                _context.QuestDataStorage.SetQuestProgress(new QuestProgress(quest.Id, quest.StarId, quest.NodeId, quest.Seed));
         }
 
         private Quest _activeQuest;

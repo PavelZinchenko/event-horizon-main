@@ -32,6 +32,8 @@ namespace Domain.Quests
         public QuestEventType Type { get { return _type; } }
 
         private readonly QuestEventType _type;
+
+        public static readonly SimpleEventData Timer = new(QuestEventType.Timer);
     }
 
     public class StarEventData : IQuestEventData
