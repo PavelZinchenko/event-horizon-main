@@ -58,6 +58,19 @@ public static class EnumerableExtension
         return list.Count == 0;
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis - only the last element is removed
+    /// <summary>
+    /// Removes the last element from the list and returns it
+    /// </summary>
+    /// <returns>Former last element of the list, or null if called on an empty list</returns>
+    public static T Pop<T>(this IList<T> list)
+    {
+        if (list.Count == 0) return default(T);
+        var item = list[list.Count - 1];
+        list.RemoveAt(list.Count - 1);
+        return item;
+    }
+
     public static int IndexOf<T>(this IReadOnlyList<T> list, T value)
     {
         return IndexOf(list, value, EqualityComparer<T>.Default);
@@ -214,6 +227,123 @@ public static class EnumerableExtension
             }
             size--;
         }
+    }
+
+    /// <summary>
+    /// This method returns elements from the list in a weighted shuffled order
+    ///
+    /// Shuffling is done by using the provided weights to generate a list of
+    /// random keys and sorting on them.
+    ///
+    /// Generation of random keys is done using the function equivalent to <c>random() ^ (1 / weight)</c>
+    /// which ensures unbiased distribution of values even in extreme cases
+    /// (for example: one element with high weight and a lot of elements with
+    /// low weight)
+    ///
+    /// If requested elements count is equal to or higher than list size, no
+    /// shuffling is performed and list elements are returned as-is
+    ///
+    /// If list is empty or zero elements are requested, no shuffling is
+    /// performed and no elements are returned 
+    /// </summary>
+    /// <param name="list">The list to sample</param>
+    /// <param name="count">Amount of elements to sample</param>
+    /// <param name="random">Random generator</param>
+    /// <param name="weightFunc">Function for getting weights from list elements</param>
+    public static IEnumerable<T> WeightedRandomUniqueElements<T>(this IReadOnlyList<T> list, int count,
+        System.Random random, Func<T, float> weightFunc)
+    {
+        // empty collection or 0 items requested
+        if (list.Count == 0 || count <= 0)
+        {
+            yield break;
+        }
+
+        // more items requested than available, return all
+        if (count >= list.Count)
+        {
+            foreach (var item in list)
+            {
+                yield return item;
+            }
+        }
+        
+        var indices = new List<WeightedIndex>(list.Count);
+
+        for (var i = 0; i < list.Count; i++)
+        {
+            indices.Add(new WeightedIndex(i, weightFunc(list[i]), random));
+        }
+        
+        indices.Sort();
+
+        foreach (var item in indices)
+        {
+            if(count <= 0) yield break;
+            count--;
+            yield return item.Get(list);
+        }
+    }
+    
+    /// <summary>
+    /// Struct holding weighted indices
+    ///
+    /// Compares in descending order on supplied weight
+    /// </summary>
+    public readonly struct WeightedIndex : IEquatable<WeightedIndex>, IComparable<WeightedIndex>
+    {
+        public WeightedIndex(int index, float weight, System.Random random)
+        {
+            _index = index;
+            if (weight == 0)
+            {
+                _weight = float.PositiveInfinity;
+            } else if (!float.IsFinite(weight))
+            {
+                _weight = 0;
+            }
+            else
+            {
+                // this computation produces weights, that when sorted act like
+                // a weighted shuffle
+                //
+                // The original approach is `random() ^ (1 / weight)`, but it
+                // results in numerical precision errors at low or high weights
+                // and adding logarithm to both sides of inequality doesn't change
+                // the result, but almost completely eliminates precision issues
+                _weight = 1f / weight * UnityEngine.Mathf.Log(random.NextFloat());
+            }
+        }
+
+        public T Get<T>(IReadOnlyList<T> list)
+        {
+            return list[_index];
+        }
+
+        public bool Equals(WeightedIndex other)
+        {
+            return _index == other._index && _weight.Equals(other._weight);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is WeightedIndex other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_index, _weight);
+        }
+
+        public int CompareTo(WeightedIndex other)
+        {
+            var weightComparison = _weight.CompareTo(other._weight);
+            if (weightComparison != 0) return weightComparison;
+            return _index.CompareTo(other._index);
+        }
+        
+        private readonly int _index;
+        private readonly float _weight;
     }
 
     public static IEnumerable<T> ToEnumerable<T>(this T item)

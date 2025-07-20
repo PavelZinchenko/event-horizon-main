@@ -8,7 +8,7 @@ namespace Domain.Quests
         public RequirementsFactory(IQuestBuilderContext context)
         {
             _context = context;
-            _lootCache = new LootCache(context.LootItemFactory, context.Database);
+            _lootCache = new LootCache(context.LootItemFactory, new RequirementCache(this), context.Database);
         }
 
         // TODO: move to another place
@@ -35,24 +35,41 @@ namespace Domain.Quests
             return requirement.Create(builder);
         }
 
-        private readonly ILootCache _lootCache;
+        private readonly LootCache _lootCache;
         private readonly IQuestBuilderContext _context;
 
         private class LootCache : ILootCache
         {
-            public LootCache(ILootItemFactory lootItemFactory, IDatabase database)
+            public LootCache(ILootItemFactory lootItemFactory, IRequirementCache requirementCache, IDatabase database)
             {
                 _lootItemFactory = lootItemFactory;
                 _database = database;
+                _requirementCache = requirementCache;
             }
 
             public ILoot Get(LootModel model, QuestInfo context)
             {
-                return new Loot(model, context, _lootItemFactory, _database);
+                return new Loot(model, context, _lootItemFactory, _requirementCache, _database);
             }
 
             private readonly IDatabase _database;
             private readonly ILootItemFactory _lootItemFactory;
+            private readonly IRequirementCache _requirementCache;
+        }
+        
+        private class RequirementCache : IRequirementCache
+        {
+            public RequirementCache(RequirementsFactory requirementsFactory)
+            {
+                _requirementsFactory = requirementsFactory;
+            }
+
+            public INodeRequirements Get(Requirement requirement, QuestInfo context)
+            {
+                return _requirementsFactory.CreateForNode(requirement, context);
+            }
+            
+            private readonly RequirementsFactory _requirementsFactory;
         }
     }
 }
