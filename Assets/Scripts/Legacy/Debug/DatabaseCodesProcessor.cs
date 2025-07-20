@@ -34,7 +34,8 @@ public class DatabaseCodesProcessor
 
     private IEnumerable<IProduct> CreateProducts(LootContent content)
     {
-        var loot = new Loot(new LootModel(content), new QuestInfo(0), _lootItemFactory, _database);
+        var loot = new Loot(new LootModel(content), new QuestInfo(0), _lootItemFactory,
+            new DummyRequirementCache("Loot requirements are not available for debug codes loot"), _database);
         return loot.Items.Select(item => CommonProduct.Create(item.Type, item.Quantity));
     }
 }
