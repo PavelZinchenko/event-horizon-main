@@ -1,9 +1,9 @@
 [submodule "Assets/Modules/Database/.CodeGenerator"]
 	path = Assets/Modules/Database/.CodeGenerator
-	url = https://github.com/PavelZinchenko/DatabaseCodeGenerator
+	url = https://github.com/feelsthebeats1/DatabaseCodeGenerator-Forge
 [submodule "Assets/Modules/Database/.Editor"]
 	path = Assets/Modules/Database/.Editor
-	url = https://github.com/PavelZinchenko/EventHorizon-Editor
+	url = https://github.com/feelsthebeats1/EventHorizon-Editor-Forge
 [submodule "Assets/ModulesPrivate"]
 	path = Assets/ModulesPrivate
 	url = https://github.com/PavelZinchenko/event-horizon-private-stuff
@@ -15,7 +15,7 @@
 	url = https://github.com/PavelZinchenko/event-horizon-session-code-generator
 [submodule "Assets/ModulesShared"]
 	path = Assets/ModulesShared
-	url = https://github.com/PavelZinchenko/event-horizon-modules
+	url = https://github.com/feelsthebeats1/Event-Horizon-Modules-Forge
 [submodule "Assets/Modules/Database/Plugins/NVorbis"]
 	path = Assets/Modules/Database/Plugins/NVorbis
 	url = https://github.com/PavelZinchenko/NVorbis
