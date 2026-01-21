@@ -10,7 +10,7 @@ namespace Combat.Component.Systems.Weapons
         public MachineGun(IWeaponPlatform platform, WeaponStats weaponStats, Factory.IBulletFactory bulletFactory, int keyBinding)
             : base(platform, weaponStats, bulletFactory, keyBinding)
         {
-            MaxCooldown = weaponStats.FireRate > 0 ? 1f / weaponStats.FireRate : 0f;
+            MaxCooldown = weaponStats.FireRate > 0 ? 1f / weaponStats.FireRate : float.PositiveInfinity;
 
             _energyConsumption = bulletFactory.Stats.EnergyCost;
             _magazine = weaponStats.Magazine;
