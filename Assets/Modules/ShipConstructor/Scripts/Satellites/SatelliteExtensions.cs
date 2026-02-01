@@ -25,7 +25,7 @@ namespace Constructor.Satellites
 
         public static IEnumerable<SatelliteBuild> SuitableFor(this IEnumerable<SatelliteBuild> satellites, Ship ship)
         {
-            return satellites.Where(item => item.Satellite.IsSuitable(ship.SizeClass, ship.ModelScale));
+            return satellites.Where(item => !item.NotAvailableInGame && item.Satellite.IsSuitable(ship.SizeClass, ship.ModelScale));
         }
 
         public static IEnumerable<SatelliteBuild> LimitClass(this IEnumerable<SatelliteBuild> satellites, DifficultyClass shipClass)
