@@ -38,6 +38,7 @@ steam_appid.txt
 
 # Visual Studio cache directory
 .vs/
+*.slnx
 
 # Gradle cache directory
 .gradle/
