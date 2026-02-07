@@ -11,11 +11,25 @@ namespace Gui.Combat
         [SerializeField] private Image Image;
         [SerializeField] private Image Background;
         [SerializeField] private float Size = 24;
+        [SerializeField] private Color DefaultTint = Color.white;
 
-        public void Open(IUnit unit, IScene scene)
+        public void Open(IUnit unit, IScene scene, Sprite icon = null, Color? tint = null)
         {
             _scene = scene;
             _unit = unit;
+
+            _baseSprite ??= Image.sprite;
+            _baseImageColor ??= Image.color;
+            _baseBackgroundColor ??= Background.color;
+
+            Image.sprite = icon != null ? icon : _baseSprite;
+
+            var color = tint ?? DefaultTint;
+            Image.color = color;
+
+            // Fixed black background for contrast
+            var bgAlpha = (_baseBackgroundColor?.a ?? Background.color.a);
+            Background.color = new Color(0.05f, 0.05f, 0.05f, bgAlpha);
 
             Initialize();
             Update();
@@ -97,5 +111,8 @@ namespace Gui.Combat
         private RectTransform _rectTransform;
         private IUnit _unit;
         private IScene _scene;
+        private Sprite _baseSprite;
+        private Color? _baseImageColor;
+        private Color? _baseBackgroundColor;
     }
 }

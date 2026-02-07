@@ -27,9 +27,9 @@ namespace Gui.Combat
             (_radars.FirstOrDefault(item => !item.gameObject.activeSelf) ?? CreateRadar()).Open(ship, _scene, _resourceLocator);
         }
 
-        public void AddBeacon(IUnit unit)
+        public void AddBeacon(IUnit unit, Sprite icon = null, Color? color = null)
         {
-            (_beaconRadars.FirstOrDefault(item => !item.gameObject.activeSelf) ?? CreateBeaconRadar()).Open(unit, _scene);
+            (_beaconRadars.FirstOrDefault(item => !item.gameObject.activeSelf) ?? CreateBeaconRadar()).Open(unit, _scene, icon, color);
         }
 
         public void RemoveBeacon(IUnit unit)

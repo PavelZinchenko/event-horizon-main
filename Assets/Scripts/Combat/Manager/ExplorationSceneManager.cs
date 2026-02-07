@@ -22,6 +22,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Zenject;
+using GameDatabase.Model;
 using IShip = Combat.Component.Ship.IShip;
 
 namespace Combat.Manager
@@ -311,7 +312,8 @@ namespace Combat.Manager
                         throw new ArgumentException();
                 }
 
-                _radarPanel.AddBeacon(unit);
+                var visual = GetBeaconVisual(objective, defaultColor);
+                _radarPanel.AddBeacon(unit, visual.icon, visual.color);
                 _sceneObjects.Add(unit);
                 _objectives.Add(i, unit);
             }
@@ -353,5 +355,83 @@ namespace Combat.Manager
 
         private const float _enemyActivationDistance = 75f;
         private const float _enemyDeactivationDistance = 100f;
+
+        private (Sprite icon, Color color) GetBeaconVisual(Game.Exploration.ObjectiveInfo objective, Color baseColor)
+        {
+            Sprite icon = null;
+            var color = new Color(0.4f, 0.7f, 1f, 1f); // default blue
+
+            switch (objective.Type)
+            {
+                case ObjectiveType.Container:
+                    color = new Color(1.0f, 0.84f, 0.0f, 1f); // yellow
+                    icon = TryGetSprite("Textures/Terrain/container");
+                    break;
+                case ObjectiveType.ShipWreck:
+                    color = new Color(1.0f, 0.84f, 0.0f, 1f); // yellow
+                    var wreckShip = _exploration.GetShipWreck(objective.Seed);
+                    if (wreckShip != null)
+                        icon = TryGetSprite(wreckShip.ModelImage) ?? TryGetSprite(wreckShip.IconImage);
+                    else
+                        icon = TryGetSprite("Textures/StarMap/ship");
+                    break;
+                case ObjectiveType.Outpost:
+                    color = new Color(1f, 0.1f, 0.1f, 1f); // red
+                    var outpostShip = _database.ExplorationSettings?.OutpostShip;
+                    if (outpostShip != null)
+                        icon = TryGetSprite(outpostShip.ModelImage) ?? TryGetSprite(outpostShip.IconImage);
+                    break;
+                case ObjectiveType.Meteorite:
+                    color = new Color(0.65f, 0.65f, 0.65f, 1f); // gray
+                    icon = TryGetSprite("Textures/Icons/icon_rock");
+                    break;
+                case ObjectiveType.Minerals:
+                    if (_exploration.HasSolidGround)
+                    {
+                        color = new Color(0.7f, 0.7f, 0.7f, 1f); // gray;
+                        icon = TryGetSprite("Textures/Terrain/volcano");
+                    }
+                    else
+                    {
+                        color = new Color(0.7804f, 0f, 1f, 1f); // purple;
+                        icon = TryGetSprite("Textures/Bullets/vortex");
+                    }
+                    break;
+                case ObjectiveType.MineralsRare:
+                    if (_exploration.HasSolidGround)
+                    {
+                        color = new Color(0.7f, 0.7f, 0.7f, 1f); // gray;
+                        icon = TryGetSprite("Textures/Terrain/volcano");
+                    }
+                    else
+                    {
+                        color = new Color(0.7804f, 0f, 1f, 1f); // purple;
+                        icon = TryGetSprite("Textures/Bullets/vortex");
+                    }
+                    break;
+                case ObjectiveType.Hive:
+                    color = new Color(0.8314f, 0.851f, 0.4667f, 1f); // green
+                    var hiveShip = _database.ExplorationSettings?.HiveShipBuild?.Ship;
+                    if (hiveShip != null)
+                        icon = TryGetSprite(hiveShip.ModelImage) ?? TryGetSprite(hiveShip.IconImage);
+                    break;
+            }
+
+            return (icon, color);
+        }
+
+        private Sprite TryGetSprite(SpriteId id)
+        {
+            if (id == null) return null;
+            try { return _resourceLocator.GetSprite(id); }
+            catch { return null; }
+        }
+
+        private Sprite TryGetSprite(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
+            try { return _resourceLocator.GetSprite(name); }
+            catch { return null; }
+        }
     }
 }
