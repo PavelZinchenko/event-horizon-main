@@ -100,21 +100,21 @@ namespace Installers
 #endif
 
 #if LICENSE_OPENSOURCE
-            Container.BindInterfacesTo<PlayerPrefsStorage>().AsSingle();
+            Container.BindInterfacesTo<FileDataStorage>().AsSingle();
 #elif UNITY_WEBGL && !UNITY_EDITOR
             Container.BindInterfacesTo<PlayerPrefsStorage>().AsSingle();
 #elif UNITY_ANDROID && !UNITY_EDITOR
-            Container.BindInterfacesTo<AndroidLocalStorage>().AsSingle();
+            Container.BindInterfacesTo<FileDataStorage>().AsSingle();
 #elif UNITY_IPHONE && !UNITY_EDITOR
-            Container.BindInterfacesTo<ExportableLocalStorage>().AsSingle();
+            Container.BindInterfacesTo<FileDataStorage>().AsSingle();
 #elif UNITY_STANDALONE_OSX && !UNITY_EDITOR
-            Container.BindInterfacesTo<MacLocalStorage>().AsSingle();
+            Container.BindInterfacesTo<FileDataStorage>().AsSingle();
 #elif UNITY_STANDALONE_WIN && !UNITY_EDITOR
-            Container.BindInterfacesTo<WindowsLocalStorage>().AsSingle();
+            Container.BindInterfacesTo<FileDataStorage>().AsSingle();
 #elif UNITY_EDITOR
-            Container.BindInterfacesTo<ExportableLocalStorage>().AsSingle();
+            Container.BindInterfacesTo<FileDataStorage>().AsSingle();
 #else
-            Container.BindInterfacesTo<LocalStorage>().AsSingle();
+            Container.BindInterfacesTo<FileDataStorage>().AsSingle();
 #endif
             Container.Bind<ISavegameExporter>().To<SaveGameExporterStub>().AsSingle().IfNotBound();
 
