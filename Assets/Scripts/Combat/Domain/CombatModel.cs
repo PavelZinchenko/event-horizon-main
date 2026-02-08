@@ -10,6 +10,12 @@ using GameServices.Player;
 
 namespace Combat.Domain
 {
+    public enum CombatScenario
+    {
+        Default = 0,
+        Survival = 1,
+    }
+
     public class CombatModel : ICombatModel
     {
         private readonly Dictionary<IShip, long> _playerExperienceData = new Dictionary<IShip, long>();
@@ -17,6 +23,8 @@ namespace Combat.Domain
         private readonly FleetModel _playerFleet;
         private readonly FleetModel _enemyFleet;
         private long _totalExperience;
+
+        public CombatScenario Scenario { get; set; } = CombatScenario.Default;
 
         public CombatModel(
             FleetModel playerFleet, 

@@ -34,6 +34,7 @@ namespace Combat.Domain
 
         public CombatRules Rules { get; set; }
         public int StarLevel { get; set; }
+        public CombatScenario Scenario { get; set; } = CombatScenario.Default;
 
         public void AddSpecialReward(IProduct item)
         {
@@ -56,6 +57,7 @@ namespace Combat.Domain
                 new FleetModel(enemyFleet.Ships, UnitSide.Enemy, _database, enemyFleet.AiLevel), _shipDestroyedSignal);
 
 			var rules = Rules.Create(StarLevel, _playerSkills.HasRescueUnit);
+            model.Scenario = Scenario;
 
 			model.SpecialRewards = specialLoot != null ? _specialReward.Concat(specialLoot) : _specialReward;
 			model.Rules = rules;

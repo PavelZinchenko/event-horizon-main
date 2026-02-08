@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Constructor;
+using Economy;
 using Economy.Products;
 using GameModel;
 using GameModel.Quests;
 using GameServices.Economy;
 using GameServices.Player;
 using Model.Military;
+using GameDatabase.Enums;
 
 namespace Combat.Domain
 {
@@ -13,9 +16,12 @@ namespace Combat.Domain
     {
         public CombatReward(CombatModel combatModel, PlayerSkills playerSkills, LootGenerator lootGenerator, Galaxy.Star currentStar)
         {
+            var scenario = (combatModel as CombatModel)?.Scenario ?? CombatScenario.Default;
+            var isVictory = combatModel.IsVictory();
+
             if (combatModel.IsLootAllowed())
             {
-                foreach (var item in CreateItems(combatModel, lootGenerator, currentStar))
+                foreach (var item in CreateItems(combatModel, lootGenerator, currentStar, scenario, isVictory))
                 {
                     IProduct product;
                     if (_items.TryGetValue(item.Type.Id, out product))
@@ -28,7 +34,7 @@ namespace Combat.Domain
             PlayerExperience = ExperienceData.Empty;
             if (combatModel.IsExpAllowed())
             {
-                var expMultiplier = playerSkills.ExperienceMultiplier;
+                var expMultiplier = playerSkills.ExperienceMultiplier * (scenario == CombatScenario.Survival && isVictory ? 3f : 1f);
                 foreach (var item in combatModel.PlayerExperience)
                 {
                     var exp = (long) (item.Value*expMultiplier);
@@ -48,7 +54,7 @@ namespace Combat.Domain
         public IEnumerable<ExperienceData> Experience { get { return _experience; } }
         public ExperienceData PlayerExperience { get; private set; }
 
-        private IEnumerable<IProduct> CreateItems(CombatModel combatModel, LootGenerator lootGenerator, Galaxy.Star currentStar)
+        private IEnumerable<IProduct> CreateItems(CombatModel combatModel, LootGenerator lootGenerator, Galaxy.Star currentStar, CombatScenario scenario, bool isVictory)
         {
             if (combatModel.SpecialRewards != null)
                 foreach (var item in combatModel.SpecialRewards)
@@ -61,6 +67,17 @@ namespace Combat.Domain
                 currentStar.Level, currentStar.Region.Faction, currentStar.Id);
             foreach (var item in rewards)
                 yield return item;
+
+            if (scenario == CombatScenario.Survival && isVictory)
+            {
+                var random = new System.Random(currentStar.Id + 74123);
+
+                yield return Price.Premium(random.Next(10, 16)).GetProduct(lootGenerator.Factory);
+
+                var count = random.Next(2, 6);
+                foreach (var component in lootGenerator.GetRandomComponents(currentStar.Level, count, random.Next(), true, ComponentQuality.P1, ComponentQuality.P3))
+                    yield return CommonProduct.Create(component);
+            }
         }
 
         private readonly Dictionary<string, IProduct> _items = new Dictionary<string, IProduct>();

@@ -10,6 +10,7 @@ using GameDatabase;
 using GameDatabase.Enums;
 using GameServices.Economy;
 using GameServices.Random;
+using GameServices.Player;
 using GameStateMachine.States;
 using GameDatabase.DataModel;
 using GameDatabase.Query;
@@ -32,6 +33,7 @@ namespace Galaxy.StarContent
         [Inject] private readonly LootGenerator _lootGenerator;
         [Inject] private readonly IDatabase _database;
         [Inject] private readonly CombatModelBuilder.Factory _combatModelBuilderFactory;
+        [Inject] private readonly PlayerSkills _playerSkills;
 
         public bool IsCompleted(int starId) { return GetCurrentLevel(starId) >= MaxLevel; }
         public int GetCurrentLevel(int starId) { return _session.CommonObjects.GetIntValue(starId); }
@@ -105,7 +107,7 @@ namespace Galaxy.StarContent
                 yield break;
 
             var random = _random.CreateRandom(starId + 98765);
-            yield return Price.Premium(random.Next(1, 4)).GetProduct(_itemTypeFactory);
+            yield return Price.Premium(random.Next(3, 6)).GetProduct(_itemTypeFactory);
         }
 
         private void OnCombatCompleted(int starId, ICombatModel result)
@@ -113,8 +115,21 @@ namespace Galaxy.StarContent
             if (!result.IsVictory())
                 return;
 
-            _session.CommonObjects.SetIntValue(starId, GetCurrentLevel(starId) + 1);
+            var nextLevel = GetCurrentLevel(starId) + 1;
+
+            _session.CommonObjects.SetIntValue(starId, nextLevel);
+
+            if (nextLevel >= MaxLevel)
+                IncrementPlayerSkillLevel();
+
             _starContentChangedTrigger.Fire(starId);
+        }
+
+        private void IncrementPlayerSkillLevel()
+        {
+            var experience = _playerSkills.Experience;
+            var nextExperienceValue = (long)experience + experience.NextLevelCost;
+            _playerSkills.Experience = nextExperienceValue;
         }
 
         public struct Facade

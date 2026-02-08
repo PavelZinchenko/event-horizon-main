@@ -47,6 +47,7 @@ namespace Galaxy.StarContent
             builder.EnemyFleet = secondFleet;
             builder.Rules = _database.GalaxySettings.SurvivalCombatRules ?? _database.CombatSettings.DefaultCombatRules;
             builder.StarLevel = level;
+            builder.Scenario = Combat.Domain.CombatScenario.Survival;
 
             _startBattleTrigger.Fire(builder.Build(), result => OnCombatCompleted(starId));
 
