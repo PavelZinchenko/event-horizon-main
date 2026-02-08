@@ -10,6 +10,7 @@ namespace Economy.Products
     public class ProductFactory
     {
         [Inject] private readonly PlayerResources _playerResources;
+        [Inject] private readonly PlayerSkills _playerSkills;
         [Inject] private readonly ISessionData _session;
         [Inject] private readonly ItemTypeFactory _itemTypeFactory;
         [Inject] private readonly IDatabase _database;
@@ -22,14 +23,7 @@ namespace Economy.Products
         public IProduct CreatePlayerProduct(IItemType itemType, int quantity = 1, int inversedPriceScale = 2)
         {
             var quantityProvider = new QuantityProvider(quantity);
-            var priceProvider = new PlayerInventoryPriceProvider(_playerResources, itemType, inversedPriceScale);
-            return new CommonProduct(itemType, quantityProvider, priceProvider);
-        }
-
-        public IProduct CreateCargoHoldProduct(IItemType itemType, int quantity = 1)
-        {
-            var quantityProvider = new QuantityProvider(quantity);
-            var priceProvider = new PlayerInventoryPriceProvider(_playerResources, itemType, 2);
+            var priceProvider = new PlayerInventoryPriceProvider(_playerResources, _playerSkills, itemType, inversedPriceScale);
             return new CommonProduct(itemType, quantityProvider, priceProvider);
         }
 

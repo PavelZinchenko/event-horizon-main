@@ -19,7 +19,7 @@ namespace Economy
         public static Price Premium(Money amount)
         {
 #if IAP_DISABLED
-            return new Price(amount*500, Currency.Credits);
+            return new Price(amount*30000, Currency.Credits);
 #else
             return new Price(amount, Currency.Stars);
 #endif

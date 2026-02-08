@@ -58,7 +58,7 @@ namespace GameModel
             private readonly ItemTypeFactory _factory;
             private readonly IDatabase _database;
 
-            private const int _priceScale = 5;
+            private const int _priceScale = 4; // Scraping items in cargo hold now gets 25% of its base price.
         }
     }
 }

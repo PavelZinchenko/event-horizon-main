@@ -22,6 +22,7 @@ namespace Gui.StarMap
         [Inject] private readonly IGameObjectFactory _gameObjectFactory;
         [Inject] private readonly PlayerFleet _playerFleet;
         [Inject] private readonly IDatabase _database;
+        [Inject] private readonly PlayerSkills _playerSkills;
 
         [Inject]
         private void Initialize(IMessenger _messenger)
@@ -38,6 +39,8 @@ namespace Gui.StarMap
         [SerializeField] private Text _creditsText;
         [SerializeField] private Text _starsText;
         [SerializeField] private GameObject _starsPanel;
+
+        private float discount => 1f - Mathf.Min(0.25f, _playerSkills.Experience.Level / 648f); // max(PlayerSkills.Experience.Level) = 162
 
         public void InitializeWindow()
         {
@@ -56,7 +59,7 @@ namespace Gui.StarMap
             if (ship.Experience.Level >= Level || ship.Experience >= Maths.Experience.FromLevel(_database.SkillSettings.MaxPlayerShipsLevel))
                 return;
 
-            var price = GetLevelUpPrice(ship);
+            var price = GetLevelUpPrice(ship, discount);
             if (!price.TryWithdraw(_playerResources))
                 return;
 
@@ -74,7 +77,7 @@ namespace Gui.StarMap
 
         private void UpdateShipItem(MilitaryBaseShipItem item, IShip ship)
         {
-            item.Initialize(ship, GetLevelUpPrice(ship), Mathf.Min(Level, _database.SkillSettings.MaxPlayerShipsLevel));
+            item.Initialize(ship, GetLevelUpPrice(ship, discount), Mathf.Min(Level, _database.SkillSettings.MaxPlayerShipsLevel));
         }
 
         private void UpdateResources()
@@ -90,11 +93,16 @@ namespace Gui.StarMap
 
         private int Level { get { return Mathf.Max(5, _motherShip.CurrentStar.Level/2); } }
 
-        private static Price GetLevelUpPrice(IShip ship)
+        private static Price GetLevelUpPrice(IShip ship, float discount)
         {
             var size = 1 + Mathf.Max(0, (int)ship.Model.SizeClass);
-            var price = 1 + ship.Experience.Level * size / 25;
-            return Price.Premium(price);
+            var shipLevel = ship.Experience.Level;
+            var scaleLevel = shipLevel / 5;
+            var scalar = shipLevel < 100 ? 1.15 : 1.5;
+            var startingPrice = 10000 + size * 800;
+            var price = startingPrice + 125 * size * scalar * scaleLevel * discount;
+
+            return Price.Common(price);
         }
     }
 }

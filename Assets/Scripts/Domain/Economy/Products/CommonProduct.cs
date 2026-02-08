@@ -1,6 +1,7 @@
 ﻿using Economy.ItemType;
 using GameServices.Player;
 using Session;
+using UnityEngine;
 
 namespace Economy.Products
 {
@@ -111,10 +112,15 @@ namespace Economy.Products
         private readonly PlayerResources _playerResources;
         private readonly Price _price;
 
-        public PlayerInventoryPriceProvider(PlayerResources playerResources, IItemType itemType, int inversedPriceScale)
+        public PlayerInventoryPriceProvider(PlayerResources playerResources, PlayerSkills playerSkills, IItemType itemType, int inversedPriceScale)
         {
             _playerResources = playerResources;
-            _price = itemType.Price / inversedPriceScale;
+            var baseResale = itemType.Price / inversedPriceScale; // e.g. half price when inversedPriceScale == 2
+            var skillScale = 1f + 1.6666667f * (1f - playerSkills.PriceScale); // raises sell value as PriceScale decreases (better trader)
+            _price = baseResale * skillScale;
+
+            if (playerSkills.HasMasterTrader)
+                _price = itemType.Price * 0.9f; // override: flat 90% payout
         }
 
         public Price Price => _price;
