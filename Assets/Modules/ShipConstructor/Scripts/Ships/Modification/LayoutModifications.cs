@@ -133,12 +133,21 @@ namespace Constructor.Ships.Modification
                         var t = (CellType)_stockLayout[x, y - 1];
                         var b = (CellType)_stockLayout[x, y + 1];
 
-                        if (l == CellType.Weapon || r == CellType.Weapon || t == CellType.Weapon || b == CellType.Weapon)
+                        if (l == CellType.All || r == CellType.All || t == CellType.All || b == CellType.All)
+                            _layout[index] = (char)CellType.Engine;
+                        else if (l == CellType.All || r == CellType.All || t == CellType.All || b == CellType.All)
+                            _layout[index] = (char)CellType.Inner;
+                        else if (l == CellType.All || r == CellType.All || t == CellType.All || b == CellType.All)
+                            _layout[index] = (char)CellType.Outer;
+
+                        else if (l == CellType.Weapon || r == CellType.Weapon || t == CellType.Weapon || b == CellType.Weapon)
                             _layout[index] = (char)Layout.CustomWeaponCell;
                         else if (l == CellType.Inner || r == CellType.Inner || t == CellType.Inner || b == CellType.Inner)
                             _layout[index] = (char)CellType.Inner;
                         else if (l == CellType.Engine || r == CellType.Engine || t == CellType.Engine || b == CellType.Engine)
                             _layout[index] = (char)CellType.Engine;
+                        
+
                         else
                             _layout[index] = (char)CellType.Outer;
                     }

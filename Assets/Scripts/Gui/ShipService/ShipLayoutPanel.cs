@@ -20,8 +20,13 @@ namespace Gui.ShipService
         public BlockViewModel WeaponBlock;
         public BlockViewModel InnerBlock;
         public BlockViewModel OuterBlock;
-        public BlockViewModel IoBlock;
         public BlockViewModel EngineBlock;
+
+        public BlockViewModel IoBlock;
+
+        public BlockViewModel OeBlock;
+        public BlockViewModel IeBlock;
+
         public BlockViewModel CustomBlock;
         public BlockViewModel Selection;
         public Image BackgroundImage;
@@ -81,7 +86,12 @@ namespace Gui.ShipService
             WeaponBlock.gameObject.SetActive(false);
             InnerBlock.gameObject.SetActive(false);
             OuterBlock.gameObject.SetActive(false);
+            
             IoBlock.gameObject.SetActive(false);
+            
+            OeBlock.gameObject.SetActive(false);
+            IeBlock.gameObject.SetActive(false);
+            
             EngineBlock.gameObject.SetActive(false);
             CustomBlock.gameObject.SetActive(false);
             Cleanup();
@@ -122,16 +132,31 @@ namespace Gui.ShipService
                     return GameObject.Instantiate<BlockViewModel>(OuterBlock);
                 case CellType.Inner:
                     return GameObject.Instantiate<BlockViewModel>(InnerBlock);
-                case CellType.InnerOuter:
-                    return GameObject.Instantiate<BlockViewModel>(IoBlock);
 				case CellType.Weapon:
-				case Layout.CustomWeaponCell:
+				case CellType.WeaponEngine:
+				case CellType.WeaponInner:
+				case CellType.WeaponOuter:
+                case CellType.All:
+                case Layout.CustomWeaponCell:
 					var item = GameObject.Instantiate<BlockViewModel>(WeaponBlock);
 					//item.Label.text = string.IsNullOrEmpty(cell.WeaponClass) ? "•" : cell.WeaponClass;
 					return item;
 				case CellType.Engine:
                     return GameObject.Instantiate<BlockViewModel>(EngineBlock);
-				case Layout.CustomizableCell:
+
+                case CellType.OuterEngine:
+                    return GameObject.Instantiate<BlockViewModel>(OeBlock);
+
+                case CellType.InnerOuter:
+                    return GameObject.Instantiate<BlockViewModel>(IoBlock);
+
+                case CellType.InnerEngine:
+                    return GameObject.Instantiate<BlockViewModel>(IeBlock);
+
+                
+
+
+                case Layout.CustomizableCell:
 					return GameObject.Instantiate<BlockViewModel>(CustomBlock);
 			}
 
@@ -156,7 +181,12 @@ namespace Gui.ShipService
                     child == InnerBlock.transform ||
                     child == OuterBlock.transform ||
                     child == EngineBlock.transform ||
+
                     child == IoBlock.transform ||
+
+                    child == OeBlock.transform ||
+                    child == IeBlock.transform ||
+
                     child == CustomBlock.transform ||
                     child == Selection.transform ||
                     child == BackgroundImage.transform)
