@@ -18485,11 +18485,11 @@ MonoBehaviour:
   OuterBlock: {fileID: 114884176730582308}
   EngineBlock: {fileID: 114249964346711904}
   IoBlock: {fileID: 114676432296711226}
-  OeBlock: {fileID: 5959242650295001509}
-  IeBlock: {fileID: 3164804152278795350}
-  WeBlock: {fileID: 405418894583297132}
-  WoBlock: {fileID: 7184667524974478809}
-  WiBlock: {fileID: 7855979295071858957}
+  OuterEngineBlock: {fileID: 5959242650295001509}
+  InnerEngineBlock: {fileID: 3164804152278795350}
+  WeaponEngineBlock: {fileID: 405418894583297132}
+  WeaponOuterBlock: {fileID: 7184667524974478809}
+  WeaponInnerBlock: {fileID: 7855979295071858957}
   AllBlock: {fileID: 8990421594967232111}
   CustomBlock: {fileID: 114735871356398318}
   Selection: {fileID: 114452224105346906}

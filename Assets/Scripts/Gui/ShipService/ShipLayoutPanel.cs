@@ -24,12 +24,12 @@ namespace Gui.ShipService
 
         public BlockViewModel IoBlock;
 
-        public BlockViewModel OeBlock;
-        public BlockViewModel IeBlock;
+        public BlockViewModel OuterEngineBlock;
+        public BlockViewModel InnerEngineBlock;
 
-        public BlockViewModel WeBlock;
-        public BlockViewModel WoBlock;
-        public BlockViewModel WiBlock;
+        public BlockViewModel WeaponEngineBlock;
+        public BlockViewModel WeaponOuterBlock;
+        public BlockViewModel WeaponInnerBlock;
 
         public BlockViewModel AllBlock;
 
@@ -95,11 +95,11 @@ namespace Gui.ShipService
 
             IoBlock.gameObject.SetActive(false);
 
-            IeBlock.gameObject.SetActive(false);
-            OeBlock.gameObject.SetActive(false);
-            WeBlock.gameObject.SetActive(false);
-            WiBlock.gameObject.SetActive(false);
-            WoBlock.gameObject.SetActive(false);
+            InnerEngineBlock.gameObject.SetActive(false);
+            OuterEngineBlock.gameObject.SetActive(false);
+            WeaponEngineBlock.gameObject.SetActive(false);
+            WeaponInnerBlock.gameObject.SetActive(false);
+            WeaponOuterBlock.gameObject.SetActive(false);
             AllBlock.gameObject.SetActive(false);
 
             EngineBlock.gameObject.SetActive(false);
@@ -151,23 +151,23 @@ namespace Gui.ShipService
                     return GameObject.Instantiate<BlockViewModel>(EngineBlock);
 
                 case CellType.OuterEngine:
-                    return GameObject.Instantiate<BlockViewModel>(OeBlock);
+                    return GameObject.Instantiate<BlockViewModel>(OuterEngineBlock);
 
                 case CellType.InnerOuter:
                     return GameObject.Instantiate<BlockViewModel>(IoBlock);
 
                 case CellType.InnerEngine:
-                    return GameObject.Instantiate<BlockViewModel>(IeBlock);
+                    return GameObject.Instantiate<BlockViewModel>(InnerEngineBlock);
 
                 case CellType.All:
                     return GameObject.Instantiate<BlockViewModel>(AllBlock);
 
                 case CellType.WeaponEngine:
-                    return GameObject.Instantiate<BlockViewModel>(WeBlock);
+                    return GameObject.Instantiate<BlockViewModel>(WeaponEngineBlock);
                 case CellType.WeaponInner:
-                    return GameObject.Instantiate<BlockViewModel>(WiBlock);
+                    return GameObject.Instantiate<BlockViewModel>(WeaponInnerBlock);
                 case CellType.WeaponOuter:
-                    return GameObject.Instantiate<BlockViewModel>(WoBlock);
+                    return GameObject.Instantiate<BlockViewModel>(WeaponOuterBlock);
 
 
                 case Layout.CustomizableCell:
@@ -197,11 +197,11 @@ namespace Gui.ShipService
                     child == EngineBlock.transform ||
 
                     child == IoBlock.transform ||
-                    child == OeBlock.transform ||
-                    child == IeBlock.transform ||
-                    child == WeBlock.transform ||
-                    child == WoBlock.transform ||
-                    child == WiBlock.transform ||
+                    child == OuterEngineBlock.transform ||
+                    child == InnerEngineBlock.transform ||
+                    child == WeaponEngineBlock.transform ||
+                    child == WeaponOuterBlock.transform ||
+                    child == WeaponInnerBlock.transform ||
                     child == AllBlock.transform ||
 
                     child == CustomBlock.transform ||
