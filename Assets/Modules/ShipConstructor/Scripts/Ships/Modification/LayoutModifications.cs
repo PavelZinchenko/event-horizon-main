@@ -161,6 +161,14 @@ namespace Constructor.Ships.Modification
                 var t = (CellType)_stockLayout[x, y - 1];
                 var b = (CellType)_stockLayout[x, y + 1];
 
+                // Optional logic that allows Engine/? and Weapon/? slots to be expanded to their respective first value (engine or weapon)
+                // Weapon/Engine slot can be expanded into Engine only (not including Outer).
+                // Doesn't affect any Green slot expansion logic.
+                if (value == CellType.Engine && (l == CellType.WeaponEngine || l == CellType.InnerEngine || l == CellType.OuterEngine || r == CellType.WeaponEngine || r == CellType.InnerEngine || r == CellType.OuterEngine || t == CellType.WeaponEngine || t == CellType.InnerEngine || t == CellType.OuterEngine || b == CellType.WeaponEngine || b == CellType.InnerEngine || b == CellType.OuterEngine))
+                    return true;
+                if (value == CellType.Weapon && (l == CellType.WeaponInner || l == CellType.WeaponOuter || r == CellType.WeaponInner || r == CellType.WeaponOuter || t == CellType.WeaponInner || t == CellType.WeaponOuter || b == CellType.WeaponInner || b == CellType.WeaponOuter))
+                    return true;
+
                 return value == l || value == r || value == t || value == b || l == CellType.All || r == CellType.All || t == CellType.All || b == CellType.All;
             }
 
