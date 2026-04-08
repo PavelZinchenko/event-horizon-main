@@ -27,6 +27,12 @@ namespace Gui.ShipService
         public BlockViewModel OeBlock;
         public BlockViewModel IeBlock;
 
+        public BlockViewModel WeBlock;
+        public BlockViewModel WoBlock;
+        public BlockViewModel WiBlock;
+
+        public BlockViewModel AllBlock;
+
         public BlockViewModel CustomBlock;
         public BlockViewModel Selection;
         public Image BackgroundImage;
@@ -37,7 +43,7 @@ namespace Gui.ShipService
         [SerializeField] public BlockSelectedEvent _onBlockSelected = new BlockSelectedEvent();
 
         [Serializable]
-        public class BlockSelectedEvent : UnityEvent<int,int> { };
+        public class BlockSelectedEvent : UnityEvent<int, int> { };
 
         public void Reset()
         {
@@ -86,12 +92,16 @@ namespace Gui.ShipService
             WeaponBlock.gameObject.SetActive(false);
             InnerBlock.gameObject.SetActive(false);
             OuterBlock.gameObject.SetActive(false);
-            
+
             IoBlock.gameObject.SetActive(false);
-            
-            OeBlock.gameObject.SetActive(false);
+
             IeBlock.gameObject.SetActive(false);
-            
+            OeBlock.gameObject.SetActive(false);
+            WeBlock.gameObject.SetActive(false);
+            WiBlock.gameObject.SetActive(false);
+            WoBlock.gameObject.SetActive(false);
+            AllBlock.gameObject.SetActive(false);
+
             EngineBlock.gameObject.SetActive(false);
             CustomBlock.gameObject.SetActive(false);
             Cleanup();
@@ -126,22 +136,18 @@ namespace Gui.ShipService
 
         private BlockViewModel CreateBlock(/*ShipLayout.LayoutElement cell*/CellType cell)
         {
-			switch (cell)
+            switch (cell)
             {
                 case CellType.Outer:
                     return GameObject.Instantiate<BlockViewModel>(OuterBlock);
                 case CellType.Inner:
                     return GameObject.Instantiate<BlockViewModel>(InnerBlock);
-				case CellType.Weapon:
-				case CellType.WeaponEngine:
-				case CellType.WeaponInner:
-				case CellType.WeaponOuter:
-                case CellType.All:
+                case CellType.Weapon:
                 case Layout.CustomWeaponCell:
-					var item = GameObject.Instantiate<BlockViewModel>(WeaponBlock);
-					//item.Label.text = string.IsNullOrEmpty(cell.WeaponClass) ? "•" : cell.WeaponClass;
-					return item;
-				case CellType.Engine:
+                    var item = GameObject.Instantiate<BlockViewModel>(WeaponBlock);
+                    //item.Label.text = string.IsNullOrEmpty(cell.WeaponClass) ? "•" : cell.WeaponClass;
+                    return item;
+                case CellType.Engine:
                     return GameObject.Instantiate<BlockViewModel>(EngineBlock);
 
                 case CellType.OuterEngine:
@@ -153,14 +159,22 @@ namespace Gui.ShipService
                 case CellType.InnerEngine:
                     return GameObject.Instantiate<BlockViewModel>(IeBlock);
 
-                
+                case CellType.All:
+                    return GameObject.Instantiate<BlockViewModel>(AllBlock);
+
+                case CellType.WeaponEngine:
+                    return GameObject.Instantiate<BlockViewModel>(WeBlock);
+                case CellType.WeaponInner:
+                    return GameObject.Instantiate<BlockViewModel>(WiBlock);
+                case CellType.WeaponOuter:
+                    return GameObject.Instantiate<BlockViewModel>(WoBlock);
 
 
                 case Layout.CustomizableCell:
-					return GameObject.Instantiate<BlockViewModel>(CustomBlock);
-			}
+                    return GameObject.Instantiate<BlockViewModel>(CustomBlock);
+            }
 
-			return null;
+            return null;
         }
 
         private void SetBlockLayout(RectTransform item, int x, int y, int size)
@@ -183,9 +197,12 @@ namespace Gui.ShipService
                     child == EngineBlock.transform ||
 
                     child == IoBlock.transform ||
-
                     child == OeBlock.transform ||
                     child == IeBlock.transform ||
+                    child == WeBlock.transform ||
+                    child == WoBlock.transform ||
+                    child == WiBlock.transform ||
+                    child == AllBlock.transform ||
 
                     child == CustomBlock.transform ||
                     child == Selection.transform ||
