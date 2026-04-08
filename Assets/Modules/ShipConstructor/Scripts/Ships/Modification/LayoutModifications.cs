@@ -161,7 +161,7 @@ namespace Constructor.Ships.Modification
                 var t = (CellType)_stockLayout[x, y - 1];
                 var b = (CellType)_stockLayout[x, y + 1];
 
-                return value == l || value == r || value == t || value == b;
+                return value == l || value == r || value == t || value == b || l == CellType.All || r == CellType.All || t == CellType.All || b == CellType.All;
             }
 
             public bool TryModifyCell(int x, int y, CellType value)
