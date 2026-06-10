@@ -14,7 +14,7 @@ namespace Combat.Component.Systems.Weapons
             : base(platform, weaponStats, bulletFactory, keyBinding)
         {
             _energyConsumption = bulletFactory.Stats.EnergyCost;
-            _chargeTotalTime = 1.0f / weaponStats.FireRate;
+            _chargeTotalTime = weaponStats.FireRate > 0 ? 1.0f / weaponStats.FireRate : float.PositiveInfinity;
 			_bullets = BulletCompositeDisposable.Create(BulletFactory.Stats);
         }
 
