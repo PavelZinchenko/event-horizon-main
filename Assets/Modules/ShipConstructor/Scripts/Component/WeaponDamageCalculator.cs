@@ -185,10 +185,7 @@ namespace Constructor.Component
                 case AmmunitionClassObsolete.VampiricRay:
                 case AmmunitionClassObsolete.SmallVampiricRay:
                 case AmmunitionClassObsolete.LaserBeam:
-                    if (ammunition.LifeTime >= 0.5f)
-                        return damage.Add(ammunition.Damage * ammunition.LifeTime * 0.5f * fireRate, ammunition.DamageType);
-                    else
-                        return damage.Add(ammunition.Damage * ammunition.LifeTime * fireRate, ammunition.DamageType);
+                    return damage.Add(ammunition.Damage * ammunition.LifeTime * fireRate, ammunition.DamageType);
                 case AmmunitionClassObsolete.AcidRocket:
                     return damage.Add(ammunition.Damage * ammunition.LifeTime * fireRate, ammunition.DamageType);
                 case AmmunitionClassObsolete.Fireworks:
