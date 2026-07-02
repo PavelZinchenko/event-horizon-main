@@ -39,6 +39,7 @@ namespace Combat.Component.Systems.Devices
         }
 
         public float MaxRange => _range;
+        public bool IsWarping => _isEnabled;
 
         public override IFeaturesModification FeaturesModification => this;
         public bool TryApplyModification(ref FeaturesData data)

@@ -6,11 +6,6 @@
   "AvailableForEnemy": false,
   "Components": [
     {
-      "ComponentId": 298,
-      "X": 12,
-      "Y": 20
-    },
-    {
       "ComponentId": 296,
       "X": 5,
       "Y": 15

@@ -11,7 +11,7 @@ using Services.Localization;
 using Services.Messenger;
 using Session;
 using Zenject;
-using GameServices.Player;
+using Gui.Theme;
 
 namespace ViewModel.Skills
 {
@@ -159,22 +159,56 @@ namespace ViewModel.Skills
                 panelRect.anchoredPosition = contentRect.anchoredPosition;
                 panelRect.sizeDelta = contentRect.sizeDelta;
             }
-            panel.GetComponent<Image>().color = new Color(0.01f, 0.025f, 0.05f, 0.94f);
+            panel.GetComponent<Image>().color = UiTheme.Current.GetColor(ThemeColor.Window);
             _preview7Panel = panel;
 
-            var node = new GameObject("AdvancedRadar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            var line = new GameObject("RootLine", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            var lineRect = line.GetComponent<RectTransform>();
+            lineRect.SetParent(panelRect, false);
+            lineRect.anchorMin = lineRect.anchorMax = new Vector2(0.5f, 0.5f);
+            lineRect.pivot = new Vector2(0.5f, 1f);
+            lineRect.anchoredPosition = new Vector2(0f, 72f);
+            lineRect.sizeDelta = new Vector2(5f, 74f);
+            line.GetComponent<Image>().color = UiTheme.Current.GetColor(ThemeColor.HeaderText);
+
+            var node = new GameObject("AdvancedRadar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(Outline));
             var nodeRect = node.GetComponent<RectTransform>();
             nodeRect.SetParent(panelRect, false);
             nodeRect.anchorMin = nodeRect.anchorMax = new Vector2(0.5f, 0.5f);
             nodeRect.pivot = new Vector2(0.5f, 0.5f);
-            nodeRect.sizeDelta = new Vector2(260f, 110f);
+            nodeRect.anchoredPosition = new Vector2(0f, 26f);
+            nodeRect.sizeDelta = new Vector2(124f, 124f);
+            var originalNodeImage = _root != null ? _root.GetComponent<Image>() : null;
+            var nodeImage = node.GetComponent<Image>();
+            if (originalNodeImage != null)
+            {
+                nodeImage.sprite = originalNodeImage.sprite;
+                nodeImage.type = originalNodeImage.type;
+            }
+            var outline = node.GetComponent<Outline>();
+            outline.effectColor = UiTheme.Current.GetColor(ThemeColor.HeaderText);
+            outline.effectDistance = new Vector2(3f, -3f);
             node.GetComponent<Button>().onClick.AddListener(() =>
             {
                 ThreeBodySkillState.UnlockAdvancedRadar();
                 UpdateAdvancedRadarNode(node);
             });
-            var nodeText = CreateLabel(nodeRect, string.Empty, 22);
-            nodeText.name = "Description";
+
+            var nodeText = CreateLabel(nodeRect, "RADAR", 20);
+            nodeText.gameObject.name = "NodeLabel";
+            nodeText.fontStyle = FontStyle.Bold;
+
+            var description = new GameObject("DescriptionPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Outline));
+            var descriptionRect = description.GetComponent<RectTransform>();
+            descriptionRect.SetParent(panelRect, false);
+            descriptionRect.anchorMin = descriptionRect.anchorMax = new Vector2(0.5f, 0.5f);
+            descriptionRect.pivot = new Vector2(0.5f, 1f);
+            descriptionRect.anchoredPosition = new Vector2(0f, -54f);
+            descriptionRect.sizeDelta = new Vector2(390f, 108f);
+            description.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.22f);
+            description.GetComponent<Outline>().effectColor = UiTheme.Current.GetColor(ThemeColor.Icon);
+            var descriptionText = CreateLabel(descriptionRect, string.Empty, 20);
+            descriptionText.gameObject.name = "Description";
             UpdateAdvancedRadarNode(node);
 
             originalButton.onClick.AddListener(() => ShowThreeBodyTree(false));
@@ -190,7 +224,7 @@ namespace ViewModel.Skills
             _informationPanel.gameObject.SetActive(!enabled);
         }
 
-        private static Button CreateTreeButton(RectTransform parent, string title, Vector2 position)
+        private Button CreateTreeButton(RectTransform parent, string title, Vector2 position)
         {
             var go = new GameObject(title, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
             var rect = go.GetComponent<RectTransform>();
@@ -199,7 +233,16 @@ namespace ViewModel.Skills
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.anchoredPosition = position;
             rect.sizeDelta = new Vector2(170f, 46f);
-            go.GetComponent<Image>().color = new Color(0.08f, 0.32f, 0.48f, 0.95f);
+            var image = go.GetComponent<Image>();
+            var template = _resetButton != null ? _resetButton.GetComponent<Image>() : null;
+            if (template != null)
+            {
+                image.sprite = template.sprite;
+                image.type = template.type;
+                image.color = template.color;
+            }
+            else
+                image.color = UiTheme.Current.GetColor(ThemeColor.Window);
             CreateLabel(rect, title, 22);
             return go.GetComponent<Button>();
         }
@@ -227,10 +270,12 @@ namespace ViewModel.Skills
         {
             var unlocked = ThreeBodySkillState.AdvancedRadarUnlocked;
             node.GetComponent<Image>().color = unlocked
-                ? new Color(0.1f, 0.62f, 0.82f, 1f)
-                : new Color(0.08f, 0.12f, 0.18f, 1f);
-            var text = node.transform.Find("Description")?.GetComponent<Text>() ??
-                       node.GetComponentInChildren<Text>();
+                ? UiTheme.Current.GetColor(ThemeColor.HeaderText)
+                : UiTheme.Current.GetColor(ThemeColor.Window);
+            var nodeLabel = node.transform.Find("NodeLabel")?.GetComponent<Text>();
+            if (nodeLabel != null)
+                nodeLabel.color = unlocked ? UiTheme.Current.GetColor(ThemeColor.Window) : UiTheme.Current.GetColor(ThemeColor.Icon);
+            var text = node.transform.parent.Find("DescriptionPanel/Description")?.GetComponent<Text>();
             if (text != null)
                 text.text = unlocked
                     ? "先进雷达  已解锁\n雷达范围 +20%\n舰船识别器已启用"

@@ -23,8 +23,8 @@ namespace Combat.Component.Systems.Devices
             effect._line.numCapVertices = 12;
             effect._line.numCornerVertices = 12;
             effect._line.material = new Material(Shader.Find("Sprites/Default"));
-            effect._line.startColor = new Color(0.005f, 0.008f, 0.014f, 0.36f);
-            effect._line.endColor = new Color(0.025f, 0.03f, 0.045f, 0.24f);
+            effect._line.startColor = new Color(0.018f, 0.022f, 0.04f, 0.78f);
+            effect._line.endColor = new Color(0.055f, 0.065f, 0.1f, 0.58f);
             effect._line.sortingOrder = 20;
             effect.CreateFog();
             ActiveTrails.Add(effect);
@@ -46,8 +46,8 @@ namespace Combat.Component.Systems.Devices
                     {
                         position = position + Random.insideUnitCircle * (layer == 0 ? 1.7f : 3.8f),
                         startColor = layer == 0
-                            ? new Color(0.005f, 0.008f, 0.014f, Random.Range(0.52f, 0.72f))
-                            : new Color(0.025f, 0.035f, 0.055f, Random.Range(0.22f, 0.44f)),
+                            ? new Color(0.012f, 0.016f, 0.03f, Random.Range(0.72f, 0.92f))
+                            : new Color(0.055f, 0.065f, 0.11f, Random.Range(0.42f, 0.68f)),
                         startSize = layer == 0 ? Random.Range(2.2f, 4.5f) : Random.Range(5f, 10f),
                         startLifetime = 3600f,
                         rotation = Random.Range(0f, Mathf.PI * 2f)
@@ -76,6 +76,8 @@ namespace Combat.Component.Systems.Devices
                             !trail.InsideTrail(unit.Body.WorldPosition()))
                             continue;
 
+                        if (unit is IShip ship && ship.Systems.All.OfType<WarpDrive>().Any(drive => drive.IsWarping))
+                            break;
                         if (unit.Type.Class == UnitClass.Ship || unit.Type.Class == UnitClass.Drone)
                             slowed.Add(unit);
                         else if (unit.Type.Class == UnitClass.Missile || unit.Type.Class == UnitClass.EnergyBolt)
@@ -235,8 +237,9 @@ namespace Combat.Component.Systems.Devices
                 var filament = 0.07f * Mathf.Sin((x + y) * 0.47f);
                 var alpha = Mathf.Clamp01((1f - radius + fineNoise + cloudNoise + filament) * 1.35f);
                 alpha = alpha * alpha * (3f - 2f * alpha);
-                var blue = (byte)Mathf.Clamp(6f + cloudNoise * 35f, 3f, 14f);
-                pixels[y * size + x] = new Color32(2, 4, blue, (byte)(alpha * 205f));
+                var blue = (byte)Mathf.Clamp(18f + cloudNoise * 55f, 10f, 34f);
+                var gray = (byte)Mathf.Clamp(8f + cloudNoise * 28f, 5f, 18f);
+                pixels[y * size + x] = new Color32(gray, (byte)(gray + 3), blue, (byte)(alpha * 235f));
             }
             texture.SetPixels32(pixels);
             texture.Apply(false, true);

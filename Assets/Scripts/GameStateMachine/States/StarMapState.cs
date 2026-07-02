@@ -98,7 +98,7 @@ namespace GameStateMachine.States
 
 		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.StarMap; } }
 
-		protected override void OnActivate()
+        protected override void OnActivate()
 		{
             _musicPlayer.Play(AudioTrackType.Game);
 
@@ -107,6 +107,14 @@ namespace GameStateMachine.States
                 var id = DesiredWindowOnActivate;
                 DesiredWindowOnActivate = string.Empty;
                 _guiManager.OpenWindow(id);
+            }
+
+            if (_pendingGuardianAttackStarId >= 0)
+            {
+                var starId = _pendingGuardianAttackStarId;
+                _pendingGuardianAttackStarId = -1;
+                _starData.GetOccupant(starId).Attack();
+                return;
             }
 
             CheckStatus();
@@ -241,7 +249,7 @@ namespace GameStateMachine.States
             if (code != WindowExitCode.Ok)
             {
                 _guardianDialogOpen = false;
-                guardian.Attack();
+                _pendingGuardianAttackStarId = starId;
                 return;
             }
 
@@ -261,7 +269,7 @@ namespace GameStateMachine.States
             else
             {
                 _guiHelper.ShowMessage("潜入失败，守军已发现舰队");
-                guardian.Attack();
+                _pendingGuardianAttackStarId = starId;
             }
         }
 
@@ -382,6 +390,7 @@ namespace GameStateMachine.States
         private readonly OpenEhopediaSignal _openEhopediaSignal;
         private readonly GuiHelper _guiHelper;
         private bool _guardianDialogOpen;
+        private int _pendingGuardianAttackStarId = -1;
         private readonly ExitSignal _exitSignal;
         private readonly EscapeKeyPressedSignal _escapeKeyPressedSignal;
         private readonly PlayerPositionChangedSignal _playerPositionChangedSignal;

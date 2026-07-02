@@ -16,6 +16,8 @@ namespace Combat.Ai.BehaviorTree.Nodes
 		{
 			if (context.TargetShip == null)
 				return NodeState.Failure;
+            if (!CombatRelations.AreEnemies(context.Ship.Type, context.TargetShip.Type))
+                return NodeState.Failure;
 
 			UpdateTargetForTurrets(context);
 
@@ -39,7 +41,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 		private void UpdateTargetForTurrets(Context context)
 		{
             if (context.TargetShip == null) return;
-            if (context.TargetShip.Type.Side.IsEnemy(context.Ship.Type.Side)) return;
+            if (!CombatRelations.AreEnemies(context.Ship.Type, context.TargetShip.Type)) return;
 
             var weapons = context.SelectedWeapons;
 			for (int i = 0; i < weapons.List.Count; ++i)

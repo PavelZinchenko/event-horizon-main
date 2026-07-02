@@ -9,7 +9,7 @@
   "IconImage": "starship_earth_frigate_preview5",
   "IconScale": 0.85,
   "ModelImage": "starship_earth_frigate_preview5",
-  "ModelScale": 2.2,
+  "ModelScale": 4.4,
   "EngineColor": "#63EFFF",
   "Engines": [
     {
@@ -19,7 +19,7 @@
       "Size": 0.18
     }
   ],
-  "Layout": "000040000000040000001111100001122100011222110011222110011552110001552100000550000",
+  "Layout": "000040000000040000001111100011122110011122110011222110011552110011552110001550100",
   "Barrels": [
     {
       "Position": {

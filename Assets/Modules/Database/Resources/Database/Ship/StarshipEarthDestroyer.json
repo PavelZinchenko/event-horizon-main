@@ -9,7 +9,7 @@
   "IconImage": "starship_earth_destroyer_preview5",
   "IconScale": 0.9,
   "ModelImage": "starship_earth_destroyer_preview5",
-  "ModelScale": 3.2,
+  "ModelScale": 6.4,
   "EngineColor": "#63EFFF",
   "Engines": [
     {
@@ -27,7 +27,7 @@
       "Size": 0.18
     }
   ],
-  "Layout": "0000404000000004040000001111111000011222110001122222110011222221100112222211001122222110011155511100011555110000055500000",
+  "Layout": "0000404000000004040000001111111000111222211001112222110011122221101112222211111122222111011155511100011555110000055500000",
   "Barrels": [
     {
       "Position": {

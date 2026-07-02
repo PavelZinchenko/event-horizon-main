@@ -8,7 +8,7 @@
   "IconImage": "mothership",
   "IconScale": 1.0,
   "ModelImage": "wandering_earth_preview5",
-  "ModelScale": 7.0,
+  "ModelScale": 14.0,
   "EngineColor": "#40FFF096",
   "Engines": [
     {

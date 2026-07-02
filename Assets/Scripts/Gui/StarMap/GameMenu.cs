@@ -121,8 +121,8 @@ namespace Gui.StarMap
             rect.anchorMin = exitRect.anchorMin;
             rect.anchorMax = exitRect.anchorMax;
             rect.pivot = exitRect.pivot;
-            rect.sizeDelta = new Vector2(Mathf.Max(exitRect.sizeDelta.x, 128f), Mathf.Max(exitRect.sizeDelta.y, 64f));
-            rect.anchoredPosition = exitRect.anchoredPosition + new Vector2(Mathf.Max(exitRect.rect.width, 128f) + 12f, 0f);
+            rect.sizeDelta = exitRect.sizeDelta;
+            rect.anchoredPosition = exitRect.anchoredPosition + new Vector2(exitRect.rect.width + 12f, 0f);
             var sourceImage = exit.GetComponent<Image>();
             var image = buttonObject.GetComponent<Image>();
             if (sourceImage != null)
@@ -138,18 +138,18 @@ namespace Gui.StarMap
             iconRect.SetParent(buttonObject.transform, false);
             iconRect.anchorMin = iconRect.anchorMax = new Vector2(0f, 0.5f);
             iconRect.pivot = new Vector2(0f, 0.5f);
-            iconRect.anchoredPosition = new Vector2(10f, 0f);
-            iconRect.sizeDelta = new Vector2(42f, 42f);
+            iconRect.anchoredPosition = new Vector2(8f, 0f);
+            iconRect.sizeDelta = new Vector2(34f, 34f);
             var iconImage = iconObject.GetComponent<Image>();
             iconImage.sprite = Resources.Load<Sprite>("Textures/UI/faction_relations_preview4");
             iconImage.preserveAspect = true;
             iconImage.raycastTarget = false;
-            var text = NewRelationText(buttonObject.transform, "关系", 22);
+            var text = NewRelationText(buttonObject.transform, "关系", 20);
             var textRect = text.GetComponent<RectTransform>();
             textRect.anchorMin = Vector2.zero;
             textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = new Vector2(54f, 0f);
-            textRect.offsetMax = new Vector2(-8f, 0f);
+            textRect.offsetMin = new Vector2(44f, 0f);
+            textRect.offsetMax = new Vector2(-6f, 0f);
             text.alignment = TextAnchor.MiddleCenter;
             text.color = Color.white;
         }
