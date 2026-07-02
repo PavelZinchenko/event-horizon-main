@@ -153,22 +153,14 @@ namespace Gui.StarMap
             var iconObject = new GameObject("Icon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             var iconRect = iconObject.GetComponent<RectTransform>();
             iconRect.SetParent(buttonObject.transform, false);
-            iconRect.anchorMin = iconRect.anchorMax = new Vector2(0f, 0.5f);
-            iconRect.pivot = new Vector2(0f, 0.5f);
-            iconRect.anchoredPosition = new Vector2(8f, 0f);
-            iconRect.sizeDelta = new Vector2(34f, 34f);
+            iconRect.anchorMin = Vector2.zero;
+            iconRect.anchorMax = Vector2.one;
+            iconRect.offsetMin = new Vector2(10f, 10f);
+            iconRect.offsetMax = new Vector2(-10f, -10f);
             var iconImage = iconObject.GetComponent<Image>();
             iconImage.sprite = Resources.Load<Sprite>("Textures/UI/faction_relations_preview4");
             iconImage.preserveAspect = true;
             iconImage.raycastTarget = false;
-            var text = NewRelationText(buttonObject.transform, "关系", 20);
-            var textRect = text.GetComponent<RectTransform>();
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = new Vector2(44f, 0f);
-            textRect.offsetMax = new Vector2(-6f, 0f);
-            text.alignment = TextAnchor.MiddleCenter;
-            text.color = Color.white;
         }
 
         private void ToggleRelationsPanel()

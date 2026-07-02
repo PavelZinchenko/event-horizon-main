@@ -127,8 +127,18 @@ namespace ViewModel
             if (buttonsRect != null)
                 buttonsRect.sizeDelta = new Vector2(buttonsRect.sizeDelta.x, Mathf.Max(260f, buttonsRect.sizeDelta.y));
             var captureLayout = CaptureButton.GetComponent<LayoutElement>() ?? CaptureButton.AddComponent<LayoutElement>();
+            captureLayout.minWidth = 180f;
+            captureLayout.preferredWidth = 260f;
+            captureLayout.minHeight = 58f;
             captureLayout.preferredHeight = 58f;
             captureLayout.flexibleWidth = 1f;
+            foreach (var captureLabel in CaptureButton.GetComponentsInChildren<Text>(true))
+            {
+                captureLabel.resizeTextForBestFit = true;
+                captureLabel.resizeTextMinSize = 10;
+                captureLabel.resizeTextMaxSize = Mathf.Max(18, captureLabel.fontSize);
+                captureLabel.horizontalOverflow = HorizontalWrapMode.Wrap;
+            }
 
             var emblem = transform.Find("Body/Left/Faction") ?? transform.Find("Faction");
             if (emblem != null)
@@ -263,6 +273,8 @@ namespace ViewModel
             jointObject.transform.SetAsLastSibling();
             jointRect.sizeDelta = new Vector2(captureRect.sizeDelta.x, 58f);
             var jointLayout = jointObject.AddComponent<LayoutElement>();
+            jointLayout.minWidth = 180f;
+            jointLayout.preferredWidth = 260f;
             jointLayout.preferredHeight = 58f;
             jointLayout.flexibleWidth = 1f;
             var captureImage = CaptureButton.GetComponent<Image>();

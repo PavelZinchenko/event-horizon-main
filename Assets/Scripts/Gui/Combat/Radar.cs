@@ -87,7 +87,7 @@ namespace Gui.Combat
             var locked = _scene.LockedEnemyShip == _ship;
             RectTransform.localScale = Vector3.one * scale * (locked ? 1.35f : 1f);
             if (locked)
-                Background.color = Color.white;
+                Background.color = CombatTargetLine.HighlightedTargetColor(_ship);
             else
                 ApplyBackgroundColor();
             ShipIcon.transform.localEulerAngles = new Vector3(0, 0, _ship.Body.VisualRotation);

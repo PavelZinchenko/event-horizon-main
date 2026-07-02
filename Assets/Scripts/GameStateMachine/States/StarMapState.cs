@@ -241,7 +241,7 @@ namespace GameStateMachine.States
             if (code != WindowExitCode.Ok)
             {
                 _guardianDialogOpen = false;
-                AttackOccupants(starId);
+                StartInfiltrationCombat(starId);
                 return;
             }
 
@@ -261,8 +261,20 @@ namespace GameStateMachine.States
             else
             {
                 _guiHelper.ShowMessage("潜入失败，守军已发现舰队");
-                AttackOccupants(starId);
+                StartInfiltrationCombat(starId);
             }
+        }
+
+        private void StartInfiltrationCombat(int starId)
+        {
+            var model = _starData.GetOccupant(starId).CreateCombatModel();
+            LoadState(StateFactory.CreateCombatState(model, result =>
+            {
+                var victory = result.IsVictory();
+                if (victory)
+                    _starData.GetOccupant(starId).Suppress(true);
+                _questEventTrigger.Fire(new CombatEventData(victory));
+            }));
         }
 
 		private void UpdateQuests()

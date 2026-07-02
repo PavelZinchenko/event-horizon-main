@@ -90,6 +90,8 @@ namespace Combat.Factory
                 new Ship(spec, unitSide, body, view, shipStats, collider, physics);
 
             ship.AddResource(shipGameObject);
+            if (unitSide == UnitSide.Ally && !isDrone)
+                shipGameObject.AddComponent<AllyShipMarker>();
 
             if (!_settings.NoDamageIndicator && !isDrone)
                 shipStats.DamageIndicator = new DamageIndicator(ship, _effectFactory, unitSide == UnitSide.Player ? 0.75f : 0.5f);

@@ -32,10 +32,10 @@ namespace Gui.Combat
                 return;
             }
 
-            var color = TargetColor(target);
-            color.a = 0.72f;
+            var color = HighlightedTargetColor(target);
+            color.a = 0.9f;
             _line.startColor = color;
-            _line.endColor = new Color(color.r, color.g, color.b, 0.25f);
+            _line.endColor = new Color(color.r, color.g, color.b, 0.55f);
             _line.SetPosition(0, player.Body.VisualPosition);
             _line.SetPosition(1, target.Body.VisualPosition);
             _line.enabled = true;
@@ -51,6 +51,15 @@ namespace Gui.Combat
                 SizeClass.Starbase => new Color(0.15f, 0.55f, 1f),
                 _ => Color.red
             };
+        }
+
+        public static Color HighlightedTargetColor(IShip ship)
+        {
+            var color = TargetColor(ship);
+            Color.RGBToHSV(color, out var hue, out var saturation, out var value);
+            var highlighted = Color.HSVToRGB(hue, Mathf.Max(0.92f, saturation), 1f);
+            highlighted.a = 1f;
+            return highlighted;
         }
 
         private IScene _scene;
