@@ -113,7 +113,7 @@ namespace Gui.StarMap
             });
             if (exit == null) return;
 
-            var buttonObject = new GameObject("Preview5RelationsButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            var buttonObject = new GameObject("Preview5RelationsButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(LayoutElement));
             buttonObject.transform.SetParent(exit.transform.parent, false);
             buttonObject.name = "Preview5RelationsButton";
             var rect = buttonObject.GetComponent<RectTransform>();
@@ -123,6 +123,23 @@ namespace Gui.StarMap
             rect.pivot = exitRect.pivot;
             rect.sizeDelta = exitRect.sizeDelta;
             rect.anchoredPosition = exitRect.anchoredPosition + new Vector2(exitRect.rect.width + 12f, 0f);
+            var sourceLayout = exit.GetComponent<LayoutElement>();
+            var buttonLayout = buttonObject.GetComponent<LayoutElement>();
+            if (sourceLayout != null)
+            {
+                buttonLayout.minWidth = sourceLayout.minWidth;
+                buttonLayout.minHeight = sourceLayout.minHeight;
+                buttonLayout.preferredWidth = sourceLayout.preferredWidth;
+                buttonLayout.preferredHeight = sourceLayout.preferredHeight;
+                buttonLayout.flexibleWidth = sourceLayout.flexibleWidth;
+                buttonLayout.flexibleHeight = sourceLayout.flexibleHeight;
+                buttonLayout.layoutPriority = sourceLayout.layoutPriority;
+            }
+            else
+            {
+                buttonLayout.preferredWidth = 120f;
+                buttonLayout.preferredHeight = 120f;
+            }
             var sourceImage = exit.GetComponent<Image>();
             var image = buttonObject.GetComponent<Image>();
             if (sourceImage != null)

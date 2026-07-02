@@ -109,14 +109,6 @@ namespace GameStateMachine.States
                 _guiManager.OpenWindow(id);
             }
 
-            if (_pendingGuardianAttackStarId >= 0)
-            {
-                var starId = _pendingGuardianAttackStarId;
-                _pendingGuardianAttackStarId = -1;
-                _starData.GetOccupant(starId).Attack();
-                return;
-            }
-
             CheckStatus();
         }
 
@@ -249,7 +241,7 @@ namespace GameStateMachine.States
             if (code != WindowExitCode.Ok)
             {
                 _guardianDialogOpen = false;
-                _pendingGuardianAttackStarId = starId;
+                AttackOccupants(starId);
                 return;
             }
 
@@ -269,7 +261,7 @@ namespace GameStateMachine.States
             else
             {
                 _guiHelper.ShowMessage("潜入失败，守军已发现舰队");
-                _pendingGuardianAttackStarId = starId;
+                AttackOccupants(starId);
             }
         }
 
@@ -390,7 +382,6 @@ namespace GameStateMachine.States
         private readonly OpenEhopediaSignal _openEhopediaSignal;
         private readonly GuiHelper _guiHelper;
         private bool _guardianDialogOpen;
-        private int _pendingGuardianAttackStarId = -1;
         private readonly ExitSignal _exitSignal;
         private readonly EscapeKeyPressedSignal _escapeKeyPressedSignal;
         private readonly PlayerPositionChangedSignal _playerPositionChangedSignal;

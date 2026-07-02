@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Combat.Component.Ship;
+using Combat.Component.Body;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Scene;
@@ -72,7 +73,7 @@ namespace Combat.Component.Systems.Devices
 
                     foreach (var trail in ActiveTrails)
                     {
-                        if (trail == null || trail._points.Count < 2 || unit == trail._owner ||
+                        if (trail == null || trail._points.Count < 2 ||
                             !trail.InsideTrail(unit.Body.WorldPosition()))
                             continue;
 
@@ -87,10 +88,20 @@ namespace Combat.Component.Systems.Devices
                 }
             }
 
-            // Apply after engines have updated. This hard reduction makes the black-domain
-            // speed limit observable even when a powerful engine keeps accelerating.
             foreach (var unit in slowed)
-                unit.Body.ApplyAcceleration(-unit.Body.Velocity * 0.9f);
+            {
+                var velocity = unit.Body.Velocity;
+                var normalMaximum = unit is IShip ship ? ship.Engine.MaxVelocity : 40f;
+                var blackDomainMaximum = Mathf.Max(0.5f, normalMaximum * 0.1f);
+                if (velocity.sqrMagnitude <= blackDomainMaximum * blackDomainMaximum)
+                    continue;
+
+                var limitedVelocity = velocity.normalized * blackDomainMaximum;
+                if (unit.Body is RigidBodyAdapter rigidBody)
+                    rigidBody.Velocity = limitedVelocity;
+                else
+                    unit.Body.ApplyAcceleration(limitedVelocity - velocity);
+            }
         }
 
         private bool InsideTrail(Vector2 position)
