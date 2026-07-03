@@ -34,16 +34,9 @@ namespace Combat.Component.View
             if (_marker == null)
                 return;
 
-            var height = 2.5f;
-            foreach (var item in GetComponentsInChildren<Renderer>())
-            {
-                if (item.gameObject == _marker)
-                    continue;
-                height = Mathf.Max(height, item.bounds.extents.y + 1.8f);
-            }
-            _marker.transform.position = transform.position + Vector3.up * height;
+            _marker.transform.position = transform.position + Vector3.up * 0.35f;
             _marker.transform.rotation = Quaternion.identity;
-            _marker.transform.localScale = Vector3.one;
+            _marker.transform.localScale = Vector3.one * 0.72f;
         }
 
         private void OnDisable()

@@ -146,6 +146,20 @@ namespace Gui.MainMenu
 
         private void OnDatabaseLoaded()
         {
+            var backgroundImage = _database.UiSettings.MainMenuBackgroundImage;
+            if (backgroundImage)
+            {
+                var modSprite = _resourceLocator.GetSprite(backgroundImage);
+                if (modSprite != null)
+                {
+                    _backgroundImage.gameObject.SetActive(true);
+                    _backgroundImage.SetImage(modSprite.texture);
+                    _animatedBackground.SetActive(false);
+                    UpdateButtons();
+                    return;
+                }
+            }
+
             var preview5Background = Resources.Load<Texture2D>("Textures/Preview5/main_background_preview5");
             if (preview5Background != null)
             {
@@ -156,7 +170,6 @@ namespace Gui.MainMenu
                 return;
             }
 
-            var backgroundImage = _database.UiSettings.MainMenuBackgroundImage;
             if (backgroundImage)
             {
                 var sprite = _resourceLocator.GetSprite(backgroundImage);
@@ -202,8 +215,8 @@ namespace Gui.MainMenu
             root.layer = canvas.gameObject.layer;
             var rect = root.GetComponent<RectTransform>();
             rect.SetParent(canvas.transform, false);
-            rect.anchorMin = new Vector2(0.04f, 0.66f);
-            rect.anchorMax = new Vector2(0.62f, 0.96f);
+            rect.anchorMin = new Vector2(0.04f, 0.57f);
+            rect.anchorMax = new Vector2(0.62f, 0.87f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 

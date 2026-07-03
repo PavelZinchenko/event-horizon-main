@@ -24,8 +24,8 @@ namespace Combat.Component.Systems.Devices
             effect._line.numCapVertices = 12;
             effect._line.numCornerVertices = 12;
             effect._line.material = new Material(Shader.Find("Sprites/Default"));
-            effect._line.startColor = new Color(0.018f, 0.022f, 0.04f, 0.78f);
-            effect._line.endColor = new Color(0.055f, 0.065f, 0.1f, 0.58f);
+            effect._line.startColor = new Color(0.002f, 0.003f, 0.006f, 0.96f);
+            effect._line.endColor = new Color(0.008f, 0.012f, 0.022f, 0.86f);
             effect._line.sortingOrder = 20;
             effect.CreateFog();
             ActiveTrails.Add(effect);
@@ -47,8 +47,8 @@ namespace Combat.Component.Systems.Devices
                     {
                         position = position + Random.insideUnitCircle * (layer == 0 ? 1.7f : 3.8f),
                         startColor = layer == 0
-                            ? new Color(0.012f, 0.016f, 0.03f, Random.Range(0.72f, 0.92f))
-                            : new Color(0.055f, 0.065f, 0.11f, Random.Range(0.42f, 0.68f)),
+                            ? new Color(0.001f, 0.002f, 0.006f, Random.Range(0.88f, 1f))
+                            : new Color(0.008f, 0.012f, 0.025f, Random.Range(0.7f, 0.9f)),
                         startSize = layer == 0 ? Random.Range(2.2f, 4.5f) : Random.Range(5f, 10f),
                         startLifetime = 3600f,
                         rotation = Random.Range(0f, Mathf.PI * 2f)
@@ -248,9 +248,9 @@ namespace Combat.Component.Systems.Devices
                 var filament = 0.07f * Mathf.Sin((x + y) * 0.47f);
                 var alpha = Mathf.Clamp01((1f - radius + fineNoise + cloudNoise + filament) * 1.35f);
                 alpha = alpha * alpha * (3f - 2f * alpha);
-                var blue = (byte)Mathf.Clamp(18f + cloudNoise * 55f, 10f, 34f);
-                var gray = (byte)Mathf.Clamp(8f + cloudNoise * 28f, 5f, 18f);
-                pixels[y * size + x] = new Color32(gray, (byte)(gray + 3), blue, (byte)(alpha * 235f));
+                var blue = (byte)Mathf.Clamp(8f + cloudNoise * 28f, 2f, 18f);
+                var gray = (byte)Mathf.Clamp(2f + cloudNoise * 12f, 0f, 8f);
+                pixels[y * size + x] = new Color32(gray, (byte)(gray + 1), blue, (byte)(alpha * 252f));
             }
             texture.SetPixels32(pixels);
             texture.Apply(false, true);

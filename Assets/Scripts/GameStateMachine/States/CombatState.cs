@@ -26,6 +26,7 @@ namespace GameStateMachine.States
             GameServices.Economy.LootGenerator lootGenerator,
             
             ExitSignal exitSignal,
+            CombatRetreatSignal combatRetreatSignal,
             CombatCompletedSignal.Trigger combatCompletedTrigger)
             : base(stateMachine, stateFactory)
         {
@@ -40,6 +41,8 @@ namespace GameStateMachine.States
 
             _exitSignal = exitSignal;
             _exitSignal.Event += OnCombatCompleted;
+            _combatRetreatSignal = combatRetreatSignal;
+            _combatRetreatSignal.Event += OnPlayerRetreated;
         }
 
         public override StateType Type => StateType.Combat;
@@ -62,8 +65,12 @@ namespace GameStateMachine.States
 			if (Condition != GameStateCondition.Active)
 				return;
 
-            var reward = _combatModel.GetReward(_lootGenerator, _playerSkills, _motherShip.CurrentStar);
-            reward.Consume(_playerSkills);
+            IReward reward = null;
+            if (!_playerRetreated)
+            {
+                reward = _combatModel.GetReward(_lootGenerator, _playerSkills, _motherShip.CurrentStar);
+                reward.Consume(_playerSkills);
+            }
 
             var action = _onCompleteAction;
             _onCompleteAction = null;
@@ -73,10 +80,19 @@ namespace GameStateMachine.States
 
             _combatCompletedTrigger.Fire(_combatModel);
 
-            if (reward.Any())
+            if (reward != null && reward.Any())
                 ShowRewardDialog(reward);
 
-			LoadState(StateFactory.CreateStarMapState());
+			LoadState(_playerRetreated ? StateFactory.CreateRetreatState() : StateFactory.CreateStarMapState());
+        }
+
+        private void OnPlayerRetreated()
+        {
+            if (Condition != GameStateCondition.Active)
+                return;
+
+            _playerRetreated = true;
+            OnCombatCompleted();
         }
 
         private void ShowRewardDialog(IReward reward)
@@ -87,6 +103,8 @@ namespace GameStateMachine.States
         private Action<ICombatModel> _onCompleteAction;
         private readonly ICombatModel _combatModel;
         private readonly ExitSignal _exitSignal;
+        private readonly CombatRetreatSignal _combatRetreatSignal;
+        private bool _playerRetreated;
         private readonly MotherShip _motherShip;
         private readonly GameServices.Economy.LootGenerator _lootGenerator;
         private readonly IMusicPlayer _musicPlayer;
@@ -98,4 +116,5 @@ namespace GameStateMachine.States
     }
 
     public class CombatCompletedSignal : SmartWeakSignal<CombatCompletedSignal, ICombatModel> {}
+    public class CombatRetreatSignal : SmartWeakSignal<CombatRetreatSignal> {}
 }

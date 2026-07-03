@@ -82,7 +82,7 @@ namespace Constructor
                 data.AddPlatform(platform);
 
             foreach (var item in stats.BuiltinDevices)
-		        data.AddDevice(new DeviceData(item.Stats, item.Stats.ActivationType == ActivationType.Manual ? 5 : -1));
+		        data.AddDevice(new DeviceData(item.Stats, item.Stats.ActivationType == ActivationType.Manual ? 5 : -1, -1));
 
             var limitedComponents = new SimpleInventory<GameDatabase.DataModel.Component>();
 		    var componentTags = new SimpleInventory<ComponentGroupTag>();
@@ -144,7 +144,7 @@ namespace Constructor
             stats.EquipmentStats.AddStats(componentStats);
 
             foreach (var spec in component.Devices)
-                data.AddDevice(new DeviceData(spec, item.KeyBinding));
+                data.AddDevice(new DeviceData(spec, item.KeyBinding, item.Info.Data.Id.Value));
             foreach (var spec in component.DroneBays)
             {
                 var droneBayStats = spec.Key;
@@ -232,14 +232,16 @@ namespace Constructor
 
 	public class DeviceData : IDeviceData
 	{
-		public DeviceData(DeviceStats spec, int key)
+		public DeviceData(DeviceStats spec, int key, int componentId)
 		{
 			Device = spec;
 			KeyBinding = spec.ActivationType.ValidateKey(key);
+			ComponentId = componentId;
 		}
 
 		public DeviceStats Device { get; private set; }
 		public int KeyBinding { get; private set; }
+		public int ComponentId { get; private set; }
     }
 
 	public class DroneBayData : IDroneBayData

@@ -21,6 +21,9 @@ namespace Combat.Component.Unit.Classification
             if ((first.Side == UnitSide.Ally && second.Side == UnitSide.Enemy) ||
                 (first.Side == UnitSide.Enemy && second.Side == UnitSide.Ally))
                 return false;
+            if ((first.Side == UnitSide.Player && second.Side == UnitSide.Enemy) ||
+                (first.Side == UnitSide.Enemy && second.Side == UnitSide.Player))
+                return false;
             if (first.FactionId == second.FactionId) return true;
             if (Relations.TryGetValue(Key(first.FactionId, second.FactionId), out var allied)) return allied;
 

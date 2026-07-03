@@ -20,18 +20,21 @@ namespace Combat.Component.Systems.Devices
         private readonly float _speed;
         private readonly bool _controllable;
         private readonly float _totalTime;
+        private readonly bool _isStarshipEarthWarpDrive;
         private bool _isEnabled;
         private float _timeLeft;
+        private float _activationElapsed;
 
-        public WarpDrive(IShip ship, DeviceStats deviceSpec, int keyBinding, IScene scene)
+        public WarpDrive(IShip ship, DeviceStats deviceSpec, int keyBinding, IScene scene, bool isStarshipEarthWarpDrive)
             : base(keyBinding, deviceSpec.ControlButtonIcon)
         {
 			DeviceClass = deviceSpec.DeviceClass;
             MaxCooldown = deviceSpec.Cooldown;
 
             _ship = ship;
-            _range = Mathf.Max(deviceSpec.Range, 100000f);
-            _speed = deviceSpec.Power * 10f;
+            _isStarshipEarthWarpDrive = isStarshipEarthWarpDrive;
+            _range = isStarshipEarthWarpDrive ? Mathf.Max(deviceSpec.Range, 100000f) : deviceSpec.Range;
+            _speed = isStarshipEarthWarpDrive ? deviceSpec.Power * 10f : deviceSpec.Power;
             _totalTime = _range / _speed;
             _energyCost = deviceSpec.EnergyConsumption;
             _controllable = _ship.Systems.All.FindFirstDevice(DeviceClass.WormTail) < 0;
@@ -109,15 +112,24 @@ namespace Combat.Component.Systems.Devices
         {
             if (_isEnabled)
             {
-                if (!_ship.Stats.Energy.TryGet(_energyCost * elapsedTime))
+                _activationElapsed += elapsedTime;
+                if (_isStarshipEarthWarpDrive && !_ship.Stats.Energy.TryGet(_energyCost * elapsedTime))
                     _timeLeft = 0;
                 _timeLeft -= elapsedTime;
+
+                if (_isStarshipEarthWarpDrive && Active && _activationElapsed >= BlackDomainHoldTime)
+                {
+                    if (_trail == null)
+                        _trail = WarpTrailEffect.Create(_scene, _ship);
+                    _trail.Record(_ship.Body.Position);
+                }
 
                 if (!Active && _totalTime - _timeLeft > _minTime || _timeLeft <= 0)
                 {
                     InvokeTriggers(ConditionType.OnDeactivate);
                     TimeFromLastUse = 0;
                     _isEnabled = false;
+                    _trail = null;
                     _ship.Collider.Enabled = true;
                     _ship.Body.ApplyAcceleration(-_ship.Body.Velocity);
                 }
@@ -127,8 +139,7 @@ namespace Combat.Component.Systems.Devices
                 if (_controllable)
                 {
                     _isEnabled = true;
-                    if (_trail == null)
-                        _trail = WarpTrailEffect.Create(_scene, _ship);
+                    _activationElapsed = 0f;
                     _timeLeft = _totalTime;
                     InvokeTriggers(ConditionType.OnActivate);
                     _ship.Collider.Enabled = false;
@@ -146,8 +157,6 @@ namespace Combat.Component.Systems.Devices
                 _ship.Body.ApplyAngularAcceleration(-_ship.Body.AngularVelocity);
             }
 
-            if (_isEnabled)
-                _trail?.Record(_ship.Body.Position);
         }
 
         protected override void OnUpdateView(float elapsedTime) {}
@@ -156,5 +165,6 @@ namespace Combat.Component.Systems.Devices
 
         private readonly IScene _scene;
         private WarpTrailEffect _trail;
+        private const float BlackDomainHoldTime = 0.45f;
     }
 }

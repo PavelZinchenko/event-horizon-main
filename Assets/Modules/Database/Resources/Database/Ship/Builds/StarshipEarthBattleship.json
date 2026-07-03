@@ -12,7 +12,7 @@
     },
     {
       "ComponentId": 302,
-      "X": 2,
+      "X": 1,
       "Y": 8
     },
     {
@@ -23,7 +23,8 @@
     {
       "ComponentId": 305,
       "X": 6,
-      "Y": 8
+      "Y": 8,
+      "KeyBinding": 2
     },
     {
       "ComponentId": 306,
@@ -31,7 +32,7 @@
       "Y": 8
     },
     {
-      "ComponentId": 304,
+      "ComponentId": 55,
       "X": 6,
       "Y": 12
     }

@@ -264,7 +264,9 @@ namespace Installers
             Container.BindSignal<StartQuickBattleSignal>();
             Container.BindTrigger<StartQuickBattleSignal.Trigger>();
             Container.BindSignal<ExitSignal>();
+            Container.BindSignal<CombatRetreatSignal>();
             Container.BindTrigger<ExitSignal.Trigger>();
+            Container.BindTrigger<CombatRetreatSignal.Trigger>();
             Container.BindSignal<OpenSkillTreeSignal>();
             Container.BindTrigger<OpenSkillTreeSignal.Trigger>();
 			Container.BindSignal<OpenShipEditorSignal>();

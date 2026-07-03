@@ -131,7 +131,7 @@ namespace Combat.Factory
                         device.AddTrigger(new StaticEffect(stats.EffectPrefab, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
                     break;
                 case DeviceClass.TeleporterV2:
-                    device = new WarpDrive(ship, stats, deviceData.KeyBinding, _scene);
+                    device = new WarpDrive(ship, stats, deviceData.KeyBinding, _scene, deviceData.ComponentId == 305);
                     if (stats.VisualEffect != null)
                         device.AddTrigger(new StaticEffect(stats.VisualEffect, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
                     else if (stats.EffectPrefab)

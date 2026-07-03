@@ -28,10 +28,12 @@ namespace Combat.Manager
         private CombatManager(
             IMessenger messenger,
             ISoundPlayer soundPlayer,
-            ExitSignal.Trigger exitTrigger)
+            ExitSignal.Trigger exitTrigger,
+            CombatRetreatSignal.Trigger combatRetreatTrigger)
         {
             _soundPlayer = soundPlayer;
             _exitTrigger = exitTrigger;
+            _combatRetreatTrigger = combatRetreatTrigger;
             _messenger = messenger;
 
             _messenger.AddListener(EventType.EscapeKeyPressed, OnEscapeKeyPressed);
@@ -196,7 +198,7 @@ namespace Combat.Manager
             var chargeEffect = new ShipRetreatingEffect(player, _effectFactory, ConditionType.OnActivate, ConditionType.OnDeactivate);
             var warpEffect = new ShipWarpEffect(player, _effectFactory, _soundPlayer, _settings.ShipWarpSound, ConditionType.OnDeactivate);
             var soundEffect = new SoundLoopEffect(_soundPlayer, _settings.ShipRetreatSound, ConditionType.OnActivate, ConditionType.OnDeactivate);
-            player.AddEffect(new ShipRetreatEffect(7.0f, soundEffect, warpEffect, chargeEffect));
+            player.AddEffect(new ShipRetreatEffect(7.0f, () => _combatRetreatTrigger.Fire(), soundEffect, warpEffect, chargeEffect));
         }
 
         public void KillAllEnemies()
@@ -390,6 +392,7 @@ namespace Combat.Manager
         private int _pausedCount;
         private readonly ISoundPlayer _soundPlayer;
         private readonly ExitSignal.Trigger _exitTrigger;
+        private readonly CombatRetreatSignal.Trigger _combatRetreatTrigger;
         private readonly IMessenger _messenger;
     }
 }

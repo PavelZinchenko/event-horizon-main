@@ -88,6 +88,7 @@ namespace Constructor
 	{
 		DeviceStats Device { get; }
 		int KeyBinding { get; }
+		int ComponentId { get; }
 	}
 	
     public enum DroneBehaviour { Aggressive = 0, Defensive = 1 }
