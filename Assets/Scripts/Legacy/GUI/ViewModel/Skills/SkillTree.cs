@@ -84,7 +84,7 @@ namespace ViewModel.Skills
 
         public void ResetSkills()
         {
-            if (_playerSkills.PointsSpent == 0)
+            if (_showingThreeBody ? !ThreeBodySkillState.AdvancedRadarUnlocked : _playerSkills.PointsSpent == 0)
                 return;
 
             _guiHelper.ShowConfirmation(_localization.GetString("$CommonConfirmation"), ResetSkillsImpl);
@@ -96,12 +96,20 @@ namespace ViewModel.Skills
             if (!price.TryWithdraw(_playerResources))
                 return;
 
-            _playerSkills.Reset();
+            if (_showingThreeBody)
+            {
+                ThreeBodySkillState.ResetAdvancedRadar();
+                if (_advancedRadarNode != null)
+                    UpdateAdvancedRadarNode(_advancedRadarNode);
+            }
+            else
+            {
+                _playerSkills.Reset();
+                _connectedNodes.Clear();
+                _toggleGroup.SetAllTogglesOff();
+                RebuildTree();
+            }
 
-            _connectedNodes.Clear();
-            _toggleGroup.SetAllTogglesOff();
-
-            RebuildTree();
             UpdateResetPanel();
             UpdateAvailablePoints();
         }
@@ -192,7 +200,9 @@ namespace ViewModel.Skills
             {
                 ThreeBodySkillState.UnlockAdvancedRadar();
                 UpdateAdvancedRadarNode(node);
+                UpdateResetPanel();
             });
+            _advancedRadarNode = node;
 
             var nodeText = CreateLabel(nodeRect, "RADAR", 20);
             nodeText.gameObject.name = "NodeLabel";
@@ -218,10 +228,12 @@ namespace ViewModel.Skills
 
         private void ShowThreeBodyTree(bool enabled)
         {
+            _showingThreeBody = enabled;
             _content.gameObject.SetActive(!enabled);
             if (_preview7Panel != null)
                 _preview7Panel.SetActive(enabled);
             _informationPanel.gameObject.SetActive(!enabled);
+            UpdateResetPanel();
         }
 
         private Button CreateTreeButton(RectTransform parent, string title, Vector2 position)
@@ -296,7 +308,10 @@ namespace ViewModel.Skills
 
             _resetPricePanel.gameObject.SetActive(price.Amount > 0);
             _resetPricePanel.Initialize(null, price, !isEnough);
-            _resetButton.interactable = isEnough && _playerSkills.PointsSpent > 0;
+            var hasPointsOnCurrentPage = _showingThreeBody
+                ? ThreeBodySkillState.AdvancedRadarUnlocked
+                : _playerSkills.PointsSpent > 0;
+            _resetButton.interactable = isEnough && hasPointsOnCurrentPage;
         }
 
         private Price ResetPrice { get { return Economy.Price.Premium(_session.Upgrades.ResetCounter*10); } }
@@ -401,5 +416,7 @@ namespace ViewModel.Skills
         private Dictionary<SkillTreeNode, int> _nodeIds;
 		private readonly HashSet<SkillTreeNode> _connectedNodes = new HashSet<SkillTreeNode>();
         private GameObject _preview7Panel;
+        private GameObject _advancedRadarNode;
+        private bool _showingThreeBody;
     }
 }

@@ -1,0 +1,21 @@
+{
+  "ItemType": 1,
+  "Id": 309,
+  "Name": "反物质引擎",
+  "Description": "竖置1×2高性能引擎，推进与转向参数均为80，并针对星舰地球能源系统调整耗能。",
+  "ContentSource": 1,
+  "DisplayCategory": 4,
+  "Availability": 1,
+  "ComponentStatsId": 297,
+  "Faction": 21,
+  "Level": 60,
+  "Icon": "engine6",
+  "Color": "#77F4FF",
+  "Layout": "1010",
+  "CellType": "5",
+  "PossibleModifications": [
+    2,
+    11,
+    1
+  ]
+}

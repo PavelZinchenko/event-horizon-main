@@ -14,5 +14,11 @@ namespace GameServices.Player
             PlayerPrefs.SetInt(AdvancedRadarKey, 1);
             PlayerPrefs.Save();
         }
+
+        public static void ResetAdvancedRadar()
+        {
+            PlayerPrefs.DeleteKey(AdvancedRadarKey);
+            PlayerPrefs.Save();
+        }
     }
 }

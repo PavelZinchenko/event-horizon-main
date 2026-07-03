@@ -10,8 +10,8 @@ public static class AndroidDevelopmentBuild
 {
     private const string PackageName = "com.threebody.EventHorizon";
     private const string ProductName = "三体视界";
-    private const string VersionName = "Preview9.75";
-    private const int VersionCode = 112121;
+    private const string VersionName = "Preview X";
+    private const int VersionCode = 112122;
 
     [MenuItem("Build/Android/Development APK")]
     public static void BuildFromMenu()
@@ -35,7 +35,7 @@ public static class AndroidDevelopmentBuild
 
         var outputDirectory = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Builds", "Android"));
         Directory.CreateDirectory(outputDirectory);
-        var outputPath = Path.Combine(outputDirectory, "ThreeBody-EventHorizon-Preview-9.75.apk");
+        var outputPath = Path.Combine(outputDirectory, "ThreeBody-EventHorizon-Preview-X.apk");
         BuildStreamingAssetBundles();
 
         var scenes = EditorBuildSettings.scenes
@@ -161,7 +161,7 @@ public static class AndroidDevelopmentBuild
     private static string FindComponentSpriteAsset(string icon)
     {
         var folder = "Assets/Sprites/Components/";
-        foreach (var extension in new[] { ".png", ".jpg", ".jpeg", ".JPG" })
+        foreach (var extension in new[] { ".png", ".jpg", ".jpeg", ".JPG", ".psd" })
         {
             var path = folder + icon + extension;
             if (File.Exists(Path.GetFullPath(path)))

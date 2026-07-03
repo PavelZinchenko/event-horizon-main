@@ -1,5 +1,6 @@
 ﻿using Combat.Component.Body;
 using Combat.Component.Unit;
+using Combat.Component.Unit.Classification;
 using Combat.Scene;
 using Combat.Unit;
 using UnityEngine;
@@ -27,16 +28,31 @@ namespace Combat.Component.Controller
 
             if (_timeFromLastUpdate > _targetUpdateCooldown)
             {
-                _target = _unit.Type.Side == Combat.Component.Unit.Classification.UnitSide.Player &&
-                          _scene.LockedEnemyShip.IsActive()
-                    ? _scene.LockedEnemyShip
-                    : _scene.Ships.GetEnemyForMissile(_unit, 0f, _maxRange*1.3f, 30f, false, false);
+                _target = FindTarget();
                 _timeFromLastUpdate = 0;
             }
             
             
             UpdateVelocity(elapsedTime);
             UpdateRotation(elapsedTime);
+        }
+
+        private IUnit FindTarget()
+        {
+            if (_unit.Type.Side == UnitSide.Player)
+            {
+                var locked = _scene.LockedEnemyShip;
+                return locked.IsActive() && CombatRelations.AreEnemies(_unit.Type, locked.Type) ? locked : null;
+            }
+
+            if (_unit.Type.Side == UnitSide.Enemy)
+            {
+                var player = _scene.PlayerShip;
+                if (player.IsActive() && CombatRelations.AreEnemies(_unit.Type, player.Type))
+                    return player;
+            }
+
+            return _scene.Ships.GetEnemyForMissile(_unit, 0f, _maxRange * 1.3f, 90f, false, false);
         }
 
         private void UpdateVelocity(float deltaTime)

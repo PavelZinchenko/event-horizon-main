@@ -3,6 +3,7 @@
   "Id": 913,
   "Name": "深空相控阵雷达",
   "Description": "雷达探测范围+2000。",
+  "ContentSource": 1,
   "DisplayCategory": 6,
   "Availability": 1,
   "ComponentStatsId": 91,

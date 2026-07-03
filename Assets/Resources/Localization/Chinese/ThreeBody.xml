@@ -58,4 +58,10 @@
     <string name="StarshipEarthBattleshipDescription">星舰地球战列舰，可搭载曲速引擎并维持重型远程火力。</string>
     <string name="StarshipEarthFlagship">自然选择号</string>
     <string name="StarshipEarthFlagshipDescription">星舰地球旗舰，能够同时搭载全部星舰地球特色装置。</string>
+    <string name="StarshipEarthHeavyRailgun">大型电磁炮</string>
+    <string name="StarshipEarthHeavyRailgunDescription">3×3重型动能武器，拥有高于基础电磁炮的射程、弹速与单发威力。</string>
+    <string name="StarshipEarthFocusedLaser">聚能激光</string>
+    <string name="StarshipEarthFocusedLaserDescription">竖置1×3聚能激光，强化射程与持续火力，整体性能高于基础激光。</string>
+    <string name="StarshipEarthAntimatterDrive">反物质引擎</string>
+    <string name="StarshipEarthAntimatterDriveDescription">竖置1×2高性能引擎，推进与转向参数均为80，并针对星舰地球能源系统调整耗能。</string>
 </resources>

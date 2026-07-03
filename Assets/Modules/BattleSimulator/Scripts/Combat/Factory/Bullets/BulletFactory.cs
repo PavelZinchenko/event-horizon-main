@@ -54,6 +54,9 @@ namespace Combat.Factory
 
         public IBullet Create(IWeaponPlatform parent, float spread, float rotation, Vector2 offset)
         {
+            if (_owner.Type.Side != UnitSide.Player)
+                spread *= 0.35f;
+
             var bulletGameObject = new GameObjectHolder(_prefab, _services);
             bulletGameObject.IsActive = true;
 
@@ -265,17 +268,20 @@ namespace Combat.Factory
                     controller = new HarpoonController(bullet, parent, range);
                     break;
                 case BulletController_Homing homing:
+                {
+                    var smartAim = homing.SmartAim || _owner.Type.Side != UnitSide.Player;
                     if (homing.IgnoreRotation)
                     {
                         controller = new MagneticController(bullet, bulletSpeed, bulletSpeed * WeightToAcceleration(weight), range,
-                            BulletShape.HasDirection(), homing.SmartAim, _scene);
+                            BulletShape.HasDirection(), smartAim, _scene);
                     }
                     else
                     {
                         controller = new HomingController(bullet, bulletSpeed, 120f * WeightToAcceleration(weight),
-                            0.5f * bulletSpeed / (0.2f + weight * 2), range, homing.SmartAim, _scene);
+                            0.5f * bulletSpeed / (0.2f + weight * 2), range, smartAim, _scene);
                     }
                     break;
+                }
                 case BulletController_Beam:
                     controller = new BeamController(bullet, spread, rotationOffset + bullet.Body.Rotation);
                     break;

@@ -3,6 +3,7 @@
   "Id": 911,
   "Name": "近程雷达阵列",
   "Description": "雷达探测范围+100。",
+  "ContentSource": 1,
   "DisplayCategory": 6,
   "Availability": 1,
   "ComponentStatsId": 91,

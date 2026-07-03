@@ -125,13 +125,15 @@ namespace ViewModel
 
             var buttonsRect = CaptureButton.transform.parent.GetComponent<RectTransform>();
             if (buttonsRect != null)
-                buttonsRect.sizeDelta = new Vector2(buttonsRect.sizeDelta.x, Mathf.Max(260f, buttonsRect.sizeDelta.y));
+                buttonsRect.sizeDelta = new Vector2(Mathf.Max(430f, buttonsRect.sizeDelta.x), Mathf.Max(360f, buttonsRect.sizeDelta.y));
             var captureLayout = CaptureButton.GetComponent<LayoutElement>() ?? CaptureButton.AddComponent<LayoutElement>();
-            captureLayout.minWidth = 394f;
-            captureLayout.preferredWidth = 394f;
-            captureLayout.minHeight = 58f;
-            captureLayout.preferredHeight = 58f;
-            captureLayout.flexibleWidth = 1f;
+            captureLayout.minWidth = 410f;
+            captureLayout.preferredWidth = 410f;
+            captureLayout.minHeight = 78f;
+            captureLayout.preferredHeight = 78f;
+            captureLayout.flexibleWidth = 0f;
+            captureRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 410f);
+            captureRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 78f);
             foreach (var captureLabel in CaptureButton.GetComponentsInChildren<Text>(true))
             {
                 captureLabel.resizeTextForBestFit = true;
@@ -271,12 +273,13 @@ namespace ViewModel
             var jointRect = jointObject.GetComponent<RectTransform>();
             jointRect.SetParent(CaptureButton.transform.parent, false);
             jointObject.transform.SetAsLastSibling();
-            jointRect.sizeDelta = new Vector2(captureRect.sizeDelta.x, 58f);
+            jointRect.sizeDelta = new Vector2(410f, 78f);
             var jointLayout = jointObject.AddComponent<LayoutElement>();
-            jointLayout.minWidth = 394f;
-            jointLayout.preferredWidth = 394f;
-            jointLayout.preferredHeight = 58f;
-            jointLayout.flexibleWidth = 1f;
+            jointLayout.minWidth = 410f;
+            jointLayout.preferredWidth = 410f;
+            jointLayout.minHeight = 78f;
+            jointLayout.preferredHeight = 78f;
+            jointLayout.flexibleWidth = 0f;
             var captureImage = CaptureButton.GetComponent<Image>();
             var jointImage = jointObject.GetComponent<Image>();
             jointImage.color = new Color(0.025f, 0.32f, 0.48f, 1f);

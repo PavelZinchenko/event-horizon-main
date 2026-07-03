@@ -3,6 +3,7 @@
   "Id": 912,
   "Name": "远程雷达阵列",
   "Description": "雷达探测范围+220。",
+  "ContentSource": 1,
   "DisplayCategory": 6,
   "Availability": 1,
   "ComponentStatsId": 91,

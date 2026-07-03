@@ -1,0 +1,19 @@
+{
+  "ItemType": 1,
+  "Id": 307,
+  "Name": "大型电磁炮",
+  "Description": "3×3重型动能武器，拥有高于基础电磁炮的射程、弹速与单发威力。",
+  "ContentSource": 1,
+  "DisplayCategory": 1,
+  "Availability": 1,
+  "ComponentStatsId": 295,
+  "Faction": 21,
+  "Level": 70,
+  "Icon": "starship_earth_railgun",
+  "Color": "#8DF5FF",
+  "Layout": "111111111",
+  "CellType": "4",
+  "WeaponId": 135,
+  "AmmunitionId": 160,
+  "WeaponSlotType": "C"
+}

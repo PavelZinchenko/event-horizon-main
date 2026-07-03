@@ -19,11 +19,15 @@ namespace Gui.Combat
         private RectTransform _map;
         private Text _status;
         private Text _rangeText;
+        private RectTransform _root;
+        private Text _expandLabel;
+        private bool _expanded;
 
         public void Initialize(IScene scene)
         {
             _scene = scene;
             var root = GetComponent<RectTransform>();
+            _root = root;
             root.anchorMin = root.anchorMax = new Vector2(1f, 0.5f);
             root.pivot = new Vector2(1f, 0.5f);
             root.anchoredPosition = new Vector2(-115f, 55f);
@@ -56,7 +60,7 @@ namespace Gui.Combat
             var statusRect = statusObject.GetComponent<RectTransform>();
             statusRect.SetParent(root, false);
             statusRect.anchorMin = new Vector2(0.72f, 0f);
-            statusRect.anchorMax = Vector2.one;
+            statusRect.anchorMax = new Vector2(0.88f, 1f);
             statusRect.offsetMin = Vector2.zero;
             statusRect.offsetMax = new Vector2(0f, 30f);
             _status = statusObject.GetComponent<Text>();
@@ -78,6 +82,26 @@ namespace Gui.Combat
             _rangeText.alignment = TextAnchor.MiddleCenter;
             _rangeText.color = Color.white;
             _rangeText.raycastTarget = false;
+
+            var expand = new GameObject("ExpandRadar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            var expandRect = expand.GetComponent<RectTransform>();
+            expandRect.SetParent(root, false);
+            expandRect.anchorMin = expandRect.anchorMax = new Vector2(1f, 0f);
+            expandRect.pivot = new Vector2(1f, 0f);
+            expandRect.anchoredPosition = new Vector2(-2f, 2f);
+            expandRect.sizeDelta = new Vector2(30f, 28f);
+            expand.GetComponent<Image>().color = new Color(0.08f, 0.32f, 0.42f, 0.98f);
+            expand.GetComponent<Button>().onClick.AddListener(ToggleExpanded);
+            _expandLabel = AddText(expandRect, "↗", 18);
+        }
+
+        private void ToggleExpanded()
+        {
+            _expanded = !_expanded;
+            _root.sizeDelta = _expanded ? new Vector2(380f, 340f) : new Vector2(190f, 170f);
+            _root.anchoredPosition = _expanded ? new Vector2(-85f, 20f) : new Vector2(-115f, 55f);
+            if (_expandLabel != null)
+                _expandLabel.text = _expanded ? "↘" : "↗";
         }
 
         private void Update()
@@ -194,7 +218,7 @@ namespace Gui.Combat
             rect.sizeDelta = new Vector2(size, size);
         }
 
-        private static void AddText(RectTransform parent, string value, int size)
+        private static Text AddText(RectTransform parent, string value, int size)
         {
             var go = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
             var rect = go.GetComponent<RectTransform>();
@@ -209,6 +233,7 @@ namespace Gui.Combat
             text.color = Color.white;
             text.text = value;
             text.raycastTarget = false;
+            return text;
         }
 
         private sealed class TargetMarker

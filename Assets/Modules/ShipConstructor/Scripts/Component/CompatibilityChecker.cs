@@ -9,7 +9,6 @@ namespace Constructor.Component
         public static bool IsCompatibleComponent(GameDatabase.DataModel.Component component, Ships.IShipModel ship)
         {
             if (component == null) return false;
-            if (component.Id.Value == 304 && ship.Faction != null && ship.Faction.Id.Value == 21) return false;
 
             if (!component.Restrictions.ShipSizes.IsEmpty && !component.Restrictions.ShipSizes.Contains(ship.SizeClass)) return false;
             if (component.Restrictions.NotForMechanicShips && !ship.IsBionic) return false;
