@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Combat.Component.Platform
 {
-    public sealed class AutoAimingPlatform : IWeaponPlatform
+    public sealed class AutoAimingPlatform : IWeaponPlatform, IUnitTargetingPlatform
     {
         public AutoAimingPlatform(IShip ship, IUnit parent, IScene scene, Vector2 position, 
             float rotation, float offset, float maxAngle, float cooldown, float rotationSpeed, bool hasTurret)
@@ -32,6 +32,7 @@ namespace Combat.Component.Platform
         public float AutoAimingAngle => _body.AutoAimingAngle;
 
 		public IShip ActiveTarget { get => _body.ActiveTarget; set => _body.ActiveTarget = value; }
+		public IUnit ActiveUnitTarget { get => _body.ActiveUnitTarget; set => _body.ActiveUnitTarget = value; }
 
 		public void SetView(IView view, UnityEngine.Color color)
         {

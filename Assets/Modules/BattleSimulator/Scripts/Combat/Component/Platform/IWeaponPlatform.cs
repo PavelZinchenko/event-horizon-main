@@ -33,6 +33,11 @@ namespace Combat.Component.Platform
         void UpdateView(float elapsedTime);
     }
 
+    public interface IUnitTargetingPlatform
+    {
+        IUnit ActiveUnitTarget { get; set; }
+    }
+
     public static class WeaponPlatformExtensions
     {
         public static float WorldMountAngle(this IWeaponPlatform platform)

@@ -27,6 +27,8 @@ namespace Combat.Factory
             bulletFactory.Stats.HitPointsMultiplier = hitPointsMultiplier;
             var stats = weaponData.Weapon.Stats;
             stats.FireRate *= weaponData.Stats.FireRateMultiplier.Value;
+            if (weaponData.Weapon.Id.Value == 137)
+                return CreateInterceptorLaser(stats, weaponData.KeyBinding, bulletFactory, platform, owner);
             return Create(stats, weaponData.KeyBinding, bulletFactory, platform);
         }
 
@@ -120,6 +122,19 @@ namespace Combat.Factory
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private IWeapon CreateInterceptorLaser(WeaponStats weaponStats, int keyBinding, IBulletFactory bulletFactory, IWeaponPlatform platform, IShip owner)
+        {
+            var weapon = new AutoPointDefenseLaser(platform, weaponStats, bulletFactory, keyBinding, _scene, owner);
+            if (weaponStats.ShotSound)
+                weapon.AddTrigger(new SoundEffect(_services.SoundPlayer, weaponStats.ShotSound, ConditionType.OnActivate, ConditionType.OnDeactivate));
+
+            var effect = CreateEffect(weaponStats, bulletFactory);
+            if (effect != null)
+                weapon.AddTrigger(CreateFlashEffect(effect, bulletFactory, platform, ConditionType.OnActivate | ConditionType.OnRemainActive));
+
+            return weapon;
         }
 
         private IEffect CreateEffect(WeaponStats weaponStats, IBulletFactory bulletFactory)

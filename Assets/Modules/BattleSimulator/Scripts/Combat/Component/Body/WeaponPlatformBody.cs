@@ -101,6 +101,12 @@ namespace Combat.Component.Platform
 
         public IShip ActiveTarget
         {
+            get => _target as IShip; 
+			set => ActiveUnitTarget = value;
+		}
+
+        public IUnit ActiveUnitTarget
+        {
             get => _target; 
 			set
 			{
@@ -233,7 +239,7 @@ namespace Combat.Component.Platform
         private float _relativeEffect = 1;
 
         private float _timeFromTargetUpdate = _targetUpdateCooldown;
-        private IShip _target;
+        private IUnit _target;
 
         private float _rotation;
         private float _angularVelocity;

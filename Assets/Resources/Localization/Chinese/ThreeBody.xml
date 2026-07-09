@@ -21,7 +21,7 @@
     <string name="EmptyDream">空幻之梦</string>
     <string name="EmptyDreamDescription">自由势力旗舰。舰体围绕高维能量骨架构筑，专用于三体模组测试。</string>
     <string name="TearTheStars">撕裂星辰</string>
-    <string name="TearTheStarsDescription">2×4 特殊槽位武器，发射无视护盾、装甲抗性与减伤的超远程真实伤害束。</string>
+    <string name="TearTheStarsDescription">2×4 D槽武器，发射无视护盾、装甲抗性与减伤的超远程维度伤害束。</string>
     <string name="ZeroElementArmor">零素装甲</string>
     <string name="ZeroElementArmorDescription">四格测试装甲，提供极高装甲值、修复能力和全属性减伤。</string>
     <string name="QuantumLoanGenerator">量子借贷发电机</string>
@@ -30,8 +30,8 @@
     <string name="FtlDeviceDescription">六格超光速引擎，提供极高推进力和转向速度。</string>
     <string name="ElectronCompressor">电子压缩器</string>
     <string name="ElectronCompressorDescription">测试电池，以压缩电子态存储巨量能量。</string>
-    <string name="TrueDamage">真实伤害</string>
-    <string name="TrueDPS">真实伤害/秒</string>
+    <string name="TrueDamage">维度伤害</string>
+    <string name="TrueDPS">维度伤害/秒</string>
 
     <string name="StarshipEarthLaser">激光</string>
     <string name="StarshipEarthLaserDescription">星舰地球早期定向能武器，射程与能量效率优于同级原版装备。</string>
@@ -64,4 +64,6 @@
     <string name="StarshipEarthFocusedLaserDescription">竖置1×3聚能激光，强化射程与持续火力，整体性能高于基础激光。</string>
     <string name="StarshipEarthAntimatterDrive">反物质引擎</string>
     <string name="StarshipEarthAntimatterDriveDescription">竖置1×2高性能引擎，推进与转向参数均为10；高级舰船可并联安装多个。</string>
+    <string name="StarshipEarthInterceptorLaser">小型拦截激光</string>
+    <string name="StarshipEarthInterceptorLaserDescription">一格L槽点防御激光，自动优先拦截导弹；射程50，每秒造成150热能伤害。</string>
 </resources>

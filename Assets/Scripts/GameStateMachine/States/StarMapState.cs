@@ -224,7 +224,7 @@ namespace GameStateMachine.States
 		    if (guardian.IsAggressive)
 		    {
                 _guardianDialogOpen = true;
-                const string message = "侦测到星域守军。\n\n确定：尝试潜入\n取消：逃离该星域\n\n友好势力潜入必定成功，中立势力成功率较高，敌对势力成功率较低。";
+                const string message = "侦测到星域守军。\n\n确定：尝试潜入\n取消：直接进攻\n\n友好势力潜入必定成功，中立势力成功率较高，敌对势力成功率较低。";
                 LoadStateAdditive(StateFactory.CreateDialogState(
                     global::Gui.Common.WindowNames.ConfirmationDialog,
                     new WindowArgs(message),
@@ -241,7 +241,7 @@ namespace GameStateMachine.States
             if (code != WindowExitCode.Ok)
             {
                 _guardianDialogOpen = false;
-                LoadStateAdditive(StateFactory.CreateRetreatState());
+                StartInfiltrationCombat(starId);
                 return;
             }
 

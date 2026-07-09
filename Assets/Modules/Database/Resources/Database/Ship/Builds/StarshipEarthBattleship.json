@@ -7,13 +7,13 @@
   "Components": [
     {
       "ComponentId": 301,
-      "X": 6,
+      "X": 5,
       "Y": 0
     },
     {
       "ComponentId": 302,
-      "X": 1,
-      "Y": 8
+      "X": 0,
+      "Y": 5
     },
     {
       "ComponentId": 303,
@@ -33,18 +33,18 @@
     },
     {
       "ComponentId": 309,
-      "X": 4,
-      "Y": 12
+      "X": 5,
+      "Y": 13
     },
     {
       "ComponentId": 309,
-      "X": 6,
-      "Y": 12
+      "X": 7,
+      "Y": 13
     },
     {
       "ComponentId": 309,
-      "X": 8,
-      "Y": 12
+      "X": 9,
+      "Y": 13
     }
   ]
 }

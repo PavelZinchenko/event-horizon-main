@@ -1,0 +1,19 @@
+{
+  "ItemType": 1,
+  "Id": 310,
+  "Name": "$StarshipEarthInterceptorLaser",
+  "Description": "$StarshipEarthInterceptorLaserDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 1,
+  "Availability": 1,
+  "ComponentStatsId": 298,
+  "Faction": 21,
+  "Level": 35,
+  "Icon": "starship_earth_laser",
+  "Color": "#9BF8FF",
+  "Layout": "1",
+  "CellType": "4",
+  "WeaponId": 137,
+  "AmmunitionId": 162,
+  "WeaponSlotType": "L"
+}

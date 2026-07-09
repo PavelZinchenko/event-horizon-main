@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Combat.Component.Ship;
+using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Scene;
 using Combat.Unit;
@@ -15,6 +16,7 @@ namespace Gui.Combat
     {
         private const float BaseRadarRange = 300f;
         private readonly Dictionary<IShip, TargetMarker> _markers = new();
+        private readonly Dictionary<IUnit, UnitMarker> _projectileMarkers = new();
         private IScene _scene;
         private RectTransform _map;
         private Text _status;
@@ -149,8 +151,84 @@ namespace Gui.Combat
                 marker.Cross.SetActive(ship == _scene.LockedEnemyShip);
             }
 
+            UpdateProjectileLayer(player, radarRange, displayRange);
             _status.text = _scene.LockedEnemyShip.IsActive() ? "LOCKED" : "NO LOCK";
             _rangeText.text = $"RADAR {radarRange:0}";
+        }
+
+        private void UpdateProjectileLayer(IShip player, float radarRange, float displayRange)
+        {
+            var visible = new HashSet<IUnit>();
+            lock (_scene.Units.LockObject)
+            {
+                foreach (var unit in _scene.Units.Items)
+                {
+                    if (!IsProjectileVisible(unit, player, radarRange))
+                        continue;
+
+                    visible.Add(unit);
+                    if (!_projectileMarkers.TryGetValue(unit, out var marker))
+                    {
+                        marker = CreateProjectileMarker(unit);
+                        _projectileMarkers.Add(unit, marker);
+                    }
+
+                    UpdateProjectileMarker(marker, unit, player, displayRange);
+                }
+            }
+
+            foreach (var stale in _projectileMarkers.Keys.Where(unit => !visible.Contains(unit)).ToArray())
+            {
+                Destroy(_projectileMarkers[stale].Root);
+                _projectileMarkers.Remove(stale);
+            }
+        }
+
+        private static bool IsProjectileVisible(IUnit unit, IShip player, float radarRange)
+        {
+            if (!unit.IsActive())
+                return false;
+
+            if (unit.Type.Class != UnitClass.Missile &&
+                unit.Type.Class != UnitClass.EnergyBolt &&
+                unit.Type.Class != UnitClass.AreaOfEffect)
+                return false;
+
+            return Vector2.Distance(player.Body.Position, unit.Body.WorldPosition()) <= radarRange;
+        }
+
+        private UnitMarker CreateProjectileMarker(IUnit unit)
+        {
+            var go = new GameObject(unit.Type.Class == UnitClass.Missile ? "MissileBlip" : "LaserTrace", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            var rect = go.GetComponent<RectTransform>();
+            rect.SetParent(_map, false);
+            var image = go.GetComponent<Image>();
+            image.raycastTarget = false;
+            return new UnitMarker(go, rect, image);
+        }
+
+        private void UpdateProjectileMarker(UnitMarker marker, IUnit unit, IShip player, float displayRange)
+        {
+            var friendly = !CombatRelations.AreEnemies(player.Type, unit.Type);
+            marker.Image.color = friendly ? new Color(0.25f, 0.65f, 1f, 0.95f) : new Color(1f, 0.15f, 0.1f, 0.95f);
+
+            var start = unit.Body.WorldPosition();
+            var relative = (start - player.Body.Position) / displayRange;
+            marker.Rect.anchorMin = marker.Rect.anchorMax = new Vector2(0.5f + relative.x * 0.47f, 0.5f + relative.y * 0.47f);
+
+            if (unit.Type.Class == UnitClass.Missile)
+            {
+                SetDot(marker.Rect, Vector2.zero, 4f);
+                marker.Rect.localEulerAngles = Vector3.zero;
+                return;
+            }
+
+            var length = unit.Body.Parent != null ? Mathf.Max(unit.Body.Scale, 18f) : 12f;
+            var radarLength = Mathf.Clamp(length / displayRange * _map.rect.width * 0.47f, 8f, _map.rect.width * 0.42f);
+            marker.Rect.anchoredPosition = Vector2.zero;
+            marker.Rect.sizeDelta = new Vector2(radarLength, 2f);
+            marker.Rect.pivot = new Vector2(0f, 0.5f);
+            marker.Rect.localEulerAngles = new Vector3(0f, 0f, unit.Body.WorldRotation());
         }
 
         private void LockNearest()
@@ -250,6 +328,20 @@ namespace Gui.Combat
             public readonly RectTransform Rect;
             public readonly Image Image;
             public readonly GameObject Cross;
+        }
+
+        private sealed class UnitMarker
+        {
+            public UnitMarker(GameObject root, RectTransform rect, Image image)
+            {
+                Root = root;
+                Rect = rect;
+                Image = image;
+            }
+
+            public readonly GameObject Root;
+            public readonly RectTransform Rect;
+            public readonly Image Image;
         }
     }
 }
