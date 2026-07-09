@@ -296,14 +296,14 @@ namespace Gui.MainMenu
             root.layer = canvas.gameObject.layer;
             var rect = root.GetComponent<RectTransform>();
             rect.SetParent(canvas.transform, false);
-            rect.anchorMin = new Vector2(0.04f, 0.57f);
-            rect.anchorMax = new Vector2(0.62f, 0.87f);
+            rect.anchorMin = new Vector2(0.04f, 0.5f);
+            rect.anchorMax = new Vector2(0.62f, 0.8f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
-            CreateBrandText(root.transform, template, "Title", "三体视界", 76, new Vector2(0, 0.53f), new Vector2(1, 1), Color.white);
-            CreateBrandText(root.transform, template, "Developers", "开发者：白墨 & 空梦", 32, new Vector2(0, 0.27f), new Vector2(1, 0.55f), new Color(0.55f, 0.9f, 1f));
-            CreateBrandText(root.transform, template, "OriginalAuthor", "原作者：Pavel Zinchenko（Event Horizon）", 23, new Vector2(0, 0), new Vector2(1, 0.28f), new Color(0.72f, 0.76f, 0.82f));
+            CreateBrandText(root.transform, template, "Title", "三体视界", 76, new Vector2(0, 0.6f), new Vector2(1, 1), Color.white);
+            CreateBrandText(root.transform, template, "Developers", "策划&文案：白墨\n程序开发：V0idream\n舰船设计：Aqua\n音乐：巡洋舰零售", 28, new Vector2(0, 0.08f), new Vector2(1, 0.62f), new Color(0.55f, 0.9f, 1f));
+            CreateBrandText(root.transform, template, "OriginalAuthor", "原作者：Pavel Zinchenko（Event Horizon）", 22, new Vector2(0, 0f), new Vector2(1, 0.12f), new Color(0.72f, 0.76f, 0.82f));
         }
 
         private static void CreateBrandText(

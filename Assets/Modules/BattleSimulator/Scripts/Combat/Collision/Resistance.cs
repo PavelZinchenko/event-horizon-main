@@ -7,13 +7,14 @@ namespace Combat.Collision
         public float Kinetic;
         public float Energy;
         public float Heat;
+        public float Corrosive;
         public float EnergyAbsorption;
         public float ShieldCorrosive;
 
         public float ModifyKineticDamage(float damage) => ModifyDamage(damage, Kinetic);
         public float ModifyEnergyDamage(float damage) => ModifyDamage(damage, Energy);
 		public float ModifyHeatDamage(float damage) => ModifyDamage(damage, Heat);
-		public float ModifyCorrosiveDamage(float damage) => ModifyDamage(damage, 0.5f * MinResistance);
+		public float ModifyCorrosiveDamage(float damage) => ModifyDamage(damage, Corrosive);
 
         public static float ModifyDamage(float damage, float resistance) => damage > 0 ? damage * (1f - resistance) : damage;
 
@@ -34,14 +35,6 @@ namespace Combat.Collision
 				default:
 					return damage;
 			}
-		}
-
-		public float MinResistance => Min(Kinetic, Heat, Energy);
-
-		private static float Min(float a, float b, float c)
-		{
-			if (a < b && a < c) return a;
-			return b < c ? b : c;
 		}
 
         public static readonly Resistance Empty = new();

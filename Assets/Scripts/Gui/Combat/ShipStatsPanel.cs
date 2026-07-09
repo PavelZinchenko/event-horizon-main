@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ViewModel;
 using Zenject;
+using System.Collections.Generic;
 
 namespace Gui.Combat
 {
@@ -27,6 +28,8 @@ namespace Gui.Combat
         [SerializeField] private Text _fireResistText;
         [SerializeField] private Text _energyResistText;
         [SerializeField] private Text _kineticResistText;
+        private GameObject _corrosiveResistIcon;
+        private Text _corrosiveResistText;
 
         public void Close()
         {
@@ -52,6 +55,7 @@ namespace Gui.Combat
             _shipItem.SetLevel(ship.Specification.Info.Level);
             _shipItem.SetClass(ship.Specification.Info.Class);
 
+            EnsureCorrosiveResistanceRow();
             UpdateResistance();
 
             _hasShield = _ship.Stats.Shield.Exists;
@@ -91,6 +95,43 @@ namespace Gui.Combat
                 if (active)
                     _kineticResistText.text = Mathf.RoundToInt(resistance.Kinetic * 100) + "%";
             }
+
+            if (_corrosiveResistIcon != null && _corrosiveResistText != null)
+            {
+                _corrosiveResistIcon.gameObject.SetActive(true);
+                _corrosiveResistText.gameObject.SetActive(true);
+                _corrosiveResistText.text = Mathf.RoundToInt(resistance.Corrosive * 100) + "%";
+            }
+        }
+
+        private void EnsureCorrosiveResistanceRow()
+        {
+            if (_corrosiveResistIcon != null || _kineticResistIcon == null || _kineticResistText == null || _energyResistIcon == null)
+                return;
+
+            var iconTemplate = _kineticResistIcon.GetComponent<Image>() ?? _energyResistIcon.GetComponent<Image>();
+            var textTemplate = _kineticResistText;
+            if (iconTemplate == null || textTemplate == null)
+                return;
+
+            _corrosiveResistIcon = Instantiate(iconTemplate.gameObject, _kineticResistIcon.transform.parent);
+            _corrosiveResistIcon.name = "CorrosiveResistanceIcon";
+            _corrosiveResistIcon.GetComponent<Image>().color = new Color(0.45f, 1f, 0.45f, 1f);
+            ShiftBelow(_corrosiveResistIcon.transform as RectTransform, _kineticResistIcon.transform as RectTransform, _energyResistIcon.transform as RectTransform);
+
+            _corrosiveResistText = Instantiate(textTemplate, _kineticResistText.transform.parent);
+            _corrosiveResistText.name = "CorrosiveResistanceText";
+            ShiftBelow(_corrosiveResistText.transform as RectTransform, _kineticResistText.transform as RectTransform, _energyResistText.transform as RectTransform);
+            _corrosiveResistText.text = "0%";
+        }
+
+        private static void ShiftBelow(RectTransform target, RectTransform reference, RectTransform previous)
+        {
+            if (target == null || reference == null)
+                return;
+
+            var offset = previous != null ? reference.anchoredPosition - previous.anchoredPosition : new Vector2(0f, -28f);
+            target.anchoredPosition = reference.anchoredPosition + offset;
         }
 
         private void Update()

@@ -9,7 +9,7 @@
   "IconImage": "starship_earth_cruiser_preview5",
   "IconScale": 0.95,
   "ModelImage": "starship_earth_cruiser_preview5",
-  "ModelScale": 9.0,
+  "ModelScale": 11.0,
   "EngineColor": "#63EFFF",
   "Engines": [
     {

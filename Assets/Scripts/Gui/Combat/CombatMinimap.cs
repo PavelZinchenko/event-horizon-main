@@ -17,12 +17,16 @@ namespace Gui.Combat
         private const float BaseRadarRange = 300f;
         private readonly Dictionary<IShip, TargetMarker> _markers = new();
         private readonly Dictionary<IUnit, UnitMarker> _projectileMarkers = new();
+        private readonly Dictionary<IUnit, Vector2> _lastProjectilePositions = new();
+        private readonly HashSet<IUnit> _seenAreaEffects = new();
+        private readonly List<TransientMarker> _transientMarkers = new();
         private IScene _scene;
         private RectTransform _map;
         private Text _status;
         private Text _rangeText;
         private RectTransform _root;
         private Text _expandLabel;
+        private Toggle _engineThrottleToggle;
         private bool _expanded;
 
         public void Initialize(IScene scene)
@@ -33,15 +37,47 @@ namespace Gui.Combat
             root.anchorMin = root.anchorMax = new Vector2(1f, 0.5f);
             root.pivot = new Vector2(1f, 0.5f);
             root.anchoredPosition = new Vector2(-115f, 55f);
-            root.sizeDelta = new Vector2(190f, 170f);
+            root.sizeDelta = new Vector2(190f, 196f);
 
             var panel = NewImage("Map", root, new Color(0.01f, 0.04f, 0.05f, 0.82f));
             panel.raycastTarget = false;
             _map = panel.rectTransform;
             _map.anchorMin = Vector2.zero;
             _map.anchorMax = Vector2.one;
-            _map.offsetMin = Vector2.zero;
+            _map.offsetMin = new Vector2(0f, 26f);
             _map.offsetMax = new Vector2(0f, -32f);
+
+            var throttleRow = new GameObject("EngineThrottle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Toggle));
+            var throttleRect = throttleRow.GetComponent<RectTransform>();
+            throttleRect.SetParent(root, false);
+            throttleRect.anchorMin = new Vector2(0f, 1f);
+            throttleRect.anchorMax = new Vector2(1f, 1f);
+            throttleRect.pivot = new Vector2(0.5f, 1f);
+            throttleRect.anchoredPosition = new Vector2(0f, 0f);
+            throttleRect.sizeDelta = new Vector2(0f, 24f);
+            throttleRow.GetComponent<Image>().color = new Color(0.06f, 0.16f, 0.2f, 0.92f);
+            _engineThrottleToggle = throttleRow.GetComponent<Toggle>();
+            _engineThrottleToggle.isOn = ThreeBodySkillState.EngineThrottleEnabled;
+            _engineThrottleToggle.targetGraphic = throttleRow.GetComponent<Image>();
+
+            var throttleCheck = NewImage("Checkmark", throttleRect, new Color(0.2f, 0.95f, 1f, 0.96f));
+            throttleCheck.rectTransform.anchorMin = throttleCheck.rectTransform.anchorMax = new Vector2(0f, 0.5f);
+            throttleCheck.rectTransform.pivot = new Vector2(0f, 0.5f);
+            throttleCheck.rectTransform.anchoredPosition = new Vector2(6f, 0f);
+            throttleCheck.rectTransform.sizeDelta = new Vector2(14f, 14f);
+            throttleCheck.raycastTarget = false;
+            _engineThrottleToggle.graphic = throttleCheck;
+            throttleCheck.enabled = _engineThrottleToggle.isOn;
+            _engineThrottleToggle.onValueChanged.AddListener(value =>
+            {
+                ThreeBodySkillState.SetEngineThrottle(value);
+                throttleCheck.enabled = value;
+            });
+
+            var throttleLabel = AddText(throttleRect, "引擎节流", 13);
+            throttleLabel.alignment = TextAnchor.MiddleLeft;
+            throttleLabel.rectTransform.offsetMin = new Vector2(26f, 0f);
+            throttleLabel.rectTransform.offsetMax = new Vector2(-6f, 0f);
 
             var center = NewImage("Player", _map, new Color(0.1f, 1f, 0.25f, 1f));
             center.raycastTarget = false;
@@ -100,7 +136,7 @@ namespace Gui.Combat
         private void ToggleExpanded()
         {
             _expanded = !_expanded;
-            _root.sizeDelta = _expanded ? new Vector2(380f, 340f) : new Vector2(190f, 170f);
+            _root.sizeDelta = _expanded ? new Vector2(380f, 366f) : new Vector2(190f, 196f);
             _root.anchoredPosition = _expanded ? new Vector2(-85f, 20f) : new Vector2(-115f, 55f);
             if (_expandLabel != null)
                 _expandLabel.text = _expanded ? "↘" : "↗";
@@ -152,6 +188,7 @@ namespace Gui.Combat
             }
 
             UpdateProjectileLayer(player, radarRange, displayRange);
+            UpdateTransientMarkers(player, displayRange);
             _status.text = _scene.LockedEnemyShip.IsActive() ? "LOCKED" : "NO LOCK";
             _rangeText.text = $"RADAR {radarRange:0}";
         }
@@ -164,9 +201,19 @@ namespace Gui.Combat
                 foreach (var unit in _scene.Units.Items)
                 {
                     if (!IsProjectileVisible(unit, player, radarRange))
+                    {
+                        if (unit.IsActive() && unit.Type.Class == UnitClass.AreaOfEffect &&
+                            Vector2.Distance(player.Body.Position, unit.Body.WorldPosition()) <= radarRange &&
+                            _seenAreaEffects.Add(unit))
+                        {
+                            SpawnExplosion(unit.Body.WorldPosition(), !CombatRelations.AreEnemies(player.Type, unit.Type));
+                        }
+
                         continue;
+                    }
 
                     visible.Add(unit);
+                    _lastProjectilePositions[unit] = unit.Body.WorldPosition();
                     if (!_projectileMarkers.TryGetValue(unit, out var marker))
                     {
                         marker = CreateProjectileMarker(unit);
@@ -179,9 +226,15 @@ namespace Gui.Combat
 
             foreach (var stale in _projectileMarkers.Keys.Where(unit => !visible.Contains(unit)).ToArray())
             {
+                if (_lastProjectilePositions.TryGetValue(stale, out var lastPosition) && stale.Type.Class == UnitClass.Missile)
+                    SpawnExplosion(lastPosition, !CombatRelations.AreEnemies(player.Type, stale.Type));
+
                 Destroy(_projectileMarkers[stale].Root);
                 _projectileMarkers.Remove(stale);
+                _lastProjectilePositions.Remove(stale);
             }
+
+            _seenAreaEffects.RemoveWhere(unit => !unit.IsActive());
         }
 
         private static bool IsProjectileVisible(IUnit unit, IShip player, float radarRange)
@@ -190,8 +243,7 @@ namespace Gui.Combat
                 return false;
 
             if (unit.Type.Class != UnitClass.Missile &&
-                unit.Type.Class != UnitClass.EnergyBolt &&
-                unit.Type.Class != UnitClass.AreaOfEffect)
+                unit.Type.Class != UnitClass.EnergyBolt)
                 return false;
 
             return Vector2.Distance(player.Body.Position, unit.Body.WorldPosition()) <= radarRange;
@@ -212,8 +264,8 @@ namespace Gui.Combat
             var friendly = !CombatRelations.AreEnemies(player.Type, unit.Type);
             marker.Image.color = friendly ? new Color(0.25f, 0.65f, 1f, 0.95f) : new Color(1f, 0.15f, 0.1f, 0.95f);
 
-            var start = unit.Body.WorldPosition();
-            var relative = (start - player.Body.Position) / displayRange;
+            var worldPosition = unit.Body.WorldPosition();
+            var relative = (worldPosition - player.Body.Position) / displayRange;
             marker.Rect.anchorMin = marker.Rect.anchorMax = new Vector2(0.5f + relative.x * 0.47f, 0.5f + relative.y * 0.47f);
 
             if (unit.Type.Class == UnitClass.Missile)
@@ -223,12 +275,19 @@ namespace Gui.Combat
                 return;
             }
 
-            var length = unit.Body.Parent != null ? Mathf.Max(unit.Body.Scale, 18f) : 12f;
-            var radarLength = Mathf.Clamp(length / displayRange * _map.rect.width * 0.47f, 8f, _map.rect.width * 0.42f);
-            marker.Rect.anchoredPosition = Vector2.zero;
-            marker.Rect.sizeDelta = new Vector2(radarLength, 2f);
+            var end = worldPosition;
+            var lineStart = unit.Body.Parent != null ? unit.Body.Parent.WorldPosition() : end - RotationHelpers.Direction(unit.Body.WorldRotation()) * Mathf.Max(unit.Body.Scale * 1.8f, 12f);
+            var startRelative = (lineStart - player.Body.Position) / displayRange;
+            var endRelative = (end - player.Body.Position) / displayRange;
+            var startPoint = new Vector2(startRelative.x * _map.rect.width * 0.47f, startRelative.y * _map.rect.height * 0.47f);
+            var endPoint = new Vector2(endRelative.x * _map.rect.width * 0.47f, endRelative.y * _map.rect.height * 0.47f);
+            var delta = endPoint - startPoint;
+            var radarLength = Mathf.Max(10f, delta.magnitude);
+            marker.Rect.anchorMin = marker.Rect.anchorMax = new Vector2(0.5f, 0.5f);
+            marker.Rect.anchoredPosition = startPoint;
+            marker.Rect.sizeDelta = new Vector2(radarLength, 2.5f);
             marker.Rect.pivot = new Vector2(0f, 0.5f);
-            marker.Rect.localEulerAngles = new Vector3(0f, 0f, unit.Body.WorldRotation());
+            marker.Rect.localEulerAngles = new Vector3(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
         }
 
         private void LockNearest()
@@ -314,6 +373,40 @@ namespace Gui.Combat
             return text;
         }
 
+        private void SpawnExplosion(Vector2 worldPosition, bool friendly)
+        {
+            var go = new GameObject("ExplosionBlip", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            var rect = go.GetComponent<RectTransform>();
+            rect.SetParent(_map, false);
+            var image = go.GetComponent<Image>();
+            image.raycastTarget = false;
+            image.color = friendly ? new Color(0.45f, 0.85f, 1f, 0.9f) : new Color(1f, 0.55f, 0.2f, 0.95f);
+            _transientMarkers.Add(new TransientMarker(go, rect, image, worldPosition, 0.45f));
+        }
+
+        private void UpdateTransientMarkers(IShip player, float displayRange)
+        {
+            for (var i = _transientMarkers.Count - 1; i >= 0; i--)
+            {
+                var marker = _transientMarkers[i];
+                marker.TimeLeft -= Time.deltaTime;
+                if (marker.TimeLeft <= 0f)
+                {
+                    Destroy(marker.Root);
+                    _transientMarkers.RemoveAt(i);
+                    continue;
+                }
+
+                var relative = (marker.WorldPosition - player.Body.Position) / displayRange;
+                marker.Rect.anchorMin = marker.Rect.anchorMax = new Vector2(0.5f + relative.x * 0.47f, 0.5f + relative.y * 0.47f);
+                var size = Mathf.Lerp(14f, 6f, 1f - marker.TimeLeft / marker.Duration);
+                SetDot(marker.Rect, Vector2.zero, size);
+                var color = marker.Image.color;
+                color.a = Mathf.Clamp01(marker.TimeLeft / marker.Duration);
+                marker.Image.color = color;
+            }
+        }
+
         private sealed class TargetMarker
         {
             public TargetMarker(GameObject root, RectTransform rect, Image image, GameObject cross)
@@ -342,6 +435,26 @@ namespace Gui.Combat
             public readonly GameObject Root;
             public readonly RectTransform Rect;
             public readonly Image Image;
+        }
+
+        private sealed class TransientMarker
+        {
+            public TransientMarker(GameObject root, RectTransform rect, Image image, Vector2 worldPosition, float duration)
+            {
+                Root = root;
+                Rect = rect;
+                Image = image;
+                WorldPosition = worldPosition;
+                Duration = duration;
+                TimeLeft = duration;
+            }
+
+            public readonly GameObject Root;
+            public readonly RectTransform Rect;
+            public readonly Image Image;
+            public readonly Vector2 WorldPosition;
+            public readonly float Duration;
+            public float TimeLeft;
         }
     }
 }

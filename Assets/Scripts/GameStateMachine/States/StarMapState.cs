@@ -17,6 +17,7 @@ using GameModel.Quests;
 using UniRx;
 using Combat.Component.Unit.Classification;
 using GameServices.Gui;
+using Gui.Dialogs;
 
 namespace GameStateMachine.States
 {
@@ -221,13 +222,13 @@ namespace GameStateMachine.States
 			var star = _session.StarMap.PlayerPosition;
 			var guardian = _starData.GetOccupant(star);
 
-		    if (guardian.IsAggressive)
+            if (guardian.IsAggressive)
 		    {
                 _guardianDialogOpen = true;
-                const string message = "侦测到星域守军。\n\n确定：尝试潜入\n取消：直接进攻\n\n友好势力潜入必定成功，中立势力成功率较高，敌对势力成功率较低。";
+                const string message = "侦测到星域守军。\n\n潜入：尝试潜入\n进攻：直接进攻\n撤离：返回来到此星系前的星系\n\n友好势力潜入必定成功，中立势力成功率较高，敌对势力成功率较低。";
                 LoadStateAdditive(StateFactory.CreateDialogState(
                     global::Gui.Common.WindowNames.ConfirmationDialog,
-                    new WindowArgs(message),
+                    new WindowArgs(new ConfirmationDialogOptions(message, "潜入", "进攻", "撤离")),
                     code => ResolveInfiltration(star, code)));
                 return true;
             }
@@ -238,6 +239,13 @@ namespace GameStateMachine.States
         private void ResolveInfiltration(int starId, WindowExitCode code)
         {
             var guardian = _starData.GetOccupant(starId);
+            if (code == WindowExitCode.Option1)
+            {
+                _guardianDialogOpen = false;
+                WithdrawFromPreviousStar(starId);
+                return;
+            }
+
             if (code != WindowExitCode.Ok)
             {
                 _guardianDialogOpen = false;
@@ -262,6 +270,20 @@ namespace GameStateMachine.States
                 _guiHelper.ShowMessage("潜入失败，守军已发现舰队");
                 StartInfiltrationCombat(starId);
             }
+        }
+
+        private void WithdrawFromPreviousStar(int currentStarId)
+        {
+            var destination = _session.StarMap.LastPlayerPosition;
+            if (destination < 0 || destination == currentStarId)
+            {
+                _guiHelper.ShowMessage("无法继续撤离");
+                return;
+            }
+
+            _motherShip.ViewMode = ViewMode.StarMap;
+            _session.StarMap.PlayerPosition = destination;
+            _guiHelper.ShowMessage("已撤离至上一星系");
         }
 
         private void StartInfiltrationCombat(int starId)

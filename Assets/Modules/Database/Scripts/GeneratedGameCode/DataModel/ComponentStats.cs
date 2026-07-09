@@ -43,6 +43,7 @@ namespace GameDatabase.DataModel
 			KineticResistance = UnityEngine.Mathf.Clamp(serializable.KineticResistance, -1000000f, 1000000f);
 			EnergyResistance = UnityEngine.Mathf.Clamp(serializable.EnergyResistance, -1000000f, 1000000f);
 			ThermalResistance = UnityEngine.Mathf.Clamp(serializable.ThermalResistance, -1000000f, 1000000f);
+			CorrosiveResistance = UnityEngine.Mathf.Clamp(serializable.CorrosiveResistance, -1000000f, 1000000f);
 			EnginePower = UnityEngine.Mathf.Clamp(serializable.EnginePower, 0f, 2000f);
 			TurnRate = UnityEngine.Mathf.Clamp(serializable.TurnRate, 0f, 2000f);
 			Autopilot = serializable.Autopilot;
@@ -80,6 +81,7 @@ namespace GameDatabase.DataModel
 		public float KineticResistance { get; private set; }
 		public float EnergyResistance { get; private set; }
 		public float ThermalResistance { get; private set; }
+		public float CorrosiveResistance { get; private set; }
 		public float EnginePower { get; private set; }
 		public float TurnRate { get; private set; }
 		public bool Autopilot { get; private set; }

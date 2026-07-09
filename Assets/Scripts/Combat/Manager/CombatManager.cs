@@ -175,6 +175,11 @@ namespace Combat.Manager
             Exit();
         }
 
+        public void Retreat()
+        {
+            _combatRetreatTrigger.Fire();
+        }
+
         public void Exit()
         {
             _exitTrigger.Fire();

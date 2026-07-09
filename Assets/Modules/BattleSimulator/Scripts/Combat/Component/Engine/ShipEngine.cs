@@ -7,6 +7,9 @@ namespace Combat.Component.Engine
 {
     public class ShipEngine : IEngine
     {
+        private const string EngineThrottleKey = "Preview14.EngineThrottle";
+        private const float ThrottledVelocityLimit = 40f;
+
         public ShipEngine(
             EngineStats engineStats,
             EngineStats engineStatsWithoutEnergy)
@@ -104,6 +107,9 @@ namespace Combat.Component.Engine
                 if (_engineData.AngularVelocity > _engineStatsWithoutEnergy.AngularVelocityLimit)
                     _engineData.AngularVelocity = _engineStatsWithoutEnergy.AngularVelocityLimit;
             }
+
+            if (PlayerPrefs.GetInt(EngineThrottleKey, 0) != 0 && _engineData.Velocity > ThrottledVelocityLimit)
+                _engineData.Velocity = ThrottledVelocityLimit;
         }
 
         private float ApplyAcceleration(IBody body, float elapsedTime)

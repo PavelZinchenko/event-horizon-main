@@ -31,6 +31,7 @@ namespace GameDatabase.Serializable
 		public float KineticResistance;
 		public float EnergyResistance;
 		public float ThermalResistance;
+		public float CorrosiveResistance;
 		public float EnginePower;
 		public float TurnRate;
 		public bool Autopilot;

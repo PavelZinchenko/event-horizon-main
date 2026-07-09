@@ -23,6 +23,7 @@
     "ArmorBonus": 50.0,
     "VelocityBonus": -0.45,
     "TurnRateBonus": -0.35,
-    "EnergyBonus": 10.0
+    "EnergyBonus": 10.0,
+    "IsFourDimensional": true
   }
 }

@@ -34,6 +34,7 @@ namespace Constructor.Model
         public float KineticResistance;
         public float EnergyResistance;
         public float ThermalResistance;
+        public float CorrosiveResistance;
 
         public float EnginePower;
         public float TurnRate;
@@ -88,6 +89,7 @@ namespace Constructor.Model
             stats.KineticResistance = component.KineticResistance * multiplier;
             stats.EnergyResistance = component.EnergyResistance * multiplier;
             stats.ThermalResistance = component.ThermalResistance * multiplier;
+            stats.CorrosiveResistance = component.CorrosiveResistance * multiplier;
 
             stats.EnginePower = component.EnginePower * multiplier;
             stats.TurnRate = component.TurnRate * multiplier;
@@ -147,6 +149,7 @@ namespace Constructor.Model
             KineticResistance += other.KineticResistance;
             EnergyResistance += other.EnergyResistance;
             ThermalResistance += other.ThermalResistance;
+            CorrosiveResistance += other.CorrosiveResistance;
 
             EnginePower += other.EnginePower;
             TurnRate += other.TurnRate;

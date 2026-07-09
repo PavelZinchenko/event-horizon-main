@@ -140,7 +140,7 @@ namespace Combat.Collision
                 KineticDamage = KineticDamage * (1f - resistance.Kinetic),
                 EnergyDamage = EnergyDamage * (1f - resistance.Energy),
                 HeatDamage = HeatDamage * (1f - resistance.Heat),
-                CorrosiveDamage = CorrosiveDamage * (1f - 0.5f * resistance.MinResistance),
+                CorrosiveDamage = CorrosiveDamage * (1f - resistance.Corrosive),
                 TrueDamage = TrueDamage,
                 ShieldDamage = ShieldDamage,
                 EnergyDrain = EnergyDrain,
@@ -198,6 +198,15 @@ namespace Combat.Collision
             HeatDamage = 0;
             CorrosiveDamage = 0;
             TrueDamage = 0;
+        }
+
+        public void ConvertAllDamageToTrue()
+        {
+            TrueDamage += KineticDamage + EnergyDamage + HeatDamage + CorrosiveDamage;
+            KineticDamage = 0;
+            EnergyDamage = 0;
+            HeatDamage = 0;
+            CorrosiveDamage = 0;
         }
 
         public void Append(in Impact second)

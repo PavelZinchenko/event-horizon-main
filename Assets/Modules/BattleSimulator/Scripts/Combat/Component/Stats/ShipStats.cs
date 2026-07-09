@@ -2,9 +2,11 @@
 using Combat.Component.Mods;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
+using Combat.Component.Ship;
 using Combat.Unit;
 using Combat.Unit.HitPoints;
 using Constructor;
+using System.Linq;
 
 namespace Combat.Component.Stats
 {
@@ -23,6 +25,7 @@ namespace Combat.Component.Stats
                 EnergyAbsorption = stats.EnergyAbsorptionPercentage,
                 Heat = stats.ThermalResistancePercentage,
                 Kinetic = stats.KineticResistancePercentage,
+                Corrosive = stats.CorrosiveResistancePercentage,
                 ShieldCorrosive = stats.ShieldCorrosiveResistancePercentage
             };
 
@@ -75,8 +78,20 @@ namespace Combat.Component.Stats
 
         public void ApplyDamage(Impact impact, IUnit self, IUnit source)
         {
-			if (!IsAlive)
+            if (!IsAlive)
 				return;
+
+            if (IsFourDimensional(source))
+                impact.ConvertAllDamageToTrue();
+
+            if (IsFourDimensional(self))
+            {
+                impact.KineticDamage = 0f;
+                impact.EnergyDamage = 0f;
+                impact.HeatDamage = 0f;
+                impact.CorrosiveDamage = 0f;
+                impact.ShieldDamage = 0f;
+            }
 
             var resistance = Resistance;
             
@@ -162,5 +177,17 @@ namespace Combat.Component.Stats
         private readonly IResourcePoints _energyPoints;
         private readonly Resistance _resistance;
         private readonly Modifications<Resistance> _modifications = new Modifications<Resistance>();
+
+        private static bool IsFourDimensional(IUnit unit)
+        {
+            var ship = unit.GetOwnerShip();
+            if (ship == null)
+                return false;
+
+            if (ship.Specification?.Stats?.ShipModel?.Features?.IsFourDimensional == true)
+                return true;
+
+            return ship.Systems?.All?.OfType<Combat.Component.Systems.Devices.DimensionalAscensionDevice>().Any(device => device.IsDimensionShifted) == true;
+        }
     }
 }

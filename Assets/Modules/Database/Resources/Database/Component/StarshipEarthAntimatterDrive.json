@@ -2,7 +2,7 @@
   "ItemType": 1,
   "Id": 309,
   "Name": "反物质引擎",
-  "Description": "竖置1×2高性能引擎，推进与转向参数均为10；高级舰船可并联安装多个。",
+  "Description": "竖置1×2高性能引擎，推进与转向参数均为20；高级舰船可并联安装多个。",
   "ContentSource": 1,
   "DisplayCategory": 4,
   "Availability": 1,

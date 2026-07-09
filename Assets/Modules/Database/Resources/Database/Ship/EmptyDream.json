@@ -47,6 +47,7 @@
     "VelocityBonus": 5.0,
     "TurnRateBonus": 5.0,
     "ArmorBonus": 5.0,
-    "ShieldBonus": 5.0
+    "ShieldBonus": 5.0,
+    "IsFourDimensional": true
   }
 }

@@ -29,6 +29,9 @@ namespace Combat.Factory
         {
             var stats = deviceData.Device;
 
+            if (deviceData.ComponentId == 311)
+                return new DimensionalAscensionDevice(ship, stats, deviceData.KeyBinding >= 0 ? deviceData.KeyBinding : 0);
+
             SystemBase device;
             ConditionType soundEffectCondition = ConditionType.OnActivate;
 

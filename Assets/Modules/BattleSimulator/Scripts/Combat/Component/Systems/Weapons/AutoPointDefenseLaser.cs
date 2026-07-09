@@ -31,9 +31,23 @@ namespace Combat.Component.Systems.Weapons
         protected override void OnUpdatePhysics(float elapsedTime)
         {
             var target = FindTarget();
+            if (!IsTargetInsideWeaponRange(target))
+                target = null;
             SetTarget(target);
 
-            if (target.IsActive() && HasActiveBullet)
+            if (!target.IsActive())
+            {
+                if (HasActiveBullet)
+                {
+                    _activeBullet.Vanish();
+                    TimeFromLastUse = 0;
+                    InvokeTriggers(ConditionType.OnDeactivate);
+                }
+
+                return;
+            }
+
+            if (HasActiveBullet)
             {
                 Aim();
                 if (TryConsumeEnergy(_energyConsumption * elapsedTime))
@@ -43,7 +57,7 @@ namespace Combat.Component.Systems.Weapons
                     return;
                 }
             }
-            else if (target.IsActive() && !HasActiveBullet && TryConsumeEnergy(ActivationCost))
+            else if (TryConsumeEnergy(ActivationCost))
             {
                 Aim();
                 _activeBullet = CreateBullet();
@@ -54,6 +68,7 @@ namespace Combat.Component.Systems.Weapons
 
             if (HasActiveBullet)
             {
+                _activeBullet.Vanish();
                 TimeFromLastUse = 0;
                 InvokeTriggers(ConditionType.OnDeactivate);
             }
@@ -100,6 +115,16 @@ namespace Combat.Component.Systems.Weapons
                 unitTargetingPlatform.ActiveUnitTarget = target;
             else
                 Platform.ActiveTarget = target as IShip;
+        }
+
+        private bool IsTargetInsideWeaponRange(IUnit target)
+        {
+            if (!target.IsActive())
+                return false;
+
+            var position = Platform.Body.WorldPosition();
+            var range = Info.Range;
+            return Vector2.SqrMagnitude(target.Body.Position - position) <= range * range;
         }
 
         private bool HasActiveBullet => _activeBullet.IsActive();

@@ -18,6 +18,7 @@ namespace GameDatabase.Serializable
 		public float EnergyResistance;
 		public float KineticResistance;
 		public float HeatResistance;
+		public float CorrosiveResistance;
 		public float ShipWeightBonus;
 		public float EquipmentWeightBonus;
 		public float VelocityBonus;
@@ -29,6 +30,7 @@ namespace GameDatabase.Serializable
 		public float DroneAttackBonus;
 		public float DroneDefenseBonus;
 		public bool Regeneration;
+		public bool IsFourDimensional;
 		public int[] BuiltinDevices;
 	}
 }

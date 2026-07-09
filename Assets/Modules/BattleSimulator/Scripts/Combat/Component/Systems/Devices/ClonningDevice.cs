@@ -148,10 +148,12 @@ namespace Combat.Component.Systems.Devices
             public float EnergyResistance => _stats.EnergyResistance * _defense;
             public float KineticResistance => _stats.KineticResistance * _defense;
             public float ThermalResistance => _stats.ThermalResistance * _defense;
+            public float CorrosiveResistance => _stats.CorrosiveResistance * _defense;
             public float EnergyAbsorptionPercentage => _stats.EnergyAbsorptionPercentage;
             public float KineticResistancePercentage => _stats.KineticResistancePercentage;
             public float EnergyResistancePercentage => _stats.EnergyResistancePercentage;
             public float ThermalResistancePercentage => _stats.ThermalResistancePercentage;
+            public float CorrosiveResistancePercentage => _stats.CorrosiveResistancePercentage;
             public bool Autopilot => false;
             public float DroneBuildSpeed => _stats.DroneBuildSpeed;
             public float DroneBuildTime => _stats.DroneBuildTime;

@@ -40,8 +40,7 @@ public class LoadingScreen : MonoBehaviour
 
 	private void OnLocalizationChanged(string language)
 	{
-		_shipNameText.text = AppConfig.alternativeTitle ? 
-            _localization.GetString("$Credits_Title_Alternative") : _localization.GetString("$Credits_Title");
+		_shipNameText.text = "边界工作室";
 		_loadingText.text = _localization.GetString("$Loading");
 	}
 
@@ -72,21 +71,33 @@ public class LoadingScreen : MonoBehaviour
     {
 		_canvas.enabled = true;
 
-        if (_firstTime)
+        _background.gameObject.SetActive(true);
+        _background.color = Color.white;
+        _shipIcon.gameObject.SetActive(false);
+        _shipNameText.text = "边界工作室";
+        _shipNameText.color = Color.black;
+        _loadingText.color = Color.black;
+
+        if (_studioLogoSprite == null)
         {
-            _shipIcon.gameObject.SetActive(false);
-            _background.gameObject.SetActive(false);
-            _firstTime = false;
+            var texture = Resources.Load<Texture2D>(StudioLogoPath);
+            if (texture != null)
+                _studioLogoSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
+        }
+
+        if (_studioLogoSprite != null)
+        {
+            _shipSprite.gameObject.SetActive(true);
+            _shipSprite.sprite = _studioLogoSprite;
+            _shipSprite.color = Color.black;
+            _shipSprite.preserveAspect = true;
         }
         else
         {
-            _shipIcon.gameObject.SetActive(true);
-            _background.gameObject.SetActive(true);
-            var ship = ShipBuildQuery.PlayerShips(_database).CommonAndRare().Random(_random).Ship;
-            _shipNameText.text = _localization.GetString(ship.Name);
-            _shipIcon.sprite = _resourceLocator.GetSprite(ship.IconImage) ?? _resourceLocator.GetSprite(ship.ModelImage);
-            _shipSprite.sprite = _resourceLocator.GetSprite(ship.ModelImage);
+            _shipSprite.gameObject.SetActive(false);
         }
+
+        _firstTime = false;
     }
 
     private void Hide()
@@ -98,4 +109,7 @@ public class LoadingScreen : MonoBehaviour
     private readonly System.Random _random = new System.Random();
     private SceneManagerStateChangedSignal _sceneManagerStateChangedSignal;
     private LocalizationChangedSignal _localizationChangedSignal;
+    private Sprite _studioLogoSprite;
+
+    private const string StudioLogoPath = "Textures/BoundaryStudio/logo";
 }
