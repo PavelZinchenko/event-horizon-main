@@ -24,6 +24,8 @@ namespace Domain.Quests
         void SetQuestCompleted(int questId, int starId);
         void SetQuestFailed(int questId, int starId);
         void SetQuestCancelled(int questId, int starId);
+        int GetFactionRelations(int starId);
+        void SetFactionRelations(int starId, int value);
     }
 
     public readonly struct QuestProgress

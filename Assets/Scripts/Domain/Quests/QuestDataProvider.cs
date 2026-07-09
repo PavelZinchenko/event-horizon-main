@@ -71,6 +71,8 @@ namespace Domain.Quests
         public void SetQuestFailed(int questId, int starId) => 
             _session.Quests.SetQuestCompleted(questId, starId, false, _gameTime.TotalPlayTime);
         public void SetQuestCancelled(int questId, int starId) => _session.Quests.CancelQuest(questId, starId);
+        public int GetFactionRelations(int starId) => _session.Quests.GetFactionRelations(starId);
+        public void SetFactionRelations(int starId, int value) => _session.Quests.SetFactionRelations(starId, value);
 
         public int GenerateSeed(QuestModel quest, int starId)
         {

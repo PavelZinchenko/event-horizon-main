@@ -2,8 +2,8 @@
   "ItemType": 11,
   "Id": 297,
   "Type": 1,
-  "EnergyRechargeRate": -8.0,
+  "EnergyRechargeRate": -2.0,
   "Weight": 45.0,
-  "EnginePower": 80.0,
-  "TurnRate": 80.0
+  "EnginePower": 10.0,
+  "TurnRate": 10.0
 }

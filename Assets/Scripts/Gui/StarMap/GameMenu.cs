@@ -11,6 +11,7 @@ using System.Linq;
 using GameDatabase;
 using Combat.Component.Unit.Classification;
 using Services.Localization;
+using Session;
 
 namespace Gui.StarMap
 {
@@ -23,6 +24,8 @@ namespace Gui.StarMap
         [Inject] private readonly IMessenger _messenger;
         [Inject] private readonly IDatabase _database;
         [Inject] private readonly ILocalization _localization;
+        [Inject] private readonly ISessionData _session;
+        [Inject] private readonly GameModel.RegionMap _regionMap;
 
         public AnimatedWindow InformationPanel;
         public AnimatedWindow CargoHoldPanel;
@@ -191,11 +194,28 @@ namespace Gui.StarMap
             title.color = new Color(0.3f, 0.8f, 1f);
             foreach (var faction in _database.FactionList.OrderBy(item => item.Id.Value))
             {
-                var allied = faction.Id.Value >= 21;
+                var reputation = GetFactionReputation(faction);
+                var state = reputation > 25 ? "友好" : reputation < -25 ? "敌对" : "中立";
                 var row = NewRelationText(rect,
-                    $"{faction.Id.Value:00}  {_localization.GetString(faction.Name)}    {(allied ? "友好" : "敌对")}", 18);
-                row.color = allied ? new Color(0.3f, 0.8f, 1f) : new Color(1f, 0.35f, 0.25f);
+                    $"{faction.Id.Value:00}  {_localization.GetString(faction.Name)}    {reputation:+0;-0;0}  {state}", 18);
+                row.color = reputation > 25
+                    ? new Color(0.3f, 0.8f, 1f)
+                    : reputation < -25
+                        ? new Color(1f, 0.35f, 0.25f)
+                        : new Color(0.85f, 0.85f, 0.65f);
             }
+        }
+
+        private int GetFactionReputation(GameDatabase.DataModel.Faction faction)
+        {
+            foreach (var regionId in _session.Regions.Regions)
+            {
+                var region = _regionMap[regionId];
+                if (region != GameModel.Region.Empty && region.Faction.Id == faction.Id)
+                    return _session.Quests.GetFactionRelations(region.HomeStar);
+            }
+
+            return faction.Id.Value >= GameModel.Region.StarshipEarthFactionId ? 50 : -50;
         }
 
         private static Text NewRelationText(Transform parent, string value, int size)

@@ -8,6 +8,7 @@ using Services.Audio;
 using CommonComponents.Signals;
 using Zenject;
 using GameServices.Audio;
+using Session;
 
 namespace GameStateMachine.States
 {
@@ -24,6 +25,7 @@ namespace GameStateMachine.States
             IMusicPlayer musicPlayer,
             DatabaseMusicPlaylist playlist,
             GameServices.Economy.LootGenerator lootGenerator,
+            ISessionData session,
             
             ExitSignal exitSignal,
             CombatRetreatSignal combatRetreatSignal,
@@ -38,6 +40,7 @@ namespace GameStateMachine.States
             _musicPlayer = musicPlayer;
             _onCompleteAction = onCompleteAction;
             _playlist = playlist;
+            _session = session;
 
             _exitSignal = exitSignal;
             _exitSignal.Event += OnCombatCompleted;
@@ -54,8 +57,17 @@ namespace GameStateMachine.States
 			container.Bind<ICombatModel>().FromInstance(_combatModel);
 		}
 
-		protected override void OnLoad()
+        protected override void OnLoad()
         {
+            var region = _motherShip.CurrentStar.Region;
+            if (region != GameModel.Region.Empty && !region.IsCaptured)
+            {
+                var relation = _session.Quests.GetFactionRelations(region.HomeStar) - 1;
+                _session.Quests.SetFactionRelations(region.HomeStar, relation);
+                Combat.Component.Unit.Classification.CombatRelations.SetRelation(
+                    0, region.Faction.Id.Value, relation > 25);
+            }
+
             _playlist.SetCustomCombatPlaylist(_combatModel.Rules.CustomSoundtrack);
             _musicPlayer.Play(AudioTrackType.Combat);
         }
@@ -111,6 +123,7 @@ namespace GameStateMachine.States
         private readonly CombatCompletedSignal.Trigger _combatCompletedTrigger;
         private readonly PlayerSkills _playerSkills;
         private readonly DatabaseMusicPlaylist _playlist;
+        private readonly ISessionData _session;
 
         public class Factory : Factory<ICombatModel, Action<ICombatModel>, CombatState> { }
     }

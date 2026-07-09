@@ -23,6 +23,7 @@ namespace GameModel
                 _faction = _database.GetFaction(new GameDatabase.Model.ItemId<GameDatabase.DataModel.Faction>(StarshipEarthFactionId));
                 Size = RegionLayout.RegionFourthSize * 2 - 1;
                 _session.Regions.SetRegionFactionId(Id, _faction.Id);
+                EnsureInitialRelations(_faction);
             }
 			else if (Id == 0 || isPirateBase)
 			{
@@ -110,14 +111,16 @@ namespace GameModel
 			    if (_faction != null)
 			        return _faction;
 
-				if (_session.Regions.TryGetRegionFactionId(Id, out var factionId))
+                if (_session.Regions.TryGetRegionFactionId(Id, out var factionId))
                 {
 					_faction = _database.GetFaction(factionId);
+					EnsureInitialRelations(_faction);
 					return _faction;
 				}
 
 			    _faction = _database.FactionList.WithStarbases(HomeStarLevel).RandomElement(new System.Random(HomeStar + _session.Game.Seed));
 			    _session.Regions.SetRegionFactionId(Id, _faction.Id);
+			    EnsureInitialRelations(_faction);
 
                 return _faction;
 			}
@@ -126,9 +129,19 @@ namespace GameModel
 				if (value == _faction) return;
                 _faction = value;
 				_session.Regions.SetRegionFactionId(Id, value.Id);
+				EnsureInitialRelations(value);
 				_baseCapturedTrigger.Fire(this);
             }
-		}
+        }
+
+        private void EnsureInitialRelations(Faction faction)
+        {
+            if (faction == null || faction == Faction.Empty || _session.Quests.HasFactionRelations(HomeStar))
+                return;
+
+            var value = faction.Id.Value >= StarshipEarthFactionId ? 50 : -50;
+            _session.Quests.SetFactionRelations(HomeStar, value);
+        }
 
 		public int HomeStar
 		{

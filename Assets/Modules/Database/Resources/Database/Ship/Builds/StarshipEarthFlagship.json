@@ -45,7 +45,22 @@
     },
     {
       "ComponentId": 309,
+      "X": 5,
+      "Y": 14
+    },
+    {
+      "ComponentId": 309,
       "X": 7,
+      "Y": 14
+    },
+    {
+      "ComponentId": 309,
+      "X": 9,
+      "Y": 14
+    },
+    {
+      "ComponentId": 309,
+      "X": 11,
       "Y": 14
     }
   ]

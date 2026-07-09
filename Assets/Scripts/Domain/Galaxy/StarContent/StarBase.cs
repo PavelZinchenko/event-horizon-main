@@ -73,7 +73,7 @@ namespace Galaxy.StarContent
 
             var model = CreateCombatModel(starId);
             var region = _starData.GetRegion(starId);
-            _session.Quests.SetFactionRelations(region.HomeStar, -100);
+            _session.Quests.SetFactionRelations(region.HomeStar, -50);
             CombatRelations.SetRelation(0, region.Faction.Id.Value, false);
             _startBattleTrigger.Fire(model, result => OnCombatCompleted(starId, result));
         }

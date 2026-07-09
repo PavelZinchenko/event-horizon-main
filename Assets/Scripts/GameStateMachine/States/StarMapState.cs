@@ -224,7 +224,7 @@ namespace GameStateMachine.States
 		    if (guardian.IsAggressive)
 		    {
                 _guardianDialogOpen = true;
-                const string message = "侦测到星域守军。\n\n确定：尝试潜入\n取消：立即进入战斗\n\n友好势力潜入必定成功，敌对势力存在失败概率。";
+                const string message = "侦测到星域守军。\n\n确定：尝试潜入\n取消：逃离该星域\n\n友好势力潜入必定成功，中立势力成功率较高，敌对势力成功率较低。";
                 LoadStateAdditive(StateFactory.CreateDialogState(
                     global::Gui.Common.WindowNames.ConfirmationDialog,
                     new WindowArgs(message),
@@ -241,17 +241,16 @@ namespace GameStateMachine.States
             if (code != WindowExitCode.Ok)
             {
                 _guardianDialogOpen = false;
-                StartInfiltrationCombat(starId);
+                LoadStateAdditive(StateFactory.CreateRetreatState());
                 return;
             }
 
             var region = _starData.GetRegion(starId);
             var relation = _session.Quests.GetFactionRelations(region.HomeStar);
             var factionId = region.Faction.Id.Value;
-            var strategicallyFriendly = factionId >= GameModel.Region.StarshipEarthFactionId
-                ? relation >= 0
-                : relation > 0;
-            var success = strategicallyFriendly || UnityEngine.Random.value <= 0.45f;
+            var strategicallyFriendly = relation > 25;
+            var infiltrationChance = relation < -25 ? 0.15f : 0.55f;
+            var success = strategicallyFriendly || UnityEngine.Random.value <= infiltrationChance;
             _guardianDialogOpen = false;
             if (success)
             {
@@ -308,7 +307,7 @@ namespace GameStateMachine.States
             var faction = _starData.GetRegion(starId).Faction;
             if (faction != null && faction.Id.Value > 0)
                 CombatRelations.SetRelation(0, faction.Id.Value,
-                    faction.Id.Value >= GameModel.Region.StarshipEarthFactionId && relation >= 0);
+                    relation > 25);
         }
 
         public void SetFactionStarbasePower(int starId, int value, bool additive)

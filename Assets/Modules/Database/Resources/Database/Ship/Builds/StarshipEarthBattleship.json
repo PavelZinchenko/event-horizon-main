@@ -33,7 +33,17 @@
     },
     {
       "ComponentId": 309,
+      "X": 4,
+      "Y": 12
+    },
+    {
+      "ComponentId": 309,
       "X": 6,
+      "Y": 12
+    },
+    {
+      "ComponentId": 309,
+      "X": 8,
       "Y": 12
     }
   ]

@@ -234,6 +234,9 @@ namespace Domain.Quests
 
         private void CompleteQuest(Quest quest)
 	    {
+            var completedFactionMission =
+                quest.Status == QuestStatus.Completed &&
+                quest.Model.StartCondition == StartCondition.FactionMission;
 			_quests.Remove(quest);
 	        _recentlyUpdatedQuests.Remove(quest);
 
@@ -243,6 +246,13 @@ namespace Domain.Quests
 	        {
                 case QuestStatus.Completed:
                     _context.QuestDataStorage.SetQuestCompleted(quest.Id, quest.StarId);
+                    if (completedFactionMission)
+                    {
+                        var region = _context.StarMapDataProvider.GetStarData(quest.StarId).Region;
+                        var homeStar = region.HomeStarId;
+                        var relation = _context.QuestDataStorage.GetFactionRelations(homeStar);
+                        _context.QuestDataStorage.SetFactionRelations(homeStar, relation + 5);
+                    }
                     break;
 	            case QuestStatus.Failed:
                     _context.QuestDataStorage.SetQuestFailed(quest.Id, quest.StarId);
@@ -259,6 +269,8 @@ namespace Domain.Quests
             }
 
             ProcessQuestEvent(SimpleEventData.Timer);
+            if (completedFactionMission)
+                CreateFactionMission(quest.StarId, _context.GameDataProvider.TotalPlayTime);
             _context.EventProvider.FireQuestsUpdatedEvent();
         }
 
@@ -291,10 +303,7 @@ namespace Domain.Quests
             if (data.Type == QuestEventType.FactionMissionAccepted)
 	        {
 	            var eventData = (StarEventData)data;
-	            var seed = _context.GameDataProvider.GameSeed + eventData.StarId + _context.QuestDataStorage.TotalQuestCount() +
-                    _context.StarMapDataProvider.GetStarData(eventData.StarId).Region.Relations;
-                _factionQuests.UpdateQuests(eventData.StarId, seed, time, _context);
-                Add(_factionQuests.CreateRandomWeighted(_factory, seed));
+                CreateFactionMission(eventData.StarId, time);
                 return;
 	        }
 
@@ -315,6 +324,14 @@ namespace Domain.Quests
 
 			ProcessQuestEvent(data);
 	    }
+
+        private void CreateFactionMission(int starId, long time)
+        {
+            var seed = _context.GameDataProvider.GameSeed + starId + _context.QuestDataStorage.TotalQuestCount() +
+                _context.StarMapDataProvider.GetStarData(starId).Region.Relations;
+            _factionQuests.UpdateQuests(starId, seed, time, _context);
+            Add(_factionQuests.CreateRandomWeighted(_factory, seed));
+        }
 
         private void ProcessQuestEvent(IQuestEventData data)
 	    {

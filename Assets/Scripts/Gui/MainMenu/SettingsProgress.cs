@@ -85,8 +85,29 @@ namespace Gui.MainMenu
             accountButton?.SetActive(false);
             cloudButton?.SetActive(false);
 
-            if (controller != null && buttons != null && buttons.Find("DeleteProgress") == null)
+            var deleteProgress = buttons != null ? buttons.Find("DeleteProgress") : null;
+            if (controller != null && buttons != null && deleteProgress == null)
+            {
                 controller.CreateDeleteProgressNavigationButton(buttons, cloudButton, modButton);
+                deleteProgress = buttons.Find("DeleteProgress");
+            }
+
+            if (deleteProgress != null)
+            {
+                deleteProgress.SetSiblingIndex(modButton != null
+                    ? modButton.transform.GetSiblingIndex() + 1
+                    : buttons.childCount - 1);
+                if (deleteProgress.Find("ProhibitedIcon") is RectTransform icon)
+                {
+                    icon.anchorMin = new Vector2(0.18f, 0.18f);
+                    icon.anchorMax = new Vector2(0.82f, 0.82f);
+                    icon.offsetMin = Vector2.zero;
+                    icon.offsetMax = Vector2.zero;
+                    icon.localPosition = Vector3.zero;
+                    icon.localRotation = Quaternion.identity;
+                    icon.localScale = Vector3.one;
+                }
+            }
 
             GameObject.Find("Canvas/Settings/Panels/LoadSave")?.SetActive(false);
             if (controller != null && controller._deleteProgressPanel != null)

@@ -27,6 +27,7 @@ namespace GameStateMachine.States
             CombatModelBuilder.Factory combatModelBuilderFactory,
             IMusicPlayer musicPlayer,
             DatabaseMusicPlaylist playlist,
+            GameServices.Player.PlayerFleet playerFleet,
 			ExitSignal exitSignal)
             : base(stateMachine, stateFactory)
         {
@@ -36,6 +37,7 @@ namespace GameStateMachine.States
             _musicPlayer = musicPlayer;
 			_combatModelBuilderFactory = combatModelBuilderFactory;
             _playlist = playlist;
+            _playerFleet = playerFleet;
 
             _exitSignal = exitSignal;
             _exitSignal.Event += OnCombatCompleted;
@@ -108,7 +110,9 @@ namespace GameStateMachine.States
 			else
 			{
 				var ships = GetUnlockedShips();
-				firstFleet = new TestFleet(_database, ships.RandomUniqueElements(12, random).OrderBy(item => random.Next()), _settings.EasyMode ? 0 : 100);
+				firstFleet = _settings.UsePlayerFleet && _session.IsGameStarted()
+                    ? Model.Factories.Fleet.Player(_playerFleet, _database)
+                    : new TestFleet(_database, ships.RandomUniqueElements(12, random).OrderBy(item => random.Next()), _settings.EasyMode ? 0 : 100);
 				secondFleet = new TestFleet(_database, ships.RandomUniqueElements(12, random).OrderBy(item => random.Next()), _settings.EasyMode ? 0 : 100);
 			}
 
@@ -151,6 +155,7 @@ namespace GameStateMachine.States
         private readonly IMusicPlayer _musicPlayer;
 		private readonly CombatModelBuilder.Factory _combatModelBuilderFactory;
         private readonly DatabaseMusicPlaylist _playlist;
+        private readonly GameServices.Player.PlayerFleet _playerFleet;
 
         public class Factory : Factory<Settings, QuickCombatState> { }
 
@@ -158,6 +163,7 @@ namespace GameStateMachine.States
 		{
 			public string TestShipId;
 			public bool EasyMode;
+            public bool UsePlayerFleet;
 		}
     }
 }

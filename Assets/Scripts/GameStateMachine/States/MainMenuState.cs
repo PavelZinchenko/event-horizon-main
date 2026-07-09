@@ -82,9 +82,9 @@ namespace GameStateMachine.States
                 LoadState(StateFactory.CreateStarMapState());
         }
 
-        private void OnStartQuickBattle(bool easyMode, string testShipId)
+        private void OnStartQuickBattle(QuickCombatState.Settings settings)
         {
-            LoadState(StateFactory.CreateQuickCombatState(new () { EasyMode = easyMode, TestShipId = testShipId }));
+            LoadState(StateFactory.CreateQuickCombatState(settings));
         }
 
         private void OnConfigureControls()
@@ -149,7 +149,7 @@ namespace GameStateMachine.States
     }
 
     public class StartGameSignal : SmartWeakSignal<StartGameSignal> {}
-    public class StartQuickBattleSignal : SmartWeakSignal<StartQuickBattleSignal, bool, string> {}
+    public class StartQuickBattleSignal : SmartWeakSignal<StartQuickBattleSignal, QuickCombatState.Settings> {}
     public class ConfigureControlsSignal : SmartWeakSignal<ConfigureControlsSignal> {}
 	public class ReloadUiSignal : SmartWeakSignal<ReloadUiSignal> {}
 	public class OpenGameSettingsSignal : SmartWeakSignal<OpenGameSettingsSignal> {}

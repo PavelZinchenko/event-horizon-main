@@ -17,6 +17,7 @@ using UnityEngine.UI;
 using Zenject;
 using Services.Resources;
 using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace Gui.MainMenu
 {
@@ -73,6 +74,7 @@ namespace Gui.MainMenu
         public void StartBattle()
         {
             _guiManager.OpenWindow(Common.WindowNames.SelectDifficultyDialog, OnDialogClosed);
+            StartCoroutine(ConfigureQuickBattleFleetToggle());
         }
 
 		public void OpenSettings()
@@ -132,16 +134,95 @@ namespace Gui.MainMenu
         private void OnDialogClosed(WindowExitCode result)
         {
             _gameSettings.EditorText = _inputField.text;
+            var useMyFleet = _useMyFleetToggle != null && _useMyFleetToggle.isOn;
 
             switch (result)
             {
                 case WindowExitCode.Option1:
-                    _startBattleTrigger.Fire(true, _inputField.text);
+                    _startBattleTrigger.Fire(new QuickCombatState.Settings
+                    {
+                        EasyMode = true,
+                        UsePlayerFleet = useMyFleet,
+                        TestShipId = _inputField.text
+                    });
                     break;
                 case WindowExitCode.Option2:
-                    _startBattleTrigger.Fire(false, _inputField.text);
+                    _startBattleTrigger.Fire(new QuickCombatState.Settings
+                    {
+                        EasyMode = false,
+                        UsePlayerFleet = useMyFleet,
+                        TestShipId = _inputField.text
+                    });
                     break;
             }
+        }
+
+        private IEnumerator ConfigureQuickBattleFleetToggle()
+        {
+            yield return null;
+            var dialog = GameObject.Find(Common.WindowNames.SelectDifficultyDialog);
+            if (dialog == null)
+                yield break;
+
+            var existing = dialog.transform.Find("UseMyFleet");
+            if (existing != null)
+            {
+                _useMyFleetToggle = existing.GetComponent<Toggle>();
+                yield break;
+            }
+
+            var row = new GameObject("UseMyFleet", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Toggle), typeof(LayoutElement));
+            row.layer = dialog.layer;
+            row.transform.SetParent(dialog.transform, false);
+            row.transform.SetAsLastSibling();
+            var rowRect = row.GetComponent<RectTransform>();
+            rowRect.sizeDelta = new Vector2(0f, 62f);
+            var rowLayout = row.GetComponent<LayoutElement>();
+            rowLayout.minHeight = 62f;
+            rowLayout.preferredHeight = 62f;
+            row.GetComponent<Image>().color = new Color(0.025f, 0.13f, 0.19f, 0.96f);
+
+            var checkBackground = new GameObject("CheckBackground", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            checkBackground.layer = row.layer;
+            var checkRect = checkBackground.GetComponent<RectTransform>();
+            checkRect.SetParent(rowRect, false);
+            checkRect.anchorMin = checkRect.anchorMax = new Vector2(0f, 0.5f);
+            checkRect.pivot = new Vector2(0f, 0.5f);
+            checkRect.anchoredPosition = new Vector2(18f, 0f);
+            checkRect.sizeDelta = new Vector2(36f, 36f);
+            checkBackground.GetComponent<Image>().color = new Color(0.05f, 0.3f, 0.4f, 1f);
+
+            var checkmark = new GameObject("Checkmark", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            checkmark.layer = row.layer;
+            var markRect = checkmark.GetComponent<RectTransform>();
+            markRect.SetParent(checkRect, false);
+            markRect.anchorMin = new Vector2(0.2f, 0.2f);
+            markRect.anchorMax = new Vector2(0.8f, 0.8f);
+            markRect.offsetMin = Vector2.zero;
+            markRect.offsetMax = Vector2.zero;
+            checkmark.GetComponent<Image>().color = new Color(0.3f, 0.95f, 1f, 1f);
+
+            var label = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            label.layer = row.layer;
+            var labelRect = label.GetComponent<RectTransform>();
+            labelRect.SetParent(rowRect, false);
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.offsetMin = new Vector2(70f, 0f);
+            labelRect.offsetMax = new Vector2(-16f, 0f);
+            var labelText = label.GetComponent<Text>();
+            labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            labelText.fontSize = 24;
+            labelText.alignment = TextAnchor.MiddleLeft;
+            labelText.color = Color.white;
+            labelText.text = "使用我的舰队";
+
+            _useMyFleetToggle = row.GetComponent<Toggle>();
+            _useMyFleetToggle.targetGraphic = row.GetComponent<Image>();
+            _useMyFleetToggle.graphic = checkmark.GetComponent<Image>();
+            _useMyFleetToggle.isOn = false;
+            _useMyFleetToggle.interactable = _gameSession.IsGameStarted();
+            labelText.color = _useMyFleetToggle.interactable ? Color.white : new Color(0.55f, 0.58f, 0.62f);
         }
 
         private void OnDatabaseLoaded()
@@ -265,5 +346,6 @@ namespace Gui.MainMenu
         private OpenEhopediaSignal.Trigger _openEchopediaTrigger;
         private ISessionData _gameSession;
         private IGuiManager _guiManager;
+        private Toggle _useMyFleetToggle;
     }
 }

@@ -99,8 +99,9 @@ namespace ViewModel
             SetJointControlsVisible(true);
 		    CaptureDescription.gameObject.SetActive(true);
 		    MilitaryPowerPanel.gameObject.SetActive(true);
-		    ReputationPanel.gameObject.SetActive(!region.Faction.NoMissions);
-		    ReputationText.text = reputation > 0 ? "+" + reputation : reputation.ToString();
+		    ReputationPanel.gameObject.SetActive(region.Faction != Faction.Empty);
+            var relationState = reputation > 25 ? "友好" : reputation < -25 ? "敌对" : "中立";
+		    ReputationText.text = $"{reputation:+0;-0;0}  {relationState}";
 		    PowerText.text = region.BaseDefensePower + "%";
 
             MissionButton.gameObject.SetActive(MissionsAvailable);

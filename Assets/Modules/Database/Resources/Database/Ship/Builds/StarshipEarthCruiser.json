@@ -6,7 +6,7 @@
   "AvailableForEnemy": true,
   "Components": [
     {
-      "ComponentId": 301,
+      "ComponentId": 901,
       "X": 5,
       "Y": 0
     },
@@ -27,7 +27,17 @@
     },
     {
       "ComponentId": 309,
+      "X": 4,
+      "Y": 10
+    },
+    {
+      "ComponentId": 309,
       "X": 6,
+      "Y": 10
+    },
+    {
+      "ComponentId": 309,
+      "X": 8,
       "Y": 10
     }
   ]
