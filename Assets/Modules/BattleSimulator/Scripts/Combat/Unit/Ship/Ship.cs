@@ -5,6 +5,8 @@ using Combat.Component.Features;
 using Combat.Component.Body;
 using Combat.Component.Collider;
 using Combat.Component.Controls;
+using Combat.Component.Bullet;
+using Combat.Component.Controller;
 using Combat.Component.Engine;
 using Combat.Component.Physics;
 using Combat.Component.Stats;
@@ -13,6 +15,7 @@ using Combat.Component.Unit;
 using Combat.Component.View;
 using Combat.Component.Platform;
 using Combat.Component.Ship.Effects;
+using Combat.Component.Ship.Effects.Special;
 using Combat.Component.Unit.Classification;
 using Combat.Component.Triggers;
 using Combat.Unit;
@@ -44,6 +47,8 @@ namespace Combat.Component.Ship
             AddResource(Stats = stats);
             _state = UnitState.Active;
             Specification = spec;
+            if (spec.Info.Id.Value == 166)
+                _effects.TryAdd(new WaterdropHaloEffect());
         }
 
         public override UnitState State => _state;
@@ -73,7 +78,8 @@ namespace Combat.Component.Ship
             if (Specification.Info.Id.Value != 166 || target == null || !target.IsActive())
                 return false;
 
-            if (target.Type.Class == UnitClass.EnergyBolt && target.Type.Owner != this)
+            if (target is Combat.Component.Bullet.Bullet laser && target.Type.Owner != this &&
+                (laser.Controller is BeamController || laser.Controller is MovingBeamController))
             {
                 // Calculate a surface normal from the actual contact point and
                 // redirect the intact beam.  Changing Owner before it travels
@@ -83,18 +89,64 @@ namespace Combat.Component.Ship
                     normal = -target.Body.WorldVelocity().normalized;
 
                 var velocity = target.Body.WorldVelocity();
-                var reflected = Vector2.Reflect(velocity, normal);
+                var incomingDirection = velocity.sqrMagnitude > 0.001f
+                    ? velocity.normalized
+                    : target.Type.Owner != null && target.Type.Owner.IsActive()
+                        ? (collisionData.Position - target.Type.Owner.Body.WorldPosition()).normalized
+                        : -normal;
+                var reflectedDirection = Vector2.Reflect(incomingDirection, normal).normalized;
+                var reflectedRotation = RotationHelpers.Angle(reflectedDirection);
+
+                // Detach the beam controller from its original weapon and
+                // relocate its origin to the reflection point.  The live beam
+                // now travels and deals damage as a projectile owned by 水滴.
+                laser.Controller?.Dispose();
+                laser.Controller = null;
+                if (target.Body.Parent != null)
+                {
+                    target.Body.Move(target.Body.WorldPositionToLocal(collisionData.Position + reflectedDirection * 0.05f));
+                    target.Body.Turn(target.Body.WorldRotationToLocal(reflectedRotation));
+                }
+                else
+                {
+                    target.Body.Move(collisionData.Position + reflectedDirection * 0.05f);
+                    target.Body.Turn(reflectedRotation);
+                }
                 target.Type.Owner = this;
                 target.Type.FactionId = Type.FactionId;
-                target.Body.ApplyAcceleration(reflected - velocity);
+                if (laser.Collider != null)
+                {
+                    laser.Collider.Unit = laser;
+                    laser.Collider.Source = this;
+                }
+                var reflectedSpeed = Mathf.Max(velocity.magnitude, 180f);
+                target.Body.ApplyAcceleration(reflectedDirection * reflectedSpeed - target.Body.Velocity);
+                WaterdropHaloEffect.ShowReflection(collisionData.Position, reflectedDirection, Body.WorldScale());
                 return true;
             }
 
-            if (target is Asteroid || CombatRelations.AreEnemies(Type, target.Type))
+            if (target is Asteroid)
+            {
+                var impact = new Impact();
+                impact.Effects |= CollisionEffect.Destroy;
+                target.OnCollision(impact, this, collisionData);
+                return true;
+            }
+
+            if (CombatRelations.AreEnemies(Type, target.Type))
             {
                 var impact = new Impact();
                 impact.AddDamage(GameDatabase.Enums.DamageType.Impact, 10000f);
                 target.OnCollision(impact, this, collisionData);
+
+                // Penetration no longer makes 水滴 collision-invulnerable.
+                // It receives a compact ramming hit while retaining its
+                // straight-through trajectory.
+                var selfImpact = new Impact();
+                var collisionDamage = Mathf.Max(1f,
+                    collisionData.RelativeVelocity.magnitude * Mathf.Max(1f, target.Body.Weight) * 0.1f);
+                selfImpact.AddDamage(GameDatabase.Enums.DamageType.Impact, collisionDamage);
+                OnCollision(selfImpact, target, collisionData);
                 return true;
             }
 
@@ -118,6 +170,25 @@ namespace Combat.Component.Ship
 
             Features.UpdatePhysics(elapsedTime, Collider);
             UpdateSystems(elapsedTime);
+            ApplyVelocityLimit();
+        }
+
+        private void ApplyVelocityLimit()
+        {
+            var limit = Type.Side == UnitSide.Player
+                ? PlayerPrefs.GetInt(EngineThrottleKey, 0) != 0
+                    ? Mathf.Clamp(PlayerPrefs.GetFloat(EngineThrottleLimitKey, 40f), 20f, 120f)
+                    : float.PositiveInfinity
+                : 40f;
+            var velocity = Body.Velocity;
+            if (velocity.sqrMagnitude <= limit * limit)
+                return;
+
+            var limited = velocity.normalized * limit;
+            if (Body is RigidBodyAdapter rigidBody)
+                rigidBody.Velocity = limited;
+            else
+                Body.ApplyAcceleration(limited - velocity);
         }
 
         protected override void OnUpdateView(float elapsedTime)
@@ -216,6 +287,8 @@ namespace Combat.Component.Ship
         }
 
         private UnitState _state;
+        private const string EngineThrottleKey = "Preview14.EngineThrottle";
+        private const string EngineThrottleLimitKey = "Preview18.EngineThrottleLimit";
         private readonly ShipSystems _systems;
         private readonly ShipEffects _effects;
     }

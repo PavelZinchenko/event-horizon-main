@@ -17,7 +17,6 @@ using GameModel.Quests;
 using UniRx;
 using Combat.Component.Unit.Classification;
 using GameServices.Gui;
-using Gui.Dialogs;
 
 namespace GameStateMachine.States
 {
@@ -102,20 +101,6 @@ namespace GameStateMachine.States
         protected override void OnActivate()
 		{
             _musicPlayer.Play(AudioTrackType.Game);
-
-            if (_pendingInfiltrationChoice != InfiltrationChoice.None)
-            {
-                var choice = _pendingInfiltrationChoice;
-                var starId = _pendingInfiltrationStarId;
-                _pendingInfiltrationChoice = InfiltrationChoice.None;
-                _pendingInfiltrationStarId = -1;
-
-                if (choice == InfiltrationChoice.Withdraw)
-                    WithdrawFromPreviousStar(starId);
-                else if (choice == InfiltrationChoice.Attack)
-                    StartInfiltrationCombat(starId);
-                return;
-            }
 
             if (!string.IsNullOrEmpty(DesiredWindowOnActivate))
             {
@@ -230,123 +215,18 @@ namespace GameStateMachine.States
 		{
 			if (Condition != GameStateCondition.Active)
 				return false;
-            if (_guardianDialogOpen)
-                return true;
 
 			var star = _session.StarMap.PlayerPosition;
 			var guardian = _starData.GetOccupant(star);
 
             if (guardian.IsAggressive)
 		    {
-                _guardianDialogOpen = true;
-                _infiltrationChoice = InfiltrationChoice.None;
-                const string message = "侦测到星域守军。\n\n潜入：尝试潜入\n进攻：直接进攻\n撤离：返回来到此星系前的星系\n\n友好势力潜入必定成功，中立势力成功率较高，敌对势力成功率较低。";
-                LoadStateAdditive(StateFactory.CreateDialogState(
-                    global::Gui.Common.WindowNames.ConfirmationDialog,
-                    // Keep the retreat action on the original second dialog button.  Some
-                    // platform prefabs cache that button's action, while the dynamically
-                    // added third button is only reliable for the ordinary attack action.
-                    new WindowArgs(new ConfirmationDialogOptions(
-                        message, "潜入", "撤离", "进攻",
-                        WindowExitCode.Ok, WindowExitCode.Option1, WindowExitCode.Cancel,
-                        () => _infiltrationChoice = InfiltrationChoice.Infiltrate,
-                        () => _infiltrationChoice = InfiltrationChoice.Withdraw,
-                        () => _infiltrationChoice = InfiltrationChoice.Attack)),
-                    code => ResolveInfiltration(star, code)));
+                UnityEngine.Debug.Log("Attacked by occupants");
+                guardian.Attack();
                 return true;
             }
 
             return false;
-        }
-
-        private void ResolveInfiltration(int starId, WindowExitCode code)
-        {
-            var guardian = _starData.GetOccupant(starId);
-            var choice = _infiltrationChoice;
-            _infiltrationChoice = InfiltrationChoice.None;
-
-            // Use the explicit button callback as the source of truth.  The
-            // platform-specific confirmation prefab can report its legacy
-            // exit code regardless of which dynamically arranged button was
-            // tapped; that previously turned 撤离 into 进攻.
-            if (choice == InfiltrationChoice.Withdraw)
-            {
-                _guardianDialogOpen = false;
-                QueueInfiltrationAction(starId, choice);
-                return;
-            }
-
-            if (choice == InfiltrationChoice.Attack)
-            {
-                _guardianDialogOpen = false;
-                QueueInfiltrationAction(starId, choice);
-                return;
-            }
-
-            if (choice != InfiltrationChoice.Infiltrate)
-            {
-                _guardianDialogOpen = false;
-                return;
-            }
-
-            var region = _starData.GetRegion(starId);
-            var relation = _session.Quests.GetFactionRelations(region.HomeStar);
-            var factionId = region.Faction.Id.Value;
-            var strategicallyFriendly = relation > 25;
-            var infiltrationChance = relation < -25 ? 0.15f : 0.55f;
-            var success = strategicallyFriendly || UnityEngine.Random.value <= infiltrationChance;
-            _guardianDialogOpen = false;
-            if (success)
-            {
-                guardian.Infiltrate();
-                _guiHelper.ShowMessage("潜入成功");
-            }
-            else
-            {
-                _guiHelper.ShowMessage("潜入失败，守军已发现舰队");
-                QueueInfiltrationAction(starId, InfiltrationChoice.Attack);
-            }
-        }
-
-        private void WithdrawFromPreviousStar(int currentStarId)
-        {
-            if (_session.StarMap.LastPlayerPosition < 0 ||
-                _session.StarMap.LastPlayerPosition == currentStarId)
-            {
-                _guiHelper.ShowMessage("无法继续撤离");
-                return;
-            }
-
-            // Use the same animated retreat state as a normal star-map
-            // withdrawal.  Directly assigning PlayerPosition skipped the
-            // flight transition and could leave the guardian encounter active.
-            OnRetreat();
-        }
-
-        private void StartInfiltrationCombat(int starId)
-        {
-            var model = _starData.GetOccupant(starId).CreateCombatModel();
-            LoadState(StateFactory.CreateCombatState(model, result =>
-            {
-                var victory = result.IsVictory();
-                if (victory)
-                    _starData.GetOccupant(starId).Suppress(true);
-                _questEventTrigger.Fire(new CombatEventData(victory));
-            }));
-        }
-
-        private void QueueInfiltrationAction(int starId, InfiltrationChoice choice)
-        {
-            _pendingInfiltrationStarId = starId;
-            _pendingInfiltrationChoice = choice;
-        }
-
-        private enum InfiltrationChoice
-        {
-            None,
-            Infiltrate,
-            Withdraw,
-            Attack,
         }
 
 		private void UpdateQuests()
@@ -465,10 +345,6 @@ namespace GameStateMachine.States
         private readonly OpenShipyardSignal _openShipyardSignal;
         private readonly OpenEhopediaSignal _openEhopediaSignal;
         private readonly GuiHelper _guiHelper;
-        private bool _guardianDialogOpen;
-        private InfiltrationChoice _infiltrationChoice;
-        private InfiltrationChoice _pendingInfiltrationChoice;
-        private int _pendingInfiltrationStarId = -1;
         private readonly ExitSignal _exitSignal;
         private readonly EscapeKeyPressedSignal _escapeKeyPressedSignal;
         private readonly PlayerPositionChangedSignal _playerPositionChangedSignal;

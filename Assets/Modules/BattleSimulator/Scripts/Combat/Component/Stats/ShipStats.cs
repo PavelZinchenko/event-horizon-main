@@ -81,10 +81,10 @@ namespace Combat.Component.Stats
             if (!IsAlive)
 				return;
 
-            if (IsFourDimensional(source))
+            if (IsFourDimensionalUnit(source))
                 impact.ConvertAllDamageToTrue();
 
-            if (IsFourDimensional(self))
+            if (IsFourDimensionalUnit(self))
             {
                 impact.KineticDamage = 0f;
                 impact.EnergyDamage = 0f;
@@ -178,7 +178,7 @@ namespace Combat.Component.Stats
         private readonly Resistance _resistance;
         private readonly Modifications<Resistance> _modifications = new Modifications<Resistance>();
 
-        private static bool IsFourDimensional(IUnit unit)
+        public static bool IsFourDimensionalUnit(IUnit unit)
         {
             var ship = unit.GetOwnerShip();
             if (ship == null)

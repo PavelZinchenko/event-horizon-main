@@ -162,6 +162,7 @@ SpriteAtlas:
     - cace53abf4889654da2d21927d0fcf82: 21300000
     - 971f24ab94069344584fc2a94a34af6d: 21300000
     - 1c1e26bb4fbf1884e847ec4c1a468603: 21300000
+    - f00997bb9afebb24ebe5d1a33ebfaa23: 21300000
     - 4dcfc2cbe0eb3a042b3eb4630b579de3: 21300000
     - 374105dbb563c8648ae9d861dd38d4f6: 21300000
     - c415e8fb267cecb4aa9b7a2a5789cfb2: 21300000
@@ -307,6 +308,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: cace53abf4889654da2d21927d0fcf82, type: 3}
   - {fileID: 21300000, guid: 971f24ab94069344584fc2a94a34af6d, type: 3}
   - {fileID: 21300000, guid: 1c1e26bb4fbf1884e847ec4c1a468603, type: 3}
+  - {fileID: 21300000, guid: f00997bb9afebb24ebe5d1a33ebfaa23, type: 3}
   - {fileID: 21300000, guid: 4dcfc2cbe0eb3a042b3eb4630b579de3, type: 3}
   - {fileID: 21300000, guid: 374105dbb563c8648ae9d861dd38d4f6, type: 3}
   - {fileID: 21300000, guid: c415e8fb267cecb4aa9b7a2a5789cfb2, type: 3}
@@ -451,6 +453,7 @@ SpriteAtlas:
   - zygote3
   - shield_generator3
   - energy_wave2
+  - sophon_guidance_system
   - jammer
   - repairbot1
   - torpedo3

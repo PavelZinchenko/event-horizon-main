@@ -5,6 +5,7 @@ using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Scene;
 using Combat.Unit;
+using Combat.Component.Stats;
 using UnityEngine;
 using System.Linq;
 
@@ -78,6 +79,8 @@ namespace Combat.Component.Systems.Devices
                             continue;
 
                         if (unit is IShip ship && ship.Systems.All.OfType<WarpDrive>().Any(drive => drive.IsWarping))
+                            break;
+                        if (ShipStats.IsFourDimensionalUnit(unit))
                             break;
                         if (unit.Type.Class == UnitClass.Ship || unit.Type.Class == UnitClass.Drone)
                             slowed.Add(unit);

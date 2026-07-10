@@ -129,14 +129,6 @@ namespace Galaxy.StarContent
             return builder.Build();
 		}
 
-        public void Infiltrate(int starId)
-        {
-            if (!IsExists(starId))
-                return;
-            _session.StarMap.SetEnemy(starId, IStarMapData.Occupant.Passive);
-            _starContentChangedTrigger.Fire(starId);
-        }
-
 		public struct Facade
 		{
 			public Facade(Occupants occupants, int starId)
@@ -151,7 +143,6 @@ namespace Galaxy.StarContent
 		    public IFleet CreateFleet() { return _occupants.CreateFleet(_starId); }
 		    public ICombatModel CreateCombatModel() { return _occupants.CreateCombatModel(_starId); }
             public void Attack() { _occupants.Attack(_starId); }
-            public void Infiltrate() { _occupants.Infiltrate(_starId); }
 		    public void Suppress(bool destroy) { _occupants.Suppress(_starId, destroy); }
 
 

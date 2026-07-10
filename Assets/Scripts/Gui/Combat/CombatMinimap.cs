@@ -28,6 +28,8 @@ namespace Gui.Combat
         private RectTransform _root;
         private Text _expandLabel;
         private Toggle _engineThrottleToggle;
+        private Slider _speedLimitSlider;
+        private Text _speedLimitText;
         private bool _expanded;
 
         public void Initialize(IScene scene)
@@ -39,6 +41,8 @@ namespace Gui.Combat
             root.pivot = new Vector2(1f, 0.5f);
             root.anchoredPosition = new Vector2(-115f, 55f);
             root.sizeDelta = new Vector2(190f, 196f);
+
+            CreateSpeedLimitSlider(root);
 
             var panel = NewImage("Map", root, new Color(0.01f, 0.04f, 0.05f, 0.82f));
             panel.raycastTarget = false;
@@ -132,6 +136,85 @@ namespace Gui.Combat
             expand.GetComponent<Image>().color = new Color(0.08f, 0.32f, 0.42f, 0.98f);
             expand.GetComponent<Button>().onClick.AddListener(ToggleExpanded);
             _expandLabel = AddText(expandRect, "↗", 18);
+        }
+
+        private void CreateSpeedLimitSlider(RectTransform root)
+        {
+            var row = new GameObject("EngineSpeedLimit", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            var rowRect = row.GetComponent<RectTransform>();
+            rowRect.SetParent(root, false);
+            rowRect.anchorMin = new Vector2(0f, 1f);
+            rowRect.anchorMax = new Vector2(1f, 1f);
+            rowRect.pivot = new Vector2(0.5f, 1f);
+            rowRect.anchoredPosition = new Vector2(0f, 28f);
+            rowRect.sizeDelta = new Vector2(0f, 28f);
+            row.GetComponent<Image>().color = new Color(0.04f, 0.12f, 0.16f, 0.96f);
+
+            var caption = AddText(rowRect, "限速", 12);
+            caption.alignment = TextAnchor.MiddleLeft;
+            caption.rectTransform.anchorMax = new Vector2(0.2f, 1f);
+            caption.rectTransform.offsetMin = new Vector2(5f, 0f);
+
+            var value = AddText(rowRect, string.Empty, 12);
+            value.alignment = TextAnchor.MiddleRight;
+            value.rectTransform.anchorMin = new Vector2(0.78f, 0f);
+            value.rectTransform.offsetMax = new Vector2(-5f, 0f);
+            _speedLimitText = value;
+
+            var sliderObject = new GameObject("Slider", typeof(RectTransform), typeof(Slider));
+            var sliderRect = sliderObject.GetComponent<RectTransform>();
+            sliderRect.SetParent(rowRect, false);
+            sliderRect.anchorMin = new Vector2(0.2f, 0.18f);
+            sliderRect.anchorMax = new Vector2(0.78f, 0.82f);
+            sliderRect.offsetMin = sliderRect.offsetMax = Vector2.zero;
+
+            var background = NewImage("Background", sliderRect, new Color(0.12f, 0.28f, 0.34f, 1f));
+            background.rectTransform.anchorMin = new Vector2(0f, 0.4f);
+            background.rectTransform.anchorMax = new Vector2(1f, 0.6f);
+            background.rectTransform.offsetMin = background.rectTransform.offsetMax = Vector2.zero;
+
+            var fillArea = new GameObject("Fill Area", typeof(RectTransform));
+            var fillAreaRect = fillArea.GetComponent<RectTransform>();
+            fillAreaRect.SetParent(sliderRect, false);
+            fillAreaRect.anchorMin = new Vector2(0f, 0.35f);
+            fillAreaRect.anchorMax = new Vector2(1f, 0.65f);
+            fillAreaRect.offsetMin = new Vector2(5f, 0f);
+            fillAreaRect.offsetMax = new Vector2(-5f, 0f);
+            var fill = NewImage("Fill", fillAreaRect, new Color(0.15f, 0.9f, 1f, 1f));
+            fill.rectTransform.anchorMin = Vector2.zero;
+            fill.rectTransform.anchorMax = Vector2.one;
+            fill.rectTransform.offsetMin = fill.rectTransform.offsetMax = Vector2.zero;
+
+            var handleArea = new GameObject("Handle Slide Area", typeof(RectTransform));
+            var handleAreaRect = handleArea.GetComponent<RectTransform>();
+            handleAreaRect.SetParent(sliderRect, false);
+            handleAreaRect.anchorMin = Vector2.zero;
+            handleAreaRect.anchorMax = Vector2.one;
+            handleAreaRect.offsetMin = new Vector2(7f, 0f);
+            handleAreaRect.offsetMax = new Vector2(-7f, 0f);
+            var handle = NewImage("Handle", handleAreaRect, new Color(0.8f, 1f, 1f, 1f));
+            handle.rectTransform.sizeDelta = new Vector2(14f, 18f);
+
+            _speedLimitSlider = sliderObject.GetComponent<Slider>();
+            _speedLimitSlider.minValue = 20f;
+            _speedLimitSlider.maxValue = 120f;
+            _speedLimitSlider.wholeNumbers = true;
+            _speedLimitSlider.fillRect = fill.rectTransform;
+            _speedLimitSlider.handleRect = handle.rectTransform;
+            _speedLimitSlider.targetGraphic = handle;
+            _speedLimitSlider.value = ThreeBodySkillState.EngineThrottleLimit;
+            UpdateSpeedLimitText(_speedLimitSlider.value);
+            _speedLimitSlider.onValueChanged.AddListener(speed =>
+            {
+                ThreeBodySkillState.SetEngineThrottleLimit(speed);
+                UpdateSpeedLimitText(speed);
+            });
+        }
+
+        private void UpdateSpeedLimitText(float speed)
+        {
+            if (_speedLimitText != null)
+                _speedLimitText.text = Mathf.RoundToInt(speed).ToString();
         }
 
         private void ToggleExpanded()
