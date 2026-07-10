@@ -47,12 +47,22 @@ public class LoadingScreen : MonoBehaviour
 
 	private void OnSceneManagerStateChanged(State state)
 	{
-		_active = state == State.Loading;
+		if (!_startupSplashComplete && state == State.Loading && !_startupSplashRunning)
+			StartCoroutine(ShowStartupSplash());
+		else if (!_startupSplashRunning)
+			Hide();
+	}
 
-		if (_active && _firstTime)
-			Show();
-		else if (!_coroutineRunning)
-			StartCoroutine(UpdateVisibility(_delay));
+	private IEnumerator ShowStartupSplash()
+	{
+		_startupSplashRunning = true;
+		Show();
+		// This canvas appears after Unity's native splash.  Keep it visible for
+		// exactly one startup presentation and never reuse it for later loads.
+		yield return new WaitForSecondsRealtime(3f);
+		_startupSplashComplete = true;
+		_startupSplashRunning = false;
+		Hide();
 	}
 
 	private IEnumerator UpdateVisibility(float delay)
@@ -108,6 +118,8 @@ public class LoadingScreen : MonoBehaviour
     }
 
     private bool _firstTime = true;
+    private bool _startupSplashRunning;
+    private bool _startupSplashComplete;
     private readonly System.Random _random = new System.Random();
     private SceneManagerStateChangedSignal _sceneManagerStateChangedSignal;
     private LocalizationChangedSignal _localizationChangedSignal;

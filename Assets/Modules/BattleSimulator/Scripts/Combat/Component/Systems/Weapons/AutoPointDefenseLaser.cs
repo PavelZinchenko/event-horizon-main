@@ -35,6 +35,17 @@ namespace Combat.Component.Systems.Weapons
                 target = null;
             SetTarget(target);
 
+            // Recreate the live beam immediately when a missile preempts a
+            // ship target. Some bound beam controllers retain their original
+            // target until destruction, which delayed missile interception.
+            if (target != _currentTarget && HasActiveBullet)
+            {
+                _activeBullet.Vanish();
+                TimeFromLastUse = 0f;
+                InvokeTriggers(ConditionType.OnDeactivate);
+            }
+            _currentTarget = target;
+
             if (!target.IsActive())
             {
                 if (HasActiveBullet)
@@ -94,7 +105,7 @@ namespace Combat.Component.Systems.Weapons
                     if (!unit.IsActive() || unit.Type.Class != UnitClass.Missile || !CombatRelations.AreEnemies(unit.Type, _owner.Type))
                         continue;
 
-                    var distance = Vector2.SqrMagnitude(unit.Body.Position - position);
+                    var distance = Vector2.SqrMagnitude(unit.Body.WorldPosition() - position);
                     if (distance > range * range || distance >= missileDistance)
                         continue;
 
@@ -124,7 +135,7 @@ namespace Combat.Component.Systems.Weapons
 
             var position = Platform.Body.WorldPosition();
             var range = Info.Range;
-            return Vector2.SqrMagnitude(target.Body.Position - position) <= range * range;
+            return Vector2.SqrMagnitude(target.Body.WorldPosition() - position) <= range * range;
         }
 
         private bool HasActiveBullet => _activeBullet.IsActive();
@@ -133,5 +144,6 @@ namespace Combat.Component.Systems.Weapons
         private readonly IShip _owner;
         private readonly float _energyConsumption;
         private IBullet _activeBullet;
+        private IUnit _currentTarget;
     }
 }

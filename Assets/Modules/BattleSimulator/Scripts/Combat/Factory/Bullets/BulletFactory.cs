@@ -69,7 +69,11 @@ namespace Combat.Factory
             var options = new Bullet.Options 
             {
                 CanBeDisarmed = _ammunition.Body.CanBeDisarmed, 
-                DetonateWhenDestroyed = _ammunition.Body.DetonateWhenDestroyed 
+                DetonateWhenDestroyed = _ammunition.Body.DetonateWhenDestroyed,
+                // Only ordinary laser beams are mirrored by 水滴.  Focused,
+                // point-defence, repair, tractor and other beam-like effects
+                // intentionally remain ordinary incoming damage.
+                ReflectableByWaterdrop = IsOrdinaryLaser(_ammunition.Id.Value)
             };
 
             var bullet = CreateUnit(body, view, bulletGameObject, options);
@@ -87,6 +91,23 @@ namespace Combat.Factory
 
             bullet.UpdatePhysics(0);
             return bullet;
+        }
+
+        private static bool IsOrdinaryLaser(int ammunitionId)
+        {
+            switch (ammunitionId)
+            {
+                case 2:   // legacy common laser beam
+                case 24:
+                case 26:
+                case 27:
+                case 28:
+                case 149: // heavy/common laser beam
+                case 158: // Starship Earth common laser
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         private bool CanSiphonHitpoints()
@@ -147,6 +168,9 @@ namespace Combat.Factory
                     collisionBehaviour.AddAction(new RestoreLifeAction(bullet.Lifetime, effect.Power, impactType));
                 }
             }
+
+            if (_ammunition.Id.Value == 163)
+                collisionBehaviour.AddAction(new KineticPenetrationAction(0.8f));
 
             if (impactType == BulletImpactType.HitFirstTarget)
             {

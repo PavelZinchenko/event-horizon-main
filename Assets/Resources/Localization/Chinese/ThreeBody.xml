@@ -65,5 +65,7 @@
     <string name="StarshipEarthAntimatterDrive">反物质引擎</string>
     <string name="StarshipEarthAntimatterDriveDescription">竖置1×2高性能引擎，推进与转向参数均为10；高级舰船可并联安装多个。</string>
     <string name="StarshipEarthInterceptorLaser">小型拦截激光</string>
-    <string name="StarshipEarthInterceptorLaserDescription">一格L槽点防御激光，自动优先拦截导弹；射程50，每秒造成150热能伤害。</string>
+    <string name="StarshipEarthInterceptorLaserDescription">一格L槽点防御激光，自动优先拦截导弹；射程50，每秒造成10热能伤害。</string>
+    <string name="SophonSimPointDefense">SIM弹头近防炮</string>
+    <string name="SophonSimPointDefenseDescription">一格L槽自主近防炮，以每秒10发的射速发射SIM实弹，单发造成5点物理伤害并穿透目标80%的动能抗性；360°旋转并始终优先拦截射程内导弹。</string>
 </resources>

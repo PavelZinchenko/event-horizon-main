@@ -116,6 +116,7 @@ SpriteAtlas:
     - 655f2d65eb770a140b591396db37775e: 21300000
     - d511f2c560ef0e64d937835b6a04ac76: 21300000
     - c7aae4e5a3f84de48a1fea1f0d349961: 21300000
+    - f5c2d716c6bd9d44584e7cc5ffa7ef32: 21300000
     - a6b2d75610dc44f4b8e3d51ecaa14cf8: 21300000
     - 3b87727622b07ab4ba03b3a06bbe3337: 21300000
     - df83f586a9536df44b6811825a480df4: 21300000
@@ -262,6 +263,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 655f2d65eb770a140b591396db37775e, type: 3}
   - {fileID: 21300000, guid: d511f2c560ef0e64d937835b6a04ac76, type: 3}
   - {fileID: 21300000, guid: c7aae4e5a3f84de48a1fea1f0d349961, type: 3}
+  - {fileID: 21300000, guid: f5c2d716c6bd9d44584e7cc5ffa7ef32, type: 3}
   - {fileID: 21300000, guid: a6b2d75610dc44f4b8e3d51ecaa14cf8, type: 3}
   - {fileID: 21300000, guid: 3b87727622b07ab4ba03b3a06bbe3337, type: 3}
   - {fileID: 21300000, guid: df83f586a9536df44b6811825a480df4, type: 3}
@@ -407,6 +409,7 @@ SpriteAtlas:
   - inertial1
   - missile1
   - drone_power2
+  - sophon_sim_point_defense
   - armor31
   - reactor1
   - DroneRange

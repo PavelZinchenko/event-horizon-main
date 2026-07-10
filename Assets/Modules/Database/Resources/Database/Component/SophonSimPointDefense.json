@@ -1,0 +1,19 @@
+{
+  "ItemType": 1,
+  "Id": 314,
+  "Name": "$SophonSimPointDefense",
+  "Description": "$SophonSimPointDefenseDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 1,
+  "Availability": 1,
+  "ComponentStatsId": 302,
+  "Faction": 22,
+  "Level": 85,
+  "Icon": "sophon_sim_point_defense",
+  "Color": "#B9F5FF",
+  "Layout": "1",
+  "CellType": "4",
+  "WeaponId": 138,
+  "AmmunitionId": 163,
+  "WeaponSlotType": "L"
+}

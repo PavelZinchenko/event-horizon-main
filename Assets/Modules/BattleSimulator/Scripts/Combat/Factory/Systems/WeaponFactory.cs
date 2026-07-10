@@ -31,6 +31,8 @@ namespace Combat.Factory
                 // Point defence is autonomous.  It must not reserve an action button
                 // even if an old saved layout contains a key binding.
                 return CreateInterceptorLaser(stats, -1, bulletFactory, platform, owner);
+            if (weaponData.Weapon.Id.Value == 138)
+                return CreatePointDefenseCannon(stats, -1, bulletFactory, platform, owner);
             return Create(stats, weaponData.KeyBinding, bulletFactory, platform);
         }
 
@@ -136,6 +138,18 @@ namespace Combat.Factory
             if (effect != null)
                 weapon.AddTrigger(CreateFlashEffect(effect, bulletFactory, platform, ConditionType.OnActivate | ConditionType.OnRemainActive));
 
+            return weapon;
+        }
+
+        private IWeapon CreatePointDefenseCannon(WeaponStats weaponStats, int keyBinding,
+            IBulletFactory bulletFactory, IWeaponPlatform platform, IShip owner)
+        {
+            var weapon = new AutoPointDefenseCannon(platform, weaponStats, bulletFactory, keyBinding, _scene, owner);
+            if (weaponStats.ShotSound)
+                weapon.AddTrigger(new SoundEffect(_services.SoundPlayer, weaponStats.ShotSound, ConditionType.OnActivate));
+            var effect = CreateEffect(weaponStats, bulletFactory);
+            if (effect != null)
+                weapon.AddTrigger(CreateFlashEffect(effect, bulletFactory, platform));
             return weapon;
         }
 

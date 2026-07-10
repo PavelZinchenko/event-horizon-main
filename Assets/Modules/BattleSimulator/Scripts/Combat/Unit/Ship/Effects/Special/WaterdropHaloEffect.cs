@@ -22,66 +22,52 @@ namespace Combat.Component.Ship.Effects.Special
 
         public void UpdateView(IShip ship, float elapsedTime)
         {
-            _pulseTimer += elapsedTime;
-            if (ship.Body.WorldVelocity().sqrMagnitude > 0.25f)
+            EnsureAnimation();
+            if (_renderer == null)
+                return;
+
+            var moving = ship.Body.WorldVelocity().sqrMagnitude > 0.25f;
+            _renderer.enabled = moving;
+            if (!moving)
             {
-                while (_pulseTimer >= PulseInterval)
-                {
-                    _pulseTimer -= PulseInterval;
-                    SpawnRing();
-                    PlayChime(ship.Body.VisualWorldPosition());
-                }
+                _elapsed = 0f;
+                _lastFrame = -1;
+                return;
             }
-            else
+
+            _elapsed += elapsedTime;
+            var sequenceTime = Mathf.Repeat(_elapsed, SequenceDuration);
+            var frame = Mathf.Clamp(Mathf.FloorToInt(sequenceTime / SequenceDuration * _frames.Count), 0, _frames.Count - 1);
+            if (frame != _lastFrame)
             {
-                _pulseTimer = Mathf.Min(_pulseTimer, PulseInterval);
+                if (frame < _lastFrame || _lastFrame < 0)
+                    PlayChime(ship.Body.VisualWorldPosition());
+                _renderer.sprite = _frames[frame];
+                _lastFrame = frame;
             }
 
             var forward = RotationHelpers.Direction(ship.Body.VisualWorldRotation());
             var scale = ship.Body.WorldScale();
-            var tail = ship.Body.VisualWorldPosition() - forward * scale * 0.72f;
-            for (var i = _rings.Count - 1; i >= 0; i--)
-            {
-                var ring = _rings[i];
-                ring.Age += elapsedTime;
-                if (ring.Age >= RingLifetime)
-                {
-                    Object.Destroy(ring.Root);
-                    _rings.RemoveAt(i);
-                    continue;
-                }
-
-                var t = Mathf.Clamp01(ring.Age / RingLifetime);
-                var radius = Mathf.Lerp(scale * 0.04f, scale * 0.5f, Mathf.SmoothStep(0f, 1f, t));
-                var color = t < 0.5f
-                    ? Color.Lerp(new Color(0.15f, 0.65f, 1f), new Color(1f, 0.9f, 0.12f), t * 2f)
-                    : Color.Lerp(new Color(1f, 0.9f, 0.12f), new Color(1f, 0.08f, 0.02f), (t - 0.5f) * 2f);
-                color.a = 1f - Mathf.Pow(t, 3f);
-                ring.Line.startColor = ring.Line.endColor = color;
-                ring.Line.widthMultiplier = Mathf.Lerp(scale * 0.035f, scale * 0.012f, t);
-                for (var point = 0; point < RingSegments; point++)
-                {
-                    var angle = point * Mathf.PI * 2f / (RingSegments - 1);
-                    ring.Line.SetPosition(point, new Vector3(
-                        tail.x + Mathf.Cos(angle) * radius,
-                        tail.y + Mathf.Sin(angle) * radius,
-                        0f));
-                }
-            }
+            _root.transform.position = ship.Body.VisualWorldPosition() - forward * scale * 0.72f;
+            _root.transform.eulerAngles = new Vector3(0f, 0f, ship.Body.VisualWorldRotation());
+            // The source frames are 360 px at 100 PPU (3.6 world units).
+            // A scale of scale / 3.6 makes the largest ring approximately one
+            // waterdrop diameter, matching the supplied animation artwork.
+            _root.transform.localScale = Vector3.one * Mathf.Max(0.01f, scale / 3.6f);
         }
 
         public void Dispose()
         {
-            foreach (var ring in _rings)
-                if (ring.Root != null)
-                    Object.Destroy(ring.Root);
-            _rings.Clear();
+            if (_root != null)
+                Object.Destroy(_root);
+            foreach (var frame in _frames)
+                if (frame != null)
+                    Object.Destroy(frame);
+            _frames.Clear();
             if (_audioObject != null)
                 Object.Destroy(_audioObject);
             if (_chime != null)
                 Object.Destroy(_chime);
-            if (_material != null)
-                Object.Destroy(_material);
         }
 
         public static void ShowReflection(Vector2 origin, Vector2 direction, float scale)
@@ -101,19 +87,27 @@ namespace Combat.Component.Ship.Effects.Special
             fade.Line = line;
         }
 
-        private void SpawnRing()
+        private void EnsureAnimation()
         {
-            if (_material == null)
-                _material = new Material(Shader.Find("Sprites/Default"));
-            var root = new GameObject("WaterdropPropulsionHalo");
-            var line = root.AddComponent<LineRenderer>();
-            line.useWorldSpace = true;
-            line.loop = true;
-            line.positionCount = RingSegments;
-            line.numCornerVertices = 4;
-            line.material = _material;
-            line.sortingOrder = 45;
-            _rings.Add(new Ring(root, line));
+            if (_root != null)
+                return;
+
+            _root = new GameObject("WaterdropPropulsionHaloFrames");
+            _renderer = _root.AddComponent<SpriteRenderer>();
+            _renderer.sortingOrder = 45;
+            for (var i = 1; i <= FrameCount; i++)
+            {
+                var texture = Resources.Load<Texture2D>($"Textures/WaterdropHaloFrames/{i}");
+                if (texture == null)
+                    continue;
+                _frames.Add(Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f), 100f));
+            }
+
+            if (_frames.Count > 0)
+                _renderer.sprite = _frames[0];
+            else
+                _renderer.enabled = false;
         }
 
         private void PlayChime(Vector2 position)
@@ -148,14 +142,6 @@ namespace Combat.Component.Ship.Effects.Special
             return clip;
         }
 
-        private sealed class Ring
-        {
-            public Ring(GameObject root, LineRenderer line) { Root = root; Line = line; }
-            public readonly GameObject Root;
-            public readonly LineRenderer Line;
-            public float Age;
-        }
-
         private sealed class ReflectionFade : MonoBehaviour
         {
             public LineRenderer Line;
@@ -178,12 +164,13 @@ namespace Combat.Component.Ship.Effects.Special
             }
         }
 
-        private const int RingSegments = 49;
-        private const float PulseInterval = 0.4f;
-        private const float RingLifetime = 0.36f;
-        private readonly List<Ring> _rings = new();
-        private float _pulseTimer;
-        private Material _material;
+        private const int FrameCount = 29;
+        private const float SequenceDuration = 0.4f;
+        private readonly List<Sprite> _frames = new();
+        private GameObject _root;
+        private SpriteRenderer _renderer;
+        private float _elapsed;
+        private int _lastFrame = -1;
         private GameObject _audioObject;
         private AudioSource _audio;
         private AudioClip _chime;

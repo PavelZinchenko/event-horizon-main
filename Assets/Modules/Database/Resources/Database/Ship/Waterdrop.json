@@ -23,6 +23,11 @@
   "Features": {
     "ArmorBonus": 8.0,
     "VelocityBonus": 0.25,
-    "TurnRateBonus": 0.25
+    "TurnRateBonus": 0.25,
+    "ShipWeightBonus": 3.0,
+    "KineticResistance": 99.0,
+    "EnergyResistance": 4.0,
+    "HeatResistance": 4.0,
+    "CorrosiveResistance": 1.0
   }
 }

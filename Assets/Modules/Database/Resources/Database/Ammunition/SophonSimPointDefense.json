@@ -1,0 +1,32 @@
+{
+  "ItemType": 25,
+  "Id": 163,
+  "Body": {
+    "Size": 0.22,
+    "Velocity": 260.0,
+    "Range": 50.0,
+    "Weight": 0.08,
+    "Color": "#DDFBFF",
+    "BulletPrefab": 1,
+    "EnergyCost": 0.4,
+    "ParentVelocityEffect": 0.0
+  },
+  "Triggers": [
+    {
+      "Condition": 3,
+      "EffectType": 1,
+      "VisualEffect": 1,
+      "Color": "#C8FCFF",
+      "ColorMode": 1,
+      "Size": 0.35,
+      "Lifetime": 0.08
+    }
+  ],
+  "ImpactType": 0,
+  "Effects": [
+    {
+      "DamageType": 0,
+      "Power": 5.0
+    }
+  ]
+}

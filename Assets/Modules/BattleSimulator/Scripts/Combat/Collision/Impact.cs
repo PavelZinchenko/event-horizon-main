@@ -67,6 +67,7 @@ namespace Combat.Collision
         public float Repair;
         public float ShieldDamage;
         public float EnergyDrain;
+        public float KineticResistancePenetration;
         public bool IgnoresShield;
         public Impulse Impulse;
         public CollisionEffect Effects;
@@ -79,7 +80,7 @@ namespace Combat.Collision
         public float GetTotalDamage(in Resistance resistance)
         {
 			var damage =
-				resistance.ModifyKineticDamage(KineticDamage) +
+				Resistance.ModifyDamage(KineticDamage, Mathf.Max(0f, resistance.Kinetic - KineticResistancePenetration)) +
 				resistance.ModifyEnergyDamage(EnergyDamage) +
 				resistance.ModifyHeatDamage(HeatDamage) +
 				resistance.ModifyCorrosiveDamage(CorrosiveDamage) +
@@ -137,13 +138,14 @@ namespace Combat.Collision
         {
             return new Impact
             {
-                KineticDamage = KineticDamage * (1f - resistance.Kinetic),
+                KineticDamage = KineticDamage * (1f - Mathf.Max(0f, resistance.Kinetic - KineticResistancePenetration)),
                 EnergyDamage = EnergyDamage * (1f - resistance.Energy),
                 HeatDamage = HeatDamage * (1f - resistance.Heat),
                 CorrosiveDamage = CorrosiveDamage * (1f - resistance.Corrosive),
                 TrueDamage = TrueDamage,
                 ShieldDamage = ShieldDamage,
                 EnergyDrain = EnergyDrain,
+                KineticResistancePenetration = KineticResistancePenetration,
                 Impulse = Impulse,
                 Repair = Repair,
                 Effects = Effects
@@ -218,6 +220,7 @@ namespace Combat.Collision
             TrueDamage += second.TrueDamage;
             ShieldDamage += second.ShieldDamage;
             Repair += second.Repair;
+            KineticResistancePenetration = Mathf.Max(KineticResistancePenetration, second.KineticResistancePenetration);
             Effects |= second.Effects;
             Impulse = Impulse == null ? second.Impulse : Impulse.Append(second.Impulse);
         }

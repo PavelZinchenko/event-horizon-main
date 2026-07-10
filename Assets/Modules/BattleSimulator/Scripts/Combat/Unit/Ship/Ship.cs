@@ -11,6 +11,7 @@ using Combat.Component.Engine;
 using Combat.Component.Physics;
 using Combat.Component.Stats;
 using Combat.Component.Systems;
+using Combat.Component.Systems.Devices;
 using Combat.Component.Unit;
 using Combat.Component.View;
 using Combat.Component.Platform;
@@ -79,6 +80,7 @@ namespace Combat.Component.Ship
                 return false;
 
             if (target is Combat.Component.Bullet.Bullet laser && target.Type.Owner != this &&
+                laser.IsReflectableByWaterdrop &&
                 (laser.Controller is BeamController || laser.Controller is MovingBeamController))
             {
                 // Calculate a surface normal from the actual contact point and
@@ -122,6 +124,24 @@ namespace Combat.Component.Ship
                 var reflectedSpeed = Mathf.Max(velocity.magnitude, 180f);
                 target.Body.ApplyAcceleration(reflectedDirection * reflectedSpeed - target.Body.Velocity);
                 WaterdropHaloEffect.ShowReflection(collisionData.Position, reflectedDirection, Body.WorldScale());
+                return true;
+            }
+
+            if (target is Combat.Component.Bullet.Bullet projectile)
+            {
+                // Resolve the projectile as the attacking unit even when the
+                // physics callback reports the ship first.  Without this, a
+                // single-hit shot damaged 水滴 but never ran its own destroy
+                // action and appeared to pass straight through indefinitely.
+                var projectileImpact = new Impact();
+                var waterdropImpact = new Impact();
+                projectile.CollisionBehaviour?.Process(projectile, this, collisionData,
+                    ref projectileImpact, ref waterdropImpact);
+                projectile.OnCollision(projectileImpact, this, collisionData);
+                OnCollision(waterdropImpact, projectile, collisionData);
+                if (collisionData.IsNew && projectile.IsActive() &&
+                    projectile.Type.Class == UnitClass.EnergyBolt)
+                    projectile.Vanish();
                 return true;
             }
 
@@ -175,6 +195,10 @@ namespace Combat.Component.Ship
 
         private void ApplyVelocityLimit()
         {
+            foreach (var system in Systems.All)
+                if (system is WarpDrive warpDrive && warpDrive.IsWarping)
+                    return;
+
             var limit = Type.Side == UnitSide.Player
                 ? PlayerPrefs.GetInt(EngineThrottleKey, 0) != 0
                     ? Mathf.Clamp(PlayerPrefs.GetFloat(EngineThrottleLimitKey, 40f), 20f, 120f)

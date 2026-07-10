@@ -48,10 +48,10 @@ namespace Combat.Factory
 
         public IControllerFactory CreateCloneController(BehaviorTreeModel customAi)
         {
-            var aiModel = customAi ?? _database.CombatSettings.CloneAI;
-            if (aiModel != null)
-                return new BehaviorTreeController.Factory(aiModel, AiSettings.Default, _behaviorTreeBuilder);
-
+            // Clones need the dedicated controller: it inherits the mother's
+            // side/faction through ownership and actively reacquires hostile
+            // ships.  Imported ship-specific trees frequently assume a normal
+            // top-level ship and leave owned clone units idle.
             return new Clone.Factory(_scene);
         }
 

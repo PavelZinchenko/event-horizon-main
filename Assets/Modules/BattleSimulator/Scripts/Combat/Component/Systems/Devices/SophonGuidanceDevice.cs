@@ -1,4 +1,5 @@
 using Combat.Component.Engine;
+using Combat.Component.Body;
 using Combat.Component.Ship;
 using Combat.Component.Triggers;
 using Combat.Component.Unit.Classification;
@@ -85,7 +86,21 @@ namespace Combat.Component.Systems.Devices
             // bleeding speed or leaving the craft sliding sideways.
             var maximumSpeed = Mathf.Max(0f, _ship.Engine.MaxVelocity);
             var desiredVelocity = RotationHelpers.Direction(rotation) * maximumSpeed;
-            _ship.Body.ApplyAcceleration(desiredVelocity - _ship.Body.Velocity);
+            if (_ship.Body is RigidBodyAdapter rigidBody)
+            {
+                // A force-based correction could be delayed by the physics
+                // step (and by a very light body), leaving the visible nose
+                // pointing at the target while momentum continued sideways.
+                // Guidance is defined as an immediate course snap, so update
+                // the rigid body state atomically every physics frame.
+                rigidBody.Rotation = rotation;
+                rigidBody.AngularVelocity = 0f;
+                rigidBody.Velocity = desiredVelocity;
+            }
+            else
+            {
+                _ship.Body.ApplyAcceleration(desiredVelocity - _ship.Body.Velocity);
+            }
             _ship.Controls.Course = rotation;
             _ship.Controls.Throttle = 1f;
         }

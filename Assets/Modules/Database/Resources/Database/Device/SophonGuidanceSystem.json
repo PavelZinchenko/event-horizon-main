@@ -9,5 +9,5 @@
   "ActivationType": 1,
   "Color": "#B7E7FF",
   "Sound": "hit_01",
-  "ControlButtonIcon": "sophon_guidance_system"
+  "ControlButtonIcon": "controls_sophon_guidance"
 }
