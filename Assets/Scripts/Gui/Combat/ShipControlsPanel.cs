@@ -9,6 +9,7 @@ using Services.Resources;
 using UnityEngine;
 using Zenject;
 using Combat.Ai;
+using Combat.Component.Systems.Devices;
 
 namespace Gui.Combat
 {
@@ -82,6 +83,12 @@ namespace Gui.Combat
 
         public void ActivateSystem(int id)
         {
+            if (IsClickToggle(id))
+            {
+                _ship.Controls.Systems.SetState(id, !_ship.Controls.Systems[id]);
+                return;
+            }
+
             ActiveButtons++;
             if (_ship.IsActive())
                 _ship.Controls.Systems.SetState(id, true);
@@ -89,9 +96,18 @@ namespace Gui.Combat
 
         public void DeactivateSystem(int id)
         {
+            if (IsClickToggle(id))
+                return;
+
             ActiveButtons--;
             if (_ship.IsActive())
                 _ship.Controls.Systems.SetState(id, false);
+        }
+
+        private bool IsClickToggle(int id)
+        {
+            return _ship != null && _ship.IsActive() && id >= 0 && id < _ship.Systems.All.Count &&
+                   _ship.Systems.All[id] is DimensionalAscensionDevice;
         }
 
         public void ActivateDroneBays()

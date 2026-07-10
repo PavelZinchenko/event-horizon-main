@@ -6,6 +6,7 @@ using Combat.Scene;
 using Combat.Unit;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
+using System.Linq;
 using UnityEngine;
 
 namespace Combat.Component.Systems.Devices
@@ -67,7 +68,12 @@ namespace Combat.Component.Systems.Devices
                 InvokeTriggers(ConditionType.OnRemainActive);
             }
 
-            var target = _scene.LockedEnemyShip;
+            var target = _ship.Type.Side == UnitSide.Enemy
+                ? _scene.Ships.Items
+                    .Where(item => item.IsActive() && CombatRelations.AreEnemies(_ship.Type, item.Type))
+                    .OrderBy(item => Vector2.SqrMagnitude(item.Body.WorldPosition() - _ship.Body.WorldPosition()))
+                    .FirstOrDefault()
+                : _scene.LockedEnemyShip;
             if (!target.IsActive() || !CombatRelations.AreEnemies(_ship.Type, target.Type))
                 return;
 

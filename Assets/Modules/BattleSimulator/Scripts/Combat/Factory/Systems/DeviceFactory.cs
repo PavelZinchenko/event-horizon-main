@@ -4,6 +4,7 @@ using Combat.Component.Ship;
 using Combat.Component.Systems;
 using Combat.Component.Systems.Devices;
 using Combat.Component.Triggers;
+using Combat.Component.Unit.Classification;
 using Combat.Effects;
 using Combat.Scene;
 using Combat.Services;
@@ -33,7 +34,9 @@ namespace Combat.Factory
                 return new DimensionalAscensionDevice(ship, stats, deviceData.KeyBinding >= 0 ? deviceData.KeyBinding : 0);
 
             if (deviceData.ComponentId == 312)
-                return new SophonGuidanceDevice(ship, stats, deviceData.KeyBinding >= 0 ? deviceData.KeyBinding : 0, _scene);
+                return new SophonGuidanceDevice(ship, stats,
+                    ship.Type.Side == UnitSide.Enemy ? -1 : deviceData.KeyBinding >= 0 ? deviceData.KeyBinding : 0,
+                    _scene);
 
             SystemBase device;
             ConditionType soundEffectCondition = ConditionType.OnActivate;

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5cb2f01a5e8c5b2499007ec16c81145a
+guid: ce79864927964e741b8f0fd03b0f0853
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5868612593429392887
-    second: waterdrop_0
+      213: -3876095191063715799
+    second: sophon_sim_armor_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: waterdrop_0
+      name: sophon_sim_armor_0
       rect:
         serializedVersion: 2
-        x: 248
-        y: 471
-        width: 724
-        height: 312
+        x: 190
+        y: 176
+        width: 874
+        height: 902
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7fd2ebb7f00817150800000000000000
-      internalID: 5868612593429392887
+      spriteID: 9202c0dc5f7553ac0800000000000000
+      internalID: -3876095191063715799
       vertices: []
       indices: 
       edges: []
@@ -147,8 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      waterdrop_0: 5868612593429392887
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

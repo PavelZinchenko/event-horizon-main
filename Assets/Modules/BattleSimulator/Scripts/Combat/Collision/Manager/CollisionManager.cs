@@ -1,6 +1,8 @@
 ﻿using Combat.Component.Unit;
 using Combat.Unit;
 using Combat.Component.Unit.Classification;
+using Combat.Component.Ship;
+using Combat.Unit.Object;
 
 namespace Combat.Collision.Manager
 {
@@ -30,6 +32,13 @@ namespace Combat.Collision.Manager
                 return;
             if (CombatRelations.AreAllies(first.Type, second.Type) &&
                 !first.Type.CanHitAllies && !second.Type.CanHitAllies)
+                return;
+
+            // Waterdrop interactions have to be resolved before the incoming
+            // laser bullet processes its ordinary hit/destroy behaviour.
+            if (first is Ship firstShip && firstShip.TryHandleWaterdropCollision(second, collisionData))
+                return;
+            if (second is Ship secondShip && secondShip.TryHandleWaterdropCollision(first, collisionData))
                 return;
 
             var selfImpact = new Impact();

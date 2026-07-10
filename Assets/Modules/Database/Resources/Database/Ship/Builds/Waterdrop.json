@@ -14,22 +14,22 @@
     {
       "ComponentId": 313,
       "X": 3,
-      "Y": 2
+      "Y": 0
     },
     {
-      "ComponentId": 66,
-      "X": 1,
-      "Y": 3
+      "ComponentId": 67,
+      "X": 2,
+      "Y": 1
     },
     {
       "ComponentId": 303,
-      "X": 4,
-      "Y": 3
+      "X": 2,
+      "Y": 2
     },
     {
       "ComponentId": 304,
-      "X": 3,
-      "Y": 6
+      "X": 2,
+      "Y": 4
     }
   ]
 }

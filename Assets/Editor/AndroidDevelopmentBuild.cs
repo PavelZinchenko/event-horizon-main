@@ -10,8 +10,8 @@ public static class AndroidDevelopmentBuild
 {
     private const string PackageName = "com.threebody.EventHorizon";
     private const string ProductName = "三体视界";
-    private const string VersionName = "Preview 15";
-    private const int VersionCode = 112150;
+    private const string VersionName = "Preview 16";
+    private const int VersionCode = 112160;
 
     [MenuItem("Build/Android/Development APK")]
     public static void BuildFromMenu()
@@ -35,7 +35,7 @@ public static class AndroidDevelopmentBuild
 
         var outputDirectory = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Builds", "Android"));
         Directory.CreateDirectory(outputDirectory);
-        var outputPath = Path.Combine(outputDirectory, "ThreeBody-EventHorizon-Preview-15.apk");
+        var outputPath = Path.Combine(outputDirectory, "ThreeBody-EventHorizon-Preview-16.apk");
         BuildStreamingAssetBundles();
 
         var scenes = EditorBuildSettings.scenes
@@ -81,6 +81,7 @@ public static class AndroidDevelopmentBuild
         NormalizeShipSpriteScale("Assets/Sprites/Ships");
         NormalizeShipSpriteScale("Assets/Sprites/ShipIcons");
         NormalizeShipSpriteScale("Assets/Sprites/Starbases");
+        NormalizeShipSpriteScale("Assets/Resources/Textures/ThreeBody");
         NormalizeThreeBodyComponentSprites();
         var locator = Resources.Load<Services.Resources.ResourceLocator>("ResourceLocator");
         if (locator == null)

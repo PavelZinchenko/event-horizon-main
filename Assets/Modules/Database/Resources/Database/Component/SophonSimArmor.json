@@ -9,8 +9,8 @@
   "ComponentStatsId": 301,
   "Faction": 22,
   "Level": 85,
-  "Icon": "starship_earth_nanoblade_armor",
+  "Icon": "sophon_sim_armor",
   "Color": "#B9E7FF",
-  "Layout": "11",
+  "Layout": "1",
   "CellType": "1"
 }

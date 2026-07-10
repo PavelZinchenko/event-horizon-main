@@ -140,6 +140,7 @@ SpriteAtlas:
     - 11fc8758063b1044eb545f5f219cfa1d: 21300000
     - bea336b812855654792a35cc3de1e7b8: 21300000
     - 600b13092eedc094eb0ae8f8e627f87c: 21300000
+    - ce79864927964e741b8f0fd03b0f0853: 21300000
     - beec8b993ad760242b367fbb9e336898: 21300000
     - 926100a9a978f5f488fe24207c035483: 21300000
     - 9ebd61a9253a7cd4187ea6ae5264ba2a: 21300000
@@ -284,6 +285,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 11fc8758063b1044eb545f5f219cfa1d, type: 3}
   - {fileID: 21300000, guid: bea336b812855654792a35cc3de1e7b8, type: 3}
   - {fileID: 21300000, guid: 600b13092eedc094eb0ae8f8e627f87c, type: 3}
+  - {fileID: 21300000, guid: ce79864927964e741b8f0fd03b0f0853, type: 3}
   - {fileID: 21300000, guid: beec8b993ad760242b367fbb9e336898, type: 3}
   - {fileID: 21300000, guid: 926100a9a978f5f488fe24207c035483, type: 3}
   - {fileID: 21300000, guid: 9ebd61a9253a7cd4187ea6ae5264ba2a, type: 3}
@@ -427,6 +429,7 @@ SpriteAtlas:
   - armor12
   - armor41
   - armor42
+  - sophon_sim_armor
   - RepairBay
   - shock1
   - drone_replicator2

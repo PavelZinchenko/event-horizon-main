@@ -22,8 +22,8 @@ namespace Gui.MainMenu
         [Inject] private readonly ISessionData _session;
         [Inject] private readonly IGameDataManager _gameDataManager;
         [Inject] private readonly IDatabase _database;
-        [InjectOptional] private readonly OpenShipEditorSignal.Trigger _openShipEditorTrigger;
-        [InjectOptional] private readonly GuiHelper _guiHelper;
+        [Inject] private readonly OpenShipEditorSignal.Trigger _openShipEditorTrigger;
+        [Inject] private readonly GuiHelper _guiHelper;
 
         [Inject]
         private void Initialize(IMessenger messenger)

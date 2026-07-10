@@ -78,6 +78,16 @@ public class LoadingScreen : MonoBehaviour
         _shipNameText.color = Color.black;
         _loadingText.gameObject.SetActive(false);
 
+        var titleRect = _shipNameText.rectTransform;
+        titleRect.anchorMin = titleRect.anchorMax = new Vector2(0.5f, 0.5f);
+        titleRect.pivot = new Vector2(0f, 0.5f);
+        titleRect.anchoredPosition = new Vector2(130f, 0f);
+        titleRect.sizeDelta = new Vector2(500f, 100f);
+        _shipNameText.alignment = TextAnchor.MiddleLeft;
+        _shipNameText.fontSize = 48;
+        foreach (var effect in _shipNameText.GetComponents<BaseMeshEffect>())
+            effect.enabled = false;
+
         if (_studioLogoSprite == null)
         {
             var texture = Resources.Load<Texture2D>(StudioLogoPath);
@@ -89,8 +99,18 @@ public class LoadingScreen : MonoBehaviour
         {
             _shipSprite.gameObject.SetActive(true);
             _shipSprite.sprite = _studioLogoSprite;
-            _shipSprite.color = Color.black;
+            // The supplied logo already contains its black mark on a white
+            // field. Tinting it black turned the complete square into a block.
+            _shipSprite.color = Color.white;
             _shipSprite.preserveAspect = true;
+            var logoRect = _shipSprite.rectTransform;
+            logoRect.anchorMin = logoRect.anchorMax = new Vector2(0.5f, 0.5f);
+            logoRect.pivot = new Vector2(1f, 0.5f);
+            logoRect.anchoredPosition = new Vector2(-20f, 0f);
+            logoRect.sizeDelta = new Vector2(210f, 210f);
+            logoRect.localRotation = Quaternion.identity;
+            foreach (var effect in _shipSprite.GetComponents<BaseMeshEffect>())
+                effect.enabled = false;
         }
         else
         {

@@ -279,16 +279,17 @@ namespace GameStateMachine.States
 
         private void WithdrawFromPreviousStar(int currentStarId)
         {
-            var destination = _session.StarMap.LastPlayerPosition;
-            if (destination < 0 || destination == currentStarId)
+            if (_session.StarMap.LastPlayerPosition < 0 ||
+                _session.StarMap.LastPlayerPosition == currentStarId)
             {
                 _guiHelper.ShowMessage("无法继续撤离");
                 return;
             }
 
-            _motherShip.ViewMode = ViewMode.StarMap;
-            _session.StarMap.PlayerPosition = destination;
-            _guiHelper.ShowMessage("已撤离至上一星系");
+            // Use the same animated retreat state as a normal star-map
+            // withdrawal.  Directly assigning PlayerPosition skipped the
+            // flight transition and could leave the guardian encounter active.
+            OnRetreat();
         }
 
         private void StartInfiltrationCombat(int starId)

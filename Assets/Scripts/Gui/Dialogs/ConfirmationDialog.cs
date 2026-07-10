@@ -60,6 +60,7 @@ namespace Gui.Dialogs
                 EnsureExtraButton();
                 ConfigureButton(_extraButton, options.ExtraLabel, options.ExtraResult);
                 _extraButton.gameObject.SetActive(true);
+                ArrangeThreeButtons();
             }
         }
 
@@ -106,6 +107,32 @@ namespace Gui.Dialogs
             var label = button.GetComponentInChildren<Text>(true);
             if (label != null)
                 label.text = caption;
+        }
+
+        private void ArrangeThreeButtons()
+        {
+            var footer = transform.Find("Footer");
+            if (footer == null || _confirmButton == null || _cancelButton == null || _extraButton == null)
+                return;
+
+            var layout = footer.GetComponent<HorizontalOrVerticalLayoutGroup>();
+            if (layout != null)
+                layout.enabled = false;
+
+            PlaceButton(_confirmButton, 0.23f); // 潜入：左
+            PlaceButton(_extraButton, 0.44f);   // 进攻：左侧区域
+            PlaceButton(_cancelButton, 0.82f);  // 撤离：右
+        }
+
+        private static void PlaceButton(Button button, float anchorX)
+        {
+            var rect = button.transform as RectTransform;
+            if (rect == null)
+                return;
+            rect.anchorMin = rect.anchorMax = new Vector2(anchorX, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(150f, rect.sizeDelta.y > 0f ? rect.sizeDelta.y : 58f);
         }
 
         private Button _confirmButton;

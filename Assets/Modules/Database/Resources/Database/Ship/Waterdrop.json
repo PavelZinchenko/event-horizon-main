@@ -7,9 +7,9 @@
   "Description": "三体势力高速探测器。圆头为舰首，表面可镜面反射激光；碰撞敌舰时会贯穿并造成巨量动能伤害。",
   "Faction": 22,
   "IconImage": "waterdrop",
-  "IconScale": 0.8,
+  "IconScale": 0.6,
   "ModelImage": "waterdrop",
-  "ModelScale": 3.2,
+  "ModelScale": 5.6,
   "EngineColor": "#86EFFF",
   "Engines": [
     {
@@ -19,7 +19,7 @@
       "Size": 0.15
     }
   ],
-  "Layout": "000000000000660000000110000011222211001122221000001111000000550000000550000000550000",
+  "Layout": "0001000002660000222000022200005550000555000055500",
   "Features": {
     "ArmorBonus": 8.0,
     "VelocityBonus": 0.25,
