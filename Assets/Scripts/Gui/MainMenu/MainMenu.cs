@@ -302,7 +302,7 @@ namespace Gui.MainMenu
             rect.offsetMax = Vector2.zero;
 
             CreateBrandText(root.transform, template, "Title", "三体视界", 76, new Vector2(0, 0.6f), new Vector2(1, 1), Color.white);
-            CreateBrandText(root.transform, template, "Developers", "策划&文案：白墨\n程序开发：V0idream\n舰船设计：Aqua\n音乐：巡洋舰零售", 28, new Vector2(0, 0.08f), new Vector2(1, 0.62f), new Color(0.55f, 0.9f, 1f));
+            CreateBrandText(root.transform, template, "Developers", "策划&文案：白墨\n程序开发：V0idream\n舰船设计：Aqua\n音乐：巡洋舰零售\n测试群：908948524", 28, new Vector2(0, 0.08f), new Vector2(1, 0.62f), new Color(0.55f, 0.9f, 1f));
             CreateBrandText(root.transform, template, "OriginalAuthor", "原作者：Pavel Zinchenko（Event Horizon）", 22, new Vector2(0, 0f), new Vector2(1, 0.12f), new Color(0.72f, 0.76f, 0.82f));
         }
 

@@ -41,7 +41,7 @@ public class LoadingScreen : MonoBehaviour
 	private void OnLocalizationChanged(string language)
 	{
 		_shipNameText.text = "边界工作室";
-		_loadingText.text = _localization.GetString("$Loading");
+		_loadingText.text = string.Empty;
 	}
 
 	private void OnSceneManagerStateChanged(State state)
@@ -76,7 +76,7 @@ public class LoadingScreen : MonoBehaviour
         _shipIcon.gameObject.SetActive(false);
         _shipNameText.text = "边界工作室";
         _shipNameText.color = Color.black;
-        _loadingText.color = Color.black;
+        _loadingText.gameObject.SetActive(false);
 
         if (_studioLogoSprite == null)
         {

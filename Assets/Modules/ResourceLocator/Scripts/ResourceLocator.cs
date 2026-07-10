@@ -155,8 +155,18 @@ namespace Services.Resources
             return result;
         }
 
-		private Sprite GetShipSprite(string id) => Ships.TryGetValue(id, out var sprite) ? sprite : null;
-		private Sprite GetShipIconSprite(string id) => ShipIcons.TryGetValue(id, out var sprite) || Ships.TryGetValue(id, out sprite) ? sprite : null;
+		private Sprite GetShipSprite(string id)
+        {
+            if (Ships.TryGetValue(id, out var sprite))
+                return sprite;
+
+            // Project-owned ship artwork lives in Resources so it remains
+            // available even when third-party mods replace the locator prefab.
+            return GetSprite("Textures/ThreeBody/" + id);
+        }
+		private Sprite GetShipIconSprite(string id) => ShipIcons.TryGetValue(id, out var sprite) || Ships.TryGetValue(id, out sprite)
+            ? sprite
+            : GetShipSprite(id);
 		private Sprite GetComponentSprite(string id) => Components.TryGetValue(id, out var sprite) ? sprite : null;
 		private Sprite GetSatelliteSprite(string id) => Satellites.TryGetValue(id, out var sprite) ? sprite : null;
 		private Sprite GetControlButtonSprite(string id) => ControlButtons.TryGetValue(id, out var sprite) ? sprite : null;

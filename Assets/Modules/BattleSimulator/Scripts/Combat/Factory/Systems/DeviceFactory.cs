@@ -32,6 +32,9 @@ namespace Combat.Factory
             if (deviceData.ComponentId == 311)
                 return new DimensionalAscensionDevice(ship, stats, deviceData.KeyBinding >= 0 ? deviceData.KeyBinding : 0);
 
+            if (deviceData.ComponentId == 312)
+                return new SophonGuidanceDevice(ship, stats, deviceData.KeyBinding >= 0 ? deviceData.KeyBinding : 0, _scene);
+
             SystemBase device;
             ConditionType soundEffectCondition = ConditionType.OnActivate;
 

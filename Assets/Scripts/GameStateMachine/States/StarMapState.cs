@@ -228,7 +228,12 @@ namespace GameStateMachine.States
                 const string message = "侦测到星域守军。\n\n潜入：尝试潜入\n进攻：直接进攻\n撤离：返回来到此星系前的星系\n\n友好势力潜入必定成功，中立势力成功率较高，敌对势力成功率较低。";
                 LoadStateAdditive(StateFactory.CreateDialogState(
                     global::Gui.Common.WindowNames.ConfirmationDialog,
-                    new WindowArgs(new ConfirmationDialogOptions(message, "潜入", "进攻", "撤离")),
+                    // Keep the retreat action on the original second dialog button.  Some
+                    // platform prefabs cache that button's action, while the dynamically
+                    // added third button is only reliable for the ordinary attack action.
+                    new WindowArgs(new ConfirmationDialogOptions(
+                        message, "潜入", "撤离", "进攻",
+                        WindowExitCode.Ok, WindowExitCode.Option1, WindowExitCode.Cancel)),
                     code => ResolveInfiltration(star, code)));
                 return true;
             }

@@ -7,7 +7,7 @@
   "Size": 1.5,
   "InitialPosition": { "x": 0.7 },
   "AreaOfEffect": 18.0,
-  "Damage": 280.0,
+  "Damage": 700.0,
   "Range": 420.0,
   "Velocity": 55.0,
   "LifeTime": 10.0,

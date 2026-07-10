@@ -16,6 +16,7 @@ namespace Gui.Combat
     {
         private const float BaseRadarRange = 300f;
         private readonly Dictionary<IShip, TargetMarker> _markers = new();
+        private readonly Dictionary<IShip, Text> _allyMarkers = new();
         private readonly Dictionary<IUnit, UnitMarker> _projectileMarkers = new();
         private readonly Dictionary<IUnit, Vector2> _lastProjectilePositions = new();
         private readonly HashSet<IUnit> _seenAreaEffects = new();
@@ -151,6 +152,10 @@ namespace Gui.Combat
                 .Where(s => s.IsActive() && CombatRelations.AreEnemies(player.Type, s.Type))
                 .ToArray();
             var detected = enemies.Where(s => Vector2.Distance(player.Body.Position, s.Body.Position) <= radarRange).ToArray();
+            var allies = _scene.Ships.Items
+                .Where(s => s.IsActive() && s != player && s.Type.Side == UnitSide.Ally)
+                .Where(s => Vector2.Distance(player.Body.Position, s.Body.Position) <= radarRange)
+                .ToArray();
             if (!_scene.LockedEnemyShip.IsActive() || !detected.Contains(_scene.LockedEnemyShip))
             {
                 _scene.LockTarget(null);
@@ -160,7 +165,9 @@ namespace Gui.Combat
                 if (nearestTarget != null)
                     Lock(nearestTarget);
             }
-            var displayRange = Mathf.Max(100f, detected.Select(s => Vector2.Distance(player.Body.Position, s.Body.Position)).DefaultIfEmpty(100f).Max());
+            var displayRange = Mathf.Max(100f, detected.Concat(allies)
+                .Select(s => Vector2.Distance(player.Body.Position, s.Body.Position))
+                .DefaultIfEmpty(100f).Max());
 
             var detectedSet = new HashSet<IShip>(detected);
             foreach (var stale in _markers.Keys.Where(ship => !detectedSet.Contains(ship)).ToArray())
@@ -187,10 +194,45 @@ namespace Gui.Combat
                 marker.Cross.SetActive(ship == _scene.LockedEnemyShip);
             }
 
+            UpdateAllyMarkers(player, allies, displayRange);
+
             UpdateProjectileLayer(player, radarRange, displayRange);
             UpdateTransientMarkers(player, displayRange);
             _status.text = _scene.LockedEnemyShip.IsActive() ? "LOCKED" : "NO LOCK";
             _rangeText.text = $"RADAR {radarRange:0}";
+        }
+
+        private void UpdateAllyMarkers(IShip player, IEnumerable<IShip> allies, float displayRange)
+        {
+            var visible = new HashSet<IShip>(allies);
+            foreach (var stale in _allyMarkers.Keys.Where(ship => !visible.Contains(ship)).ToArray())
+            {
+                Destroy(_allyMarkers[stale].gameObject);
+                _allyMarkers.Remove(stale);
+            }
+
+            foreach (var ally in visible)
+            {
+                if (!_allyMarkers.TryGetValue(ally, out var marker))
+                {
+                    var go = new GameObject("AllyRadarTriangle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                    var markerRect = go.GetComponent<RectTransform>();
+                    markerRect.SetParent(_map, false);
+                    marker = go.GetComponent<Text>();
+                    marker.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                    marker.fontSize = 15;
+                    marker.alignment = TextAnchor.MiddleCenter;
+                    marker.text = "▲";
+                    marker.color = new Color(0.2f, 0.62f, 1f, 1f);
+                    marker.raycastTarget = false;
+                    _allyMarkers.Add(ally, marker);
+                }
+
+                var relative = (ally.Body.Position - player.Body.Position) / displayRange;
+                var rect = marker.rectTransform;
+                rect.anchorMin = rect.anchorMax = new Vector2(0.5f + relative.x * 0.47f, 0.5f + relative.y * 0.47f);
+                SetDot(rect, Vector2.zero, 14f);
+            }
         }
 
         private void UpdateProjectileLayer(IShip player, float radarRange, float displayRange)

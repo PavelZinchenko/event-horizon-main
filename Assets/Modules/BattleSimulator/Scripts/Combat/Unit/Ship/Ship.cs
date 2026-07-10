@@ -17,6 +17,7 @@ using Combat.Component.Unit.Classification;
 using Combat.Component.Triggers;
 using Combat.Unit;
 using Constructor;
+using UnityEngine;
 
 namespace Combat.Component.Ship
 {
@@ -62,6 +63,17 @@ namespace Combat.Component.Ship
 
         public override void OnCollision(Impact impact, IUnit target, CollisionData collisionData)
         {
+            if (Specification.Info.Id.Value == 166 && target.Type.Class == UnitClass.EnergyBolt)
+            {
+                // Mirror-smooth strong-interaction armour reflects laser bolts.
+                // Reversing their velocity keeps the shot alive and sends it
+                // back through the normal collision pipeline.
+                var velocity = target.Body.WorldVelocity();
+                if (velocity.sqrMagnitude > 0.0001f)
+                    target.Body.ApplyAcceleration(-2f * velocity / Mathf.Max(0.01f, Time.fixedDeltaTime));
+                impact = default;
+            }
+
             Affect(impact, target);
             InvokeTriggers(ConditionType.OnHit);
         }

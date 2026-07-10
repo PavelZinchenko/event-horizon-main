@@ -28,7 +28,9 @@ namespace Combat.Factory
             var stats = weaponData.Weapon.Stats;
             stats.FireRate *= weaponData.Stats.FireRateMultiplier.Value;
             if (weaponData.Weapon.Id.Value == 137)
-                return CreateInterceptorLaser(stats, weaponData.KeyBinding, bulletFactory, platform, owner);
+                // Point defence is autonomous.  It must not reserve an action button
+                // even if an old saved layout contains a key binding.
+                return CreateInterceptorLaser(stats, -1, bulletFactory, platform, owner);
             return Create(stats, weaponData.KeyBinding, bulletFactory, platform);
         }
 

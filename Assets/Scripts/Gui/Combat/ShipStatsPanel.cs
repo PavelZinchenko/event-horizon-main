@@ -119,6 +119,22 @@ namespace Gui.Combat
             _corrosiveResistIcon.GetComponent<Image>().color = new Color(0.45f, 1f, 0.45f, 1f);
             ShiftBelow(_corrosiveResistIcon.transform as RectTransform, _kineticResistIcon.transform as RectTransform, _energyResistIcon.transform as RectTransform);
 
+            // A distinct biohazard glyph prevents corrosion resistance from
+            // being mistaken for one of the three vanilla resistance icons.
+            var glyphObject = new GameObject("CorrosionGlyph", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            var glyphRect = glyphObject.GetComponent<RectTransform>();
+            glyphRect.SetParent(_corrosiveResistIcon.transform, false);
+            glyphRect.anchorMin = Vector2.zero;
+            glyphRect.anchorMax = Vector2.one;
+            glyphRect.offsetMin = glyphRect.offsetMax = Vector2.zero;
+            var glyph = glyphObject.GetComponent<Text>();
+            glyph.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            glyph.fontSize = 22;
+            glyph.alignment = TextAnchor.MiddleCenter;
+            glyph.color = new Color(0.02f, 0.2f, 0.04f, 1f);
+            glyph.text = "☣";
+            glyph.raycastTarget = false;
+
             _corrosiveResistText = Instantiate(textTemplate, _kineticResistText.transform.parent);
             _corrosiveResistText.name = "CorrosiveResistanceText";
             ShiftBelow(_corrosiveResistText.transform as RectTransform, _kineticResistText.transform as RectTransform, _energyResistText.transform as RectTransform);

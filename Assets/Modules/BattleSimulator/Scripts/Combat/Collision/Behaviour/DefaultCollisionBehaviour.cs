@@ -1,5 +1,6 @@
 ﻿using Combat.Collision.Manager;
 using Combat.Component.Unit;
+using Combat.Component.Ship;
 using Combat.Component.Unit.Classification;
 using GameDatabase.Enums;
 using UnityEngine;
@@ -17,6 +18,15 @@ namespace Combat.Collision.Behaviour
         {
             if (collisionData.IsNew && self.Type.Side.IsEnemy(target.Type.Side))
             {
+                if (self is IShip ship && ship.Specification.Info.Id.Value == 166)
+                {
+                    // The droplet does not stop at the point of impact.  The
+                    // standard collision remains active for visual contact,
+                    // while this dedicated impact is resolved once per target.
+                    targetImpact.AddDamage(DamageType.Impact, 10000f);
+                    return;
+                }
+
                 var impulse = Mathf.Min(self.Body.Weight, target.Body.Weight);
                 var damage = 0.1f * collisionData.RelativeVelocity.magnitude * impulse * _rammingDamageMultiplier;
 

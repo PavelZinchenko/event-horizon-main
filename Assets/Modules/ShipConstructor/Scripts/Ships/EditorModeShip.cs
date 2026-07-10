@@ -39,7 +39,8 @@ namespace Constructor.Ships
             }
         }
 
-        public override string Name { get { return _shipBuild.Id.ToString(); } set {} }
+        public int BuildId => _shipBuild.Id.Value;
+        public override string Name { get => _shipBuild.Id.ToString(); set { } }
 
         private void SaveComponents()
         {

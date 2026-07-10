@@ -1,0 +1,13 @@
+{
+  "ItemType": 2,
+  "Id": 39,
+  "DeviceClass": 0,
+  "EnergyConsumption": 5.0,
+  "PassiveEnergyConsumption": 0.0,
+  "Power": 1.0,
+  "Cooldown": 0.1,
+  "ActivationType": 1,
+  "Color": "#B7E7FF",
+  "Sound": "hit_01",
+  "ControlButtonIcon": "controls_gear"
+}

@@ -33,7 +33,11 @@ namespace ViewModel
 		private void OnEnable()
 		{
 			UpdateFactions();
-		    FactionsLayout.transform.Cast<Transform>().Select(child => child.GetComponent<FactionViewModel>()).First(item => item != null).Toggle.isOn = true;
+		    var firstFaction = FactionsLayout.transform.Cast<Transform>()
+                .Select(child => child.GetComponent<FactionViewModel>())
+                .FirstOrDefault(item => item != null && item.Toggle.interactable);
+            if (firstFaction != null)
+                firstFaction.Toggle.isOn = true;
 		}
 
 		private void UpdateFactions()

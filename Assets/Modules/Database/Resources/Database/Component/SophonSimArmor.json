@@ -1,0 +1,16 @@
+{
+  "ItemType": 1,
+  "Id": 313,
+  "Name": "小型SIM甲",
+  "Description": "强相互作用力小型装甲。以紧凑尺寸提供接近飞刃纳米甲的防护，并具备优秀腐蚀抗性。",
+  "ContentSource": 1,
+  "DisplayCategory": 2,
+  "Availability": 1,
+  "ComponentStatsId": 301,
+  "Faction": 22,
+  "Level": 85,
+  "Icon": "starship_earth_nanoblade_armor",
+  "Color": "#B9E7FF",
+  "Layout": "11",
+  "CellType": "1"
+}

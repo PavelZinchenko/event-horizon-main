@@ -113,7 +113,10 @@ namespace Combat.Component.Systems.Devices
 
         public GameDatabase.Enums.DeviceClass DeviceClass { get; }
         public bool IsDimensionShifted => _isEnabled;
-        public override bool CanBeActivated => base.CanBeActivated && (_isEnabled || _ship.Stats.Energy.Value >= _energyCost);
+        // This is a sustained toggle, not a one-shot 400-energy purchase.
+        // Requiring a full second's energy here made the control unavailable to
+        // otherwise valid ships.  Energy is consumed continuously below.
+        public override bool CanBeActivated => base.CanBeActivated && (_isEnabled || _ship.Stats.Energy.Value > 0.01f);
         public override IFeaturesModification FeaturesModification => this;
 
         public bool TryApplyModification(ref FeaturesData data)

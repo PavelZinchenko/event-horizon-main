@@ -354,6 +354,10 @@ namespace Combat.Manager
             return _combatModel.EnemyFleet.Ships.Count(item => item.Status != ShipStatus.Destroyed);
         }
 
+        public int RemainingAllyCount => _combatModel?.AllyFleet?.Ships.Count(item => item.Status != ShipStatus.Destroyed) ?? 0;
+
+        public bool HasAlliedParticipants => _combatModel?.AllyFleet?.Ships.Any() == true;
+
         private void UpdateEnemyCounter(bool force = false)
         {
             var count = RemainingEnemyCount();
