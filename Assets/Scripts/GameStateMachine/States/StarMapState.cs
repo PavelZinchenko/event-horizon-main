@@ -103,6 +103,20 @@ namespace GameStateMachine.States
 		{
             _musicPlayer.Play(AudioTrackType.Game);
 
+            if (_pendingInfiltrationChoice != InfiltrationChoice.None)
+            {
+                var choice = _pendingInfiltrationChoice;
+                var starId = _pendingInfiltrationStarId;
+                _pendingInfiltrationChoice = InfiltrationChoice.None;
+                _pendingInfiltrationStarId = -1;
+
+                if (choice == InfiltrationChoice.Withdraw)
+                    WithdrawFromPreviousStar(starId);
+                else if (choice == InfiltrationChoice.Attack)
+                    StartInfiltrationCombat(starId);
+                return;
+            }
+
             if (!string.IsNullOrEmpty(DesiredWindowOnActivate))
             {
                 var id = DesiredWindowOnActivate;
@@ -225,6 +239,7 @@ namespace GameStateMachine.States
             if (guardian.IsAggressive)
 		    {
                 _guardianDialogOpen = true;
+                _infiltrationChoice = InfiltrationChoice.None;
                 const string message = "侦测到星域守军。\n\n潜入：尝试潜入\n进攻：直接进攻\n撤离：返回来到此星系前的星系\n\n友好势力潜入必定成功，中立势力成功率较高，敌对势力成功率较低。";
                 LoadStateAdditive(StateFactory.CreateDialogState(
                     global::Gui.Common.WindowNames.ConfirmationDialog,
@@ -233,7 +248,10 @@ namespace GameStateMachine.States
                     // added third button is only reliable for the ordinary attack action.
                     new WindowArgs(new ConfirmationDialogOptions(
                         message, "潜入", "撤离", "进攻",
-                        WindowExitCode.Ok, WindowExitCode.Option1, WindowExitCode.Cancel)),
+                        WindowExitCode.Ok, WindowExitCode.Option1, WindowExitCode.Cancel,
+                        () => _infiltrationChoice = InfiltrationChoice.Infiltrate,
+                        () => _infiltrationChoice = InfiltrationChoice.Withdraw,
+                        () => _infiltrationChoice = InfiltrationChoice.Attack)),
                     code => ResolveInfiltration(star, code)));
                 return true;
             }
@@ -244,17 +262,30 @@ namespace GameStateMachine.States
         private void ResolveInfiltration(int starId, WindowExitCode code)
         {
             var guardian = _starData.GetOccupant(starId);
-            if (code == WindowExitCode.Option1)
+            var choice = _infiltrationChoice;
+            _infiltrationChoice = InfiltrationChoice.None;
+
+            // Use the explicit button callback as the source of truth.  The
+            // platform-specific confirmation prefab can report its legacy
+            // exit code regardless of which dynamically arranged button was
+            // tapped; that previously turned 撤离 into 进攻.
+            if (choice == InfiltrationChoice.Withdraw)
             {
                 _guardianDialogOpen = false;
-                WithdrawFromPreviousStar(starId);
+                QueueInfiltrationAction(starId, choice);
                 return;
             }
 
-            if (code != WindowExitCode.Ok)
+            if (choice == InfiltrationChoice.Attack)
             {
                 _guardianDialogOpen = false;
-                StartInfiltrationCombat(starId);
+                QueueInfiltrationAction(starId, choice);
+                return;
+            }
+
+            if (choice != InfiltrationChoice.Infiltrate)
+            {
+                _guardianDialogOpen = false;
                 return;
             }
 
@@ -273,7 +304,7 @@ namespace GameStateMachine.States
             else
             {
                 _guiHelper.ShowMessage("潜入失败，守军已发现舰队");
-                StartInfiltrationCombat(starId);
+                QueueInfiltrationAction(starId, InfiltrationChoice.Attack);
             }
         }
 
@@ -302,6 +333,20 @@ namespace GameStateMachine.States
                     _starData.GetOccupant(starId).Suppress(true);
                 _questEventTrigger.Fire(new CombatEventData(victory));
             }));
+        }
+
+        private void QueueInfiltrationAction(int starId, InfiltrationChoice choice)
+        {
+            _pendingInfiltrationStarId = starId;
+            _pendingInfiltrationChoice = choice;
+        }
+
+        private enum InfiltrationChoice
+        {
+            None,
+            Infiltrate,
+            Withdraw,
+            Attack,
         }
 
 		private void UpdateQuests()
@@ -421,6 +466,9 @@ namespace GameStateMachine.States
         private readonly OpenEhopediaSignal _openEhopediaSignal;
         private readonly GuiHelper _guiHelper;
         private bool _guardianDialogOpen;
+        private InfiltrationChoice _infiltrationChoice;
+        private InfiltrationChoice _pendingInfiltrationChoice;
+        private int _pendingInfiltrationStarId = -1;
         private readonly ExitSignal _exitSignal;
         private readonly EscapeKeyPressedSignal _escapeKeyPressedSignal;
         private readonly PlayerPositionChangedSignal _playerPositionChangedSignal;

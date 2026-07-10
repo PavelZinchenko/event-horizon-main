@@ -14,7 +14,10 @@ namespace Gui.Dialogs
             string extraLabel = null,
             WindowExitCode confirmResult = WindowExitCode.Ok,
             WindowExitCode cancelResult = WindowExitCode.Cancel,
-            WindowExitCode extraResult = WindowExitCode.Option1)
+            WindowExitCode extraResult = WindowExitCode.Option1,
+            System.Action confirmPressed = null,
+            System.Action cancelPressed = null,
+            System.Action extraPressed = null)
         {
             Message = message;
             ConfirmLabel = confirmLabel;
@@ -23,6 +26,9 @@ namespace Gui.Dialogs
             ConfirmResult = confirmResult;
             CancelResult = cancelResult;
             ExtraResult = extraResult;
+            ConfirmPressed = confirmPressed;
+            CancelPressed = cancelPressed;
+            ExtraPressed = extraPressed;
         }
 
         public string Message { get; }
@@ -32,6 +38,9 @@ namespace Gui.Dialogs
         public WindowExitCode ConfirmResult { get; }
         public WindowExitCode CancelResult { get; }
         public WindowExitCode ExtraResult { get; }
+        public System.Action ConfirmPressed { get; }
+        public System.Action CancelPressed { get; }
+        public System.Action ExtraPressed { get; }
     }
 
     public class ConfirmationDialog : MonoBehaviour
@@ -47,8 +56,8 @@ namespace Gui.Dialogs
             _text.text = options.Message;
             EnsureButtons();
 
-            ConfigureButton(_confirmButton, options.ConfirmLabel ?? "确定", options.ConfirmResult);
-            ConfigureButton(_cancelButton, options.CancelLabel ?? "取消", options.CancelResult);
+            ConfigureButton(_confirmButton, options.ConfirmLabel ?? "确定", options.ConfirmResult, options.ConfirmPressed);
+            ConfigureButton(_cancelButton, options.CancelLabel ?? "取消", options.CancelResult, options.CancelPressed);
 
             if (string.IsNullOrWhiteSpace(options.ExtraLabel))
             {
@@ -58,7 +67,7 @@ namespace Gui.Dialogs
             else
             {
                 EnsureExtraButton();
-                ConfigureButton(_extraButton, options.ExtraLabel, options.ExtraResult);
+                ConfigureButton(_extraButton, options.ExtraLabel, options.ExtraResult, options.ExtraPressed);
                 _extraButton.gameObject.SetActive(true);
                 ArrangeThreeButtons();
             }
@@ -96,13 +105,17 @@ namespace Gui.Dialogs
             _extraButton = clone.GetComponent<Button>();
         }
 
-        private void ConfigureButton(Button button, string caption, WindowExitCode result)
+        private void ConfigureButton(Button button, string caption, WindowExitCode result, System.Action pressed)
         {
             if (button == null)
                 return;
 
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() => GetComponent<AnimatedWindow>().Close(result));
+            button.onClick.AddListener(() =>
+            {
+                pressed?.Invoke();
+                GetComponent<AnimatedWindow>().Close(result);
+            });
 
             var label = button.GetComponentInChildren<Text>(true);
             if (label != null)

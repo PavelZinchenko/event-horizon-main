@@ -99,7 +99,11 @@ namespace GameStateMachine.States
 		private void OnOpenShipEditor(IShip ship)
 		{
 			var context = new ShipEditorState.Context { Ship = ship, DatabaseMode = true, NextState = this };
-			LoadState(StateFactory.CreateShipEditorState(context));
+			var state = StateFactory.CreateShipEditorState(context);
+			if (Condition == GameStateCondition.Active)
+				LoadState(state);
+			else
+				_loadOnResume = state;
 		}
 
 		private void OnOpenGameSettings()

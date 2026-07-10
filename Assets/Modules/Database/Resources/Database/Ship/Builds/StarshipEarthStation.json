@@ -1,0 +1,10 @@
+{
+  "ItemType": 8,
+  "Id": 94000,
+  "ShipId": 94000,
+  "AvailableForPlayer": false,
+  "AvailableForEnemy": true,
+  "DifficultyClass": 2,
+  "BuildFaction": 21,
+  "Components": []
+}

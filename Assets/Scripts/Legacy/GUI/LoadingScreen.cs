@@ -40,8 +40,9 @@ public class LoadingScreen : MonoBehaviour
 
 	private void OnLocalizationChanged(string language)
 	{
-		_shipNameText.text = "边界工作室";
-		_loadingText.text = string.Empty;
+		// Preview 17 uses a single precomposed splash image.  Keeping text and
+		// logo in separate UI elements made their placement depend on the scene
+		// prefab and aspect ratio.
 	}
 
 	private void OnSceneManagerStateChanged(State state)
@@ -67,55 +68,36 @@ public class LoadingScreen : MonoBehaviour
 		_coroutineRunning = false;
 	}
 
-	private void Show()
+    private void Show()
     {
 		_canvas.enabled = true;
 
         _background.gameObject.SetActive(true);
         _background.color = Color.white;
+		_background.preserveAspect = false;
+		var backgroundRect = _background.rectTransform;
+		backgroundRect.anchorMin = Vector2.zero;
+		backgroundRect.anchorMax = Vector2.one;
+		backgroundRect.offsetMin = Vector2.zero;
+		backgroundRect.offsetMax = Vector2.zero;
+		backgroundRect.SetAsFirstSibling();
+
+		if (_splashSprite == null)
+		{
+			var texture = Resources.Load<Texture2D>(SplashPath);
+			if (texture != null)
+				_splashSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+					new Vector2(0.5f, 0.5f), 100f);
+		}
+		if (_splashSprite != null)
+			_background.sprite = _splashSprite;
+
+		// The whole presentation is baked into the splash image so there is no
+		// second layout pass capable of moving or tinting the studio mark.
+		_shipSprite.gameObject.SetActive(false);
         _shipIcon.gameObject.SetActive(false);
-        _shipNameText.text = "边界工作室";
-        _shipNameText.color = Color.black;
+		_shipNameText.gameObject.SetActive(false);
         _loadingText.gameObject.SetActive(false);
-
-        var titleRect = _shipNameText.rectTransform;
-        titleRect.anchorMin = titleRect.anchorMax = new Vector2(0.5f, 0.5f);
-        titleRect.pivot = new Vector2(0f, 0.5f);
-        titleRect.anchoredPosition = new Vector2(130f, 0f);
-        titleRect.sizeDelta = new Vector2(500f, 100f);
-        _shipNameText.alignment = TextAnchor.MiddleLeft;
-        _shipNameText.fontSize = 48;
-        foreach (var effect in _shipNameText.GetComponents<BaseMeshEffect>())
-            effect.enabled = false;
-
-        if (_studioLogoSprite == null)
-        {
-            var texture = Resources.Load<Texture2D>(StudioLogoPath);
-            if (texture != null)
-                _studioLogoSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
-        }
-
-        if (_studioLogoSprite != null)
-        {
-            _shipSprite.gameObject.SetActive(true);
-            _shipSprite.sprite = _studioLogoSprite;
-            // The supplied logo already contains its black mark on a white
-            // field. Tinting it black turned the complete square into a block.
-            _shipSprite.color = Color.white;
-            _shipSprite.preserveAspect = true;
-            var logoRect = _shipSprite.rectTransform;
-            logoRect.anchorMin = logoRect.anchorMax = new Vector2(0.5f, 0.5f);
-            logoRect.pivot = new Vector2(1f, 0.5f);
-            logoRect.anchoredPosition = new Vector2(-20f, 0f);
-            logoRect.sizeDelta = new Vector2(210f, 210f);
-            logoRect.localRotation = Quaternion.identity;
-            foreach (var effect in _shipSprite.GetComponents<BaseMeshEffect>())
-                effect.enabled = false;
-        }
-        else
-        {
-            _shipSprite.gameObject.SetActive(false);
-        }
 
         _firstTime = false;
     }
@@ -129,7 +111,7 @@ public class LoadingScreen : MonoBehaviour
     private readonly System.Random _random = new System.Random();
     private SceneManagerStateChangedSignal _sceneManagerStateChangedSignal;
     private LocalizationChangedSignal _localizationChangedSignal;
-    private Sprite _studioLogoSprite;
+    private Sprite _splashSprite;
 
-    private const string StudioLogoPath = "Textures/BoundaryStudio/logo";
+    private const string SplashPath = "Textures/BoundaryStudio/loading_screen_preview17";
 }

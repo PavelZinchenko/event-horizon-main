@@ -4,8 +4,10 @@ using GameDatabase;
 using GameServices.GameManager;
 using GameServices.Gui;
 using GameStateMachine.States;
+using Gui.Windows;
 using Services.Localization;
 using Services.Messenger;
+using Services.Gui;
 using Services.Storage;
 using Session;
 using UnityEngine;
@@ -56,6 +58,12 @@ namespace Gui.MainMenu
             }
 
             _openShipEditorTrigger?.Fire(new EditorModeShip(build, _database));
+
+            // Settings is an additive modal state.  MainMenu records the
+            // editor request while suspended, then opens it as soon as this
+            // window closes and MainMenu resumes.
+            var settingsWindow = GetComponentInParent<AnimatedWindow>();
+            settingsWindow?.Close(WindowExitCode.Ok);
         }
 
         private void OnFileImported(ISavegameExporter.Result result)

@@ -107,7 +107,8 @@ namespace Gui.Combat
         private bool IsClickToggle(int id)
         {
             return _ship != null && _ship.IsActive() && id >= 0 && id < _ship.Systems.All.Count &&
-                   _ship.Systems.All[id] is DimensionalAscensionDevice;
+                   (_ship.Systems.All[id] is DimensionalAscensionDevice ||
+                    _ship.Systems.All[id] is SophonGuidanceDevice);
         }
 
         public void ActivateDroneBays()

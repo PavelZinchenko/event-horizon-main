@@ -27,6 +27,21 @@ public class ApplicationBuildProcessor : IPostGenerateGradleAndroidProject
 				var data = File.ReadAllText(filename);
 				var result = Regex.Replace(data, "android:screenOrientation=\"\\w+\"", "android:screenOrientation=\"sensorLandscape\"");
 
+				// Keep Unity's generated launcher/activity manifest intact and add
+				// only the legacy shared-storage declarations needed by Android 12
+				// and earlier.  Replacing the entire manifest removed Unity's launch
+				// activity and produced an APK that could not be started.
+				if (!result.Contains("android.permission.READ_EXTERNAL_STORAGE"))
+				{
+					const string permissions =
+						"\n  <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" android:maxSdkVersion=\"32\" />" +
+						"\n  <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" android:maxSdkVersion=\"28\" />";
+					result = Regex.Replace(result, "(<manifest\\b[^>]*>)", "$1" + permissions, RegexOptions.IgnoreCase);
+				}
+
+				if (!result.Contains("android:requestLegacyExternalStorage="))
+					result = Regex.Replace(result, "<application\\b", "<application android:requestLegacyExternalStorage=\"true\"", RegexOptions.IgnoreCase);
+
 				if (data != result)
 					File.WriteAllText(filename, result);
 			}
