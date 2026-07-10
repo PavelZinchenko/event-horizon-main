@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Combat.Component.Ship;
+using Combat.Component.Collider;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Scene;
@@ -400,8 +401,13 @@ namespace Gui.Combat
                 return;
             }
 
-            var end = worldPosition;
-            var lineStart = unit.Body.Parent != null ? unit.Body.Parent.WorldPosition() : end - RotationHelpers.Direction(unit.Body.WorldRotation()) * Mathf.Max(unit.Body.Scale * 1.8f, 12f);
+            var lineStart = unit.Body.WorldPositionNoOffset();
+            var direction = RotationHelpers.Direction(unit.Body.WorldRotation());
+            var end = lineStart + direction * Mathf.Max(unit.Body.Scale * 1.8f, 12f);
+            if (unit.Collider is RayCastCollider ray)
+                end = ray.ActiveCollision != null ? ray.LastContactPoint : lineStart + direction * ray.MaxRange;
+            else if (unit.Body.Parent == null)
+                lineStart = worldPosition - direction * Mathf.Max(unit.Body.Scale * 1.8f, 12f);
             var startRelative = (lineStart - player.Body.Position) / displayRange;
             var endRelative = (end - player.Body.Position) / displayRange;
             var startPoint = new Vector2(startRelative.x * _map.rect.width * 0.47f, startRelative.y * _map.rect.height * 0.47f);

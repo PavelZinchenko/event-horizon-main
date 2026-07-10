@@ -31,7 +31,8 @@ namespace Combat.Factory
     public class BulletFactory : IBulletFactory
     {
         public BulletFactory(Ammunition ammunition, WeaponStatModifier statModifier, IScene scene, IGameServicesProvider services,
-            SpaceObjectFactory spaceObjectFactory, EffectFactory effectFactory, IShip owner, int nestingLevel = 0)
+            SpaceObjectFactory spaceObjectFactory, EffectFactory effectFactory, IShip owner, int nestingLevel = 0,
+            bool reflectableByWaterdrop = false)
         {
             _services = services;
             _ammunition = ammunition;
@@ -41,6 +42,7 @@ namespace Combat.Factory
             _effectFactory = effectFactory;
             _nestingLevel = nestingLevel;
             _owner = owner;
+            _reflectableByWaterdrop = reflectableByWaterdrop;
 
             _prefab = new Lazy<GameObject>(() => _services.PrefabCache.GetBulletPrefab(_ammunition.Body.BulletPrefab));
             _stats = new BulletStats(ammunition, statModifier, nestingLevel > 0);
@@ -70,10 +72,9 @@ namespace Combat.Factory
             {
                 CanBeDisarmed = _ammunition.Body.CanBeDisarmed, 
                 DetonateWhenDestroyed = _ammunition.Body.DetonateWhenDestroyed,
-                // Only ordinary laser beams are mirrored by 水滴.  Focused,
-                // point-defence, repair, tractor and other beam-like effects
-                // intentionally remain ordinary incoming damage.
-                ReflectableByWaterdrop = IsOrdinaryLaser(_ammunition.Id.Value)
+                // Reflection follows the installed component's L-slot identity,
+                // rather than a fragile ammunition-id whitelist.
+                ReflectableByWaterdrop = _reflectableByWaterdrop
             };
 
             var bullet = CreateUnit(body, view, bulletGameObject, options);
@@ -91,23 +92,6 @@ namespace Combat.Factory
 
             bullet.UpdatePhysics(0);
             return bullet;
-        }
-
-        private static bool IsOrdinaryLaser(int ammunitionId)
-        {
-            switch (ammunitionId)
-            {
-                case 2:   // legacy common laser beam
-                case 24:
-                case 26:
-                case 27:
-                case 28:
-                case 149: // heavy/common laser beam
-                case 158: // Starship Earth common laser
-                    return true;
-                default:
-                    return false;
-            }
         }
 
         private bool CanSiphonHitpoints()
@@ -336,7 +320,7 @@ namespace Combat.Factory
         private BulletFactory CreateFactory(Ammunition ammunition, WeaponStatModifier stats)
         {
             var factory = new BulletFactory(ammunition, stats, _scene, _services,
-                _spaceObjectFactory, _effectFactory, _owner, _nestingLevel + 1);
+                _spaceObjectFactory, _effectFactory, _owner, _nestingLevel + 1, _reflectableByWaterdrop);
 
             factory.Stats.PowerLevel = _stats.PowerLevel;
             factory.Stats.HitPointsMultiplier = _stats.HitPointsMultiplier;
@@ -349,6 +333,7 @@ namespace Combat.Factory
 
 		private int _nestingLevel;
         private readonly IShip _owner;
+        private readonly bool _reflectableByWaterdrop;
         private readonly Lazy<GameObject> _prefab;
         private readonly BulletStats _stats;
         private readonly Ammunition _ammunition;

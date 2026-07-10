@@ -94,10 +94,15 @@ namespace Model
 					SelectRandom(numberOfShips, random);
 
                 var starbaseClass = region.HomeStarLevel < 40 ? DifficultyClass.Default : DifficultyClass.Class1;
-			    var starbase = ShipBuildQuery.Starbases(database).
-					BelongToFaction(region.Faction).
-					WithDifficulty(starbaseClass, starbaseClass).
-					Random(random);
+                // 星舰地球 has a dedicated class-2 station. The generic query
+                // filters stations to class 0/1 and therefore silently fell back
+                // to the original default station. Bind its faction explicitly.
+			    var starbase = region.Faction.Id.Value == 21
+                    ? database.GetShipBuild(new ItemId<ShipBuild>(94000))
+                    : ShipBuildQuery.Starbases(database).
+					    BelongToFaction(region.Faction).
+					    WithDifficulty(starbaseClass, starbaseClass).
+					    Random(random);
 
 				if (starbase == null) starbase = database.GalaxySettings.DefaultStarbaseBuild;
 

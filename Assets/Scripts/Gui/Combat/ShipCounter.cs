@@ -44,11 +44,16 @@ namespace Gui.Combat
             {
                 _allyText = Instantiate(_countText, _countText.transform.parent);
                 _allyText.name = "AllyShipCount";
-                _allyText.alignment = TextAnchor.MiddleCenter;
+                _allyText.alignment = TextAnchor.UpperCenter;
                 _allyText.fontSize = Mathf.Max(12, _countText.fontSize - 3);
+                _allyText.resizeTextForBestFit = false;
+                _allyText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                _allyText.verticalOverflow = VerticalWrapMode.Overflow;
                 var rect = _allyText.rectTransform;
-                rect.anchoredPosition = _countText.rectTransform.anchoredPosition + new Vector2(0f, -24f);
-                rect.sizeDelta = new Vector2(Mathf.Max(70f, _countText.rectTransform.sizeDelta.x * 1.8f), rect.sizeDelta.y);
+                var enemyRect = _countText.rectTransform;
+                var verticalGap = Mathf.Max(34f, enemyRect.rect.height + 8f);
+                rect.anchoredPosition = enemyRect.anchoredPosition + new Vector2(0f, -verticalGap);
+                rect.sizeDelta = new Vector2(Mathf.Max(150f, enemyRect.rect.width * 2.4f), Mathf.Max(28f, enemyRect.rect.height));
             }
 
             var visible = _manager.HasAlliedParticipants;

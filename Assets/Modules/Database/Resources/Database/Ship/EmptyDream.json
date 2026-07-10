@@ -5,6 +5,7 @@
   "SizeClass": 4,
   "Name": "$EmptyDream",
   "Description": "$EmptyDreamDescription",
+  "Faction": 28,
   "IconImage": "empty_dream",
   "IconScale": 1.0,
   "ModelImage": "empty_dream",

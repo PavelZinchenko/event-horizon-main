@@ -203,7 +203,10 @@ namespace Combat.Manager
             var chargeEffect = new ShipRetreatingEffect(player, _effectFactory, ConditionType.OnActivate, ConditionType.OnDeactivate);
             var warpEffect = new ShipWarpEffect(player, _effectFactory, _soundPlayer, _settings.ShipWarpSound, ConditionType.OnDeactivate);
             var soundEffect = new SoundLoopEffect(_soundPlayer, _settings.ShipRetreatSound, ConditionType.OnActivate, ConditionType.OnDeactivate);
-            player.AddEffect(new ShipRetreatEffect(7.0f, () => _combatRetreatTrigger.Fire(), soundEffect, warpEffect, chargeEffect));
+            // Changing the active ship is not a combat retreat.  Firing the retreat
+            // signal here moves the star-map state while the combat ship-selection
+            // flow is still running, which leaves the regular combat scene black.
+            player.AddEffect(new ShipRetreatEffect(7.0f, null, soundEffect, warpEffect, chargeEffect));
         }
 
         public void KillAllEnemies()

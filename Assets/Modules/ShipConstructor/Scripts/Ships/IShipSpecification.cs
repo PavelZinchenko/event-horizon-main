@@ -60,6 +60,7 @@ namespace Constructor
         Ammunition Ammunition { get; }
         WeaponStatModifier Stats { get; }
         int KeyBinding { get; }
+        char WeaponSlotType { get; }
     }
 
     public struct WeaponStatModifier

@@ -23,7 +23,8 @@ namespace Combat.Factory
 
         public IWeapon Create(IWeaponData weaponData, IWeaponPlatform platform, float hitPointsMultiplier, IShip owner)
         {
-            var bulletFactory = new BulletFactory(weaponData.Ammunition, weaponData.Stats, _scene, _services, _spaceObjectFactory, _effectFactory, owner);
+            var bulletFactory = new BulletFactory(weaponData.Ammunition, weaponData.Stats, _scene, _services, _spaceObjectFactory, _effectFactory, owner,
+                reflectableByWaterdrop: weaponData.WeaponSlotType == 'L');
             bulletFactory.Stats.HitPointsMultiplier = hitPointsMultiplier;
             var stats = weaponData.Weapon.Stats;
             stats.FireRate *= weaponData.Stats.FireRateMultiplier.Value;

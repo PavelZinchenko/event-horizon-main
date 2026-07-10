@@ -18,6 +18,7 @@ using Zenject;
 using Services.Resources;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Gui.MainMenu
 {
@@ -133,8 +134,12 @@ namespace Gui.MainMenu
 
         private void OnDialogClosed(WindowExitCode result)
         {
+            if (_enemyFleetPanel != null)
+                Destroy(_enemyFleetPanel);
             _gameSettings.EditorText = _inputField.text;
             var useMyFleet = _useMyFleetToggle != null && _useMyFleetToggle.isOn;
+            var enemyFleetSpec = string.Join(",", _quickEnemyCounts.Where(item => item.Value > 0)
+                .OrderBy(item => item.Key).Select(item => item.Key + ":" + item.Value));
 
             switch (result)
             {
@@ -143,6 +148,7 @@ namespace Gui.MainMenu
                     {
                         EasyMode = true,
                         UsePlayerFleet = useMyFleet,
+                        EnemyFleetSpec = enemyFleetSpec,
                         TestShipId = _inputField.text
                     });
                     break;
@@ -151,6 +157,7 @@ namespace Gui.MainMenu
                     {
                         EasyMode = false,
                         UsePlayerFleet = useMyFleet,
+                        EnemyFleetSpec = enemyFleetSpec,
                         TestShipId = _inputField.text
                     });
                     break;
@@ -168,6 +175,7 @@ namespace Gui.MainMenu
             if (existing != null)
             {
                 _useMyFleetToggle = existing.GetComponent<Toggle>();
+                CreateEnemyFleetButton(dialog.transform);
                 yield break;
             }
 
@@ -223,6 +231,133 @@ namespace Gui.MainMenu
             _useMyFleetToggle.isOn = false;
             _useMyFleetToggle.interactable = _gameSession.IsGameStarted();
             labelText.color = _useMyFleetToggle.interactable ? Color.white : new Color(0.55f, 0.58f, 0.62f);
+            CreateEnemyFleetButton(dialog.transform);
+        }
+
+        private void CreateEnemyFleetButton(Transform dialog)
+        {
+            if (dialog.Find("ConfigureEnemyFleet") != null) return;
+            var buttonObject = new GameObject("ConfigureEnemyFleet", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(LayoutElement));
+            buttonObject.layer = dialog.gameObject.layer;
+            buttonObject.transform.SetParent(dialog, false);
+            buttonObject.transform.SetAsLastSibling();
+            var layout = buttonObject.GetComponent<LayoutElement>();
+            layout.minHeight = layout.preferredHeight = 62f;
+            buttonObject.GetComponent<Image>().color = new Color(0.03f, 0.28f, 0.38f, 0.98f);
+            buttonObject.GetComponent<Button>().onClick.AddListener(OpenEnemyFleetPanel);
+            var label = CreateRuntimeText(buttonObject.transform, "Label", "配置敌方舰队", 24, TextAnchor.MiddleCenter);
+            label.rectTransform.anchorMin = Vector2.zero; label.rectTransform.anchorMax = Vector2.one;
+            label.rectTransform.offsetMin = label.rectTransform.offsetMax = Vector2.zero;
+        }
+
+        private void OpenEnemyFleetPanel()
+        {
+            if (_enemyFleetPanel != null) { _enemyFleetPanel.SetActive(true); return; }
+            var canvas = GetComponentInParent<Canvas>() ?? FindObjectOfType<Canvas>();
+            if (canvas == null) return;
+            _enemyFleetPanel = new GameObject("QuickEnemyFleetPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            _enemyFleetPanel.layer = canvas.gameObject.layer;
+            var root = _enemyFleetPanel.GetComponent<RectTransform>();
+            root.SetParent(canvas.transform, false);
+            root.anchorMin = new Vector2(0.08f, 0.06f); root.anchorMax = new Vector2(0.92f, 0.94f);
+            root.offsetMin = root.offsetMax = Vector2.zero;
+            _enemyFleetPanel.GetComponent<Image>().color = new Color(0.015f, 0.07f, 0.11f, 0.99f);
+            _enemyFleetPanel.transform.SetAsLastSibling();
+
+            var title = CreateRuntimeText(root, "Title", "指定敌方舰队", 30, TextAnchor.MiddleCenter);
+            title.rectTransform.anchorMin = new Vector2(0f, 0.91f); title.rectTransform.anchorMax = Vector2.one;
+            title.rectTransform.offsetMin = new Vector2(20f, 0f); title.rectTransform.offsetMax = new Vector2(-20f, 0f);
+
+            var viewportObject = new GameObject("Viewport", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Mask), typeof(ScrollRect));
+            viewportObject.layer = _enemyFleetPanel.layer;
+            var viewport = viewportObject.GetComponent<RectTransform>();
+            viewport.SetParent(root, false);
+            viewport.anchorMin = new Vector2(0.03f, 0.12f); viewport.anchorMax = new Vector2(0.97f, 0.9f);
+            viewport.offsetMin = viewport.offsetMax = Vector2.zero;
+            viewportObject.GetComponent<Image>().color = new Color(0.02f, 0.12f, 0.17f, 0.98f);
+            viewportObject.GetComponent<Mask>().showMaskGraphic = true;
+
+            var contentObject = new GameObject("Content", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            contentObject.layer = _enemyFleetPanel.layer;
+            var content = contentObject.GetComponent<RectTransform>();
+            content.SetParent(viewport, false);
+            content.anchorMin = new Vector2(0f, 1f); content.anchorMax = Vector2.one;
+            content.pivot = new Vector2(0.5f, 1f); content.offsetMin = content.offsetMax = Vector2.zero;
+            var group = contentObject.GetComponent<VerticalLayoutGroup>();
+            group.spacing = 5f; group.padding = new RectOffset(8, 8, 8, 8); group.childForceExpandHeight = false;
+            contentObject.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var scroll = viewportObject.GetComponent<ScrollRect>();
+            scroll.viewport = viewport; scroll.content = content; scroll.horizontal = false; scroll.vertical = true;
+
+            foreach (var build in _database.ShipBuildList.Where(item => item != null && item.Ship != null)
+                         .GroupBy(item => item.Ship.Id.Value).Select(items => items.First())
+                         .OrderBy(item => (int)item.Ship.SizeClass).ThenBy(item => item.Ship.Id.Value))
+                CreateEnemyFleetRow(content, build);
+
+            var done = CreateRuntimeButton(root, "Done", "完成", new Vector2(0.54f, 0.02f), new Vector2(0.95f, 0.105f));
+            done.onClick.AddListener(() => _enemyFleetPanel.SetActive(false));
+            var clear = CreateRuntimeButton(root, "Clear", "清空", new Vector2(0.05f, 0.02f), new Vector2(0.46f, 0.105f));
+            clear.onClick.AddListener(() => { _quickEnemyCounts.Clear(); RefreshEnemyFleetCounts(); });
+        }
+
+        private void CreateEnemyFleetRow(RectTransform parent, ShipBuild build)
+        {
+            var row = new GameObject("Ship_" + build.Id.Value, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(LayoutElement));
+            row.layer = parent.gameObject.layer; row.transform.SetParent(parent, false);
+            row.GetComponent<Image>().color = new Color(0.03f, 0.19f, 0.25f, 0.95f);
+            row.GetComponent<LayoutElement>().preferredHeight = 58f;
+            var name = CreateRuntimeText(row.transform, "Name", _localization.GetString(build.Ship.Name), 20, TextAnchor.MiddleLeft);
+            name.rectTransform.anchorMin = new Vector2(0.02f, 0f); name.rectTransform.anchorMax = new Vector2(0.63f, 1f);
+            name.rectTransform.offsetMin = name.rectTransform.offsetMax = Vector2.zero;
+            var minus = CreateRuntimeButton(row.GetComponent<RectTransform>(), "Minus", "−", new Vector2(0.65f, 0.12f), new Vector2(0.75f, 0.88f));
+            var count = CreateRuntimeText(row.transform, "Count", "0", 22, TextAnchor.MiddleCenter);
+            count.rectTransform.anchorMin = new Vector2(0.76f, 0f); count.rectTransform.anchorMax = new Vector2(0.87f, 1f);
+            count.rectTransform.offsetMin = count.rectTransform.offsetMax = Vector2.zero;
+            _quickEnemyCountTexts[build.Id.Value] = count;
+            var plus = CreateRuntimeButton(row.GetComponent<RectTransform>(), "Plus", "+", new Vector2(0.88f, 0.12f), new Vector2(0.98f, 0.88f));
+            minus.onClick.AddListener(() => SetEnemyFleetCount(build.Id.Value, -1));
+            plus.onClick.AddListener(() => SetEnemyFleetCount(build.Id.Value, 1));
+            RefreshEnemyFleetCount(build.Id.Value);
+        }
+
+        private void SetEnemyFleetCount(int id, int delta)
+        {
+            _quickEnemyCounts.TryGetValue(id, out var count);
+            count = Mathf.Clamp(count + delta, 0, 99);
+            if (count == 0) _quickEnemyCounts.Remove(id); else _quickEnemyCounts[id] = count;
+            RefreshEnemyFleetCount(id);
+        }
+
+        private void RefreshEnemyFleetCounts()
+        {
+            foreach (var id in _quickEnemyCountTexts.Keys.ToArray()) RefreshEnemyFleetCount(id);
+        }
+
+        private void RefreshEnemyFleetCount(int id)
+        {
+            if (_quickEnemyCountTexts.TryGetValue(id, out var text))
+                text.text = _quickEnemyCounts.TryGetValue(id, out var count) ? count.ToString() : "0";
+        }
+
+        private static Text CreateRuntimeText(Transform parent, string name, string value, int fontSize, TextAnchor alignment)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            go.layer = parent.gameObject.layer; go.transform.SetParent(parent, false);
+            var text = go.GetComponent<Text>(); text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.text = value; text.fontSize = fontSize; text.alignment = alignment; text.color = Color.white;
+            return text;
+        }
+
+        private static Button CreateRuntimeButton(RectTransform parent, string name, string label, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            go.layer = parent.gameObject.layer; var rect = go.GetComponent<RectTransform>(); rect.SetParent(parent, false);
+            rect.anchorMin = anchorMin; rect.anchorMax = anchorMax; rect.offsetMin = rect.offsetMax = Vector2.zero;
+            go.GetComponent<Image>().color = new Color(0.04f, 0.36f, 0.48f, 1f);
+            var text = CreateRuntimeText(rect, "Label", label, 22, TextAnchor.MiddleCenter);
+            text.rectTransform.anchorMin = Vector2.zero; text.rectTransform.anchorMax = Vector2.one;
+            text.rectTransform.offsetMin = text.rectTransform.offsetMax = Vector2.zero;
+            return go.GetComponent<Button>();
         }
 
         private void OnDatabaseLoaded()
@@ -347,5 +482,8 @@ namespace Gui.MainMenu
         private ISessionData _gameSession;
         private IGuiManager _guiManager;
         private Toggle _useMyFleetToggle;
+        private GameObject _enemyFleetPanel;
+        private readonly Dictionary<int, int> _quickEnemyCounts = new();
+        private readonly Dictionary<int, Text> _quickEnemyCountTexts = new();
     }
 }

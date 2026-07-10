@@ -116,6 +116,10 @@ namespace GameStateMachine.States
 				secondFleet = new TestFleet(_database, ships.RandomUniqueElements(12, random).OrderBy(item => random.Next()), _settings.EasyMode ? 0 : 100);
 			}
 
+            var configuredEnemies = ParseEnemyFleet(_settings.EnemyFleetSpec).ToList();
+            if (configuredEnemies.Count > 0)
+                secondFleet = new TestFleet(_database, configuredEnemies, _settings.EasyMode ? 0 : 100);
+
 			var builder = _combatModelBuilderFactory.Create();
 			builder.PlayerFleet = firstFleet;
 			builder.EnemyFleet = secondFleet;
@@ -123,6 +127,20 @@ namespace GameStateMachine.States
 
             return builder.Build();
 		}
+
+        private IEnumerable<ShipBuild> ParseEnemyFleet(string spec)
+        {
+            if (string.IsNullOrWhiteSpace(spec)) yield break;
+            foreach (var entry in spec.Split(','))
+            {
+                var parts = entry.Split(':');
+                if (parts.Length != 2 || !int.TryParse(parts[0], out var id) || !int.TryParse(parts[1], out var count))
+                    continue;
+                var build = _database.GetShipBuild(new ItemId<ShipBuild>(id));
+                if (build == null || build == ShipBuild.DefaultValue) continue;
+                for (var i = 0; i < System.Math.Min(count, 99); i++) yield return build;
+            }
+        }
 
 		private HashSet<ShipBuild> GetUnlockedShips()
 		{
@@ -164,6 +182,7 @@ namespace GameStateMachine.States
 			public string TestShipId;
 			public bool EasyMode;
             public bool UsePlayerFleet;
+			public string EnemyFleetSpec;
 		}
     }
 }

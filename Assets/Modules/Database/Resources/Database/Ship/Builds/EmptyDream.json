@@ -4,6 +4,7 @@
   "ShipId": 160,
   "AvailableForPlayer": true,
   "AvailableForEnemy": false,
+  "BuildFaction": 28,
   "Components": [
     {
       "ComponentId": 296,
