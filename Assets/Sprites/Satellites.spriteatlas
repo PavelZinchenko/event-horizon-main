@@ -60,6 +60,7 @@ SpriteAtlas:
     - 39302543e74fdd24f92318f90be70538: 21300000
     - 50a7dd44bcf9652479cd9b2b39a9c92e: 21300000
     - 77e56b677f42e08448f4ba82a5ef2b32: 21300000
+    - b92d9b18e4cd7d94f9d7df66f1776f07: 21300000
     - 393c1028094afd54abfea0be8ad8c796: 21300000
     - 558a2558915084d4eb1442550c94e775: 21300000
     - 88cd21e8689c29e4abc6deeb5b04defc: 21300000
@@ -85,6 +86,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 39302543e74fdd24f92318f90be70538, type: 3}
   - {fileID: 21300000, guid: 50a7dd44bcf9652479cd9b2b39a9c92e, type: 3}
   - {fileID: 21300000, guid: 77e56b677f42e08448f4ba82a5ef2b32, type: 3}
+  - {fileID: 21300000, guid: b92d9b18e4cd7d94f9d7df66f1776f07, type: 3}
   - {fileID: 21300000, guid: 393c1028094afd54abfea0be8ad8c796, type: 3}
   - {fileID: 21300000, guid: 558a2558915084d4eb1442550c94e775, type: 3}
   - {fileID: 21300000, guid: 88cd21e8689c29e4abc6deeb5b04defc, type: 3}
@@ -109,6 +111,7 @@ SpriteAtlas:
   - satellite3
   - satellite2
   - scavenger_arm
+  - starship_earth_experimental_platform
   - satellite7
   - hovertank
   - turret

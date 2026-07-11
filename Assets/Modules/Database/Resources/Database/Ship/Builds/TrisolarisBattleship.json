@@ -17,6 +17,8 @@
     { "ComponentId": 303, "X": 27, "Y": 20 },
     { "ComponentId": 930, "X": 23, "Y": 32 },
     { "ComponentId": 930, "X": 25, "Y": 32 },
-    { "ComponentId": 930, "X": 27, "Y": 32 }
+    { "ComponentId": 930, "X": 27, "Y": 32 },
+    { "ComponentId": 935, "X": 25, "Y": 4 },
+    { "ComponentId": 935, "X": 25, "Y": 6 }
   ]
 }

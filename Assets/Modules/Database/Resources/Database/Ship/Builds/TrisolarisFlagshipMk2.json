@@ -27,6 +27,9 @@
     { "ComponentId": 930, "X": 39, "Y": 57 },
     { "ComponentId": 930, "X": 42, "Y": 57 },
     { "ComponentId": 930, "X": 44, "Y": 57 },
-    { "ComponentId": 930, "X": 46, "Y": 55 }
+    { "ComponentId": 930, "X": 46, "Y": 55 },
+    { "ComponentId": 935, "X": 39, "Y": 13 },
+    { "ComponentId": 935, "X": 41, "Y": 13 },
+    { "ComponentId": 935, "X": 39, "Y": 15 }
   ]
 }

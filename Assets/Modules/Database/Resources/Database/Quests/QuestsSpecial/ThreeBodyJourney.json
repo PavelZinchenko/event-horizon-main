@@ -3,6 +3,7 @@
   "Id": 202,
   "Name": "$Quest_ThreeBodyJourney",
   "QuestType": 1,
+  "StartCondition": 0,
   "Origin": {
     "Type": 2,
     "MinDistance": 100,

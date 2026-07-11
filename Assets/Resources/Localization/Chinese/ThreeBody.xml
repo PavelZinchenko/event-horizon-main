@@ -17,6 +17,8 @@
     <string name="ThreeBodyPrologue_Message2">自广播纪元来临，无数人都在恐惧那一天的到来，而现在，已经来临，黑暗森林打击来了。\n\n而你，身为星舰地球的一份子，即将使用母舰曲率前往星辰大海，恢复人类的荣光！</string>
     <string name="ThreeBodyPrologue_Advance">前进四。</string>
     <string name="Quest_ThreeBodyJourney">开始旅程</string>
+    <string name="StarshipEarthExperimentalPlatform">实验性装备搭载平台</string>
+    <string name="StarshipEarthExperimentalPlatformDescription">为大型旗舰设计的模块化伴飞平台，可搭载特种实验装置并随舰部署。</string>
     <string name="TrisolarisCruiser">三体巡洋舰</string>
     <string name="TrisolarisCruiserDescription">三体舰队的高速主力巡洋舰，可使用不同武器改型投入战斗。</string>
     <string name="TrisolarisBattleship">三体战舰</string>
