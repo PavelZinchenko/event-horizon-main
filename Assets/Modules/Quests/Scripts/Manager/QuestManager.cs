@@ -253,6 +253,17 @@ namespace Domain.Quests
                         var relation = _context.QuestDataStorage.GetFactionRelations(homeStar);
                         _context.QuestDataStorage.SetFactionRelations(homeStar, relation + 5);
                     }
+                    // The prologue's StartQuest action can be skipped when its
+                    // terminal transition and the dialog close happen in the same
+                    // frame.  Guarantee the storyline follow-up is persisted and
+                    // visible in the quest list after the prologue finishes.
+                    if (quest.Id == ThreeBodyPrologueQuestId)
+                    {
+                        var journey = _database.GetQuest(new GameDatabase.Model.ItemId<QuestModel>(ThreeBodyJourneyQuestId));
+                        if (journey != null && journey != QuestModel.DefaultValue &&
+                            journey.CanBeStarted(_context.QuestDataStorage, quest.StarId))
+                            StartQuest(journey);
+                    }
                     break;
 	            case QuestStatus.Failed:
                     _context.QuestDataStorage.SetQuestFailed(quest.Id, quest.StarId);
@@ -366,5 +377,7 @@ namespace Domain.Quests
 		private readonly IQuestManagerContext _context;
 
 		private const long UpdateCooldown = 10 * TimeSpan.TicksPerSecond;
+		private const int ThreeBodyPrologueQuestId = 201;
+		private const int ThreeBodyJourneyQuestId = 202;
 	}
 }

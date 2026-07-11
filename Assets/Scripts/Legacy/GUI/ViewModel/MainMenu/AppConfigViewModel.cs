@@ -49,11 +49,22 @@ namespace ViewModel
                 _session.Statistics.UnlockShip(ship.Id);
 
             foreach (var component in _database.ComponentList.Where(item => item != null))
-                _playerInventory.Components.Add(new ComponentInfo(component), 99);
+            {
+                var info = new ComponentInfo(component);
+                if (_playerInventory.Components.GetQuantity(info) < 99)
+                    _playerInventory.Components[info] = 99;
+            }
 
+            foreach (var satellite in _database.SatelliteList.Where(item => item != null))
+                if (_playerInventory.Satellites.GetQuantity(satellite) == 0)
+                    _playerInventory.Satellites[satellite] = 1;
+
+            var ownedShipIds = _playerFleet.Ships.Select(item => item.Model.Id.Value).ToHashSet();
             foreach (var build in _database.ShipBuildList.Where(item => item?.Ship != null && item.AvailableForPlayer &&
-                         (item.Ship.ShipType == ShipType.Common || item.Ship.ShipType == ShipType.Drone)))
-                _playerFleet.Ships.Add(new CommonShip(build, _database));
+                         (item.Ship.ShipType == ShipType.Common || item.Ship.ShipType == ShipType.Drone))
+                     .GroupBy(item => item.Ship.Id.Value).Select(group => group.First()))
+                if (ownedShipIds.Add(build.Ship.Id.Value))
+                    _playerFleet.Ships.Add(new CommonShip(build, _database));
         }
     }
 }
