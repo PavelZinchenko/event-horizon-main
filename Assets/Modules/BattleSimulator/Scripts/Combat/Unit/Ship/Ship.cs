@@ -129,6 +129,11 @@ namespace Combat.Component.Ship
 
             if (target is Combat.Component.Bullet.Bullet projectile)
             {
+                // Missiles must follow the normal collision/detonation path so
+                // their area thermal damage is created and can damage 水滴.
+                if (projectile.Type.Class == UnitClass.Missile)
+                    return false;
+
                 // Resolve the projectile as the attacking unit even when the
                 // physics callback reports the ship first.  Without this, a
                 // single-hit shot damaged 水滴 but never ran its own destroy

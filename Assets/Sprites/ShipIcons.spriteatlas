@@ -116,6 +116,7 @@ SpriteAtlas:
     - 3da2218a92bd7404faabff4631a3a595: 21300000
     - 6536f19a54cd827469b693451b77efa3: 21300000
     - 008b269ac7f68b14db022017cbbb308d: 21300000
+    - 1a18a0ca214b6504ab9a392f1661b2a5: 21300000
     - 8e4673ca0f2a2344a84585e76449ccc2: 21300000
     - 0c1ee5ca89ef8c0409733249d8e5afdc: 21300000
     - df1926cace4bc5848a7ab379f21a16fd: 21300000
@@ -123,6 +124,8 @@ SpriteAtlas:
     - b3ed26fa9f42de34d838cb705d1d3a7e: 21300000
     - 570156fa5564a1e4298adcb470e8ca54: 21300000
     - ba04960b997bffc46b48cbed661f7bf7: 21300000
+    - 3a7a9f0b4fcf0e942a15dc3d286d9cd9: 21300000
+    - b388c11baecb0fe41b3aeb8fc65762f7: 21300000
     - fdff293b656daac41a2b5ebe77412833: 21300000
     - 3bbadd7b8776f6341867d1426c912d3e: 21300000
     - a540798bca8499946855b6b3d160785d: 21300000
@@ -221,6 +224,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3da2218a92bd7404faabff4631a3a595, type: 3}
   - {fileID: 21300000, guid: 6536f19a54cd827469b693451b77efa3, type: 3}
   - {fileID: 21300000, guid: 008b269ac7f68b14db022017cbbb308d, type: 3}
+  - {fileID: 21300000, guid: 1a18a0ca214b6504ab9a392f1661b2a5, type: 3}
   - {fileID: 21300000, guid: 8e4673ca0f2a2344a84585e76449ccc2, type: 3}
   - {fileID: 21300000, guid: 0c1ee5ca89ef8c0409733249d8e5afdc, type: 3}
   - {fileID: 21300000, guid: df1926cace4bc5848a7ab379f21a16fd, type: 3}
@@ -228,6 +232,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b3ed26fa9f42de34d838cb705d1d3a7e, type: 3}
   - {fileID: 21300000, guid: 570156fa5564a1e4298adcb470e8ca54, type: 3}
   - {fileID: 21300000, guid: ba04960b997bffc46b48cbed661f7bf7, type: 3}
+  - {fileID: 21300000, guid: 3a7a9f0b4fcf0e942a15dc3d286d9cd9, type: 3}
+  - {fileID: 21300000, guid: b388c11baecb0fe41b3aeb8fc65762f7, type: 3}
   - {fileID: 21300000, guid: fdff293b656daac41a2b5ebe77412833, type: 3}
   - {fileID: 21300000, guid: 3bbadd7b8776f6341867d1426c912d3e, type: 3}
   - {fileID: 21300000, guid: a540798bca8499946855b6b3d160785d, type: 3}
@@ -325,6 +331,7 @@ SpriteAtlas:
   - f6s5
   - starship_earth_frigate
   - f1s5
+  - trisolaris_cruiser
   - fas4
   - unknown_ship
   - f6s1
@@ -332,6 +339,8 @@ SpriteAtlas:
   - flagship3
   - fns9
   - f2s4
+  - trisolaris_flagship
+  - trisolaris_battleship
   - f3s2
   - starship_earth_battleship
   - f5s1_2

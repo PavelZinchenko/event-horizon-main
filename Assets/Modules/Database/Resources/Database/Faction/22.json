@@ -4,8 +4,9 @@
   "Name": "$Faction22",
   "Color": "#D6E8FF",
   "Icon": "faction_22",
-  "NoTerritories": true,
-  "NoWanderingShips": true,
-  "HideFromMerchants": true,
+  "HomeStarDistance": 100,
+  "HomeStarDistanceMax": 5000,
+  "WanderingShipsDistance": 60,
+  "WanderingShipsDistanceMax": 5000,
   "NoMissions": true
 }

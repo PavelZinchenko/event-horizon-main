@@ -118,7 +118,7 @@ namespace GameStateMachine.States
 
             var configuredEnemies = ParseEnemyFleet(_settings.EnemyFleetSpec).ToList();
             if (configuredEnemies.Count > 0)
-                secondFleet = new TestFleet(_database, configuredEnemies, _settings.EasyMode ? 0 : 100);
+                secondFleet = new TestFleet(_database, configuredEnemies.OrderBy(_ => random.Next()), _settings.EasyMode ? 0 : 100);
 
 			var builder = _combatModelBuilderFactory.Create();
 			builder.PlayerFleet = firstFleet;

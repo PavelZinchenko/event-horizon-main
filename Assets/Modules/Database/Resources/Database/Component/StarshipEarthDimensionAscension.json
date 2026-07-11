@@ -2,7 +2,7 @@
   "ItemType": 1,
   "Id": 311,
   "Name": "维度跃升装置",
-  "Description": "2×2特种装置。手动开启后每秒耗能400，暂时进入四维状态：仅受维度伤害，且自身造成的伤害全部视为维度伤害。",
+  "Description": "手动开启后持续消耗能量，暂时进入四维状态：仅受维度伤害，且自身造成的伤害全部视为维度伤害。",
   "ContentSource": 1,
   "DisplayCategory": 6,
   "Availability": 1,

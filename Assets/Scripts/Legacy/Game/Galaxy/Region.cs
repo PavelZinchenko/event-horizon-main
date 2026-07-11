@@ -139,7 +139,9 @@ namespace GameModel
             if (faction == null || faction == Faction.Empty || _session.Quests.HasFactionRelations(HomeStar))
                 return;
 
-            var value = faction.Id.Value >= StarshipEarthFactionId ? 50 : -50;
+            var value = faction.Id.Value == TrisolarisFactionId
+                ? -50
+                : faction.Id.Value >= StarshipEarthFactionId ? 50 : -50;
             _session.Quests.SetFactionRelations(HomeStar, value);
         }
 
@@ -175,6 +177,7 @@ namespace GameModel
         public const int UnoccupiedRegionId = 0;
 		public const int PlayerHomeRegionId = 1;
         public const int StarshipEarthFactionId = 21;
+        public const int TrisolarisFactionId = 22;
 
 	    public static readonly Region Empty = new Region();
 	}

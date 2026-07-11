@@ -1,0 +1,16 @@
+{
+  "ItemType": 1,
+  "Id": 930,
+  "Name": "$TrisolarisAntimatterEngine",
+  "Description": "$TrisolarisAntimatterEngineDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 4,
+  "Availability": 1,
+  "ComponentStatsId": 303,
+  "Faction": 22,
+  "Level": 100,
+  "Icon": "trisolaris_antimatter_engine",
+  "Color": "#9B72FF",
+  "Layout": "1010",
+  "CellType": "5"
+}

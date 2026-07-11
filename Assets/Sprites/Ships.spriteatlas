@@ -157,9 +157,11 @@ SpriteAtlas:
     - 6e48b57a2141c4c4f82c5b40aeb35566: 21300000
     - c7a5a48ab9f9b8d4a974cf8edb3c27b3: 21300000
     - 3f4b01aa3a7d836409de6daf53915ccc: 21300000
+    - b9c34cead2b1f894ab70eef82ab858c2: 21300000
     - a48e68fa8b3cccf408d0f07f2e953c4c: 21300000
     - eac08f0b59b4e6b45a8326384f9cf6f4: 21300000
     - 6802d51b60af82d40ab5bfe36815b662: 21300000
+    - c5a9571bc2b10be44a4011b0d8bd0e8b: 21300000
     - 9f08a71b26ff39c47b939d961caa548b: 21300000
     - 58c831ab1838c53469b14e665a6d939b: 21300000
     - d9a7b0bbcba1fa4488692c865c53fd43: 21300000
@@ -174,6 +176,7 @@ SpriteAtlas:
     - 897580ac8d29e084fae4573564b5fd4b: 21300000
     - 003518ccbfddbcc4e95fcf04a5fd84ab: 21300000
     - 9525dacc95b73564392d930c7207280a: 21300000
+    - adb455dca80d0924b940c131371a2011: 21300000
     - 6a9eebdccbb9fa343a77a002c59d2b8a: 21300000
     - 4214f0ec0808c0d48afb446098ee4b7f: 21300000
     - 989537fc7a055f34babbb609e4c8870e: 21300000
@@ -314,9 +317,11 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6e48b57a2141c4c4f82c5b40aeb35566, type: 3}
   - {fileID: 21300000, guid: c7a5a48ab9f9b8d4a974cf8edb3c27b3, type: 3}
   - {fileID: 21300000, guid: 3f4b01aa3a7d836409de6daf53915ccc, type: 3}
+  - {fileID: 21300000, guid: b9c34cead2b1f894ab70eef82ab858c2, type: 3}
   - {fileID: 21300000, guid: a48e68fa8b3cccf408d0f07f2e953c4c, type: 3}
   - {fileID: 21300000, guid: eac08f0b59b4e6b45a8326384f9cf6f4, type: 3}
   - {fileID: 21300000, guid: 6802d51b60af82d40ab5bfe36815b662, type: 3}
+  - {fileID: 21300000, guid: c5a9571bc2b10be44a4011b0d8bd0e8b, type: 3}
   - {fileID: 21300000, guid: 9f08a71b26ff39c47b939d961caa548b, type: 3}
   - {fileID: 21300000, guid: 58c831ab1838c53469b14e665a6d939b, type: 3}
   - {fileID: 21300000, guid: d9a7b0bbcba1fa4488692c865c53fd43, type: 3}
@@ -331,6 +336,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 897580ac8d29e084fae4573564b5fd4b, type: 3}
   - {fileID: 21300000, guid: 003518ccbfddbcc4e95fcf04a5fd84ab, type: 3}
   - {fileID: 21300000, guid: 9525dacc95b73564392d930c7207280a, type: 3}
+  - {fileID: 21300000, guid: adb455dca80d0924b940c131371a2011, type: 3}
   - {fileID: 21300000, guid: 6a9eebdccbb9fa343a77a002c59d2b8a, type: 3}
   - {fileID: 21300000, guid: 4214f0ec0808c0d48afb446098ee4b7f, type: 3}
   - {fileID: 21300000, guid: 989537fc7a055f34babbb609e4c8870e, type: 3}
@@ -470,9 +476,11 @@ SpriteAtlas:
   - drone3
   - ship9
   - necro3
+  - trisolaris_cruiser
   - slime2
   - flagship13
   - f7s1_2
+  - trisolaris_flagship
   - f6s3
   - f7s3
   - fas4
@@ -487,6 +495,7 @@ SpriteAtlas:
   - f5s1
   - salvage_drone
   - fns10
+  - trisolaris_battleship
   - flagship7
   - ship12
   - f3s1_2

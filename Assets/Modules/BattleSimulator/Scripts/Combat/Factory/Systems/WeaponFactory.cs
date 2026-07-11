@@ -39,7 +39,8 @@ namespace Combat.Factory
 
         public IWeapon Create(IWeaponDataObsolete weaponData, IWeaponPlatform platform, float hitPointsMultiplier, IShip owner)
         {
-            var bulletFactory = new BulletFactoryObsolete(weaponData.Ammunition, _scene, _services, _spaceObjectFactory, _effectFactory, owner);
+            var bulletFactory = new BulletFactoryObsolete(weaponData.Ammunition, _scene, _services, _spaceObjectFactory, _effectFactory, owner,
+                weaponData.WeaponSlotType == 'L');
             bulletFactory.Stats.HitPointsMultiplier = hitPointsMultiplier;
             return Create(weaponData.Weapon, weaponData.KeyBinding, bulletFactory, platform);
         }

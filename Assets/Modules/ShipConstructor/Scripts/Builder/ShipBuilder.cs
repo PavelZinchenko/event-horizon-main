@@ -165,7 +165,7 @@ namespace Constructor
             }
 
             foreach (var spec in component.WeaponsObsolete)
-                platform.AddWeapon(spec.Key, spec.Value, item.KeyBinding);
+                platform.AddWeapon(spec.Key, spec.Value, item.KeyBinding, item.Info.Data.WeaponSlotType);
         }
 
         private int Size
@@ -363,9 +363,9 @@ namespace Constructor
 				}
 			}
 			
-			public void AddWeapon(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition, int key)
+			public void AddWeapon(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition, int key, char weaponSlotType = default)
 			{
-				_weaponsObsolete.Add(new WeaponDataObsolete(weapon, ammunition, key));
+				_weaponsObsolete.Add(new WeaponDataObsolete(weapon, ammunition, key, weaponSlotType));
 			}
 
 		    public void AddWeapon(Weapon weapon, Ammunition ammunition, in WeaponStatModifier stats, int key, char weaponSlotType)
@@ -418,11 +418,12 @@ namespace Constructor
 
             public class WeaponDataObsolete : IWeaponDataObsolete
             {
-				public WeaponDataObsolete(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition, int key)
+				public WeaponDataObsolete(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition, int key, char weaponSlotType)
 				{
 					_weapon = weapon;
 				    _ammunition = ammunition;
 					KeyBinding = weapon.ActivationType.ValidateKey(key);
+					WeaponSlotType = weaponSlotType;
 				}
 
 			    public WeaponStats Weapon
@@ -447,7 +448,8 @@ namespace Constructor
 					}
 				}
 				
-				public int KeyBinding { get; private set; }
+                public int KeyBinding { get; private set; }
+				public char WeaponSlotType { get; private set; }
 				
 				public float DamageMultiplier { get; set; }
 				public float FireRateMultiplier { get; set; }

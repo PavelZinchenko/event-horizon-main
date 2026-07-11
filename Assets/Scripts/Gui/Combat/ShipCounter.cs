@@ -51,7 +51,7 @@ namespace Gui.Combat
                 _allyText.verticalOverflow = VerticalWrapMode.Overflow;
                 var rect = _allyText.rectTransform;
                 var enemyRect = _countText.rectTransform;
-                var verticalGap = Mathf.Max(34f, enemyRect.rect.height + 8f);
+                var verticalGap = Mathf.Max(64f, enemyRect.rect.height + 32f);
                 rect.anchoredPosition = enemyRect.anchoredPosition + new Vector2(0f, -verticalGap);
                 rect.sizeDelta = new Vector2(Mathf.Max(150f, enemyRect.rect.width * 2.4f), Mathf.Max(28f, enemyRect.rect.height));
             }
@@ -59,7 +59,7 @@ namespace Gui.Combat
             var visible = _manager.HasAlliedParticipants;
             _allyText.gameObject.SetActive(visible);
             if (visible)
-                _allyText.text = "友军 " + _manager.RemainingAllyCount;
+                _allyText.text = "友军：" + _manager.RemainingAllyCount;
         }
 
         private global::Combat.Manager.CombatManager _manager;

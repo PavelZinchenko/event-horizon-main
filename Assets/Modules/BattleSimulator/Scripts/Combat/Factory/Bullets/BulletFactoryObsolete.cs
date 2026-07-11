@@ -27,7 +27,7 @@ namespace Combat.Factory
 {
     public class BulletFactoryObsolete : IBulletFactory
     {
-        public BulletFactoryObsolete(AmmunitionObsoleteStats ammunitionStats, IScene scene, IGameServicesProvider services, SpaceObjectFactory spaceObjectFactory, EffectFactory effectFactory, IShip owner)
+        public BulletFactoryObsolete(AmmunitionObsoleteStats ammunitionStats, IScene scene, IGameServicesProvider services, SpaceObjectFactory spaceObjectFactory, EffectFactory effectFactory, IShip owner, bool reflectableByWaterdrop = false)
         {
             _stats = ammunitionStats;
             _scene = scene;
@@ -35,6 +35,7 @@ namespace Combat.Factory
             _spaceObjectFactory = spaceObjectFactory;
             _effectFactory = effectFactory;
             _owner = owner;
+            _reflectableByWaterdrop = reflectableByWaterdrop;
             _bulletStats = new BulletStatsObsolete(ammunitionStats);
             _prefab = new Lazy<GameObject>(() => _services.PrefabCache.LoadBulletPrefabObsolete(_stats.BulletPrefab, _stats.AmmunitionClass.IsBeam() ? "Combat/Bullets/Laser" : "Combat/Bullets/Plasma2", services));
         }
@@ -78,7 +79,12 @@ namespace Combat.Factory
             var lifetime = new Lifetime(_stats.Velocity > 0 && _bulletStats.Range > 0 ? _stats.AmmunitionClass.IsHoming() ? 1.2f * _bulletStats.Range / velocity : _bulletStats.Range / velocity : _bulletStats.Lifetime);
             var unitType = new UnitType(_stats.HitPoints > 0 ? UnitClass.Missile : _stats.AmmunitionClass.IsProjectile() ? UnitClass.EnergyBolt : UnitClass.AreaOfEffect, UnitSide.Undefined, _owner, _stats.AmmunitionClass.CanHitAllies());
 
-            var options = new Bullet.Options { CanBeDisarmed = _stats.AmmunitionClass.CanBeDisarmed() && _bulletStats.Impulse < 0.5f, DetonateWhenDestroyed = true };
+            var options = new Bullet.Options
+            {
+                CanBeDisarmed = _stats.AmmunitionClass.CanBeDisarmed() && _bulletStats.Impulse < 0.5f,
+                DetonateWhenDestroyed = true,
+                ReflectableByWaterdrop = _reflectableByWaterdrop && _stats.AmmunitionClass.IsBeam()
+            };
             var bullet = new Bullet(body, view, lifetime, unitType, options);
             bullet.AddResource(bulletGameObject);
 
@@ -310,6 +316,7 @@ namespace Combat.Factory
         private readonly SpaceObjectFactory _spaceObjectFactory;
         private readonly EffectFactory _effectFactory;
         private readonly IShip _owner;
+        private readonly bool _reflectableByWaterdrop;
         private readonly IGameServicesProvider _services;
     }
 }

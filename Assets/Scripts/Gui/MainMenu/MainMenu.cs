@@ -136,6 +136,8 @@ namespace Gui.MainMenu
         {
             if (_enemyFleetPanel != null)
                 Destroy(_enemyFleetPanel);
+            _enemyFleetPanel = null;
+            _quickEnemyCountTexts.Clear();
             _gameSettings.EditorText = _inputField.text;
             var useMyFleet = _useMyFleetToggle != null && _useMyFleetToggle.isOn;
             var enemyFleetSpec = string.Join(",", _quickEnemyCounts.Where(item => item.Value > 0)
@@ -236,7 +238,14 @@ namespace Gui.MainMenu
 
         private void CreateEnemyFleetButton(Transform dialog)
         {
-            if (dialog.Find("ConfigureEnemyFleet") != null) return;
+            var existing = dialog.Find("ConfigureEnemyFleet");
+            if (existing != null)
+            {
+                var existingButton = existing.GetComponent<Button>();
+                existingButton.onClick.RemoveAllListeners();
+                existingButton.onClick.AddListener(OpenEnemyFleetPanel);
+                return;
+            }
             var buttonObject = new GameObject("ConfigureEnemyFleet", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(LayoutElement));
             buttonObject.layer = dialog.gameObject.layer;
             buttonObject.transform.SetParent(dialog, false);
@@ -255,13 +264,16 @@ namespace Gui.MainMenu
             if (_enemyFleetPanel != null) { _enemyFleetPanel.SetActive(true); return; }
             var canvas = GetComponentInParent<Canvas>() ?? FindObjectOfType<Canvas>();
             if (canvas == null) return;
-            _enemyFleetPanel = new GameObject("QuickEnemyFleetPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            _enemyFleetPanel = new GameObject("QuickEnemyFleetPanel", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster), typeof(CanvasRenderer), typeof(Image));
             _enemyFleetPanel.layer = canvas.gameObject.layer;
             var root = _enemyFleetPanel.GetComponent<RectTransform>();
             root.SetParent(canvas.transform, false);
             root.anchorMin = new Vector2(0.08f, 0.06f); root.anchorMax = new Vector2(0.92f, 0.94f);
             root.offsetMin = root.offsetMax = Vector2.zero;
             _enemyFleetPanel.GetComponent<Image>().color = new Color(0.015f, 0.07f, 0.11f, 0.99f);
+            var overlayCanvas = _enemyFleetPanel.GetComponent<Canvas>();
+            overlayCanvas.overrideSorting = true;
+            overlayCanvas.sortingOrder = canvas.sortingOrder + 100;
             _enemyFleetPanel.transform.SetAsLastSibling();
 
             var title = CreateRuntimeText(root, "Title", "指定敌方舰队", 30, TextAnchor.MiddleCenter);

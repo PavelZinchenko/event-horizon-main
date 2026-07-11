@@ -83,6 +83,7 @@ namespace Constructor
 		WeaponStats Weapon { get; }
         AmmunitionObsoleteStats Ammunition { get; }
         int KeyBinding { get; }
+		char WeaponSlotType { get; }
 	}
 	
 	public interface IDeviceData

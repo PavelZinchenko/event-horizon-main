@@ -215,6 +215,7 @@ namespace Gui.StarMap
                     return _session.Quests.GetFactionRelations(region.HomeStar);
             }
 
+            if (faction.Id.Value == GameModel.Region.TrisolarisFactionId) return -50;
             return faction.Id.Value >= GameModel.Region.StarshipEarthFactionId ? 50 : -50;
         }
 
