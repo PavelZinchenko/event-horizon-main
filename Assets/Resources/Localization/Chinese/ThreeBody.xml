@@ -10,6 +10,13 @@
     <string name="Faction26">墓地</string>
     <string name="Faction27">四维空间</string>
     <string name="Faction28">开发组</string>
+    <string name="CharacterBoundaryStudio">边界工作室</string>
+    <string name="Quest_ThreeBodyPrologue">三体视界</string>
+    <string name="ThreeBodyPrologue_Message1">欢迎游玩《三体视界》，我们已经重构了原版，当然也包括很多新机制。你准备好了吗？——边界工作室</string>
+    <string name="ThreeBodyPrologue_Confirm">确认。</string>
+    <string name="ThreeBodyPrologue_Message2">自广播纪元来临，无数人都在恐惧那一天的到来，而现在，已经来临，黑暗森林打击来了。\n\n而你，身为星舰地球的一份子，即将使用母舰曲率前往星辰大海，恢复人类的荣光！</string>
+    <string name="ThreeBodyPrologue_Advance">前进四。</string>
+    <string name="Quest_ThreeBodyJourney">开始旅程</string>
     <string name="TrisolarisCruiser">三体巡洋舰</string>
     <string name="TrisolarisCruiserDescription">三体舰队的高速主力巡洋舰，可使用不同武器改型投入战斗。</string>
     <string name="TrisolarisBattleship">三体战舰</string>

@@ -1,0 +1,19 @@
+{
+  "ItemType": 15,
+  "Id": 202,
+  "Name": "$Quest_ThreeBodyJourney",
+  "QuestType": 1,
+  "Origin": {
+    "Type": 2,
+    "MinDistance": 100,
+    "MaxDistance": 140
+  },
+  "Nodes": [
+    {
+      "Id": 1,
+      "Type": 15,
+      "Transitions": [{ "TargetNode": 2, "Requirement": { "Type": 30 } }]
+    },
+    { "Id": 2, "Type": 40 }
+  ]
+}

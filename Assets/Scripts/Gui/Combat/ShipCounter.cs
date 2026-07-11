@@ -52,7 +52,7 @@ namespace Gui.Combat
                 var rect = _allyText.rectTransform;
                 var enemyRect = _countText.rectTransform;
                 var verticalGap = Mathf.Max(64f, enemyRect.rect.height + 32f);
-                rect.anchoredPosition = enemyRect.anchoredPosition + new Vector2(0f, -verticalGap);
+                rect.anchoredPosition = enemyRect.anchoredPosition + new Vector2(72f, -verticalGap);
                 rect.sizeDelta = new Vector2(Mathf.Max(150f, enemyRect.rect.width * 2.4f), Mathf.Max(28f, enemyRect.rect.height));
             }
 
