@@ -10,8 +10,8 @@ public static class AndroidDevelopmentBuild
 {
     private const string PackageName = "com.threebody.EventHorizon";
     private const string ProductName = "三体视界";
-    private const string VersionName = "Preview 25";
-    private const int VersionCode = 112250;
+    private const string VersionName = "Preview 26";
+    private const int VersionCode = 112260;
 
     [MenuItem("Build/Android/Development APK")]
     public static void BuildFromMenu()
@@ -35,7 +35,7 @@ public static class AndroidDevelopmentBuild
 
         var outputDirectory = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Builds", "Android"));
         Directory.CreateDirectory(outputDirectory);
-        var outputPath = Path.Combine(outputDirectory, "ThreeBody-EventHorizon-Preview-25.apk");
+        var outputPath = Path.Combine(outputDirectory, "ThreeBody-EventHorizon-Preview-26.apk");
         BuildStreamingAssetBundles();
 
         var scenes = EditorBuildSettings.scenes
@@ -82,6 +82,7 @@ public static class AndroidDevelopmentBuild
         NormalizeShipSpriteScale("Assets/Sprites/ShipIcons");
         NormalizeShipSpriteScale("Assets/Sprites/Starbases");
         NormalizeShipSpriteScale("Assets/Resources/Textures/ThreeBody");
+        NormalizeAvatarSprite("Assets/Resources/Textures/Avatars/boundary_studio_logo.png");
         NormalizeThreeBodyComponentSprites();
         var locator = Resources.Load<Services.Resources.ResourceLocator>("ResourceLocator");
         if (locator == null)
@@ -157,6 +158,21 @@ public static class AndroidDevelopmentBuild
             importer.spritePixelsPerUnit = pixelsPerUnit;
             importer.SaveAndReimport();
         }
+    }
+
+    private static void NormalizeAvatarSprite(string path)
+    {
+        if (AssetImporter.GetAtPath(path) is not TextureImporter importer)
+            throw new InvalidOperationException($"Avatar sprite is missing: {path}");
+
+        importer.GetSourceTextureWidthAndHeight(out var width, out var height);
+        importer.textureType = TextureImporterType.Sprite;
+        importer.spriteImportMode = SpriteImportMode.Single;
+        importer.alphaSource = TextureImporterAlphaSource.FromInput;
+        importer.alphaIsTransparency = true;
+        importer.mipmapEnabled = false;
+        importer.spritePixelsPerUnit = Mathf.Max(width, height);
+        importer.SaveAndReimport();
     }
 
     private static string FindComponentSpriteAsset(string icon)

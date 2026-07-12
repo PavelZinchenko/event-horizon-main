@@ -133,6 +133,18 @@ namespace Domain.Quests
 	        var starId = _context.StarMapDataProvider.CurrentStar.Id;
             var seed = _context.QuestDataStorage.GenerateSeed(questModel, starId) + seedIncrement;
 
+            // This storyline objective is a destination 100+ light-years from
+            // the prologue system. Manual quests normally bind to the current
+            // star, which made ComeToOrigin true immediately and completed the
+            // task before the quest list could render it.
+            if (questModel.Id.Value == ThreeBodyJourneyQuestId)
+            {
+                var destination = _requirementsFactory.CreateQuestGiver(questModel.Origin)
+                    .GetStartSystem(starId, seed);
+                if (destination >= 0)
+                    starId = destination;
+            }
+
 	        if (questModel.StartCondition != StartCondition.Manual)
 	        {
 	            UnityEngine.Debug.LogException(new ArgumentException("QuestManager.StartQuest: Wrong start condition - " + questModel.StartCondition));

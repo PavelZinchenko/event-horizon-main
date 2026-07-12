@@ -12,8 +12,6 @@ namespace GameServices.Player
 {
     public sealed class PlayerSkills : GameServiceBase
     {
-        private const int GrantAllContentQuestId = 201;
-
         [Inject] private readonly PlayerFleet _playerFleet;
 
         [Inject]
@@ -39,9 +37,6 @@ namespace GameServices.Player
             get
             {
                 GetSkillLevels();
-                if (_session.Quests.HasBeenCompleted(GrantAllContentQuestId))
-                    return int.MaxValue - _pointsSpent;
-
                 return _experience.Level - _pointsSpent;
             }
         }
