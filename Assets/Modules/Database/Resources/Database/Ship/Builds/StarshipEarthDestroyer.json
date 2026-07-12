@@ -1,138 +1,113 @@
-{
-  "ItemType": 8,
-  "Id": 413,
-  "ShipId": 162,
-  "AvailableForPlayer": true,
-  "AvailableForEnemy": true,
-  "Components": [
-    {
-      "ComponentId": 302,
-      "X": 12,
-      "Y": 0
-    },
-    {
-      "ComponentId": 302,
-      "X": 12,
-      "Y": 2
-    },
-    {
-      "ComponentId": 302,
-      "X": 14,
-      "Y": 3
-    },
-    {
-      "ComponentId": 302,
-      "X": 12,
-      "Y": 4
-    },
-    {
-      "ComponentId": 302,
-      "X": 10,
-      "Y": 5
-    },
-    {
-      "ComponentId": 302,
-      "X": 15,
-      "Y": 5
-    },
-    {
-      "ComponentId": 302,
-      "X": 12,
-      "Y": 6
-    },
-    {
-      "ComponentId": 308,
-      "X": 9,
-      "Y": 8,
-      "BarrelId": 0
-    },
-    {
-      "ComponentId": 308,
-      "X": 15,
-      "Y": 8,
-      "BarrelId": 1
-    },
-    {
-      "ComponentId": 303,
-      "X": 11,
-      "Y": 9
-    },
-    {
-      "ComponentId": 303,
-      "X": 14,
-      "Y": 9
-    },
-    {
-      "ComponentId": 303,
-      "X": 11,
-      "Y": 13
-    },
-    {
-      "ComponentId": 303,
-      "X": 14,
-      "Y": 13
-    },
-    {
-      "ComponentId": 308,
-      "X": 9,
-      "Y": 15,
-      "BarrelId": 2
-    },
-    {
-      "ComponentId": 303,
-      "X": 12,
-      "Y": 15
-    },
-    {
-      "ComponentId": 308,
-      "X": 15,
-      "Y": 15,
-      "BarrelId": 3
-    },
-    {
-      "ComponentId": 303,
-      "X": 12,
-      "Y": 17
-    },
-    {
-      "ComponentId": 306,
-      "X": 14,
-      "Y": 17
-    },
-    {
-      "ComponentId": 303,
-      "X": 12,
-      "Y": 19
-    },
-    {
-      "ComponentId": 306,
-      "X": 11,
-      "Y": 20
-    },
-    {
-      "ComponentId": 306,
-      "X": 14,
-      "Y": 20
-    },
-    {
-      "ComponentId": 306,
-      "X": 15,
-      "Y": 20
-    },
-    {
-      "ComponentId": 303,
-      "X": 12,
-      "Y": 21
-    },
-    {
-      "ComponentId": 304,
-      "X": 11,
-      "Y": 23
-    },
-    {
-      "ComponentId": 304,
-      "X": 13,
-      "Y": 23
-    }
-  ]
+﻿{
+    "ItemType":  8,
+    "Id":  413,
+    "ShipId":  162,
+    "AvailableForPlayer":  true,
+    "AvailableForEnemy":  true,
+    "Components":  [
+                       {
+                           "ComponentId":  302,
+                           "X":  10,
+                           "Y":  5
+                       },
+                       {
+                           "ComponentId":  302,
+                           "X":  15,
+                           "Y":  5
+                       },
+                       {
+                           "ComponentId":  308,
+                           "X":  9,
+                           "Y":  8,
+                           "BarrelId":  0
+                       },
+                       {
+                           "ComponentId":  308,
+                           "X":  15,
+                           "Y":  8,
+                           "BarrelId":  1
+                       },
+                       {
+                           "ComponentId":  303,
+                           "X":  11,
+                           "Y":  9
+                       },
+                       {
+                           "ComponentId":  303,
+                           "X":  14,
+                           "Y":  9
+                       },
+                       {
+                           "ComponentId":  303,
+                           "X":  11,
+                           "Y":  13
+                       },
+                       {
+                           "ComponentId":  303,
+                           "X":  14,
+                           "Y":  13
+                       },
+                       {
+                           "ComponentId":  308,
+                           "X":  9,
+                           "Y":  15,
+                           "BarrelId":  2
+                       },
+                       {
+                           "ComponentId":  303,
+                           "X":  12,
+                           "Y":  15
+                       },
+                       {
+                           "ComponentId":  308,
+                           "X":  15,
+                           "Y":  15,
+                           "BarrelId":  3
+                       },
+                       {
+                           "ComponentId":  303,
+                           "X":  12,
+                           "Y":  17
+                       },
+                       {
+                           "ComponentId":  306,
+                           "X":  14,
+                           "Y":  17
+                       },
+                       {
+                           "ComponentId":  303,
+                           "X":  12,
+                           "Y":  19
+                       },
+                       {
+                           "ComponentId":  306,
+                           "X":  11,
+                           "Y":  20
+                       },
+                       {
+                           "ComponentId":  306,
+                           "X":  14,
+                           "Y":  20
+                       },
+                       {
+                           "ComponentId":  306,
+                           "X":  15,
+                           "Y":  20
+                       },
+                       {
+                           "ComponentId":  303,
+                           "X":  12,
+                           "Y":  21
+                       },
+                       {
+                           "ComponentId":  304,
+                           "X":  11,
+                           "Y":  23
+                       },
+                       {
+                           "ComponentId":  304,
+                           "X":  13,
+                           "Y":  23
+                       }
+                   ]
 }

@@ -5,7 +5,7 @@
   "QuestType": 2,
   "StartCondition": 0,
   "Origin": {
-    "Type": 2,
+    "Type": 4,
     "MinDistance": 100,
     "MaxDistance": 140
   },

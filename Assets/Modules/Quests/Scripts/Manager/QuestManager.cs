@@ -106,16 +106,50 @@ namespace Domain.Quests
             _dailyQuests.Clear();
         }
 
-        private void LoadQuests()
+	    private void LoadQuests()
 	    {
+			var currentStarId = _context.StarMapDataProvider.CurrentStar.Id;
+			var discardedInvalidJourney = false;
 			foreach (var item in _context.QuestDataStorage.GetActiveQuests())
-				Add(_factory.Create(item));
+			{
+				// Preview builds could start the journey quest on the current star
+				// when the destination origin could not be resolved.  Its ComeToOrigin
+				// node then completed on the next tick and removed the task.  Discard
+				// that invalid in-progress entry so the prologue can create a real
+				// destination below instead of loading an already-completed task.
+				if (item.QuestId.Value == ThreeBodyJourneyQuestId && item.StarId == currentStarId)
+				{
+					_context.QuestDataStorage.SetQuestCancelled(item.QuestId.Value, item.StarId);
+					discardedInvalidJourney = true;
+					continue;
+				}
 
-	        var starId = _context.StarMapDataProvider.CurrentStar.Id;
+				Add(_factory.Create(item));
+			}
+
+	        var starId = currentStarId;
+			// GameStart is emitted for both a newly-created session and a loaded
+			// session in the original service layer.  Only evaluate this condition
+			// for a genuinely new save; otherwise the opening transmission can be
+			// offered again every time the application is launched.
+			var isNewGame = !_context.GameDataProvider.IsGameStarted;
 
             foreach (var questData in _database.QuestList)
-                if (questData.StartCondition == StartCondition.GameStart && questData.CanBeStarted(_context.QuestDataStorage, starId))
+	                if (isNewGame && questData.StartCondition == StartCondition.GameStart && questData.CanBeStarted(_context.QuestDataStorage, starId))
 	                Add(_factory.Create(questData, starId));
+
+			// Recover saves made by the builds that either skipped the StartQuest
+			// node or completed the destination objective on the current star.  A
+			// completed prologue is the authoritative prerequisite; the journey is
+			// still singleton, so this cannot duplicate a valid completed task.
+			if (!isNewGame && (discardedInvalidJourney ||
+				_context.QuestDataStorage.HasBeenCompleted(ThreeBodyPrologueQuestId)) &&
+				!_context.QuestDataStorage.IsActiveOrCompleted(ThreeBodyJourneyQuestId))
+			{
+				var journey = _database.GetQuest(new GameDatabase.Model.ItemId<QuestModel>(ThreeBodyJourneyQuestId));
+				if (journey != null && journey != QuestModel.DefaultValue)
+					StartQuest(journey);
+			}
 
             var seed = _context.GameDataProvider.GameSeed;
             _beaconQuests.Assign(_database.QuestList.Where(item => item.StartCondition == StartCondition.Beacon), _requirementsFactory, seed);
@@ -141,8 +175,13 @@ namespace Domain.Quests
             {
                 var destination = _requirementsFactory.CreateQuestGiver(questModel.Origin)
                     .GetStartSystem(starId, seed);
-                if (destination >= 0)
-                    starId = destination;
+                if (destination < 0 || destination == starId)
+                {
+                    UnityEngine.Debug.LogError("QuestManager.StartQuest: unable to resolve the journey destination");
+                    return;
+                }
+
+                starId = destination;
             }
 
 	        if (questModel.StartCondition != StartCondition.Manual)

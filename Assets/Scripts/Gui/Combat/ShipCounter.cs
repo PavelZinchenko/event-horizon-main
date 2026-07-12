@@ -40,26 +40,54 @@ namespace Gui.Combat
             if (_type != Type.Enemy || _manager == null || _countText == null)
                 return;
 
-            if (_allyText == null)
-            {
-                _allyText = Instantiate(_countText, _countText.transform.parent);
-                _allyText.name = "AllyShipCount";
-                _allyText.alignment = TextAnchor.UpperCenter;
-                _allyText.fontSize = Mathf.Max(12, _countText.fontSize - 3);
-                _allyText.resizeTextForBestFit = false;
-                _allyText.horizontalOverflow = HorizontalWrapMode.Overflow;
-                _allyText.verticalOverflow = VerticalWrapMode.Overflow;
-                var rect = _allyText.rectTransform;
-                var enemyRect = _countText.rectTransform;
-                var verticalGap = Mathf.Max(64f, enemyRect.rect.height + 32f);
-                rect.anchoredPosition = enemyRect.anchoredPosition + new Vector2(72f, -verticalGap);
-                rect.sizeDelta = new Vector2(Mathf.Max(150f, enemyRect.rect.width * 2.4f), Mathf.Max(28f, enemyRect.rect.height));
-            }
-
             var visible = _manager.HasAlliedParticipants;
-            _allyText.gameObject.SetActive(visible);
-            if (visible)
+            if (visible && _allyText == null)
+                CreateAllyPopup();
+
+            if (_allyText != null)
+                _allyText.transform.parent.gameObject.SetActive(visible);
+
+            if (visible && _allyText != null)
                 _allyText.text = "友军：" + _manager.RemainingAllyCount;
+        }
+
+        private void CreateAllyPopup()
+        {
+            var canvas = _countText.GetComponentInParent<Canvas>();
+            if (canvas == null) return;
+
+            var panel = new GameObject("AllyShipCountPopup", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            panel.layer = canvas.gameObject.layer;
+            panel.transform.SetParent(canvas.transform, false);
+            panel.transform.SetAsLastSibling();
+
+            var panelRect = panel.GetComponent<RectTransform>();
+            panelRect.anchorMin = new Vector2(0.5f, 1f);
+            panelRect.anchorMax = new Vector2(0.5f, 1f);
+            panelRect.pivot = new Vector2(0.5f, 1f);
+            // Keep the ally counter in its own top-level popup, well clear of
+            // the enemy counter and the right-side target list.
+            panelRect.anchoredPosition = new Vector2(-210f, -18f);
+            panelRect.sizeDelta = new Vector2(180f, 48f);
+
+            var background = panel.GetComponent<Image>();
+            background.color = new Color(0.02f, 0.16f, 0.24f, 0.88f);
+            background.raycastTarget = false;
+
+            _allyText = Instantiate(_countText, panel.transform);
+            _allyText.name = "AllyShipCount";
+            _allyText.alignment = TextAnchor.MiddleCenter;
+            _allyText.fontSize = Mathf.Max(14, _countText.fontSize - 2);
+            _allyText.resizeTextForBestFit = false;
+            _allyText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            _allyText.verticalOverflow = VerticalWrapMode.Overflow;
+            _allyText.color = new Color(0.4f, 0.85f, 1f, 1f);
+            _allyText.raycastTarget = false;
+            var textRect = _allyText.rectTransform;
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
         }
 
         private global::Combat.Manager.CombatManager _manager;

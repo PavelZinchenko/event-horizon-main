@@ -1,81 +1,66 @@
-{
-  "ItemType": 8,
-  "Id": 412,
-  "ShipId": 161,
-  "AvailableForPlayer": true,
-  "AvailableForEnemy": true,
-  "Components": [
-    {
-      "ComponentId": 308,
-      "X": 6,
-      "Y": 1,
-      "BarrelId": 0
-    },
-    {
-      "ComponentId": 308,
-      "X": 10,
-      "Y": 1,
-      "BarrelId": 1
-    },
-    {
-      "ComponentId": 302,
-      "X": 8,
-      "Y": 3
-    },
-    {
-      "ComponentId": 303,
-      "X": 7,
-      "Y": 5
-    },
-    {
-      "ComponentId": 303,
-      "X": 10,
-      "Y": 5
-    },
-    {
-      "ComponentId": 303,
-      "X": 7,
-      "Y": 7
-    },
-    {
-      "ComponentId": 303,
-      "X": 10,
-      "Y": 7
-    },
-    {
-      "ComponentId": 306,
-      "X": 6,
-      "Y": 10
-    },
-    {
-      "ComponentId": 306,
-      "X": 12,
-      "Y": 10
-    },
-    {
-      "ComponentId": 302,
-      "X": 7,
-      "Y": 11
-    },
-    {
-      "ComponentId": 302,
-      "X": 10,
-      "Y": 11
-    },
-    {
-      "ComponentId": 302,
-      "X": 8,
-      "Y": 13
-    },
-    {
-      "ComponentId": 304,
-      "X": 7,
-      "Y": 15
-    },
-    {
-      "ComponentId": 304,
-      "X": 9,
-      "Y": 15
-    }
-  ]
+﻿{
+    "ItemType":  8,
+    "Id":  412,
+    "ShipId":  161,
+    "AvailableForPlayer":  true,
+    "AvailableForEnemy":  true,
+    "Components":  [
+                       {
+                           "ComponentId":  308,
+                           "X":  6,
+                           "Y":  1,
+                           "BarrelId":  0
+                       },
+                       {
+                           "ComponentId":  308,
+                           "X":  10,
+                           "Y":  1,
+                           "BarrelId":  1
+                       },
+                       {
+                           "ComponentId":  302,
+                           "X":  8,
+                           "Y":  3
+                       },
+                       {
+                           "ComponentId":  303,
+                           "X":  7,
+                           "Y":  5
+                       },
+                       {
+                           "ComponentId":  303,
+                           "X":  10,
+                           "Y":  5
+                       },
+                       {
+                           "ComponentId":  303,
+                           "X":  7,
+                           "Y":  7
+                       },
+                       {
+                           "ComponentId":  303,
+                           "X":  10,
+                           "Y":  7
+                       },
+                       {
+                           "ComponentId":  306,
+                           "X":  6,
+                           "Y":  10
+                       },
+                       {
+                           "ComponentId":  306,
+                           "X":  12,
+                           "Y":  10
+                       },
+                       {
+                           "ComponentId":  304,
+                           "X":  7,
+                           "Y":  15
+                       },
+                       {
+                           "ComponentId":  304,
+                           "X":  9,
+                           "Y":  15
+                       }
+                   ]
 }

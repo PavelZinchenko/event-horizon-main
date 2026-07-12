@@ -4,6 +4,7 @@ using Constructor.Ships;
 using GameDatabase;
 using GameDatabase.Enums;
 using GameServices.Player;
+using GameServices.Research;
 using Session;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +19,9 @@ namespace ViewModel
         [Inject] private readonly ISessionData _session;
         [Inject] private readonly PlayerFleet _playerFleet;
         [Inject] private readonly PlayerInventory _playerInventory;
+        [Inject] private readonly PlayerResources _playerResources;
+        [Inject] private readonly PlayerSkills _playerSkills;
+        [Inject] private readonly Research _research;
 
         private int _tapCount;
         private float _lastTapTime;
@@ -58,6 +62,29 @@ namespace ViewModel
             foreach (var satellite in _database.SatelliteList.Where(item => item != null))
                 if (_playerInventory.Satellites.GetQuantity(satellite) == 0)
                     _playerInventory.Satellites[satellite] = 1;
+
+            // The version label is also the developer unlock gesture.  Keep
+            // the content unlock from the previous implementation, but make
+            // the gesture useful on a fresh save as well by filling the
+            // normal player resources and progression pools.  Values are
+            // intentionally applied as additions (except fuel, which is
+            // filled to its current capacity) so tapping again is harmless.
+            _playerResources.Money += 5_000_000;
+            _playerResources.Stars += 100_000;
+            _playerResources.Tokens += 10_000;
+            _playerResources.Fuel = _playerSkills.MainFuelCapacity;
+
+            foreach (var item in _database.QuestItemList.Where(item => item != null))
+                _playerResources.AddResource(item.Id, 10_000);
+
+            foreach (var faction in _database.FactionsWithEmpty.Where(item => item != null))
+                _research.AddResearchPoints(faction, 10_000);
+
+            // Player skill points are represented by the player's skill
+            // experience level.  Add a generous pool without resetting points
+            // already spent by the player.
+            _playerSkills.Experience = GameModel.Skills.Experience.FromLevel(
+                _playerSkills.Experience.Level + 100);
 
             var ownedShipIds = _playerFleet.Ships.Select(item => item.Model.Id.Value).ToHashSet();
             foreach (var build in _database.ShipBuildList.Where(item => item?.Ship != null && item.AvailableForPlayer &&
