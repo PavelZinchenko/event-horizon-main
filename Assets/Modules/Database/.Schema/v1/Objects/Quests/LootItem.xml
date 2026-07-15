@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data name="LootItem" type="struct" >
     <member name="Weight" type="float" />
+    <member name="Requirement" type="struct" typeid="Requirement" />
     <member name="Loot" type="struct" typeid="LootContent" />
 </data>

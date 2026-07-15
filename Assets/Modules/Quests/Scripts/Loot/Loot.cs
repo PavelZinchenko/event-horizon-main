@@ -4,7 +4,9 @@ using System.Linq;
 using Economy.ItemType;
 using GameDatabase;
 using GameDatabase.DataModel;
+using GameDatabase.Enums;
 using GameDatabase.Extensions;
+using UnityEngine;
 
 namespace Domain.Quests
 {
@@ -50,20 +52,21 @@ namespace Domain.Quests
 
     public class Loot : ILoot, ILootContentFactory<IEnumerable<LootItem>>
     {
-        public Loot(LootModel loot, QuestInfo questInfo, ILootItemFactory lootItemFactory, IDatabase database)
+        public Loot(LootModel loot, QuestInfo questInfo, ILootItemFactory lootItemFactory, IRequirementCache requirementCache, IDatabase database)
         {
             _lootItemFactory = lootItemFactory;
             _database = database;
             _loot = loot;
             _questInfo = questInfo;
-            _random = new Random(questInfo.Seed + loot.Id.Value);
+            _random = new System.Random(questInfo.Seed + loot.Id.Value);
+            _requirementCache = requirementCache;
         }
 
         public bool CanBeRemoved
         {
             get
             {
-                if (_items == null)
+                if (!_initialized)
                     Initialize();
 
                 foreach (var item in _items)
@@ -78,7 +81,7 @@ namespace Domain.Quests
         {
             get
             {
-                if (_items == null)
+                if (!_initialized)
                     Initialize();
 
                 return _items;
@@ -87,9 +90,15 @@ namespace Domain.Quests
 
         private void Initialize()
         {
+            // not initialized yet but items are already not-null
+            if (_items != null)
+            {
+                throw new InvalidOperationException($"Loot {_loot.Id} is accesses while it's still initializing. Check your loots and conditions for circular dependencies");
+            }
             _items = new List<LootItem>();
             foreach (var item in _loot.Loot.Create(this))
                 _items.Add(item);
+            _initialized = true;
         }
 
         #region ILootItemFactory
@@ -150,39 +159,25 @@ namespace Domain.Quests
         public IEnumerable<LootItem> Create(LootContent_RandomItems content)
         {
             var amount = _random.Range(content.MinAmount, content.MaxAmount);
-            var itemCount = content.Items.Count;
-
-            if (itemCount == 0)
-                yield break;
-
-            var totalWeight = 0f;
-            for (var i = 0; i < itemCount; ++i)
-                totalWeight += content.Items[i].Weight;
-
-            if (totalWeight < 0.0001f)
-                foreach (var item in content.Items.RandomUniqueElements(amount, itemCount, _random).SelectMany(item => item.Loot.Create(this)))
-                    yield return item;
 
             var itemsLeft = amount;
-            foreach (var item in content.Items)
+            foreach (var item in content.Items.WeightedRandomUniqueElements(amount, _random, item => item.Weight))
             {
-                if (itemsLeft <= 0)
-                    yield break;
-
-                if (_random.NextFloat() * totalWeight >= item.Weight * itemsLeft)
-                    continue;
-
+                if (itemsLeft <= 0) yield break;
                 itemsLeft--;
-                totalWeight = totalWeight > item.Weight ? totalWeight - item.Weight : 0f;
-
+                if (!_requirementCache.Get(item.Requirement, _questInfo).IsMet) continue;
                 foreach (var lootItem in item.Loot.Create(this))
+                {
                     yield return lootItem;
+                }
             }
         }
 
         public IEnumerable<LootItem> Create(LootContent_AllItems content)
         {
-            return content.Items.SelectMany(item => item.Loot.Create(this));
+            return content.Items
+                .Where(item => _requirementCache.Get(item.Requirement, _questInfo).IsMet)
+                .SelectMany(item => item.Loot.Create(this));
         }
 
         public IEnumerable<LootItem> Create(LootContent_ItemsWithChance content)
@@ -190,6 +185,9 @@ namespace Domain.Quests
             foreach (var item in content.Items)
             {
                 if (_random.NextFloat() > item.Weight)
+                    continue;
+
+                if (!_requirementCache.Get(item.Requirement, _questInfo).IsMet)
                     continue;
 
                 foreach (var lootItem in item.Loot.Create(this))
@@ -233,10 +231,29 @@ namespace Domain.Quests
         #endregion
 
         private List<LootItem> _items;
-        private readonly Random _random;
+        private bool _initialized = false;
+        private readonly System.Random _random;
         private readonly QuestInfo _questInfo;
         private readonly LootModel _loot;
         private readonly IDatabase _database;
         private readonly ILootItemFactory _lootItemFactory;
+        private readonly IRequirementCache _requirementCache;
+    }
+    
+    public class DummyRequirementCache : IRequirementCache
+    {
+        public DummyRequirementCache(string message)
+        {
+            _message = message;
+        }
+        
+        public INodeRequirements Get(Requirement requirement, QuestInfo context)
+        {
+            if (requirement.Type == RequirementType.Empty) return EmptyRequirements.Instance;
+            Debug.LogError($"{_message}");
+            return EmptyRequirements.Instance;
+        }
+
+        private readonly string _message;
     }
 }

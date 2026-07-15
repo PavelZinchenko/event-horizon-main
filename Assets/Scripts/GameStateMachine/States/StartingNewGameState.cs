@@ -57,7 +57,10 @@ namespace GameStateMachine.States
         {
             if (_database.GalaxySettings.StartingInventory == null) return;
 
-            var inventory = new Loot(new LootModel(_database.GalaxySettings.StartingInventory.Loot), new QuestInfo(0), _lootItemFactory, _database);
+            var inventory = new Loot(new LootModel(_database.GalaxySettings.StartingInventory.Loot), new QuestInfo(0),
+                _lootItemFactory,
+                new DummyRequirementCache(
+                    "Loot requirements are not available during startup inventory initialization"), _database);
             foreach (var item in inventory.Items)
                 item.Type.Consume(item.Quantity);
         }

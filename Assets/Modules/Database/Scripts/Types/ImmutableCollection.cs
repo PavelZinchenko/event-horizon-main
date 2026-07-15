@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace GameDatabase.Model
 {
-    public readonly struct ImmutableCollection<T> : IReadOnlyCollection<T>
+    public readonly struct ImmutableCollection<T> : IReadOnlyList<T>
     {
         public static readonly ImmutableCollection<T> Empty = new();
         private readonly List<T> _items;

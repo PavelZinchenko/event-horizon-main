@@ -16,6 +16,7 @@ namespace GameDatabase.Serializable
 	public class LootItemSerializable
 	{
 		public float Weight;
+		public RequirementSerializable Requirement;
 		public LootContentSerializable Loot;
 	}
 }
