@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Combat.Component.Body;
 using Combat.Component.Ship;
 using Combat.Component.Unit;
@@ -204,13 +204,6 @@ namespace Combat.Scene
             if (_activePlayerShip == null)
                 return;
 
-            if (_cooldown > 0)
-            {
-                _cooldown -= Time.deltaTime;
-                return;
-            }
-            _cooldown = 0.5f;
-
             var center = _activePlayerShip.Body.Position;
 
             lock (_unitList.LockObject)
@@ -228,23 +221,23 @@ namespace Combat.Scene
 
                     var position = unit.Body.Position;
 
-                    if (position.x - center.x > 0.5f * _settings.AreaWidth)
+                    while (position.x - center.x > 0.5f * _settings.AreaWidth)
                     {
                         position.x -= _settings.AreaWidth;
                         changed = true;
                     }
-                    else if (position.x - center.x < -0.5f * _settings.AreaWidth)
+                    while (position.x - center.x < -0.5f * _settings.AreaWidth)
                     {
                         position.x += _settings.AreaWidth;
                         changed = true;
                     }
 
-                    if (position.y - center.y > 0.5f * _settings.AreaHeight)
+                    while (position.y - center.y > 0.5f * _settings.AreaHeight)
                     {
                         position.y -= _settings.AreaHeight;
                         changed = true;
                     }
-                    else if (position.y - center.y < -0.5f * _settings.AreaHeight)
+                    while (position.y - center.y < -0.5f * _settings.AreaHeight)
                     {
                         position.y += _settings.AreaHeight;
                         changed = true;
@@ -256,7 +249,6 @@ namespace Combat.Scene
             }
         }
 
-        private float _cooldown;
         private float _disturbance;
         private float _lastUpdateTime;
 
