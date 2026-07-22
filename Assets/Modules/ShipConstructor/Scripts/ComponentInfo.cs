@@ -51,7 +51,9 @@ namespace Constructor
             var maxLevel = 3*level/2;
             var components = allowRare ? database.ComponentList.CommonAndRare() : database.ComponentList.Common();
             if (faction != null) components = components.FilterByFactionOrEmpty(faction);
-            var component = components.LevelLessOrEqual(maxLevel).RandomElement(random);
+            var component = components.LevelLessOrEqual(maxLevel)
+                .Where(item => !ThreeBodyContentRules.IsRestrictedComponent(item))
+                .RandomElement(random);
             if (component == null)
             {
                 componentInfo = Empty;
@@ -97,7 +99,9 @@ namespace Constructor
             }
         }
 
-        public bool IsValidModification => ModificationType == ComponentMod.Empty || _data.PossibleModifications.Contains(ModificationType);
+        public bool IsValidModification => ModificationType == ComponentMod.Empty ||
+                                           _data.PossibleModifications.Contains(ModificationType) ||
+                                           ThreeBodyComponentModifications.IsEligible(_data, ModificationType);
 
         public static ComponentInfo CreateRandomModification(GameDatabase.DataModel.Component data, System.Random random, ModificationQuality minQuality = ModificationQuality.N3, ModificationQuality maxQuality = ModificationQuality.P3)
         {

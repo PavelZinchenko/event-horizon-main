@@ -1,0 +1,166 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="System.Linq" #>
+<#@ include file="FuncParams.tt" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+using System.Collections.Generic;
+using <#= Utils.RootNamespace #>.<#= Utils.EnumsNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.TypesNamespace #>;
+using CodeWriter.ExpressionParser;
+<#
+	var returnType = GetFuncReturnType(ExpressionData);
+	var hasEnums = ExpressionData.result == Constants.TypeEnum || ExpressionData.items.Any(item => item.type == Constants.TypeEnum);
+#>
+
+namespace <#= Utils.RootNamespace #>.<#= Utils.ExpressionsNamespace #>
+{
+	public class <#= Utils.ExpressionClassName(ExpressionData) #> : IFunction<<#= Utils.VariantType #>>
+	{
+<#
+		PushIndent("\t\t");
+
+		for(int i = 0; i < ExpressionData.items.Count; ++i)
+			WriteLine($"public string ParamName{i+1} {{ get; set; }} = \"{ExpressionData.items[i].name}\";");
+
+		PopIndent();
+#>
+
+		public int ArgumentCount => <#= ExpressionData.items.Count #>;
+
+		private Expression<<#= Utils.VariantType #>> Expression
+		{
+			get
+			{
+				if (_expression == null)
+				{
+					var builder = new ExpressionBuilder();
+					builder.AddVariableResolver(_variableResolver);
+<#
+					PushIndent("\t\t\t\t\t");
+			
+					if (hasEnums)
+					WriteLine("builder.AddVariableResolver(new EnumResolver());");
+
+					for (int i = 0; i < ExpressionData.items.Count; i++)
+						WriteLine($"builder.AddParameter(ParamName{i+1}, {Utils.GetterName(ExpressionData.items[i].name)});");
+
+					PopIndent();
+#>
+					_expression = builder.Build(_expressionText).Invoke;
+				}
+
+				return _expression;
+			}
+		}
+
+
+		public <#= Utils.ExpressionClassName(ExpressionData) #>(string data, <#= returnType #> minvalue, <#= returnType #> maxvalue, IVariableResolver variableResolver)
+		{
+			_expressionText = data;
+			_minvalue = minvalue;
+			_maxvalue = maxvalue;
+			_variableResolver = variableResolver;
+		}
+
+		public <#= returnType #> Evaluate(<#= GetFuncParamList(ExpressionData) #>)
+		{
+<#
+			PushIndent("\t\t\t");
+
+			foreach(var item in ExpressionData.items)
+				WriteLine($"{Utils.PrivateMemberName(item.name)} = ({GetInternalType(item, Schema)}){item.name};");
+
+			PopIndent();
+#>
+			return ClampResult(<#= VariantToType("Expression.Invoke()", returnType) #>);
+		}
+
+		private <#= returnType #> ClampResult(<#= returnType #> value)
+		{
+			if (value < _minvalue) return _minvalue;
+			if (value > _maxvalue) return _maxvalue;
+			return value;
+		}
+
+<#
+		PushIndent("\t\t");
+
+		foreach(var item in ExpressionData.items)
+			WriteLine($"private {Utils.VariantType} {Utils.GetterName(item.name)}() => {Utils.PrivateMemberName(item.name)};");
+
+		PopIndent();
+#>
+
+		public Expression<<#= Utils.VariantType #>> Invoke(List<Expression<<#= Utils.VariantType #>>> arguments)
+		{
+			if (arguments.Count != ArgumentCount) 
+				throw new System.ArgumentException();
+
+			return () =>
+			{
+<#
+				PushIndent("\t\t\t\t");
+
+				for (int i = 0; i < ExpressionData.items.Count; i++)
+				{
+					var item = ExpressionData.items[i];
+					WriteLine($"{Utils.PrivateMemberName(item.name)} = " + VariantToType($"arguments[{i}].Invoke()", GetFuncParamType(item, Schema)) + ";");
+				}
+
+				PopIndent();
+#>
+				return ClampResult(<#= VariantToType("Expression.Invoke()", returnType) #>);
+			};
+		}
+
+		private IVariableResolver _variableResolver;
+		private Expression<<#= Utils.VariantType #>> _expression;
+		private string _expressionText;
+		private <#= returnType #> _minvalue;
+		private <#= returnType #> _maxvalue;
+
+<#
+		foreach(var item in ExpressionData.items)
+		{
+#>
+		private <#= GetInternalType(item, Schema) #> <#= Utils.PrivateMemberName(item.name) #>;
+<#
+		}
+
+		if (hasEnums)
+		{
+#>
+
+		private class EnumResolver : IVariableResolver
+		{
+			public IFunction<<#= Utils.VariantType #>> ResolveFunction(string name)
+			{
+				return null;
+			}
+
+			public Expression<<#= Utils.VariantType #>> ResolveVariable(string name)
+			{
+				switch (name)
+				{
+<#
+				PushIndent("\t\t\t\t\t");
+
+				if (ExpressionData.result == Constants.TypeEnum)
+					WriteEnumResolver(Schema.GetEnum(ExpressionData.typeid)); 
+
+				foreach (var item in ExpressionData.items)
+					if (item.type == Constants.TypeEnum)
+						WriteEnumResolver(Schema.GetEnum(item.typeid)); 
+
+				PopIndent();
+#>
+				}
+
+				return null;
+			}
+		}
+<#
+		}
+#>
+	}
+}

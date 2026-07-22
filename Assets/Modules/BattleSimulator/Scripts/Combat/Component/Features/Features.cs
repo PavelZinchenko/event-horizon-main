@@ -16,6 +16,7 @@ namespace Combat.Component.Features
 
         public TargetPriority TargetPriority => _data.TargetPriority;
         public bool ImmuneToEffects => _data.ImmuneToEffects;
+        public bool Invulnerable => _data.Invulnerable;
 
         public Color Color
         {
@@ -32,7 +33,10 @@ namespace Combat.Component.Features
         public void UpdatePhysics(float elapsedTime, ICollider collider)
         {
             UpdateData();
-            collider.Enabled = !_data.Invulnerable;
+            // Keep the collider available so dimensional damage can pierce
+            // Infinity-stone and similar immunity effects. Ship.Affect still
+            // rejects all ordinary damage while invulnerability is active.
+            collider.Enabled = true;
         }
 
         public void UpdateView(float elapsedTime, IView view)

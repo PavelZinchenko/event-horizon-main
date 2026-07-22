@@ -19,8 +19,9 @@ namespace Combat.Component.Triggers
             float flightRadius,
             float hitPoints,
             float cooldown,
-            Color color, 
-            AudioClipId activationSound)
+            Color color,
+            AudioClipId activationSound,
+            float energyRepairRate = 0f)
         {
             _device = device;
             _factory = factory;
@@ -32,6 +33,7 @@ namespace Combat.Component.Triggers
             _repairRate = repairRate;
             _activationSound = activationSound;
             _cooldown = cooldown;
+            _energyRepairRate = energyRepairRate;
             _timeLeft = cooldown;
         }
 
@@ -65,7 +67,7 @@ namespace Combat.Component.Triggers
         private void CreateBot()
         {
             _repairBot = _factory.CreateRepairBot(_ship, _repairRate, _deviceSize,
-                _flightRadius, _deviceSize, _hitPoints, _color, _activationSound);
+                _flightRadius, _deviceSize, _hitPoints, _color, _activationSound, _energyRepairRate);
             
             _repairBot.Enabled = _isActive;
             _device.Enabled = true;
@@ -109,6 +111,7 @@ namespace Combat.Component.Triggers
         private IAuxiliaryUnit _repairBot;
         private readonly ISystem _device;
         private readonly float _repairRate;
+        private readonly float _energyRepairRate;
         private readonly Color _color;
         private readonly AudioClipId _activationSound;
         private readonly float _hitPoints;

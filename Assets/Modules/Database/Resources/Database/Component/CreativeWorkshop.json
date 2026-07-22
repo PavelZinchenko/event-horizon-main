@@ -1,0 +1,18 @@
+{
+  "ItemType": 1,
+  "Id": 936,
+  "Name": "创意工坊",
+  "Description": "可指定任意舰船配置作为无人机的实验性单元。",
+  "ContentSource": 1,
+  "DisplayCategory": 5,
+  "Availability": 0,
+  "ComponentStatsId": 921,
+  "Faction": 21,
+  "Level": 100,
+  "Icon": "dronebay3",
+  "Color": "#FFFFFF",
+  "Layout": "1",
+  "CellType": "2",
+  "DroneBayId": 7,
+  "DroneId": 418
+}

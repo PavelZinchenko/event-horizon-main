@@ -101,6 +101,10 @@ namespace GameDatabase.Query
 		{
 			if (!build.AvailableForEnemy) return false;
 			if (build.Ship.ShipType != ShipType.Common && build.Ship.ShipType != ShipType.Flagship) return false;
+			// The two custom SizeClass-6 Titans are strategic station defenders,
+			// not ordinary roaming, boss or quick-battle ships.  Station defense
+			// adds them explicitly for their own factions.
+			if (build.Ship.SizeClass == SizeClass.TitanP) return false;
 			return true;
 		}
 

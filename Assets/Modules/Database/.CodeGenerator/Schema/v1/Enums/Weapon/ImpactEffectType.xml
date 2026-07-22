@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="ImpactEffectType">
+    <item name="Damage" />
+    <item name="Push" />
+    <item name="Pull" />
+    <item name="DrainEnergy" />
+    <item name="SiphonHitPoints" />
+    <item name="SlowDown" />
+    <item name="CaptureDrones" />
+    <item name="Repair" />
+    <item name="RestoreLifetime" />
+    <item name="Devour" />
+    <item name="Teleport" />
+</data>

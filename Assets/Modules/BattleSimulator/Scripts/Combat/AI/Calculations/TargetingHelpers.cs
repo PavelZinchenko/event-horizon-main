@@ -1,6 +1,7 @@
 ﻿using Combat.Component.Body;
 using Combat.Component.Features;
 using Combat.Component.Ship;
+using Combat.Component.Ship.Effects;
 using Combat.Component.Systems.Weapons;
 using Combat.Unit;
 using UnityEngine;
@@ -12,6 +13,8 @@ namespace Combat.Ai.Calculations
         public static bool CantDetectTarget(IShip ship, IShip enemy)
         {
             if (ship == null || enemy == null || !ship.IsActive() || !enemy.IsActive())
+                return true;
+            if (!RadarStatus.CanDetect(ship, enemy))
                 return true;
             if (enemy.Features.TargetPriority != TargetPriority.None)
                 return false;

@@ -53,7 +53,8 @@ namespace Combat.Component.Collider
                 if (other == null)
                     continue;
 
-				if (Source != null && (other.Unit == Source || other.Unit.Type.Owner == Source))
+				if (Source != null && (other.Unit == Source ||
+                    other.Unit.Type.Owner == Source && !IsBallLightning(other.Unit)))
 					continue;
 
 				var target = other.Unit;
@@ -82,5 +83,11 @@ namespace Combat.Component.Collider
         private readonly Collider2D[] _buffer = new Collider2D[32];
         private HashSet<IUnit> _activeCollisions = new();
         private HashSet<IUnit> _lastActiveCollisions = new();
+
+        private static bool IsBallLightning(IUnit unit)
+        {
+            return unit is Combat.Component.Bullet.Bullet bullet &&
+                   bullet.Controller is Combat.Component.Controller.BallLightningController;
+        }
     }
 }

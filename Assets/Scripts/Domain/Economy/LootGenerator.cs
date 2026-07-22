@@ -292,7 +292,8 @@ namespace GameServices.Economy
             if (random.Next(3) == 0)
             {
                 var itemLevel = Mathf.Max(6, level / 2);
-                var companions = _database.SatelliteList.Where(item => item.Layout.CellCount <= itemLevel && item.SizeClass != SizeClass.Titan);
+                var companions = _database.SatelliteList.Where(item => item.Layout.CellCount <= itemLevel &&
+                    item.SizeClass != SizeClass.Titan && !ThreeBodyContentRules.IsRestrictedSatellite(item));
                 foreach (var item in companions.Where(item => item.SizeClass != SizeClass.Titan).RandomUniqueElements(1, random))
                     yield return CommonProduct.Create(_factory.CreateSatelliteItem(item));
             }
@@ -314,6 +315,7 @@ namespace GameServices.Economy
             yield return new Price(random.Range(level/5 + 15, level/5 + 30), Currency.Snowflakes).GetProduct(_factory);
 
             var items = _database.ComponentList.CommonAndRare().LevelLessOrEqual(level + 50)
+                .Where(item => !ThreeBodyContentRules.IsRestrictedComponent(item))
                 .RandomElements(random.Range(5, 10), random).Select(item =>
                     ComponentInfo.CreateRandomModification(item, random, ModificationQuality.P2));
 
@@ -391,6 +393,7 @@ namespace GameServices.Economy
 
             var value = random.Next(distance);
             var ships = value > 20 ? ShipBuildQuery.PlayerShips(_database).CommonAndRare() : ShipBuildQuery.PlayerShips(_database).Common();
+            ships = ships.Where(item => !ThreeBodyContentRules.IsRestrictedShip(item.Ship));
             var ship = ships.FilterByStarDistance(distance/2, ShipBuildQuery.FilterMode.SizeAndFaction).Random(random);
 
             return (DamagedShipItem)_factory.CreateDamagedShipItem(ship, random.Next());
@@ -399,6 +402,7 @@ namespace GameServices.Economy
         private IItemType RandomFactionShip(int distance, Faction faction, System.Random random)
         {
             var ship = ShipBuildQuery.PlayerShips(_database).Common().BelongToFaction(faction).
+                Where(item => !ThreeBodyContentRules.IsRestrictedShip(item.Ship)).
 				FilterByStarDistance(distance, ShipBuildQuery.FilterMode.Size).Random(random);
             return ship != null ? _factory.CreateMarketShipItem(new CommonShip(ship, _database)) : null;
         }

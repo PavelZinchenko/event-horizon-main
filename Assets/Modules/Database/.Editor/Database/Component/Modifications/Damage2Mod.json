@@ -1,0 +1,34 @@
+{
+  "ItemType": 12,
+  "Id": 16,
+  "Description": "$DamageMod2",
+  "Modifications": [
+    {
+      "Type": 1,
+      "Gray3": 0.4,
+      "Gray2": 0.6,
+      "Gray1": 0.85,
+      "Green": 1.4,
+      "Purple": 2.0,
+      "Gold": 3.0
+    },
+    {
+      "Type": 40,
+      "Gray3": 0.7,
+      "Gray2": 0.8,
+      "Gray1": 0.9,
+      "Green": 1.1,
+      "Purple": 1.25,
+      "Gold": 1.5
+    },
+    {
+      "Type": 3,
+      "Gray3": 1.42857,
+      "Gray2": 1.25,
+      "Gray1": 1.11111,
+      "Green": 0.90909,
+      "Purple": 0.8,
+      "Gold": 0.66667
+    }
+  ]
+}

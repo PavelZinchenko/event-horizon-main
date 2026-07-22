@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Combat.Component.Features;
 using Combat.Component.Ship;
+using Combat.Component.Ship.Effects;
 using Combat.Component.Systems.Weapons;
 using Combat.Component.Unit.Classification;
 using Combat.Unit;
@@ -278,6 +279,8 @@ namespace Combat.Ai
         public static bool CantDetectTarget(IShip ship, IShip enemy)
         {
             if (ship == null || enemy == null || !ship.IsActive() || !enemy.IsActive())
+                return true;
+            if (!RadarStatus.CanDetect(ship, enemy))
                 return true;
             if (ship.Type.Side.IsAlly(enemy.Type.Side))
                 return false;

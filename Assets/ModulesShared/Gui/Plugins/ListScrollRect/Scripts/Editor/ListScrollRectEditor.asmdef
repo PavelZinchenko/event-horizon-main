@@ -1,0 +1,10 @@
+﻿{
+    "name": "ListScrollRectEditor",
+    "references": [
+        "Gui"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

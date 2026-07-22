@@ -9,7 +9,7 @@ namespace Constructor
 {
 	public class IntegratedComponent
 	{
-		public IntegratedComponent(ComponentInfo component, int x, int y, int barrelId, int keyBinding, int behaviour, bool locked)
+		public IntegratedComponent(ComponentInfo component, int x, int y, int barrelId, int keyBinding, int behaviour, bool locked, int rotation = 0)
 		{
 			Info = component;
 			X = x;
@@ -18,6 +18,7 @@ namespace Constructor
 		    KeyBinding = keyBinding;
 		    Behaviour = behaviour;
 		    Locked = locked;
+			Rotation = rotation & 3;
 		}
 
 		public override string ToString() { throw new NotSupportedException(); }
@@ -25,6 +26,7 @@ namespace Constructor
 		public int KeyBinding { get; set; }
 		public bool Locked { get; set; }
         public int Behaviour { get; set; }
+		public int Rotation { get; set; }
 
 		public readonly ComponentInfo Info;
 		public readonly int X;
@@ -47,6 +49,7 @@ namespace Constructor
             yield return (byte)component.KeyBinding;
             yield return (byte)component.Behaviour;
             yield return component.Locked ? (byte)1 : (byte)0;
+            yield return (byte)(component.Rotation & 3);
         }
 
         public static IntegratedComponent Deserialize(IDatabase database, byte[] data/*, ref int index*/)
@@ -60,7 +63,8 @@ namespace Constructor
             var mode = (sbyte)data[index++];
             var locked = data[index++] > 0;
 
-            return new IntegratedComponent(component, x, y, barrelId, keyBinding, mode, locked);
+			var rotation = index < data.Length ? data[index++] & 3 : 0;
+			return new IntegratedComponent(component, x, y, barrelId, keyBinding, mode, locked, rotation);
         }
 
         public static IEnumerable<byte> SerializeObsolete(this IntegratedComponent component)
@@ -74,6 +78,7 @@ namespace Constructor
             yield return (byte)component.KeyBinding;
             yield return (byte)component.Behaviour;
             yield return component.Locked ? (byte)1 : (byte)0;
+            yield return (byte)(component.Rotation & 3);
         }
 
         public static IntegratedComponent DeserializeObsolete(IDatabase database, byte[] data/*, ref int index*/)
@@ -87,7 +92,8 @@ namespace Constructor
             var mode = (sbyte)data[index++];
             var locked = data[index++] > 0;
 
-            return new IntegratedComponent(component, x, y, barrelId, keyBinding, mode, locked);
+			var rotation = index < data.Length ? data[index++] & 3 : 0;
+			return new IntegratedComponent(component, x, y, barrelId, keyBinding, mode, locked, rotation);
         }
 
         public static long SerializeToInt64Obsolete(this IntegratedComponent component) // deprecated
@@ -128,7 +134,7 @@ namespace Constructor
         public static IntegratedComponent FromDatabase(InstalledComponent serializable)
         {
             var info = new ComponentInfo(serializable.Component, serializable.Modification, serializable.Quality);
-            var component = new IntegratedComponent(info, serializable.X, serializable.Y, serializable.BarrelId, serializable.KeyBinding, serializable.Behaviour, true);
+			var component = new IntegratedComponent(info, serializable.X, serializable.Y, serializable.BarrelId, serializable.KeyBinding, serializable.Behaviour, true, serializable.Rotation);
 
             return component;
         }

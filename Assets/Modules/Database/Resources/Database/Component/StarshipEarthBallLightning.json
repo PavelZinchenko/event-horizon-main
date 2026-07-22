@@ -1,0 +1,19 @@
+{
+  "ItemType": 1,
+  "Id": 939,
+  "Name": "$StarshipEarthBallLightning",
+  "Description": "$StarshipEarthBallLightningDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 1,
+  "Availability": 1,
+  "ComponentStatsId": 309,
+  "Faction": 21,
+  "Level": 78,
+  "Icon": "starship_earth_ball_lightning",
+  "Color": "#FFFFFF",
+  "Layout": "111111111",
+  "CellType": "4",
+  "WeaponId": 142,
+  "AmmunitionId": 166,
+  "WeaponSlotType": "C"
+}

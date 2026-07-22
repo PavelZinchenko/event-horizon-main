@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="Resource1">Void Essence</string>
+    <string name="Resource2">Bio-Nanomachines</string>
+    <string name="Resource3">Alien Artifact</string>
+    <string name="Resource4">Quantum Chipset</string>
+    <string name="Resource5">Aetherstone</string>
+
+    <string name="StatCurrentValue">Current Value:</string>
+    <string name="StatValueAfterUpgrade">After Upgrade:</string>
+    <string name="StatUpgradeLevel">(Level $1)</string>
+    <string name="ResearchLabDesciption">Enhance module stats here to upgrade all your modules of this type in the game</string>
+    <string name="RecycleDesciption">Dismantle your modules for a chance to acquire valuable components. The higher the quality, the better the result</string>
+</resources>

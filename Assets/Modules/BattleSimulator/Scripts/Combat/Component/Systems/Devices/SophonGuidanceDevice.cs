@@ -51,7 +51,12 @@ namespace Combat.Component.Systems.Devices
 
         protected override void OnUpdatePhysics(float elapsedTime)
         {
-            if (!Active || !CanBeActivated)
+            // AI controllers do not consistently hold a manually bound device
+            // key.  A non-player droplet always runs its guidance system while
+            // the installed device is available; the player still controls the
+            // normal click-toggle path.
+            var shouldRun = Active || _ship.Type.Side != UnitSide.Player;
+            if (!shouldRun || !CanBeActivated)
             {
                 Deactivate();
                 return;
@@ -67,12 +72,18 @@ namespace Combat.Component.Systems.Devices
                 InvokeTriggers(ConditionType.OnRemainActive);
             }
 
-            var target = _ship.Type.Side == UnitSide.Enemy
-                ? _scene.Ships.Items
-                    .Where(item => item.IsActive() && CombatRelations.AreEnemies(_ship.Type, item.Type))
-                    .OrderBy(item => Vector2.SqrMagnitude(item.Body.WorldPosition() - _ship.Body.WorldPosition()))
-                    .FirstOrDefault()
-                : _scene.LockedEnemyShip;
+            var target = _ship.Type.Side == UnitSide.Player ? _scene.LockedEnemyShip : null;
+            if (_ship.Type.Side != UnitSide.Player &&
+                (!target.IsActive() || !CombatRelations.AreEnemies(_ship.Type, target.Type)))
+            {
+                lock (_scene.Ships.LockObject)
+                {
+                    target = _scene.Ships.Items
+                        .Where(item => item.IsActive() && CombatRelations.AreEnemies(_ship.Type, item.Type))
+                        .OrderBy(item => Vector2.SqrMagnitude(item.Body.WorldPosition() - _ship.Body.WorldPosition()))
+                        .FirstOrDefault();
+                }
+            }
             if (!target.IsActive() || !CombatRelations.AreEnemies(_ship.Type, target.Type))
                 return;
 

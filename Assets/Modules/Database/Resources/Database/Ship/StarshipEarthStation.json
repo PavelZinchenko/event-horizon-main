@@ -3,7 +3,7 @@
   "Id": 94000,
   "ShipType": 2,
   "SizeClass": 5,
-  "Name": "星舰地球轨道要塞",
+  "Name": "掩体太空城",
   "Faction": 21,
   "IconImage": "starship_earth_station",
   "IconScale": 1.0,
@@ -70,6 +70,65 @@
       },
       "Rotation": 180.0,
       "AutoAimingArc": 30.0
+    },
+    {
+      "Position": { "x": 0.7, "y": 0.35 },
+      "Rotation": 30.0,
+      "AutoAimingArc": 360.0
+    },
+    {
+      "Position": { "x": 0.7, "y": -0.35 },
+      "Rotation": -30.0,
+      "AutoAimingArc": 360.0
+    },
+    {
+      "Position": { "x": 0.35, "y": 0.7 },
+      "Rotation": 60.0,
+      "AutoAimingArc": 360.0
+    },
+    {
+      "Position": { "x": 0.35, "y": -0.7 },
+      "Rotation": -60.0,
+      "AutoAimingArc": 360.0
+    },
+    {
+      "Position": { "y": 0.8 },
+      "Rotation": 90.0,
+      "AutoAimingArc": 360.0
+    },
+    {
+      "Position": { "y": -0.8 },
+      "Rotation": -90.0,
+      "AutoAimingArc": 360.0
+    },
+    {
+      "Position": { "x": -0.35, "y": 0.7 },
+      "Rotation": 120.0,
+      "AutoAimingArc": 360.0
+    },
+    {
+      "Position": { "x": -0.35, "y": -0.7 },
+      "Rotation": -120.0,
+      "AutoAimingArc": 360.0
+    },
+    {
+      "Position": { "x": -0.7, "y": 0.35 },
+      "Rotation": 150.0,
+      "AutoAimingArc": 360.0
+    },
+    {
+      "Position": { "x": -0.7, "y": -0.35 },
+      "Rotation": -150.0,
+      "AutoAimingArc": 360.0
+    },
+    {
+      "Position": { "x": 0.8 },
+      "AutoAimingArc": 360.0
+    },
+    {
+      "Position": { "x": -0.8 },
+      "Rotation": 180.0,
+      "AutoAimingArc": 360.0
     }
   ],
   "Features": {

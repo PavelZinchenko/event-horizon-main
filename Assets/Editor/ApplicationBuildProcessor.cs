@@ -27,17 +27,23 @@ public class ApplicationBuildProcessor : IPostGenerateGradleAndroidProject
 				var data = File.ReadAllText(filename);
 				var result = Regex.Replace(data, "android:screenOrientation=\"\\w+\"", "android:screenOrientation=\"sensorLandscape\"");
 
-				// Keep Unity's generated launcher/activity manifest intact and add
-				// only the legacy shared-storage declarations needed by Android 12
-				// and earlier.  Replacing the entire manifest removed Unity's launch
-				// activity and produced an APK that could not be started.
+				// Keep Unity's generated launcher/activity manifest intact.  Add each
+				// storage declaration independently: a manifest merger may already
+				// contain the legacy permission while still lacking Android 13's
+				// READ_MEDIA_* permissions needed by the system picker.
+				var permissions = string.Empty;
 				if (!result.Contains("android.permission.READ_EXTERNAL_STORAGE"))
-				{
-					const string permissions =
-						"\n  <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" android:maxSdkVersion=\"32\" />" +
-						"\n  <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" android:maxSdkVersion=\"28\" />";
+					permissions += "\n  <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" android:maxSdkVersion=\"32\" />";
+				if (!result.Contains("android.permission.WRITE_EXTERNAL_STORAGE"))
+					permissions += "\n  <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" android:maxSdkVersion=\"28\" />";
+				if (!result.Contains("android.permission.READ_MEDIA_IMAGES"))
+					permissions += "\n  <uses-permission android:name=\"android.permission.READ_MEDIA_IMAGES\" />";
+				if (!result.Contains("android.permission.READ_MEDIA_VIDEO"))
+					permissions += "\n  <uses-permission android:name=\"android.permission.READ_MEDIA_VIDEO\" />";
+				if (!result.Contains("android.permission.READ_MEDIA_AUDIO"))
+					permissions += "\n  <uses-permission android:name=\"android.permission.READ_MEDIA_AUDIO\" />";
+				if (!string.IsNullOrEmpty(permissions))
 					result = Regex.Replace(result, "(<manifest\\b[^>]*>)", "$1" + permissions, RegexOptions.IgnoreCase);
-				}
 
 				if (!result.Contains("android:requestLegacyExternalStorage="))
 					result = Regex.Replace(result, "<application\\b", "<application android:requestLegacyExternalStorage=\"true\"", RegexOptions.IgnoreCase);

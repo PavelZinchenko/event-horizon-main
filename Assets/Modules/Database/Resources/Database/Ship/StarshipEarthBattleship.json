@@ -9,7 +9,7 @@
   "IconImage": "starship_earth_battleship_preview5",
   "IconScale": 1.0,
   "ModelImage": "starship_earth_battleship_preview5",
-  "ModelScale": 13.0,
+  "ModelScale": 10.833333,
   "EngineColor": "#FF0000",
   "Engines": [
     {
@@ -68,6 +68,33 @@
       "Rotation": -90.0,
       "Offset": 0.25,
       "WeaponClass": "CL"
+    },
+    {
+      "Position": {
+        "x": -0.15,
+        "y": -0.8
+      },
+      "Rotation": -90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
+    },
+    {
+      "Position": {
+        "x": -0.15,
+        "y": 0.7
+      },
+      "Rotation": 90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
+    },
+    {
+      "Position": {
+        "x": -0.15,
+        "y": 0.88
+      },
+      "Rotation": 90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
     }
   ],
   "Features": {

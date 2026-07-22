@@ -1,9 +1,11 @@
 ﻿using GameDatabase.Model;
+using Domain.Quests;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using Services.Localization;
 using Services.Resources;
+using Gui.Windows;
 
 namespace Gui.Quests
 {
@@ -20,8 +22,11 @@ namespace Gui.Quests
         [SerializeField] private GameObject _characterPanel;
         [SerializeField] private GameObject _messagePanel;
 
+        [Inject] private readonly QuestEventSignal.Trigger _questEventTrigger;
+
         public void Initialize(string text, string characterName, SpriteId avatar)
         {
+            ThreeBodyPrologueOverlay.HideUnlessPageTransitionPending();
             if (string.IsNullOrEmpty(text))
             {
                 gameObject.SetActive(false);
@@ -48,6 +53,16 @@ namespace Gui.Quests
                 _characterAvatar.gameObject.SetActive(sprite);
                 _unknownAvatar.gameObject.SetActive(!sprite);
             }
+        }
+
+        public void InitializeStoryImage(string imageResource, UserAction action)
+        {
+            // The illustrated pages must not inherit the quest dialog's
+            // narrow layout.  Present them in the same full-screen overlay
+            // used by the startup splash instead.
+            var eventWindow = GetComponentInParent<AnimatedWindow>();
+            ThreeBodyPrologueOverlay.Show(imageResource, action, _questEventTrigger, () => eventWindow?.Close());
+            gameObject.SetActive(false);
         }
     }
 }

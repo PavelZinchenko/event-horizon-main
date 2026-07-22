@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using Combat.Component.Bullet;
 using Combat.Component.Ship;
+using Combat.Component.Ship.Effects;
 using Combat.Component.Collider;
+using Combat.Component.Controller;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Scene;
@@ -31,6 +34,11 @@ namespace Gui.Combat
         private Toggle _engineThrottleToggle;
         private Slider _speedLimitSlider;
         private Text _speedLimitText;
+        private CanvasGroup _canvasGroup;
+        private RawImage _staticOverlay;
+        private Texture2D _staticTexture;
+        private Color32[] _staticPixels;
+        private float _nextStaticUpdateTime;
         private bool _expanded;
 
         public void Initialize(IScene scene)
@@ -38,6 +46,7 @@ namespace Gui.Combat
             _scene = scene;
             var root = GetComponent<RectTransform>();
             _root = root;
+            _canvasGroup = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
             root.anchorMin = root.anchorMax = new Vector2(1f, 0.5f);
             root.pivot = new Vector2(1f, 0.5f);
             root.anchoredPosition = new Vector2(-115f, 55f);
@@ -86,8 +95,10 @@ namespace Gui.Combat
             throttleLabel.rectTransform.offsetMax = new Vector2(-6f, 0f);
 
             var center = NewImage("Player", _map, new Color(0.1f, 1f, 0.25f, 1f));
+            center.sprite = MarkerSprite;
             center.raycastTarget = false;
             SetDot(center.rectTransform, Vector2.zero, 7f);
+            CreateRadarStaticOverlay();
 
             var nearest = new GameObject("LockNearest", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
             var nearestRect = nearest.GetComponent<RectTransform>();
@@ -218,6 +229,16 @@ namespace Gui.Combat
                 _speedLimitText.text = Mathf.RoundToInt(speed).ToString();
         }
 
+        private void SetRadarVisible(bool visible)
+        {
+            if (_canvasGroup == null)
+                return;
+
+            _canvasGroup.alpha = visible ? 1f : 0f;
+            _canvasGroup.interactable = visible;
+            _canvasGroup.blocksRaycasts = visible;
+        }
+
         private void ToggleExpanded()
         {
             _expanded = !_expanded;
@@ -231,19 +252,38 @@ namespace Gui.Combat
         {
             if (_scene == null || !_scene.PlayerShip.IsActive()) return;
             var player = _scene.PlayerShip;
+            if (RadarStatus.IsJammed(player))
+            {
+                SetRadarStatic(true);
+                _scene.LockTarget(null);
+                _status.text = "JAMMED";
+                _rangeText.text = "SNOW";
+                return;
+            }
+
+            SetRadarVisible(true);
+            SetRadarStatic(false);
             var radarRange = GetRadarRange(player);
             var enemies = _scene.Ships.Items
-                .Where(s => s.IsActive() && CombatRelations.AreEnemies(player.Type, s.Type))
+                .Where(s => s.IsActive() && !RadarStatus.IsStealthedFrom(s, player) && CombatRelations.AreEnemies(player.Type, s.Type))
                 .ToArray();
             var detected = enemies.Where(s => Vector2.Distance(player.Body.Position, s.Body.Position) <= radarRange).ToArray();
             var allies = _scene.Ships.Items
-                .Where(s => s.IsActive() && s != player && s.Type.Side == UnitSide.Ally)
+                .Where(s => s.IsActive() && s != player && !RadarStatus.IsStealthedFrom(s, player) && s.Type.Side == UnitSide.Ally)
                 .Where(s => Vector2.Distance(player.Body.Position, s.Body.Position) <= radarRange)
                 .ToArray();
-            if (!_scene.LockedEnemyShip.IsActive() || !detected.Contains(_scene.LockedEnemyShip))
+            var detectedLockableProjectiles = GetDetectedLockableProjectiles(player, radarRange);
+            var lockedTarget = _scene.LockedTarget;
+            var lockedShip = _scene.LockedEnemyShip;
+            var lockedProjectile = IsLockableProjectile(lockedTarget);
+            var lockedTargetVisible = lockedShip != null && detected.Contains(lockedShip) ||
+                                      lockedProjectile && IsProjectileVisible(lockedTarget, player, radarRange);
+            if (!lockedTargetVisible)
             {
                 _scene.LockTarget(null);
-                var nearestTarget = detected
+                IUnit nearestTarget = detected
+                    .Cast<IUnit>()
+                    .Concat(detectedLockableProjectiles)
                     .OrderBy(s => Vector2.SqrMagnitude(s.Body.Position - player.Body.Position))
                     .FirstOrDefault();
                 if (nearestTarget != null)
@@ -251,6 +291,7 @@ namespace Gui.Combat
             }
             var displayRange = Mathf.Max(100f, detected.Concat(allies)
                 .Select(s => Vector2.Distance(player.Body.Position, s.Body.Position))
+                .Concat(detectedLockableProjectiles.Select(m => Vector2.Distance(player.Body.Position, m.Body.WorldPosition())))
                 .DefaultIfEmpty(100f).Max());
 
             var detectedSet = new HashSet<IShip>(detected);
@@ -272,9 +313,11 @@ namespace Gui.Combat
                 var relative = (ship.Body.Position - player.Body.Position) / displayRange;
                 rect.anchorMin = rect.anchorMax = new Vector2(0.5f + relative.x * 0.47f, 0.5f + relative.y * 0.47f);
                 SetDot(rect, Vector2.zero, ship == _scene.LockedEnemyShip ? 12f : 7f);
-                marker.Image.color = ThreeBodySkillState.AdvancedRadarUnlocked
+                marker.Image.color = ship.Specification.Stats.ShipModel.SizeClass == GameDatabase.Enums.SizeClass.Starbase
                     ? CombatTargetLine.TargetColor(ship)
-                    : Color.red;
+                    : ThreeBodySkillState.AdvancedRadarUnlocked
+                        ? CombatTargetLine.TargetColor(ship)
+                        : Color.red;
                 marker.Cross.SetActive(ship == _scene.LockedEnemyShip);
             }
 
@@ -282,7 +325,7 @@ namespace Gui.Combat
 
             UpdateProjectileLayer(player, radarRange, displayRange);
             UpdateTransientMarkers(player, displayRange);
-            _status.text = _scene.LockedEnemyShip.IsActive() ? "LOCKED" : "NO LOCK";
+            _status.text = _scene.LockedTarget != null && _scene.LockedTarget.IsActive() ? "LOCKED" : "NO LOCK";
             _rangeText.text = $"RADAR {radarRange:0}";
         }
 
@@ -304,9 +347,9 @@ namespace Gui.Combat
                     markerRect.SetParent(_map, false);
                     marker = go.GetComponent<Text>();
                     marker.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                    marker.fontSize = 15;
+                    marker.fontSize = 10;
                     marker.alignment = TextAnchor.MiddleCenter;
-                    marker.text = "▲";
+                    marker.text = "●";
                     marker.color = new Color(0.2f, 0.62f, 1f, 1f);
                     marker.raycastTarget = false;
                     _allyMarkers.Add(ally, marker);
@@ -315,7 +358,7 @@ namespace Gui.Combat
                 var relative = (ally.Body.Position - player.Body.Position) / displayRange;
                 var rect = marker.rectTransform;
                 rect.anchorMin = rect.anchorMax = new Vector2(0.5f + relative.x * 0.47f, 0.5f + relative.y * 0.47f);
-                SetDot(rect, Vector2.zero, 14f);
+                SetDot(rect, Vector2.zero, 8f);
             }
         }
 
@@ -352,7 +395,8 @@ namespace Gui.Combat
 
             foreach (var stale in _projectileMarkers.Keys.Where(unit => !visible.Contains(unit)).ToArray())
             {
-                if (_lastProjectilePositions.TryGetValue(stale, out var lastPosition) && stale.Type.Class == UnitClass.Missile)
+                if (_lastProjectilePositions.TryGetValue(stale, out var lastPosition) &&
+                    (stale.Type.Class == UnitClass.Missile || IsMacroElectron(stale)))
                     SpawnExplosion(lastPosition, !CombatRelations.AreEnemies(player.Type, stale.Type));
 
                 Destroy(_projectileMarkers[stale].Root);
@@ -368,7 +412,7 @@ namespace Gui.Combat
             if (!unit.IsActive())
                 return false;
 
-            if (unit.Type.Class != UnitClass.Missile &&
+            if (!IsLockableProjectile(unit) && unit.Type.Class != UnitClass.Missile &&
                 unit.Type.Class != UnitClass.EnergyBolt)
                 return false;
 
@@ -377,12 +421,39 @@ namespace Gui.Combat
 
         private UnitMarker CreateProjectileMarker(IUnit unit)
         {
-            var go = new GameObject(unit.Type.Class == UnitClass.Missile ? "MissileBlip" : "LaserTrace", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            var isLockable = IsLockableProjectile(unit);
+            var go = new GameObject(isLockable ? "LockableProjectileBlip" : unit.Type.Class == UnitClass.Missile ? "MissileBlip" : "LaserTrace", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             var rect = go.GetComponent<RectTransform>();
             rect.SetParent(_map, false);
             var image = go.GetComponent<Image>();
-            image.raycastTarget = false;
-            return new UnitMarker(go, rect, image);
+            image.sprite = MarkerSprite;
+            image.raycastTarget = isLockable;
+
+            GameObject cross = null;
+            Text symbol = null;
+            if (isLockable)
+            {
+                var button = go.AddComponent<Button>();
+                button.onClick.AddListener(() => _scene.LockUnit(unit));
+                symbol = AddText(rect, "●", 14);
+                symbol.color = Color.white;
+                cross = new GameObject("LockedCross", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                var crossRect = cross.GetComponent<RectTransform>();
+                crossRect.SetParent(rect, false);
+                crossRect.anchorMin = Vector2.zero;
+                crossRect.anchorMax = Vector2.one;
+                crossRect.offsetMin = crossRect.offsetMax = Vector2.zero;
+                var crossText = cross.GetComponent<Text>();
+                crossText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                crossText.fontSize = 16;
+                crossText.alignment = TextAnchor.MiddleCenter;
+                crossText.color = Color.white;
+                crossText.text = "+";
+                crossText.raycastTarget = false;
+                cross.SetActive(false);
+            }
+
+            return new UnitMarker(go, rect, image, cross, symbol);
         }
 
         private void UpdateProjectileMarker(UnitMarker marker, IUnit unit, IShip player, float displayRange)
@@ -393,6 +464,22 @@ namespace Gui.Combat
             var worldPosition = unit.Body.WorldPosition();
             var relative = (worldPosition - player.Body.Position) / displayRange;
             marker.Rect.anchorMin = marker.Rect.anchorMax = new Vector2(0.5f + relative.x * 0.47f, 0.5f + relative.y * 0.47f);
+
+            if (IsLockableProjectile(unit))
+            {
+                var macroColor = IsDualVectorFoil(unit)
+                    ? Color.white
+                    : friendly
+                    ? new Color(0.2f, 0.65f, 1f, 1f)
+                    : new Color(1f, 0.16f, 0.08f, 1f);
+                marker.Image.color = new Color(macroColor.r, macroColor.g, macroColor.b, 0.22f);
+                if (marker.Symbol != null)
+                    marker.Symbol.color = macroColor;
+                SetDot(marker.Rect, Vector2.zero, _scene.LockedTarget == unit ? 12f : 9f);
+                marker.Cross?.SetActive(_scene.LockedTarget == unit);
+                marker.Rect.localEulerAngles = Vector3.zero;
+                return;
+            }
 
             if (unit.Type.Class == UnitClass.Missile)
             {
@@ -425,9 +512,24 @@ namespace Gui.Combat
         {
             var player = _scene.PlayerShip;
             var target = _scene.Ships.Items.Where(s => s.IsActive() && CombatRelations.AreEnemies(player.Type, s.Type))
+                .Where(s => !RadarStatus.IsStealthedFrom(s, player))
                 .Where(s => Vector2.Distance(player.Body.Position, s.Body.Position) <= GetRadarRange(player))
-                .OrderBy(s => Vector2.SqrMagnitude(s.Body.Position - player.Body.Position)).FirstOrDefault();
+                .Cast<IUnit>()
+                .Concat(GetDetectedLockableProjectiles(player, GetRadarRange(player)))
+                .OrderBy(s => Vector2.SqrMagnitude(s.Body.WorldPosition() - player.Body.Position)).FirstOrDefault();
             Lock(target);
+        }
+
+        private IUnit[] GetDetectedLockableProjectiles(IShip player, float radarRange)
+        {
+            lock (_scene.Units.LockObject)
+            {
+                return _scene.Units.Items
+                    .Where(unit => IsLockableProjectile(unit) &&
+                                   CombatRelations.AreEnemies(player.Type, unit.Type) &&
+                                   IsProjectileVisible(unit, player, radarRange))
+                    .ToArray();
+            }
         }
 
         public static float GetRadarRange(IShip ship)
@@ -439,9 +541,14 @@ namespace Gui.Combat
 
         private void Lock(IShip ship)
         {
-            if (ship == null || !ship.IsActive())
+            Lock((IUnit)ship);
+        }
+
+        private void Lock(IUnit unit)
+        {
+            if (unit == null || !unit.IsActive())
                 return;
-            _scene.LockTarget(ship);
+            _scene.LockUnit(unit);
             _status.text = "LOCKED";
         }
 
@@ -451,6 +558,7 @@ namespace Gui.Combat
             var rect = buttonObject.GetComponent<RectTransform>();
             rect.SetParent(_map, false);
             var image = buttonObject.GetComponent<Image>();
+            image.sprite = MarkerSprite;
             image.raycastTarget = true;
             buttonObject.GetComponent<Button>().onClick.AddListener(() => Lock(ship));
 
@@ -478,6 +586,107 @@ namespace Gui.Combat
             var image = go.GetComponent<Image>();
             image.color = color;
             return image;
+        }
+
+        private void CreateRadarStaticOverlay()
+        {
+            _staticTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false)
+            {
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Repeat,
+            };
+            _staticPixels = new Color32[64 * 64];
+
+            var go = new GameObject("RadarStatic", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
+            var rect = go.GetComponent<RectTransform>();
+            rect.SetParent(_map, false);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+            _staticOverlay = go.GetComponent<RawImage>();
+            _staticOverlay.texture = _staticTexture;
+            _staticOverlay.color = new Color(0.65f, 1f, 1f, 0.86f);
+            _staticOverlay.raycastTarget = false;
+            _staticOverlay.enabled = false;
+        }
+
+        private void SetRadarStatic(bool visible)
+        {
+            if (_staticOverlay == null)
+                return;
+
+            _staticOverlay.enabled = visible;
+            if (!visible || Time.unscaledTime < _nextStaticUpdateTime)
+                return;
+
+            _nextStaticUpdateTime = Time.unscaledTime + 0.045f;
+            for (var i = 0; i < _staticPixels.Length; ++i)
+            {
+                var value = (byte)Random.Range(55, 255);
+                var alpha = (byte)Random.Range(150, 245);
+                _staticPixels[i] = new Color32(value, (byte)Mathf.Min(255, value + 25), 255, alpha);
+            }
+
+            _staticTexture.SetPixels32(_staticPixels);
+            _staticTexture.Apply(false);
+        }
+
+        private static bool IsMacroElectron(IUnit unit)
+        {
+            return unit is Bullet bullet && bullet.Controller is BallLightningController;
+        }
+
+        private static bool IsLockableProjectile(IUnit unit)
+        {
+            return IsMacroElectron(unit) || unit is Bullet bullet &&
+                bullet.Controller is StrategicWeaponController controller &&
+                controller.Kind == StrategicWeaponController.WeaponKind.DualVectorFoil;
+        }
+
+        private static bool IsDualVectorFoil(IUnit unit)
+        {
+            return unit is Bullet bullet && bullet.Controller is StrategicWeaponController controller &&
+                controller.Kind == StrategicWeaponController.WeaponKind.DualVectorFoil;
+        }
+
+        private static Sprite MarkerSprite
+        {
+            get
+            {
+                if (_markerSprite == null)
+                {
+                    const int size = 32;
+                    var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+                    {
+                        name = "Combat Minimap Circular Marker",
+                        filterMode = FilterMode.Bilinear,
+                        wrapMode = TextureWrapMode.Clamp,
+                        hideFlags = HideFlags.HideAndDontSave,
+                    };
+                    var pixels = new Color32[size * size];
+                    float center = (size - 1) * 0.5f;
+                    float radius = size * 0.47f;
+                    for (int y = 0; y < size; y++)
+                    {
+                        for (int x = 0; x < size; x++)
+                        {
+                            float dx = x - center;
+                            float dy = y - center;
+                            float distance = Mathf.Sqrt(dx * dx + dy * dy);
+                            float alpha = Mathf.Clamp01(radius + 0.75f - distance);
+                            pixels[y * size + x] = new Color32(255, 255, 255,
+                                (byte)Mathf.RoundToInt(alpha * 255f));
+                        }
+                    }
+                    texture.SetPixels32(pixels);
+                    texture.Apply(false, false);
+                    _markerSprite = Sprite.Create(texture, new Rect(0, 0, size, size),
+                        new Vector2(0.5f, 0.5f), size);
+                    _markerSprite.name = "Combat Minimap Circular Marker";
+                    _markerSprite.hideFlags = HideFlags.HideAndDontSave;
+                }
+                return _markerSprite;
+            }
         }
 
         private static void SetDot(RectTransform rect, Vector2 position, float size)
@@ -510,6 +719,7 @@ namespace Gui.Combat
             var rect = go.GetComponent<RectTransform>();
             rect.SetParent(_map, false);
             var image = go.GetComponent<Image>();
+            image.sprite = MarkerSprite;
             image.raycastTarget = false;
             image.color = friendly ? new Color(0.45f, 0.85f, 1f, 0.9f) : new Color(1f, 0.55f, 0.2f, 0.95f);
             _transientMarkers.Add(new TransientMarker(go, rect, image, worldPosition, 0.45f));
@@ -556,16 +766,20 @@ namespace Gui.Combat
 
         private sealed class UnitMarker
         {
-            public UnitMarker(GameObject root, RectTransform rect, Image image)
+            public UnitMarker(GameObject root, RectTransform rect, Image image, GameObject cross = null, Text symbol = null)
             {
                 Root = root;
                 Rect = rect;
                 Image = image;
+                Cross = cross;
+                Symbol = symbol;
             }
 
             public readonly GameObject Root;
             public readonly RectTransform Rect;
             public readonly Image Image;
+            public readonly GameObject Cross;
+            public readonly Text Symbol;
         }
 
         private sealed class TransientMarker
@@ -587,5 +801,7 @@ namespace Gui.Combat
             public readonly float Duration;
             public float TimeLeft;
         }
+
+        private static Sprite _markerSprite;
     }
 }

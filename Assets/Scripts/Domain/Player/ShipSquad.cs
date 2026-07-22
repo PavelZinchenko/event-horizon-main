@@ -78,7 +78,7 @@ namespace Constructor.Ships
                 if (index >= _ships.Count)
                     break;
 
-                if (_ships[index] != null && _ships[index].Model.SizeClass > slotSize)
+                if (_ships[index] != null && !CanFit(_ships[index].Model.SizeClass, slotSize, index))
                     return false;
 
                 index++;
@@ -98,7 +98,9 @@ namespace Constructor.Ships
                 var position = -1;
                 for (var i = 0; i < order.Length; ++i)
                 {
-                    if (order[i] == ship.Model.SizeClass)
+                    if (CanFit(ship.Model.SizeClass, order[i], i) &&
+                        (order[i] == ship.Model.SizeClass ||
+                         (ship.Model.SizeClass == SizeClass.TitanP && order[i] == SizeClass.Titan)))
                     {
                         position = i;
                         break;
@@ -149,6 +151,19 @@ namespace Constructor.Ships
             return valid;
         }
 
+        private static bool CanFit(SizeClass shipSize, SizeClass slotSize, int slotIndex)
+        {
+            if (shipSize <= slotSize)
+                return true;
+
+            // Giant Cannons upgrades the first two Titan hangars without
+            // changing their serialized slot size.  Keep this rule in the
+            // squad model as well as the UI so saves/rearrangement do not
+            // silently discard TitanP ships.
+            return shipSize == SizeClass.TitanP && slotSize == SizeClass.Titan &&
+                   slotIndex < 2 && ThreeBodySkillState.GiantCannonsUnlocked;
+        }
+
         public IEnumerator<IShip> GetEnumerator()
         {
             return _ships.GetEnumerator();
@@ -166,11 +181,20 @@ namespace Constructor.Ships
             public ShipsSlots(PlayerSkills playerSkills)
             {
                 _slots = Enum.GetValues(typeof(SizeClass)).OfType<SizeClass>().
+                    Where(size => size != SizeClass.TitanP).
                     ToDictionary<SizeClass,SizeClass,int>(size => size, playerSkills.GetAvailableHangarSlots);
+                _titanPSlots = ThreeBodySkillState.GiantCannonsUnlocked ? 2 : 0;
             }
 
             public bool TryTakeBestSlot(SizeClass sizeClass)
             {
+                if (sizeClass == SizeClass.TitanP)
+                {
+                    if (_titanPSlots <= 0) return false;
+                    _titanPSlots--;
+                    return true;
+                }
+
                 var size = sizeClass;
 
                 int count;
@@ -189,6 +213,7 @@ namespace Constructor.Ships
             }
 
             private readonly Dictionary<SizeClass, int> _slots;
+            private int _titanPSlots;
         }
     }
 }

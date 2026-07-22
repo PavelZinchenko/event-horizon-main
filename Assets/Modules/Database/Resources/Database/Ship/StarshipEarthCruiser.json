@@ -9,7 +9,7 @@
   "IconImage": "starship_earth_cruiser_preview5",
   "IconScale": 1.0,
   "ModelImage": "starship_earth_cruiser_preview5",
-  "ModelScale": 10.0,
+  "ModelScale": 8.333333,
   "EngineColor": "#FF0000",
   "Engines": [
     {
@@ -68,6 +68,33 @@
       "Rotation": -90.0,
       "Offset": 0.25,
       "WeaponClass": "CL"
+    },
+    {
+      "Position": {
+        "x": -0.2,
+        "y": -0.78
+      },
+      "Rotation": -90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
+    },
+    {
+      "Position": {
+        "x": -0.2,
+        "y": 0.68
+      },
+      "Rotation": 90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
+    },
+    {
+      "Position": {
+        "x": -0.2,
+        "y": 0.86
+      },
+      "Rotation": 90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
     }
   ],
   "Features": {

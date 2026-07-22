@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="BulletBody" type="struct" >
+    <member name="Type" type="enum" typeid="BulletType" />
+    <member name="Size" type="float" minvalue="0" maxvalue="1000" />
+    <member name="Velocity" type="float" minvalue="0" maxvalue="1000" />
+    <member name="Range" type="float" minvalue="0" maxvalue="999999999" />
+    <member name="Lifetime" type="float" minvalue="0" maxvalue="999999999" />
+    <member name="Weight" type="float" minvalue="0" maxvalue="999999999" />
+    <member name="HitPoints" type="int" minvalue="0" maxvalue="999999999" />
+    <member name="Color" type="color" />
+    <member name="BulletPrefab" type="object" typeid="BulletPrefab" />
+    <member name="EnergyCost" type="float" minvalue="0" maxvalue="999999999" />
+    <member name="CanBeDisarmed" type="bool" />
+    <member name="FriendlyFire" type="bool" />
+</data>

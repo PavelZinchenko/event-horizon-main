@@ -1,0 +1,20 @@
+﻿<#@ template language="C#" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+using System;
+using Newtonsoft.Json;
+using <#= Utils.RootNamespace #>.<#= Utils.EnumsNamespace #>;
+
+namespace <#= Utils.RootNamespace #>.<#= Utils.SerializableNamespace #>
+{
+    [Serializable]
+    public class SerializableItem
+    {
+        [JsonIgnore]
+	    public string FileName { get; set; }
+
+        public <#= Schema.Constants.ItemTypeEnum #> ItemType;
+        public int Id;
+        public bool Disabled;
+    }
+}

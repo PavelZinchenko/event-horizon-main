@@ -89,7 +89,7 @@ namespace Constructor.Model
         public StatMultiplier SizeMultiplier { get; set; }
 
         public StatMultiplier DamageMultiplier => Bonuses.DamageMultiplier * BaseStats.DamageMultiplier.Value;
-        public StatMultiplier ArmorMultiplier => Bonuses.ArmorPointsMultiplier * BaseStats.ArmorMultiplier;
+        public StatMultiplier ArmorMultiplier => Bonuses.ArmorPointsMultiplier * BaseStats.ArmorMultiplier * EquipmentStats.ThreeBodyArmorMultiplier;
         public StatMultiplier ShieldMultiplier => Bonuses.ShieldPointsMultiplier * BaseStats.ShieldMultiplier;
 
         public IShipLayout Layout => BaseStats.Layout;

@@ -1,0 +1,3 @@
+[submodule "Gui/Plugins/com.unity.uiextensions"]
+	path = Gui/Plugins/com.unity.uiextensions
+	url = https://github.com/PavelZinchenko/com.unity.uiextensions

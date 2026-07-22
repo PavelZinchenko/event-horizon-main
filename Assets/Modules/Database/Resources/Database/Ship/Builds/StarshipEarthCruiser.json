@@ -178,6 +178,36 @@
                            "X":  25,
                            "Y":  39,
                            "KeyBinding":  2
+                       },
+                       {
+                           "ComponentId":  306,
+                           "X":  18,
+                           "Y":  14,
+                           "KeyBinding":  2
+                       },
+                       {
+                           "ComponentId":  306,
+                           "X":  31,
+                           "Y":  14,
+                           "KeyBinding":  2
+                       },
+                       {
+                           "ComponentId":  306,
+                           "X":  18,
+                           "Y":  23,
+                           "KeyBinding":  2
+                       },
+                       {
+                           "ComponentId":  306,
+                           "X":  31,
+                           "Y":  23,
+                           "KeyBinding":  2
+                       },
+                       {
+                           "ComponentId":  306,
+                           "X":  24,
+                           "Y":  32,
+                           "KeyBinding":  2
                        }
                    ]
 }

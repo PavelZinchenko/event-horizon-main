@@ -16,6 +16,7 @@ using GameServices.Economy;
 using GameServices.GameManager;
 using GameServices.Gui;
 using GameServices.Multiplayer;
+using GameServices.Captains;
 using GameServices.Player;
 using GameServices.Quests;
 using GameServices.Random;
@@ -89,6 +90,8 @@ namespace Installers
             Container.BindInterfacesTo<SignalsTranslator>().AsSingle().NonLazy();
 
             BindPlayerData();
+            Container.BindInterfacesAndSelfTo<MultiplayerSession>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<CaptainService>().AsSingle().NonLazy();
             BindQuestManager();
             BindStarContent();
             BindDatabase();

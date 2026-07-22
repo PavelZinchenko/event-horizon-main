@@ -1,0 +1,25 @@
+{
+    "name": "Gui",
+    "rootNamespace": "Gui",
+    "references": [
+        "AppConfiguration",
+        "CommonComponents",
+        "ServicesFacade",
+        "Unity.InputSystem",
+        "Zenject",
+        "ShipConstructor",
+        "Localization",
+        "Database",
+        "Diagnostics",
+        "Utilites"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

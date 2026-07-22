@@ -1,0 +1,166 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+using System;
+using System.Collections.Generic;
+using <#= Utils.RootNamespace #>.<#= Utils.EnumsNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.SerializableNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.TypesNamespace #>;
+
+namespace <#= Utils.RootNamespace #>.<#= Utils.StorageNamespace #>
+{
+    public class DatabaseContent : IContentLoader
+    {
+        public DatabaseContent(IJsonSerializer jsonSerializer, IDataStorage storage)
+        {
+            _serializer = jsonSerializer;
+            storage?.LoadContent(this);
+        }
+  
+        public void Save(IDataStorage storage, IJsonSerializer jsonSerializer)
+        {
+<#
+    		foreach (var item in Schema.Objects)
+            {
+#>
+            foreach (var item in <#= DataMember(item.name) #>.Values)
+                storage.SaveJson(item.FileName, jsonSerializer.ToJson(item));
+<#
+            }
+
+    		foreach (var item in Schema.Configurations)
+            {
+#>
+            if (<#= item.name #> != null)
+                storage.SaveJson(<#= item.name #>.FileName, jsonSerializer.ToJson(<#= item.name #>));            
+<#
+            }
+#>
+        }
+
+        public void LoadJson(string name, string content)
+        {
+            var item = _serializer.FromJson<SerializableItem>(content);
+            var type = item.ItemType;
+
+<#
+			var first = true;
+			foreach (var item in Schema.Objects)
+            {
+#>
+            <#= first ? "if" : "else if" #> (type == <#= Constants.ItemTypeEnum + "." + item.name #>)
+            {
+			    if (<#= DataMember(item.name) #>.ContainsKey(item.Id)) throw new DatabaseException("Duplicate <#= item.name #> ID - " + item.Id + " (" + name + ")");
+                var data = _serializer.FromJson<<#= Utils.SerializableClassName(item.name) #>>(content);
+                data.FileName = name;
+                <#= DataMember(item.name) #>.Add(data.Id, data);
+            }
+<#
+				first = false;
+            }
+
+			foreach (var item in Schema.Configurations)
+            {
+#>
+            <#= first ? "if" : "else if" #> (type == <#= Constants.ItemTypeEnum + "." + item.name #>)
+            {
+                var data = _serializer.FromJson<<#= Utils.SerializableClassName(item.name) #>>(content);
+                data.FileName = name;
+
+				if (<#= item.name #> != null)
+                    throw new DatabaseException("Duplicate <#= item.name #> file found - " + name);
+                <#= item.name #> = data;
+            }
+<#
+				first = false;
+            }
+			if (!first)
+            {
+#>
+            else
+            {
+                throw new DatabaseException("Unknown file type - " + type + "(" + name + ")");
+            }
+<#
+			}
+#>
+        }
+
+		public void LoadLocalization(string name, string data)
+        {
+            _localizations.Add(name, data);
+        }
+
+        public void LoadImage(string name, <#= Utils.ImageType #> image)
+        {
+            _images.Add(name, image);
+        }
+        
+        public void LoadAudioClip(string name, <#= Utils.AudioClipType #> audioClip)
+        {
+            _audioClips.Add(name, audioClip);
+        }
+<#
+		foreach (var item in Schema.Configurations)
+        {
+#>
+		public <#= Utils.SerializableClassName(item.name) + " " + item.name #> { get; private set; }
+<#
+        }
+#>
+
+<#
+		foreach (var item in Schema.Objects)
+        {
+#>
+		public IEnumerable<<#= Utils.SerializableClassName(item.name) #>> <#= Utils.ObjectListPropertyName(item.name) #> => <#= DataMember(item.name) #>.Values;
+<#
+        }
+#>
+
+<#
+		foreach (var item in Schema.Objects)
+        {
+#>
+		public <#= Utils.SerializableClassName(item.name) + " " + Utils.ObjectGetterName(item.name) #>(int id) { return <#= DataMember(item.name) #>.TryGetValue(id, out var item) ? item : null; }
+<#
+        }
+#>
+
+        public <#= Utils.ImageType #> GetImage(string name)
+        {
+            return _images.TryGetValue(name, out var image) ? image : <#= Utils.EmptyImage #>;
+        }
+
+        public <#= Utils.AudioClipType #> GetAudioClip(string name)
+        {
+            return _audioClips.TryGetValue(name, out var audioClip) ? audioClip : <#= Utils.EmptyAudioClip #>;
+        }
+
+        private IEnumerable<KeyValuePair<string, <#= Utils.ImageType #>>> Images => _images;
+        private IEnumerable<KeyValuePair<string, string>> Localizations => _localizations;
+
+        private readonly IJsonSerializer _serializer;
+
+<#
+		foreach (var item in Schema.Objects)
+        {
+#>
+		private readonly Dictionary<int, <#= Utils.SerializableClassName(item.name) #>> <#= DataMember(item.name) #> = new Dictionary<int, <#= Utils.SerializableClassName(item.name) #>>();
+<#
+        }
+#>
+
+        private readonly Dictionary<string, <#= Utils.ImageType #>> _images = new Dictionary<string, <#= Utils.ImageType #>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, <#= Utils.AudioClipType #>> _audioClips = new Dictionary<string, <#= Utils.AudioClipType #>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string> _localizations = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	}
+}
+
+<#+ 
+	private static string DataMember(string name) 
+	{ 		
+		return "_" + char.ToLower(name[0]) + name.Substring(1) + "Map"; 
+	}
+#>

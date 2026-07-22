@@ -101,6 +101,7 @@ namespace Combat.Component.Systems.Devices
             public IEnumerable<IDeviceData> ClonningCenters => _spec.ClonningCenters;
             public IEnumerable<IDroneBayData> DroneBays => Enumerable.Empty<IDroneBayData>();
 			public BehaviorTreeModel CustomAi => _spec.CustomAi;
+			public ThreeBodyModificationSummary ThreeBodyModifications => _spec.ThreeBodyModifications;
 
 			private readonly IShipStats _stats;
             private readonly IShipSpecification _spec;
@@ -162,7 +163,6 @@ namespace Combat.Component.Systems.Devices
             public float TurnRateWihoutEnergy => _stats.TurnRateWihoutEnergy;
             public float ShieldCorrosiveResistancePercentage => _stats.ShieldCorrosiveResistancePercentage;
             public float EngineEnergyConsumption => _stats.EngineEnergyConsumption;
-
             private readonly float _size;
             private readonly float _attack;
             private readonly float _defense;

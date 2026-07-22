@@ -1,0 +1,193 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="Schema" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+using <#= Context.Namespace #>.<#= Utils.StorageNamespace #>;
+
+namespace <#= Utils.RootNamespace #>
+{
+    public partial class <#= Utils.DatabaseUpgraderClassName #>
+    {
+        public <#= Utils.DatabaseUpgraderClassName #>(IJsonSerializer jsonSerializer, IDataStorage storage)
+        {
+            _serializer = jsonSerializer;
+            _storage = storage;
+        }
+
+        public void Upgrade(IContentLoader result)
+        {
+            var major = _storage.Version.Major;
+            var minor = _storage.Version.Minor;
+
+            if (major == 0)
+            {
+                major = <#= VersionList.Items.First().Major #>;
+                minor = 0;
+            }
+            
+            if (!IsValidVersion(major, minor))
+                throw new DatabaseException($"invalid database version: {major}.{minor}");
+
+<#
+        var lastVersion = new SchemaVersion();
+		foreach (var schemaVersion in VersionList.Items)
+        {
+#>
+            <#= schemaVersion.ToNamespace() #>.<#= Utils.StorageNamespace #>.DatabaseContent content<#= schemaVersion.Major #> = null;
+            if (major <= <#= schemaVersion.Major #>)
+<#
+            if (lastVersion.IsNull)
+            {
+#>
+            {
+                content<#= schemaVersion.Major #> = new <#= schemaVersion.ToNamespace() #>.<#= Utils.StorageNamespace #>.DatabaseContent(_serializer, _storage);
+                content<#= schemaVersion.Major #>.VersionMajor = major;
+                content<#= schemaVersion.Major #>.VersionMinor = minor;
+                var upgrader = new <#= schemaVersion.ToNamespace() #>.DatabaseUpgrader(content<#= schemaVersion.Major #>);
+                upgrader.UpgradeMinor();
+            }
+
+<#
+            }
+            else 
+            {
+#>
+                content<#= schemaVersion.Major #> = MigrateFrom(content<#= lastVersion.Major #>);
+
+<#
+            }
+            lastVersion = schemaVersion;
+        }
+#>
+
+            content<#= lastVersion.Major #>.Export(result);
+        }
+
+        private bool IsValidVersion(int major, int minor)
+        {
+<#
+        lastVersion = new SchemaVersion();
+		foreach (var schemaVersion in VersionList.Items)
+        {
+#>
+            <#= lastVersion.IsNull ? "if" : "else if" #> (major == <#= schemaVersion.Major #>)
+                return minor >= 0 && minor <= <#= schemaVersion.Minor #>;
+<#
+            lastVersion = schemaVersion;
+        }
+#>
+
+            return false;
+        }
+
+<#
+    lastVersion = new SchemaVersion();
+	foreach (var schemaVersion in VersionList.Items)
+    {
+        if (!lastVersion.IsNull)
+        {
+#>
+        private <#= schemaVersion.ToNamespace() #>.<#= Utils.StorageNamespace #>.DatabaseContent MigrateFrom(<#= lastVersion.ToNamespace() #>.<#= Utils.StorageNamespace #>.DatabaseContent contentOld)
+        {
+            <#= schemaVersion.ToNamespace() #>.Storage.DatabaseContent content;
+            if (contentOld == null)
+                content = new <#= schemaVersion.ToNamespace() #>.<#= Utils.StorageNamespace #>.DatabaseContent(_serializer, _storage);
+            else
+            {
+                content = new <#= schemaVersion.ToNamespace() #>.<#= Utils.StorageNamespace #>.DatabaseContent(_serializer, null);
+                contentOld.Export(content);
+                content.VersionMajor = <#= schemaVersion.Major #>;
+                content.VersionMinor = 0;
+            }
+
+            var upgrader = new <#= schemaVersion.ToNamespace() #>.DatabaseUpgrader(content);
+            upgrader.UpgradeMajor(contentOld);
+            upgrader.UpgradeMinor();
+
+            return content;
+        }
+
+<#
+        }
+        lastVersion = schemaVersion;
+    }
+#>
+        private readonly IDataStorage _storage;
+        private readonly IJsonSerializer _serializer;
+    }
+
+<#
+lastVersion = new SchemaVersion();
+foreach (var schemaVersion in VersionList.Items)
+{
+#>
+    namespace <#= schemaVersion.ToNamespace() #>
+    {
+        public partial class <#= Utils.DatabaseUpgraderClassName #>
+        {
+            public <#= Utils.DatabaseUpgraderClassName #>(<#= Utils.StorageNamespace #>.DatabaseContent content)
+            {
+                Content = content;
+                var major = content.VersionMajor;
+                var minor = content.VersionMinor;
+
+                if (major != <#= schemaVersion.Major #> || minor < 0 || minor > <#= schemaVersion.Minor #>)
+                    throw new DatabaseException($"invalid database version: {major}.{minor}");
+            }
+
+<#
+            if (!lastVersion.IsNull)
+            {
+#>
+            public void UpgradeMajor(<#= lastVersion.ToNamespace() #>.Storage.DatabaseContent oldContent)
+            {
+                if (oldContent.VersionMajor != <#= lastVersion.Major #> || oldContent.VersionMinor != <#= lastVersion.Minor #>)
+                    throw new DatabaseException($"invalid database version: {oldContent.VersionMajor}.{oldContent.VersionMinor}");
+
+                MigrateFrom_<#= lastVersion.ToNamespace() #>(oldContent);
+            }
+
+<#
+            }
+#>
+            public void UpgradeMinor()
+            {
+<#
+                for (var i = 0; i < schemaVersion.Minor; ++i)
+                {
+#>
+                if (Content.VersionMinor == <#= i #>)
+                {
+                    Migrate_<#= i #>_<#= i+1 #>();
+                    Content.VersionMinor = <#= i+1 #>;
+                }
+<#
+                }
+#>
+            }
+
+<#
+            if (!lastVersion.IsNull) 
+            {
+#>
+            partial void MigrateFrom_<#= lastVersion.ToNamespace() #>(<#= lastVersion.ToNamespace() #>.<#= Utils.StorageNamespace #>.DatabaseContent contentOld);
+<#
+            }
+
+            for (var i = 0; i < schemaVersion.Minor; ++i)
+            {
+#>
+            partial void Migrate_<#= i #>_<#= i+1 #>();
+<#
+            }
+#>
+
+            protected <#= Utils.StorageNamespace #>.DatabaseContent Content { get; }
+        }
+    }
+<#
+    lastVersion = schemaVersion;
+}
+#>
+}

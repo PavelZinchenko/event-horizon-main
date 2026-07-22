@@ -1,0 +1,13 @@
+{
+  "ItemType": 2,
+  "Id": 904,
+  "DeviceClass": 12,
+  "EnergyConsumption": 0.0,
+  "PassiveEnergyConsumption": 0.0,
+  "Power": 1.0,
+  "Size": 1.0,
+  "Cooldown": 0.0,
+  "ActivationType": 1,
+  "Color": "#8D7DFF",
+  "ControlButtonIcon": "controls_ghost"
+}

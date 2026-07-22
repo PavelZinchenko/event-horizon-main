@@ -1,0 +1,27 @@
+﻿<#@ template language="C#" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+using <#= Utils.RootNamespace #>.<#= Utils.TypesNamespace #>;
+
+namespace <#= Utils.RootNamespace #>.<#= Utils.StorageNamespace #>
+{
+    public interface IJsonSerializer
+    {
+        T FromJson<T>(string data);
+        string ToJson<T>(T item);
+    }
+
+    public partial interface IDataStorage
+    {
+        void LoadContent(IContentLoader loader);
+        void SaveJson(string name, string data);
+    }
+
+    public interface IContentLoader
+    {
+        void LoadJson(string name, string data);
+        void LoadLocalization(string name, string data);
+        void LoadImage(string name, <#= Utils.ImageType #> image);
+        void LoadAudioClip(string name, <#= Utils.AudioClipType #> audioClip);
+    }
+}

@@ -1,0 +1,25 @@
+{
+  "ItemType": 1,
+  "Id": 271,
+  "Name": "$HeavyPlasmaEmitter",
+  "DisplayCategory": 1,
+  "Availability": 2,
+  "ComponentStatsId": 1,
+  "Level": 300,
+  "Icon": "cannon_1x4",
+  "Color": "#FF8080",
+  "Layout": "0110001100011000110001100",
+  "CellType": "4",
+  "WeaponId": 124,
+  "AmmunitionId": 124,
+  "WeaponSlotType": "C",
+  "PossibleModifications": [
+    6,
+    16,
+    5,
+    2,
+    7,
+    8,
+    13
+  ]
+}

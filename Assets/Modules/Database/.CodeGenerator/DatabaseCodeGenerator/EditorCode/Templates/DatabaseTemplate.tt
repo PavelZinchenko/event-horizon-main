@@ -1,0 +1,200 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using <#= Utils.RootNamespace #>.<#= Utils.ClassesNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.StorageNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.TypesNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.EnumsNamespace #>;
+
+namespace <#= Utils.RootNamespace #>
+{
+    public partial class <#= Utils.DatabaseClassName #>
+    {
+		public const int VersionMajor = <#= Schema.Version.Major #>;
+		public const int VersionMinor = <#= Schema.Version.Minor #>;
+
+		public <#= Utils.DatabaseClassName #>(IDataStorage storage)
+		{
+            _serializer = new JsonSerializer();
+            _content = new DatabaseContent(_serializer, storage);
+		}
+
+		public void Save(IDataStorage storage)
+		{
+<#
+			foreach (var item in Schema.Objects)
+			{
+#>
+            foreach (var item in <#= DataMember(item.name) #>) item.Value.Save(_content.<#= Utils.ObjectGetterName(item.name) #>(item.Key));
+<#
+	        }
+			foreach (var item in Schema.Configurations)
+			{
+#>
+			<#= SettingsDataMember(item.name) #>?.Save(_content.<#= item.name #>);
+<#
+			}
+#>
+		
+			_content.Save(storage, _serializer);
+		}
+
+		public IEnumerable<IItemId> GetItemList(Type type)
+        {
+<#
+			foreach (var item in Schema.Objects)
+			{
+#>
+            if (type == typeof(<#= Utils.DataClassName(item) #>)) return _content.<#= Utils.ObjectListPropertyName(item.name) #>.Select(item => new ItemId<<#= Utils.DataClassName(item) #>>(item));
+<#
+	        }
+#>
+            return Enumerable.Empty<IItemId>();
+        }
+
+        public IEnumerable<object> GetAllItems()
+        {
+<#
+			foreach (var item in Schema.Objects)
+			{
+#>
+            foreach (var item in _content.<#= Utils.ObjectListPropertyName(item.name) #>)
+                yield return <#= Utils.ObjectGetterName(item.name) #>(item.Id);
+<#
+	        }
+			foreach (var item in Schema.Configurations)
+			{
+#>
+            if (_content.<#= item.name #> != null)
+				yield return <#= item.name #>;
+<#
+			}
+#>
+        }
+
+        public IItemId GetItemId(Type type, int id)
+        {
+<#
+			foreach (var item in Schema.Objects)
+			{
+#>
+            if (type == typeof(<#= Utils.DataClassName(item) #>)) return <#= Utils.ObjectIdGetterName(item.name) #>(id);
+<#
+		    }
+#>
+            return ItemId<Type>.Empty;
+        }
+
+        public object GetItem(ItemType type, int id)
+        {
+            switch (type)
+            {
+<#
+				foreach (var item in Schema.Objects)
+				{
+#>
+				case ItemType.<#= item.typeid #>: return <#= Utils.ObjectGetterName(item.name) #>(id);
+<#
+		        }
+				foreach (var item in Schema.Configurations)
+			    {
+#>
+				case ItemType.<#= item.typeid #>: return <#= item.name #>;
+<#
+			    }
+#>
+                default: return null;
+            }
+        }
+
+
+<#
+		foreach (var item in Schema.Configurations)
+        {
+#>
+		public <#= Utils.DataClassName(item) #> <#= item.name #> => <#= SettingsDataMember(item.name) #> ?? (<#= SettingsDataMember(item.name) #> = <#= Utils.DataClassName(item) #>.Create(_content.<#= item.name #>, this));
+<#
+        }
+#>
+
+<#
+		foreach (var item in Schema.Objects)
+        {
+#>
+		public ItemId<<#= Utils.DataClassName(item) + "> " + Utils.ObjectIdGetterName(item.name) #>(int id) { return new ItemId<<#= Utils.DataClassName(item)#>>(_content.<#= Utils.ObjectGetterName(item.name) #>(id)); }
+        public <#= Utils.DataClassName(item) + " " + Utils.ObjectGetterName(item.name) #>(int id)
+        {
+            if (!<#= DataMember(item.name) #>.TryGetValue(id, out var item))
+            {
+                var serializable = _content.<#= Utils.ObjectGetterName(item.name) #>(id);
+                item = <#= Utils.DataClassName(item) #>.Create(serializable, this);
+                <#= DataMember(item.name) #>.Add(id, item);
+            }
+            return item;
+        }
+
+<#
+        }
+#>
+
+        public <#= Utils.ImageType #> GetImage(string name) { return _content.GetImage(name); }
+
+        private void Clear()
+        {
+<#
+			foreach (var item in Schema.Objects)
+			{
+#>
+			<#= DataMember(item.name) #>.Clear();
+<#
+			}
+#>
+
+<#
+			foreach (var item in Schema.Configurations)
+			{
+#>
+			<#= SettingsDataMember(item.name) #> = null;
+<#
+			}
+#>
+        }
+
+<#
+		foreach (var item in Schema.Objects)
+        {
+#>
+		private readonly Dictionary<int, <#= Utils.DataClassName(item) #>> <#= DataMember(item.name) #> = new Dictionary<int, <#= Utils.DataClassName(item) #>>();
+<#
+        }
+#>
+
+<#
+		foreach (var item in Schema.Configurations)
+		{
+#>
+		private <#= item.name + " " + SettingsDataMember(item.name) #>;
+<#
+		}
+#>
+	
+        private readonly IJsonSerializer _serializer;
+		private readonly DatabaseContent _content;
+	}
+}
+
+<#+ 
+	private static string DataMember(string name) 
+	{ 		
+		return "_" + char.ToLower(name[0]) + name.Substring(1) + "Map"; 
+	}
+
+	private static string SettingsDataMember(string name) 
+	{ 		
+		return "_" + char.ToLower(name[0]) + name.Substring(1); 
+	}
+#>

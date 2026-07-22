@@ -48,7 +48,9 @@ namespace Combat.Component.Ship.Effects.Special
 
             var forward = RotationHelpers.Direction(ship.Body.VisualWorldRotation());
             var scale = ship.Body.WorldScale();
-            _root.transform.position = ship.Body.VisualWorldPosition() - forward * scale * 0.72f;
+            // Keep the ring at the waterdrop's pointed rear, but close enough
+            // to read as propulsion rather than a detached projectile.
+            _root.transform.position = ship.Body.VisualWorldPosition() - forward * scale * 0.45f;
             _root.transform.eulerAngles = new Vector3(0f, 0f, ship.Body.VisualWorldRotation());
             // The source frames are 360 px at 100 PPU (3.6 world units).
             // A scale of scale / 3.6 makes the largest ring approximately one

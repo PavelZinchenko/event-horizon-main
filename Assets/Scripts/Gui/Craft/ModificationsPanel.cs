@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Constructor.Ships;
 using Constructor.Ships.Modification;
 using GameDatabase.DataModel;
@@ -45,7 +45,6 @@ namespace Gui.Craft
 
             InitializeSlots();
             UpdateActions();
-
             _modSlots[0].Selected = true;
         }
 

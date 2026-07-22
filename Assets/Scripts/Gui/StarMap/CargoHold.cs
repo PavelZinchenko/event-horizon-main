@@ -153,6 +153,7 @@ namespace Gui.StarMap
                 DescriptionPanel.gameObject.SetActive(true);
                 Icon.sprite = _resourceLocator.GetSprite(product.Type.Icon);
                 Icon.color = product.Type.Color;
+                Icon.preserveAspect = true;
                 NameText.text = _localization.GetString(product.Type.Name);
                 DescrtiptionText.gameObject.SetActive(!string.IsNullOrEmpty(DescrtiptionText.text = product.Type.Description));
                 NameText.color = DescrtiptionText.color = Gui.Theme.UiTheme.Current.GetQualityColor(product.Type.Quality);

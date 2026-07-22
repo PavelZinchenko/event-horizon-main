@@ -10,7 +10,7 @@
   "Faction": 21,
   "Level": 30,
   "Icon": "starship_earth_warp_drive",
-  "Color": "#43D9FF",
+  "Color": "#FFFFFF",
   "Layout": "111111111",
   "CellType": "2",
   "DeviceId": 37

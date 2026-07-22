@@ -10,7 +10,7 @@
   "Faction": 21,
   "Level": 25,
   "Icon": "starship_earth_railgun",
-  "Color": "#7FEFFF",
+  "Color": "#FFFFFF",
   "Layout": "110110110",
   "CellType": "4",
   "WeaponId": 134,

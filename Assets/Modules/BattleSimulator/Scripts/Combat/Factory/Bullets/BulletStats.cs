@@ -30,6 +30,7 @@ namespace Combat.Factory
 		float PowerLevel { get; set; }
         float RandomFactor { get; set; }
         float HitPointsMultiplier { get; set; }
+        float CaptainDamageMultiplier { get; set; }
     }
 
     public class BulletStats : IBulletStats
@@ -43,6 +44,7 @@ namespace Combat.Factory
             PowerLevel = 1.0f;
             RandomFactor = 0.0f;
             HitPointsMultiplier = 1.0f;
+            CaptainDamageMultiplier = 1.0f;
         }
 
         public AiBulletBehavior BehaviorType => _ammunition.Body.AiBulletBehavior;
@@ -126,16 +128,16 @@ namespace Combat.Factory
             get
             {
                 if (IsAoe)
-                    return _ammunition.Body.Size * SizeMultiplier * _statModifier.AoeRadiusMultiplier.Value;
+                    return _ammunition.Body.Size * SizeMultiplier * _statModifier.AoeRadiusMultiplier.Value * (_statModifier.SweepingBeam ? 1.5f : 1f);
                 else
-                    return _ammunition.Body.Size * SizeMultiplier;
+                    return _ammunition.Body.Size * SizeMultiplier * (_statModifier.SweepingBeam ? 1.5f : 1f);
             } 
         }
 
 		public float Length => _ammunition.Body.Length * SizeMultiplier * (_isNested ? _statModifier.AoeRadiusMultiplier.Value : 1.0f);
 		public float Range => _ammunition.Body.Range * RangeMultiplier * (_isNested ? _statModifier.AoeRadiusMultiplier.Value : 1.0f);
         public float HitPoints { get { return _ammunition.Body.HitPoints * HitPointsMultiplier * _statModifier.HitPointsMultiplier.Value; } }
-        public float DamageMultiplier { get { return PowerLevel * _statModifier.DamageMultiplier.Value; } }
+        public float DamageMultiplier { get { return PowerLevel * _statModifier.DamageMultiplier.Value * CaptainDamageMultiplier; } }
         public float EffectPowerMultiplier { get { return PowerLevel * _statModifier.EffectPowerMultiplier.Value; } }
 
         public float GetBulletSpeed()
@@ -167,6 +169,7 @@ namespace Combat.Factory
         public float PowerLevel { get; set; }
         public float RandomFactor { get; set; }
         public float HitPointsMultiplier { get; set; }
+		public float CaptainDamageMultiplier { get; set; }
 		public bool IsBoundToCannon => _ammunition.Body.AttachedToParent;
 
         private bool IsAoe { get { return (_ammunition.ImpactType == BulletImpactType.DamageOverTime || _ammunition.ImpactType == BulletImpactType.HitAllTargets) && _ammunition.Effects.Count > 0; } }
@@ -192,6 +195,7 @@ namespace Combat.Factory
             PowerLevel = 1.0f;
             RandomFactor = 0.0f;
             HitPointsMultiplier = 1.0f;
+			CaptainDamageMultiplier = 1.0f;
         }
 
         public AiBulletBehavior BehaviorType { get; private set; }
@@ -221,7 +225,7 @@ namespace Combat.Factory
         public float FlashTime { get { return _stats.AmmunitionClass.IsBeam() ? Mathf.Max(0.2f, _stats.LifeTime * LifetimeMultiplier) : 0.2f; } }
 
         public float Range { get { return _stats.Range * RangeMultiplier; } }
-        public float Damage { get { return _stats.Damage * DamageMultiplier; } }
+		public float Damage { get { return _stats.Damage * DamageMultiplier * CaptainDamageMultiplier; } }
         public float Size { get { return _stats.Size * SizeMultiplier; } }
         public Color Color { get { return _stats.Color; } }
         public float Lifetime { get { return _stats.LifeTime * LifetimeMultiplier; } }
@@ -244,6 +248,7 @@ namespace Combat.Factory
         public float PowerLevel { get; set; }
         public float RandomFactor { get; set; }
         public float HitPointsMultiplier { get; set; }
+		public float CaptainDamageMultiplier { get; set; }
 		public bool IsBoundToCannon => _stats.AmmunitionClass.IsBoundToCannon();
 
         private readonly AmmunitionObsoleteStats _stats;

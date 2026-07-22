@@ -31,6 +31,24 @@
         "y": -0.1
       },
       "WeaponClass": "CLM"
+    },
+    {
+      "Position": {
+        "x": -0.2,
+        "y": 0.72
+      },
+      "Rotation": 90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "CLM"
+    },
+    {
+      "Position": {
+        "x": -0.2,
+        "y": -0.72
+      },
+      "Rotation": -90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "CLM"
     }
   ],
   "Features": {

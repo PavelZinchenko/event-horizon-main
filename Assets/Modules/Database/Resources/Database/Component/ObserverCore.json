@@ -1,0 +1,17 @@
+{
+  "ItemType": 1,
+  "Id": 937,
+  "Name": "观察者核心",
+  "Description": "你不知为何拥有它，但知与“你”来自一个世界",
+  "ContentSource": 1,
+  "DisplayCategory": 6,
+  "Availability": 0,
+  "ComponentStatsId": 922,
+  "Faction": 28,
+  "Level": 100,
+  "Icon": "sophon_guidance_system",
+  "Color": "#8D7DFF",
+  "Layout": "1",
+  "CellType": "6",
+  "DeviceId": 904
+}

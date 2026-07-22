@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="SkillSettings" type="settings" typeid="SkillSettings">
+    <member name="BeatAllEnemiesFactionList" type="object_list" typeid="Faction" />
+    <member name="DisableExceedTheLimits" type="bool" />
+    <member name="FuelTankCapacity" type="expression" typeid="IntToInt" arguments="level" minvalue="0" />
+    <member name="AttackBonus" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="DefenseBonus" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="ShieldStrengthBonus" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="ShieldRechargeBonus" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="ExperienceBonus" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="FlightSpeed" type="expression" typeid="IntToFloat" arguments="level" minvalue="1" />
+    <member name="FlightRange" type="expression" typeid="IntToFloat" arguments="level" minvalue="1.5" />
+    <member name="ExplorationLootBonus" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="HeatResistance" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" maxvalue="1" />
+    <member name="KineticResistance" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" maxvalue="1" />
+    <member name="EnergyResistance" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" maxvalue="1" />
+    <member name="MerchantPriceFactor" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="CraftingPriceFactor" type="expression" typeid="IntToFloat" arguments="level" minvalue="0" />
+    <member name="CraftingLevelReduction" type="expression" typeid="IntToInt" arguments="level" minvalue="0" />
+    <member name="IncreasedLevelLimit" type="int" minvalue="100" maxvalue="1000" default="200" />
+    <member name="BaseFuelCapacity" type="int" minvalue="10" default="100" />
+    <member name="BaseFlightRange" type="float" minvalue="1.5" default="1.5" />
+    <member name="BaseFlightSpeed" type="float" minvalue="1" default="1" />
+</data>

@@ -144,8 +144,8 @@ namespace Gui.Combat
             var size = _ship.Specification.Stats.ShipModel.SizeClass;
             var isAlly = _ship.Type.Side == UnitSide.Ally;
             var isDangerous = _ship.Specification.Info.Class >= DifficultyClass.Class3;
-            if (isAlly) Background.color = AllyColor;
-            else if (size == SizeClass.Starbase) Background.color = StarbaseColor;
+            if (size == SizeClass.Starbase) Background.color = new Color(0.68f, 0.2f, 1f, 1f);
+            else if (isAlly) Background.color = AllyColor;
             else if (size == SizeClass.Titan) Background.color = isDangerous ? DangerColor : BossColor;
             else if (size == SizeClass.Cruiser || size == SizeClass.Battleship) Background.color = new Color(1f, 0.45f, 0.05f, 1f);
             else Background.color = NormalColor;

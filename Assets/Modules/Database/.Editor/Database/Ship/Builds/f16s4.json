@@ -1,0 +1,162 @@
+{
+  "ItemType": 8,
+  "Id": 288,
+  "ShipId": 123,
+  "Components": [
+    {
+      "ComponentId": 61,
+      "X": 6,
+      "Y": 12,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 56,
+      "X": 9,
+      "Y": 12,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 56,
+      "X": 5,
+      "Y": 12,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 59,
+      "X": 6,
+      "Y": 11,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 60,
+      "X": 8,
+      "Y": 11,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 76,
+      "X": 2,
+      "Y": 6
+    },
+    {
+      "ComponentId": 257,
+      "X": 4,
+      "Y": 3,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 76,
+      "X": 5,
+      "Y": 7
+    },
+    {
+      "ComponentId": 120,
+      "X": 12,
+      "Y": 9,
+      "BarrelId": 2
+    },
+    {
+      "ComponentId": 120,
+      "X": 6
+    },
+    {
+      "ComponentId": 120,
+      "Y": 9,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 71,
+      "X": 8,
+      "Y": 3,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 71,
+      "X": 8,
+      "Y": 5,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 261,
+      "X": 13,
+      "Y": 7,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 261,
+      "X": 12,
+      "Y": 4,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 261,
+      "X": 10,
+      "Y": 2,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 260,
+      "X": 14,
+      "Y": 6,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 260,
+      "X": 13,
+      "Y": 6,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 260,
+      "X": 12,
+      "Y": 3,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 260,
+      "X": 11,
+      "Y": 4,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 260,
+      "X": 10,
+      "Y": 1,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 260,
+      "X": 9,
+      "Y": 1,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 260,
+      "X": 9,
+      "Y": 2,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 66,
+      "Y": 7,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 66,
+      "X": 1,
+      "Y": 4,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 66,
+      "X": 3,
+      "Y": 2,
+      "KeyBinding": 2
+    },
+    {
+      "ComponentId": 76,
+      "X": 10,
+      "Y": 6
+    }
+  ]
+}

@@ -30,6 +30,12 @@
       "ComponentId": 295,
       "X": 12,
       "Y": 3
+    },
+    {
+      "ComponentId": 298,
+      "X": 12,
+      "Y": 20,
+      "KeyBinding": 2
     }
   ]
 }

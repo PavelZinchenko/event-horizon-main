@@ -24,6 +24,25 @@ namespace Combat.Collision.Manager
 
         private void ProcessCollision(IUnit first, IUnit second, CollisionData collisionData)
         {
+            // Unity can report the same projectile contact from either
+            // collider first.  When the macro-electron is reported first,
+            // process the incoming projectile as the attacker so its actual
+            // weapon damage reaches BallLightningDamageHandler.
+            if (IsBallLightning(first) && IsProjectile(second) && !IsBallLightning(second))
+            {
+                ProcessProjectileHit(second, first, collisionData);
+                return;
+            }
+            if (IsBallLightning(second) && IsProjectile(first) && !IsBallLightning(first))
+            {
+                // Ray-cast laser bullets are normally reported as the first
+                // collider. Route them through the same explicit projectile
+                // path as physical rounds so allied laser damage can charge a
+                // macro-electron instead of being discarded as friendly fire.
+                ProcessProjectileHit(first, second, collisionData);
+                return;
+            }
+
             var behaviour = first.CollisionBehaviour;
             if (behaviour == null)
                 return;
@@ -31,7 +50,8 @@ namespace Combat.Collision.Manager
             if (!first.IsActive() || !second.IsActive())
                 return;
             if (CombatRelations.AreAllies(first.Type, second.Type) &&
-                !first.Type.CanHitAllies && !second.Type.CanHitAllies)
+                !first.Type.CanHitAllies && !second.Type.CanHitAllies &&
+                !IsBallLightningInteraction(first, second))
                 return;
 
             // Waterdrop interactions have to be resolved before the incoming
@@ -48,6 +68,39 @@ namespace Combat.Collision.Manager
 
             first.OnCollision(selfImpact, second, collisionData);
             second.OnCollision(targetImpact, first, collisionData);
+        }
+
+        private static bool IsBallLightningInteraction(IUnit first, IUnit second)
+        {
+            return IsBallLightning(first) && IsProjectile(second) ||
+                   IsBallLightning(second) && IsProjectile(first);
+        }
+
+        private static bool IsBallLightning(IUnit unit)
+        {
+            return unit is Combat.Component.Bullet.Bullet bullet &&
+                   bullet.Controller is Combat.Component.Controller.BallLightningController;
+        }
+
+        private static bool IsProjectile(IUnit unit)
+        {
+            return unit is Combat.Component.Bullet.Bullet;
+        }
+
+        private static void ProcessProjectileHit(IUnit projectile, IUnit target, CollisionData collisionData)
+        {
+            if (!projectile.IsActive() || !target.IsActive())
+                return;
+
+            var behaviour = projectile.CollisionBehaviour;
+            if (behaviour == null)
+                return;
+
+            var projectileImpact = new Impact();
+            var targetImpact = new Impact();
+            behaviour.Process(projectile, target, collisionData, ref projectileImpact, ref targetImpact);
+            projectile.OnCollision(projectileImpact, target, collisionData);
+            target.OnCollision(targetImpact, projectile, collisionData);
         }
     }
 }

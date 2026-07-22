@@ -1,0 +1,906 @@
+{
+    "shipId": 1145140,
+    "shipName": "$TrisolarisTitan",
+    "presetName": "$TrisolarisTitan",
+    "components": [
+        {
+            "component": 4063039062016,
+            "x": 41,
+            "y": 15,
+            "barrelId": 0,
+            "keyBinding": 4,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4058744094720,
+            "x": 54,
+            "y": 15,
+            "barrelId": 0,
+            "keyBinding": 5,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4007204487168,
+            "x": 17,
+            "y": 18,
+            "barrelId": 1,
+            "keyBinding": 2,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4007204487168,
+            "x": 19,
+            "y": 18,
+            "barrelId": 1,
+            "keyBinding": 2,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4007204487168,
+            "x": 76,
+            "y": 18,
+            "barrelId": 2,
+            "keyBinding": 2,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4007204487168,
+            "x": 78,
+            "y": 18,
+            "barrelId": 2,
+            "keyBinding": 2,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4002909519872,
+            "x": 7,
+            "y": 36,
+            "barrelId": 3,
+            "keyBinding": 1,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4002909519872,
+            "x": 9,
+            "y": 36,
+            "barrelId": 3,
+            "keyBinding": 1,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4002909519872,
+            "x": 11,
+            "y": 36,
+            "barrelId": 3,
+            "keyBinding": 1,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4002909519872,
+            "x": 84,
+            "y": 36,
+            "barrelId": 4,
+            "keyBinding": 1,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4002909519872,
+            "x": 86,
+            "y": 36,
+            "barrelId": 4,
+            "keyBinding": 1,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4002909519872,
+            "x": 88,
+            "y": 36,
+            "barrelId": 4,
+            "keyBinding": 1,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4032974290944,
+            "x": 10,
+            "y": 39,
+            "barrelId": 3,
+            "keyBinding": 3,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4032974290944,
+            "x": 84,
+            "y": 39,
+            "barrelId": 4,
+            "keyBinding": 3,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4015794421760,
+            "x": 33,
+            "y": 44,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4015794421760,
+            "x": 35,
+            "y": 44,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4015794421760,
+            "x": 60,
+            "y": 44,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4015794421760,
+            "x": 62,
+            "y": 44,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4015794421760,
+            "x": 33,
+            "y": 46,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 44,
+            "y": 46,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 46,
+            "y": 46,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 48,
+            "y": 46,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 50,
+            "y": 46,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 52,
+            "y": 46,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4015794421760,
+            "x": 62,
+            "y": 46,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 42,
+            "y": 47,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 54,
+            "y": 47,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4015794421760,
+            "x": 33,
+            "y": 48,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 35,
+            "y": 48,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 44,
+            "y": 48,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 46,
+            "y": 48,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 48,
+            "y": 48,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 50,
+            "y": 48,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 52,
+            "y": 48,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 60,
+            "y": 48,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4015794421760,
+            "x": 62,
+            "y": 48,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 42,
+            "y": 49,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 54,
+            "y": 49,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4015794421760,
+            "x": 33,
+            "y": 50,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 35,
+            "y": 50,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 44,
+            "y": 50,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 46,
+            "y": 50,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 48,
+            "y": 50,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 50,
+            "y": 50,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 52,
+            "y": 50,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 60,
+            "y": 50,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4015794421760,
+            "x": 62,
+            "y": 50,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 42,
+            "y": 51,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 54,
+            "y": 51,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4015794421760,
+            "x": 33,
+            "y": 52,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 35,
+            "y": 52,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 44,
+            "y": 52,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 46,
+            "y": 52,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 48,
+            "y": 52,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 50,
+            "y": 52,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 52,
+            "y": 52,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 60,
+            "y": 52,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4015794421760,
+            "x": 62,
+            "y": 52,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 42,
+            "y": 53,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 54,
+            "y": 53,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 35,
+            "y": 54,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 44,
+            "y": 54,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 46,
+            "y": 54,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 48,
+            "y": 54,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 50,
+            "y": 54,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 3998614552576,
+            "x": 52,
+            "y": 54,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 60,
+            "y": 54,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 35,
+            "y": 56,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 60,
+            "y": 56,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 35,
+            "y": 58,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 60,
+            "y": 58,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 35,
+            "y": 60,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 60,
+            "y": 60,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 35,
+            "y": 62,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4041564225536,
+            "x": 60,
+            "y": 62,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4011499454464,
+            "x": 12,
+            "y": 66,
+            "barrelId": 5,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4011499454464,
+            "x": 83,
+            "y": 66,
+            "barrelId": 6,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4011499454464,
+            "x": 12,
+            "y": 69,
+            "barrelId": 5,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4011499454464,
+            "x": 83,
+            "y": 69,
+            "barrelId": 6,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 36,
+            "y": 78,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 39,
+            "y": 78,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 42,
+            "y": 78,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 45,
+            "y": 78,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 48,
+            "y": 78,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 51,
+            "y": 78,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 54,
+            "y": 78,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 57,
+            "y": 78,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4011499454464,
+            "x": 17,
+            "y": 81,
+            "barrelId": 7,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 38,
+            "y": 81,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 41,
+            "y": 81,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 44,
+            "y": 81,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 47,
+            "y": 81,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 50,
+            "y": 81,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 53,
+            "y": 81,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 56,
+            "y": 81,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4045859192832,
+            "x": 59,
+            "y": 81,
+            "barrelId": -1,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4011499454464,
+            "x": 78,
+            "y": 81,
+            "barrelId": 8,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4011499454464,
+            "x": 17,
+            "y": 83,
+            "barrelId": 7,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        },
+        {
+            "component": 4011499454464,
+            "x": 78,
+            "y": 83,
+            "barrelId": 8,
+            "keyBinding": 0,
+            "behaviour": 0,
+            "locked": false
+        }
+    ],
+    "firstSatellite": {
+        "satelliteId": 0,
+        "components": []
+    },
+    "secondSatellite": {
+        "satelliteId": 0,
+        "components": []
+    }
+}

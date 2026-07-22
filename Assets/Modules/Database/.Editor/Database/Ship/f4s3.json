@@ -1,0 +1,32 @@
+{
+  "ItemType": 6,
+  "Id": 37,
+  "SizeClass": 2,
+  "Name": "$f4_Cruiser",
+  "Faction": 4,
+  "IconImage": "f4s3",
+  "IconScale": 0.9,
+  "ModelImage": "f4s3",
+  "ModelScale": 1.8,
+  "EngineColor": "#40B4FFB4",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.9
+      },
+      "Size": 0.3
+    }
+  ],
+  "Layout": "000000000000000100001000000104401000011114411110011134431110001332233100011332233110001332233100000022220000000022220000000055550000000015510000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.5
+      },
+      "WeaponClass": "LS"
+    }
+  ],
+  "Features": {
+    "Regeneration": true
+  }
+}

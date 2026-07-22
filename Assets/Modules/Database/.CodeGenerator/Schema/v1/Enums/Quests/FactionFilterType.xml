@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="FactionFilterType">
+    <item name="AllButList">0</item>
+    <item name="ListOnly">1</item>
+    <item name="StarOwnersAndList">2</item>
+    <item name="AllAvailable">3</item>
+</data>

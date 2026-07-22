@@ -1,0 +1,10 @@
+﻿{
+    "name": "GuiThemeEditor",
+    "references": [
+        "Gui"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

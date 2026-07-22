@@ -1,0 +1,18 @@
+{
+  "ItemType": 1,
+  "Id": 952,
+  "Name": "$Sophon",
+  "Description": "$SophonDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 2,
+  "Availability": 1,
+  "ComponentStatsId": 925,
+  "Faction": 22,
+  "Level": 100,
+  "Icon": "sophon",
+  "Color": "#8FEAFF",
+  "Layout": "1111111111111111",
+  "CellType": "4",
+  "DeviceId": 906,
+  "WeaponSlotType": "S"
+}

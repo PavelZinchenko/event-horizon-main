@@ -71,7 +71,7 @@ namespace Gui.StarMap
         public void OnShipClicked(ShipListItem item)
         {
             var ship = item.Ship;
-            var canInstall = ship != null && SelectedSlotId >= 0 && !Slots[SelectedSlotId].Locked && Slots[SelectedSlotId].Size >= ship.Model.SizeClass;
+            var canInstall = ship != null && SelectedSlotId >= 0 && Slots[SelectedSlotId].CanAccept(ship.Model.SizeClass);
             SlotInfoPanel.Initialize(ship, canInstall);
         }
 
@@ -165,7 +165,7 @@ namespace Gui.StarMap
 
             var id = SelectedSlotId;
             ContentFiller.InitializeShips(ships.OrderBy(ship => ship.Id.Value).Select(ship => 
-                new KeyValuePair<IShip, bool>(ship, id < 0 || (!Slots[id].Locked && Slots[id].Size >= ship.Model.SizeClass))));
+                new KeyValuePair<IShip, bool>(ship, id < 0 || Slots[id].CanAccept(ship.Model.SizeClass))));
 
             ShipList.RefreshContent();
         }
@@ -175,8 +175,9 @@ namespace Gui.StarMap
             var size = SizeClass.Titan;
             var count = _playerSkills.GetAvailableHangarSlots(size);
 
-            foreach (var slot in Slots)
+            for (var i = 0; i < Slots.Count; ++i)
             {
+                var slot = Slots[i];
                 while (size >= SizeClass.Frigate && count <= 0)
                 {
                     size--;
@@ -185,6 +186,10 @@ namespace Gui.StarMap
 
                 slot.Locked = count <= 0;
                 slot.Size = count > 0 ? size : SizeClass.Frigate;
+                // The skill upgrades the first two existing Titan hangars; they
+                // retain their normal silhouette but gain a gold outline.
+                slot.TitanPAllowed = GameServices.Player.ThreeBodySkillState.GiantCannonsUnlocked &&
+                                     i < 2 && slot.Size == SizeClass.Titan;
                 count--;
             }
         }

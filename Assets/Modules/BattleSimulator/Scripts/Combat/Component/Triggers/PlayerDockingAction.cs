@@ -14,7 +14,8 @@ namespace Combat.Component.Triggers
 
         public bool TryUpdateAction(float elapsedTime)
         {
-            if (--_counter > 0)
+            _remainingTime -= elapsedTime;
+            if (_remainingTime > 0)
                 return true;
 
             _messenger.Broadcast(EventType.PlayerShipUndocked, _stationId);
@@ -23,18 +24,21 @@ namespace Combat.Component.Triggers
 
         public bool TryInvokeAction(ConditionType condition)
         {
-            const int maxValue = 5;
-
-            if (_counter <= 0)
+            if (_remainingTime <= 0)
                 _messenger.Broadcast(EventType.PlayerShipDocked, _stationId);
 
-            _counter = maxValue;
+            // Scanning an exploration point takes ten seconds.  Keeping the
+            // docking session alive slightly longer makes a brief physics
+            // contact interruption (common with large ship colliders) unable
+            // to cancel an otherwise valid scan.
+            _remainingTime = DockingSessionDuration;
             return true;
         }
 
         public void Dispose() { }
 
-        private int _counter;
+        private const float DockingSessionDuration = 12f;
+        private float _remainingTime;
         private readonly int _stationId;
         private readonly IMessenger _messenger;
     }

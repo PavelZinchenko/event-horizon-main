@@ -1,0 +1,30 @@
+{
+  "ItemType": 6,
+  "Id": 167,
+  "ShipType": 1,
+  "SizeClass": -1,
+  "Name": "观众",
+  "Description": "来自未知观察者的四维微型舰船。",
+  "Faction": 28,
+  "IconImage": "observer",
+  "IconScale": 0.38,
+  "ModelImage": "observer",
+  "ModelScale": 0.38,
+  "EngineColor": "#63E9FF",
+  "Engines": [
+    {
+      "Position": {
+        "y": -0.45
+      },
+      "Size": 0.18
+    }
+  ],
+  "Layout": "6",
+  "Features": {
+    "EnergyResistance": -1.0,
+    "KineticResistance": -1.0,
+    "HeatResistance": -1.0,
+    "CorrosiveResistance": -1.0,
+    "IsFourDimensional": true
+  }
+}

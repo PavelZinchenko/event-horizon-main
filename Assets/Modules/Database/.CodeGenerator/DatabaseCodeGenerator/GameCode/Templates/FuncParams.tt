@@ -1,0 +1,160 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #><#+
+
+private bool HasExpression(XmlClassItem objectData)
+{
+	foreach(var member in objectData.members)
+		if (member.type == Constants.TypeFormula) 
+			return true;
+	return false;
+}
+
+private string GetInternalType(XmlExpressionParam member, DatabaseSchema schema)
+{
+	if (member.type == Constants.TypeEnum)
+		return Constants.TypeInt;
+	else
+		return GetFuncParamType(member, schema);
+}
+
+private void WriteEnumResolver(XmlEnumItem data)
+{
+	foreach (var item in data.items)
+	{
+		WriteLine($"case \"{item.name}\": return () => (int){data.name}.{item.name};");
+	}
+}
+
+private string GetFuncParamType(XmlExpressionParam member, DatabaseSchema schema)
+{
+	if (member.type == Constants.TypeInt)
+	{
+		return Constants.TypeInt;
+	}
+	else if (member.type == Constants.TypeFloat)
+	{
+		return Constants.TypeFloat;
+	}
+	else if (member.type == Constants.TypeBool)
+	{
+		return Constants.TypeBool;
+	}
+	else if (member.type == Constants.TypeChar)
+	{
+		return Constants.TypeChar;
+	}
+	else if (member.type == Constants.TypeFormula)
+	{
+		if (!schema.HasExpression(member.typeid))
+			throw new InvalidSchemaException("Unknown expression type in class member " + member.name);
+
+		var expression = schema.GetExpression(member.typeid);
+		return Utils.ExpressionClassName(expression);
+	}
+	else if (member.type == Constants.TypeEnum)
+	{
+		if (!schema.HasEnum(member.typeid))
+			throw new InvalidSchemaException("Unknown enum type in class member " + member.name);
+
+		return member.typeid;
+	}
+	else
+	{
+		throw new InvalidSchemaException("Invalid expression param type - " + member.type);
+	}
+}
+
+private string GetFuncReturnType(XmlExpressionItem expression)
+{
+	if (expression.result == Constants.TypeFloat)
+		return Constants.TypeFloat;
+	else
+		return Constants.TypeInt;
+}
+
+private string ConvertToVariant(XmlExpressionParam item)
+{
+	string result = Utils.PrivateMemberName(item.name);
+
+	if (item.type == Constants.TypeEnum)
+		result = "(int)" + result;
+
+	return result;
+}
+
+private string VariantToType(string name, string type)
+{
+	if (type == Constants.TypeFloat)
+		return name + ".AsSingle";
+	else
+		return name + ".AsInt";
+}
+
+private void WriteVariableResolverResolve(XmlClassMember member)
+{
+	if (member.options.Contains(Constants.OptionObsolete)) return;
+    var memberName = !string.IsNullOrEmpty(member.alias) ? member.alias : member.name;
+	switch (member.type)
+	{
+		case Constants.TypeInt:
+		case Constants.TypeFloat:
+		case Constants.TypeBool:
+			WriteLine($"if (name == \"{memberName}\") return {Utils.GetterName(memberName)};");
+			break;
+		case Constants.TypeEnum:
+			// TODO
+			break;
+	}
+}
+
+private void WriteVariableResolverResolveFunction(XmlClassMember member)
+{
+	if (member.options.Contains(Constants.OptionObsolete)) return;
+    var memberName = !string.IsNullOrEmpty(member.alias) ? member.alias : member.name;
+	switch (member.type)
+	{
+		case Constants.TypeFormula:
+			WriteLine($"if (name == \"{memberName}\") return _context.{Utils.PrivateMemberName(memberName)};");
+			break;
+	}
+}
+
+private void WriteVariableResolverGetter(XmlClassMember member, string contextName = "_context")
+{
+	if (member.options.Contains(Constants.OptionObsolete)) return;
+
+    var memberName = !string.IsNullOrEmpty(member.alias) ? member.alias : member.name;
+	switch (member.type)
+	{
+		case Constants.TypeInt:
+		case Constants.TypeFloat:
+		case Constants.TypeBool:
+			WriteLine($"private {Utils.VariantType} {Utils.GetterName(memberName)}() => {contextName}.{memberName};");
+			break;
+		case Constants.TypeEnum:
+			// TODO
+			break;
+	}
+}
+
+private string GetFuncParamList(XmlExpressionItem expression, string paramNames = null)
+{
+	var paramNamesArray = paramNames?.Split(new char[] { ',', ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+	bool first = true;
+
+	var sb = new System.Text.StringBuilder();
+
+	for (int i = 0; i < expression.items.Count; ++i)
+	{
+		var item = expression.items[i];
+		if (!first) sb.Append(", ");
+		first = false;
+		var name = paramNamesArray != null && paramNamesArray.Length > i ? paramNamesArray[i] : item.name;
+		sb.Append($"{GetFuncParamType(item, Schema)} {name}");
+	}
+
+	return sb.ToString();
+}
+
+#>

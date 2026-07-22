@@ -1,0 +1,32 @@
+{
+  "ItemType": 6,
+  "Id": 129,
+  "SizeClass": 1,
+  "Name": "$ship_1",
+  "Faction": 18,
+  "IconImage": "ship1",
+  "IconScale": 1.0,
+  "ModelImage": "ship1",
+  "ModelScale": 1.5,
+  "EngineColor": "#40FFB52F",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.5
+      },
+      "Size": 0.2
+    }
+  ],
+  "Layout": "0000000000000000400000000004000001000444000110002220001122222222210122525221000155555100011150511100010000010000000000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.8
+      },
+      "WeaponClass": "C"
+    }
+  ],
+  "Features": {
+    "TurnRateBonus": 1.0
+  }
+}

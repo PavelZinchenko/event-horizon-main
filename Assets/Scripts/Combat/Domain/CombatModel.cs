@@ -43,6 +43,8 @@ namespace Combat.Domain
         public IFleetModel PlayerFleet { get { return _playerFleet; } }
         public IFleetModel AllyFleet { get { return _allyFleet; } }
         public IFleetModel EnemyFleet { get { return _enemyFleet; } }
+        public IShipInfo DefenseStarbase { get; internal set; }
+        public bool IsStarbaseDefense { get; internal set; }
 
         public IEnumerable<KeyValuePair<IShip, long>> PlayerExperience { get { return _playerExperienceData; } }
         public IEnumerable<IProduct> SpecialRewards { get; set; }

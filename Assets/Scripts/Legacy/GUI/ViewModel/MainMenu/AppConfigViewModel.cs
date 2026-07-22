@@ -52,7 +52,8 @@ namespace ViewModel
             foreach (var ship in _database.ShipList.Where(item => item != null))
                 _session.Statistics.UnlockShip(ship.Id);
 
-            foreach (var component in _database.ComponentList.Where(item => item != null))
+            foreach (var component in _database.ComponentList.Where(item => item != null &&
+                         item.Id.Value != ThreeBodyContentRules.ObserverCoreComponentId))
             {
                 var info = new ComponentInfo(component);
                 if (_playerInventory.Components.GetQuantity(info) < 99)
@@ -69,26 +70,27 @@ namespace ViewModel
             // normal player resources and progression pools.  Values are
             // intentionally applied as additions (except fuel, which is
             // filled to its current capacity) so tapping again is harmless.
-            _playerResources.Money += 5_000_000;
-            _playerResources.Stars += 100_000;
-            _playerResources.Tokens += 10_000;
+            _playerResources.Money += 100_000_000;
+            _playerResources.Stars += 1_000_000;
+            _playerResources.Tokens += 100_000;
             _playerResources.Fuel = _playerSkills.MainFuelCapacity;
 
             foreach (var item in _database.QuestItemList.Where(item => item != null))
-                _playerResources.AddResource(item.Id, 10_000);
+                _playerResources.AddResource(item.Id, 100_000);
 
             foreach (var faction in _database.FactionsWithEmpty.Where(item => item != null))
-                _research.AddResearchPoints(faction, 10_000);
+                _research.AddResearchPoints(faction, 100_000);
 
             // Player skill points are represented by the player's skill
             // experience level.  Add a generous pool without resetting points
             // already spent by the player.
             _playerSkills.Experience = GameModel.Skills.Experience.FromLevel(
-                _playerSkills.Experience.Level + 100);
+                _playerSkills.Experience.Level + 500);
 
             var ownedShipIds = _playerFleet.Ships.Select(item => item.Model.Id.Value).ToHashSet();
             foreach (var build in _database.ShipBuildList.Where(item => item?.Ship != null && item.AvailableForPlayer &&
-                         (item.Ship.ShipType == ShipType.Common || item.Ship.ShipType == ShipType.Drone))
+                         (item.Ship.ShipType == ShipType.Common || item.Ship.ShipType == ShipType.Drone ||
+                          item.Ship.ShipType == ShipType.Flagship))
                      .GroupBy(item => item.Ship.Id.Value).Select(group => group.First()))
                 if (ownedShipIds.Add(build.Ship.Id.Value))
                     _playerFleet.Ships.Add(new CommonShip(build, _database));

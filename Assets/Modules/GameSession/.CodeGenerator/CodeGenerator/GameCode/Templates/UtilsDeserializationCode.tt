@@ -1,0 +1,109 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #><#+
+
+private void WriteDeserializationCode(XmlClassMember member, SchemaVersionInfo context, string callback)
+{
+	var memberName = Utils.PrivateMemberName(member.name);
+	var encoding = Utils.GetEncodingType(member.encoding);
+
+	if (member.type == Constants.TypeList)
+	{
+		var count = Utils.LocalVariableName(member.name) + "ItemCount";
+		WriteLine($"int {count};");
+		WriteDeserializationCode(count, Constants.TypeInt, context, callback, encoding);
+		WriteLine($"{memberName} = new {Utils.ListType}<{ConvertType(member.value, context)}>({count}, {callback});");
+		WriteLine($"for (int i = 0; i < {count}; ++i)");
+		WriteLine("{");
+		PushIndent("\t");
+		WriteLine($"{ConvertType(member.value, context)} item;");
+		WriteDeserializationCode($"item", member.value, context, callback, encoding);
+		WriteLine($"{memberName}.Add(item);");
+		PopIndent();
+		WriteLine("}");
+	}
+	else if (member.type == Constants.TypeMap)
+	{
+		var count = Utils.LocalVariableName(member.name) + "ItemCount";
+		WriteLine($"int {count};");
+		WriteDeserializationCode(count, Constants.TypeInt, context, callback, encoding);
+		WriteLine($"{memberName} = new {Utils.MapType}<{ConvertType(member.key, context)}, {ConvertType(member.value, context)}>({callback});");
+		WriteLine($"for (int i = 0; i < {count}; ++i)");
+		WriteLine("{");
+		PushIndent("\t");
+		WriteLine($"{ConvertType(member.key, context)} key;");
+		WriteLine($"{ConvertType(member.value, context)} value;");
+		WriteDeserializationCode("key", member.key, context, callback, encoding);
+		WriteDeserializationCode("value", member.value, context, callback, encoding);
+		WriteLine($"{memberName}.Add(key,value);");
+		PopIndent();
+		WriteLine("}");
+	}
+	else if (member.type == Constants.TypeInventory)
+	{
+		var count = Utils.LocalVariableName(member.name) + "ItemCount";
+		WriteLine($"int {count};");
+		WriteDeserializationCode(count, Constants.TypeInt, context, callback, encoding);
+		WriteLine($"{memberName} = new {Utils.InventoryType}<{ConvertType(member.value, context)}>({callback});");
+		WriteLine($"for (int i = 0; i < {count}; ++i)");
+		WriteLine("{");
+		PushIndent("\t");
+		WriteLine($"{ConvertType(member.value, context)} value;");
+		WriteLine($"int quantity;");
+		WriteDeserializationCode("value", member.value, context, callback, encoding);
+		WriteDeserializationCode("quantity", Constants.TypeInt, context, callback, encoding);
+		WriteLine($"{memberName}.Add(value,quantity);");
+		PopIndent();
+		WriteLine("}");
+	}
+	else if (member.type == Constants.TypeSet)
+	{
+		var count = Utils.LocalVariableName(member.name) + "ItemCount";
+		WriteLine($"int {count};");
+		WriteDeserializationCode(count, Constants.TypeInt, context, callback, encoding);
+		WriteLine($"{memberName} = new {Utils.SetType}<{ConvertType(member.value, context)}>({callback});");
+		WriteLine($"for (int i = 0; i < {count}; ++i)");
+		WriteLine("{");
+		PushIndent("\t");
+		WriteLine($"{ConvertType(member.value, context)} item;");
+		WriteDeserializationCode("item", member.value, context, callback, encoding);
+		WriteLine($"{memberName}.Add(item);");
+		PopIndent();
+		WriteLine("}");
+	}
+	else
+	{
+		WriteDeserializationCode(memberName, member.type, context, callback, encoding);
+	}
+}
+
+private void WriteDeserializationCode(string memberName, string memberType, SchemaVersionInfo context, string callback, string encoding)
+{
+	if (memberType == Constants.TypeInt)
+		WriteLine($"{memberName} = reader.ReadInt({encoding});");
+	else if (memberType == Constants.TypeUint)
+		WriteLine($"{memberName} = reader.ReadUint({encoding});");
+	else if (memberType == Constants.TypeLong)
+		WriteLine($"{memberName} = reader.ReadLong({encoding});");
+	else if (memberType == Constants.TypeUlong)
+		WriteLine($"{memberName} = reader.ReadUlong({encoding});");
+	else if (memberType == Constants.TypeShort)
+		WriteLine($"{memberName} = reader.ReadShort({encoding});"); 
+	else if (memberType == Constants.TypeUshort)
+		WriteLine($"{memberName} = reader.ReadUshort({encoding});"); 
+	else if (memberType == Constants.TypeSbyte)
+		WriteLine($"{memberName} = reader.ReadSbyte({encoding});"); 
+	else if (memberType == Constants.TypeByte)
+		WriteLine($"{memberName} = reader.ReadByte({encoding});"); 
+	else if (memberType == Constants.TypeFloat)
+		WriteLine($"{memberName} = reader.ReadFloat({encoding});"); 
+	else if (memberType == Constants.TypeBool)
+		WriteLine($"{memberName} = reader.ReadBool({encoding});"); 
+	else if (memberType == Constants.TypeString)
+		WriteLine($"{memberName} = reader.ReadString({encoding});"); 
+	else if (memberType == Constants.TypeBitset)
+		WriteLine($"{memberName} = new {ConvertType(memberType, context)}(reader, {encoding}, {callback});");
+	else
+		WriteLine($"{memberName} = new {ConvertType(memberType, context)}(reader, {callback});");
+}
+
+#>

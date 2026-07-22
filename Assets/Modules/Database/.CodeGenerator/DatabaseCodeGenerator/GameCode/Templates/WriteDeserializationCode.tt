@@ -1,0 +1,126 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #><#+
+
+private void WriteDeserializationCode(XmlClassMember member, DatabaseSchema schema)
+{
+	if (member.options.Contains(Constants.OptionObsolete)) return;
+
+	var memberName = !string.IsNullOrEmpty(member.alias) ? member.alias : member.name;
+	WriteDeserializationCode(memberName, member, schema);
+}
+
+// TODO: delete this method
+private void WriteLegacyDeserializationCode(XmlClassMember member, DatabaseSchema schema)
+{
+    var memberName = !string.IsNullOrEmpty(member.alias) ? member.alias : member.name;
+	WriteDeserializationCode(memberName, member, schema);
+}
+
+private void WriteDeserializationCode(string memberName, XmlClassMember member, DatabaseSchema schema)
+{
+	var notnull = member.options.Contains(Constants.OptionNotNull);
+
+    if (member.type == Constants.TypeObject)
+    {
+		var dataClass = schema.GetObject(member.typeid);
+        WriteLine($"{memberName} = loader?.{Utils.ObjectGetterName(member.typeid)}(new ItemId<{Utils.DataClassName(dataClass)}>(serializable.{member.name})) ?? {Utils.DataClassName(dataClass)}.DefaultValue;");
+		if (notnull)
+		{
+			WriteLine($"if (loader != null && {memberName} == null)");
+			WriteLine($"    throw new DatabaseException(\"{this.GetType().Name}.{memberName} cannot be null - \" + serializable.{member.name});");
+        }
+    }
+    else if (member.type == Constants.TypeObjectList)
+    {
+		var dataClass = schema.GetObject(member.typeid);
+        WriteLine(memberName + " = new ImmutableCollection<" + Utils.DataClassName(dataClass) + ">(" + "serializable." + member.name + 
+			"?.Select(item => loader." + Utils.ObjectGetterName(member.typeid) + "(new ItemId<" + Utils.DataClassName(dataClass) + ">(item), true)));");
+    }
+    else if (member.type == Constants.TypeStruct)
+    {
+		var dataClass = schema.GetStruct(member.typeid);
+        WriteLine(memberName + " = " + Utils.DataClassName(dataClass) + "." + Utils.FactoryMethodName +  "(serializable." + member.name + ", loader);");
+    }
+    else if (member.type == Constants.TypeStructList)
+    {
+		var dataClass = schema.GetStruct(member.typeid);
+        WriteLine(memberName + " = new ImmutableCollection<" + Utils.DataClassName(dataClass) + ">(" + "serializable." + member.name + 
+			"?.Select(item => " + Utils.DataClassName(dataClass) + "." + Utils.FactoryMethodName + "(item, loader)));");
+    }
+	else if (member.type == Constants.TypeEnumFlags)
+	{
+        WriteLine(memberName + " = new ImmutableSet<" + member.typeid + ">(" + "serializable." + member.name + ");");
+	}
+    else if (member.type == Constants.TypeInt)
+    {
+        member.MinMaxInt(out var minvalue, out var maxvalue);
+        WriteLine(memberName + " = UnityEngine.Mathf.Clamp(serializable." + member.name + ", " + minvalue + ", " + maxvalue + ");");
+    }
+    else if (member.type == Constants.TypeChar)
+    {
+        WriteLine(memberName + " = string.IsNullOrEmpty(serializable." + member.name + ") ? default : serializable." + member.name + "[0];");
+    }
+    else if (member.type == Constants.TypeFloat)
+    {
+        member.MinMaxFloat(out var minvalue, out var maxvalue);
+        WriteLine(memberName + " = UnityEngine.Mathf.Clamp(serializable." + member.name + ", " + minvalue + "f, " + maxvalue + "f);");
+    }
+    else if (member.type == Constants.TypeColor)
+    {
+        WriteLine(memberName + " = new ColorData(serializable." + member.name + ");");
+    }
+    else if (member.type == Constants.TypeLayout)
+    {
+        WriteLine(memberName + " = new Layout(serializable." + member.name + ");");
+    }
+    else if (member.type == Constants.TypeAudioClip)
+    {
+        WriteLine(memberName + " = new AudioClipId(serializable." + member.name + ");");
+    }
+    else if (member.type == Constants.TypeImage)
+    {
+        WriteLine(memberName + " = new SpriteId(serializable." + member.name + ", SpriteId.Type." + member.typeid + ");");
+    }
+    else if (member.type == Constants.TypePrefab)
+    {
+        WriteLine(memberName + " = new PrefabId(serializable." + member.name + ", PrefabId.Type." + member.typeid + ");");
+    }
+	else if (member.type == Constants.TypeFormula)
+	{
+		var expression = schema.GetExpression(member.typeid);
+        member.MinMaxInt(out var minvalue, out var maxvalue);
+
+        Write($"{Utils.PrivateMemberName(memberName)} = new {Utils.ExpressionsNamespace}.{Utils.ExpressionClassName(expression)}(serializable.{member.name}, {minvalue}, {maxvalue}, variableResolver)");
+        Write(" { ");
+        
+        var paramNamesArray = member.arguments?.Split(new char[] { ',', ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+        if (paramNamesArray != null)
+        {
+            for (int i = 0; i < paramNamesArray.Length; i++)
+            {
+                if (i > 0) Write(", ");
+                Write($"ParamName{i+1} = \"{paramNamesArray[i]}\"");
+            }
+        }
+
+        WriteLine(" };");
+
+		WriteLine($"{memberName} = {Utils.PrivateMemberName(memberName)}.Evaluate;");
+	}
+    else
+    {
+        WriteLine($"{memberName} = serializable.{member.name};");
+    }
+}
+
+private static string PrivateMemberName(string name) 
+{ 		
+	return "_" + char.ToLower(name[0]) + name.Substring(1); 
+}
+
+private static string GetterName(string name) 
+{ 		
+	return "Get" + char.ToUpper(name[0]) + name.Substring(1);
+}
+
+#>

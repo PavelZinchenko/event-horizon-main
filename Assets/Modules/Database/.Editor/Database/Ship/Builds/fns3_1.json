@@ -1,0 +1,144 @@
+{
+  "ItemType": 8,
+  "Id": 159,
+  "ShipId": 71,
+  "AvailableForPlayer": false,
+  "DifficultyClass": 1,
+  "Components": [
+    {
+      "ComponentId": 55,
+      "X": 3,
+      "Y": 6,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 57,
+      "X": 5,
+      "Y": 6,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 57,
+      "X": 2,
+      "Y": 6,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 129,
+      "X": 3
+    },
+    {
+      "ComponentId": 74,
+      "X": 2,
+      "Y": 3,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 63,
+      "X": 6,
+      "Y": 5,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 63,
+      "Y": 5,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 5,
+      "Y": 7,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 2,
+      "Y": 7,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 6,
+      "Y": 4,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 6,
+      "Y": 3,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 1,
+      "Y": 4,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 1,
+      "Y": 3,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 5,
+      "Y": 1,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 2,
+      "Y": 1,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 78,
+      "X": 2,
+      "Y": 5,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 78,
+      "X": 2,
+      "Y": 3,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 69,
+      "X": 2,
+      "Y": 2,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 69,
+      "X": 3,
+      "Y": 2,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 31,
+      "X": 4,
+      "Y": 2,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 69,
+      "X": 5,
+      "Y": 5,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 69,
+      "X": 4,
+      "Y": 5,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 69,
+      "X": 5,
+      "Y": 4,
+      "KeyBinding": -1
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "com.codewriter.expression-parser",
+  "displayName": "Expression Parser",
+  "description": "Simple expression parser library for Unity",
+  "version": "1.0.1",
+  "unity": "2020.1",
+  "license": "MIT",
+  "author": "CodeWriter (https://github.com/orgs/codewriter-packages)",
+  "homepage": "https://github.com/codewriter-packages/Expression-Parser#readme",
+  "dependencies": {}
+}

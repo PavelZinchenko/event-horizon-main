@@ -1,0 +1,29 @@
+{
+  "ItemType": 6,
+  "Id": 26,
+  "SizeClass": 2,
+  "Name": "$f2_Cruiser",
+  "Faction": 2,
+  "IconImage": "f2s3",
+  "IconScale": 0.7,
+  "ModelImage": "f2s3",
+  "ModelScale": 1.5,
+  "EngineColor": "#40FFBABA",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.7
+      },
+      "Size": 0.3
+    }
+  ],
+  "Layout": "0000000000000044000001114411100112222110113222231111322223111132222311111255211110055550010000000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.9
+      },
+      "WeaponClass": "S"
+    }
+  ]
+}

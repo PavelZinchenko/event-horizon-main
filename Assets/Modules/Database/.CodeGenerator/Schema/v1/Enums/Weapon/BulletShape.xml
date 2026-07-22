@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="BulletShape">
+    <item name="Projectile" />
+    <item name="Rocket" />
+    <item name="LaserBeam" />
+    <item name="LightningBolt" />
+    <item name="EnergyBeam" />
+    <item name="Spark" />
+    <item name="Mine" />
+    <item name="Wave" />
+    <item name="BlackHole" />
+</data>

@@ -27,7 +27,8 @@ namespace Gui.StarMap
             _levelText.text = ship.Experience.Level > 0 ? ship.Experience.Level.ToString() : "0";
             _classText.text = ship.Model.SizeClass.ToString(localization);
 
-            _icon.sprite = resourceLocator.GetSprite(ship.Model.ModelImage);
+            _icon.sprite = PlayerShipTextureOverrides.Get(ship.Model.Id.Value,
+                resourceLocator.GetSprite(ship.Model.ModelImage));
             _icon.color = ship.ColorScheme.HsvColor;
 
             if (_levelPanel != null)

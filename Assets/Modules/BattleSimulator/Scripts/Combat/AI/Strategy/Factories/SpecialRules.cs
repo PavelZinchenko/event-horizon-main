@@ -89,6 +89,14 @@ namespace Combat.Ai
                         new AlwaysTrueCondition(),
                         new ActivateDeviceAction(i));
                 }
+                else if (device is SophonJammerDevice)
+                {
+                    // Sophon was previously absent from every AI policy, so an
+                    // AI-controlled launcher could install it but never fire it.
+                    strategy.AddPolicy(
+                        new HasEnergyCondition(0.2f),
+                        new ActivateDeviceAction(i));
+                }
                 else if (device is GravityGenerator)
                 {
                     var distance = Helpers.ShipMinRange(ship);

@@ -142,6 +142,9 @@ namespace Constructor
             }
 
             stats.EquipmentStats.AddStats(componentStats);
+            var modifications = data.ThreeBodyModifications;
+            ThreeBodyComponentModifications.AddToSummary(ref modifications, item.Info.ModificationType);
+            data.ThreeBodyModifications = modifications;
 
             foreach (var spec in component.Devices)
                 data.AddDevice(new DeviceData(spec, item.KeyBinding, item.Info.Data.Id.Value));
@@ -149,7 +152,22 @@ namespace Constructor
             {
                 var droneBayStats = spec.Key;
                 droneBayStats.Capacity += ExtraDroneBayCapacity;
-                data.AddDroneBay(new DroneBayData(droneBayStats, spec.Value, item.KeyBinding, (DroneBehaviour)item.Behaviour));
+                var droneBuild = spec.Value;
+                var keyBinding = item.KeyBinding;
+                var behaviour = (DroneBehaviour)item.Behaviour;
+
+                if (item.Info.Data.Id.Value == ThreeBodyContentRules.CreativeWorkshopComponentId)
+                {
+                    if (ThreeBodyContentRules.TryGetCreativeWorkshopDrone(_ship.Database, item.BarrelId, item.Behaviour, out var selectedBuild))
+                        droneBuild = selectedBuild;
+
+                    // The selected build is packed into the persisted barrel
+                    // and behaviour bytes. KeyBinding remains an ordinary,
+                    // player-configurable action slot.
+                    behaviour = DroneBehaviour.Aggressive;
+                }
+
+                data.AddDroneBay(new DroneBayData(droneBayStats, droneBuild, keyBinding, behaviour));
             }
 
             if (item.BarrelId < 0)
@@ -363,7 +381,8 @@ namespace Constructor
 				}
 			}
 			
-			public void AddWeapon(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition, int key, char weaponSlotType = default)
+			public void AddWeapon(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition,
+                int key, char weaponSlotType = default)
 			{
 				_weaponsObsolete.Add(new WeaponDataObsolete(weapon, ammunition, key, weaponSlotType));
 			}
@@ -418,7 +437,8 @@ namespace Constructor
 
             public class WeaponDataObsolete : IWeaponDataObsolete
             {
-				public WeaponDataObsolete(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition, int key, char weaponSlotType)
+                public WeaponDataObsolete(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition,
+                    int key, char weaponSlotType)
 				{
 					_weapon = weapon;
 				    _ammunition = ammunition;
@@ -447,7 +467,7 @@ namespace Constructor
 						return stats;
 					}
 				}
-				
+
                 public int KeyBinding { get; private set; }
 				public char WeaponSlotType { get; private set; }
 				
@@ -475,6 +495,7 @@ namespace Constructor
             public IEnumerable<IDeviceData> ClonningCenters => _clonningCenters.Cast<IDeviceData>();
             public IEnumerable<IDroneBayData> DroneBays => _droneBays.Cast<IDroneBayData>();
             public BehaviorTreeModel CustomAi { get; set; }
+            public ThreeBodyModificationSummary ThreeBodyModifications { get; set; }
 
             public WeaponPlatform FindPlatform(int barrelId)
             {

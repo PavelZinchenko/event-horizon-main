@@ -1,0 +1,163 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="System.Linq" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+<#@ include file="UtilsUpgradeCode.tt" #>
+
+using <#= Utils.RootNamespace #>.<#= Utils.UtilsNamespace #>;
+
+namespace <#= Utils.RootNamespace #>
+{
+	public partial class SessionLoader
+	{
+<#
+		PushIndent("\t\t");
+		var first = true;
+		var oldVersion = new Schema.SchemaVersion();
+		foreach (var schemaVersion in VersionList.Items)
+		{
+			var major = schemaVersion.Major;
+			if (!first)
+			{
+				WriteLine("/// <summary>");
+				WriteLine("/// These items must be transferred manually:");
+				var oldSchema = Context[oldVersion.Major];
+				var newSchema = Context[major];
+				var oldData = oldSchema.GetObject(Utils.RootDataClass);
+				var newData = newSchema.GetObject(Utils.RootDataClass);
+				WriteXmlComments("oldData", "newData", oldData, newData, oldSchema, newSchema);
+				WriteLine("/// </summary>");
+				WriteLine($"partial void Upgrage_v{oldVersion.Major}_{oldVersion.Minor}_to_v{major}_{0}({Context[oldVersion.Major].GetObjectName(Utils.RootDataClass)} oldData, {Context[major].GetObjectName(Utils.RootDataClass)} newData);");
+			}
+
+			for (int i = 0; i < schemaVersion.Minor; ++i)
+				WriteLine($"partial void Upgrage_v{major}_{i}_to_v{major}_{i+1}({Context[major].GetObjectName(Utils.RootDataClass)} data);");
+
+			first = false;
+			oldVersion = schemaVersion;
+		}
+		PopIndent();
+#>
+
+		public <#= Context.Current.GetObjectName(Utils.RootDataClass) #> Convert(<#= Context[1].GetObjectName(Utils.RootDataClass) #> data)
+		{
+<#
+			PushIndent("\t\t\t");
+			first = true;
+			string name = "data";
+
+			foreach (var schemaVersion in VersionList.Items)
+			{
+				var major = schemaVersion.Major;
+				if (!first)
+				{
+					var oldname = name;
+					name = "data" + major;
+					WriteLine($"var {name} = Convert_{oldVersion.Major}_{major}({oldname});");
+				}
+
+				for (int i = 0; i < schemaVersion.Minor; ++i)
+					WriteLine($"Upgrage_v{major}_{i}_to_v{major}_{i+1}({name});");
+
+				first = false;
+				oldVersion = schemaVersion;
+			}
+			PopIndent();
+#>
+			return <#= name #>;
+		}
+
+		public <#= Context.Current.GetObjectName(Utils.RootDataClass) #> Load(<#= Utils.ReaderClass #> reader, int versionMajor, int versionMinor)
+		{
+<#
+			first = true;
+			name = "data";
+
+			foreach (var schemaVersion in VersionList.Items)
+			{
+				var major = schemaVersion.Major;
+				var oldname = name;
+				name = "data" + major;
+				if (!first) WriteLine(string.Empty);
+
+#>
+			<#= Context[major].GetObjectName(Utils.RootDataClass) #> <#= name #> = null;
+			if (versionMajor == <#= major #>)
+				<#= name #> = new <#= Context[major].GetObjectName(Utils.RootDataClass) #>(reader, null);
+<#
+				if (!first)
+				{
+#>
+			else if (versionMajor == <#= oldVersion.Major #>)
+			{
+				<#= name #> = Convert_<#= oldVersion.Major #>_<#= major #>(<#= oldname #>);
+				versionMajor = <#= major #>;
+				versionMinor = 0;
+			}
+<#
+				}
+
+				if (schemaVersion.Minor > 0)
+				{
+#>
+			if (versionMajor == <#= major #>)
+			{
+<#
+					for (int i = 0; i < schemaVersion.Minor; ++i)
+					{
+#>
+				if (versionMinor == <#= i #>)
+				{
+					Upgrage_v<#= major #>_<#= i #>_to_v<#= major #>_<#= i+1 #>(<#= name #>);
+					versionMinor = <#= i+1 #>;
+				}
+<#
+					}
+#>
+				}
+<#
+			}
+
+				first = false;
+				oldVersion = schemaVersion;
+			}
+
+			// if (!IsValidVersion(versionMajor, versionMinor))
+			//	throw new System.InvalidOperationException($"invalid data version: {versionMajor}.{versionMinor}");
+#>
+
+			return <#= name #>;
+		}
+
+<#
+		first = true;
+		foreach (var schemaVersion in VersionList.Items)
+		{
+			var major = schemaVersion.Major;
+			if (!first)
+			{
+#>
+
+		private <#= Context[major].GetObjectName(Utils.RootDataClass) #> Convert_<#= oldVersion.Major #>_<#= major #>(<#= Context[oldVersion.Major].GetObjectName(Utils.RootDataClass) #> oldData)
+		{
+			var newData = new <#= Context[major].GetObjectName(Utils.RootDataClass) #>(null);
+<#
+			PushIndent("\t\t\t");
+			var oldSchema = Context[oldVersion.Major];
+			var newSchema = Context[major];
+			var oldData = oldSchema.GetObject(Utils.RootDataClass);
+			var newData = newSchema.GetObject(Utils.RootDataClass);
+			WriteClonningCode("oldData", "newData", oldData, newData, oldSchema, newSchema);
+			PopIndent();
+#>
+			Upgrage_v<#= oldVersion.Major #>_<#= oldVersion.Minor #>_to_v<#= major #>_0(oldData, newData);
+			return newData;
+		}
+<#			
+			}
+
+			first = false;
+			oldVersion = schemaVersion;
+		}
+#>
+	}
+}

@@ -1,0 +1,99 @@
+{
+  "ItemType": 8,
+  "Id": 139,
+  "ShipId": 50,
+  "AvailableForPlayer": false,
+  "DifficultyClass": 1,
+  "Components": [
+    {
+      "ComponentId": 74,
+      "X": 3,
+      "Y": 3
+    },
+    {
+      "ComponentId": 125,
+      "X": 3,
+      "Y": 1
+    },
+    {
+      "ComponentId": 64,
+      "X": 5,
+      "Y": 6
+    },
+    {
+      "ComponentId": 64,
+      "X": 3,
+      "Y": 6
+    },
+    {
+      "ComponentId": 64,
+      "X": 7,
+      "Y": 5
+    },
+    {
+      "ComponentId": 64,
+      "X": 6,
+      "Y": 4
+    },
+    {
+      "ComponentId": 64,
+      "X": 1,
+      "Y": 5
+    },
+    {
+      "ComponentId": 64,
+      "X": 2,
+      "Y": 4
+    },
+    {
+      "ComponentId": 69,
+      "X": 5,
+      "Y": 5
+    },
+    {
+      "ComponentId": 69,
+      "X": 5,
+      "Y": 3
+    },
+    {
+      "ComponentId": 69,
+      "X": 3,
+      "Y": 3
+    },
+    {
+      "ComponentId": 69,
+      "X": 3,
+      "Y": 5
+    },
+    {
+      "ComponentId": 67,
+      "X": 2,
+      "Y": 5
+    },
+    {
+      "ComponentId": 67,
+      "X": 6,
+      "Y": 5
+    },
+    {
+      "ComponentId": 57,
+      "X": 3,
+      "Y": 8
+    },
+    {
+      "ComponentId": 56,
+      "X": 4,
+      "Y": 7
+    },
+    {
+      "ComponentId": 57,
+      "X": 5,
+      "Y": 8
+    },
+    {
+      "ComponentId": 60,
+      "X": 4,
+      "Y": 6
+    }
+  ]
+}

@@ -13,8 +13,13 @@ using Economy;
 using CommonComponents.Signals;
 using Session;
 using GameDatabase;
+using GameDatabase.Model;
 using System.Linq;
 using System;
+using TextAsset = UnityEngine.TextAsset;
+using Debug = UnityEngine.Debug;
+using Resources = UnityEngine.Resources;
+using JsonUtility = UnityEngine.JsonUtility;
 
 namespace GameStateMachine.States
 {
@@ -89,7 +94,7 @@ namespace GameStateMachine.States
             public IShipPresetStorage ShipPresetStorage { get; }
             public IComponentUpgradesProvider UpgradesProvider { get; }
 
-            public bool CanBeUnlocked(Component component)
+            public bool CanBeUnlocked(GameDatabase.DataModel.Component component)
             {
                 if (!_technologies.TryGetComponentTechnology(component, out var tech))
                     return false;
@@ -101,7 +106,7 @@ namespace GameStateMachine.States
         private class UpgradesProvider : IComponentUpgradesProvider
         {
             public IEnumerable<ComponentUpgradeLevel> GetAllUpgrades() => Enumerable.Empty<ComponentUpgradeLevel>();
-            public IComponentUpgrades GetComponentUpgrades(Component component) => null;
+            public IComponentUpgrades GetComponentUpgrades(GameDatabase.DataModel.Component component) => null;
         }
 
         private class PresetStorage : IShipPresetStorage, IDisposable
@@ -114,19 +119,110 @@ namespace GameStateMachine.States
             {
                 _session = session;
                 _database = database;
-                _shipPresets = session.ShipPresets.Presets.Select(item => item.ToShipPreset(database)).ToList();
+                _shipPresets = session.ShipPresets.Presets
+                    .Select(item => item.ToShipPreset(database))
+                    .Where(item => item != null)
+                    .ToList();
+                EnsureBundledTitanPreset();
+            }
+
+            private void EnsureBundledTitanPreset()
+            {
+                const int titanId = 1145140;
+                const string presetName = "$TrisolarisTitan";
+                if (_shipPresets.Any(item => item.Ship != null && item.Ship.Id.Value == titanId &&
+                                             string.Equals(item.Name, presetName, StringComparison.Ordinal)))
+                    return;
+
+                var ship = _database.GetShip(new ItemId<Ship>(titanId));
+                if (ship == null || ship == Ship.DefaultValue)
+                    return;
+
+                var asset = Resources.Load<TextAsset>("ShipEditor/Presets/TrisolarisTitan");
+                if (asset == null)
+                {
+                    Debug.LogWarning("Bundled Trisolaris Titan preset is missing");
+                    return;
+                }
+
+                try
+                {
+                    var data = JsonUtility.FromJson<BundledPresetFile>(asset.text);
+                    if (data == null || data.components == null || data.components.Length == 0)
+                        return;
+
+                    var preset = new ShipPreset(ship) { Name = presetName };
+                    foreach (var item in data.components)
+                    {
+                        try
+                        {
+                            var info = ComponentInfo.FromInt64(_database, item.component);
+                            if (!info)
+                                continue;
+                            preset.Components.Add(new IntegratedComponent(info, item.x, item.y,
+                                item.barrelId, item.keyBinding, item.behaviour, item.locked));
+                        }
+                        catch (Exception error)
+                        {
+                            // A component introduced by a missing optional mod
+                            // should not prevent the rest of the Titan preset
+                            // from being offered.
+                            Debug.LogWarning("Skipping Titan preset component: " + error.Message);
+                        }
+                    }
+
+                    if (preset.Components.Count == 0)
+                        return;
+
+                    _shipPresets.Add(preset);
+                    Persist();
+                }
+                catch (Exception error)
+                {
+                    Debug.LogWarning("Unable to load bundled Titan preset: " + error.Message);
+                }
+            }
+
+            [Serializable]
+            private sealed class BundledPresetFile
+            {
+                public BundledPresetComponent[] components;
+            }
+
+            [Serializable]
+            private sealed class BundledPresetComponent
+            {
+                public long component;
+                public int x;
+                public int y;
+                public int barrelId;
+                public int keyBinding;
+                public int behaviour;
+                public bool locked;
             }
 
             public IShipPreset Create(Ship ship)
             {
                 var preset = new ShipPreset(ship);
                 _shipPresets.Add(preset);
+                Persist();
                 return preset;
+            }
+
+            public void Update(IShipPreset preset)
+            {
+                // The object is already held by _shipPresets.  Re-serializing
+                // here is important because satellite layouts are edited after
+                // Create() and Android may leave the editor without disposing
+                // this state first.
+                if (preset != null && _shipPresets.Contains(preset))
+                    Persist();
             }
 
             public void Delete(IShipPreset preset)
             {
                 _shipPresets.Remove(preset);
+                Persist();
             }
 
             public IEnumerable<IShipPreset> GetPresets(Ship ship)
@@ -136,6 +232,16 @@ namespace GameStateMachine.States
 
             public void Dispose()
             {
+                Persist();
+            }
+
+            private void Persist()
+            {
+                // Presets (including both satellite layouts) used to be copied
+                // into session data only when the editor state was disposed.
+                // Android can tear down the state without disposing the Zenject
+                // container, so save immediately after every create/delete and
+                // also after the final edit.
                 _session.ShipPresets.UpdatePresets(_shipPresets);
             }
         }

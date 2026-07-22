@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Component" type="object" typeid="Component" >
+    <member name="Name" type="string" />
+    <member name="Description" type="string" />
+    <member name="DisplayCategory" type="enum" typeid="ComponentCategory" />
+    <member name="Availability" type="enum" typeid="Availability" />
+    <member name="ComponentStatsId" type="object" typeid="ComponentStats" alias="Stats" options="notnull" />
+    <member name="Faction" type="object" typeid="Faction" />
+    <member name="Level" type="int" minvalue="0" />
+    <member name="Icon" type="image" typeid="Component" />
+    <member name="Color" type="color" />
+    <member name="Layout" type="layout" />
+    <member name="CellType" type="string" options="obsolete" />
+    <member name="DeviceId" type="object" typeid="Device" alias="Device" />
+    <member name="WeaponId" type="object" typeid="Weapon" alias="Weapon" />
+    <member name="AmmunitionId" type="object" typeid="Ammunition" alias="Ammunition" />
+    <member name="AmmunitionId" type="object" typeid="AmmunitionObsolete" alias="AmmunitionObsolete" />
+    <member name="WeaponSlotType" type="string" options="obsolete" />
+    <member name="DroneBayId" type="object" typeid="DroneBay" alias="DroneBay" />
+    <member name="DroneId" type="object" typeid="ShipBuild" alias="Drone" />
+    <member name="Restrictions" type="struct" typeid="ComponentRestrictions" />
+    <member name="PossibleModifications" type="object_list" typeid="ComponentMod" />
+</data>

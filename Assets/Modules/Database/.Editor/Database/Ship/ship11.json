@@ -1,0 +1,33 @@
+{
+  "ItemType": 6,
+  "Id": 139,
+  "SizeClass": 1,
+  "Name": "$ship_11",
+  "Faction": 18,
+  "IconImage": "ship11",
+  "IconScale": 1.0,
+  "ModelImage": "ship11",
+  "ModelScale": 1.8,
+  "EngineColor": "#4008FF00",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.55
+      },
+      "Size": 0.2
+    }
+  ],
+  "Layout": "0000000000000000000000000000000040000000000004000000000001410000000000242000001122222222211112222222221100002222200000000055500000000005050000000000000000000000000000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.7
+      },
+      "WeaponClass": "T"
+    }
+  ],
+  "Features": {
+    "ShipWeightBonus": -0.8,
+    "EquipmentWeightBonus": -0.8
+  }
+}

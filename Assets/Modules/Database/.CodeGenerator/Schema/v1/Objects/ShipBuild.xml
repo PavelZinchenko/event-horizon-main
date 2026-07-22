@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ShipBuild" type="object" typeid="ShipBuild" >
+    <member name="ShipId" type="object" typeid="Ship" alias="Ship" options="notnull" />
+    <member name="NotAvailableInGame" type="bool" />
+    <member name="DifficultyClass" type="enum" typeid="DifficultyClass" />
+    <member name="BuildFaction" type="object" typeid="Faction" />
+    <member name="Components" type="struct_list" typeid="InstalledComponent" />
+</data>

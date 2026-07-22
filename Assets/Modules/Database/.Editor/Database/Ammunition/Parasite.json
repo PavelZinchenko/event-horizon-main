@@ -1,0 +1,43 @@
+{
+  "ItemType": 25,
+  "Id": 122,
+  "Body": {
+    "Type": 4,
+    "Size": 1.0,
+    "Velocity": 15.0,
+    "Range": 20.0,
+    "Lifetime": 12.0,
+    "Weight": 0.05,
+    "HitPoints": 25,
+    "Color": "#5EAD21",
+    "BulletPrefab": 15,
+    "EnergyCost": 10.0,
+    "CanBeDisarmed": true
+  },
+  "Triggers": [
+    {
+      "Condition": 2,
+      "EffectType": 1,
+      "VisualEffect": 8,
+      "Color": "#00000000",
+      "Size": 1.0,
+      "Lifetime": 1.0
+    }
+  ],
+  "ImpactType": 2,
+  "Effects": [
+    {
+      "DamageType": 3,
+      "Power": 15.0
+    },
+    {
+      "Type": 5,
+      "Power": 2.5
+    },
+    {
+      "Type": 8,
+      "Power": 3.0,
+      "Factor": 0.75
+    }
+  ]
+}

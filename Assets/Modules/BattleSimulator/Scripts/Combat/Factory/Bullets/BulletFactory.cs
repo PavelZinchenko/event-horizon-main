@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Combat.Collision.Behaviour;
 using Combat.Collision.Behaviour.Action;
@@ -105,15 +105,21 @@ namespace Combat.Factory
         private BulletCollisionBehaviour CreateCollisionBehaviour(IBullet bullet)
         {
             var collisionBehaviour = new BulletCollisionBehaviour();
-            var impactType = _ammunition.ImpactType;
+            var impactType = ImpactType;
 
             for (int i = 0; i < _ammunition.Effects.Count; ++i)
             {
                 var effect = _ammunition.Effects[i];
+                var damageType = _statModifier.ConvertDamageToCorrosive ? DamageType.Corrosive : effect.DamageType;
                 if (effect.Type == ImpactEffectType.Damage)
-                    collisionBehaviour.AddAction(new DealDamageAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, impactType));
+                {
+                    collisionBehaviour.AddAction(new DealDamageAction(damageType, effect.Power * _stats.DamageMultiplier,
+                        impactType, selfSharpening: _statModifier.SelfSharpening, piercingBeam: _statModifier.PiercingBeam));
+                    if (_statModifier.ArmorBreaking)
+                        collisionBehaviour.AddAction(new ResistanceShredAction(damageType, 5f, impactType));
+                }
                 if (effect.Type == ImpactEffectType.ProgressiveDamage)
-                    collisionBehaviour.AddAction(new ProgressiveDamageAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, effect.Factor, impactType));
+                    collisionBehaviour.AddAction(new ProgressiveDamageAction(damageType, effect.Power * _stats.DamageMultiplier, effect.Factor, impactType));
                 else if (effect.Type == ImpactEffectType.Push)
                     collisionBehaviour.AddAction(new PushAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.Pull)
@@ -124,8 +130,10 @@ namespace Combat.Factory
                     collisionBehaviour.AddAction(new RadialPushAction(-effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.DrainEnergy)
                     collisionBehaviour.AddAction(new DrainEnergyAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
+                else if (effect.Type == ImpactEffectType.RadarInterference)
+                    collisionBehaviour.AddAction(new RadarInterferenceAction(effect.Power, effect.Factor, 1f, impactType));
                 else if (effect.Type == ImpactEffectType.SiphonHitPoints)
-                    collisionBehaviour.AddAction(new SiphonHitPointsAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, effect.Factor, impactType));
+                    collisionBehaviour.AddAction(new SiphonHitPointsAction(damageType, effect.Power * _stats.DamageMultiplier, effect.Factor, impactType));
                 else if (effect.Type == ImpactEffectType.SlowDown)
                     collisionBehaviour.AddAction(new SlowDownAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.CaptureDrones)
@@ -133,7 +141,7 @@ namespace Combat.Factory
                 else if (effect.Type == ImpactEffectType.DriveDronesCrazy)
                     collisionBehaviour.AddAction(new AffectDroneAction(impactType, AffectDroneAction.EffectType.DriveCrazy));
                 else if (effect.Type == ImpactEffectType.Repair)
-                    collisionBehaviour.AddAction(new RepairAction(effect.Power * _stats.DamageMultiplier, impactType, effect.DamageType, effect.Factor, _owner.Type.Side));
+                    collisionBehaviour.AddAction(new RepairAction(effect.Power * _stats.DamageMultiplier, impactType, damageType, effect.Factor, _owner.Type.Side));
                 else if (effect.Type == ImpactEffectType.RechargeShield)
                     collisionBehaviour.AddAction(new RechargeShieldAction(effect.Power * _stats.DamageMultiplier, impactType, effect.Factor, _owner.Type.Side));
                 else if (effect.Type == ImpactEffectType.RechargeEnergy)
@@ -143,7 +151,7 @@ namespace Combat.Factory
                 else if (effect.Type == ImpactEffectType.DrainShield)
                     collisionBehaviour.AddAction(new DamageShieldAction(impactType, effect.Power * _stats.DamageMultiplier));
                 else if (effect.Type == ImpactEffectType.Devour)
-                    collisionBehaviour.AddAction(new DevourAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, impactType));
+                    collisionBehaviour.AddAction(new DevourAction(damageType, effect.Power * _stats.DamageMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.IgnoreShield)
                     collisionBehaviour.AddAction(new IgnoreShieldAction());
                 else if (effect.Type == ImpactEffectType.RestoreLifetime)
@@ -156,7 +164,16 @@ namespace Combat.Factory
             if (_ammunition.Id.Value == 163)
                 collisionBehaviour.AddAction(new KineticPenetrationAction(0.8f));
 
-            if (impactType == BulletImpactType.HitFirstTarget)
+            if (_ammunition.Id.Value == 166)
+                collisionBehaviour.AddAction(new BallLightningCollisionAction());
+
+            if (_statModifier.PiercingBeam)
+                collisionBehaviour.AddAction(new SelfDestructAction(4));
+
+            // The macro-electron becomes a stationary ball-lightning source
+            // when it reaches a target. Do not let the generic hit-first
+            // detonation action destroy it before its controller can arm it.
+            if (impactType == BulletImpactType.HitFirstTarget && _ammunition.Id.Value != 166)
             {
                 if (_ammunition.Body.HitPoints > 0)
                     collisionBehaviour.AddAction(new DetonateAtTargetAction());
@@ -178,6 +195,15 @@ namespace Combat.Factory
                 unitClass = UnitClass.AreaOfEffect;
 
             var unitType = new UnitType(unitClass, UnitSide.Neutral, _owner, _ammunition.Body.FriendlyFire);
+            if (_ammunition.Id.Value == 166)
+            {
+                // Macro-electrons keep their real owner/faction for radar and
+                // targeting, but use a neutral physics layer.  Same-side
+                // projectile layers can be filtered by Unity before our
+                // collision manager sees them; the neutral layer guarantees
+                // that player and allied weapons reach the damage handler.
+                unitType.CollisionSideOverride = UnitSide.Neutral;
+            }
             var bullet = new Bullet(body, view, new Lifetime(_stats.GetBulletLifetime()), unitType, options);
 
             bullet.Physics = gameObject.GetComponent<PhysicsManager>();
@@ -194,6 +220,13 @@ namespace Combat.Factory
             var angularVelocity = 0f;
             var weight = _stats.Weight;
             var scale = _stats.BodySize;
+
+            // A damaged/corrupted projectile specification can otherwise turn a
+            // rocket into a screen-filling physics body.  Clamp only physical
+            // rocket missiles; area effects such as black holes and dimensional
+            // fields deliberately use their own larger visual scale.
+            if (BulletShape == BulletShape.Rocket)
+                scale = UnityEngine.Mathf.Clamp(scale, 0.05f, 2.0f);
 
             if (_ammunition.Body.AttachedToParent && parent.Owner.IsActive())
             {
@@ -234,7 +267,10 @@ namespace Combat.Factory
         {
             collider.Unit = unit;
 			collider.Source = weaponPlatform.Owner;
-            collider.OneHitOnly = _ammunition.ImpactType != BulletImpactType.DamageOverTime;
+            // A piercing beam must remain eligible for follow-up collision
+            // callbacks.  Its damage action itself enforces the four-target
+            // limit, so this does not turn other bullets into multi-hit shots.
+            collider.OneHitOnly = ImpactType != BulletImpactType.DamageOverTime && !_statModifier.PiercingBeam;
 
             if (_ammunition.Controller.Continuous)
                 collider.MaxRange = _stats.Range;
@@ -244,7 +280,13 @@ namespace Combat.Factory
 
         private IDamageHandler CreateDamageHandler(Bullet bullet)
         {
+            if (_ammunition.Id.Value == 166 && bullet.Controller is BallLightningController ballLightning)
+                return new BallLightningDamageHandler(ballLightning);
+
             var hitPoints = _stats.HitPoints;
+            if (_statModifier.ProjectileIndestructible)
+                return new BulletDamageHandler(bullet, CanSiphonHitpoints());
+
             if (hitPoints > 0)
             {
                 //UnityEngine.Debug.LogError("HP:" + _stats.HitPoints);
@@ -264,10 +306,29 @@ namespace Combat.Factory
         private IController CreateController(IWeaponPlatform parent, Bullet bullet, float bulletSpeed, float spread,
             float rotationOffset)
         {
+            if (_ammunition.Id.Value == 166)
+                return new BallLightningController(bullet, _scene, _effectFactory, _owner, _stats.Range);
+            if (_ammunition.Id.Value == 167)
+                return new StrategicWeaponController(bullet, _scene, _owner, _stats.Range,
+                    StrategicWeaponController.WeaponKind.Photon);
+            if (_ammunition.Id.Value == 168)
+                return new StrategicWeaponController(bullet, _scene, _owner, _stats.Range,
+                    StrategicWeaponController.WeaponKind.DualVectorFoil);
+            if (_ammunition.Id.Value == 169)
+                return new StrategicWeaponController(bullet, _scene, _owner, _stats.Range,
+                    StrategicWeaponController.WeaponKind.BlackHole);
+            if (_ammunition.Id.Value == 170)
+                return new StrategicWeaponController(bullet, _scene, _owner, _stats.Range,
+                    StrategicWeaponController.WeaponKind.DarkDomain);
+
             var range = _stats.Range;
             var weight = _stats.Weight;
 
             IController controller = null;
+            if (_statModifier.ForceHoming && _ammunition.Controller is BulletController_Projectile)
+                return new HomingController(bullet, bulletSpeed, 120f * WeightToAcceleration(weight),
+                    0.5f * bulletSpeed / (0.2f + weight * 2), range, _owner.Type.Side != UnitSide.Player, _scene);
+
             switch (_ammunition.Controller)
             {
                 case BulletController_Projectile:
@@ -330,6 +391,9 @@ namespace Combat.Factory
         }
 
 		private BulletShape BulletShape => _ammunition.Body.BulletPrefab == null ? BulletShape.Mine : _ammunition.Body.BulletPrefab.Shape;
+        private BulletImpactType ImpactType => _statModifier.PiercingBeam
+            ? BulletImpactType.HitAllTargets
+            : _ammunition.ImpactType;
 
 		private int _nestingLevel;
         private readonly IShip _owner;

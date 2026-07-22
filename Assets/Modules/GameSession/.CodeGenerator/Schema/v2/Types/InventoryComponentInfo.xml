@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="InventoryComponentInfo" type="struct">
+    <member name="Id" type="uint" />
+    <member name="Quality" type="byte" />
+    <member name="Modification" type="byte" />
+    <member name="UpgradeLevel" type="byte" />
+</data>

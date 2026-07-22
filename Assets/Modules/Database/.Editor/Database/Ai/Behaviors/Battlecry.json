@@ -1,0 +1,34 @@
+{
+  "ItemType": 28,
+  "Id": 109,
+  "RootNode": {
+    "Type": 5,
+    "Nodes": [
+      {
+        "Type": 300,
+        "Text": "$Battlecry1",
+        "Color": "#E0FF8040"
+      },
+      {
+        "Type": 300,
+        "Text": "$Battlecry2",
+        "Color": "#E0FF8040"
+      },
+      {
+        "Type": 300,
+        "Text": "$Battlecry3",
+        "Color": "#E0FF8040"
+      },
+      {
+        "Type": 300,
+        "Text": "$Battlecry4",
+        "Color": "#E0FF8040"
+      },
+      {
+        "Type": 300,
+        "Text": "$Battlecry5",
+        "Color": "#E0FF8040"
+      }
+    ]
+  }
+}

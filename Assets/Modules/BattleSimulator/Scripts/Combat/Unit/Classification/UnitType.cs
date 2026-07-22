@@ -18,6 +18,7 @@ namespace Combat.Component.Unit.Classification
         public readonly UnitClass Class;
         public UnitSide Side => _ignoreOwnerSide || Owner == null ? _side : Owner.Type.Side;
         public bool CanHitAllies => _ignoreOwnerSide;
+        public UnitSide? CollisionSideOverride { get; set; }
         public int FactionId
         {
             get => !_ignoreOwnerSide && Owner != null ? Owner.Type.FactionId : _factionId;
@@ -25,7 +26,7 @@ namespace Combat.Component.Unit.Classification
         }
         public IShip Owner;
 
-        public Layer CollisionLayer => GetCollisionLayer(Class, Side);
+        public Layer CollisionLayer => GetCollisionLayer(Class, CollisionSideOverride ?? Side);
 
         public static Layer GetCollisionLayer(UnitClass unitClass, UnitSide unitSide)
         {

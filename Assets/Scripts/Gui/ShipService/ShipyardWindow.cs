@@ -140,7 +140,8 @@ namespace Gui.ShipService
             if (!visible) return;
 
             _shipLayout.Initialize(_ship.Model.Layout);
-            _shipLayout.BackgroundImage.sprite = _resourceLocator.GetSprite(_ship.Model.ModelImage);
+            _shipLayout.BackgroundImage.sprite = PlayerShipTextureOverrides.Get(_ship.Model.Id.Value,
+                _resourceLocator.GetSprite(_ship.Model.ModelImage));
             _coroutineManager.StartCoroutine(CalculateZoom());
         }
 

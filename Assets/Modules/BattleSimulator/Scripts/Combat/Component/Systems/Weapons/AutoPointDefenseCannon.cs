@@ -1,4 +1,5 @@
 using Combat.Component.Bullet;
+using Combat.Component.Controller;
 using Combat.Component.Platform;
 using Combat.Component.Ship;
 using Combat.Component.Triggers;
@@ -55,8 +56,8 @@ namespace Combat.Component.Systems.Weapons
             {
                 foreach (var unit in _scene.Units.Items)
                 {
-                    if (!unit.IsActive() || unit.Type.Class != UnitClass.Missile ||
-                        !CombatRelations.AreEnemies(unit.Type, _owner.Type))
+                    if (!unit.IsActive() || !IsInterceptableProjectile(unit) ||
+                        !CanTargetProjectile(unit))
                         continue;
                     var distance = Vector2.SqrMagnitude(unit.Body.WorldPosition() - position);
                     if (distance > rangeSquared || distance >= nearestDistance)
@@ -82,5 +83,22 @@ namespace Combat.Component.Systems.Weapons
         private readonly IShip _owner;
         private readonly float _energyCost;
         private readonly IBulletCompositeDisposable _bullets;
+
+        private static bool IsInterceptableProjectile(IUnit unit)
+        {
+            return unit.Type.Class == UnitClass.Missile ||
+                   unit is Combat.Component.Bullet.Bullet bullet && bullet.Controller is BallLightningController;
+        }
+
+        private bool CanTargetProjectile(IUnit unit)
+        {
+            return IsMacroElectron(unit) || CombatRelations.AreEnemies(unit.Type, _owner.Type);
+        }
+
+        private static bool IsMacroElectron(IUnit unit)
+        {
+            return unit is Combat.Component.Bullet.Bullet bullet &&
+                   bullet.Controller is BallLightningController;
+        }
     }
 }

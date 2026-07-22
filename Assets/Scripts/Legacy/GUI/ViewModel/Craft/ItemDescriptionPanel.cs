@@ -63,6 +63,7 @@ namespace ViewModel.Craft
         {
             _icon.sprite = _resourceLocator.GetSprite(ship.Model.ModelImage);
             _icon.color = Color.white;
+            _icon.preserveAspect = true;
             _name.text = _localization.GetString(ship.Name);
             _name.color = Gui.Theme.UiTheme.Current.GetQualityColor(ship.Model.Quality());
 
@@ -79,13 +80,14 @@ namespace ViewModel.Craft
 
             _stats.gameObject.SetActive(true);
             _stats.transform.InitializeElements<TextFieldViewModel, KeyValuePair<string, string>>(GetShipDescription(ship, _localization), UpdateTextField);
-			UpdateWeaponSlots(ship.Model.Barrels);
+            HideLegacyWeaponSlotDisplay();
         }
 
         private void CreateSatellite(Satellite satellite)
         {
             _icon.sprite = _resourceLocator.GetSprite(satellite.ModelImage);
             _icon.color = Color.white;
+            _icon.preserveAspect = true;
             _name.text = _localization.GetString(satellite.Name);
             _name.color = Gui.Theme.UiTheme.Current.GetQualityColor(ItemQuality.Common);
             _description.gameObject.SetActive(false);
@@ -93,13 +95,14 @@ namespace ViewModel.Craft
 
             _stats.gameObject.SetActive(true);
             _stats.transform.InitializeElements<TextFieldViewModel, KeyValuePair<string, string>>(GetSatelliteDescription(satellite), UpdateTextField);
-			UpdateWeaponSlots(satellite.Barrels);
+            HideLegacyWeaponSlotDisplay();
         }
 
         private void CreateComponent(ComponentInfo info)
         {
             _icon.sprite = _resourceLocator.GetSprite(info.Data.Icon);
             _icon.color = info.Data.Color;
+            _icon.preserveAspect = true;
             _name.text = _localization.GetString(info.Data.Name);
             _name.color = UiTheme.Current.GetQualityColor(info.ItemQuality);
 
@@ -120,17 +123,18 @@ namespace ViewModel.Craft
             _stats.gameObject.SetActive(true);
             _stats.transform.InitializeElements<TextFieldViewModel, KeyValuePair<string, string>>(
                 ShipEditor.UI.ComponentItem.GetDescription(component, _localization, _database.LocalizationSettings), UpdateTextField, _factory);
-            _weaponSlots.gameObject.SetActive(false);
+            HideLegacyWeaponSlotDisplay();
         }
 
         private void CreateEmpty()
         {
             _icon.sprite = _emptyIcon;
             _icon.color = Color.white;
+            _icon.preserveAspect = true;
             _name.text = string.Empty;
             _description.gameObject.SetActive(false);
             _stats.gameObject.SetActive(false);
-            _weaponSlots.gameObject.SetActive(false);
+            HideLegacyWeaponSlotDisplay();
             _modification.gameObject.SetActive(false);
         }
 
@@ -138,6 +142,7 @@ namespace ViewModel.Craft
         {
             _icon.sprite = _resourceLocator.GetSprite(item.Icon);
             _icon.color = item.Color;
+            _icon.preserveAspect = true;
             _name.text = item.Name;
             _name.color = UiTheme.Current.GetQualityColor(item.Quality);
 
@@ -146,15 +151,9 @@ namespace ViewModel.Craft
             _description.text = item.Description;
 
             _stats.gameObject.SetActive(false);
-            _weaponSlots.gameObject.SetActive(false);
+            HideLegacyWeaponSlotDisplay();
             _modification.gameObject.SetActive(false);
         }
-
-		private void UpdateWeaponSlots(IReadOnlyCollection<Barrel> barrels)
-		{
-			_weaponSlots.gameObject.SetActive(barrels.Count > 0);
-			_weaponSlots.transform.InitializeElements<BlockViewModel, Barrel>(barrels, UpdateWeaponSlot);
-		}
 
 		private void UpdateTextField(TextFieldViewModel viewModel, KeyValuePair<string, string> data)
         {
@@ -162,13 +161,39 @@ namespace ViewModel.Craft
             viewModel.Value.text = data.Value;
         }
 
-        private static void UpdateWeaponSlot(BlockViewModel view, Barrel barrel)
+        private void HideLegacyWeaponSlotDisplay()
         {
-            view.Label.text = barrel.WeaponClass;
+            if (_weaponSlots == null)
+                return;
+
+            // Walk up to the named legacy root. Some imported scene variants
+            // insert an extra Layout container, so assuming one fixed parent
+            // leaves the red icon/label row alive.
+            var current = _weaponSlots.transform;
+            while (current != null && current != _stats.transform)
+            {
+                if (current.name == "WeaponSlots")
+                {
+                    current.gameObject.SetActive(false);
+                    return;
+                }
+
+                current = current.parent;
+            }
+
+            var legacyRoot = _stats.transform.Find("WeaponSlots");
+            if (legacyRoot != null)
+                legacyRoot.gameObject.SetActive(false);
+            else
+                _weaponSlots.gameObject.SetActive(false);
         }
 
         private static IEnumerable<KeyValuePair<string, string>> GetShipDescription(IShip ship, ILocalization localization)
         {
+            var weaponSlots = GetWeaponSlotText(ship.Model.Barrels);
+            if (!string.IsNullOrEmpty(weaponSlots))
+                yield return new KeyValuePair<string, string>("$WeaponSlots", weaponSlots);
+
             var size = ship.Model.Layout.CellCount;
             yield return new KeyValuePair<string, string>("$CellCount", size.ToString());
             yield return new KeyValuePair<string, string>("$EngineSize", CalculateEngineSize(ship.Model.Layout).ToString());
@@ -215,6 +240,10 @@ namespace ViewModel.Craft
 
         private static IEnumerable<KeyValuePair<string, string>> GetSatelliteDescription(Satellite satellite)
         {
+            var weaponSlots = GetWeaponSlotText(satellite.Barrels);
+            if (!string.IsNullOrEmpty(weaponSlots))
+                yield return new KeyValuePair<string, string>("$WeaponSlots", weaponSlots);
+
             var size = satellite.Layout.CellCount;
             yield return new KeyValuePair<string, string>("$CellCount", size.ToString());
 
@@ -225,7 +254,22 @@ namespace ViewModel.Craft
 
         private static int CalculateResistance(float value)
         {
+            if (value <= -1f)
+                return -100;
             return Mathf.FloorToInt(100 * value / (value + 1));
+        }
+
+        private static string GetWeaponSlotText(IReadOnlyCollection<Barrel> barrels)
+        {
+            if (barrels == null || barrels.Count == 0)
+                return string.Empty;
+
+            // The old floating slot-grid prefab retained an absolute editor
+            // position and could overlap the stat rows.  Put the exact live
+            // barrel classes into the same stat layout instead.
+            return string.Join("　", barrels
+                .Select(item => string.IsNullOrEmpty(item.WeaponClass) ? "任意" : item.WeaponClass)
+                .Distinct());
         }
 
         private static string SignedPercent(float value)

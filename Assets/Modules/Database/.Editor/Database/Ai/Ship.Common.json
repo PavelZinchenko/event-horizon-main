@@ -1,0 +1,44 @@
+{
+  "ItemType": 28,
+  "Id": 11,
+  "RootNode": {
+    "Type": 4,
+    "Nodes": [
+      {
+        "Type": 104
+      },
+      {
+        "Type": 1,
+        "ItemId": 124
+      },
+      {
+        "Type": 1,
+        "ItemId": 100
+      },
+      {
+        "Type": 1,
+        "Requirement": {
+          "Type": 6,
+          "DifficultyLevel": 2
+        },
+        "ItemId": 110
+      },
+      {
+        "Type": 1,
+        "Requirement": {
+          "Type": 6,
+          "DifficultyLevel": 1
+        },
+        "ItemId": 111
+      },
+      {
+        "Type": 1,
+        "ItemId": 117
+      },
+      {
+        "Type": 1,
+        "ItemId": 123
+      }
+    ]
+  }
+}

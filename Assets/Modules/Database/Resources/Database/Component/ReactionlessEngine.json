@@ -10,7 +10,7 @@
   "Faction": 21,
   "Level": 20,
   "Icon": "starship_earth_reactionless_engine",
-  "Color": "#60EEFF",
+  "Color": "#FFFFFF",
   "Layout": "110110110",
   "CellType": "5"
 }

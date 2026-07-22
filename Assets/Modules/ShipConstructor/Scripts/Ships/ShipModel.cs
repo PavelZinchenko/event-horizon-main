@@ -14,6 +14,7 @@ namespace Constructor.Ships
     {
         public ShipModel(ShipBuild build, IDatabase database)
         {
+            Database = database;
             _ship = build.Ship;
             Faction = build.BuildFaction != Faction.Empty ? build.BuildFaction : build.Ship.Faction;
 
@@ -43,6 +44,7 @@ namespace Constructor.Ships
 
         public ShipModel(Ship ship, IDatabase database)
         {
+            Database = database;
             _ship = ship;
             Faction = ship.Faction;
 
@@ -62,6 +64,7 @@ namespace Constructor.Ships
         public ShipRarity ShipRarity => _ship.ShipRarity;
         public string OriginalName => _ship.Name;
         public Faction Faction { get; private set; }
+        public IDatabase Database { get; }
         public IShipLayout Layout => _stats.Layout;
         public ImmutableCollection<Barrel> Barrels => _stats.Barrels;
         public SpriteId ModelImage => _ship.ModelImage;

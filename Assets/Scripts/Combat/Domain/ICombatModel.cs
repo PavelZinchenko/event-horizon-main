@@ -15,23 +15,31 @@ namespace Combat.Domain
         IFleetModel PlayerFleet { get; }
         IFleetModel AllyFleet { get; }
         IFleetModel EnemyFleet { get; }
+        IShipInfo DefenseStarbase { get; }
+        bool IsStarbaseDefense { get; }
     }
 
     public static class CombatModelExtensions
     {
         public static bool IsCompleted(this ICombatModel combatModel)
         {
-            return !combatModel.EnemyFleet.IsAnyShipAlive() || !combatModel.PlayerFleet.IsAnyShipAlive();
+            return !combatModel.EnemyFleet.IsAnyShipAlive() || !IsPlayerForceAlive(combatModel);
         }
 
         public static bool IsVictory(this ICombatModel combatModel)
         {
-            if (!combatModel.PlayerFleet.IsAnyShipAlive())
+            if (!IsPlayerForceAlive(combatModel))
                 return false;
             if (combatModel.EnemyFleet.IsAnyShipAlive())
                 return false;
 
             return true;
+        }
+
+        private static bool IsPlayerForceAlive(ICombatModel combatModel)
+        {
+            return combatModel.PlayerFleet.IsAnyShipAlive() ||
+                   combatModel.DefenseStarbase != null && combatModel.DefenseStarbase.Status != ShipStatus.Destroyed;
         }
 
         public static bool IsLootAllowed(this ICombatModel combatModel)

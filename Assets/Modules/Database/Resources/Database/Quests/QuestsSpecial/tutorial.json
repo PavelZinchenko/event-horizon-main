@@ -49,7 +49,7 @@
       "Id": 4,
       "Type": 20,
       "DefaultTransition": 5,
-      "FailureTransition": 3,
+      "FailureTransition": 7,
       "Enemy": 1
     },
     {
@@ -67,6 +67,24 @@
     {
       "Id": 6,
       "Type": 40
+    },
+    {
+      "Id": 7,
+      "Type": 10,
+      "Message": "菜成啥了，难道是故意的？不管了，这个送你玩去吧。",
+      "Character": 30,
+      "Actions": [
+        {
+          "TargetNode": 8,
+          "ButtonText": "接过“创意工坊”"
+        }
+      ]
+    },
+    {
+      "Id": 8,
+      "Type": 35,
+      "DefaultTransition": 3,
+      "Loot": 22
     }
   ]
 }

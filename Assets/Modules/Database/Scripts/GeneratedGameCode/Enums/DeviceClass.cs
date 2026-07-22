@@ -35,5 +35,7 @@ namespace GameDatabase.Enums
 		WormTailV2,
 		Retribution,
 		Radar,
+		RadarStealth,
+		SophonJammer,
 	}
 }

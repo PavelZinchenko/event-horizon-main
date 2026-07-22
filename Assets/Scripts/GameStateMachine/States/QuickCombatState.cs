@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Collections.Generic;
 using Zenject;
 using GameServices.SceneManager;
@@ -8,11 +8,13 @@ using GameDatabase;
 using GameDatabase.Model;
 using GameDatabase.Query;
 using GameDatabase.DataModel;
+using GameDatabase.Enums;
 using Database.Legacy;
 using Session;
 using Model.Military;
 using GameServices.Audio;
 using System.Text.RegularExpressions;
+using GameServices.Multiplayer;
 
 namespace GameStateMachine.States
 {
@@ -28,6 +30,7 @@ namespace GameStateMachine.States
             IMusicPlayer musicPlayer,
             DatabaseMusicPlaylist playlist,
             GameServices.Player.PlayerFleet playerFleet,
+			MultiplayerSession multiplayer,
 			ExitSignal exitSignal)
             : base(stateMachine, stateFactory)
         {
@@ -38,6 +41,7 @@ namespace GameStateMachine.States
 			_combatModelBuilderFactory = combatModelBuilderFactory;
             _playlist = playlist;
             _playerFleet = playerFleet;
+            _multiplayer = multiplayer;
 
             _exitSignal = exitSignal;
             _exitSignal.Event += OnCombatCompleted;
@@ -61,12 +65,25 @@ namespace GameStateMachine.States
 
         private void OnCombatCompleted()
         {
+			if (_settings.Multiplayer)
+				_multiplayer.Disconnect();
 			LoadState(StateFactory.CreateMainMenuState());
         }
 
 		private ICombatModel CreateCombatModel()
 		{
 			IFleet firstFleet, secondFleet;
+
+            if (_settings.Multiplayer && _multiplayer.IsActive && _multiplayer.RemoteFleet.Count > 0)
+            {
+                firstFleet = Model.Factories.Fleet.Player(_playerFleet, _database);
+                secondFleet = new NetworkFleet(_multiplayer.RemoteFleet);
+                var networkBuilder = _combatModelBuilderFactory.Create();
+                networkBuilder.PlayerFleet = firstFleet;
+                networkBuilder.EnemyFleet = secondFleet;
+                networkBuilder.Rules = _database.GalaxySettings.QuickCombatRules ?? _database.CombatSettings.DefaultCombatRules;
+                return networkBuilder.Build();
+            }
 
             var testShips = new Queue<ShipBuild>();
             var matches = Regex.Matches(_settings.TestShipId, @"\d+");
@@ -79,8 +96,12 @@ namespace GameStateMachine.States
             }
 
 			var random = new System.Random();
-			var fleet1 = _database.ShipBuildList.RandomUniqueElements(12, random);
-			var fleet2 = _database.ShipBuildList.RandomUniqueElements(12, random);
+            // Random quick-battle pools stay conservative. Manually configured
+            // rosters use IsConfigurableQuickBattleBuild below and may explicitly
+            // include the two SizeClass-6 Titans.
+            var quickBattleShips = _database.ShipBuildList.Where(IsQuickBattleBuild).ToList();
+			var fleet1 = quickBattleShips.RandomUniqueElements(12, random);
+			var fleet2 = quickBattleShips.RandomUniqueElements(12, random);
 
 #if UNITY_EDITOR
 			if (testShips.Count > 0)
@@ -116,19 +137,25 @@ namespace GameStateMachine.States
 				secondFleet = new TestFleet(_database, ships.RandomUniqueElements(12, random).OrderBy(item => random.Next()), _settings.EasyMode ? 0 : 100);
 			}
 
-            var configuredEnemies = ParseEnemyFleet(_settings.EnemyFleetSpec).ToList();
+            var configuredEnemies = ParseFleet(_settings.EnemyFleetSpec).ToList();
             if (configuredEnemies.Count > 0)
                 secondFleet = new TestFleet(_database, configuredEnemies.OrderBy(_ => random.Next()), _settings.EasyMode ? 0 : 100);
+
+            var configuredAllies = _settings.UseConfiguredAllies
+                ? ParseFleet(_settings.AllyFleetSpec).ToList()
+                : new List<ShipBuild>();
 
 			var builder = _combatModelBuilderFactory.Create();
 			builder.PlayerFleet = firstFleet;
 			builder.EnemyFleet = secondFleet;
+			if (configuredAllies.Count > 0)
+				builder.AllyFleet = new TestFleet(_database, configuredAllies.OrderBy(_ => random.Next()), _settings.EasyMode ? 0 : 100);
 			builder.Rules = _database.GalaxySettings.QuickCombatRules ?? _database.CombatSettings.DefaultCombatRules;
 
             return builder.Build();
 		}
 
-        private IEnumerable<ShipBuild> ParseEnemyFleet(string spec)
+        private IEnumerable<ShipBuild> ParseFleet(string spec)
         {
             if (string.IsNullOrWhiteSpace(spec)) yield break;
             foreach (var entry in spec.Split(','))
@@ -137,7 +164,7 @@ namespace GameStateMachine.States
                 if (parts.Length != 2 || !int.TryParse(parts[0], out var id) || !int.TryParse(parts[1], out var count))
                     continue;
                 var build = _database.GetShipBuild(new ItemId<ShipBuild>(id));
-                if (build == null || build == ShipBuild.DefaultValue) continue;
+                if (build == null || build == ShipBuild.DefaultValue || !IsConfigurableQuickBattleBuild(build)) continue;
                 for (var i = 0; i < System.Math.Min(count, 99); i++) yield return build;
             }
         }
@@ -163,8 +190,20 @@ namespace GameStateMachine.States
 				}
 			}
 
+			ships.RemoveWhere(item => !IsQuickBattleBuild(item));
 			return ships;
 		}
+
+        public static bool IsQuickBattleBuild(ShipBuild build)
+        {
+            return IsConfigurableQuickBattleBuild(build) && build.Ship.SizeClass != SizeClass.TitanP;
+        }
+
+        public static bool IsConfigurableQuickBattleBuild(ShipBuild build)
+        {
+            return build != null && build.Ship != null && build.Faction != null &&
+                   build.Faction.Id.Value != 28;
+        }
 
 		private readonly Settings _settings;
 		private readonly IDatabase _database;
@@ -174,6 +213,7 @@ namespace GameStateMachine.States
 		private readonly CombatModelBuilder.Factory _combatModelBuilderFactory;
         private readonly DatabaseMusicPlaylist _playlist;
         private readonly GameServices.Player.PlayerFleet _playerFleet;
+        private readonly MultiplayerSession _multiplayer;
 
         public class Factory : Factory<Settings, QuickCombatState> { }
 
@@ -182,7 +222,10 @@ namespace GameStateMachine.States
 			public string TestShipId;
 			public bool EasyMode;
             public bool UsePlayerFleet;
+			public bool UseConfiguredAllies;
 			public string EnemyFleetSpec;
+			public string AllyFleetSpec;
+			public bool Multiplayer;
 		}
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameDatabase;
+using Gui.Common;
 using GameStateMachine.States;
 using Services.Settings;
 using Services.Audio;
@@ -105,6 +106,7 @@ namespace Gui.MainMenu
         private void OnEnable()
         {
             SettingsProgress.ApplyThreeBodySettingsLayout();
+            ApplyThreeBodySettingsTheme();
             _musicVolumeSlider.value = _musicPlayer.Volume;
             _soundVolumeSlider.value = _soundPlayer.Volume;
             _runInBackgroundToggle.isOn = _gameSettings.RunInBackground;
@@ -121,6 +123,104 @@ namespace Gui.MainMenu
 #if UNITY_STANDALONE
             _fullScreenModeToogle.isOn = Screen.fullScreen;
 #endif
+        }
+
+        // Settings is an original scene, so these controls are styled through
+        // their serialized references instead of a canvas-wide scan.  Keeping
+        // the work local also makes Dropdown item clones inherit the same
+        // palette from their template.
+        private void ApplyThreeBodySettingsTheme()
+        {
+            if (_database?.UiSettings == null)
+                return;
+
+            ThreeBodyUiPalette.Configure(_database.UiSettings);
+            StyleSlider(_soundVolumeSlider);
+            StyleSlider(_musicVolumeSlider);
+            StyleToggle(_runInBackgroundToggle);
+            StyleToggle(_lowQualityToggle);
+            StyleToggle(_mediumQualityToggle);
+            StyleToggle(_highQualityToggle);
+            StyleToggle(_fullScreenModeToogle);
+            StyleLanguageDropdown(_languagesDropdown);
+        }
+
+        private void StyleSlider(Slider slider)
+        {
+            if (slider == null)
+                return;
+
+            SetImageColor(slider.GetComponent<Image>(), _database.UiSettings.WindowColor);
+            SetImageColor(slider.fillRect != null ? slider.fillRect.GetComponent<Image>() : null,
+                _database.UiSettings.SelectionColor);
+            SetImageColor(slider.handleRect != null ? slider.handleRect.GetComponent<Image>() : null,
+                _database.UiSettings.ButtonIconColor);
+        }
+
+        private void StyleToggle(Toggle toggle)
+        {
+            if (toggle == null)
+                return;
+
+            SetImageColor(toggle.targetGraphic as Image, _database.UiSettings.ButtonColor);
+            SetImageColor(toggle.graphic as Image, _database.UiSettings.IconColor);
+
+            var colors = toggle.colors;
+            colors.normalColor = _database.UiSettings.ButtonColor;
+            colors.highlightedColor = _database.UiSettings.ButtonFocusColor;
+            colors.pressedColor = _database.UiSettings.SelectionColor;
+            colors.selectedColor = _database.UiSettings.SelectionColor;
+            colors.disabledColor = _database.UiSettings.PaleTextColor;
+            colors.colorMultiplier = 1f;
+            toggle.colors = colors;
+        }
+
+        private void StyleLanguageDropdown(Dropdown dropdown)
+        {
+            if (dropdown == null)
+                return;
+
+            SetImageColor(dropdown.targetGraphic as Image, _database.UiSettings.WindowColor);
+            if (dropdown.captionText != null)
+                dropdown.captionText.color = _database.UiSettings.TextColor;
+            SetImageColor(dropdown.captionImage, _database.UiSettings.IconColor);
+
+            var template = dropdown.template;
+            if (template == null)
+                return;
+
+            SetImageColor(template.GetComponent<Image>(), _database.UiSettings.WindowColor);
+            var viewport = template.Find("Viewport");
+            SetImageColor(viewport != null ? viewport.GetComponent<Image>() : null, _database.UiSettings.BackgroundDark);
+            var item = template.Find("Viewport/Content/Item");
+            SetImageColor(item != null ? item.GetComponent<Image>() : null, _database.UiSettings.SelectionColor);
+            var itemLabel = template.Find("Viewport/Content/Item/Item Label");
+            if (itemLabel != null && itemLabel.TryGetComponent<Text>(out var label))
+                label.color = _database.UiSettings.TextColor;
+            var itemCheckmark = template.Find("Viewport/Content/Item/Item Checkmark");
+            SetImageColor(itemCheckmark != null ? itemCheckmark.GetComponent<Image>() : null,
+                _database.UiSettings.IconColor);
+            var scrollbar = template.Find("Scrollbar");
+            SetImageColor(scrollbar != null ? scrollbar.GetComponent<Image>() : null,
+                _database.UiSettings.ScrollBarColor);
+            var handle = template.Find("Scrollbar/Sliding Area/Handle");
+            SetImageColor(handle != null ? handle.GetComponent<Image>() : null,
+                _database.UiSettings.ButtonIconColor);
+
+            var colors = dropdown.colors;
+            colors.normalColor = _database.UiSettings.ButtonColor;
+            colors.highlightedColor = _database.UiSettings.ButtonFocusColor;
+            colors.pressedColor = _database.UiSettings.SelectionColor;
+            colors.selectedColor = _database.UiSettings.SelectionColor;
+            colors.disabledColor = _database.UiSettings.PaleTextColor;
+            colors.colorMultiplier = 1f;
+            dropdown.colors = colors;
+        }
+
+        private static void SetImageColor(Image image, Color color)
+        {
+            if (image != null)
+                image.color = color;
         }
 
         private List<XmlLanguageInfo> _localizations;

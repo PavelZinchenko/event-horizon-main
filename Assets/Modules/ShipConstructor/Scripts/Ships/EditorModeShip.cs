@@ -82,7 +82,8 @@ namespace Constructor.Ships
 
         private static InstalledComponent ToDatabaseModel(IntegratedComponent component) =>
             new InstalledComponent(component.Info.Data, component.Info.ModificationType,
-                component.Info.ModificationQuality, component.X, component.Y, component.BarrelId, component.Behaviour, component.KeyBinding);
+                component.Info.ModificationQuality, component.X, component.Y, component.BarrelId, component.Behaviour,
+                component.KeyBinding, component.Rotation);
 
         [Serializable]
         private class ComponentOverride { public string[] Components; }

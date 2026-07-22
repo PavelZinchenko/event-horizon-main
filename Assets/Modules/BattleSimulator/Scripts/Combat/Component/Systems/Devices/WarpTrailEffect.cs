@@ -80,7 +80,10 @@ namespace Combat.Component.Systems.Devices
 
                         if (unit is IShip ship && ship.Systems.All.OfType<WarpDrive>().Any(drive => drive.IsWarping))
                             break;
-                        if (ShipStats.IsFourDimensionalUnit(unit))
+                        // Trisolaris vessels are ordinary three-dimensional units.
+                        // Imported builds may carry a stale FourDimensional flag;
+                        // faction 22 must still be slowed by black-domain trails.
+                        if (ShipStats.IsFourDimensionalUnit(unit) && unit.Type.FactionId != 22)
                             break;
                         if (unit.Type.Class == UnitClass.Ship || unit.Type.Class == UnitClass.Drone)
                             slowed.Add(unit);
@@ -147,6 +150,24 @@ namespace Combat.Component.Systems.Devices
                 if (trail != null)
                     Destroy(trail.gameObject);
             ActiveTrails.Clear();
+            StrategicFieldEffect.ClearAll();
+        }
+
+        public static bool IsInsideAnyTrail(Vector2 position, float extraRadius = 0f)
+        {
+            foreach (var trail in ActiveTrails.Where(item => item != null && item._points.Count > 1))
+            {
+                for (var i = 1; i < trail._points.Count; ++i)
+                {
+                    var a = trail._points[i - 1];
+                    var b = trail._points[i];
+                    var ab = b - a;
+                    var t = Mathf.Clamp01(Vector2.Dot(position - a, ab) / Mathf.Max(ab.sqrMagnitude, 0.001f));
+                    if (Vector2.Distance(position, a + ab * t) <= TrailRadius + extraRadius)
+                        return true;
+                }
+            }
+            return false;
         }
 
         private static bool ClosestSegmentParameters(Vector2 p1, Vector2 q1, Vector2 p2, Vector2 q2, out float firstT, out float distance)

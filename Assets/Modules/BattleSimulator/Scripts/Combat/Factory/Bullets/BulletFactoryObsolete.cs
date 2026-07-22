@@ -1,4 +1,4 @@
-﻿using Combat.Collision.Behaviour;
+using Combat.Collision.Behaviour;
 using Combat.Collision.Behaviour.Action;
 using Combat.Component.Body;
 using Combat.Component.Bullet.Action;
@@ -27,7 +27,12 @@ namespace Combat.Factory
 {
     public class BulletFactoryObsolete : IBulletFactory
     {
-        public BulletFactoryObsolete(AmmunitionObsoleteStats ammunitionStats, IScene scene, IGameServicesProvider services, SpaceObjectFactory spaceObjectFactory, EffectFactory effectFactory, IShip owner, bool reflectableByWaterdrop = false)
+        public BulletFactoryObsolete(AmmunitionObsoleteStats ammunitionStats, IScene scene,
+            IGameServicesProvider services, SpaceObjectFactory spaceObjectFactory,
+            EffectFactory effectFactory, IShip owner, bool reflectableByWaterdrop = false,
+            IShip enemyFleetEmpSource = null, float enemyFleetEmpDuration = 0f,
+            float enemyFleetEmpInitialEnergyDrainFraction = 0f,
+            float enemyFleetEmpEnergyDrainPerSecond = 0f)
         {
             _stats = ammunitionStats;
             _scene = scene;
@@ -36,6 +41,10 @@ namespace Combat.Factory
             _effectFactory = effectFactory;
             _owner = owner;
             _reflectableByWaterdrop = reflectableByWaterdrop;
+            _enemyFleetEmpSource = enemyFleetEmpSource;
+            _enemyFleetEmpDuration = enemyFleetEmpDuration;
+            _enemyFleetEmpInitialEnergyDrainFraction = enemyFleetEmpInitialEnergyDrainFraction;
+            _enemyFleetEmpEnergyDrainPerSecond = enemyFleetEmpEnergyDrainPerSecond;
             _bulletStats = new BulletStatsObsolete(ammunitionStats);
             _prefab = new Lazy<GameObject>(() => _services.PrefabCache.LoadBulletPrefabObsolete(_stats.BulletPrefab, _stats.AmmunitionClass.IsBeam() ? "Combat/Bullets/Laser" : "Combat/Bullets/Plasma2", services));
         }
@@ -306,6 +315,39 @@ namespace Combat.Factory
                 var energyDrain = _stats.EnergyCost * 10;
                 bullet.AddAction(new CreateEmpAction(bullet, _spaceObjectFactory, _stats.DamageType, _bulletStats.Damage, shieldDamage, energyDrain, _bulletStats.AreaOfEffect, explodeCondition));
             }
+
+            if (IsStellarHydrogenBomb(_stats))
+            {
+                // Stellar hydrogen bomb uses the legacy ammunition pipeline.
+                // Reuse the mod EMP missile semantics at battle scale: 20%
+                // immediate energy loss, jam/lock disruption and 1 energy/sec
+                // for 30 seconds, excluding only the current player ship.
+                bullet.AddAction(new CreateBattlewideEmpAction(
+                    _scene, 30f, 0.20f, 1f, explodeCondition));
+            }
+
+            if (_enemyFleetEmpSource != null && _enemyFleetEmpDuration > 0f)
+            {
+                bullet.AddAction(new CreateEnemyFleetEmpAction(
+                    _scene,
+                    _enemyFleetEmpSource,
+                    _enemyFleetEmpDuration,
+                    _enemyFleetEmpInitialEnergyDrainFraction,
+                    _enemyFleetEmpEnergyDrainPerSecond,
+                    explodeCondition));
+            }
+        }
+
+        private static bool IsStellarHydrogenBomb(in AmmunitionObsoleteStats stats)
+        {
+            // Stable, unmodified body attributes identify legacy ammunition 905
+            // without widening IWeaponDataObsolete. Damage, range and energy cost
+            // are intentionally excluded because ship stat modifiers can change them.
+            return stats.AmmunitionClass == AmmunitionClassObsolete.AcidRocket &&
+                   stats.HitPoints == 20 &&
+                   Mathf.Abs(stats.Size - 2.25f) < 0.001f &&
+                   Mathf.Abs(stats.AreaOfEffect - 50f) < 0.001f &&
+                   stats.BulletPrefab.ToString() == "Combat/Bullets/SatelliteRocket";
         }
 
         private readonly Lazy<GameObject> _prefab;
@@ -317,6 +359,10 @@ namespace Combat.Factory
         private readonly EffectFactory _effectFactory;
         private readonly IShip _owner;
         private readonly bool _reflectableByWaterdrop;
+        private readonly IShip _enemyFleetEmpSource;
+        private readonly float _enemyFleetEmpDuration;
+        private readonly float _enemyFleetEmpInitialEnergyDrainFraction;
+        private readonly float _enemyFleetEmpEnergyDrainPerSecond;
         private readonly IGameServicesProvider _services;
     }
 }

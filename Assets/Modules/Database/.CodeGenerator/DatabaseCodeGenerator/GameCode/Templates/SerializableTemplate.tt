@@ -1,0 +1,39 @@
+﻿<#@ template language="C#" #>
+<#@ include file="WriteSerializableClassMember.tt" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+<#@ import namespace="System.Collections.Generic" #>
+
+using System;
+using <#= Utils.RootNamespace #>.<#= Utils.EnumsNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.TypesNamespace #>;
+
+namespace <#= Utils.RootNamespace #>.<#= Utils.SerializableNamespace #>
+{
+	[Serializable]
+<#
+	if (ObjectType == ObjectType.Struct)
+    {
+#>
+	public class <#= Utils.SerializableClassName(ObjectData.name) #>
+<#
+    } else {
+#>
+	public class <#= Utils.SerializableClassName(ObjectData.name) #> : SerializableItem
+<#
+    }
+#>
+	{
+<#
+		PushIndent("\t\t");
+
+        var members = new HashSet<string>();
+        foreach (var item in ObjectData.members)
+        {
+            if (!members.Add(item.name)) continue;
+			WriteSerializableClassMember(item, Schema);
+        }
+
+		PopIndent();
+#>
+	}
+}

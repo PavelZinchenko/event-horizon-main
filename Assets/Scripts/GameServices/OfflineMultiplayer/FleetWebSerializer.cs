@@ -17,7 +17,7 @@ namespace GameServices.Multiplayer
             var data = ZlibStream.CompressBuffer(SerializeFleetInternal(ships).ToArray());
             var base64 = EncodeUrlBase64(Convert.ToBase64String(data, Base64FormattingOptions.None));
 
-            if (base64.Length > 16384)
+            if (base64.Length > 1024 * 1024)
             {
                 UnityEngine.Debug.LogException(new OverflowException("SerializeFleet: Size is too big"));
                 return string.Empty;

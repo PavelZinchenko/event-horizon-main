@@ -34,6 +34,15 @@
         "y": -0.2
       },
       "WeaponClass": "CL"
+    },
+    {
+      "Position": {
+        "x": 0.55,
+        "y": -0.55
+      },
+      "Rotation": -90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
     }
   ],
   "Features": {

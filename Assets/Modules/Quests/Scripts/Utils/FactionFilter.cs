@@ -52,7 +52,7 @@ namespace Domain.Quests
         public bool IsSuitableForBase(Faction faction)
         {
             if (_type == FactionFilterType.AllAvailable)
-                return !faction.NoTerritories && faction.HomeStarRange.Contains(_starLevel);
+                return faction.DeveloperHasStarbases && faction.HomeStarRange.Contains(_starLevel);
 
             return IsSuitable(faction, _starFaction);
         }

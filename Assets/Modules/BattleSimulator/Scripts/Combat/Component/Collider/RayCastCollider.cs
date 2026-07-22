@@ -58,19 +58,59 @@ namespace Combat.Component.Collider
             var blockedByWarpTrail = WarpTrailEffect.TryBlockRay(position, direction, MaxRange, out var trailRange);
             if (blockedByWarpTrail)
                 effectiveRange = trailRange;
+            if (StrategicFieldEffect.TryBlockRay(position, direction, effectiveRange, out var strategicRange))
+                effectiveRange = Mathf.Min(effectiveRange, strategicRange);
 
-            var hits = Physics2D.RaycastNonAlloc(position, direction, _buffer, effectiveRange, Unit.Type.CollisionMask);
+            // A player-owned macro-electron intentionally lives on a neutral
+            // missile layer so both sides can target it. That layer is not in
+            // an allied laser's normal collision mask, therefore the beam
+            // never reached CollisionManager even though friendly charging is
+            // allowed there. Scan all physics layers, then retain the original
+            // mask for every ordinary target and make only ball lightning the
+            // explicit exception.
+            // Macro-electrons use trigger colliders. Query triggers explicitly
+            // instead of inheriting Physics2D.queriesHitTriggers, otherwise
+            // lasers can pass straight through them on battle configurations
+            // where global trigger queries are disabled.
+            var contactFilter = new ContactFilter2D();
+            contactFilter.NoFilter();
+            contactFilter.SetLayerMask(Physics2D.AllLayers);
+            contactFilter.useTriggers = true;
+            var hits = Physics2D.Raycast(position, direction, contactFilter, _buffer, effectiveRange);
+            // RaycastNonAlloc does not guarantee hit ordering.  The old loop
+            // could therefore stop at a farther collider before reaching a
+            // macro-electron that was visibly in front of it.  Keep beam
+            // collision deterministic by sorting the populated range.
+            for (var i = 1; i < hits; ++i)
+            {
+                var value = _buffer[i];
+                var j = i - 1;
+                while (j >= 0 && _buffer[j].distance > value.distance)
+                {
+                    _buffer[j + 1] = _buffer[j];
+                    --j;
+                }
+                _buffer[j + 1] = value;
+            }
             bool collisionFound = false;
 			for (int i = 0; i < hits; ++i)
 			{
-                ref var hit = ref _buffer[_passThrough ? hits - i - 1 : i];
+                ref var hit = ref _buffer[i];
 				var collider = hit.collider;
 				if (collider == null) continue;
-				var target = collider.GetComponent<ICollider>();
+                // Several projectile prefabs keep the Unity Collider2D on a
+                // child while their combat collider is attached to the root.
+                // GetComponent alone made those targets (notably ball
+                // lightning) invisible to laser beams.
+                var target = collider.GetComponent<ICollider>() ?? collider.GetComponentInParent<ICollider>();
 
-                if (target == null) 
+                if (target == null || target.Unit == null)
                     continue;
-				if (Source != null && (target.Unit == Source || target.Unit.Type.Owner == Source))
+                var nativeLayer = (Unit.Type.CollisionMask & (1 << collider.gameObject.layer)) != 0;
+                if (!nativeLayer && !IsBallLightning(target.Unit))
+                    continue;
+				if (Source != null && (target.Unit == Source ||
+                    target.Unit.Type.Owner == Source && !IsBallLightning(target.Unit)))
 					continue;
 
                 ProcessCollision(target, position, hit.point, elapsedTime, !collisionFound);
@@ -133,9 +173,15 @@ namespace Combat.Component.Collider
         }
 
         private HashSet<IUnit> _collisions = new();
-        private RaycastHit2D[] _buffer = new RaycastHit2D[8];
+        private RaycastHit2D[] _buffer = new RaycastHit2D[64];
         private float _maxRange;
         private bool _needUpdateView;
         private bool _enabled = true;
+
+        private static bool IsBallLightning(IUnit unit)
+        {
+            return unit is Combat.Component.Bullet.Bullet bullet &&
+                   bullet.Controller is Combat.Component.Controller.BallLightningController;
+        }
     }
 }

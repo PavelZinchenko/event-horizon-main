@@ -57,6 +57,7 @@ SpriteAtlas:
     - 3f7da4510520a2047978d555ed779d10: 21300000
     - bf95ce51c0722cd4b91d6553575b02b9: 21300000
     - 4a10c9c11ca204c498f4aa67ad808bde: 21300000
+    - 999773f1eb39d35418a8b5bbb112dac8: 21300000
     - 39302543e74fdd24f92318f90be70538: 21300000
     - 50a7dd44bcf9652479cd9b2b39a9c92e: 21300000
     - 77e56b677f42e08448f4ba82a5ef2b32: 21300000
@@ -83,6 +84,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3f7da4510520a2047978d555ed779d10, type: 3}
   - {fileID: 21300000, guid: bf95ce51c0722cd4b91d6553575b02b9, type: 3}
   - {fileID: 21300000, guid: 4a10c9c11ca204c498f4aa67ad808bde, type: 3}
+  - {fileID: 21300000, guid: 999773f1eb39d35418a8b5bbb112dac8, type: 3}
   - {fileID: 21300000, guid: 39302543e74fdd24f92318f90be70538, type: 3}
   - {fileID: 21300000, guid: 50a7dd44bcf9652479cd9b2b39a9c92e, type: 3}
   - {fileID: 21300000, guid: 77e56b677f42e08448f4ba82a5ef2b32, type: 3}
@@ -108,6 +110,7 @@ SpriteAtlas:
   - holy_gun
   - worm_segment
   - satellite1
+  - weapon_test_platform
   - satellite3
   - satellite2
   - scavenger_arm

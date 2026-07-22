@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="DamageType">
+    <item name="Impact" />
+    <item name="Energy" />
+    <item name="Heat" />
+    <item name="Direct" />
+</data>

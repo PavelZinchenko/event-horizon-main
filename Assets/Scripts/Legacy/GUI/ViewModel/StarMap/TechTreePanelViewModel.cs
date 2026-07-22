@@ -372,7 +372,12 @@ namespace ViewModel
 				{
 					foreach (var item in node.Key.Requirements)
 					{
-						var child = nodes[item];
+						// A technology may legitimately reference a prerequisite from a
+						// different faction or an optional content pack. Such a node is not
+						// part of the currently displayed tree and must not abort the whole
+						// tab with KeyNotFoundException.
+						if (!nodes.TryGetValue(item, out var child))
+							continue;
 						node.Value.Dependencies.Add(child);
 						child.Dependencies.Add(node.Value);
 					}

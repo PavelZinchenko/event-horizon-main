@@ -142,9 +142,10 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: Preview 27
+  bundleVersion: Beta5.1
   preloadedAssets:
   - {fileID: 11400000, guid: 07d6f9791b7f5664293fa0c9ffc66f36, type: 2}
+  - {fileID: 11400000, guid: 553f37883d556464fb65a649fdbafaa5, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -177,9 +178,9 @@ PlayerSettings:
     iPhone: 32
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 112270
+  AndroidBundleVersionCode: 140003
   AndroidMinSdkVersion: 23
-  AndroidTargetSdkVersion: 33
+  AndroidTargetSdkVersion: 34
   AndroidPreferredInstallLocation: 0
   aotOptions: 
   stripEngineCode: 1
@@ -268,7 +269,7 @@ PlayerSettings:
   useCustomGradlePropertiesTemplate: 1
   useCustomGradleSettingsTemplate: 1
   useCustomProguardFile: 0
-  AndroidTargetArchitectures: 10
+  AndroidTargetArchitectures: 2
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
   AndroidKeystoreName: '{inproject}: license.keystore'

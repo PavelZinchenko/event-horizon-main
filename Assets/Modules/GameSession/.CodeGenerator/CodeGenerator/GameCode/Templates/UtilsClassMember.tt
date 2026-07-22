@@ -1,0 +1,215 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #><#+
+
+private string ConvertType(string type, SchemaVersionInfo context)
+{
+	if (type == Constants.TypeInt)
+	{
+		return "int";
+	}
+	else if (type == Constants.TypeUint)
+	{
+		return "uint";
+	}
+	else if (type == Constants.TypeLong)
+	{
+		return "long";
+	}
+	else if (type == Constants.TypeUlong)
+	{
+		return "ulong";
+	}
+	else if (type == Constants.TypeShort)
+	{
+		return "short";
+	}
+	else if (type == Constants.TypeUshort)
+	{
+		return "ushort";
+	}
+	else if (type == Constants.TypeSbyte)
+	{
+		return "sbyte";
+	}
+	else if (type == Constants.TypeByte)
+	{
+		return "byte";
+	}
+	else if (type == Constants.TypeFloat)
+	{
+		return "float";
+	}
+	else if (type == Constants.TypeBool)
+	{
+		return "bool";
+	}
+	else if (type == Constants.TypeString)
+	{
+		return "string";
+	}
+	else if (type == Constants.TypeBitset)
+	{
+		return Utils.BitsetType;
+	}
+	else if (context.HasClass(type))
+	{
+		return context.GetObjectName(type);
+	}
+	else if (context.HasStruct(type))
+	{
+		return context.GetObjectName(type);
+	}
+	else
+	{
+		throw new InvalidSchemaException("Invalid type - " + type);
+	}
+}
+
+private void WriteProperty(XmlClassMember member, SchemaVersionInfo context, bool readOnly)
+{
+	var propertyName = Utils.PropertyName(member.name);
+	var memberName = Utils.PrivateMemberName(member.name);
+	var notify = !member.options.Contains(Constants.OptionNotImportant);
+
+	if (member.type == Constants.TypeMap)
+	{
+		WriteLine($"public {Utils.MapType}<{ConvertType(member.key, context)}, {ConvertType(member.value, context)}> {propertyName} => {memberName};");
+	}
+	else if (member.type == Constants.TypeSet)
+	{
+		WriteLine($"public {Utils.SetType}<{ConvertType(member.value, context)}> {propertyName} => {memberName};");
+	}
+	else if (member.type == Constants.TypeList)
+	{
+		WriteLine($"public {Utils.ListType}<{ConvertType(member.value, context)}> {propertyName} => {memberName};");
+	}
+	else if (member.type == Constants.TypeBitset)
+	{
+		WriteLine($"public {Utils.BitsetType} {propertyName} => {memberName};");
+	}
+	else if (member.type == Constants.TypeInventory)
+	{
+		WriteLine($"public {Utils.InventoryType}<{ConvertType(member.value, context)}> {propertyName} => {memberName};");
+	}
+	else if (readOnly)
+	{
+		WriteLine($"public {ConvertType(member.type, context)} {propertyName} => {memberName};");
+	}
+	else
+	{
+		WriteLine($"public {ConvertType(member.type, context)} {propertyName}");
+		WriteLine("{");
+		PushIndent("\t");
+		WriteLine($"get => {memberName};");
+		WriteLine("set");
+		WriteLine("{");
+		PushIndent("\t");
+		WriteLine($"if ({memberName} == value) return;");
+		WriteLine($"{memberName} = value;");
+		if (context.HasClass(member.type)) WriteLine($"{memberName}.Parent = this;");
+		if (notify) WriteLine(Utils.CallbackMethod + "();");
+		PopIndent();
+		WriteLine("}");
+		PopIndent();
+		WriteLine("}");
+	}
+}
+
+private void WriteInitializer(XmlClassMember member, SchemaVersionInfo context, string callback)
+{
+	var memberName = Utils.PrivateMemberName(member.name);
+
+	if (member.type == Constants.TypeMap)
+	{
+		WriteLine($"{memberName} = new {Utils.MapType}<{ConvertType(member.key, context)}, {ConvertType(member.value, context)}>({callback});");
+	}
+	else if (member.type == Constants.TypeSet)
+	{
+		WriteLine($"{memberName} = new {Utils.SetType}<{ConvertType(member.value, context)}>({callback});");
+	}
+	else if (member.type == Constants.TypeList)
+	{
+		WriteLine($"{memberName} = new {Utils.ListType}<{ConvertType(member.value, context)}>({callback});");
+	}
+	else if (member.type == Constants.TypeBitset)
+	{
+		WriteLine($"{memberName} = new {Utils.BitsetType}({callback});");
+	}
+	else if (member.type == Constants.TypeInventory)
+	{
+		WriteLine($"{memberName} = new {Utils.InventoryType}<{ConvertType(member.value, context)}>({callback});");
+	}
+	else if (context.HasClass(member.type))
+	{
+		WriteLine($"{memberName} = new {ConvertType(member.type, context)}({callback});");
+	}
+	else if (context.HasStruct(member.type))
+	{
+		WriteLine($"{memberName} = new {ConvertType(member.type, context)}({callback});");
+	}
+	else
+	{
+		WriteLine($"{memberName} = {GetDefaultValue(member.@default, member.type, context)};");
+	}
+}
+
+private string GetDefaultValue(string value, string type, SchemaVersionInfo context)
+{
+	if (type == Constants.TypeString)
+		return string.IsNullOrEmpty(value) ? "string.Empty" : $"\"{value}\"";
+
+	if (string.IsNullOrEmpty(value))
+		return $"default({ConvertType(type, context)})";
+
+	if (value == Constants.Timestamp)
+		return $"({ConvertType(type, context)})System.DateTime.UtcNow.Ticks";
+
+	return value;
+}
+
+private void WriteClassMember(XmlClassMember member, SchemaVersionInfo context, bool readOnly)
+{
+	var memberName = Utils.PrivateMemberName(member.name);
+	var encrypted = member.options.Contains(Constants.OptionEncrypted);
+	var prefix = readOnly ? "private readonly " : "private ";
+	var suffix = ";";
+
+	string memberType;
+	if (member.type == Constants.TypeMap)
+	{
+		memberType = $"{Utils.MapType}<{ConvertType(member.key, context)}, {ConvertType(member.value, context)}>";
+	}
+	else if (member.type == Constants.TypeSet)
+	{
+		memberType = $"{Utils.SetType}<{ConvertType(member.value, context)}>";
+	}
+	else if (member.type == Constants.TypeList)
+	{
+		memberType = $"{Utils.ListType}<{ConvertType(member.value, context)}>";
+	}
+	else if (member.type == Constants.TypeBitset)
+	{
+		memberType = $"{Utils.BitsetType}";
+	}
+	else if (member.type == Constants.TypeInventory)
+	{
+		memberType = $"{Utils.InventoryType}<{ConvertType(member.value, context)}>";
+	}
+	else if (encrypted)
+	{
+		if (member.type == Constants.TypeInt)
+			memberType = Utils.EncryptedIntType;
+		else if (member.type == Constants.TypeLong)
+			memberType = Utils.EncryptedLongType;
+		else
+			throw new System.InvalidOperationException($"'encrypted' not supported for type {member.type}");
+	}
+	else
+	{
+		memberType = ConvertType(member.type, context);
+	}
+
+	WriteLine(prefix + memberType + " " + memberName + suffix);
+}
+
+#>

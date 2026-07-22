@@ -20,16 +20,20 @@ using Combat.Unit;
 using Constructor;
 using GameDatabase.Enums;
 using UnityEngine;
+using GameServices.Multiplayer;
 
 namespace Combat.Domain
 {
     public class ShipInfo : IShipInfo
     {
-        public ShipInfo(Constructor.Ships.IShip shipData, IShipSpecification shipSpec, UnitSide unitSide)
+        public ShipInfo(Constructor.Ships.IShip shipData, IShipSpecification shipSpec, UnitSide unitSide,
+            bool isCollaborativeAlly = false, int? factionIdOverride = null)
         {
             _unitSide = unitSide;
             _shipData = shipData;
             _shipSpec = shipSpec;
+            IsCollaborativeAlly = isCollaborativeAlly;
+            _factionIdOverride = factionIdOverride;
         }
 
         public ShipStatus Status
@@ -56,13 +60,14 @@ namespace Combat.Domain
                 if (Status == ShipStatus.Destroyed)
                     return 0;
                 if (ShipUnit == null)
-                    return 1.0f;
+                    return _nextActivationArmorPercentage;
 
                 return ShipUnit.Stats.Armor.Percentage;
             }
         }
 
         public UnitSide Side { get { return _unitSide; } }
+        public bool IsCollaborativeAlly { get; }
 
         public void Create(Factory.ShipFactory factory, Vector2 position, int aiLevel)
         {
@@ -73,14 +78,22 @@ namespace Combat.Domain
             var rotation = random.Next(360);
 
             IShip ship;
-            if (_shipData.Model.ShipType == ShipType.Starbase)
+            if (_shipData.Model.ShipType == ShipType.Starbase && _unitSide == UnitSide.Player)
+                ship = factory.CreatePlayerStarbase(_shipSpec, position, rotation);
+            else if (_shipData.Model.ShipType == ShipType.Starbase)
                 ship = factory.CreateStarbase(_shipSpec, position, rotation, _unitSide);
             else if (_unitSide == UnitSide.Player)
                 ship = factory.CreatePlayerShip(_shipSpec, position, rotation);
+            else if (_unitSide == UnitSide.Enemy && MultiplayerSession.Instance != null && MultiplayerSession.Instance.IsActive)
+                ship = factory.CreateShip(_shipSpec,
+                    new MultiplayerController.Factory(MultiplayerSession.Instance.IsHost),
+                    _unitSide, position, rotation);
             else
                 ship = factory.CreateAiShip(_shipSpec, position, rotation, aiLevel, _unitSide);
 
-            ship.Type.FactionId = _unitSide == UnitSide.Player ? 0 : _shipData.Model.Faction.Id.Value;
+            ship.Type.FactionId = _unitSide == UnitSide.Player
+                ? 0
+                : _factionIdOverride ?? _shipData.Model.Faction.Id.Value;
 
             if (ShipUnit != null && ShipUnit.State == UnitState.Inactive)
             {
@@ -89,20 +102,33 @@ namespace Combat.Domain
             }
 
             ShipUnit = ship;
+            if (_nextActivationArmorPercentage < 0.999f)
+            {
+                ship.Stats.Armor.Get(ship.Stats.Armor.MaxValue * (1.0f - _nextActivationArmorPercentage));
+                _nextActivationArmorPercentage = 1.0f;
+            }
             ActivationTime = Time.time;
         }
 
         public void Destroy()
         {
-            if (ShipUnit.IsActive())
+            if (ShipUnit != null && ShipUnit.IsActive())
                 ShipUnit.Vanish();
 
             ShipUnit = new DeadShip();
         }
 
+        public void RestoreForNextActivation(float armorPercentage)
+        {
+            _nextActivationArmorPercentage = Mathf.Clamp01(armorPercentage);
+            ShipUnit = null;
+        }
+
         private readonly UnitSide _unitSide;
         private readonly Constructor.Ships.IShip _shipData;
         private readonly IShipSpecification _shipSpec;
+        private readonly int? _factionIdOverride;
+        private float _nextActivationArmorPercentage = 1.0f;
 
         private class DeadShip : IShip
         {

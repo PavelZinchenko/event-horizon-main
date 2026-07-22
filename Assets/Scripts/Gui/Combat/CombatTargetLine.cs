@@ -48,7 +48,7 @@ namespace Gui.Combat
                 SizeClass.Cruiser => new Color(1f, 0.45f, 0.05f),
                 SizeClass.Battleship => new Color(1f, 0.45f, 0.05f),
                 SizeClass.Titan => new Color(1f, 0.82f, 0.1f),
-                SizeClass.Starbase => new Color(0.15f, 0.55f, 1f),
+                SizeClass.Starbase => new Color(0.68f, 0.2f, 1f),
                 _ => Color.red
             };
         }

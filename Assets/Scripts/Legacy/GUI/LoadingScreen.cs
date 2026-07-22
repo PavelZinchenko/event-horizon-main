@@ -84,7 +84,6 @@ public class LoadingScreen : MonoBehaviour
 
         _background.gameObject.SetActive(true);
         _background.color = Color.white;
-		_background.preserveAspect = false;
 		var backgroundRect = _background.rectTransform;
 		backgroundRect.anchorMin = Vector2.zero;
 		backgroundRect.anchorMax = Vector2.one;
@@ -100,7 +99,10 @@ public class LoadingScreen : MonoBehaviour
 					new Vector2(0.5f, 0.5f), 100f);
 		}
 		if (_splashSprite != null)
+		{
 			_background.sprite = _splashSprite;
+			ConfigureSplashCover(_background, _splashSprite.texture);
+		}
 
 		// The whole presentation is baked into the splash image so there is no
 		// second layout pass capable of moving or tinting the studio mark.
@@ -115,7 +117,18 @@ public class LoadingScreen : MonoBehaviour
     private void Hide()
     {
 		_canvas.enabled = false;
-    }
+	}
+
+	private static void ConfigureSplashCover(Image image, Texture2D texture)
+	{
+		if (image == null || texture == null)
+			return;
+
+		image.preserveAspect = false;
+		var fitter = image.GetComponent<AspectRatioFitter>() ?? image.gameObject.AddComponent<AspectRatioFitter>();
+		fitter.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+		fitter.aspectRatio = texture.width / (float)texture.height;
+	}
 
     private bool _firstTime = true;
     private bool _startupSplashRunning;

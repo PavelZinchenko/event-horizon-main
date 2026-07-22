@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="Resource1">虚空精华</string>
+    <string name="Resource2">生物纳米机械</string>
+    <string name="Resource3">外星文物</string>
+    <string name="Resource4">量子芯片组</string>
+    <string name="Resource5">以太石</string>
+    <string name="StatCurrentValue">当前值：</string>
+    <string name="StatValueAfterUpgrade">升级后：</string>
+    <string name="StatUpgradeLevel">（等级$1）</string>
+    <string name="ResearchLabDesciption">在此强化组件属性，以提升游戏中所有同类组件。</string>
+    <string name="RecycleDesciption">拆解组件有机会获得珍贵材料；品质越高，结果越好。</string>
+</resources>

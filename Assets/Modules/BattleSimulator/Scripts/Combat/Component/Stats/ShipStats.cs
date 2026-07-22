@@ -49,6 +49,11 @@ namespace Combat.Component.Stats
                 _shieldPoints = new EmptyResources();
 
             _energyPoints = new Energy(stats.EnergyPoints, stats.EnergyRechargeRate, stats.EnergyRechargeCooldown);
+
+            var modifications = spec.ThreeBodyModifications;
+            _adaptiveArmorCount = UnityEngine.Mathf.Clamp(modifications.AdaptiveArmorCount, 0, 10);
+            _energyLeechCount = UnityEngine.Mathf.Clamp(modifications.EnergyLeechCount, 0, 10);
+            _shieldRecirculationCount = UnityEngine.Mathf.Clamp(modifications.ShieldRecirculationCount, 0, 5);
         }
 
         public bool IsAlive => _armorPoints.Value > 0;
@@ -97,9 +102,12 @@ namespace Combat.Component.Stats
             
             impact.ApplyShield(Shield.Value, resistance.ShieldCorrosive);
 
-            DamageIndicator?.ApplyDamage(impact.GetDamage(resistance));
+            var resolvedImpact = impact.GetDamage(resistance);
+            ApplyAdaptiveArmor(ref resolvedImpact);
+            DamageIndicator?.ApplyDamage(resolvedImpact);
 
-            var damage = impact.GetTotalDamage(resistance);
+            var damage = resolvedImpact.KineticDamage + resolvedImpact.EnergyDamage +
+                         resolvedImpact.HeatDamage + resolvedImpact.CorrosiveDamage + resolvedImpact.TrueDamage;
             if (damage > 0.1f)
                 TimeFromLastHit = 0;
 
@@ -113,6 +121,20 @@ namespace Combat.Component.Stats
             var damageDealt = Armor.Get(damage);
             var energyDamage = Energy.Get(impact.EnergyDrain);
             var shieldDamage = Shield.Get(impact.ShieldDamage);
+
+            // Refit reactions are deliberately based on actual hull loss. A
+            // depleted shield or a direct energy drain must not trigger them.
+            if (damageDealt > 0f)
+            {
+                if (_energyLeechCount > 0 && Armor.MaxValue > 0f && Energy.MaxValue > 0f)
+                {
+                    var energyFraction = damageDealt / Armor.MaxValue * 0.5f * _energyLeechCount;
+                    Energy.Get(-Energy.MaxValue * energyFraction);
+                }
+
+                if (_shieldRecirculationCount > 0 && Shield.Exists)
+                    Shield.Get(-damageDealt * 0.2f * _shieldRecirculationCount);
+            }
 
             if (impact.Effects.Contains(CollisionEffect.Destroy))
                 damageDealt = Armor.Get(Armor.MaxValue);
@@ -151,6 +173,29 @@ namespace Combat.Component.Stats
                 enemyPerformance.OnDamageRepaired(-armorDamage);
         }
 
+        private void ApplyAdaptiveArmor(ref Impact impact)
+        {
+            if (_adaptiveArmorCount <= 0 || Armor.MaxValue <= 0f)
+                return;
+
+            // Each copy gives one percent independent reduction for every
+            // missing ten percent of hull.  Ten copies therefore cap at the
+            // documented ninety percent shortly before destruction.
+            // The small epsilon makes an exact ten-percent loss count as the
+            // first documented threshold despite floating point rounding.
+            var missingSteps = UnityEngine.Mathf.Clamp(
+                UnityEngine.Mathf.FloorToInt((1f - Armor.Percentage) * 10f + 0.0001f), 0, 9);
+            if (missingSteps <= 0)
+                return;
+
+            var multiplier = UnityEngine.Mathf.Clamp(1f - missingSteps * _adaptiveArmorCount * 0.01f, 0.1f, 1f);
+            impact.KineticDamage *= multiplier;
+            impact.EnergyDamage *= multiplier;
+            impact.HeatDamage *= multiplier;
+            impact.CorrosiveDamage *= multiplier;
+            // True damage deliberately stays outside the four basic types.
+        }
+
         public void UpdatePhysics(float elapsedTime)
         {
             if (!IsAlive)
@@ -177,11 +222,30 @@ namespace Combat.Component.Stats
         private readonly IResourcePoints _energyPoints;
         private readonly Resistance _resistance;
         private readonly Modifications<Resistance> _modifications = new Modifications<Resistance>();
+        private readonly int _adaptiveArmorCount;
+        private readonly int _energyLeechCount;
+        private readonly int _shieldRecirculationCount;
 
         public static bool IsFourDimensionalUnit(IUnit unit)
         {
             var ship = unit.GetOwnerShip();
             if (ship == null)
+                return false;
+
+            // Trisolaris vessels are three-dimensional.  Some of their older
+            // generated builds were copied from the four-dimensional demo
+            // ships and can retain that feature flag, which incorrectly made
+            // them immune to black-domain slowing and ordinary damage.  Use
+            // the stable ship IDs as the source of truth for this faction.
+            var shipId = ship.Specification?.Info.Id.Value ?? -1;
+            if (shipId == 166 || (shipId >= 1145140 && shipId <= 1145143))
+                return false;
+
+            // Keep the faction-level fallback as well.  Imported Trisolaris
+            // variants may receive a different generated ship id, but they
+            // still belong to faction 22 and must remain ordinary
+            // three-dimensional units for black-domain and damage rules.
+            if (ship.Type != null && ship.Type.FactionId == 22)
                 return false;
 
             if (ship.Specification?.Stats?.ShipModel?.Features?.IsFourDimensional == true)

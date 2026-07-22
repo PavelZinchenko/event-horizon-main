@@ -9,12 +9,13 @@ namespace Combat.Component.Controller
 {
     public class RepairBotContoller : IController
     {
-        public RepairBotContoller(IShip ship, IAuxiliaryUnit repairBot, float radius, float repairRate)
+        public RepairBotContoller(IShip ship, IAuxiliaryUnit repairBot, float radius, float repairRate, float energyRepairRate = 0f)
         {
             _ship = ship;
             _radius = radius;
             _repairBot = repairBot;
             _repairRate = repairRate;
+            _energyRepairRate = energyRepairRate;
         }
 
         public virtual void UpdatePhysics(float elapsedTime)
@@ -28,7 +29,7 @@ namespace Combat.Component.Controller
             var enabled = _repairBot.Enabled;
 
             _elapsedTime += elapsedTime;
-            var active = enabled && _elapsedTime%3f > 2f;
+            var active = enabled && (_energyRepairRate > 0f || _elapsedTime%3f > 2f);
 
             var requiredRotation = RotationHelpers.Angle(_ship.Body.WorldPosition() - _repairBot.Body.WorldPosition());
             if (active)
@@ -42,7 +43,11 @@ namespace Combat.Component.Controller
 
             _repairBot.Active = active;
             if (active)
+            {
                 _ship.Affect(new Impact { Repair = _repairRate*elapsedTime }, null);
+                if (_energyRepairRate > 0f)
+                    _ship.Stats.Energy.Get(-_energyRepairRate * elapsedTime);
+            }
 
             if (!enabled && _repairBot.Body.WorldPosition().Distance(requiredPosition) < _repairBot.Body.Scale)
                 _repairBot.Vanish();
@@ -53,6 +58,7 @@ namespace Combat.Component.Controller
         private float _elapsedTime;
         private readonly float _radius;
         private readonly float _repairRate;
+        private readonly float _energyRepairRate;
         private readonly IShip _ship;
         private readonly IAuxiliaryUnit _repairBot;
 

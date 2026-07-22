@@ -121,11 +121,11 @@ public class ActionButton : UIBehaviour, ICanvasRaycastFilter, IPointerDownHandl
     }
 
     public bool IsRaycastLocationValid(Vector2 screenPoint, Camera eventCamera)
-	{
-		RectTransformUtility.ScreenPointToLocalPointInRectangle(
-			RectTransform, screenPoint, eventCamera, out var pivotToCursorVector);		
-		return pivotToCursorVector.magnitude < RectTransform.rect.width/2;
-	}
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            RectTransform, screenPoint, eventCamera, out var pivotToCursorVector);
+        return pivotToCursorVector.magnitude < RectTransform.rect.width/2;
+    }
 
     private void UpdateState(ButtonState state, bool pressed)
     {
@@ -166,12 +166,12 @@ public class ActionButton : UIBehaviour, ICanvasRaycastFilter, IPointerDownHandl
     }
 
     private RectTransform RectTransform
-	{
-		get
-		{
-			if (_rectTransform == null)
-				_rectTransform = GetComponent<RectTransform>();
-			return _rectTransform;
-		}
-	}
+    {
+        get
+        {
+            if (_rectTransform == null)
+                _rectTransform = GetComponent<RectTransform>();
+            return _rectTransform;
+        }
+    }
 }

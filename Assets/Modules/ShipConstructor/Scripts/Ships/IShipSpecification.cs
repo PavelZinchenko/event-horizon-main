@@ -15,6 +15,7 @@ namespace Constructor
         IEnumerable<IDeviceData> ClonningCenters { get; }
         IEnumerable<IDroneBayData> DroneBays { get; }
 		BehaviorTreeModel CustomAi { get; }
+		ThreeBodyModificationSummary ThreeBodyModifications { get; }
 	}
 
 	public struct ShipInfo
@@ -76,6 +77,16 @@ namespace Constructor
         public StatMultiplier WeightMultiplier;
         public StatMultiplier EffectPowerMultiplier;
         public Color? Color;
+
+        // Behaviour flags carried alongside normal scalar stat modifiers.
+        // They are set by refits and consumed by BulletFactory.
+        public bool ArmorBreaking;
+        public bool SelfSharpening;
+        public bool ConvertDamageToCorrosive;
+        public bool ProjectileIndestructible;
+        public bool ForceHoming;
+        public bool PiercingBeam;
+        public bool SweepingBeam;
     }
 
     public interface IWeaponDataObsolete

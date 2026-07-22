@@ -1,6 +1,7 @@
 ﻿using System;
 using Combat.Component.Body;
 using Combat.Component.Ship;
+using Combat.Component.Ship.Effects;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Unit;
@@ -55,15 +56,45 @@ namespace Combat.Scene
         }
 
         public IShip PlayerShip => _activePlayerShip;
-        public IShip EnemyShip => _lockedEnemyShip.IsActive() ? _lockedEnemyShip : null;
-        public IShip LockedEnemyShip => _lockedEnemyShip;
+        public IShip EnemyShip => LockedEnemyShip != null && LockedEnemyShip.IsActive() ? LockedEnemyShip : null;
+        public IShip LockedEnemyShip => _lockedTarget as IShip;
+        public IUnit LockedTarget => _lockedTarget;
         public void LockTarget(IShip ship)
         {
-            _lockedEnemyShip = ship != null && ship.IsActive() &&
-                                 _activePlayerShip.IsActive() &&
-                                 CombatRelations.AreEnemies(_activePlayerShip.Type, ship.Type)
-                ? ship
-                : null;
+            LockUnit(ship);
+        }
+
+        public void LockUnit(IUnit unit)
+        {
+            if (unit == null)
+            {
+                _lockedTarget = null;
+                return;
+            }
+
+            if (!unit.IsActive() || _activePlayerShip == null || !_activePlayerShip.IsActive() ||
+                RadarStatus.IsJammed(_activePlayerShip))
+            {
+                _lockedTarget = null;
+                return;
+            }
+
+            if (unit is IShip ship)
+            {
+                _lockedTarget = RadarStatus.CanDetect(_activePlayerShip, ship) && CombatRelations.AreEnemies(_activePlayerShip.Type, ship.Type)
+                    ? ship
+                    : null;
+                return;
+            }
+
+            // Special projectiles such as the player-fired macro-electron are
+            // valid radar targets even though they are not ships.  Keep this
+            // lock separate from LockedEnemyShip so weapon auto-aim continues
+            // to use the enemy ship lock when one is selected.
+            if (unit.Type.Owner == _activePlayerShip ||
+                CombatRelations.AreEnemies(_activePlayerShip.Type, unit.Type) ||
+                CombatRelations.AreAllies(_activePlayerShip.Type, unit.Type))
+                _lockedTarget = unit;
         }
         
         public void Tick()
@@ -190,8 +221,9 @@ namespace Combat.Scene
             var position = _activePlayerShip.Body.Position;
             var minDistance = float.MaxValue;
             _nearestEnemyShip = null;
-            if (!_lockedEnemyShip.IsActive())
-                _lockedEnemyShip = null;
+            if (_lockedTarget == null || !_lockedTarget.IsActive() || RadarStatus.IsJammed(_activePlayerShip) ||
+                _lockedTarget is IShip lockedShip && !RadarStatus.CanDetect(_activePlayerShip, lockedShip))
+                _lockedTarget = null;
 
             lock (_shipList.LockObject)
             {
@@ -278,7 +310,7 @@ namespace Combat.Scene
         private bool _playerInCenter;
         private IShip _activePlayerShip;
         private IShip _nearestEnemyShip;
-        private IShip _lockedEnemyShip;
+        private IUnit _lockedTarget;
 
         private readonly UnitList<IUnit> _unitList = new UnitList<IUnit>();
         private readonly ShipList _shipList = new ShipList();

@@ -84,7 +84,9 @@ namespace ViewModel.Skills
 
         public void ResetSkills()
         {
-            if (_showingThreeBody ? !ThreeBodySkillState.AdvancedRadarUnlocked : _playerSkills.PointsSpent == 0)
+            if (_showingThreeBody
+                ? !ThreeBodySkillState.AdvancedRadarUnlocked && !ThreeBodySkillState.CollaborativeCombatUnlocked && !ThreeBodySkillState.GiantCannonsUnlocked
+                : _playerSkills.PointsSpent == 0)
                 return;
 
             _guiHelper.ShowConfirmation(_localization.GetString("$CommonConfirmation"), ResetSkillsImpl);
@@ -98,9 +100,13 @@ namespace ViewModel.Skills
 
             if (_showingThreeBody)
             {
-                ThreeBodySkillState.ResetAdvancedRadar();
+                ThreeBodySkillState.ResetThreeBody1();
                 if (_advancedRadarNode != null)
                     UpdateAdvancedRadarNode(_advancedRadarNode);
+                if (_collaborativeCombatNode != null)
+                    UpdateCollaborativeCombatNode(_collaborativeCombatNode);
+                if (_giantCannonsNode != null)
+                    UpdateGiantCannonsNode(_giantCannonsNode);
             }
             else
             {
@@ -208,18 +214,59 @@ namespace ViewModel.Skills
             nodeText.gameObject.name = "NodeLabel";
             nodeText.fontStyle = FontStyle.Bold;
 
+            var collaborationLine = new GameObject("CollaborationLine", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            var collaborationLineRect = collaborationLine.GetComponent<RectTransform>();
+            collaborationLineRect.SetParent(panelRect, false);
+            collaborationLineRect.anchorMin = collaborationLineRect.anchorMax = new Vector2(0.5f, 0.5f);
+            collaborationLineRect.pivot = new Vector2(0.5f, 1f);
+            collaborationLineRect.anchoredPosition = new Vector2(0f, -36f);
+            collaborationLineRect.sizeDelta = new Vector2(5f, 82f);
+            collaborationLine.GetComponent<Image>().color = UiTheme.Current.GetColor(ThemeColor.HeaderText);
+
+            var collaborationNode = CreateThreeBodyNode(panelRect, "CollaborativeCombat", "协同\n作战", new Vector2(0f, -126f));
+            collaborationNode.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                ThreeBodySkillState.UnlockCollaborativeCombat();
+                UpdateCollaborativeCombatNode(collaborationNode);
+                UpdateResetPanel();
+            });
+            _collaborativeCombatNode = collaborationNode;
+
+            // Lets the first two flagship hangar slots accept TitanP ships.
+            // Keep it as a parallel branch so it can be unlocked independently
+            // of the combat-assistance node.
+            var giantCannonsLine = new GameObject("GiantCannonsLine", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            var giantCannonsLineRect = giantCannonsLine.GetComponent<RectTransform>();
+            giantCannonsLineRect.SetParent(panelRect, false);
+            giantCannonsLineRect.anchorMin = giantCannonsLineRect.anchorMax = new Vector2(0.5f, 0.5f);
+            giantCannonsLineRect.pivot = new Vector2(0f, 0.5f);
+            giantCannonsLineRect.anchoredPosition = new Vector2(62f, -126f);
+            giantCannonsLineRect.sizeDelta = new Vector2(76f, 5f);
+            giantCannonsLine.GetComponent<Image>().color = UiTheme.Current.GetColor(ThemeColor.HeaderText);
+
+            var giantCannonsNode = CreateThreeBodyNode(panelRect, "GiantCannons", "巨舰\n大炮", new Vector2(172f, -126f));
+            giantCannonsNode.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                ThreeBodySkillState.UnlockGiantCannons();
+                UpdateGiantCannonsNode(giantCannonsNode);
+                UpdateResetPanel();
+            });
+            _giantCannonsNode = giantCannonsNode;
+
             var description = new GameObject("DescriptionPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Outline));
             var descriptionRect = description.GetComponent<RectTransform>();
             descriptionRect.SetParent(panelRect, false);
             descriptionRect.anchorMin = descriptionRect.anchorMax = new Vector2(0.5f, 0.5f);
             descriptionRect.pivot = new Vector2(0.5f, 1f);
-            descriptionRect.anchoredPosition = new Vector2(0f, -54f);
-            descriptionRect.sizeDelta = new Vector2(390f, 108f);
+            descriptionRect.anchoredPosition = new Vector2(0f, -212f);
+            descriptionRect.sizeDelta = new Vector2(430f, 116f);
             description.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.22f);
             description.GetComponent<Outline>().effectColor = UiTheme.Current.GetColor(ThemeColor.Icon);
             var descriptionText = CreateLabel(descriptionRect, string.Empty, 20);
             descriptionText.gameObject.name = "Description";
             UpdateAdvancedRadarNode(node);
+            UpdateCollaborativeCombatNode(collaborationNode);
+            UpdateGiantCannonsNode(giantCannonsNode);
 
             originalButton.onClick.AddListener(() => ShowThreeBodyTree(false));
             threeBodyButton.onClick.AddListener(() => ShowThreeBodyTree(true));
@@ -294,6 +341,59 @@ namespace ViewModel.Skills
                     : "先进雷达\n雷达范围 +20%\n点击解锁舰船识别器";
         }
 
+        private GameObject CreateThreeBodyNode(RectTransform parent, string objectName, string title, Vector2 position)
+        {
+            var node = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(Outline));
+            var nodeRect = node.GetComponent<RectTransform>();
+            nodeRect.SetParent(parent, false);
+            nodeRect.anchorMin = nodeRect.anchorMax = new Vector2(0.5f, 0.5f);
+            nodeRect.pivot = new Vector2(0.5f, 0.5f);
+            nodeRect.anchoredPosition = position;
+            nodeRect.sizeDelta = new Vector2(124f, 124f);
+            var originalNodeImage = _root != null ? _root.GetComponent<Image>() : null;
+            var image = node.GetComponent<Image>();
+            if (originalNodeImage != null)
+            {
+                image.sprite = originalNodeImage.sprite;
+                image.type = originalNodeImage.type;
+            }
+            var outline = node.GetComponent<Outline>();
+            outline.effectColor = UiTheme.Current.GetColor(ThemeColor.HeaderText);
+            outline.effectDistance = new Vector2(3f, -3f);
+            var label = CreateLabel(nodeRect, title, 20);
+            label.gameObject.name = "NodeLabel";
+            label.fontStyle = FontStyle.Bold;
+            return node;
+        }
+
+        private static void UpdateCollaborativeCombatNode(GameObject node)
+        {
+            var unlocked = ThreeBodySkillState.CollaborativeCombatUnlocked;
+            node.GetComponent<Image>().color = unlocked
+                ? UiTheme.Current.GetColor(ThemeColor.HeaderText)
+                : UiTheme.Current.GetColor(ThemeColor.Window);
+            var nodeLabel = node.transform.Find("NodeLabel")?.GetComponent<Text>();
+            if (nodeLabel != null)
+                nodeLabel.color = unlocked ? UiTheme.Current.GetColor(ThemeColor.Window) : UiTheme.Current.GetColor(ThemeColor.Icon);
+            var text = node.transform.parent.Find("DescriptionPanel/Description")?.GetComponent<Text>();
+            if (text != null && unlocked)
+                text.text = "协同作战  已解锁\n未操控的携带舰船将作为友军参战\n旗舰被击毁后自动接管剩余最大舰船";
+        }
+
+        private static void UpdateGiantCannonsNode(GameObject node)
+        {
+            var unlocked = ThreeBodySkillState.GiantCannonsUnlocked;
+            node.GetComponent<Image>().color = unlocked
+                ? UiTheme.Current.GetColor(ThemeColor.HeaderText)
+                : UiTheme.Current.GetColor(ThemeColor.Window);
+            var nodeLabel = node.transform.Find("NodeLabel")?.GetComponent<Text>();
+            if (nodeLabel != null)
+                nodeLabel.color = unlocked ? UiTheme.Current.GetColor(ThemeColor.Window) : UiTheme.Current.GetColor(ThemeColor.Icon);
+            var text = node.transform.parent.Find("DescriptionPanel/Description")?.GetComponent<Text>();
+            if (text != null && unlocked)
+                text.text = "巨舰大炮  已解锁\n前两个旗舰机库槽位可搭载泰坦\n槽位剪影以金色边框标识";
+        }
+
         private void RebuildTree()
         {
             foreach (var item in NodeIds)
@@ -309,7 +409,7 @@ namespace ViewModel.Skills
             _resetPricePanel.gameObject.SetActive(price.Amount > 0);
             _resetPricePanel.Initialize(null, price, !isEnough);
             var hasPointsOnCurrentPage = _showingThreeBody
-                ? ThreeBodySkillState.AdvancedRadarUnlocked
+                ? ThreeBodySkillState.AdvancedRadarUnlocked || ThreeBodySkillState.CollaborativeCombatUnlocked || ThreeBodySkillState.GiantCannonsUnlocked
                 : _playerSkills.PointsSpent > 0;
             _resetButton.interactable = isEnough && hasPointsOnCurrentPage;
         }
@@ -417,6 +517,8 @@ namespace ViewModel.Skills
 		private readonly HashSet<SkillTreeNode> _connectedNodes = new HashSet<SkillTreeNode>();
         private GameObject _preview7Panel;
         private GameObject _advancedRadarNode;
+        private GameObject _collaborativeCombatNode;
+        private GameObject _giantCannonsNode;
         private bool _showingThreeBody;
     }
 }

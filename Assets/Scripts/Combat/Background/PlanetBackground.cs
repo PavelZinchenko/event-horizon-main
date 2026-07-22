@@ -16,10 +16,16 @@ namespace Combat.Background
         [Inject]
         public void Initialize(IResourceLocator resourceLocator, Planet planet)
         {
-            _width = _height = _size * Screen.width / Screen.height;
             _planet = planet;
 
-            Primitives.CreatePlane(gameObject.GetMesh(), _width, _height, 8);
+            // The old code made both sides of the mesh equal to
+            // size * screenAspect.  On wide displays that produced a square
+            // planetary surface in the middle of the camera, leaving the
+            // camera clear colour visible down both sides of exploration.
+            // Keep a unit mesh and scale it to the actual camera viewport
+            // instead, so the planet always covers the complete view.
+            Primitives.CreatePlane(gameObject.GetMesh(), 1f, 1f, 8);
+            UpdateViewSize();
 
             switch (planet.Type)
             {
@@ -68,6 +74,8 @@ namespace Combat.Background
 
         private void LateUpdate()
         {
+            UpdateViewSize();
+
             switch (_planet.Type)
             {
                 case PlanetType.Gas:
@@ -81,6 +89,25 @@ namespace Combat.Background
                     UpdateBarrenMaterial();
                     break;
             }
+        }
+
+        private void UpdateViewSize()
+        {
+            var camera = UnityEngine.Camera.main;
+            if (camera == null)
+            {
+                _height = _size * Screen.width / Mathf.Max(1, Screen.height);
+                _width = _height * Screen.width / Mathf.Max(1, Screen.height);
+            }
+            else
+            {
+                _height = 2f * camera.orthographicSize;
+                _width = _height * camera.aspect;
+            }
+
+            _width *= BackgroundOverscan;
+            _height *= BackgroundOverscan;
+            transform.localScale = new Vector3(_width, _height, 1f);
         }
 
         private void UpdateBarrenMaterial()
@@ -129,5 +156,7 @@ namespace Combat.Background
         private Planet _planet;
         private float _width;
         private float _height;
+
+        private const float BackgroundOverscan = 1.05f;
     }
 }

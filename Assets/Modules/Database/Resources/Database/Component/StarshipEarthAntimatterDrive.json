@@ -2,7 +2,7 @@
   "ItemType": 1,
   "Id": 309,
   "Name": "反物质引擎",
-  "Description": "以反物质反应提供推进力的高性能引擎，可通过并联满足大型舰船需求。",
+  "Description": "利用正反物质湮灭爆发的巨大能量进行供能驱动的引擎",
   "ContentSource": 1,
   "DisplayCategory": 4,
   "Availability": 1,
@@ -10,7 +10,7 @@
   "Faction": 21,
   "Level": 60,
   "Icon": "engine6",
-  "Color": "#77F4FF",
+  "Color": "#FFFFFF",
   "Layout": "1010",
   "CellType": "5",
   "PossibleModifications": [

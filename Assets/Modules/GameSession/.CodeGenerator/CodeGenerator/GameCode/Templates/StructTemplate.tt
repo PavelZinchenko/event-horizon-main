@@ -1,0 +1,82 @@
+﻿<#@ template language="C#" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+<#@ include file="UtilsClassMember.tt" #>
+<#@ include file="UtilsSerializationCode.tt" #>
+<#@ include file="UtilsDeserializationCode.tt" #>
+<#@ include file="UtilsComparisonCode.tt" #>
+
+using System.Collections.Generic;
+using <#= Utils.RootNamespace #>.<#= Utils.UtilsNamespace #>;
+
+namespace <#= Utils.RootNamespace #>.<#= Context.GetObjectNamespace(ObjectData.name) #>
+{
+	public readonly partial struct <#= ObjectData.name #>
+	{
+<#
+		PushIndent("\t\t");
+		foreach (var item in ObjectData.members)
+			WriteClassMember(item, Context, true);
+		PopIndent();
+#>
+
+		public <#= ObjectData.name #>(<#= Utils.CallbackInterface #> parent)
+		{
+<#
+			PushIndent("\t\t\t");
+			foreach (var item in ObjectData.members)
+				WriteInitializer(item, Context, "parent");
+			PopIndent();
+#>
+		}
+
+		public <#= ObjectData.name #>(<#= Utils.ReaderClass #> reader, <#= Utils.CallbackInterface #> parent)
+		{
+<#
+			PushIndent("\t\t\t");
+			foreach (var item in ObjectData.members)
+				WriteDeserializationCode(item, Context, "parent");
+			PopIndent();
+#>
+		}
+
+<#
+		PushIndent("\t\t");
+		foreach (var item in ObjectData.members)
+			WriteProperty(item, Context, true);
+		PopIndent();
+
+		if (Context.IsLatestObjectVersion(ObjectData.name))
+		{
+#>
+
+        public void Serialize(<#= Utils.WriterClass #> writer)
+        {
+<#
+			PushIndent("\t\t\t");
+			foreach (var item in ObjectData.members)
+				WriteSerializationCode(item, Context);
+			PopIndent();
+#>
+        }
+
+        public bool Equals(<#= ObjectData.name #> other)
+        {
+<#
+    		PushIndent("\t\t\t");
+    		foreach (var item in ObjectData.members)
+	    		WriteComparisonCode(item, Context);
+    		PopIndent();
+#>
+            return true;
+        }
+
+        public struct EqualityComparer : IEqualityComparer<<#= ObjectData.name #>>
+        {
+            public bool Equals(<#= ObjectData.name #> first, <#= ObjectData.name #> second) => first.Equals(second);
+            public int GetHashCode(<#= ObjectData.name #> obj) => obj.GetHashCode();
+        }
+<#
+		}
+#>
+	}
+}

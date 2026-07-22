@@ -17,6 +17,7 @@ using Zenject;
 using Services.Audio;
 using GameServices.Audio;
 using Constructor.Model;
+using GameServices.Developer;
 
 namespace GameStateMachine.States
 {
@@ -100,6 +101,10 @@ namespace GameStateMachine.States
                 mod = string.Empty;
                 _database.LoadDefault();
             }
+
+            // Apply the local developer faction overrides before any galaxy,
+            // quest or starbase data is generated from the database.
+            FactionDeveloperSettings.Apply(_database);
 
             _localization.Initialize(_settings.Language, _database);
 

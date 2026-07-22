@@ -1,0 +1,111 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #><#+
+
+private void WriteClonningCode(
+	string sourceName, 
+	string targetName,
+	XmlClassItem sourceData,
+	XmlClassItem targetData,
+	SchemaVersionInfo sourceSchema,
+	SchemaVersionInfo targetSchema)
+{
+	if (sourceData == null || targetData == null) return;
+
+	var sourceMembers = sourceData.members.ToDictionary(item => item.name);
+	var targetMembers = targetData.members.ToDictionary(item => item.name);
+
+	foreach (var member in sourceMembers.Values)
+	{
+		var propertyName = Utils.PropertyName(member.name);
+		if (!targetMembers.TryGetValue(member.name, out var targetMember)) 
+		{
+			// property was removed - {sourceName}.{propertyName};
+			continue;
+		}
+
+		targetMembers.Remove(member.name);
+
+		if (!Helpers.AreEqual(member, targetMember))
+		{
+			// type was changed - {propertyName};
+			continue;
+		}
+
+		if (BuilderContext.AreVersionsEqual(member, targetMember, sourceSchema, targetSchema))
+		{
+			if (Helpers.IsCollectionType(member.type))
+				WriteLine($"{targetName}.{propertyName}.Assign({sourceName}.{propertyName});");
+			else
+				WriteLine($"{targetName}.{propertyName} = {sourceName}.{propertyName};");
+
+			continue;
+		}
+
+		if (targetSchema.HasClass(member.type))
+		{
+			WriteClonningCode($"{sourceName}.{propertyName}", $"{targetName}.{propertyName}",
+				sourceSchema.GetObject(member.type), targetSchema.GetObject(member.type), sourceSchema, targetSchema);
+			continue;
+		}
+
+		// {targetName}.{propertyName} = {sourceName}.{propertyName};
+	}
+
+	foreach (var member in targetMembers.Values)
+	{
+		var propertyName = Utils.PropertyName(member.name);
+		// property was added - {targetName}.{propertyName};
+	}
+}
+
+private void WriteXmlComments(
+	string sourceName, 
+	string targetName,
+	XmlClassItem sourceData,
+	XmlClassItem targetData,
+	SchemaVersionInfo sourceSchema,
+	SchemaVersionInfo targetSchema)
+{
+	if (sourceData == null || targetData == null) return;
+
+	var sourceMembers = sourceData.members.ToDictionary(item => item.name);
+	var targetMembers = targetData.members.ToDictionary(item => item.name);
+
+	foreach (var member in sourceMembers.Values)
+	{
+		var propertyName = Utils.PropertyName(member.name);
+		if (!targetMembers.TryGetValue(member.name, out var targetMember)) 
+		{
+			WriteLine($"/// property was removed - {sourceName}.{propertyName};");
+			continue;
+		}
+
+		targetMembers.Remove(member.name);
+
+		if (!Helpers.AreEqual(member, targetMember))
+		{
+			WriteLine($"/// type was changed - {sourceName}.{propertyName};");
+			continue;
+		}
+
+		if (BuilderContext.AreVersionsEqual(member, targetMember, sourceSchema, targetSchema))
+			continue;
+
+		if (targetSchema.HasClass(member.type))
+		{
+			WriteXmlComments($"{sourceName}.{propertyName}", $"{targetName}.{propertyName}",
+				sourceSchema.GetObject(member.type), targetSchema.GetObject(member.type), sourceSchema, targetSchema);
+			continue;
+		}
+
+		WriteLine($"/// copy {sourceName}.{propertyName} to {targetName}.{propertyName};");
+	}
+
+	foreach (var member in targetMembers.Values)
+	{
+		var propertyName = Utils.PropertyName(member.name);
+		WriteLine($"/// property was added - {targetName}.{propertyName};");
+	}
+}
+
+#>

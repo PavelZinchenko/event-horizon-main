@@ -66,6 +66,51 @@
       "Rotation": -90.0,
       "Offset": 0.35,
       "WeaponClass": "CL"
+    },
+    {
+      "Position": {
+        "x": 0.15,
+        "y": -0.66
+      },
+      "Rotation": -90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
+    },
+    {
+      "Position": {
+        "x": 0.15,
+        "y": 0.66
+      },
+      "Rotation": 90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
+    },
+    {
+      "Position": {
+        "x": -0.25,
+        "y": -0.85
+      },
+      "Rotation": -90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
+    },
+    {
+      "Position": {
+        "x": -0.25,
+        "y": 0.68
+      },
+      "Rotation": 90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
+    },
+    {
+      "Position": {
+        "x": -0.25,
+        "y": 0.86
+      },
+      "Rotation": 90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
     }
   ],
   "Features": {

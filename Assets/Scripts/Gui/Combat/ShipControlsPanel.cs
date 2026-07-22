@@ -83,6 +83,12 @@ namespace Gui.Combat
 
         public void ActivateSystem(int id)
         {
+            if (TryRequestSophonActivation(id))
+            {
+                _playerInputTrigger.Fire();
+                return;
+            }
+
             if (IsClickToggle(id))
             {
                 _ship.Controls.Systems.SetState(id, !_ship.Controls.Systems[id]);
@@ -96,6 +102,11 @@ namespace Gui.Combat
 
         public void DeactivateSystem(int id)
         {
+            // Sophon activation is queued directly on the device and consumed by
+            // its next physics update. Pointer-up must not clear that queued request.
+            if (IsSophonSystem(id))
+                return;
+
             if (IsClickToggle(id))
                 return;
 
@@ -109,6 +120,21 @@ namespace Gui.Combat
             return _ship != null && _ship.IsActive() && id >= 0 && id < _ship.Systems.All.Count &&
                    (_ship.Systems.All[id] is DimensionalAscensionDevice ||
                     _ship.Systems.All[id] is SophonGuidanceDevice);
+        }
+
+        private bool TryRequestSophonActivation(int id)
+        {
+            if (!IsSophonSystem(id))
+                return false;
+
+            ((SophonJammerDevice)_ship.Systems.All[id]).RequestActivation();
+            return true;
+        }
+
+        private bool IsSophonSystem(int id)
+        {
+            return _ship != null && _ship.IsActive() && id >= 0 && id < _ship.Systems.All.Count &&
+                   _ship.Systems.All[id] is SophonJammerDevice;
         }
 
         public void ActivateDroneBays()
@@ -318,7 +344,6 @@ namespace Gui.Combat
 
         private List<List<int>> _keyBindings;
         private List<ActionButton> _buttons;
-
         private int _activeButtons;
         private bool _leftPressed;
         private bool _rightPressed;

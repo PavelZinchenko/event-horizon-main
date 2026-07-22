@@ -3,6 +3,7 @@
   "Id": 377,
   "Type": 1,
   "ItemId": 163,
+  "Faction": 21,
   "Price": 4,
   "Dependencies": [
     376,

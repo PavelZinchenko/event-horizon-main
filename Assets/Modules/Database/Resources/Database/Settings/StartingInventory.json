@@ -63,15 +63,95 @@
       {
         "Loot": {
           "Type": 3,
+          "MinAmount": 500,
+          "MaxAmount": 500
+        }
+      },
+      {
+        "Loot": {
+          "Type": 4,
           "MinAmount": 100,
           "MaxAmount": 100
         }
       },
       {
         "Loot": {
-          "Type": 4,
-          "MinAmount": 20,
-          "MaxAmount": 20
+          "Type": 30,
+          "ItemId": 412,
+          "MinAmount": 1,
+          "MaxAmount": 1
+        }
+      },
+      {
+        "Loot": {
+          "Type": 30,
+          "ItemId": 413,
+          "MinAmount": 1,
+          "MaxAmount": 1
+        }
+      },
+      {
+        "Loot": {
+          "Type": 30,
+          "ItemId": 418,
+          "MinAmount": 1,
+          "MaxAmount": 1
+        }
+      },
+      {
+        "Loot": {
+          "Type": 35,
+          "ItemId": 304,
+          "MinAmount": 10,
+          "MaxAmount": 10
+        }
+      },
+      {
+        "Loot": {
+          "Type": 35,
+          "ItemId": 306,
+          "MinAmount": 10,
+          "MaxAmount": 10
+        }
+      },
+      {
+        "Loot": {
+          "Type": 35,
+          "ItemId": 309,
+          "MinAmount": 10,
+          "MaxAmount": 10
+        }
+      },
+      {
+        "Loot": {
+          "Type": 35,
+          "ItemId": 300,
+          "MinAmount": 10,
+          "MaxAmount": 10
+        }
+      },
+      {
+        "Loot": {
+          "Type": 35,
+          "ItemId": 308,
+          "MinAmount": 10,
+          "MaxAmount": 10
+        }
+      },
+      {
+        "Loot": {
+          "Type": 35,
+          "ItemId": 302,
+          "MinAmount": 10,
+          "MaxAmount": 10
+        }
+      },
+      {
+        "Loot": {
+          "Type": 35,
+          "ItemId": 91,
+          "MinAmount": 10,
+          "MaxAmount": 10
         }
       }
     ]

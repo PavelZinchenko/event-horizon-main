@@ -1,0 +1,78 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #><#+
+
+private string GetEqualityComparer(string type, SchemaVersionInfo context)
+{
+	if (type == Constants.TypeInt)
+	{
+		return "EqualityComparer<int>.Default";
+	}
+	else if (type == Constants.TypeUint)
+	{
+		return "EqualityComparer<uint>.Default";
+	}
+	else if (type == Constants.TypeLong)
+	{
+		return "EqualityComparer<long>.Default";
+	}
+	else if (type == Constants.TypeUlong)
+	{
+		return "EqualityComparer<ulong>.Default";
+	}
+	else if (type == Constants.TypeShort)
+	{
+		return "EqualityComparer<short>.Default";
+	}
+	else if (type == Constants.TypeUshort)
+	{
+		return "EqualityComparer<ushort>.Default";
+	}
+	else if (type == Constants.TypeSbyte)
+	{
+		return "EqualityComparer<sbyte>.Default";
+	}
+	else if (type == Constants.TypeByte)
+	{
+		return "EqualityComparer<byte>.Default";
+	}
+	else if (type == Constants.TypeFloat)
+	{
+		return "EqualityComparer<float>.Default";
+	}
+	else if (type == Constants.TypeBool)
+	{
+		return "EqualityComparer<bool>.Default";
+	}
+	else if (type == Constants.TypeString)
+	{
+		return "System.StringComparer.Ordinal";
+	}
+	else if (context.HasStruct(type))
+	{
+		return $"new {ConvertType(type, context)}.EqualityComparer()";
+	}
+	else
+	{
+		throw new InvalidSchemaException("Invalid type - " + type);
+	}
+}
+
+private void WriteComparisonCode(XmlClassMember member, SchemaVersionInfo context)
+{
+	var propertyName = Utils.PropertyName(member.name);
+
+	if (member.type == Constants.TypeMap || member.type == Constants.TypeSet || member.type == Constants.TypeList)
+	{
+		WriteLine($"if (!{propertyName}.Equals(other.{propertyName}, {GetEqualityComparer(member.value, context)})) return false;");
+	}
+	else if (member.type == Constants.TypeBitset || member.type == Constants.TypeInventory || context.HasStruct(member.type))
+	{
+		WriteLine($"if (!{propertyName}.Equals(other.{propertyName})) return false;");
+	}
+	else
+	{
+		WriteLine($"if ({propertyName} != other.{propertyName}) return false;");
+	}
+}
+
+#>

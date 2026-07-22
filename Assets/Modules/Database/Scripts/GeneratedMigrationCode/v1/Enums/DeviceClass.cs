@@ -35,5 +35,7 @@ namespace DatabaseMigration.v1.Enums
 		WormTailV2,
 		Retribution,
 		Radar,
+		RadarStealth,
+		SophonJammer,
 	}
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="RequiredViewMode">
+    <item name="Any">0</item>
+    <item name="StarSystem">1</item>
+    <item name="StarMap">2</item>
+    <item name="GalaxyMap">3</item>
+</data>

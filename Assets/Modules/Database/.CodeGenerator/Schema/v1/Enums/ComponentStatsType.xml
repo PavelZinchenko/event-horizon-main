@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="ComponentStatsType">
+    <item name="PerComponent">0</item>
+    <item name="PerOneCell">1</item>
+</data>

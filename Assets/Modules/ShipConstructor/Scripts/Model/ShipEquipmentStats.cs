@@ -9,6 +9,10 @@ namespace Constructor.Model
         public float ArmorPoints;
         public float ArmorRepairRate;
         public StatMultiplier ArmorRepairCooldownMultiplier;
+        // Additive bonuses from the Three Body "加护" refit.  It is kept
+        // separate from the ordinary armor multiplier so it remains an
+        // independent, per-component source of hull reinforcement.
+        public StatMultiplier ThreeBodyArmorMultiplier;
 
         public float EnergyPoints;
         public float EnergyRecharge;
@@ -93,7 +97,6 @@ namespace Constructor.Model
 
             stats.EnginePower = component.EnginePower * multiplier;
             stats.TurnRate = component.TurnRate * multiplier;
-
             if (component.EnergyRechargeRate >= 0 && component.EnginePower > 0)
                 stats.EnginePowerWithoutEnergy += component.EnginePower * multiplier;
             if (component.EnergyRechargeRate >= 0 && component.TurnRate > 0)
@@ -129,6 +132,7 @@ namespace Constructor.Model
             ArmorPoints += other.ArmorPoints;
             ArmorRepairRate += other.ArmorRepairRate;
             ArmorRepairCooldownMultiplier += other.ArmorRepairCooldownMultiplier;
+            ThreeBodyArmorMultiplier += other.ThreeBodyArmorMultiplier;
 
             EnergyPoints += other.EnergyPoints;
             EnergyRecharge += other.EnergyRecharge;
