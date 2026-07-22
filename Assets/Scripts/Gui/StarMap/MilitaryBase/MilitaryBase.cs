@@ -10,6 +10,7 @@ using Services.ObjectPool;
 using Zenject;
 using CommonComponents;
 using GameDatabase;
+using Gui.Common;
 
 namespace Gui.StarMap
 {
@@ -43,7 +44,7 @@ namespace Gui.StarMap
         {
             var faction = _motherShip.CurrentStar.Region.Faction;
             _factionText.text = _localization.GetString("$MilitaryBase", _localization.GetString(faction.Name));
-            _factionIcon.color = faction.Color;
+            FactionIconUtility.Apply(_factionIcon, faction, 64f);
             _levelText.text = Level.ToString();
 
             UpdateContent();

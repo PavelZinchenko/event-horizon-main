@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="BulletType">
+    <item name="Projectile" />
+    <item name="Homing" />
+    <item name="Static" />
+    <item name="Continuous" />
+    <item name="Magnetic" />
+</data>

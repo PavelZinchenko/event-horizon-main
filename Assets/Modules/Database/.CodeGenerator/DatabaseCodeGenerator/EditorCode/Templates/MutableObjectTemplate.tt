@@ -1,0 +1,276 @@
+﻿<#@ template language="C#" #>
+<#@ include file="Serialization.tt" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+
+using System.Linq;
+using System.Collections.Generic;
+using <#= Utils.RootNamespace #>.<#= Utils.EnumsNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.SerializableNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.TypesNamespace #>;
+
+namespace <#= Utils.RootNamespace #>.<#= Utils.ClassesNamespace #>
+{
+<#
+    SortMembers(ObjectData, out var baseMembers, out var extraMembers, out var switchEnumType);
+	var factoryName = "I" + Utils.DataClassName(ObjectData) + "Factory<T>";
+#>
+
+	public interface <#= Utils.ContentInterfaceName(ObjectData) #>
+	{
+		void Load(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #> database);
+		void Save(ref <#= Utils.SerializableClassName(ObjectData.name) #> serializable);
+	}
+
+	public partial class <#= Utils.DataClassName(ObjectData) #> : IDataAdapter
+	{
+		partial void OnDataDeserialized(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #> database);
+		partial void OnDataSerialized(ref <#= Utils.SerializableClassName(ObjectData.name) #> serializable);
+
+		private static <#= Utils.ContentInterfaceName(ObjectData) #> CreateContent(<#= switchEnumType #> type)
+		{
+			switch (type)
+			{
+<#
+			foreach (var item in extraMembers)
+            {
+#>
+				case <#= switchEnumType + "." + item.Key #>:
+					return new <#= item.Value.Count > 0 ? ExtraClassName(item.Key) : EmptyClassName() #>();
+<#
+			}
+#>
+				default:
+					throw new DatabaseException("<#= ObjectData.name #>: Invalid content type - " + type);
+			}
+		}
+
+		public static <#= Utils.DataClassName(ObjectData) #> Create(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #> database)
+		{
+			if (serializable == null) return DefaultValue;
+			return new <#= Utils.DataClassName(ObjectData) #>(serializable, database);
+		}
+
+		public <#= Utils.DataClassName(ObjectData) #>()
+		{
+			_content = new <#= EmptyClassName() #>();
+		}
+
+		private <#= Utils.DataClassName(ObjectData) #>(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #> database)
+		{
+<#
+			if (ObjectType == ObjectType.Class)
+            {
+#>
+			Id = new ItemId<<#= Utils.DataClassName(ObjectData) #>>(serializable);
+
+<#
+			}
+#>
+<#
+			PushIndent("\t\t\t");
+
+			foreach (var item in baseMembers)
+				WriteDeserializationCode(item, Schema, ObjectType == ObjectType.Class);
+
+			PopIndent();
+#>
+			_content = CreateContent(serializable.<#= ObjectData.switchEnum #>);
+			_content.Load(serializable, database);
+
+			OnDataDeserialized(serializable, database);
+		}
+
+<#
+		if (ObjectType == ObjectType.Struct)
+        {
+#>
+		public <#= Utils.SerializableClassName(ObjectData.name) + " " + Utils.StructSerializationMethodName #>()
+		{
+			var serializable = new <#= Utils.SerializableClassName(ObjectData.name) #>();
+<#
+		}
+		else
+        {
+#>
+		public void <#= Utils.SerializationMethodName #>(<#= Utils.SerializableClassName(ObjectData.name) #> serializable)
+		{
+<#
+		}
+#>
+<#
+			var members = new HashSet<string>();
+			foreach (var item in ObjectData.members)
+            {
+	            if (!members.Add(item.name)) continue;
+				if (baseMembers.Contains(item)) continue;
+#>
+			serializable.<#= item.name #> = <#= GetSerializableDefaultValue(item, Schema) #>;
+<#
+            }
+#>
+			_content.Save(ref serializable);
+<#
+
+			PushIndent("\t\t\t");
+
+			foreach (var item in baseMembers)
+				WriteSerializationCode(item, Schema);
+
+			PopIndent();
+#>
+			OnDataSerialized(ref serializable);
+<#
+			if (ObjectType == ObjectType.Struct)
+            {
+#>
+			return serializable;
+<#
+			}
+#>
+		}
+
+		public event System.Action LayoutChangedEvent;
+		public event System.Action DataChangedEvent;
+
+		public IEnumerable<IProperty> Properties
+		{
+			get
+			{
+				var type = GetType();
+
+<#
+				foreach (var member in baseMembers)
+                {
+					var memberName = !string.IsNullOrEmpty(member.alias) ? member.alias : member.name;
+					var eventName =  member.name == ObjectData.switchEnum ? "OnTypeChanged" : "DataChangedEvent";
+#>
+				yield return new Property(this, type.GetField("<#= memberName #>"), <#= eventName #>);
+<#
+                }
+#>
+
+				foreach (var item in _content.GetType().GetFields().Where(f => f.IsPublic && !f.IsStatic))
+					yield return new Property(_content, item, DataChangedEvent);
+			}
+		}
+
+		private void OnTypeChanged()
+		{
+			_content = CreateContent(<#= ObjectData.switchEnum #>);
+			DataChangedEvent?.Invoke();
+			LayoutChangedEvent?.Invoke();
+		}
+
+<#
+		if (ObjectType == ObjectType.Class)
+        {
+#>
+		public readonly ItemId<<#= Utils.DataClassName(ObjectData) #>> Id;
+
+<#
+		}
+#>
+		private <#= Utils.ContentInterfaceName(ObjectData) #> _content;
+<#
+		PushIndent("\t\t");
+
+		foreach (var item in baseMembers) 
+			WriteDataClassMember(item, Schema);
+
+		PopIndent();
+#>
+
+		public static <#= Utils.DataClassName(ObjectData) #> DefaultValue { get; private set; }
+	}
+
+	public class <#= EmptyClassName() + " : " + Utils.ContentInterfaceName(ObjectData) #>
+	{
+		public void Load(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #> database) {}
+		public void Save(ref <#= Utils.SerializableClassName(ObjectData.name) #> serializable) {}
+	}
+
+<#
+	foreach (var content in extraMembers)
+    {
+		if (content.Value.Count == 0) continue;
+#>
+	public partial class <#= ExtraClassName(content.Key) + " : " + Utils.ContentInterfaceName(ObjectData) #>
+	{
+		partial void OnDataDeserialized(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #> database);
+		partial void OnDataSerialized(ref <#= Utils.SerializableClassName(ObjectData.name) #> serializable);
+
+		public void Load(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #> database)
+		{
+<#
+			PushIndent("\t\t\t");
+
+			foreach (var item in content.Value)
+				WriteDeserializationCode(item, Schema, ObjectType == ObjectType.Class);
+
+			PopIndent();
+#>
+
+			OnDataDeserialized(serializable, database);
+		}
+
+		public void Save(ref <#= Utils.SerializableClassName(ObjectData.name) #> serializable)
+		{
+<#
+			PushIndent("\t\t\t");
+
+			foreach (var item in content.Value)
+				WriteSerializationCode(item, Schema);
+
+			PopIndent();
+#>
+			OnDataSerialized(ref serializable);
+		}
+
+<#
+		PushIndent("\t\t");
+
+		foreach (var item in content.Value)
+			WriteDataClassMember(item, Schema);
+
+		PopIndent();
+#>
+	}
+
+<#
+	}
+#>
+}
+
+<#+
+    private void SortMembers(XmlClassItem data, out List<XmlClassMember> baseMembers, out Dictionary<string, List<XmlClassMember>> extraMembers, out string switchEnumType)
+    {
+        baseMembers = new List<XmlClassMember>();
+		switchEnumType = string.Empty;
+
+		foreach (var item in data.members)
+        {
+            if (!string.IsNullOrEmpty(item.caseValue)) continue;
+
+            baseMembers.Add(item);
+			if (item.name.Equals(ObjectData.switchEnum, StringComparison.Ordinal))
+				switchEnumType = item.typeid;
+        }
+
+		var switchEnum = Schema.GetEnum(switchEnumType);
+		extraMembers = switchEnum.items.ToDictionary(item => item.name, item => new List<XmlClassMember>());
+
+        foreach (var item in data.members)
+        {
+            if (string.IsNullOrEmpty(item.caseValue)) continue;
+
+            var caseValues = item.caseValue.Split(Constants.ValueSeparators, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var value in caseValues)
+				extraMembers[value].Add(item);
+        }
+    }
+
+	private string ExtraClassName(string type) { return Utils.DataClassName(ObjectData) + "_" + type; }
+	private string EmptyClassName() { return Utils.DataClassName(ObjectData) + "EmptyContent"; }
+#>

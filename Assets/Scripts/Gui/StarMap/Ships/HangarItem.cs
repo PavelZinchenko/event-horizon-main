@@ -23,11 +23,36 @@ namespace Gui.StarMap
 
         public bool TryInstall(IShip ship)
         {
-            if (ship != null && (_locked || ship.Model.SizeClass > _sizeClass))
+            if (ship != null && !CanAccept(ship.Model.SizeClass))
                 return false;
 
             Ship = ship;
             return true;
+        }
+
+        public bool CanAccept(SizeClass size)
+        {
+            if (_locked)
+                return false;
+
+            return size <= _sizeClass ||
+                   (_titanPAllowed && _sizeClass == SizeClass.Titan && size == SizeClass.TitanP);
+        }
+
+        /// <summary>
+        /// The Giant Cannons skill turns the first two Titan silhouettes into
+        /// TitanP-capable hangars.  The property lives on the slot so other
+        /// callers (drag, click and restore) share exactly the same rule.
+        /// </summary>
+        public bool TitanPAllowed
+        {
+            get { return _titanPAllowed; }
+            set
+            {
+                if (_titanPAllowed == value) return;
+                _titanPAllowed = value;
+                Initialize();
+            }
         }
 
         public SizeClass Size
@@ -89,8 +114,9 @@ namespace Gui.StarMap
 
         public void Highlight(bool enabled, SizeClass requiredClass = SizeClass.Frigate)
         {
-            _allowIcon.gameObject.SetActive(enabled && requiredClass <= _sizeClass && !_locked);
-            _denyIcon.gameObject.SetActive(enabled && (requiredClass > _sizeClass || _locked));
+            var accepted = CanAccept(requiredClass);
+            _allowIcon.gameObject.SetActive(enabled && accepted);
+            _denyIcon.gameObject.SetActive(enabled && !accepted);
         }
 
         private void Initialize()
@@ -114,7 +140,8 @@ namespace Gui.StarMap
                 _icon.gameObject.SetActive(true);
                 _icon.transform.localScale = new Vector3(_ship.Model.SizeClass.IconSize(), _ship.Model.SizeClass.IconSize(), 1.0f);
 
-                _icon.sprite = _resourceLocator.GetSprite(_ship.Model.ModelImage);
+                _icon.sprite = PlayerShipTextureOverrides.Get(_ship.Model.Id.Value,
+                    _resourceLocator.GetSprite(_ship.Model.ModelImage));
                 _icon.color = _ship.ColorScheme.HsvColor;
             }
             else
@@ -127,10 +154,26 @@ namespace Gui.StarMap
             _emptyImage3.gameObject.SetActive(!_icon.gameObject.activeSelf && _sizeClass == SizeClass.Cruiser);
             _emptyImage4.gameObject.SetActive(!_icon.gameObject.activeSelf && _sizeClass == SizeClass.Battleship);
             _emptyImage5.gameObject.SetActive(!_icon.gameObject.activeSelf && _sizeClass == SizeClass.Titan);
+
+            // Preserve the original silhouette and add a gold outline only when
+            // this Titan hangar has been upgraded to accept TitanP.
+            if (_emptyImage5 != null)
+            {
+                var outline = _emptyImage5.GetComponent<Outline>();
+                if (_titanPAllowed && outline == null)
+                    outline = _emptyImage5.gameObject.AddComponent<Outline>();
+                if (outline != null)
+                {
+                    outline.effectColor = new Color(1f, 0.72f, 0.12f, 1f);
+                    outline.effectDistance = new Vector2(3f, -3f);
+                    outline.enabled = _titanPAllowed && _sizeClass == SizeClass.Titan && !_icon.gameObject.activeSelf;
+                }
+            }
         }
 
         private IShip _ship;
         private bool _locked;
         private SizeClass _sizeClass;
+        private bool _titanPAllowed;
     }
 }

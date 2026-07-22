@@ -1,0 +1,16 @@
+{
+  "ItemType": 2,
+  "Id": 37,
+  "DeviceClass": 21,
+  "EnergyConsumption": 2.0,
+  "PassiveEnergyConsumption": 0.0,
+  "Power": 120.0,
+  "Range": 100.0,
+  "Size": 3.0,
+  "Cooldown": 2.0,
+  "ActivationType": 1,
+  "Color": "#4DE7FF",
+  "Sound": "hit_01",
+  "VisualEffect": 17,
+  "ControlButtonIcon": "controls_gear"
+}

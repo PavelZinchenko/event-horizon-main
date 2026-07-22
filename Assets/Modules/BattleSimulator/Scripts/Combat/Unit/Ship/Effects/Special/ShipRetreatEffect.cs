@@ -10,9 +10,10 @@ namespace Combat.Unit.Ship.Effects.Special
 {
     public class ShipRetreatEffect : IShipEffect, IEngineModification, ISystemsModification
     {
-        public ShipRetreatEffect(float cooldown, params IUnitEffect[] effects)
+        public ShipRetreatEffect(float cooldown, System.Action onCompleted, params IUnitEffect[] effects)
         {
             _cooldown = cooldown;
+            _onCompleted = onCompleted;
             foreach (var item in effects)
                 _triggers.Add(item);
 
@@ -49,6 +50,8 @@ namespace Combat.Unit.Ship.Effects.Special
             {
                 _triggers.Invoke(ConditionType.OnDeactivate);
                 ship.Vanish();
+                _onCompleted?.Invoke();
+                _onCompleted = null;
             }
         }
 
@@ -70,6 +73,7 @@ namespace Combat.Unit.Ship.Effects.Special
 
         private float _elapsedTime;
         private readonly float _cooldown;
+        private System.Action _onCompleted;
         private readonly UnitTriggers _triggers = new UnitTriggers();
     }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Device" type="object" typeid="Device" options="legacy" >
+    <member name="DeviceClass" type="enum" typeid="DeviceClass" />
+    <member name="EnergyConsumption" type="float" minvalue="0" maxvalue="999999999" />
+    <member name="PassiveEnergyConsumption" type="float" minvalue="0" maxvalue="999999999" />
+    <member name="Power" type="float" minvalue="0" maxvalue="1000" />
+    <member name="Range" type="float" minvalue="0" maxvalue="1000" />
+    <member name="Size" type="float" minvalue="0" maxvalue="1000" />
+    <member name="Cooldown" type="float" minvalue="0" maxvalue="1000" />
+    <member name="Lifetime" type="float" minvalue="0" maxvalue="1000" />
+    <member name="Offset" type="vector" />
+    <member name="ActivationType" type="enum" typeid="ActivationType" />
+    <member name="Color" type="color" />
+    <member name="Sound" type="audioclip" />
+    <member name="EffectPrefab" type="prefab" typeid="Effect" />
+    <member name="ObjectPrefab" type="prefab" typeid="Object" />
+    <member name="ControlButtonIcon" type="image" typeid="ActionButton" />
+</data>

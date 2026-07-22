@@ -1,0 +1,19 @@
+﻿{
+  "name": "CodeWriter.ExpressionParser.Tests",
+  "references": [
+    "CodeWriter.ExpressionParser"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": []
+}

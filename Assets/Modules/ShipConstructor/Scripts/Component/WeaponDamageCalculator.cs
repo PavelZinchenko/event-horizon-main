@@ -468,6 +468,8 @@ namespace Constructor.Component
                         Energy += damage; break;
                     case DamageType.Corrosive:
                         Corrosive += damage; break;
+                    case DamageType.True:
+                        True += damage; break;
                 }
                 return this;
             }
@@ -479,6 +481,7 @@ namespace Constructor.Component
                     Energy = first.Energy + second.Energy,
                     Heat = first.Heat + second.Heat,
                     Corrosive = first.Corrosive + second.Corrosive,
+                    True = first.True + second.True,
                     Repair = first.Repair + second.Repair,
                     Shield = first.Shield + second.Shield,
                     EnergyDrain = first.EnergyDrain + second.EnergyDrain,
@@ -496,6 +499,7 @@ namespace Constructor.Component
                     Energy = damage.Energy * multiplier,
                     Heat = damage.Heat * multiplier,
                     Corrosive = damage.Corrosive * multiplier,
+                    True = damage.True * multiplier,
                     Repair = damage.Repair * multiplier,
                     Shield = damage.Shield * multiplier,
                     EnergyDrain = boostEnergyDrain ? damage.EnergyDrain * multiplier : damage.EnergyDrain,
@@ -503,13 +507,14 @@ namespace Constructor.Component
                 };
             }
 
-            public bool Any => Kinetic > 0 || Heat > 0 || Energy > 0 || Corrosive > 0 || Shield > 0 || Repair > 0;
-            public float Total => Kinetic + Heat + Energy + Corrosive + Repair + (Shield > 0 ? Shield : -Shield);
+            public bool Any => Kinetic > 0 || Heat > 0 || Energy > 0 || Corrosive > 0 || True > 0 || Shield > 0 || Repair > 0;
+            public float Total => Kinetic + Heat + Energy + Corrosive + True + Repair + (Shield > 0 ? Shield : -Shield);
 
             public float Kinetic;
             public float Heat;
             public float Energy;
             public float Corrosive;
+            public float True;
             public float Repair;
             public float Shield;
             public float EnergyDrain;

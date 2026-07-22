@@ -36,7 +36,7 @@ namespace GameDatabase.DataModel
 			ShieldRechargeCooldown = UnityEngine.Mathf.Clamp(serializable.ShieldRechargeCooldown, 0f, 60f);
 			BaseDroneReconstructionSpeed = UnityEngine.Mathf.Clamp(serializable.BaseDroneReconstructionSpeed, 0f, 100f);
 			ShieldCorrosiveResistance = UnityEngine.Mathf.Clamp(serializable.ShieldCorrosiveResistance, 0f, 1f);
-			MaxVelocity = UnityEngine.Mathf.Clamp(serializable.MaxVelocity, 5f, 100f);
+			MaxVelocity = UnityEngine.Mathf.Clamp(serializable.MaxVelocity, 5f, 1000000f);
 			MaxAngularVelocity = UnityEngine.Mathf.Clamp(serializable.MaxAngularVelocity, 5f, 100f);
 			MaxAcceleration = UnityEngine.Mathf.Clamp(serializable.MaxAcceleration, 5f, 1000f);
 			MaxAngularAcceleration = UnityEngine.Mathf.Clamp(serializable.MaxAngularAcceleration, 5f, 1000f);

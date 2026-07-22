@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ShipFeatures" type="struct" >
+    <member name="EnergyResistance" type="float" minvalue="-100" maxvalue="100" />
+    <member name="KineticResistance" type="float" minvalue="-100" maxvalue="100" />
+    <member name="HeatResistance" type="float" minvalue="-100" maxvalue="100" />
+
+    <member name="ShipWeightBonus" type="float" minvalue="-1" maxvalue="10" />
+    <member name="EquipmentWeightBonus" type="float" minvalue="-1" maxvalue="10" />
+    <member name="VelocityBonus" type="float" minvalue="-1" maxvalue="10" />
+    <member name="TurnRateBonus" type="float" minvalue="-1" maxvalue="10" />
+    <member name="ArmorBonus" type="float" minvalue="-1" maxvalue="10" />
+    <member name="ShieldBonus" type="float" minvalue="-1" maxvalue="10" />
+    <member name="EnergyBonus" type="float" minvalue="-1" maxvalue="10" /> 
+
+    <member name="Regeneration" type="bool" />
+
+    <!-- member name="DamageBonusC" type="float" minvalue="-1" maxvalue="10" /> 
+    <member name="DamageBonusL" type="float" minvalue="-1" maxvalue="10" /> 
+    <member name="DamageBonusS" type="float" minvalue="-1" maxvalue="10" /> 
+    <member name="DamageBonusT" type="float" minvalue="-1" maxvalue="10" /> 
+    <member name="DamageBonusM" type="float" minvalue="-1" maxvalue="10" /> 
+    <member name="DroneDamageBonus" type="float" minvalue="-1" maxvalue="10" /--> 
+
+    <member name="BuiltinDevices" type="object_list" typeid="Device" />
+</data>

@@ -9,10 +9,20 @@ namespace Combat.Domain
 {
     public class FleetModel : IFleetModel
     {
-        public FleetModel(IEnumerable<IShip> ships, UnitSide unitSide, IDatabase database, int level, PlayerSkills playerSkills = null)
+        public FleetModel(
+            IEnumerable<IShip> ships,
+            UnitSide unitSide,
+            IDatabase database,
+            int level,
+            PlayerSkills playerSkills = null,
+            IEnumerable<IShip> collaborativeShips = null,
+            int? factionIdOverride = null)
         {
             var settings = database.ShipSettings;
             AiLevel = level;
+            var collaborative = collaborativeShips == null
+                ? null
+                : new HashSet<IShip>(collaborativeShips);
 
             foreach (var ship in ships)
             {
@@ -20,7 +30,9 @@ namespace Combat.Domain
                     ship.CreateBuilder().ApplyPlayerSkills(playerSkills).Build(settings) :
                     ship.CreateBuilder().Build(settings);
 
-                var shipInfo = new ShipInfo(ship, shipSpec, unitSide);
+                var shipInfo = new ShipInfo(ship, shipSpec, unitSide,
+                    unitSide == UnitSide.Ally && collaborative != null && collaborative.Contains(ship),
+                    factionIdOverride);
                 _ships.Add(shipInfo);
             }
         }

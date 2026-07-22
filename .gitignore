@@ -63,3 +63,9 @@ ExportedObj/
 # Builds
 *.apk
 *.aab
+
+# Generated image working files (final imported assets live under Assets/)
+/tmp/
+/.localappdata/
+/Backups/*.zip
+/Backups/gh-auth-*.txt

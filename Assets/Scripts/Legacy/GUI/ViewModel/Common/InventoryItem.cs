@@ -26,6 +26,7 @@ namespace ViewModel
 				Product = item;
 				Icon.sprite = resourceLocator.GetSprite(item.Type.Icon);
 				Icon.color = item.Type.Color;
+				Icon.preserveAspect = true;
 				NameText.text = item.Type.Name;
                 DescriptionText.gameObject.SetActive(!string.IsNullOrEmpty(DescriptionText.text = item.Type.Description));
                 NameText.color = DescriptionText.color = Gui.Theme.UiTheme.Current.GetQualityColor(item.Type.Quality);

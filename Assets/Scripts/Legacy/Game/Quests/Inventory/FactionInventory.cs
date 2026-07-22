@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Constructor;
 using Constructor.Ships;
 using Database.Legacy;
 using Economy.ItemType;
@@ -96,6 +97,7 @@ namespace GameModel
 					BelongToFaction(_faction).
 					Common().
 					WithSizeClass(SizeClass.Frigate, extraGoods > 0 ? SizeClass.Battleship : SizeClass.Cruiser).
+					Where(item => !ThreeBodyContentRules.IsRestrictedShip(item.Ship)).
 					Random(random);
 
 				if (ship != null)

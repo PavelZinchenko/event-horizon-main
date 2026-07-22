@@ -84,6 +84,30 @@ namespace GameServices.Research
 			return true;
 		}
 
+        public bool CanResearchPath(ITechnology technology)
+        {
+            if (technology == null || technology.Hidden || IsTechResearched(technology))
+                return false;
+
+            var path = BuildResearchPath(technology);
+            if (path == null)
+                return false;
+
+            return path.Sum(item => item.Price) <= GetAvailablePoints(technology.Faction);
+        }
+
+        public bool ResearchPath(ITechnology technology)
+        {
+            if (!CanResearchPath(technology))
+                return false;
+
+            foreach (var item in BuildResearchPath(technology))
+                if (!ResearchTech(item))
+                    return false;
+
+            return true;
+        }
+
 		public int GetAvailablePoints(Faction faction)
 		{
 			return _researchPoints[faction.Id.Value];
@@ -147,7 +171,7 @@ namespace GameServices.Research
 	    {
         }
 
-        private bool IsAvailabe(ITechnology technology, bool recursive)
+		private bool IsAvailabe(ITechnology technology, bool recursive)
         {
             if (technology.Special)
                 return false;
@@ -164,6 +188,39 @@ namespace GameServices.Research
 
 			return true;
 		}
+
+        private List<ITechnology> BuildResearchPath(ITechnology technology)
+        {
+            var result = new List<ITechnology>();
+            var visiting = new HashSet<ITechnology>();
+            var visited = new HashSet<ITechnology>();
+            return AppendResearchPath(technology, visiting, visited, result) ? result : null;
+        }
+
+        private bool AppendResearchPath(
+            ITechnology technology,
+            HashSet<ITechnology> visiting,
+            HashSet<ITechnology> visited,
+            List<ITechnology> result)
+        {
+            if (IsTechResearched(technology))
+                return true;
+            if (visiting.Contains(technology) || technology.Special)
+                return false;
+            if (visited.Contains(technology))
+                return true;
+
+            visiting.Add(technology);
+
+            foreach (var requirement in technology.Requirements)
+                if (!AppendResearchPath(requirement, visiting, visited, result))
+                    return false;
+
+            visiting.Remove(technology);
+            visited.Add(technology);
+            result.Add(technology);
+            return true;
+        }
 
 		private void CheckConsistency()
 		{

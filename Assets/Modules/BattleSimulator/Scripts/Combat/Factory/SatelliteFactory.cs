@@ -105,7 +105,7 @@ namespace Combat.Factory
             return satellite;
         }
 
-        public IAuxiliaryUnit CreateRepairBot(IShip ship, float repairRate, float deviceSize, float flightRadius, float weight, float hitPoints, Color color, AudioClipId activationSound)
+        public IAuxiliaryUnit CreateRepairBot(IShip ship, float repairRate, float deviceSize, float flightRadius, float weight, float hitPoints, Color color, AudioClipId activationSound, float energyRepairRate = 0f)
         {
             var prefab = _prefabCache.LoadResourcePrefab("Combat/Objects/RepairBot");
             var gameObject = new GameObjectHolder(prefab, _objectPool, false);
@@ -120,7 +120,7 @@ namespace Combat.Factory
             var repairBot = new RepairBot(ship, body, view, collider, hitPoints);
             var radius = ship.Body.Scale * 0.5f + flightRadius;
 
-            repairBot.Controller = new RepairBotContoller(ship, repairBot, radius, repairRate);
+            repairBot.Controller = new RepairBotContoller(ship, repairBot, radius, repairRate, energyRepairRate);
             repairBot.AddResource(gameObject);
 
             repairBot.AddTrigger(new DroneExplosionActionObsolete(repairBot, _effectFactory, _soundPlayer));

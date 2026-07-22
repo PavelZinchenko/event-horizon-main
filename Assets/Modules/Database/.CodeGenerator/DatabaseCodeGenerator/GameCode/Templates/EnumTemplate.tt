@@ -1,0 +1,24 @@
+﻿<#@ template language="C#" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+namespace <#= Utils.RootNamespace #>.<#= Utils.EnumsNamespace #>
+{
+	public enum <#= EnumData.name #>
+	{
+<#	
+		foreach (var item in EnumData.items) 
+		{
+			if (string.IsNullOrEmpty(item.value)) 
+			{ 
+#>
+		<#= item.name + "," #>
+<#	
+			} else { 
+#>
+		<#=	item.name + " = " + item.value + "," #>
+<# 
+			}
+		}
+#>
+	}
+}

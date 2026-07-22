@@ -1,0 +1,49 @@
+{
+  "ItemType": 15,
+  "Id": 9,
+  "QuestType": 3,
+  "Weight": 1.0,
+  "Nodes": [
+    {
+      "Id": 1,
+      "Type": 10,
+      "RequiredView": 1,
+      "Message": "$AttackStarbase_Message",
+      "Actions": [
+        {
+          "TargetNode": 10,
+          "ButtonText": "$Attack"
+        },
+        {
+          "TargetNode": 50,
+          "ButtonText": "$Cancel"
+        }
+      ]
+    },
+    {
+      "Id": 10,
+      "Type": 51,
+      "DefaultTransition": 20,
+      "Value": -100
+    },
+    {
+      "Id": 20,
+      "Type": 22,
+      "DefaultTransition": 30,
+      "FailureTransition": 50
+    },
+    {
+      "Id": 30,
+      "Type": 60,
+      "DefaultTransition": 40
+    },
+    {
+      "Id": 40,
+      "Type": 40
+    },
+    {
+      "Id": 50,
+      "Type": 41
+    }
+  ]
+}

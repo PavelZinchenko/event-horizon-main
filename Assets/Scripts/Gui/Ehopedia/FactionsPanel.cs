@@ -7,6 +7,7 @@ using Services.ObjectPool;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using Gui.Common;
 
 namespace Gui.Ehopedia
 {
@@ -38,6 +39,7 @@ namespace Gui.Ehopedia
         public void OnFactionSelected(FactionListItem item)
         {
             _factionName.text = _localization.GetString(item.Faction.Name);
+            FactionIconUtility.Apply(_factionIcon, item.Faction, 96f);
         }
     }
 }

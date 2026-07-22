@@ -1,0 +1,21 @@
+{
+  "ItemType": 28,
+  "Id": 119,
+  "RootNode": {
+    "Type": 3,
+    "Requirement": {
+      "Type": 10,
+      "DeviceClass": 1
+    },
+    "Nodes": [
+      {
+        "Type": 50,
+        "MinValue": 0.8
+      },
+      {
+        "Type": 114,
+        "DeviceClass": 1
+      }
+    ]
+  }
+}

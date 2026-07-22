@@ -1,0 +1,17 @@
+{
+  "ItemType": 1,
+  "Id": 950,
+  "Name": "$IdealBlackbody",
+  "Description": "$IdealBlackbodyDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 2,
+  "Availability": 1,
+  "ComponentStatsId": 923,
+  "Faction": 22,
+  "Level": 100,
+  "Icon": "ideal_blackbody",
+  "Color": "#74E9FF",
+  "Layout": "1111",
+  "CellType": "2",
+  "DeviceId": 905
+}

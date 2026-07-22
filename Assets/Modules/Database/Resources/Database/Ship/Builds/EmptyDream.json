@@ -1,0 +1,41 @@
+{
+  "ItemType": 8,
+  "Id": 411,
+  "ShipId": 160,
+  "AvailableForPlayer": true,
+  "AvailableForEnemy": false,
+  "BuildFaction": 28,
+  "Components": [
+    {
+      "ComponentId": 296,
+      "X": 5,
+      "Y": 15
+    },
+    {
+      "ComponentId": 296,
+      "X": 19,
+      "Y": 15
+    },
+    {
+      "ComponentId": 297,
+      "X": 9,
+      "Y": 11
+    },
+    {
+      "ComponentId": 299,
+      "X": 15,
+      "Y": 11
+    },
+    {
+      "ComponentId": 295,
+      "X": 12,
+      "Y": 3
+    },
+    {
+      "ComponentId": 298,
+      "X": 12,
+      "Y": 20,
+      "KeyBinding": 2
+    }
+  ]
+}

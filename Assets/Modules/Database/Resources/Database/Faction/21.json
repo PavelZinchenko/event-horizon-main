@@ -1,0 +1,11 @@
+{
+  "ItemType": 14,
+  "Id": 21,
+  "Name": "$Faction21",
+  "Color": "#4FA3FF",
+  "Icon": "faction_21",
+  "HomeStarDistance": 0,
+  "HomeStarDistanceMax": 5000,
+  "WanderingShipsDistance": 0,
+  "WanderingShipsDistanceMax": 5000
+}

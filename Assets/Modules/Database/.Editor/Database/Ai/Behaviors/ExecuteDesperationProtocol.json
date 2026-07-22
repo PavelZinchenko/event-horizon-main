@@ -1,0 +1,39 @@
+{
+  "ItemType": 28,
+  "Id": 124,
+  "RootNode": {
+    "Type": 3,
+    "Nodes": [
+      {
+        "Type": 51,
+        "MinValue": 0.25
+      },
+      {
+        "Type": 2,
+        "Nodes": [
+          {
+            "Type": 1,
+            "ItemId": 102
+          },
+          {
+            "Type": 1,
+            "ItemId": 125
+          },
+          {
+            "Type": 3,
+            "Nodes": [
+              {
+                "Type": 303,
+                "Text": "wait_for_help"
+              },
+              {
+                "Type": 1,
+                "ItemId": 123
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

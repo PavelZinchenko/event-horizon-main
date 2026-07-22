@@ -1,0 +1,211 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+using System;
+using System.Collections.Generic;
+using <#= Utils.RootNamespace #>.<#= Utils.ClassesNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.StorageNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.TypesNamespace #>;
+
+namespace <#= Utils.RootNamespace #>
+{
+	public partial interface I<#= Utils.DatabaseClassName #>
+	{
+<#
+		foreach (var item in Schema.Configurations)
+        {
+#>
+		<#= Utils.DataClassName(item) + " " + item.name #> { get; }
+<#
+        }
+#>
+
+<#
+		foreach (var item in Schema.Objects)
+        {
+#>
+		IEnumerable<<#= Utils.DataClassName(item) #>> <#= Utils.ObjectListPropertyName(item.name) #> { get; }
+<#
+        }
+#>
+
+<#
+		foreach (var item in Schema.Objects)
+        {
+#>
+		<#= Utils.DataClassName(item) + " " + Utils.ObjectGetterName(item.name) #>(ItemId<<#= Utils.DataClassName(item) #>> id);
+<#
+        }
+#>
+
+        <#= Utils.ImageType #> GetImage(string name);
+        <#= Utils.AudioClipType #> GetAudioClip(string name);
+        string GetLocalization(string language);
+	}
+
+    public partial class <#= Utils.DatabaseClassName #> : I<#= Utils.DatabaseClassName #>
+    {
+		public const int VersionMajor = <#= Schema.Version.Major #>;
+		public const int VersionMinor = <#= Schema.Version.Minor #>;
+
+<#
+		foreach (var item in Schema.Configurations)
+        {
+#>
+		public <#= Utils.DataClassName(item) + " " + item.name #> { get; private set; }
+<#
+        }
+#>
+
+<#
+		foreach (var item in Schema.Objects)
+        {
+#>
+		public IEnumerable<<#= Utils.DataClassName(item) #>> <#= Utils.ObjectListPropertyName(item.name) #> => <#= DataMember(item.name) #>.Values;
+<#
+        }
+#>
+
+<#
+		foreach (var item in Schema.Objects)
+        {
+#>
+		public <#= Utils.DataClassName(item) + " " + Utils.ObjectGetterName(item.name) #>(ItemId<<#= Utils.DataClassName(item) #>> id) { return (<#= DataMember(item.name) #>.TryGetValue(id.Value, out var item)) ? item : <#= Utils.DataClassName(item) #>.DefaultValue; }
+<#
+        }
+#>
+
+        public <#= Utils.ImageType #> GetImage(string name) { return _images.TryGetValue(name, out var image) ? image : <#= Utils.EmptyImage #>; }
+        public <#= Utils.AudioClipType #> GetAudioClip(string name) { return _audioClips.TryGetValue(name, out var audioClip) ? audioClip : <#= Utils.EmptyAudioClip #>; }
+        public string GetLocalization(string language) { return _localizations.TryGetValue(language, out var data) ? data : null; }
+
+        private void Clear()
+        {
+<#
+			foreach (var item in Schema.Objects)
+			{
+#>
+			<#= DataMember(item.name) #>.Clear();
+<#
+			}
+#>
+
+<#
+			foreach (var item in Schema.Configurations)
+			{
+#>
+			<#= item.name #> = null;
+<#
+			}
+#>
+
+			_images.Clear();
+			_audioClips.Clear();
+			_localizations.Clear();
+        }
+
+<#
+		foreach (var item in Schema.Objects)
+        {
+#>
+		private readonly Dictionary<int, <#= Utils.DataClassName(item) #>> <#= DataMember(item.name) #> = new();
+<#
+        }
+#>
+	
+        private readonly Dictionary<string, <#= Utils.ImageType #>> _images = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, <#= Utils.AudioClipType #>> _audioClips = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string> _localizations = new(StringComparer.OrdinalIgnoreCase);
+
+		public class Loader
+        {
+		    public static void Load(<#= Utils.DatabaseClassName #> database, DatabaseContent content)
+            {
+				var loader = new Loader(database, content);
+				loader.Load();
+            }
+
+            private Loader(<#= Utils.DatabaseClassName #> database, DatabaseContent content)
+            {
+                _database = database;
+                _content = content;
+            }
+
+			public void Load()
+            {
+<#
+				foreach (var item in Schema.Objects)
+				{
+#>
+				foreach (var item in _content.<#= Utils.ObjectListPropertyName(item.name) #>)
+					if (!item.Disabled && !_database.<#= DataMember(item.name) #>.ContainsKey(item.Id))
+						<#= Utils.DataClassName(item) #>.Create(item, this);
+<#
+				}
+#>
+
+                foreach (var item in _content.Images)
+                    if (!_database._images.ContainsKey(item.Key))
+                        _database._images.Add(item.Key, item.Value);
+
+                foreach (var item in _content.AudioClips)
+                    if (!_database._audioClips.ContainsKey(item.Key))
+                        _database._audioClips.Add(item.Key, item.Value);
+
+                foreach (var item in _content.Localizations)
+                    if (!_database._localizations.ContainsKey(item.Key))
+                        _database._localizations.Add(item.Key, item.Value);
+
+<#
+				foreach (var item in Schema.Configurations)
+				{
+#>
+				if (_database.<#= item.name #> == null)
+					_database.<#= item.name #> = <#= Utils.DataClassName(item) #>.<#= Utils.FactoryMethodName #>(_content.<#= item.name #> ?? new <#= Utils.SerializableNamespace + "." +
+						Utils.SerializableClassName(item.name) #> { ItemType = <#= Utils.EnumsNamespace + "." + Constants.ItemTypeEnum + "." + item.name #> }, this);
+<#
+				}
+#>
+			}
+
+<#
+			foreach (var item in Schema.Objects)
+	        {
+#>
+			public <#= Utils.DataClassName(item) + " " + Utils.ObjectGetterName(item.name) #>(ItemId<<#= Utils.DataClassName(item) #>> id, bool notNull = false)
+			{
+				if (_database.<#= DataMember(item.name) #>.TryGetValue(id.Value, out var item)) return item;
+                var serializable = _content.<#= Utils.ObjectGetterName(item.name) #>(id.Value);
+                if (serializable != null && !serializable.Disabled) return <#= Utils.DataClassName(item) #>.Create(serializable, this);
+
+				var value = <#= Utils.DataClassName(item) #>.DefaultValue;
+				if (notNull && value == null) throw new DatabaseException("Data not found " + id);
+                return value;
+			}
+<#
+	        }
+#>
+
+
+<#
+			foreach (var item in Schema.Objects)
+	        {
+#>
+			public void <#= Utils.ObjectSetterName(item.name) #>(int id, <#= Utils.DataClassName(item) #> item) { _database.<#= DataMember(item.name) #>.Add(id, item); }
+<#
+	        }
+#>
+
+            private readonly DatabaseContent _content;
+			private readonly <#= Utils.DatabaseClassName #> _database;
+		}
+	}
+}
+
+<#+ 
+	private static string DataMember(string name) 
+	{ 		
+		return "_" + char.ToLower(name[0]) + name.Substring(1) + "Map"; 
+	}
+#>

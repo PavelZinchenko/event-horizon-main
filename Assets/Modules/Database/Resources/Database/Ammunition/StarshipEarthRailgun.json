@@ -1,0 +1,34 @@
+{
+  "ItemType": 25,
+  "Id": 159,
+  "Body": {
+    "Size": 1.8,
+    "Length": 3.0,
+    "Velocity": 160.0,
+    "Range": 180.0,
+    "Weight": 0.8,
+    "Color": "#B7F7FF",
+    "BulletPrefab": 2,
+    "EnergyCost": 12.0
+  },
+  "Triggers": [
+    {
+      "Condition": 3,
+      "EffectType": 1,
+      "VisualEffect": 1,
+      "AudioClip": "hit_02",
+      "Size": 2.0,
+      "Lifetime": 0.4
+    }
+  ],
+  "Effects": [
+    {
+      "DamageType": 0,
+      "Power": 140.0
+    },
+    {
+      "Type": 1,
+      "Power": 0.08
+    }
+  ]
+}

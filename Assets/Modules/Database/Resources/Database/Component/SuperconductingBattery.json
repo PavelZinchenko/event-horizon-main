@@ -1,0 +1,16 @@
+{
+  "ItemType": 1,
+  "Id": 306,
+  "Name": "$SuperconductingBattery",
+  "Description": "$SuperconductingBatteryDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 3,
+  "Availability": 1,
+  "ComponentStatsId": 294,
+  "Faction": 21,
+  "Level": 20,
+  "Icon": "starship_earth_superconducting_battery",
+  "Color": "#FFFFFF",
+  "Layout": "100100100",
+  "CellType": "0"
+}

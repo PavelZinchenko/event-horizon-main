@@ -9,7 +9,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			if (context.TargetShip == null || context.TargetShip.State != Unit.UnitState.Active)
 				return NodeState.Failure;
 
-			return context.TargetShip.Type.Side.IsEnemy(context.Ship.Type.Side) ? NodeState.Success : NodeState.Failure;
+			return CombatRelations.AreEnemies(context.TargetShip.Type, context.Ship.Type) ? NodeState.Success : NodeState.Failure;
 		}
 	}
 }

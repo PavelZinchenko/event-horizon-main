@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using Combat.Component.Platform;
 using Combat.Component.Ship;
+using Combat.Component.Systems.Devices;
 using Combat.Component.Systems.Weapons;
 using Combat.Component.Triggers;
 using Combat.Effects;
@@ -23,16 +24,31 @@ namespace Combat.Factory
 
         public IWeapon Create(IWeaponData weaponData, IWeaponPlatform platform, float hitPointsMultiplier, IShip owner)
         {
-            var bulletFactory = new BulletFactory(weaponData.Ammunition, weaponData.Stats, _scene, _services, _spaceObjectFactory, _effectFactory, owner);
+            var bulletFactory = new BulletFactory(weaponData.Ammunition, weaponData.Stats, _scene, _services, _spaceObjectFactory, _effectFactory, owner,
+                reflectableByWaterdrop: weaponData.WeaponSlotType == 'L');
             bulletFactory.Stats.HitPointsMultiplier = hitPointsMultiplier;
             var stats = weaponData.Weapon.Stats;
             stats.FireRate *= weaponData.Stats.FireRateMultiplier.Value;
+            if (weaponData.Ammunition.Id.Value == 169 || weaponData.Ammunition.Id.Value == 170)
+            {
+                var kind = weaponData.Ammunition.Id.Value == 169
+                    ? StrategicFieldEffect.FieldKind.BlackHole
+                    : StrategicFieldEffect.FieldKind.DarkDomain;
+                return CreateStrategicFieldWeapon(stats, weaponData.KeyBinding, bulletFactory, platform, owner, kind);
+            }
+            if (weaponData.Weapon.Id.Value == 137)
+                // Point defence is autonomous.  It must not reserve an action button
+                // even if an old saved layout contains a key binding.
+                return CreateInterceptorLaser(stats, -1, bulletFactory, platform, owner);
+            if (weaponData.Weapon.Id.Value == 138)
+                return CreatePointDefenseCannon(stats, -1, bulletFactory, platform, owner);
             return Create(stats, weaponData.KeyBinding, bulletFactory, platform);
         }
 
         public IWeapon Create(IWeaponDataObsolete weaponData, IWeaponPlatform platform, float hitPointsMultiplier, IShip owner)
         {
-            var bulletFactory = new BulletFactoryObsolete(weaponData.Ammunition, _scene, _services, _spaceObjectFactory, _effectFactory, owner);
+            var bulletFactory = new BulletFactoryObsolete(weaponData.Ammunition, _scene, _services,
+                _spaceObjectFactory, _effectFactory, owner, weaponData.WeaponSlotType == 'L');
             bulletFactory.Stats.HitPointsMultiplier = hitPointsMultiplier;
             return Create(weaponData.Weapon, weaponData.KeyBinding, bulletFactory, platform);
         }
@@ -120,6 +136,45 @@ namespace Combat.Factory
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private IWeapon CreateInterceptorLaser(WeaponStats weaponStats, int keyBinding, IBulletFactory bulletFactory, IWeaponPlatform platform, IShip owner)
+        {
+            var weapon = new AutoPointDefenseLaser(platform, weaponStats, bulletFactory, keyBinding, _scene, owner);
+            if (weaponStats.ShotSound)
+                weapon.AddTrigger(new SoundEffect(_services.SoundPlayer, weaponStats.ShotSound, ConditionType.OnActivate, ConditionType.OnDeactivate));
+
+            var effect = CreateEffect(weaponStats, bulletFactory);
+            if (effect != null)
+                weapon.AddTrigger(CreateFlashEffect(effect, bulletFactory, platform, ConditionType.OnActivate | ConditionType.OnRemainActive));
+
+            return weapon;
+        }
+
+        private IWeapon CreatePointDefenseCannon(WeaponStats weaponStats, int keyBinding,
+            IBulletFactory bulletFactory, IWeaponPlatform platform, IShip owner)
+        {
+            var weapon = new AutoPointDefenseCannon(platform, weaponStats, bulletFactory, keyBinding, _scene, owner);
+            if (weaponStats.ShotSound)
+                weapon.AddTrigger(new SoundEffect(_services.SoundPlayer, weaponStats.ShotSound, ConditionType.OnActivate));
+            var effect = CreateEffect(weaponStats, bulletFactory);
+            if (effect != null)
+                weapon.AddTrigger(CreateFlashEffect(effect, bulletFactory, platform));
+            return weapon;
+        }
+
+        private IWeapon CreateStrategicFieldWeapon(WeaponStats weaponStats, int keyBinding,
+            IBulletFactory bulletFactory, IWeaponPlatform platform, IShip owner,
+            StrategicFieldEffect.FieldKind kind)
+        {
+            var weapon = new StrategicFieldWeapon(platform, weaponStats, bulletFactory, keyBinding,
+                _scene, owner, kind);
+            if (weaponStats.ShotSound)
+                weapon.AddTrigger(new SoundEffect(_services.SoundPlayer, weaponStats.ShotSound, ConditionType.OnActivate));
+            var effect = CreateEffect(weaponStats, bulletFactory);
+            if (effect != null)
+                weapon.AddTrigger(CreateFlashEffect(effect, bulletFactory, platform));
+            return weapon;
         }
 
         private IEffect CreateEffect(WeaponStats weaponStats, IBulletFactory bulletFactory)

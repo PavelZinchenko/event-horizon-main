@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using CommonComponents.Utils;
+using Gui.Common;
 
 namespace Gui.Craft
 {
@@ -43,7 +44,7 @@ namespace Gui.Craft
             _techsText.text = ValueFormatter.AsMoney(price.Techs);
             var enoughTechs = _research.GetAvailablePoints(faction) >= price.Techs;
             _techsText.color = enoughTechs ? _enoughColor : _notEnoughColor;
-            _techsImage.color = faction.Color;
+            FactionIconUtility.Apply(_techsImage, faction, 36f);
 
             HaveEnoughResources = enoughTechs && enoughMoney && enoughStars;
         }

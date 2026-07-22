@@ -63,9 +63,18 @@ namespace Combat.Collision
         public float EnergyDamage;
         public float HeatDamage;
         public float CorrosiveDamage;
+        public float TrueDamage;
         public float Repair;
         public float ShieldDamage;
         public float EnergyDrain;
+        public float KineticResistancePenetration;
+        // A value of zero means "no cap".  Weapon refits use these to make a
+        // single impact evaluate a specific resistance as no higher than the
+        // stated value without changing the target's persistent stats.
+        public float KineticResistanceCap;
+        public float EnergyResistanceCap;
+        public float HeatResistanceCap;
+        public float CorrosiveResistanceCap;
         public bool IgnoresShield;
         public Impulse Impulse;
         public CollisionEffect Effects;
@@ -78,10 +87,11 @@ namespace Combat.Collision
         public float GetTotalDamage(in Resistance resistance)
         {
 			var damage =
-				resistance.ModifyKineticDamage(KineticDamage) +
-				resistance.ModifyEnergyDamage(EnergyDamage) +
-				resistance.ModifyHeatDamage(HeatDamage) +
-				resistance.ModifyCorrosiveDamage(CorrosiveDamage);
+				Resistance.ModifyDamage(KineticDamage, Mathf.Max(0f, GetCappedResistance(resistance.Kinetic, KineticResistanceCap) - KineticResistancePenetration)) +
+				Resistance.ModifyDamage(EnergyDamage, GetCappedResistance(resistance.Energy, EnergyResistanceCap)) +
+				Resistance.ModifyDamage(HeatDamage, GetCappedResistance(resistance.Heat, HeatResistanceCap)) +
+				Resistance.ModifyDamage(CorrosiveDamage, GetCappedResistance(resistance.Corrosive, CorrosiveResistanceCap)) +
+                TrueDamage;
 
             return damage;
         }
@@ -99,6 +109,8 @@ namespace Combat.Collision
                 EnergyDamage += amount;
             else if (type == DamageType.Heat)
                 HeatDamage += amount;
+            else if (type == DamageType.True)
+                TrueDamage += amount;
             else
                 throw new System.ArgumentException("unknown damage type");
         }
@@ -133,12 +145,18 @@ namespace Combat.Collision
         {
             return new Impact
             {
-                KineticDamage = KineticDamage * (1f - resistance.Kinetic),
-                EnergyDamage = EnergyDamage * (1f - resistance.Energy),
-                HeatDamage = HeatDamage * (1f - resistance.Heat),
-                CorrosiveDamage = CorrosiveDamage * (1f - 0.5f * resistance.MinResistance),
+                KineticDamage = KineticDamage * (1f - Mathf.Max(0f, GetCappedResistance(resistance.Kinetic, KineticResistanceCap) - KineticResistancePenetration)),
+                EnergyDamage = EnergyDamage * (1f - GetCappedResistance(resistance.Energy, EnergyResistanceCap)),
+                HeatDamage = HeatDamage * (1f - GetCappedResistance(resistance.Heat, HeatResistanceCap)),
+                CorrosiveDamage = CorrosiveDamage * (1f - GetCappedResistance(resistance.Corrosive, CorrosiveResistanceCap)),
+                TrueDamage = TrueDamage,
                 ShieldDamage = ShieldDamage,
                 EnergyDrain = EnergyDrain,
+                KineticResistancePenetration = KineticResistancePenetration,
+                KineticResistanceCap = KineticResistanceCap,
+                EnergyResistanceCap = EnergyResistanceCap,
+                HeatResistanceCap = HeatResistanceCap,
+                CorrosiveResistanceCap = CorrosiveResistanceCap,
                 Impulse = Impulse,
                 Repair = Repair,
                 Effects = Effects
@@ -192,6 +210,38 @@ namespace Combat.Collision
             EnergyDamage = 0;
             HeatDamage = 0;
             CorrosiveDamage = 0;
+            TrueDamage = 0;
+        }
+
+        public void SetResistanceCap(DamageType type, float cap)
+        {
+            if (cap <= 0f)
+                return;
+
+            switch (type)
+            {
+                case DamageType.Impact:
+                    KineticResistanceCap = CombineCap(KineticResistanceCap, cap);
+                    break;
+                case DamageType.Energy:
+                    EnergyResistanceCap = CombineCap(EnergyResistanceCap, cap);
+                    break;
+                case DamageType.Heat:
+                    HeatResistanceCap = CombineCap(HeatResistanceCap, cap);
+                    break;
+                case DamageType.Corrosive:
+                    CorrosiveResistanceCap = CombineCap(CorrosiveResistanceCap, cap);
+                    break;
+            }
+        }
+
+        public void ConvertAllDamageToTrue()
+        {
+            TrueDamage += KineticDamage + EnergyDamage + HeatDamage + CorrosiveDamage;
+            KineticDamage = 0;
+            EnergyDamage = 0;
+            HeatDamage = 0;
+            CorrosiveDamage = 0;
         }
 
         public void Append(in Impact second)
@@ -200,10 +250,23 @@ namespace Combat.Collision
             EnergyDamage += second.EnergyDamage;
             HeatDamage += second.HeatDamage;
             CorrosiveDamage += second.CorrosiveDamage;
+            TrueDamage += second.TrueDamage;
             ShieldDamage += second.ShieldDamage;
             Repair += second.Repair;
+            KineticResistancePenetration = Mathf.Max(KineticResistancePenetration, second.KineticResistancePenetration);
+            KineticResistanceCap = CombineCap(KineticResistanceCap, second.KineticResistanceCap);
+            EnergyResistanceCap = CombineCap(EnergyResistanceCap, second.EnergyResistanceCap);
+            HeatResistanceCap = CombineCap(HeatResistanceCap, second.HeatResistanceCap);
+            CorrosiveResistanceCap = CombineCap(CorrosiveResistanceCap, second.CorrosiveResistanceCap);
             Effects |= second.Effects;
             Impulse = Impulse == null ? second.Impulse : Impulse.Append(second.Impulse);
+        }
+
+        private static float GetCappedResistance(float resistance, float cap) => cap > 0f ? Mathf.Min(resistance, cap) : resistance;
+        private static float CombineCap(float first, float second)
+        {
+            if (second <= 0f) return first;
+            return first <= 0f ? second : Mathf.Min(first, second);
         }
     }
 }

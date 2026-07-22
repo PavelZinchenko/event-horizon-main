@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="NodeAction" type="struct" >
+    <member name="TargetNode" type="int" minvalue="1" maxvalue="1000" />
+    <member name="Requirement" type="struct" typeid="Requirement" />
+    <member name="ButtonText" type="string" />
+</data>

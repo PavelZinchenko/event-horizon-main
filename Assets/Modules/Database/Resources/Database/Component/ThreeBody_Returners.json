@@ -1,0 +1,15 @@
+{
+  "ItemType": 1,
+  "Id": 291,
+  "Name": "$ThreeBody_Returners",
+  "Description": "$ThreeBodyPlaceholderDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 6,
+  "Availability": 1,
+  "ComponentStatsId": 282,
+  "Faction": 24,
+  "Level": 1,
+  "Icon": "jammer",
+  "Color": "#FFFFFF",
+  "Layout": "1"
+}

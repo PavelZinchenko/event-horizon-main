@@ -1,0 +1,141 @@
+{
+  "ItemType": 8,
+  "Id": 311,
+  "ShipId": 137,
+  "AvailableForPlayer": false,
+  "DifficultyClass": 1,
+  "Components": [
+    {
+      "ComponentId": 170,
+      "Modification": 16,
+      "Quality": 5,
+      "X": 3
+    },
+    {
+      "ComponentId": 57,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 5,
+      "Y": 6,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 57,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 5,
+      "Y": 5,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 57,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 2,
+      "Y": 5,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 57,
+      "Modification": 11,
+      "Quality": 5,
+      "X": 2,
+      "Y": 6,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 74,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 2,
+      "Y": 3,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 2,
+      "Y": 3,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 5,
+      "Y": 4,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 67,
+      "Modification": 9,
+      "Quality": 5,
+      "X": 5,
+      "Y": 3,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 222,
+      "X": 6,
+      "Y": 5,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 222,
+      "X": 7,
+      "Y": 5,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 222,
+      "X": 7,
+      "Y": 6,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 222,
+      "Y": 6,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 222,
+      "Y": 5,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 222,
+      "X": 1,
+      "Y": 5,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 64,
+      "X": 6,
+      "Y": 4,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 64,
+      "X": 1,
+      "Y": 4,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 4,
+      "Y": 5,
+      "KeyBinding": 1
+    },
+    {
+      "ComponentId": 78,
+      "Modification": 12,
+      "Quality": 5,
+      "X": 4,
+      "Y": 3,
+      "KeyBinding": 1
+    }
+  ]
+}

@@ -3,6 +3,7 @@
   "Id": 15,
   "Name": "$Faction15",
   "Color": "#404040",
+  "Icon": "faction_15",
   "NoTerritories": true,
   "NoWanderingShips": true,
   "WanderingShipsDistance": 100,

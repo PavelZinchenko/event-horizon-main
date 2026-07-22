@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="DeviceClass">
+    <item name="Accelerator" />
+    <item name="Decoy" />
+    <item name="EnergyShield" />
+    <item name="Ghost" />
+    <item name="GravityGenerator" />
+    <item name="PartialShield" />
+    <item name="PointDefense" />
+    <item name="RepairBot" />
+    <item name="Detonator" />
+    <item name="Stealth" />
+    <item name="Teleporter" />
+    <item name="Brake" />
+    <item name="SuperStealth" />
+    <item name="Fortification" />
+    <item name="ToxicWaste" />
+    <item name="WormTail" />
+    <item name="ClonningCenter" />
+    <item name="TimeMachine" />
+    <item name="Jammer" />
+    <item name="DroneCamouflage" />
+    <item name="MissileCamouflage" />
+</data>

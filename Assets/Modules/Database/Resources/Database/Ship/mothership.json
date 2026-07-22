@@ -2,12 +2,13 @@
   "ItemType": 6,
   "Id": 83,
   "ShipType": 3,
-  "Name": "$Mothership",
+  "Name": "流浪地球",
+  "Description": "未装备常规舰船时出现的隐藏彩蛋舰船。拥有极高结构强度、超远雷达和星舰地球无人舰再生系统。",
   "Faction": 1,
   "IconImage": "mothership",
   "IconScale": 1.0,
-  "ModelImage": "mothership",
-  "ModelScale": 5.0,
+  "ModelImage": "wandering_earth_preview5",
+  "ModelScale": 14.0,
   "EngineColor": "#40FFF096",
   "Engines": [
     {
@@ -17,5 +18,12 @@
       "Size": 0.4
     }
   ],
-  "Layout": "0000220000000222200000022220000002222000010222201001022220100102222010010222201001025520100100550010"
+  "Layout": "0000220000000222200000022220000002222000010222201001022220100102222010010222201001025520100100550010",
+  "Features": {
+    "ArmorBonus": 50.0,
+    "VelocityBonus": -0.45,
+    "TurnRateBonus": -0.35,
+    "EnergyBonus": 10.0,
+    "IsFourDimensional": true
+  }
 }

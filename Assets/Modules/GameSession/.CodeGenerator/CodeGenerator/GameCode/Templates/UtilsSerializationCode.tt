@@ -1,0 +1,87 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #><#+
+
+private void WriteSerializationCode(XmlClassMember member, SchemaVersionInfo context)
+{
+	var memberName = Utils.PrivateMemberName(member.name);
+	var encoding = Utils.GetEncodingType(member.encoding);
+
+	if (member.type == Constants.TypeList)
+	{
+		WriteSerializationCode($"{memberName}.Count", Constants.TypeInt, context, encoding);
+		WriteLine($"for (int i = 0; i < {memberName}.Count; ++i)");
+		WriteLine("{");
+		PushIndent("\t");
+		WriteSerializationCode($"{memberName}[i]", member.value, context, encoding);
+		PopIndent();
+		WriteLine("}");
+	}
+	else if (member.type == Constants.TypeMap)
+	{
+		WriteSerializationCode($"{memberName}.Count", Constants.TypeInt, context, encoding);
+		WriteLine($"foreach (var item in {memberName})");
+		WriteLine("{");
+		PushIndent("\t");
+		WriteSerializationCode("item.Key", member.key, context, encoding);
+		WriteSerializationCode("item.Value", member.value, context, encoding);
+		PopIndent();
+		WriteLine("}");
+	}
+	else if (member.type == Constants.TypeInventory)
+	{
+		WriteSerializationCode($"{memberName}.Count", Constants.TypeInt, context, encoding);
+		WriteLine($"foreach (var item in {memberName})");
+		WriteLine("{");
+		PushIndent("\t");
+		WriteSerializationCode("item.Key", member.value, context, encoding);
+		WriteSerializationCode("item.Value", Constants.TypeInt, context, encoding);
+		PopIndent();
+		WriteLine("}");
+	}
+	else if (member.type == Constants.TypeSet)
+	{
+		WriteSerializationCode($"{memberName}.Count", Constants.TypeInt, context, encoding);
+		WriteLine($"foreach (var item in {memberName})");
+		WriteLine("{");
+		PushIndent("\t");
+		WriteSerializationCode("item", member.value, context, encoding);
+		PopIndent();
+		WriteLine("}");
+	}
+	else
+	{
+		WriteSerializationCode(memberName, member.type, context, encoding);
+	}
+}
+
+private void WriteSerializationCode(string memberName, string memberType, SchemaVersionInfo context, string encoding)
+{
+	if (memberType == Constants.TypeInt)
+		WriteLine($"writer.WriteInt({memberName}, {encoding});");
+	else if (memberType == Constants.TypeUint)
+		WriteLine($"writer.WriteUint({memberName}, {encoding});");
+	else if (memberType == Constants.TypeLong)
+		WriteLine($"writer.WriteLong({memberName}, {encoding});");
+	else if (memberType == Constants.TypeUlong)
+		WriteLine($"writer.WriteUlong({memberName}, {encoding});");
+	else if (memberType == Constants.TypeShort)
+		WriteLine($"writer.WriteShort({memberName}, {encoding});");
+	else if (memberType == Constants.TypeUshort)
+		WriteLine($"writer.WriteUshort({memberName}, {encoding});");
+	else if (memberType == Constants.TypeSbyte)
+		WriteLine($"writer.WriteSbyte({memberName}, {encoding});");
+	else if (memberType == Constants.TypeByte)
+		WriteLine($"writer.WriteByte({memberName}, {encoding});");
+	else if (memberType == Constants.TypeFloat)
+		WriteLine($"writer.WriteFloat({memberName}, {encoding});");
+	else if (memberType == Constants.TypeBool)
+		WriteLine($"writer.WriteBool({memberName}, {encoding});");
+	else if (memberType == Constants.TypeString)
+		WriteLine($"writer.WriteString({memberName}, {encoding});");
+	else if (memberType == Constants.TypeBitset)
+		WriteLine($"{memberName}.Serialize(writer, {encoding});");
+	else
+		WriteLine($"{memberName}.Serialize(writer);");
+}
+
+#>

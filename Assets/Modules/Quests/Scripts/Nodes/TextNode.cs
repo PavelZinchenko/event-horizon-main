@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System;
 using GameDatabase.Enums;
 using GameDatabase.Model;
 using Services.Localization;
@@ -117,6 +118,7 @@ namespace Domain.Quests
                 Message = _message,
                 CharacterName = _characterName,
                 CharacterAvatar = _characterAvatar,
+                StoryImageResource = GetStoryImageResource(_message),
                 RequiredView = _requiredView,
                 EnemyData = _enemyData,
                 Loot = _loot ?? EmptyLoot.Instance,
@@ -124,6 +126,19 @@ namespace Domain.Quests
 
             processor.ShowUiDialog(interaction);
             return true;
+        }
+
+        private static string GetStoryImageResource(string message)
+        {
+            if (string.IsNullOrEmpty(message)) return null;
+
+            var key = message.TrimStart('$');
+            const string prefix = "ThreeBodyPrologue_Image";
+            if (!key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) return null;
+
+            var suffix = key.Substring(prefix.Length);
+            if (!int.TryParse(suffix, out var index) || index < 1 || index > 6) return null;
+            return $"Textures/ThreeBodyPrologue/story_{index:00}";
         }
 
         private readonly int _id;

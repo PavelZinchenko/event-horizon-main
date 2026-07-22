@@ -1,0 +1,16 @@
+{
+  "ItemType": 1,
+  "Id": 298,
+  "Name": "$FtlDevice",
+  "Description": "$FtlDeviceDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 4,
+  "Availability": 1,
+  "ComponentStatsId": 286,
+  "Faction": -1,
+  "Level": 0,
+  "Icon": "ftl_device",
+  "Color": "#6CEBFF",
+  "Layout": "110110110",
+  "CellType": "5"
+}

@@ -2,5 +2,6 @@
   "ItemType": 14,
   "Id": 1,
   "Name": "$Faction1",
-  "Color": "#80FFFF"
+  "Color": "#80FFFF",
+  "Icon": "faction_1"
 }

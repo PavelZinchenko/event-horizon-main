@@ -1,0 +1,75 @@
+﻿<#@ template language="C#" #>
+<#@ include file="FuncParams.tt" #>
+<#@ include file="WriteDeserializationCode.tt" #>
+<#@ include file="WriteDataClassMember.tt" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+using System.Linq;
+using <#= Utils.RootNamespace #>.<#= Utils.EnumsNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.SerializableNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.TypesNamespace #>;
+
+namespace <#= Utils.RootNamespace #>.<#= Utils.ClassesNamespace #>
+{
+	public partial class <#= Utils.DataClassName(ObjectData) #>
+	{
+		public static <#= Utils.DataClassName(ObjectData) #> <#= Utils.FactoryMethodName #>(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #>.Loader loader)
+		{
+			return new <#= Utils.DataClassName(ObjectData) #>(serializable, loader);
+		}
+
+		private <#= Utils.DataClassName(ObjectData) #>(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #>.Loader loader)
+		{
+<#
+			if (ObjectType == ObjectType.Class)
+            {
+#>
+			Id = new ItemId<<#= Utils.DataClassName(ObjectData) #>>(serializable.Id);
+			loader.<#= Utils.ObjectSetterName(ObjectData.name) #>(serializable.Id, this);
+<#
+			}
+#>
+			Stats = new <#= ObjectData.name #>Stats(serializable, loader);
+		}
+
+<#
+		if (ObjectType == ObjectType.Class)
+        {
+#>
+		public readonly ItemId<<#= Utils.DataClassName(ObjectData) #>> Id;
+<#
+		}
+#>
+		public readonly <#= ObjectData.name #>Stats Stats;
+
+		public static <#= Utils.DataClassName(ObjectData) #> DefaultValue { get; private set; }<#= ObjectType == ObjectType.Struct ? " = new(new(), null);" : "" #>
+	}
+
+	public partial struct <#= ObjectData.name #>Stats 
+	{
+		partial void OnDataDeserialized(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #>.Loader loader);
+
+		public <#= ObjectData.name #>Stats(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #>.Loader loader)
+		{
+<#
+			PushIndent("\t\t\t");
+
+			foreach (var item in ObjectData.members)
+				WriteLegacyDeserializationCode(item, Schema);
+
+			PopIndent();
+#>
+
+			OnDataDeserialized(serializable, loader);
+		}
+
+<#
+		PushIndent("\t\t");
+
+		foreach (var item in ObjectData.members) 
+			WriteLegacyStructMember(item, Schema);
+
+		PopIndent();
+#>
+	}
+}

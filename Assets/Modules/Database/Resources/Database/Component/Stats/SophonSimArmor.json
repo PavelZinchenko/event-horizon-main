@@ -1,0 +1,11 @@
+{
+  "ItemType": 11,
+  "Id": 301,
+  "Type": 1,
+  "ArmorPoints": 60.0,
+  "KineticResistance": 20.0,
+  "EnergyResistance": 20.0,
+  "ThermalResistance": 20.0,
+  "CorrosiveResistance": 45.0,
+  "Weight": 20.0
+}

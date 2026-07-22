@@ -104,29 +104,39 @@ namespace Constructor
 		    if (info.Data == null)
 		        return -1;
 
+			var isOverlayTargetingUnit = info.Data.Id.Value == 91;
+			if (isOverlayTargetingUnit && (x < 0 || x >= Size || y < 0 || y >= Size))
+				return -1;
+
 			var componentSize = info.Data.Layout.Size;
-			foreach (int index in LayoutIndices(info.Data.Layout, componentSize, x, y))
+			if (!isOverlayTargetingUnit)
 			{
-				if (index < 0 || !CanInstall(info.Data, index))
-					return -1;
+				foreach (int index in LayoutIndices(info.Data.Layout, componentSize, x, y))
+				{
+					if (index < 0 || !CanInstall(info.Data, index))
+						return -1;
+				}
 			}
 
-			var barrelId = -1;
+			var barrelId = isOverlayTargetingUnit ? _layout[y * Size + x].BarrelId : -1;
 		    var componentId = _components.Count;
 		    if (desiredComponentId < 0 || desiredComponentId >= _components.Count || _components[desiredComponentId] != null)
                 _components.Add(null);
             else
                 componentId = desiredComponentId;
 
-            foreach (int index in LayoutIndices(info.Data.Layout, componentSize, x, y))
+            if (!isOverlayTargetingUnit)
 			{
-				var element = _layout[index];
-				element.ComponentId = componentId;
-				_layout[index] = element;
-				UsedSpace++;
+				foreach (int index in LayoutIndices(info.Data.Layout, componentSize, x, y))
+				{
+					var element = _layout[index];
+					element.ComponentId = componentId;
+					_layout[index] = element;
+					UsedSpace++;
 
-				if (element.BarrelId >= 0)
-					barrelId = element.BarrelId;
+					if (element.BarrelId >= 0)
+						barrelId = element.BarrelId;
+				}
 			}
 
 			_components[componentId] = new IntegratedComponent(info, x, y, barrelId, 0, 0, false);
@@ -168,6 +178,8 @@ namespace Constructor
 		{
 			if (x < 0 || x >= Size || y < 0 || y >= Size)
 				return false;
+			if (component.Id.Value == 91)
+				return true;
 
 			return CanInstall(component, y*Size + x);
 		}

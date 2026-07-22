@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="Muttering1">开始起舞吧</string>
+    <string name="Muttering2">好戏开场</string>
+    <string name="Muttering3">没有回头路</string>
+    <string name="Muttering4">绝不投降</string>
+    <string name="Muttering5">哇啊啊！</string>
+    <string name="Whining1">只是擦伤</string>
+    <string name="Whining2">他们击中我了</string>
+    <string name="Whining3">情况不妙</string>
+    <string name="Whining4">我有麻烦了</string>
+    <string name="Whining5">需要支援</string>
+    <string name="Battlecry1">为了祖国</string>
+    <string name="Battlecry2">死亦荣光</string>
+    <string name="Battlecry3">宁死不辱</string>
+    <string name="Battlecry4">冲锋！</string>
+    <string name="Battlecry5">板载！</string>
+    <string name="Provoking1">准备好输了吗？</string>
+    <string name="Provoking2">靠近点</string>
+    <string name="Provoking3">再努力点</string>
+    <string name="Provoking4">好样的！</string>
+    <string name="Provoking5">轮到你了</string>
+</resources>

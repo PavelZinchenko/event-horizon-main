@@ -1,0 +1,13 @@
+{
+  "ItemType": 11,
+  "Id": 284,
+  "Type": 1,
+  "ArmorPoints": 100000.0,
+  "ArmorRepairRate": 1000000.0,
+  "ArmorRepairCooldownModifier": -1.0,
+  "EnergyAbsorption": 1000000.0,
+  "KineticResistance": 1000000.0,
+  "EnergyResistance": 1000000.0,
+  "ThermalResistance": 1000000.0,
+  "Weight": 1.0
+}

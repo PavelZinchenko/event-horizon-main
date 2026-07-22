@@ -1,0 +1,16 @@
+{
+  "ItemType": 1,
+  "Id": 297,
+  "Name": "$QuantumLoanGenerator",
+  "Description": "$QuantumLoanGeneratorDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 3,
+  "Availability": 1,
+  "ComponentStatsId": 285,
+  "Faction": -1,
+  "Level": 0,
+  "Icon": "quantum_loan_generator",
+  "Color": "#B35CFF",
+  "Layout": "1111",
+  "CellType": "2"
+}

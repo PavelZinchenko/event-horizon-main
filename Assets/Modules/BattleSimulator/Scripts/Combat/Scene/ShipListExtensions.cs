@@ -86,7 +86,7 @@ namespace Combat.Scene
                 for (int i = 0; i < shipList.Items.Count; ++i)
                 {
                     var ship = shipList.Items[i];
-                    if (!ship.IsActive() || ship.Type.Side.IsAlly(unit.Type.Side) || ship.Features.TargetPriority == TargetPriority.None)
+                    if (!ship.IsActive() || CombatRelations.AreAllies(ship.Type, unit.Type) || ship.Features.TargetPriority == TargetPriority.None)
                         continue;
                     if (options.IgnoreDrones && ship.Type.Class == UnitClass.Drone)
                         continue;
@@ -144,7 +144,7 @@ namespace Combat.Scene
                 for (int i = 0; i < shipList.Items.Count; ++i)
                 {
                     var ship = shipList.Items[i];
-                    if (!ship.IsActive() || ship.Type.Side.IsAlly(unit.Type.Side) || ship.Features.TargetPriority == TargetPriority.None) continue;
+                    if (!ship.IsActive() || CombatRelations.AreAllies(ship.Type, unit.Type) || ship.Features.TargetPriority == TargetPriority.None) continue;
 
                     var direction = turretPosition.Direction(ship.Body.Position);
                     var distance = direction.magnitude - ship.Body.Scale/2;
@@ -194,7 +194,7 @@ namespace Combat.Scene
                 for (int i = 0; i < shipList.Items.Count; ++i)
                 {
                     var ship = shipList.Items[i];
-                    if (!ship.IsActive() || ship.Type.Side.IsAlly(unit.Type.Side))
+                    if (!ship.IsActive() || CombatRelations.AreAllies(ship.Type, unit.Type))
                         continue;
 
                     if (trueVision && ship.Type.Class == UnitClass.Decoy)

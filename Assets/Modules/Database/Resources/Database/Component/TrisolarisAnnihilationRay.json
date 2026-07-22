@@ -1,0 +1,19 @@
+{
+  "ItemType": 1,
+  "Id": 933,
+  "Name": "$TrisolarisAnnihilationRay",
+  "Description": "$TrisolarisAnnihilationRayDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 1,
+  "Availability": 1,
+  "ComponentStatsId": 306,
+  "Faction": 22,
+  "Level": 100,
+  "Icon": "trisolaris_annihilation_ray",
+  "Color": "#FFFFFF",
+  "Layout": "110110110",
+  "CellType": "4",
+  "WeaponId": 140,
+  "AmmunitionId": 165,
+  "WeaponSlotType": "L"
+}

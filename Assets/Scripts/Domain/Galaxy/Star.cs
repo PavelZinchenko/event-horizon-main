@@ -27,6 +27,8 @@ namespace Galaxy
         public bool HasStarBase => _starData.GetStarbase(_id).IsExists;
         public bool HasBookmark => _starData.HasBookmark(_id);
         public void CaptureBase() { _starData.GetStarbase(_id).Attack(); }
+        public bool PeacefulTransferBase() { return _starData.GetStarbase(_id).PeacefulTransfer(); }
+        public void DefendBase() { _starData.GetStarbase(_id).Defend(); }
         public bool IsQuestObjective => _starData.IsQuestObjective(_id);
 
         public StarContent.Occupants.Facade Occupant => _starData.GetOccupant(_id);

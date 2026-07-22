@@ -1,0 +1,15 @@
+{
+  "ItemType": 1,
+  "Id": 292,
+  "Name": "$ThreeBody_RimWorld",
+  "Description": "$ThreeBodyPlaceholderDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 6,
+  "Availability": 1,
+  "ComponentStatsId": 282,
+  "Faction": 25,
+  "Level": 1,
+  "Icon": "jammer",
+  "Color": "#FF8A4F",
+  "Layout": "1"
+}

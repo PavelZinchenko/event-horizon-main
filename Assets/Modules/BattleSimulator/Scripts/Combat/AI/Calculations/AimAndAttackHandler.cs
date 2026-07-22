@@ -3,6 +3,7 @@ using Combat.Component.Ship;
 using Combat.Ai.BehaviorTree.Utils;
 using Combat.Unit;
 using Combat.Ai.BehaviorTree;
+using Combat.Component.Unit.Classification;
 
 namespace Combat.Ai.Calculations
 {
@@ -24,6 +25,9 @@ namespace Combat.Ai.Calculations
                 var data = weaponList.List[i];
                 var weapon = data.Weapon;
                 var platform = weapon.Platform;
+                if (platform.ActiveTarget.IsActive() &&
+                    !CombatRelations.AreEnemies(ship.Type, platform.ActiveTarget.Type))
+                    platform.ActiveTarget = null;
 
                 if (!platform.ActiveTarget.IsActive() && data.Aiming != WeaponWrapper.AimingStrategy.NoAiming)
                     platform.Aim(weapon.Info.BulletSpeed, weapon.Info.Range, weapon.Info.RelativeVelocityEffect);
@@ -43,7 +47,8 @@ namespace Combat.Ai.Calculations
 
         public static State AttackWhileStandingStill(IShip ship, IShip enemy, ShipWeaponList weaponList, ShipControls controls)
         {
-            if (enemy == null || enemy.State != Unit.UnitState.Active)
+            if (enemy == null || enemy.State != Unit.UnitState.Active ||
+                !CombatRelations.AreEnemies(ship.Type, enemy.Type))
                 return State.Failed;
 
             var activated = 0;
@@ -65,7 +70,8 @@ namespace Combat.Ai.Calculations
 
         public static State AttackWithAllWeapons(IShip ship, IShip enemy, ShipWeaponList weaponList, ShipControls controls)
 		{
-            if (enemy == null || enemy.State != Unit.UnitState.Active)
+            if (enemy == null || enemy.State != Unit.UnitState.Active ||
+                !CombatRelations.AreEnemies(ship.Type, enemy.Type))
                 return State.Failed;
 
             var targetAngle = 0f;

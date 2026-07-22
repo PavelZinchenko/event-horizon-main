@@ -17,6 +17,7 @@ namespace GameDatabase.Serializable
 	{
 		public string Name;
 		public string Description;
+		public ContentSource ContentSource;
 		public ComponentCategory DisplayCategory;
 		public Availability Availability;
 		public int ComponentStatsId;

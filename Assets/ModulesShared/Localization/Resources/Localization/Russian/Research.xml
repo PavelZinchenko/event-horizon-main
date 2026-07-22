@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="Resource1">Эссенция пустоты</string>
+    <string name="Resource2">Био-наномашины</string>
+    <string name="Resource3">Инопланетные артефакты</string>
+    <string name="Resource4">Квантовый процессор</string>
+    <string name="Resource5">Эфирный камень</string>
+    <string name="StatCurrentValue">До улучшения:</string>
+    <string name="StatValueAfterUpgrade">После улучшения:</string>
+    <string name="StatUpgradeLevel">(Уровень $1)</string>
+    <string name="ResearchLabDesciption">Улучшения будут применены ко всем вашим модулям этого типа</string>
+    <string name="RecycleDesciption">Разбирайте модули, чтобы получить ценные компоненты. Чем выше качество, тем лучше результат</string>
+</resources>

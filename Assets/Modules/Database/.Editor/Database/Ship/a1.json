@@ -1,0 +1,28 @@
+{
+  "ItemType": 6,
+  "Id": 93,
+  "ShipType": 1,
+  "SizeClass": -1,
+  "Name": "Drone",
+  "IconImage": "dronea",
+  "IconScale": 0.5,
+  "ModelImage": "dronea",
+  "ModelScale": 0.5,
+  "EngineColor": "#40FFFFFF",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.8
+      },
+      "Size": 0.1
+    }
+  ],
+  "Layout": "040242515",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.5
+      }
+    }
+  ]
+}

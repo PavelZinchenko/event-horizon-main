@@ -1,0 +1,21 @@
+{
+  "ItemType": 4,
+  "Id": 902,
+  "AmmunitionClass": 28,
+  "DamageType": 2,
+  "Impulse": 0.08,
+  "Size": 1.5,
+  "InitialPosition": { "x": 0.7 },
+  "AreaOfEffect": 18.0,
+  "Damage": 7000.0,
+  "Range": 420.0,
+  "Velocity": 55.0,
+  "LifeTime": 0.45,
+  "HitPoints": 14,
+  "EnergyCost": 90.0,
+  "Color": "#FF8A20",
+  "FireSound": "shot_01",
+  "HitSound": "explosion_01",
+  "HitEffectPrefab": "Cloud",
+  "BulletPrefab": "SatelliteRocket"
+}

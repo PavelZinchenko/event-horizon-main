@@ -7,6 +7,7 @@ using Combat.Component.Unit.Classification;
 using Combat.Scene;
 using Services.Resources;
 using Zenject;
+using UnityEngine.UI;
 
 namespace Gui.Combat
 {
@@ -20,6 +21,19 @@ namespace Gui.Combat
         {
             _radars.AddRange(transform.Children<Radar>());
             _beaconRadars.AddRange(transform.Children<BeaconRadar>());
+            var minimap = new GameObject("Preview5CombatMinimap", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster), typeof(CombatMinimap));
+            minimap.transform.SetParent(transform.root, false);
+            minimap.transform.SetAsLastSibling();
+            var canvas = minimap.GetComponent<Canvas>();
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = 32000;
+            var group = minimap.AddComponent<CanvasGroup>();
+            group.interactable = true;
+            group.blocksRaycasts = true;
+            minimap.GetComponent<CombatMinimap>().Initialize(_scene);
+
+            var targetLine = new GameObject("Preview7TargetLine", typeof(CombatTargetLine));
+            targetLine.GetComponent<CombatTargetLine>().Initialize(_scene);
         }
 
         public void Add(IShip ship)

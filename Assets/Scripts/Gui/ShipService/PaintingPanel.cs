@@ -31,7 +31,8 @@ namespace Gui.ShipService
         {
             _ship = ship;
             _faction = faction;
-            _shipIcon.sprite = _resourceLocator.GetSprite(_ship.Model.ModelImage);
+            _shipIcon.sprite = PlayerShipTextureOverrides.Get(_ship.Model.Id.Value,
+                _resourceLocator.GetSprite(_ship.Model.ModelImage));
             _nameText.text = _localization.GetString(_ship.Name);
             _levelText.text = _ship.Experience.Level.ToString();
             _techIcon.color = _faction.Color;

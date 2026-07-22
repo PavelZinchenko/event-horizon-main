@@ -1,0 +1,38 @@
+{
+  "ItemType": 6,
+  "Id": 66,
+  "Name": "$fa_Scout",
+  "Faction": 9,
+  "IconImage": "fas1",
+  "IconScale": 0.7,
+  "ModelImage": "fas1",
+  "ModelScale": 1.2,
+  "EngineColor": "#40FFFFFF",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.9
+      },
+      "Size": 0.2
+    }
+  ],
+  "Layout": "000111000000222000000222000400222004400222004400030004450030054052252250003252300",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.2,
+        "y": 0.9
+      },
+      "Rotation": -3.0,
+      "WeaponClass": "L"
+    },
+    {
+      "Position": {
+        "x": 0.2,
+        "y": -0.9
+      },
+      "Rotation": 3.0,
+      "WeaponClass": "L"
+    }
+  ]
+}

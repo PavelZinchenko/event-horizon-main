@@ -49,8 +49,8 @@ namespace GameServices.Player
 		}
 
 		public bool IsOutOfFuel => _session.Resources.Fuel == 0;
-		public float FlightRange => IsOutOfFuel ? _flightRangeWithoutFuel : _playerSkills.MainFilghtRange;
-		public float FlightSpeed => IsOutOfFuel ? _speedWithoutFuel : _playerSkills.MainEnginePower;
+		public float FlightRange => (IsOutOfFuel ? _flightRangeWithoutFuel : _playerSkills.MainFilghtRange) * 5f;
+		public float FlightSpeed => (IsOutOfFuel ? _speedWithoutFuel : _playerSkills.MainEnginePower) * 10f;
 
         public int CalculateRequiredFuel(int star1, int star2)
         {

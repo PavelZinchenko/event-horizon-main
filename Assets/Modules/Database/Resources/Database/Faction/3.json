@@ -3,5 +3,6 @@
   "Id": 3,
   "Name": "$Faction3",
   "Color": "#8C8CFF",
+  "Icon": "faction_3",
   "HomeStarDistance": 20
 }

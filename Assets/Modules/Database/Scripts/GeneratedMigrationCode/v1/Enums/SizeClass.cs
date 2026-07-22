@@ -17,5 +17,6 @@ namespace DatabaseMigration.v1.Enums
 		Battleship = 3,
 		Titan = 4,
 		Starbase = 5,
+		TitanP = 6,
 	}
 }

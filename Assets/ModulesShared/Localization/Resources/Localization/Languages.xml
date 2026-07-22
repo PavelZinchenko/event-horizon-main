@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<languages>
+    <string name="English" iso="en" folder="English" icon="english" />
+    <string name="Русский" iso="ru" folder="Russian" icon="russian" />
+    <string name="Deutsch" iso="de" folder="German" icon="german" />
+    <string name="Español" iso="es" folder="Spanish" icon="spanish" />
+    <string name="Polski" iso="pl" folder="Polish" icon="polish" />
+    <string name="Française" iso="fr" folder="French" icon="french" />
+    <string name="Português" iso="pt" folder="Portuguese" icon="portuguese" />
+    <string name="한국어" iso="ko" folder="Korean" icon="korean" />
+    <string name="Türk" iso="tr" folder="Turkish" icon="turkish" />
+    <string name="Italiano" iso="it" folder="Italian" icon="italian" />
+    <string name="中文" iso="zh" folder="Chinese" icon="chinese" />
+    <string name="Հայերէն" iso="hy" folder="Armenian" icon="armenian" />
+    <string name="Magyar" iso="hu" folder="Hungarian" icon="hungarian" />
+    <string name="Čeština" iso="cs" folder="Czech" icon="czech" />
+</languages>

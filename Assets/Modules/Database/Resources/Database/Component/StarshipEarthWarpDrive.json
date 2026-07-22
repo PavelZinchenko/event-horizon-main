@@ -1,0 +1,17 @@
+{
+  "ItemType": 1,
+  "Id": 305,
+  "Name": "$StarshipEarthWarpDrive",
+  "Description": "$StarshipEarthWarpDriveDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 6,
+  "Availability": 1,
+  "ComponentStatsId": 293,
+  "Faction": 21,
+  "Level": 30,
+  "Icon": "starship_earth_warp_drive",
+  "Color": "#FFFFFF",
+  "Layout": "111111111",
+  "CellType": "2",
+  "DeviceId": 37
+}

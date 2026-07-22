@@ -8,6 +8,7 @@ using Services.Audio;
 using CommonComponents.Signals;
 using Zenject;
 using GameServices.Audio;
+using Session;
 
 namespace GameStateMachine.States
 {
@@ -24,8 +25,10 @@ namespace GameStateMachine.States
             IMusicPlayer musicPlayer,
             DatabaseMusicPlaylist playlist,
             GameServices.Economy.LootGenerator lootGenerator,
+            ISessionData session,
             
             ExitSignal exitSignal,
+            CombatRetreatSignal combatRetreatSignal,
             CombatCompletedSignal.Trigger combatCompletedTrigger)
             : base(stateMachine, stateFactory)
         {
@@ -37,9 +40,12 @@ namespace GameStateMachine.States
             _musicPlayer = musicPlayer;
             _onCompleteAction = onCompleteAction;
             _playlist = playlist;
+            _session = session;
 
             _exitSignal = exitSignal;
             _exitSignal.Event += OnCombatCompleted;
+            _combatRetreatSignal = combatRetreatSignal;
+            _combatRetreatSignal.Event += OnPlayerRetreated;
         }
 
         public override StateType Type => StateType.Combat;
@@ -51,8 +57,17 @@ namespace GameStateMachine.States
 			container.Bind<ICombatModel>().FromInstance(_combatModel);
 		}
 
-		protected override void OnLoad()
+        protected override void OnLoad()
         {
+            var region = _motherShip.CurrentStar.Region;
+            if (region != GameModel.Region.Empty && !region.IsCaptured)
+            {
+                var relation = _session.Quests.GetFactionRelations(region.HomeStar) - 1;
+                _session.Quests.SetFactionRelations(region.HomeStar, relation);
+                Combat.Component.Unit.Classification.CombatRelations.SetRelation(
+                    0, region.Faction.Id.Value, relation > 25);
+            }
+
             _playlist.SetCustomCombatPlaylist(_combatModel.Rules.CustomSoundtrack);
             _musicPlayer.Play(AudioTrackType.Combat);
         }
@@ -62,8 +77,12 @@ namespace GameStateMachine.States
 			if (Condition != GameStateCondition.Active)
 				return;
 
-            var reward = _combatModel.GetReward(_lootGenerator, _playerSkills, _motherShip.CurrentStar);
-            reward.Consume(_playerSkills);
+            IReward reward = null;
+            if (!_playerRetreated)
+            {
+                reward = _combatModel.GetReward(_lootGenerator, _playerSkills, _motherShip.CurrentStar);
+                reward.Consume(_playerSkills);
+            }
 
             var action = _onCompleteAction;
             _onCompleteAction = null;
@@ -73,10 +92,19 @@ namespace GameStateMachine.States
 
             _combatCompletedTrigger.Fire(_combatModel);
 
-            if (reward.Any())
+            if (reward != null && reward.Any())
                 ShowRewardDialog(reward);
 
-			LoadState(StateFactory.CreateStarMapState());
+			LoadState(_playerRetreated ? StateFactory.CreateRetreatState() : StateFactory.CreateStarMapState());
+        }
+
+        private void OnPlayerRetreated()
+        {
+            if (Condition != GameStateCondition.Active)
+                return;
+
+            _playerRetreated = true;
+            OnCombatCompleted();
         }
 
         private void ShowRewardDialog(IReward reward)
@@ -87,15 +115,19 @@ namespace GameStateMachine.States
         private Action<ICombatModel> _onCompleteAction;
         private readonly ICombatModel _combatModel;
         private readonly ExitSignal _exitSignal;
+        private readonly CombatRetreatSignal _combatRetreatSignal;
+        private bool _playerRetreated;
         private readonly MotherShip _motherShip;
         private readonly GameServices.Economy.LootGenerator _lootGenerator;
         private readonly IMusicPlayer _musicPlayer;
         private readonly CombatCompletedSignal.Trigger _combatCompletedTrigger;
         private readonly PlayerSkills _playerSkills;
         private readonly DatabaseMusicPlaylist _playlist;
+        private readonly ISessionData _session;
 
         public class Factory : Factory<ICombatModel, Action<ICombatModel>, CombatState> { }
     }
 
     public class CombatCompletedSignal : SmartWeakSignal<CombatCompletedSignal, ICombatModel> {}
+    public class CombatRetreatSignal : SmartWeakSignal<CombatRetreatSignal> {}
 }

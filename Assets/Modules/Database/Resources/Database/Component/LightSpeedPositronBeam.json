@@ -1,0 +1,19 @@
+{
+  "ItemType": 1,
+  "Id": 954,
+  "Name": "$LightSpeedPositronBeam",
+  "Description": "$LightSpeedPositronBeamDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 1,
+  "Availability": 1,
+  "ComponentStatsId": 927,
+  "Faction": 22,
+  "Level": 100,
+  "Icon": "positron_beam",
+  "Color": "#E8F7FF",
+  "Layout": "1111111111111111111111111",
+  "CellType": "4",
+  "WeaponId": 149,
+  "AmmunitionId": 906,
+  "WeaponSlotType": "L"
+}

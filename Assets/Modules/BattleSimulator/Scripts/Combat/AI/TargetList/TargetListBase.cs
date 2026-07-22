@@ -59,8 +59,6 @@ namespace Combat.Ai
         {
             _enemies.Clear();
             _allies.Clear();
-            var side = ship.Type.Side;
-
             lock (_scene.Ships.LockObject)
             {
                 var ships = _scene.Ships.Items;
@@ -75,7 +73,7 @@ namespace Combat.Ai
                     if (type == UnitClass.Decoy)
                         continue;
 
-                    if (target.Type.Side.IsAlly(side) && allies)
+                    if (CombatRelations.AreAllies(target.Type, ship.Type) && allies)
                     {
                         if (type == UnitClass.Drone)
                             continue;
@@ -83,7 +81,7 @@ namespace Combat.Ai
                         _allies.Add(target);
                     }
 
-                    if (target.Type.Side.IsEnemy(side) && enemies)
+                    if (CombatRelations.AreEnemies(target.Type, ship.Type) && enemies)
                     {
                         _enemies.Add(target);
                     }

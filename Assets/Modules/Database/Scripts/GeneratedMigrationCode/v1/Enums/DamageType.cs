@@ -14,5 +14,6 @@ namespace DatabaseMigration.v1.Enums
 		Energy,
 		Heat,
 		Corrosive,
+		True,
 	}
 }

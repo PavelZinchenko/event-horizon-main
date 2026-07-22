@@ -84,6 +84,7 @@ SpriteAtlas:
     - df40c485d55e7064dbf432242687ccef: 21300000
     - 3a694707adac621438690f7258e9b7ff: 21300000
     - 7216b767ecf02d542a1180fac22be4f0: 21300000
+    - 6043f57772a42f74e88ed1efe019492b: -7302165241913092457
     - d3a95dd774efd184bad0cc144fd53996: 21300000
     - 7103bde74a788924a8bd8e2694afb370: 21300000
     - 638962181fd3a294ca4ef7a0c3a7f104: 21300000
@@ -132,6 +133,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: df40c485d55e7064dbf432242687ccef, type: 3}
   - {fileID: 21300000, guid: 3a694707adac621438690f7258e9b7ff, type: 3}
   - {fileID: 21300000, guid: 7216b767ecf02d542a1180fac22be4f0, type: 3}
+  - {fileID: -7302165241913092457, guid: 6043f57772a42f74e88ed1efe019492b, type: 3}
   - {fileID: 21300000, guid: d3a95dd774efd184bad0cc144fd53996, type: 3}
   - {fileID: 21300000, guid: 7103bde74a788924a8bd8e2694afb370, type: 3}
   - {fileID: 21300000, guid: 638962181fd3a294ca4ef7a0c3a7f104, type: 3}
@@ -179,6 +181,7 @@ SpriteAtlas:
   - ui_button1
   - ui_line2
   - ui_content1
+  - boundary_studio_logo_0
   - ui_content1tl_gray
   - ui_panel1
   - ui_panel1

@@ -56,7 +56,8 @@ namespace ViewModel
 		{
 		    var researched = _research.IsTechResearched(technology);
             var available = _research.IsTechAvailable(technology);
-			ResearchButton.interactable = !researched && available && !technology.Hidden;
+			ResearchButton.interactable = !researched && !technology.Hidden &&
+			                              (available || _research.CanResearchPath(technology));
             MoreInfoButton.interactable = available;
             _selectedItem = technology;
 
@@ -86,7 +87,7 @@ namespace ViewModel
 
 		public void OnResearchButtonClicked()
 		{
-			if (_selectedItem.Hidden || !_research.ResearchTech(_selectedItem))
+			if (_selectedItem.Hidden || !_research.ResearchPath(_selectedItem))
 				return;
 
 			UpdateTree(_selectedItem.Faction);
@@ -111,6 +112,10 @@ namespace ViewModel
 
 		private void UpdateTree(Faction faction)
 		{
+			// Imported databases can contain a partial faction definition during
+			// load.  Keep the tree bound to its own faction instead of borrowing
+			// the previous tab's technologies.
+			faction ??= Faction.Empty;
 			var techTree = TechTreeBulder.Build(faction, Width, Height, _technologies, _research);
 			var nodes = CreateNodes(techTree);
             var links = GetLinks(nodes);
@@ -302,8 +307,19 @@ namespace ViewModel
 					temp.Clear();
 					
 					foreach (var tech in technologies)
-						if (tech.Requirements.All(items.ContainsKey))
-							temp.Add(tech);
+					// A dependency from another mod/faction must not make this
+					// faction's entire tree unsortable.  Only dependencies that
+					// belong to this tab take part in its placement order.
+					if (tech.Requirements.All(requirement =>
+						!technologies.Contains(requirement) || items.ContainsKey(requirement)))
+						temp.Add(tech);
+
+				if (temp.Count == 0)
+				{
+					// Broken or cross-mod dependency cycles are rendered as roots
+					// rather than silently removing the imported technology tree.
+					temp.AddRange(technologies);
+				}
 					
 					int x = 0;
 					foreach (var item in temp)
@@ -356,7 +372,12 @@ namespace ViewModel
 				{
 					foreach (var item in node.Key.Requirements)
 					{
-						var child = nodes[item];
+						// A technology may legitimately reference a prerequisite from a
+						// different faction or an optional content pack. Such a node is not
+						// part of the currently displayed tree and must not abort the whole
+						// tab with KeyNotFoundException.
+						if (!nodes.TryGetValue(item, out var child))
+							continue;
 						node.Value.Dependencies.Add(child);
 						child.Dependencies.Add(node.Value);
 					}

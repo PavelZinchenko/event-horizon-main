@@ -97,4 +97,79 @@ namespace Combat.Component.Systems.Devices
         private readonly float _power;
         private readonly IShip _ship;
     }
+
+    public sealed class DimensionalAscensionDevice : SystemBase, IDevice, IFeaturesModification
+    {
+        public DimensionalAscensionDevice(IShip ship, DeviceStats deviceSpec, int keyBinding)
+            : base(keyBinding, deviceSpec.ControlButtonIcon)
+        {
+            DeviceClass = deviceSpec.DeviceClass;
+            MaxCooldown = deviceSpec.Cooldown;
+
+            _ship = ship;
+            _activeColor = deviceSpec.Color;
+            _energyCost = deviceSpec.EnergyConsumption;
+        }
+
+        public GameDatabase.Enums.DeviceClass DeviceClass { get; }
+        public bool IsDimensionShifted => _isEnabled;
+        // This is a sustained toggle, not a one-shot 400-energy purchase.
+        // Requiring a full second's energy here made the control unavailable to
+        // otherwise valid ships.  Energy is consumed continuously below.
+        public override bool CanBeActivated => base.CanBeActivated && (_isEnabled || _ship.Stats.Energy.Value > 0.01f);
+        public override IFeaturesModification FeaturesModification => this;
+
+        public bool TryApplyModification(ref FeaturesData data)
+        {
+            if (_isEnabled)
+            {
+                data.Color *= _color;
+                data.Opacity = Mathf.Min(data.Opacity <= 0f ? 1f : data.Opacity, 0.82f);
+            }
+
+            return true;
+        }
+
+        public void Deactivate()
+        {
+            if (!_isEnabled)
+                return;
+
+            _isEnabled = false;
+            TimeFromLastUse = 0f;
+            InvokeTriggers(ConditionType.OnDeactivate);
+        }
+
+        protected override void OnUpdatePhysics(float elapsedTime)
+        {
+            if (Active && CanBeActivated && _ship.Stats.Energy.TryGet(_energyCost * elapsedTime))
+            {
+                if (!_isEnabled)
+                {
+                    InvokeTriggers(ConditionType.OnActivate);
+                    _isEnabled = true;
+                }
+
+                InvokeTriggers(ConditionType.OnRemainActive);
+            }
+            else if (_isEnabled)
+            {
+                Deactivate();
+            }
+        }
+
+        protected override void OnUpdateView(float elapsedTime)
+        {
+            var target = _isEnabled ? _activeColor : Color.white;
+            _color = Color.Lerp(_color, target, 5f * elapsedTime);
+        }
+
+        protected override void OnDispose() { }
+
+        private bool _isEnabled;
+        private Color _color = Color.white;
+        private readonly IShip _ship;
+        private readonly Color _activeColor;
+        private readonly float _energyCost;
+    }
 }

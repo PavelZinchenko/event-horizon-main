@@ -1,0 +1,15 @@
+{
+  "ItemType": 1,
+  "Id": 290,
+  "Name": "$ThreeBody_Singer",
+  "Description": "$ThreeBodyPlaceholderDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 6,
+  "Availability": 1,
+  "ComponentStatsId": 282,
+  "Faction": 23,
+  "Level": 1,
+  "Icon": "jammer",
+  "Color": "#FFD34F",
+  "Layout": "1"
+}

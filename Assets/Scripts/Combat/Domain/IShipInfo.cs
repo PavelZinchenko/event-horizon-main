@@ -20,8 +20,10 @@ namespace Combat.Domain
         float Condition { get; }
         float ActivationTime { get; }
         UnitSide Side { get; }
+        bool IsCollaborativeAlly { get; }
 
         void Create(Factory.ShipFactory factory, Vector2 position, int aiLevel);
         void Destroy();
+        void RestoreForNextActivation(float armorPercentage);
     }
 }

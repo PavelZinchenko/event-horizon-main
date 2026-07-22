@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="NodeTransition" type="struct" >
+    <member name="TargetNode" type="int" minvalue="1" maxvalue="1000" />
+    <member name="Requirement" type="struct" typeid="Requirement" />
+    <member name="Weight" type="float" minvalue="0" maxvalue="1000" />
+</data>

@@ -1,4 +1,5 @@
 ﻿using Combat.Component.Ship;
+using Combat.Component.Ship.Effects;
 
 namespace Combat.Ai.BehaviorTree.Nodes
 {
@@ -19,12 +20,19 @@ namespace Combat.Ai.BehaviorTree.Nodes
 
 		public NodeState Evaluate(Context context)
 		{
-			if (context.TargetShip != null && IsValidEnemy(context.TargetShip, context))
+			if (RadarStatus.IsJammed(context.Ship))
+			{
+				context.TargetShip = null;
+				_lastEnemy = null;
+				return NodeState.Failure;
+			}
+
+			if (context.TargetShip != null && !RadarStatus.IsStealthedFrom(context.TargetShip, context.Ship) && IsValidEnemy(context.TargetShip, context))
 			{
 				_lastEnemy = context.TargetShip;
 				_lastEnemyUpdateTime = context.LastTargetUpdateTime;
 			}
-			else if (_lastEnemy != null && IsValidEnemy(_lastEnemy, context))
+			else if (_lastEnemy != null && !RadarStatus.IsStealthedFrom(_lastEnemy, context.Ship) && IsValidEnemy(_lastEnemy, context))
 			{
 				context.TargetShip = _lastEnemy;
 				context.LastTargetUpdateTime = _lastEnemyUpdateTime;
@@ -43,7 +51,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			var newEnemy = FindNewEnemy(context);
 			context.LastTargetUpdateTime = _lastEnemyUpdateTime = context.Time;
 			
-			if (IsValidEnemy(newEnemy, context))
+			if (newEnemy != null && !RadarStatus.IsStealthedFrom(newEnemy, context.Ship) && IsValidEnemy(newEnemy, context))
 			{
 				context.TargetShip = _lastEnemy = newEnemy;
 				return NodeState.Success;

@@ -52,11 +52,13 @@ namespace Constructor.Model
         float EnergyResistance { get; }
         float KineticResistance { get; }
         float ThermalResistance { get; }
+        float CorrosiveResistance { get; }
 
         float EnergyAbsorptionPercentage { get; }
         float KineticResistancePercentage { get; }
         float EnergyResistancePercentage { get; }
         float ThermalResistancePercentage { get; }
+        float CorrosiveResistancePercentage { get; }
 
         float ShieldCorrosiveResistancePercentage { get; }
 
@@ -87,7 +89,7 @@ namespace Constructor.Model
         public StatMultiplier SizeMultiplier { get; set; }
 
         public StatMultiplier DamageMultiplier => Bonuses.DamageMultiplier * BaseStats.DamageMultiplier.Value;
-        public StatMultiplier ArmorMultiplier => Bonuses.ArmorPointsMultiplier * BaseStats.ArmorMultiplier;
+        public StatMultiplier ArmorMultiplier => Bonuses.ArmorPointsMultiplier * BaseStats.ArmorMultiplier * EquipmentStats.ThreeBodyArmorMultiplier;
         public StatMultiplier ShieldMultiplier => Bonuses.ShieldPointsMultiplier * BaseStats.ShieldMultiplier;
 
         public IShipLayout Layout => BaseStats.Layout;
@@ -155,6 +157,16 @@ namespace Constructor.Model
             }
         }
 
+        public float CorrosiveResistance
+        {
+            get
+            {
+                var resistanceBonus = _ship.Features.CorrosiveResistance;
+                var resistance = EquipmentStats.CorrosiveResistance * ArmorMultiplier.Value;
+                return resistance + (ArmorPoints + resistance) * resistanceBonus;
+            }
+        }
+
         public float EngineEnergyConsumption => EquipmentStats.EngineEnergyConsumption;
 
         public float ShieldCorrosiveResistancePercentage => ShipSettings.ShieldCorrosiveResistance;
@@ -167,6 +179,7 @@ namespace Constructor.Model
         public float KineticResistancePercentage => KineticResistance / (ArmorPoints + KineticResistance);
         public float EnergyResistancePercentage => EnergyResistance / (ArmorPoints + EnergyResistance);
         public float ThermalResistancePercentage => ThermalResistance / (ArmorPoints + ThermalResistance);
+        public float CorrosiveResistancePercentage => CorrosiveResistance / (ArmorPoints + CorrosiveResistance);
 
         public float Weight
         {

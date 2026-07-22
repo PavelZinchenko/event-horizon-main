@@ -29,6 +29,7 @@ namespace GameDatabase.DataModel
 
 			Name = serializable.Name;
 			Color = new ColorData(serializable.Color);
+			Icon = serializable.Icon;
 			NoTerritories = serializable.NoTerritories;
 			HomeStarDistance = UnityEngine.Mathf.Clamp(serializable.HomeStarDistance, 0, 5000);
 			HomeStarDistanceMax = UnityEngine.Mathf.Clamp(serializable.HomeStarDistanceMax, 0, 5000);
@@ -46,6 +47,7 @@ namespace GameDatabase.DataModel
 
 		public string Name { get; private set; }
 		public ColorData Color { get; private set; }
+		public string Icon { get; private set; }
 		public bool NoTerritories { get; private set; }
 		public int HomeStarDistance { get; private set; }
 		public int HomeStarDistanceMax { get; private set; }

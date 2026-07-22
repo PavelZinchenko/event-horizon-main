@@ -20,6 +20,7 @@ namespace Combat.Component.Features
     {
         TargetPriority TargetPriority { get; }
         bool ImmuneToEffects { get; }
+        bool Invulnerable { get; }
         float ChanceToAvoidDrone { get; }
         float ChanceToAvoidMissile { get; }
         Color Color { get; }

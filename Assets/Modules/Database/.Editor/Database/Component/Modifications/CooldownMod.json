@@ -1,0 +1,25 @@
+{
+  "ItemType": 12,
+  "Id": 6,
+  "Description": "$CooldownMod",
+  "Modifications": [
+    {
+      "Type": 40,
+      "Gray3": 2.0,
+      "Gray2": 1.5,
+      "Gray1": 1.2,
+      "Green": 0.9,
+      "Purple": 0.75,
+      "Gold": 0.5
+    },
+    {
+      "Type": 3,
+      "Gray3": 0.5,
+      "Gray2": 0.66667,
+      "Gray1": 0.83333,
+      "Green": 1.11111,
+      "Purple": 1.33333,
+      "Gold": 2.0
+    }
+  ]
+}

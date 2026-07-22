@@ -5,18 +5,24 @@ using Combat.Component.Features;
 using Combat.Component.Body;
 using Combat.Component.Collider;
 using Combat.Component.Controls;
+using Combat.Component.Bullet;
+using Combat.Component.Controller;
 using Combat.Component.Engine;
 using Combat.Component.Physics;
 using Combat.Component.Stats;
 using Combat.Component.Systems;
+using Combat.Component.Systems.Devices;
 using Combat.Component.Unit;
 using Combat.Component.View;
 using Combat.Component.Platform;
 using Combat.Component.Ship.Effects;
+using Combat.Component.Ship.Effects.Special;
 using Combat.Component.Unit.Classification;
 using Combat.Component.Triggers;
 using Combat.Unit;
+using Combat.Unit.Object;
 using Constructor;
+using UnityEngine;
 
 namespace Combat.Component.Ship
 {
@@ -42,6 +48,8 @@ namespace Combat.Component.Ship
             AddResource(Stats = stats);
             _state = UnitState.Active;
             Specification = spec;
+            if (spec.Info.Id.Value == 166)
+                _effects.TryAdd(new WaterdropHaloEffect());
         }
 
         public override UnitState State => _state;
@@ -66,8 +74,116 @@ namespace Combat.Component.Ship
             InvokeTriggers(ConditionType.OnHit);
         }
 
+        public bool TryHandleWaterdropCollision(IUnit target, CollisionData collisionData)
+        {
+            if (Specification.Info.Id.Value != 166 || target == null || !target.IsActive())
+                return false;
+
+            if (target is Combat.Component.Bullet.Bullet laser && target.Type.Owner != this &&
+                laser.IsReflectableByWaterdrop &&
+                (laser.Controller is BeamController || laser.Controller is MovingBeamController))
+            {
+                // Calculate a surface normal from the actual contact point and
+                // redirect the intact beam.  Changing Owner before it travels
+                // on makes all later damage and kill credit belong to 水滴.
+                var normal = (collisionData.Position - Body.WorldPosition()).normalized;
+                if (normal.sqrMagnitude < 0.0001f)
+                    normal = -target.Body.WorldVelocity().normalized;
+
+                var velocity = target.Body.WorldVelocity();
+                var incomingDirection = velocity.sqrMagnitude > 0.001f
+                    ? velocity.normalized
+                    : target.Type.Owner != null && target.Type.Owner.IsActive()
+                        ? (collisionData.Position - target.Type.Owner.Body.WorldPosition()).normalized
+                        : -normal;
+                var reflectedDirection = Vector2.Reflect(incomingDirection, normal).normalized;
+                var reflectedRotation = RotationHelpers.Angle(reflectedDirection);
+
+                // Detach the beam controller from its original weapon and
+                // relocate its origin to the reflection point.  The live beam
+                // now travels and deals damage as a projectile owned by 水滴.
+                laser.Controller?.Dispose();
+                laser.Controller = null;
+                if (target.Body.Parent != null)
+                {
+                    target.Body.Move(target.Body.WorldPositionToLocal(collisionData.Position + reflectedDirection * 0.05f));
+                    target.Body.Turn(target.Body.WorldRotationToLocal(reflectedRotation));
+                }
+                else
+                {
+                    target.Body.Move(collisionData.Position + reflectedDirection * 0.05f);
+                    target.Body.Turn(reflectedRotation);
+                }
+                target.Type.Owner = this;
+                target.Type.FactionId = Type.FactionId;
+                if (laser.Collider != null)
+                {
+                    laser.Collider.Unit = laser;
+                    laser.Collider.Source = this;
+                }
+                var reflectedSpeed = Mathf.Max(velocity.magnitude, 180f);
+                target.Body.ApplyAcceleration(reflectedDirection * reflectedSpeed - target.Body.Velocity);
+                WaterdropHaloEffect.ShowReflection(collisionData.Position, reflectedDirection, Body.WorldScale());
+                return true;
+            }
+
+            if (target is Combat.Component.Bullet.Bullet projectile)
+            {
+                // Missiles must follow the normal collision/detonation path so
+                // their area thermal damage is created and can damage 水滴.
+                if (projectile.Type.Class == UnitClass.Missile)
+                    return false;
+
+                // Resolve the projectile as the attacking unit even when the
+                // physics callback reports the ship first.  Without this, a
+                // single-hit shot damaged 水滴 but never ran its own destroy
+                // action and appeared to pass straight through indefinitely.
+                var projectileImpact = new Impact();
+                var waterdropImpact = new Impact();
+                projectile.CollisionBehaviour?.Process(projectile, this, collisionData,
+                    ref projectileImpact, ref waterdropImpact);
+                projectile.OnCollision(projectileImpact, this, collisionData);
+                OnCollision(waterdropImpact, projectile, collisionData);
+                if (collisionData.IsNew && projectile.IsActive() &&
+                    projectile.Type.Class == UnitClass.EnergyBolt)
+                    projectile.Vanish();
+                return true;
+            }
+
+            if (target is Asteroid)
+            {
+                var impact = new Impact();
+                impact.Effects |= CollisionEffect.Destroy;
+                target.OnCollision(impact, this, collisionData);
+                return true;
+            }
+
+            if (CombatRelations.AreEnemies(Type, target.Type))
+            {
+                var impact = new Impact();
+                impact.AddDamage(GameDatabase.Enums.DamageType.Impact, 10000f);
+                target.OnCollision(impact, this, collisionData);
+
+                // Penetration no longer makes 水滴 collision-invulnerable.
+                // It receives a compact ramming hit while retaining its
+                // straight-through trajectory.
+                var selfImpact = new Impact();
+                var collisionDamage = Mathf.Max(1f,
+                    collisionData.RelativeVelocity.magnitude * Mathf.Max(1f, target.Body.Weight) * 0.1f);
+                selfImpact.AddDamage(GameDatabase.Enums.DamageType.Impact, collisionDamage);
+                OnCollision(selfImpact, target, collisionData);
+                return true;
+            }
+
+            return false;
+        }
+
         public void Affect(Impact impact, IUnit source)
         {
+            var dimensional = impact.TrueDamage > 0f ||
+                              (source != null && ShipStats.IsFourDimensionalUnit(source));
+            if (Features.Invulnerable && !dimensional)
+                return;
             impact.ApplyImpulse(Body);
             Stats.ApplyDamage(impact, this, source);
 
@@ -77,12 +193,78 @@ namespace Combat.Component.Ship
         protected override void OnUpdatePhysics(float elapsedTime)
         {
             var hasEnergy = Stats.Energy.Value > 0;
+            RestoreSteeringAuthority(elapsedTime);
             Engine.Course = Controls.Course;
             Engine.Throttle = Controls.Throttle;
             Engine.Update(elapsedTime, Body, hasEnergy);
 
             Features.UpdatePhysics(elapsedTime, Collider);
             UpdateSystems(elapsedTime);
+            ApplyVelocityLimit();
+        }
+
+        private void RestoreSteeringAuthority(float elapsedTime)
+        {
+            foreach (var system in Systems.All)
+                if (system is WarpDrive warpDrive && warpDrive.IsWarping)
+                    return;
+
+            var limit = EffectiveVelocityLimit();
+            if (limit <= 0f || float.IsInfinity(limit) || float.IsNaN(limit))
+                return;
+
+            var velocity = Body.Velocity;
+            var speed = velocity.magnitude;
+            if (speed < limit * 0.98f || speed < 0.001f)
+                return;
+
+            // At (or above) the cap, propulsion alone can no longer rotate a
+            // large externally-applied velocity vector reliably. Rotate the
+            // velocity toward the requested course at the ship's normal turn
+            // rate, then clamp it before the engine update. This restores
+            // steering without granting extra speed or affecting warp travel.
+            var desiredCourse = Controls.Course ?? Body.Rotation;
+            var currentCourse = RotationHelpers.Angle(velocity);
+            var steeringRate = Mathf.Max(15f, Engine.MaxAngularVelocity);
+            var steeredCourse = Mathf.MoveTowardsAngle(currentCourse, desiredCourse,
+                steeringRate * Mathf.Max(0f, elapsedTime));
+            var limited = RotationHelpers.Direction(steeredCourse) * Mathf.Min(speed, limit);
+            if (Body is RigidBodyAdapter rigidBody)
+                rigidBody.Velocity = limited;
+            else
+                Body.ApplyAcceleration(limited - velocity);
+        }
+
+        private void ApplyVelocityLimit()
+        {
+            foreach (var system in Systems.All)
+                if (system is WarpDrive warpDrive && warpDrive.IsWarping)
+                    return;
+
+            var limit = EffectiveVelocityLimit();
+            var velocity = Body.Velocity;
+            if (velocity.sqrMagnitude <= limit * limit)
+                return;
+
+            var limited = velocity.normalized * limit;
+            if (Body is RigidBodyAdapter rigidBody)
+                rigidBody.Velocity = limited;
+            else
+                Body.ApplyAcceleration(limited - velocity);
+        }
+
+        private float EffectiveVelocityLimit()
+        {
+            var engineLimit = Engine?.MaxVelocity ?? 0f;
+            var combatLimit = Type.Side == UnitSide.Player
+                ? PlayerPrefs.GetInt(EngineThrottleKey, 0) != 0
+                    ? Mathf.Clamp(PlayerPrefs.GetFloat(EngineThrottleLimitKey, 40f), 20f, 120f)
+                    : float.PositiveInfinity
+                : Specification.Info.Id.Value == 166 ? 60f : 40f;
+
+            if (engineLimit <= 0f || float.IsNaN(engineLimit))
+                return combatLimit;
+            return Mathf.Min(engineLimit, combatLimit);
         }
 
         protected override void OnUpdateView(float elapsedTime)
@@ -181,6 +363,8 @@ namespace Combat.Component.Ship
         }
 
         private UnitState _state;
+        private const string EngineThrottleKey = "Preview14.EngineThrottle";
+        private const string EngineThrottleLimitKey = "Preview18.EngineThrottleLimit";
         private readonly ShipSystems _systems;
         private readonly ShipEffects _effects;
     }

@@ -29,6 +29,7 @@ namespace GameDatabase.DataModel
 
 			Name = serializable.Name;
 			Description = serializable.Description;
+			ContentSource = serializable.ContentSource;
 			DisplayCategory = serializable.DisplayCategory;
 			Availability = serializable.Availability;
 			Stats = loader?.GetComponentStats(new ItemId<ComponentStats>(serializable.ComponentStatsId)) ?? ComponentStats.DefaultValue;
@@ -56,6 +57,7 @@ namespace GameDatabase.DataModel
 
 		public string Name { get; private set; }
 		public string Description { get; private set; }
+		public ContentSource ContentSource { get; private set; }
 		public ComponentCategory DisplayCategory { get; private set; }
 		public Availability Availability { get; private set; }
 		public ComponentStats Stats { get; private set; }

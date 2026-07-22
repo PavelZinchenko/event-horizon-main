@@ -118,6 +118,18 @@
       "X": 5,
       "Y": 1,
       "KeyBinding": -1
+    },
+    {
+      "ComponentId": 920,
+      "X": 4,
+      "Y": 5,
+      "KeyBinding": 0
+    },
+    {
+      "ComponentId": 913,
+      "X": 5,
+      "Y": 5,
+      "KeyBinding": -1
     }
   ],
   "NotAvailableInGame": true

@@ -10,5 +10,6 @@ namespace Combat.Component.Systems.Weapons
         float PowerLevel { get; }
         IBullet ActiveBullet { get; }
         void Aim();
+        void SetCaptainDamageMultiplier(float multiplier);
     }
 }

@@ -15,7 +15,8 @@
 	url = https://github.com/PavelZinchenko/event-horizon-session-code-generator
 [submodule "Assets/ModulesShared"]
 	path = Assets/ModulesShared
-	url = https://github.com/PavelZinchenko/event-horizon-modules
+	url = https://github.com/V0idream/eventhorizon-ThreeBodyversion.git
+	branch = modules-shared-preview5
 [submodule "Assets/Modules/Database/Plugins/NVorbis"]
 	path = Assets/Modules/Database/Plugins/NVorbis
 	url = https://github.com/PavelZinchenko/NVorbis

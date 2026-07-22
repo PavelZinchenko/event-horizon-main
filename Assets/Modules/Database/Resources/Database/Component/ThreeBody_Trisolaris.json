@@ -1,0 +1,15 @@
+{
+  "ItemType": 1,
+  "Id": 289,
+  "Name": "$ThreeBody_Trisolaris",
+  "Description": "$ThreeBodyPlaceholderDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 6,
+  "Availability": 1,
+  "ComponentStatsId": 282,
+  "Faction": 22,
+  "Level": 1,
+  "Icon": "jammer",
+  "Color": "#FFFFFF",
+  "Layout": "1"
+}

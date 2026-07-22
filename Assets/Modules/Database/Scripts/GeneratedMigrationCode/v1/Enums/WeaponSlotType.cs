@@ -11,10 +11,10 @@ namespace DatabaseMigration.v1.Enums
 	public enum WeaponSlotType
 	{
 		Default,
-		Cannon = 'C',
-		Torpedo = 'T',
-		Missile = 'M',
-		Laser = 'L',
-		Special = 'S',
+		Cannon,
+		Torpedo,
+		Missile,
+		Laser,
+		Special,
 	}
 }

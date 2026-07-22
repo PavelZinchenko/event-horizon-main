@@ -27,6 +27,7 @@ namespace GameDatabase.DataModel
 			EnergyResistance = UnityEngine.Mathf.Clamp(serializable.EnergyResistance, -100f, 100f);
 			KineticResistance = UnityEngine.Mathf.Clamp(serializable.KineticResistance, -100f, 100f);
 			HeatResistance = UnityEngine.Mathf.Clamp(serializable.HeatResistance, -100f, 100f);
+			CorrosiveResistance = UnityEngine.Mathf.Clamp(serializable.CorrosiveResistance, -100f, 100f);
 			ShipWeightBonus = UnityEngine.Mathf.Clamp(serializable.ShipWeightBonus, -1f, 100f);
 			EquipmentWeightBonus = UnityEngine.Mathf.Clamp(serializable.EquipmentWeightBonus, -1f, 100f);
 			VelocityBonus = UnityEngine.Mathf.Clamp(serializable.VelocityBonus, -1f, 100f);
@@ -38,6 +39,7 @@ namespace GameDatabase.DataModel
 			DroneAttackBonus = UnityEngine.Mathf.Clamp(serializable.DroneAttackBonus, -1f, 100f);
 			DroneDefenseBonus = UnityEngine.Mathf.Clamp(serializable.DroneDefenseBonus, -1f, 100f);
 			Regeneration = serializable.Regeneration;
+			IsFourDimensional = serializable.IsFourDimensional;
 			BuiltinDevices = new ImmutableCollection<Device>(serializable.BuiltinDevices?.Select(item => loader.GetDevice(new ItemId<Device>(item), true)));
 
 			OnDataDeserialized(serializable, loader);
@@ -46,6 +48,7 @@ namespace GameDatabase.DataModel
 		public float EnergyResistance { get; private set; }
 		public float KineticResistance { get; private set; }
 		public float HeatResistance { get; private set; }
+		public float CorrosiveResistance { get; private set; }
 		public float ShipWeightBonus { get; private set; }
 		public float EquipmentWeightBonus { get; private set; }
 		public float VelocityBonus { get; private set; }
@@ -57,6 +60,7 @@ namespace GameDatabase.DataModel
 		public float DroneAttackBonus { get; private set; }
 		public float DroneDefenseBonus { get; private set; }
 		public bool Regeneration { get; private set; }
+		public bool IsFourDimensional { get; private set; }
 		public ImmutableCollection<Device> BuiltinDevices { get; private set; }
 
 		public static ShipFeatures DefaultValue { get; private set; }= new(new(), null);

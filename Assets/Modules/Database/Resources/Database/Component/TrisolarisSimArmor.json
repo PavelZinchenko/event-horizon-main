@@ -1,0 +1,16 @@
+{
+  "ItemType": 1,
+  "Id": 931,
+  "Name": "$TrisolarisSimArmor",
+  "Description": "$TrisolarisSimArmorDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 2,
+  "Availability": 1,
+  "ComponentStatsId": 304,
+  "Faction": 22,
+  "Level": 100,
+  "Icon": "trisolaris_sim_armor",
+  "Color": "#FFFFFF",
+  "Layout": "1111",
+  "CellType": "1"
+}

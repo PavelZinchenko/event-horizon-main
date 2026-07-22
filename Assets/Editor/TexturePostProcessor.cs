@@ -11,6 +11,34 @@ class CollisionMapGenerator : AssetPostprocessor
 	{
 		var importer = (assetImporter as TextureImporter);
 
+        var isShipSprite =
+            assetPath.StartsWith("Assets/Sprites/Ships/") ||
+            assetPath.StartsWith("Assets/Sprites/ShipIcons/") ||
+            assetPath.StartsWith("Assets/Sprites/Starbases/");
+        var isGameSprite =
+            isShipSprite ||
+            assetPath.StartsWith("Assets/Sprites/Components/") ||
+            assetPath.StartsWith("Assets/Sprites/Satellites/") ||
+            assetPath.StartsWith("Assets/Resources/Textures/UI/");
+
+        // PNG files added outside the Unity editor otherwise import as ordinary
+        // textures and never reach ResourceLocator. Enforce the complete sprite
+        // import contract for every game-art folder.
+        if (isGameSprite)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.alphaSource = TextureImporterAlphaSource.FromInput;
+            importer.alphaIsTransparency = true;
+            importer.mipmapEnabled = false;
+        }
+
+        if (isShipSprite)
+        {
+            importer.GetSourceTextureWidthAndHeight(out var width, out var height);
+            importer.spritePixelsPerUnit = Mathf.Max(width, height);
+        }
+
         if (importer.spritePackingTag.EndsWith(".dither"))
 		{
 			_texturesToDither.Add(assetPath);

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="WeaponSlotType">
+    <item name="Default" />
+    <item name="Cannon">'C'</item>
+    <item name="Torpedo">'T'</item>
+    <item name="Missile">'M'</item>
+    <item name="Laser">'L'</item>
+    <item name="Special">'S'</item>
+</data>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="PlayerRating">玩家舰队评分：</string>
+    <string name="ArenaRating">对手舰队评分：</string>
+    <string name="ConnectionError">无法连接到服务器，请稍后再试。</string>
+    <string name="ArenaTraining">与你自己的船只进行练习战斗。</string>
+    <string name="ArenaFight">挑战这个对手。</string>
+    <string name="ArenaShop">选择你的奖励。</string>
+    <string name="ArenaFindOpponent">寻找对手。</string>
+    <string name="ArenaEmptyFleet">你的机库中没有任何船只。</string>
+    <string name="ArenaShipNotAllowed">某些船被禁用。</string>
+    <string name="ArenaBattlesAvailable">剩余 $1 ${1|次|次}可挑战</string>
+    <string name="ArenaMoreBattles">买十次挑战次数</string>
+    <string name="ArenaShipReady">准备战斗</string>
+    <string name="ArenaShipNotReady">不允许</string>
+    <string name="ArenaWatchAd">观看视频</string>
+    <string name="PlayerRatingDescription">显示玩家进攻其他玩家舰队时的实力</string>
+    <string name="ArenaRatingDescription">显示你的舰队抵御其他玩家进攻时的防守效能</string>
+    <string name="ArenaRegistrationRequired">你尚未在竞技场注册。</string>
+    <string name="ArenaSignInRequired">开始前请先登录账户。</string>
+    <string name="ArenaOpponent">对手：</string>
+    <string name="NoTicketsText">你的竞技场挑战次数已用尽</string>
+    <string name="Leaderboard">名人堂</string>
+    <string name="CheaterLeaderboard">耻辱榜</string>
+    <string name="Anonymous">匿名玩家</string>
+    <string name="ArenaPrice">苍穹奖杯</string>
+    <string name="SelectArenaShip">选择你的舰船</string>
+    <string name="RatingUnknown">--</string>
+    <string name="ArenaPlayerSettings">玩家设置</string>
+    <string name="FleetUploadTime">距上次舰队更新：</string>
+    <string name="FleetUploadTimeDescription">你的舰队上次上传到服务器后经过的时间；其他玩家会遇到这支舰队。</string>
+    <string name="ArenaCheaterWarning">检测到对手可能作弊，系统已上报。仍要继续战斗吗？否则可以跳过该对手。</string>
+</resources>

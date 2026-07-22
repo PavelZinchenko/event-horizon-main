@@ -8,7 +8,7 @@
   "BaseEnergyRechargeRate": 0.1,
   "EnergyRechargeCooldown": 1.0,
   "ShieldRechargeCooldown": 4.0,
-  "MaxVelocity": 40.0,
+  "MaxVelocity": 100000.0,
   "MaxAngularVelocity": 40.0,
   "MaxAcceleration": 400.0,
   "MaxAngularAcceleration": 400.0,

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Technology" type="object" typeid="Technology" switch="Type" >
+    <member name="Type" type="enum" typeid="TechType" />
+    <member name="ItemId" alias="Component" type="object" typeid="Component" case="Component" options="notnull" />
+    <member name="ItemId" alias="Satellite" type="object" typeid="Satellite" case="Satellite" options="notnull" />
+    <member name="ItemId" alias="Ship" type="object" typeid="Ship" case="Ship" options="notnull" />
+    <member name="Faction" type="object" typeid="Faction" case="Component,Satellite" />
+    <member name="Price" type="int" minvalue="0" maxvalue="10000" />
+    <member name="Hidden" type="bool" />
+    <member name="Special" type="bool" />
+    <member name="Dependencies" type="object_list" typeid="Technology" />
+</data>

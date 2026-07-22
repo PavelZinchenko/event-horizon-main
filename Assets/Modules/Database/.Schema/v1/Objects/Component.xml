@@ -2,6 +2,7 @@
 <data name="Component" type="object" typeid="Component" >
     <member name="Name" type="string" />
     <member name="Description" type="string" />
+    <member name="ContentSource" type="enum" typeid="ContentSource" />
     <member name="DisplayCategory" type="enum" typeid="ComponentCategory" />
     <member name="Availability" type="enum" typeid="Availability" />
     <member name="ComponentStatsId" type="object" typeid="ComponentStats" alias="Stats" options="notnull" />

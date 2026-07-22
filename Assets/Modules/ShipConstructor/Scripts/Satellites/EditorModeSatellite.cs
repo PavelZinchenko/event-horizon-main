@@ -51,8 +51,9 @@ namespace Constructor.Satellites
 
         private InstalledComponent ToDatabaseModel(IntegratedComponent component)
         {
-            return new InstalledComponent(component.Info.Data, component.Info.ModificationType, 
-                component.Info.ModificationQuality, component.X, component.Y, component.BarrelId, component.Behaviour, component.KeyBinding);
+            return new InstalledComponent(component.Info.Data, component.Info.ModificationType,
+                component.Info.ModificationQuality, component.X, component.Y, component.BarrelId, component.Behaviour,
+                component.KeyBinding, component.Rotation);
         }
 	}
 }

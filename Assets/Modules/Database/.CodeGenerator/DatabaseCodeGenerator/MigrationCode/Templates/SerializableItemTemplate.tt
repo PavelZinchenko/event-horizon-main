@@ -1,0 +1,18 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+using System;
+using <#= Utils.RootNamespace #>.<#= Schema.Version.ToNamespace() #>.<#= Utils.EnumsNamespace #>;
+
+namespace <#= Utils.RootNamespace #>.<#= Schema.Version.ToNamespace() #>.<#= Utils.SerializableNamespace #>
+{
+    [Serializable]
+    public class SerializableItem
+    {
+	    public string FileName { get; set; }
+        public <#= Constants.ItemTypeEnum #> ItemType;
+        public int Id;
+        public bool Disabled;
+    }
+}

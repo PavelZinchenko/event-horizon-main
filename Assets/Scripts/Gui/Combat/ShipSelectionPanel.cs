@@ -17,6 +17,10 @@ namespace Gui.Combat
         [SerializeField] private ShipList _enemyShips;
         [SerializeField] private ShipList _playerShips;
 
+        // CombatManager must not resume its automatic replacement-ship flow while
+        // the player is deciding which ready ship to deploy.
+        public bool IsOpen => Window.IsVisible;
+
         public void Open(ICombatModel combatModel)
         {
             if (Window.IsVisible)

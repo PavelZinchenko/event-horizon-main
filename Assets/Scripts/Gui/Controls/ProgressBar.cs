@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Gui.Controls
@@ -15,6 +15,15 @@ namespace Gui.Controls
         [Range(0.0f, 1.0f)] public float Y1 = 1;
 
         public override Texture mainTexture { get { return _image != null ? _image.texture : base.mainTexture; } }
+
+        public void UseSolidTexture()
+        {
+            if (_image == null)
+                return;
+
+            _image = null;
+            SetAllDirty();
+        }
 
         protected override void OnPopulateMesh(VertexHelper vertexHelper)
         {

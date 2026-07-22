@@ -18,7 +18,14 @@ namespace GameModel
 			Id = Mathf.Max(id, 0);
 			OwnerId = Id;
 
-			if (Id == 0 || Id == PlayerHomeRegionId || isPirateBase)
+            if (Id == PlayerHomeRegionId)
+            {
+                _faction = _database.GetFaction(new GameDatabase.Model.ItemId<GameDatabase.DataModel.Faction>(StarshipEarthFactionId));
+                Size = RegionLayout.RegionFourthSize * 2 - 1;
+                _session.Regions.SetRegionFactionId(Id, _faction.Id);
+                EnsureInitialRelations(_faction);
+            }
+			else if (Id == 0 || isPirateBase)
 			{
 				_faction = Faction.Empty;
 			    Size = 0;
@@ -83,7 +90,7 @@ namespace GameModel
 			get
 			{
                 if (!_session.Regions.TryGetStarbaseDefensePower(Id, out var power))
-                    power = (uint)_database.FactionsSettings.StarbaseInitialDefense(HomeStarLevel);
+                    power = (uint)_database.FactionsSettings.StarbaseInitialDefense(NaturalHomeStarLevel);
 
 				return (int)power;
 			}
@@ -94,8 +101,31 @@ namespace GameModel
             }
 		}
 
-        public int BaseDefendersLevel => HomeStarLevel * BaseDefensePower / 100;
-		public int HomeStarLevel => Mathf.RoundToInt(StarLayout.GetStarPosition(HomeStar, _session.Game.Seed).magnitude);
+        public int BaseDefendersLevel => Mathf.Max(1, NaturalHomeStarLevel * BaseDefensePower / 100);
+
+        // The original game derives station services directly from galactic
+        // distance, so improving a captured station's defence never raises its
+        // shipyard or workshop level.  Captured stations now expose their
+        // upgraded defence level as the effective home-star level while keeping
+        // the immutable map distance for initial generation.
+        public int HomeStarLevel => IsCaptured
+            ? Mathf.Max(NaturalHomeStarLevel, BaseDefendersLevel)
+            : NaturalHomeStarLevel;
+
+        /// <summary>
+        /// Captured station services must advance independently of the original
+        /// map-distance level calculation.  Raise the persisted defence value
+        /// enough that the effective level increases by at least one.
+        /// </summary>
+        public void RaiseCapturedServiceLevel()
+        {
+            var nextLevel = HomeStarLevel + 1;
+            var requiredPower = Mathf.CeilToInt(nextLevel * 100f / Mathf.Max(1, NaturalHomeStarLevel));
+            BaseDefensePower = Mathf.Max(BaseDefensePower + 1, requiredPower);
+        }
+
+        private int NaturalHomeStarLevel =>
+            Mathf.RoundToInt(StarLayout.GetStarPosition(HomeStar, _session.Game.Seed).magnitude);
 
 		public Faction Faction
 		{
@@ -104,14 +134,16 @@ namespace GameModel
 			    if (_faction != null)
 			        return _faction;
 
-				if (_session.Regions.TryGetRegionFactionId(Id, out var factionId))
+                if (_session.Regions.TryGetRegionFactionId(Id, out var factionId))
                 {
 					_faction = _database.GetFaction(factionId);
+					EnsureInitialRelations(_faction);
 					return _faction;
 				}
 
 			    _faction = _database.FactionList.WithStarbases(HomeStarLevel).RandomElement(new System.Random(HomeStar + _session.Game.Seed));
 			    _session.Regions.SetRegionFactionId(Id, _faction.Id);
+			    EnsureInitialRelations(_faction);
 
                 return _faction;
 			}
@@ -120,9 +152,21 @@ namespace GameModel
 				if (value == _faction) return;
                 _faction = value;
 				_session.Regions.SetRegionFactionId(Id, value.Id);
+				EnsureInitialRelations(value);
 				_baseCapturedTrigger.Fire(this);
             }
-		}
+        }
+
+        private void EnsureInitialRelations(Faction faction)
+        {
+            if (faction == null || faction == Faction.Empty || _session.Quests.HasFactionRelations(HomeStar))
+                return;
+
+            var value = faction.Id.Value == TrisolarisFactionId
+                ? -50
+                : faction.Id.Value >= StarshipEarthFactionId ? 50 : -50;
+            _session.Quests.SetFactionRelations(HomeStar, value);
+        }
 
 		public int HomeStar
 		{
@@ -155,6 +199,8 @@ namespace GameModel
 
         public const int UnoccupiedRegionId = 0;
 		public const int PlayerHomeRegionId = 1;
+        public const int StarshipEarthFactionId = 21;
+        public const int TrisolarisFactionId = 22;
 
 	    public static readonly Region Empty = new Region();
 	}

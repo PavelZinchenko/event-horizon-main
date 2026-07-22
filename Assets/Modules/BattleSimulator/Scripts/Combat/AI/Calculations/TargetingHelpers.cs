@@ -1,7 +1,9 @@
 ﻿using Combat.Component.Body;
 using Combat.Component.Features;
 using Combat.Component.Ship;
+using Combat.Component.Ship.Effects;
 using Combat.Component.Systems.Weapons;
+using Combat.Unit;
 using UnityEngine;
 
 namespace Combat.Ai.Calculations
@@ -10,13 +12,17 @@ namespace Combat.Ai.Calculations
     {
         public static bool CantDetectTarget(IShip ship, IShip enemy)
         {
-            if (enemy == null)
+            if (ship == null || enemy == null || !ship.IsActive() || !enemy.IsActive())
+                return true;
+            if (!RadarStatus.CanDetect(ship, enemy))
                 return true;
             if (enemy.Features.TargetPriority != TargetPriority.None)
                 return false;
 
-            var distance = Helpers.Distance(ship, enemy);
-            return distance > 5 + enemy.Body.Scale;
+            // Preview 4: the old fixed five-unit limit was smaller than most
+            // useful weapon ranges and made otherwise visible targets impossible
+            // to lock. Combat radar now covers the complete battle area.
+            return false;
         }
 
         public static bool TryGetProjectileTarget(IWeapon weapon, IShip ship, IShip enemy, out Vector2 target, out float distance)

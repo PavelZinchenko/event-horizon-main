@@ -16,6 +16,7 @@ using GameServices.Economy;
 using GameServices.GameManager;
 using GameServices.Gui;
 using GameServices.Multiplayer;
+using GameServices.Captains;
 using GameServices.Player;
 using GameServices.Quests;
 using GameServices.Random;
@@ -89,6 +90,8 @@ namespace Installers
             Container.BindInterfacesTo<SignalsTranslator>().AsSingle().NonLazy();
 
             BindPlayerData();
+            Container.BindInterfacesAndSelfTo<MultiplayerSession>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<CaptainService>().AsSingle().NonLazy();
             BindQuestManager();
             BindStarContent();
             BindDatabase();
@@ -264,7 +267,9 @@ namespace Installers
             Container.BindSignal<StartQuickBattleSignal>();
             Container.BindTrigger<StartQuickBattleSignal.Trigger>();
             Container.BindSignal<ExitSignal>();
+            Container.BindSignal<CombatRetreatSignal>();
             Container.BindTrigger<ExitSignal.Trigger>();
+            Container.BindTrigger<CombatRetreatSignal.Trigger>();
             Container.BindSignal<OpenSkillTreeSignal>();
             Container.BindTrigger<OpenSkillTreeSignal.Trigger>();
 			Container.BindSignal<OpenShipEditorSignal>();

@@ -9,16 +9,27 @@ namespace Services.Assets
     {
         public void LoadMusicBundle(Action<IMusicPlaylist> onCompleteAction) 
         {
-            var assetBundle = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, _bundleName));
+            var bundlePath = Path.Combine(Application.streamingAssetsPath, _bundleName);
+            // Android StreamingAssets live inside the APK and use a jar: URI.
+            // File.Exists cannot inspect that URI, while AssetBundle.LoadFromFile can.
+            if (!bundlePath.Contains("://") && !File.Exists(bundlePath))
+            {
+                Debug.LogWarning($"Optional music AssetBundle is missing: {bundlePath}");
+                onCompleteAction?.Invoke(null);
+                return;
+            }
+
+            var assetBundle = AssetBundle.LoadFromFile(bundlePath);
             if (assetBundle == null)
             {
-                Debug.LogError("Failed to load AssetBundle!");
+                Debug.LogWarning($"Optional music AssetBundle could not be loaded: {bundlePath}");
+                onCompleteAction?.Invoke(null);
                 return;
             }
 
             _musicAsset = assetBundle;
             var playlist = _musicAsset.LoadAsset<MusicPlaylist>(_assetName);
-            onCompleteAction.Invoke(playlist);
+            onCompleteAction?.Invoke(playlist);
         }
 
         public Status Status => Status.Idle;

@@ -1,0 +1,16 @@
+{
+  "ItemType": 1,
+  "Id": 935,
+  "Name": "$TrisolarisAntimatterBattery",
+  "Description": "$TrisolarisAntimatterBatteryDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 3,
+  "Availability": 1,
+  "ComponentStatsId": 308,
+  "Faction": 22,
+  "Level": 85,
+  "Icon": "trisolaris_antimatter_battery",
+  "Color": "#FFFFFF",
+  "Layout": "1111",
+  "CellType": "0"
+}

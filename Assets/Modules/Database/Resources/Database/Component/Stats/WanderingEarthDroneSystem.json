@@ -1,0 +1,11 @@
+{
+  "ItemType": 11,
+  "Id": 920,
+  "Type": 1,
+  "Weight": 100.0,
+  "DronesBuiltPerSecond": 0.35,
+  "DroneBuildTimeModifier": -0.75,
+  "DroneDefenseModifier": 1.5,
+  "DroneDamageModifier": 0.5,
+  "DroneRangeModifier": 4.0
+}

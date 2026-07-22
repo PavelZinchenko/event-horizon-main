@@ -1,0 +1,18 @@
+{
+  "ItemType": 1,
+  "Id": 920,
+  "Name": "行星无人舰释放系统",
+  "Description": "流浪地球隐藏装置，可持续再生并释放星舰地球巡洋舰。",
+  "ContentSource": 1,
+  "DisplayCategory": 5,
+  "Availability": 0,
+  "ComponentStatsId": 920,
+  "Faction": 21,
+  "Level": 100,
+  "Icon": "dronebay3",
+  "Color": "#FFFFFF",
+  "Layout": "1",
+  "CellType": "2",
+  "DroneBayId": 5,
+  "DroneId": 414
+}

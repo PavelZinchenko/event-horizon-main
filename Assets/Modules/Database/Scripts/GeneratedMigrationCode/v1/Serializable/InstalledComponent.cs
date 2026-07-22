@@ -23,5 +23,6 @@ namespace DatabaseMigration.v1.Serializable
 		public int BarrelId;
 		public int Behaviour;
 		public int KeyBinding;
+		public int Rotation;
 	}
 }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DatabaseEditor": {
+      "commandName": "Project",
+      "workingDirectory": "D:\\Projects\\event-horizon-main\\Assets\\Modules\\Database\\Resources\\Database"
+    }
+  }
+}

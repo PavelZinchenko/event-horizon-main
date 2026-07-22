@@ -85,19 +85,7 @@ namespace Installers
             Container.BindSignal<ServerTimeReceivedSignal>();
             Container.BindTrigger<ServerTimeReceivedSignal.Trigger>();
 
-#if LICENSE_OPENSOURCE
             Container.BindInterfacesTo<EmptyAccount>().AsSingle();
-#elif UNITY_EDITOR
-			Container.BindInterfacesTo<EditorModeAccount>().AsSingle();
-#elif UNITY_ANDROID && !NO_GPGS
-            Container.BindInterfacesTo<GoogleAccount>().AsSingle();
-#elif UNITY_IPHONE
-            Container.BindInterfacesTo<GameCenterAccount>().AsSingle();
-#elif UNITY_STANDALONE
-            Container.BindInterfacesTo<SteamAccount>().AsSingle();
-#else
-            Container.BindInterfacesTo<EmptyAccount>().AsSingle();
-#endif
 
 #if LICENSE_OPENSOURCE
             Container.BindInterfacesTo<PlayerPrefsStorage>().AsSingle();
@@ -118,16 +106,7 @@ namespace Installers
 #endif
             Container.Bind<ISavegameExporter>().To<SaveGameExporterStub>().AsSingle().IfNotBound();
 
-#if LICENSE_OPENSOURCE
             Container.BindInterfacesTo<EmptyCloudStorage>().AsSingle();
-#elif UNITY_ANDROID && !UNITY_EDITOR && !NO_GPGS
-            Container.BindInterfacesTo<Services.GooglePlay.GooglePlayServices>().AsSingle().NonLazy();
-            Container.BindInterfacesTo<GoogleCloudStorage>().AsSingle().NonLazy();
-#elif UNITY_IPHONE && !UNITY_EDITOR
-            Container.BindInterfacesTo<AppleCloudStorage>().AsSingle();
-#else
-            Container.BindInterfacesTo<EmptyCloudStorage>().AsSingle();
-#endif
 
 #if ADS_DISABLED || LICENSE_OPENSOURCE
             Container.BindInterfacesTo<AdsManagerStub>().AsSingle().NonLazy();

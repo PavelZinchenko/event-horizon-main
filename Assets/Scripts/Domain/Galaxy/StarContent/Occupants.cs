@@ -11,6 +11,7 @@ using Session.Content;
 using Model.Military;
 using Zenject;
 using PlayerFleet = GameServices.Player.PlayerFleet;
+using Combat.Component.Unit.Classification;
 
 namespace Galaxy.StarContent
 {
@@ -105,7 +106,10 @@ namespace Galaxy.StarContent
 
 		    var builder = _combatModelBuilderFactory.Create();
 		    builder.PlayerFleet = Model.Factories.Fleet.Player(_playerFleet, _database);
-		    builder.EnemyFleet = CreateFleet(starId);
+            var enemyFleet = CreateFleet(starId);
+		    builder.EnemyFleet = enemyFleet;
+            foreach (var ship in enemyFleet.Ships)
+                CombatRelations.SetRelation(0, ship.Model.Faction.Id.Value, false);
             builder.Rules = _database.CombatSettings.DefaultCombatRules;
 
             if (region.Id > Region.PlayerHomeRegionId)

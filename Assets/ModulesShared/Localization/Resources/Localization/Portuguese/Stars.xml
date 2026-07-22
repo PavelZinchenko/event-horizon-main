@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+<string name="PlanetTypeGas">Gas</string>
+<string name="PlanetTypeBarren">Estéril</string>
+<string name="PlanetTypeTerran">Terranos</string>
+<string name="PlanetTypeAsteroids">Cinto de asteroides</string>
+<string name="StarInfo">$1\nDefensa: $2</string>
+<string name="CapturedStarInfo">$1\nNível: $2</string>
+<string name="ExtractionLabel">Coleta...</string>
+<string name="AddNote">Adicionar nota</string>
+<string name="PlanetTemperature">Temperatura</string>
+<string name="PlanetToxicity">Toxicidade</string>
+<string name="PlanetHostility">Hostilidade</string>
+<string name="ExplorationProgress">Explorado: $1%</string>
+<string name="ExploredItems">Objectos explorados:</string>
+
+</resources>

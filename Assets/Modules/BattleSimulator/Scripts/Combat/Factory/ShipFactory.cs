@@ -78,7 +78,7 @@ namespace Combat.Factory
 
             var stats = spec.Stats;
 
-            var shipGameObject = CreateShipObject(stats, spec.Stats.ShipColor);
+            var shipGameObject = CreateShipObject(stats, spec.Stats.ShipColor, unitSide);
             var body = CreateBody(shipGameObject, stats, position, rotation);
             var collider = CreateCollider(shipGameObject);
             var view = CreateView(shipGameObject);
@@ -90,6 +90,8 @@ namespace Combat.Factory
                 new Ship(spec, unitSide, body, view, shipStats, collider, physics);
 
             ship.AddResource(shipGameObject);
+            if (unitSide == UnitSide.Ally && !isDrone)
+                shipGameObject.AddComponent<AllyShipMarker>();
 
             if (!_settings.NoDamageIndicator && !isDrone)
                 shipStats.DamageIndicator = new DamageIndicator(ship, _effectFactory, unitSide == UnitSide.Player ? 0.75f : 0.5f);
@@ -197,7 +199,12 @@ namespace Combat.Factory
 
 		public Ship CreateEnemyShip(IShipSpecification spec, Vector2 position, float rotation, int aiLevel)
         {
-            return CreateShip(spec, _controllerFactory.CreateDefaultAiController(aiLevel, spec.CustomAi), UnitSide.Enemy, position, rotation);
+            return CreateAiShip(spec, position, rotation, aiLevel, UnitSide.Enemy);
+        }
+
+        public Ship CreateAiShip(IShipSpecification spec, Vector2 position, float rotation, int aiLevel, UnitSide side)
+        {
+            return CreateShip(spec, _controllerFactory.CreateDefaultAiController(aiLevel, spec.CustomAi), side, position, rotation);
         }
 
         public Ship CreatePlayerShip(IShipSpecification spec, Vector2 position, float rotation)
@@ -233,6 +240,14 @@ namespace Combat.Factory
             return ship;
         }
 
+        public Ship CreatePlayerStarbase(IShipSpecification spec, Vector2 position, float rotation)
+        {
+            var ship = CreateShip(spec, _controllerFactory.CreateKeyboardController(), position, rotation, null,
+                UnitSide.Player, _settings.Shadows);
+            ship.Engine = new StarbaseEngine(10f);
+            return ship;
+        }
+
         public Ship CreateTurret(IShipSpecification spec, Vector2 position, float rotation, UnitSide side)
         {
             var ship = CreateShip(spec, _controllerFactory.CreateStarbaseController(spec.CustomAi, true), position, rotation, null, side, false);
@@ -241,6 +256,11 @@ namespace Combat.Factory
         }
 
         public GameObjectHolder CreateShipObject(IShipStats stats, ColorScheme colorScheme)
+        {
+            return CreateShipObject(stats, colorScheme, UnitSide.Undefined);
+        }
+
+        private GameObjectHolder CreateShipObject(IShipStats stats, ColorScheme colorScheme, UnitSide unitSide)
         {
             GameObjectHolder gameObject;
             var prefab = _prefabCache.LoadResourcePrefab("Combat/Ships/" + stats.ShipModel.ModelImage.Id, true);
@@ -252,8 +272,8 @@ namespace Combat.Factory
             {
                 prefab = _prefabCache.LoadResourcePrefab("Combat/Ships/Default");
                 gameObject = new GameObjectHolder(prefab, _objectPool, false);
-                var sprite = _resourceLocator.GetSprite(stats.ShipModel.ModelImage);
-                gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
+                gameObject.GetComponent<SpriteRenderer>().sprite =
+                    _resourceLocator.GetSprite(stats.ShipModel.ModelImage);
 
                 if (stats.ShipModel.SizeClass == SizeClass.Undefined)
                     gameObject.AddComponent<CircleCollider2D>();
@@ -262,6 +282,23 @@ namespace Combat.Factory
                     var collider = gameObject.AddComponent<PolygonCollider2D>();
                     collider.Optimize(stats.ShipModel.ColliderTolerance);
                 }
+            }
+
+            if (unitSide == UnitSide.Player && PlayerShipTextureOverrides.HasOverride(stats.ShipModel.Id.Value))
+            {
+                var fallback = _resourceLocator.GetSprite(stats.ShipModel.ModelImage);
+                var overrideSprite = PlayerShipTextureOverrides.Get(stats.ShipModel.Id.Value, fallback);
+                var renderer = gameObject.GetComponent<SpriteRenderer>(true);
+                if (renderer != null)
+                    renderer.sprite = overrideSprite;
+            }
+            else if (unitSide == UnitSide.Enemy)
+            {
+                var fallback = _resourceLocator.GetSprite(stats.ShipModel.ModelImage);
+                var overrideSprite = PlayerShipTextureOverrides.GetRemote(stats.ShipModel.Id.Value, fallback);
+                var renderer = gameObject.GetComponent<SpriteRenderer>(true);
+                if (renderer != null && overrideSprite != null)
+                    renderer.sprite = overrideSprite;
             }
 
             gameObject.GetComponent<ICollider>().Initialize(_collisionManager);

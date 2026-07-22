@@ -151,6 +151,32 @@ public static class NativeFilePicker
 		AJC.CallStatic( "OpenSettings", Context );
 #endif
 	}
+
+	/// <summary>
+	/// Opens Android's Storage Access Framework directly.  ACTION_OPEN_DOCUMENT
+	/// grants access to the selected URI and does not require broad storage
+	/// permission on any supported Android version.  The bundled picker used to
+	/// gate this call behind READ_EXTERNAL_STORAGE; Android 13 permanently
+	/// denies that legacy permission, so the file window never appeared.
+	/// </summary>
+	public static Permission PickFileWithForcedPermission( FilePickedCallback callback, params string[] allowedFileTypes )
+	{
+#if !UNITY_EDITOR && UNITY_ANDROID
+		if( allowedFileTypes == null || allowedFileTypes.Length == 0 )
+			allowedFileTypes = new string[] { "*/*" };
+		if( !IsFilePickerBusy() )
+		{
+			AJC.CallStatic( "PickFiles", Context,
+				new FPResultCallbackAndroid( callback, null, null ), false,
+				SelectedFilePath, allowedFileTypes, "" );
+			return Permission.Granted;
+		}
+
+		return Permission.Denied;
+#else
+		return PickFile( callback, allowedFileTypes );
+#endif
+	}
 	#endregion
 
 	#region Helper Functions

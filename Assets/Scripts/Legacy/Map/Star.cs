@@ -94,7 +94,13 @@ public class Star : MonoBehaviour
 
 			if (star.HasStarBase)
 			{
-				AddIcon(FactionIconPrefab).GetComponent<StarIcon>().SetColor(color);
+				var factionIcon = AddIcon(FactionIconPrefab).GetComponent<StarIcon>();
+				var iconName = star.Region.Faction.Icon;
+				var iconTexture = string.IsNullOrEmpty(iconName)
+					? null
+					: Resources.Load<Texture2D>("Textures/Factions/" + iconName);
+				factionIcon.SetTexture(iconTexture);
+				factionIcon.SetColor(iconTexture != null ? Color.white : color);
 				AddStarInfo(star);
 			    _showMiniStarOnGalaxyMap = false;
 			}
@@ -269,15 +275,16 @@ public class Star : MonoBehaviour
 		if (string.IsNullOrEmpty(name))
 			name = star.Name;
 
+		var factionName = _localization.GetString(star.Region.Faction.Name);
 		if (star.Region.IsCaptured)
 		{
 			textMesh.color = new Color(0.5f,1f,1f);
-			textMesh.text = _localization.GetString("$CapturedStarInfo", name, Mathf.Max(star.Level,5));
+			textMesh.text = factionName + "\n" + _localization.GetString("$CapturedStarInfo", name, Mathf.Max(star.Level,5));
 		}
 		else
 		{
 			textMesh.color = new Color(1f,0.75f,0.5f);
-			textMesh.text = _localization.GetString("$StarInfo", name, star.Region.BaseDefensePower + "%");
+			textMesh.text = factionName + "\n" + _localization.GetString("$StarInfo", name, star.Region.BaseDefensePower + "%");
 		}
 
 		return item;

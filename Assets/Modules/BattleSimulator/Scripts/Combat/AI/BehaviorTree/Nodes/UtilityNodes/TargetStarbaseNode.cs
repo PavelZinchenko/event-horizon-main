@@ -58,7 +58,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
             if (target.Specification == null) return false;
             if (target.State != UnitState.Active) return false;
             if (target.Specification.Stats.ShipModel.SizeClass != GameDatabase.Enums.SizeClass.Starbase) return false;
-            if (ally == target.Type.Side.IsEnemy(ship.Type.Side)) return false;
+            if (ally == CombatRelations.AreEnemies(target.Type, ship.Type)) return false;
             return true;
         }
     }

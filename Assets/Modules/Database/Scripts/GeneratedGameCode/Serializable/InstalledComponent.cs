@@ -23,5 +23,6 @@ namespace GameDatabase.Serializable
 		public int BarrelId;
 		public int Behaviour;
 		public int KeyBinding;
+		public int Rotation;
 	}
 }

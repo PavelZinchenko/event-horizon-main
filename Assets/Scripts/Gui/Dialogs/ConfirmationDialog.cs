@@ -1,4 +1,4 @@
-﻿using Gui.Windows;
+using Gui.Windows;
 using Services.Gui;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,5 +18,6 @@ namespace Gui.Dialogs
         {
             GetComponent<AnimatedWindow>().Close(WindowExitCode.Ok);
         }
+
     }
 }

@@ -3,6 +3,6 @@
   "Id": 91,
   "EnergyRechargeRate": -1.0,
   "Weight": 10.0,
-  "AutoAimingArc": 20.0,
-  "TurretTurnSpeed": 10.0
+  "AutoAimingArc": 45.0,
+  "TurretTurnSpeed": 90.0
 }

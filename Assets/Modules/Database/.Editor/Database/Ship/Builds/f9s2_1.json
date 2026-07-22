@@ -1,0 +1,148 @@
+{
+  "ItemType": 8,
+  "Id": 149,
+  "ShipId": 60,
+  "AvailableForPlayer": false,
+  "DifficultyClass": 1,
+  "Components": [
+    {
+      "ComponentId": 56,
+      "X": 3,
+      "Y": 6,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 56,
+      "X": 5,
+      "Y": 6,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 57,
+      "X": 5,
+      "Y": 8,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 57,
+      "X": 4,
+      "Y": 7,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 57,
+      "X": 3,
+      "Y": 8,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 74,
+      "X": 3,
+      "Y": 4,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 63,
+      "X": 3,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 5,
+      "Y": 1,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 5,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 6,
+      "Y": 7,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 6,
+      "Y": 6,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 6,
+      "Y": 5,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 2,
+      "Y": 7,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 2,
+      "Y": 6,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 64,
+      "X": 2,
+      "Y": 5,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 66,
+      "X": 3,
+      "Y": 2,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 67,
+      "X": 3,
+      "Y": 4,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 67,
+      "X": 5,
+      "Y": 4,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 67,
+      "X": 5,
+      "Y": 3,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 67,
+      "X": 5,
+      "Y": 2,
+      "KeyBinding": -1
+    },
+    {
+      "ComponentId": 99,
+      "X": 1,
+      "Y": 7
+    },
+    {
+      "ComponentId": 101,
+      "X": 7,
+      "Y": 7,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 103,
+      "X": 6,
+      "Y": 4,
+      "BarrelId": 1
+    },
+    {
+      "ComponentId": 104,
+      "Y": 4
+    }
+  ]
+}

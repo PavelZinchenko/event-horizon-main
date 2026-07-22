@@ -1,0 +1,19 @@
+{
+  "ItemType": 1,
+  "Id": 295,
+  "Name": "$TearTheStars",
+  "Description": "$TearTheStarsDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 1,
+  "Availability": 1,
+  "ComponentStatsId": 283,
+  "Faction": -1,
+  "Level": 0,
+  "Icon": "tear_the_stars",
+  "Color": "#B35CFF",
+  "Layout": "1100110011001100",
+  "CellType": "4",
+  "WeaponId": 132,
+  "AmmunitionId": 157,
+  "WeaponSlotType": "D"
+}

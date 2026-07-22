@@ -1,0 +1,120 @@
+﻿<#@ template language="C#" #>
+<#@ include file="Serialization.tt" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+using System.Linq;
+using <#= Utils.RootNamespace #>.<#= Utils.EnumsNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.SerializableNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.TypesNamespace #>;
+
+namespace <#= Utils.RootNamespace #>.<#= Utils.ClassesNamespace #>
+{
+	public partial class <#= Utils.DataClassName(ObjectData) #>
+	{
+		partial void OnDataDeserialized(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #> database);
+		partial void OnDataSerialized(ref <#= Utils.SerializableClassName(ObjectData.name) #> serializable);
+
+		public static <#= Utils.DataClassName(ObjectData) #> Create(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #> database)
+		{
+			if (serializable == null) return DefaultValue;
+			return new <#= Utils.DataClassName(ObjectData) #>(serializable, database);
+		}
+<#
+		if (ObjectType == ObjectType.Struct)
+        {
+#>
+
+		public <#= Utils.DataClassName(ObjectData) #>() {}
+<#
+        }
+#>
+
+		private <#= Utils.DataClassName(ObjectData) #>(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #> database)
+		{
+<#
+			if (ObjectType == ObjectType.Class)
+			{
+#>
+			try
+			{
+				Id = new ItemId<<#= Utils.DataClassName(ObjectData) #>>(serializable.Id, serializable.FileName);
+<#
+				PushIndent("\t\t\t\t");
+			} else {
+				PushIndent("\t\t\t");
+			}
+
+			foreach (var item in ObjectData.members)
+				WriteDeserializationCode(item, Schema, ObjectType == ObjectType.Class);
+			PopIndent();
+
+			if (ObjectType == ObjectType.Class)
+			{
+#>
+			}
+			catch (DatabaseException e)
+			{
+				throw new DatabaseException(this.GetType() + ": deserialization failed. " + serializable.FileName + " (" + serializable.Id + ")", e);
+			}
+<#
+			}
+#>
+			OnDataDeserialized(serializable, database);
+		}
+
+<#
+		if (ObjectType == ObjectType.Struct)
+        {
+#>
+		public <#= Utils.SerializableClassName(ObjectData.name) + " " + Utils.StructSerializationMethodName #>()
+		{
+			var serializable = new <#= Utils.SerializableClassName(ObjectData.name) #>();
+<#
+		}
+		else
+        {
+#>
+		public void <#= Utils.SerializationMethodName #>(<#= Utils.SerializableClassName(ObjectData.name) #> serializable)
+		{
+<#
+			}
+
+			PushIndent("\t\t\t");
+
+			foreach (var item in ObjectData.members)
+				WriteSerializationCode(item, Schema);
+
+			PopIndent();
+#>
+			OnDataSerialized(ref serializable);
+<#
+			if (ObjectType == ObjectType.Struct)
+            {
+#>
+			return serializable;
+<#
+			}
+#>
+		}
+
+<#
+		if (ObjectType == ObjectType.Class)
+        {
+#>
+		public readonly ItemId<<#= Utils.DataClassName(ObjectData) #>> Id;
+
+<#
+		}
+#>
+<#
+		PushIndent("\t\t");
+
+		foreach (var item in ObjectData.members) 
+			WriteDataClassMember(item, Schema);
+
+		PopIndent();
+#>
+
+		public static <#= Utils.DataClassName(ObjectData) #> DefaultValue { get; private set; }
+	}
+}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<languages>
+    <string name="English" iso="en" folder="English" icon="english" />
+    <string name="Русский" iso="ru" folder="Russian" icon="russian" />
+    <string name="Türk" iso="tr" folder="Turkish" icon="turkish" />
+</languages>

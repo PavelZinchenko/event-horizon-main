@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Combat.Component.Platform;
 using Combat.Component.Ship;
+using Combat.Component.Ship.Effects;
+using Combat.Component.Systems.Weapons;
 
 namespace Combat.Component.Systems
 {
@@ -17,6 +19,8 @@ namespace Combat.Component.Systems
 
         public void UpdatePhysics(float elapsedTime)
         {
+            SuppressJammedWeapons();
+
             foreach (var platform in _weaponPlatforms)
                 platform.UpdatePhysics(elapsedTime);
 
@@ -85,6 +89,9 @@ namespace Combat.Component.Systems
 
         private bool ShouldActivateSystem(int id, ISystem system)
         {
+            if (RadarStatus.IsJammed(_ship) && system is IWeapon)
+                return false;
+
             if (!system.CanBeActivated)
                 return false;
 
@@ -101,6 +108,22 @@ namespace Combat.Component.Systems
                 return false;
 
             return _modifications.CanActivateSystem(system);
+        }
+
+        private void SuppressJammedWeapons()
+        {
+            if (!RadarStatus.IsJammed(_ship))
+                return;
+
+            for (int i = 0; i < _systems.Count; i++)
+            {
+                if (_systems[i] is not IWeapon weapon)
+                    continue;
+
+                _systems[i].Active = false;
+                weapon.Platform.ActiveTarget = null;
+                _ship.Controls.Systems.SetState(i, false);
+            }
         }
 
         private readonly IShip _ship;

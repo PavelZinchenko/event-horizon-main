@@ -62,6 +62,7 @@ namespace GameDatabase
 #endif
             try
             {
+                Directory.CreateDirectory(path);
                 var info = new DirectoryInfo(path);
                 foreach (var fileInfo in info.GetFiles("*", SearchOption.TopDirectoryOnly))
                     TryAddModFromFile(fileInfo.FullName);

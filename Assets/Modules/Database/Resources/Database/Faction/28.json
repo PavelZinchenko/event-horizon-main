@@ -1,0 +1,12 @@
+{
+  "ItemType": 14,
+  "Id": 28,
+  "Name": "$Faction28",
+  "Color": "#59D9FF",
+  "Icon": "faction_28",
+  "NoTerritories": true,
+  "NoWanderingShips": true,
+  "HideFromMerchants": true,
+  "HideResearchTree": true,
+  "NoMissions": true
+}

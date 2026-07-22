@@ -1,0 +1,8 @@
+{
+  "ItemType": 11,
+  "Id": 302,
+  "Type": 1,
+  "Weight": 5.0,
+  "AutoAimingArc": 360.0,
+  "TurretTurnSpeed": 1440.0
+}

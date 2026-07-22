@@ -1,0 +1,15 @@
+{
+  "ItemType": 1,
+  "Id": 294,
+  "Name": "$ThreeBody_FourDimensionalSpace",
+  "Description": "$ThreeBodyPlaceholderDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 6,
+  "Availability": 1,
+  "ComponentStatsId": 282,
+  "Faction": 27,
+  "Level": 1,
+  "Icon": "jammer",
+  "Color": "#B66DFF",
+  "Layout": "1"
+}

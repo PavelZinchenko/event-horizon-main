@@ -1,0 +1,29 @@
+{
+  "ItemType": 6,
+  "Id": 31,
+  "SizeClass": 1,
+  "Name": "$f3_Destroyer",
+  "Faction": 3,
+  "IconImage": "f3s2",
+  "IconScale": 1.0,
+  "ModelImage": "f3s2",
+  "ModelScale": 1.4,
+  "EngineColor": "#4098E5FF",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.9
+      },
+      "Size": 0.2
+    }
+  ],
+  "Layout": "000004400000000004400000000002200000000012210000000002200000000002200000000012210000000012210000000012210000000115511000000115511000000155551000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 1.0
+      },
+      "WeaponClass": "L"
+    }
+  ]
+}

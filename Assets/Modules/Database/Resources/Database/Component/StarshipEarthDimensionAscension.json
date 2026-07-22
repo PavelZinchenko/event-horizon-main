@@ -1,0 +1,17 @@
+{
+  "ItemType": 1,
+  "Id": 311,
+  "Name": "维度跃升装置",
+  "Description": "利用四维碎片，允许已配置的船进入高维状态并附带维度伤害",
+  "ContentSource": 1,
+  "DisplayCategory": 6,
+  "Availability": 1,
+  "ComponentStatsId": 299,
+  "Faction": 21,
+  "Level": 95,
+  "Icon": "ftl_device",
+  "Color": "#FFFFFF",
+  "Layout": "1111",
+  "CellType": "6",
+  "DeviceId": 38
+}

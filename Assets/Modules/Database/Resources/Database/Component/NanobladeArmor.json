@@ -1,0 +1,16 @@
+{
+  "ItemType": 1,
+  "Id": 302,
+  "Name": "$NanobladeArmor",
+  "Description": "$NanobladeArmorDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 2,
+  "Availability": 1,
+  "ComponentStatsId": 290,
+  "Faction": 21,
+  "Level": 15,
+  "Icon": "starship_earth_nanoblade_armor",
+  "Color": "#FFFFFF",
+  "Layout": "1111",
+  "CellType": "1"
+}

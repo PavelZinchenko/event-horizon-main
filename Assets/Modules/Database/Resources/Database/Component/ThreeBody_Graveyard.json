@@ -1,0 +1,15 @@
+{
+  "ItemType": 1,
+  "Id": 293,
+  "Name": "$ThreeBody_Graveyard",
+  "Description": "$ThreeBodyPlaceholderDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 6,
+  "Availability": 1,
+  "ComponentStatsId": 282,
+  "Faction": 26,
+  "Level": 1,
+  "Icon": "jammer",
+  "Color": "#8A8A8A",
+  "Layout": "1"
+}

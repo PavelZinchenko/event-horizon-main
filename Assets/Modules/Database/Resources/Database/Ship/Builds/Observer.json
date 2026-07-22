@@ -1,0 +1,16 @@
+{
+  "ItemType": 8,
+  "Id": 418,
+  "ShipId": 167,
+  "AvailableForPlayer": true,
+  "AvailableForEnemy": false,
+  "BuildFaction": 28,
+  "Components": [
+    {
+      "ComponentId": 937,
+      "X": 0,
+      "Y": 0,
+      "KeyBinding": 0
+    }
+  ]
+}

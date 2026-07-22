@@ -1,5 +1,6 @@
 ﻿using Combat.Component.Body;
 using Combat.Component.Unit;
+using Combat.Component.Unit.Classification;
 using Combat.Scene;
 using Combat.Unit;
 using UnityEngine;
@@ -27,7 +28,7 @@ namespace Combat.Component.Controller
 
             if (_timeFromLastUpdate > _targetUpdateCooldown)
             {
-                _target = _scene.Ships.GetEnemyForMissile(_unit, 0f, _maxRange * 1.3f, _lookForward ? 30f : 360f, false, false);
+                _target = FindTarget();
                 _timeFromLastUpdate = 0;
             }
 
@@ -35,6 +36,24 @@ namespace Combat.Component.Controller
             
             if (_lookForward)
                 UpdateRotation();
+        }
+
+        private IUnit FindTarget()
+        {
+            if (_unit.Type.Side == UnitSide.Player)
+            {
+                var locked = _scene.LockedEnemyShip;
+                return locked.IsActive() && CombatRelations.AreEnemies(_unit.Type, locked.Type) ? locked : null;
+            }
+
+            if (_unit.Type.Side == UnitSide.Enemy)
+            {
+                var player = _scene.PlayerShip;
+                if (player.IsActive() && CombatRelations.AreEnemies(_unit.Type, player.Type))
+                    return player;
+            }
+
+            return _scene.Ships.GetEnemyForMissile(_unit, 0f, _maxRange * 1.3f, _lookForward ? 90f : 360f, false, false);
         }
 
         private void UpdateRotation()
@@ -98,6 +117,6 @@ namespace Combat.Component.Controller
         private readonly float _maxVelocity;
         private readonly float _acceleration;
         private readonly float _maxRange;
-        private const float _targetUpdateCooldown = 2.0f;
+        private const float _targetUpdateCooldown = 0.25f;
     }
 }

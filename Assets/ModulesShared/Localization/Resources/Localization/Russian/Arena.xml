@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="PlayerRating">Рейтинг игрока:</string>
+    <string name="ArenaRating">Рейтинг флота:</string>
+    <string name="PlayerRatingDescription">Показывает силу игрока при атаке флотов других игроков</string>
+    <string name="ArenaRatingDescription">Отражает эффективность вашего флота в защите от атак других игроков</string>
+    <string name="ConnectionError">Не удалось подключиться к серверу.</string>
+    <string name="ArenaTraining">Тренировочный бой со своими кораблями.</string>
+    <string name="ArenaOpponent">Противник:</string>
+    <string name="ArenaFight">Сразиться с противником.</string>
+    <string name="ArenaShop">Обменять заработанные жетоны на награду.</string>
+    <string name="ArenaFindOpponent">Поиск противника для битвы.</string>
+    <string name="ArenaEmptyFleet">У вас нет ни одного корабля в ангаре.</string>
+    <string name="ArenaShipNotAllowed">Корабль $1 не допускается к бою.</string>
+    <string name="ArenaBattlesAvailable">$1 ${1|бой|боя|боев} осталось</string>
+    <string name="ArenaMoreBattles">Купить еще 10 боев</string>
+    <string name="ArenaShipReady">Готов к бою</string>
+    <string name="ArenaShipNotReady">Не допущен</string>
+    <string name="ArenaWatchAd">Посмотреть рекламу</string>
+    <string name="NoTicketsText">Вы отыграли все доступные бои на арене</string>
+    <string name="Leaderboard">Зал славы</string>
+    <string name="CheaterLeaderboard">Доска позора</string>
+    <string name="Anonymous">Аноним</string>
+    <string name="ArenaPrice">Кубок чемпиона арены</string>
+    <string name="SelectArenaShip">Выберите корабль</string>
+    <string name="ArenaPlayerSettings">Настройки</string>
+    <string name="FleetUploadTime">Последнее обновление флота:</string>
+    <string name="FleetUploadTimeDescription">Время, прошедшее с момента последней загрузки вашего флота на сервер. Другие игроки смогут сразиться с этим флотом.</string>
+    <string name="ArenaCheaterWarning">Похоже, что ваш противник может использовать читы. Отчет уже отправлен на сервер. Хотите продолжить бой несмотря на это? Если нет, вы можете пропустить этого противника.</string>
+</resources>

@@ -39,6 +39,7 @@ namespace Combat.Component.Bullet
         public ICollider Collider { get; set; }
         public PhysicsManager Physics { get; set; }
         public ICollisionBehaviour CollisionBehaviour { get; set; }
+        public bool IsReflectableByWaterdrop => _options.ReflectableByWaterdrop;
 
         public float DefenseMultiplier => _unitType?.Owner?.DefenseMultiplier ?? 1.0f;
 
@@ -243,6 +244,7 @@ namespace Combat.Component.Bullet
         {
             public bool CanBeDisarmed;
             public bool DetonateWhenDestroyed;
+            public bool ReflectableByWaterdrop;
         }
     }
 }

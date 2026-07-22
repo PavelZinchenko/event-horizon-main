@@ -1,0 +1,97 @@
+{
+  "ItemType": 8,
+  "Id": 72,
+  "ShipId": 50,
+  "Components": [
+    {
+      "ComponentId": 57,
+      "X": 3,
+      "Y": 8
+    },
+    {
+      "ComponentId": 127,
+      "X": 4,
+      "Y": 1
+    },
+    {
+      "ComponentId": 78,
+      "X": 5,
+      "Y": 5
+    },
+    {
+      "ComponentId": 78,
+      "X": 3,
+      "Y": 5
+    },
+    {
+      "ComponentId": 78,
+      "X": 3,
+      "Y": 4
+    },
+    {
+      "ComponentId": 78,
+      "X": 5,
+      "Y": 4
+    },
+    {
+      "ComponentId": 78,
+      "X": 5,
+      "Y": 3
+    },
+    {
+      "ComponentId": 78,
+      "X": 3,
+      "Y": 3
+    },
+    {
+      "ComponentId": 67,
+      "X": 5,
+      "Y": 6
+    },
+    {
+      "ComponentId": 67,
+      "X": 3,
+      "Y": 6
+    },
+    {
+      "ComponentId": 12,
+      "X": 7,
+      "Y": 5
+    },
+    {
+      "ComponentId": 12,
+      "X": 1,
+      "Y": 5
+    },
+    {
+      "ComponentId": 67,
+      "X": 4,
+      "Y": 5
+    },
+    {
+      "ComponentId": 126,
+      "X": 5,
+      "Y": 1
+    },
+    {
+      "ComponentId": 126,
+      "X": 3,
+      "Y": 1
+    },
+    {
+      "ComponentId": 56,
+      "X": 4,
+      "Y": 6
+    },
+    {
+      "ComponentId": 57,
+      "X": 5,
+      "Y": 8
+    },
+    {
+      "ComponentId": 60,
+      "X": 4,
+      "Y": 8
+    }
+  ]
+}

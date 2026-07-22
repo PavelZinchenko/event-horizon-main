@@ -98,6 +98,7 @@ namespace GameDatabase.Expressions
 					case "Battleship": return () => (int)SizeClass.Battleship;
 					case "Titan": return () => (int)SizeClass.Titan;
 					case "Starbase": return () => (int)SizeClass.Starbase;
+					case "TitanP": return () => (int)SizeClass.TitanP;
 				}
 
 				return null;

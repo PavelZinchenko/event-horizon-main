@@ -1,0 +1,17 @@
+{
+  "ItemType": 1,
+  "Id": 312,
+  "Name": "智子导引系统",
+  "Description": "开启后锁定最大航速，转向几乎不损失速度，并自动追踪雷达锁定目标。",
+  "ContentSource": 1,
+  "DisplayCategory": 6,
+  "Availability": 1,
+  "ComponentStatsId": 300,
+  "Faction": 22,
+  "Level": 85,
+  "Icon": "sophon_guidance_system",
+  "Color": "#FFFFFF",
+  "Layout": "11",
+  "CellType": "2",
+  "DeviceId": 39
+}

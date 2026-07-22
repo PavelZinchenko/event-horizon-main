@@ -158,7 +158,7 @@ namespace Combat.Ai
 	{
 		public bool IsTrue(Context context)
 		{
-			return context.Ship.Type.Side.IsEnemy(context.Enemy.Type.Side);
+			return CombatRelations.AreEnemies(context.Ship.Type, context.Enemy.Type);
 		}
 	}
 

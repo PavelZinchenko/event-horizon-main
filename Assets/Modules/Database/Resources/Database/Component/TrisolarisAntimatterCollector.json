@@ -1,0 +1,17 @@
+{
+  "ItemType": 1,
+  "Id": 940,
+  "Name": "$TrisolarisAntimatterCollector",
+  "Description": "$TrisolarisAntimatterCollectorDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 6,
+  "Availability": 1,
+  "ComponentStatsId": 310,
+  "Faction": 22,
+  "Level": 100,
+  "Icon": "trisolaris_antimatter_collector",
+  "Color": "#FFFFFF",
+  "Layout": "1111",
+  "CellType": "2",
+  "DeviceId": 40
+}

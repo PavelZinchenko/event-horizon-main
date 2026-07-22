@@ -3,6 +3,7 @@
   "Id": 20,
   "Name": "$Faction20",
   "Color": "#101010",
+  "Icon": "faction_20",
   "HomeStarDistance": 175,
   "WanderingShipsDistance": 100
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Combat.Component.Systems;
 using Combat.Component.Systems.Devices;
@@ -46,6 +46,7 @@ namespace Combat.Component.Ship
                         case DeviceClass.PartialShield:
                         case DeviceClass.ClonningCenter:
                         case DeviceClass.TimeMachine:
+                        case DeviceClass.SophonJammer:
                             break;
                         default:
                             return false;

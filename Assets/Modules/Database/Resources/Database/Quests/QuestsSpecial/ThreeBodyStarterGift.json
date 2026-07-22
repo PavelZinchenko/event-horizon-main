@@ -1,0 +1,54 @@
+{
+  "ItemType": 15,
+  "Id": 201,
+  "Name": "$Quest_ThreeBodyPrologue",
+  "QuestType": 1,
+  "StartCondition": 4,
+  "Nodes": [
+    {
+      "Id": 1,
+      "Type": 10,
+      "Message": "$ThreeBodyPrologue_Message1",
+      "Character": 29,
+      "Actions": [{ "TargetNode": 2, "ButtonText": "$ThreeBodyPrologue_Confirm" }]
+    },
+    {
+      "Id": 2,
+      "Type": 10,
+      "Message": "$ThreeBodyPrologue_Image01",
+      "Actions": [{ "TargetNode": 3, "ButtonText": "$ThreeBodyPrologue_Advance" }]
+    },
+    {
+      "Id": 3,
+      "Type": 10,
+      "Message": "$ThreeBodyPrologue_Image02",
+      "Actions": [{ "TargetNode": 4, "ButtonText": "$ThreeBodyPrologue_Advance" }]
+    },
+    {
+      "Id": 4,
+      "Type": 10,
+      "Message": "$ThreeBodyPrologue_Image03",
+      "Actions": [{ "TargetNode": 5, "ButtonText": "$ThreeBodyPrologue_Advance" }]
+    },
+    {
+      "Id": 5,
+      "Type": 10,
+      "Message": "$ThreeBodyPrologue_Image04",
+      "Actions": [{ "TargetNode": 6, "ButtonText": "$ThreeBodyPrologue_Advance" }]
+    },
+    {
+      "Id": 6,
+      "Type": 10,
+      "Message": "$ThreeBodyPrologue_Image05",
+      "Actions": [{ "TargetNode": 7, "ButtonText": "$ThreeBodyPrologue_Advance" }]
+    },
+    {
+      "Id": 7,
+      "Type": 10,
+      "Message": "$ThreeBodyPrologue_Image06",
+      "Actions": [{ "TargetNode": 8, "ButtonText": "$ThreeBodyPrologue_Advance" }]
+    },
+    { "Id": 8, "Type": 43, "Quest": 202, "DefaultTransition": 9 },
+    { "Id": 9, "Type": 40 }
+  ]
+}

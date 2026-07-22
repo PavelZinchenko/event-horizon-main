@@ -1,0 +1,16 @@
+{
+  "ItemType": 7,
+  "Id": 951,
+  "Name": "$WeaponTestPlatform",
+  "ModelImage": "weapon_test_platform",
+  "ModelScale": 0.6,
+  "SizeClass": 4,
+  "Layout": "4444444444444444444444444",
+  "Barrels": [
+    {
+      "AutoAimingArc": 360.0,
+      "RotationSpeed": 720.0,
+      "WeaponClass": "CDLMST"
+    }
+  ]
+}

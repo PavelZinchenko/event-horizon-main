@@ -104,6 +104,7 @@ namespace Combat.Component.Engine
                 if (_engineData.AngularVelocity > _engineStatsWithoutEnergy.AngularVelocityLimit)
                     _engineData.AngularVelocity = _engineStatsWithoutEnergy.AngularVelocityLimit;
             }
+
         }
 
         private float ApplyAcceleration(IBody body, float elapsedTime)
@@ -121,7 +122,12 @@ namespace Combat.Component.Engine
 
         private static float CalculateRequiredVelocity(float velocity, float engineMaxVelocity)
         {
-            if (velocity > engineMaxVelocity) return velocity;
+            // External impacts can push a ship above its engine limit.  Using
+            // the current velocity as the target in that state produced a
+            // zero propulsion vector, leaving the ship unable to bleed speed
+            // or regain steering authority.  Always steer back toward the
+            // configured forward velocity so the same propulsion logic also
+            // corrects excess lateral momentum.
             return engineMaxVelocity;
         }
 

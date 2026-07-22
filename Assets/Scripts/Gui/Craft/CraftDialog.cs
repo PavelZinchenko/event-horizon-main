@@ -19,6 +19,7 @@ using Services.Messenger;
 using Services.ObjectPool;
 using Zenject;
 using CommonComponents;
+using Gui.Common;
 
 namespace Gui.Craft
 {
@@ -94,6 +95,7 @@ namespace Gui.Craft
             var color =  _faction.Color;
             _factionText.text = _localization.GetString(_faction.Name);
             _factionIcon.color = _faction.Color;
+            FactionIconUtility.Apply(_factionIcon, _faction, 72f);
 
             _techsIcon.color = color;
             _levelText.text = _level.ToString();

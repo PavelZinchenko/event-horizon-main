@@ -1,0 +1,16 @@
+{
+  "ItemType": 1,
+  "Id": 303,
+  "Name": "$StarshipEarthFusionReactor",
+  "Description": "$StarshipEarthFusionReactorDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 3,
+  "Availability": 1,
+  "ComponentStatsId": 291,
+  "Faction": 21,
+  "Level": 15,
+  "Icon": "starship_earth_fusion_reactor",
+  "Color": "#FFFFFF",
+  "Layout": "1111",
+  "CellType": "2"
+}

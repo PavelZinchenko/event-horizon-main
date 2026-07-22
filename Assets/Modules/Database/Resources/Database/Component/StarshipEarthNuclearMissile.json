@@ -1,0 +1,19 @@
+{
+  "ItemType": 1,
+  "Id": 902,
+  "Name": "星舰地球核导弹",
+  "Description": "制式导弹的基础上，采用了核弹头，引爆后大范围爆炸伤害与持续辐射减血区域",
+  "ContentSource": 1,
+  "DisplayCategory": 1,
+  "Availability": 1,
+  "ComponentStatsId": 1,
+  "Faction": 21,
+  "Level": 90,
+  "Icon": "starship_earth_nuclear_missile",
+  "Color": "#FFFFFF",
+  "Layout": "1111",
+  "CellType": "4",
+  "WeaponId": 104,
+  "AmmunitionId": 902,
+  "WeaponSlotType": "M"
+}

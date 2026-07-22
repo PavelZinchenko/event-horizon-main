@@ -1,6 +1,7 @@
 ﻿using Combat.Component.Body;
 using Combat.Component.Features;
 using Combat.Component.Ship;
+using Combat.Component.Ship.Effects;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Scene;
@@ -101,6 +102,12 @@ namespace Combat.Component.Platform
 
         public IShip ActiveTarget
         {
+            get => _target as IShip; 
+			set => ActiveUnitTarget = value;
+		}
+
+        public IUnit ActiveUnitTarget
+        {
             get => _target; 
 			set
 			{
@@ -120,6 +127,13 @@ namespace Combat.Component.Platform
             if (!IsValidTarget(_target))
                 _target = null;
 
+            if (_parent.Type.Side == UnitSide.Player && IsValidLockedTarget(_scene.LockedTarget) &&
+                Vector2.Distance(WorldPosition(), _scene.LockedTarget.Body.WorldPosition()) <= _weaponRange)
+            {
+                ActiveUnitTarget = _scene.LockedTarget;
+                return;
+            }
+
             if (_timeFromTargetUpdate < _targetFindCooldown) return;
             if (_timeFromTargetUpdate < _targetUpdateCooldown && _target.IsActive()) return;
 
@@ -130,11 +144,32 @@ namespace Combat.Component.Platform
 		private bool IsValidTarget(IUnit target)
 		{
 			if (target == null) return false;
-			if (target.Type.Side.IsAlly(_parent.Type.Side)) return true;
+			if (IsSpecialProjectile(target)) return true;
+			if (CombatRelations.AreAllies(target.Type, _parent.Type)) return false;
 			if (target is not IShip ship) return true;
+			if (_parent is IShip owner && !RadarStatus.CanDetect(owner, ship)) return false;
 			if (ship.Features.TargetPriority == TargetPriority.None) return false;
 			return true;
 		}
+
+        private bool IsValidLockedTarget(IUnit target)
+        {
+            if (!IsValidTarget(target) || !target.IsActive())
+                return false;
+
+            // Scene.LockUnit enforces ownership/alliance rules.  Ordinary
+            // weapons may additionally follow a player's locked macro-
+            // electron, which is not an IShip.
+            return target is IShip || IsSpecialProjectile(target);
+        }
+
+        private static bool IsSpecialProjectile(IUnit target)
+        {
+            if (target is not Combat.Component.Bullet.Bullet bullet) return false;
+            if (bullet.Controller is Combat.Component.Controller.BallLightningController) return true;
+            return bullet.Controller is Combat.Component.Controller.StrategicWeaponController controller &&
+                   controller.Kind == Combat.Component.Controller.StrategicWeaponController.WeaponKind.DualVectorFoil;
+        }
 
         private void Initialize(IScene scene, IUnit parent, Vector2 position, float rotation, float offset, float maxAngle, float rotationSpeed, bool hasTurret)
         {
@@ -226,7 +261,7 @@ namespace Combat.Component.Platform
         private float _relativeEffect = 1;
 
         private float _timeFromTargetUpdate = _targetUpdateCooldown;
-        private IShip _target;
+        private IUnit _target;
 
         private float _rotation;
         private float _angularVelocity;

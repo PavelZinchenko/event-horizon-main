@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="DebugSettings" type="settings" typeid="DebugSettings">
+    <member name="Codes" type="struct_list" typeid="DebugCode" />
+</data>

@@ -1,0 +1,136 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #><#+
+
+private void WriteDataClassMember(XmlClassMember member, DatabaseSchema schema)
+{
+	if (member.options.Contains(Constants.OptionObsolete)) return;
+
+	var memberName = !string.IsNullOrEmpty(member.alias) ? member.alias : member.name;
+
+	var prefix = "public ";
+	var suffix = " { get; private set; }";
+
+	WriteDataClassMember(memberName, prefix, suffix, member, schema);
+}
+
+// TODO: delete this method
+private void WriteLegacyStructMember(XmlClassMember member, DatabaseSchema schema)
+{
+	var memberName = !string.IsNullOrEmpty(member.alias) ? member.alias : member.name;
+	var prefix = "public ";
+	var suffix = ";";
+
+	WriteDataClassMember(memberName, prefix, suffix, member, schema);
+}
+
+private void WriteDataClassMember(string memberName, string prefix, string suffix, XmlClassMember member, DatabaseSchema schema)
+{
+	if (member.type == Constants.TypeInt)
+	{
+		WriteLine(prefix + "int " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeFloat)
+	{
+		WriteLine(prefix + "float " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeBool)
+	{
+		WriteLine(prefix + "bool " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeChar)
+	{
+		WriteLine(prefix + "char " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeString)
+	{
+		WriteLine(prefix + "string " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeColor)
+	{
+		WriteLine(prefix + "ColorData " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeImage)
+	{
+		WriteLine(prefix + "SpriteId " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeAudioClip)
+	{
+		WriteLine(prefix + "AudioClipId " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypePrefab)
+	{
+		WriteLine(prefix + "PrefabId " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeLayout)
+	{
+		WriteLine(prefix + "Layout " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeVector)
+	{
+		WriteLine(prefix + "UnityEngine.Vector2 " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeFormula)
+	{
+		if (!schema.HasExpression(member.typeid))
+			throw new InvalidSchemaException("Unknown expression type in class member " + member.name);
+
+		var expression = schema.GetExpression(member.typeid);
+		WriteLine($"private readonly {Utils.ExpressionsNamespace}.{Utils.ExpressionClassName(expression)} {Utils.PrivateMemberName(memberName)};");
+		WriteLine($"{prefix}delegate {GetFuncReturnType(expression)} {Utils.DelegateName(memberName)}({GetFuncParamList(expression, member.arguments)});");
+		WriteLine($"{prefix}{Utils.DelegateName(memberName)} {memberName}{suffix}");
+	}
+	else if (member.type == Constants.TypeEnum)
+	{
+		if (!schema.HasEnum(member.typeid))
+			throw new InvalidSchemaException("Unknown enum type in class member " + member.name);
+
+		WriteLine(prefix + member.typeid + " " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeObject)
+	{
+		if (!schema.HasObject(member.typeid))
+			throw new InvalidSchemaException("Unknown object type in class member " + member.name);
+
+		var dataClass = schema.GetObject(member.typeid);
+		WriteLine(prefix + Utils.DataClassName(dataClass) + " " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeObjectList)
+	{
+		if (!schema.HasObject(member.typeid))
+			throw new InvalidSchemaException("Unknown object type in class member " + member.name);
+
+		var dataClass = schema.GetObject(member.typeid);
+				
+		WriteLine(prefix + "ImmutableCollection<" + Utils.DataClassName(dataClass) + "> " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeStruct)
+	{
+		if (!schema.HasStruct(member.typeid))
+			throw new InvalidSchemaException("Unknown struct type in class member " + member.name);
+
+		var dataClass = schema.GetStruct(member.typeid);
+		WriteLine(prefix + Utils.DataClassName(dataClass) + " " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeStructList)
+	{
+		if (!schema.HasStruct(member.typeid))
+			throw new InvalidSchemaException("Unknown struct type in class member " + member.name);
+
+		var dataClass = schema.GetStruct(member.typeid);
+
+		WriteLine(prefix + "ImmutableCollection<" + Utils.DataClassName(dataClass) + "> " + memberName + suffix);
+	}
+	else if (member.type == Constants.TypeEnumFlags)
+	{
+		if (!schema.HasEnum(member.typeid))
+			throw new InvalidSchemaException("Unknown enum type in class member " + member.name);
+
+		WriteLine(prefix + "ImmutableSet<" + member.typeid + "> " + memberName + suffix);
+	}
+	else
+	{
+		throw new InvalidSchemaException("Invalid class member type - " + member.type);
+	}
+}
+
+#>

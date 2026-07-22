@@ -15,6 +15,10 @@ namespace Combat.Scene
 
         IShip PlayerShip { get; }
         IShip EnemyShip { get; }
+        IShip LockedEnemyShip { get; }
+        IUnit LockedTarget { get; }
+        void LockTarget(IShip ship);
+        void LockUnit(IUnit unit);
 
         Vector2 FindFreePlace(float minDistance, UnitSide unitSide);
         void Shake(float amplitude);

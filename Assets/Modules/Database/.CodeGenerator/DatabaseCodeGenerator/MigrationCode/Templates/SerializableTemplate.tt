@@ -1,0 +1,47 @@
+﻿<#@ template language="C#" #>
+<#@ include file="WriteSerializableClassMember.tt" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+<#@ import namespace="System.Collections.Generic" #>
+
+using System;
+<#
+	if (Context.GenerateAttributes) WriteLine("using System.ComponentModel;"); 
+#>
+using <#= Context.Namespace #>.<#= Utils.TypesNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Schema.Version.ToNamespace() #>.<#= Utils.EnumsNamespace #>;
+
+namespace <#= Utils.RootNamespace #>.<#= Schema.Version.ToNamespace() #>.<#= Utils.SerializableNamespace #>
+{
+	[Serializable]
+<#
+	if (ObjectType == ObjectType.Struct)
+    {
+#>
+	public class <#= Utils.SerializableClassName(ObjectData.name) #>
+	{
+<#
+    } else {
+#>
+	public class <#= Utils.SerializableClassName(ObjectData.name) #> : SerializableItem
+	{
+		public <#= Utils.SerializableClassName(ObjectData.name) #>()
+		{
+			ItemType = <#= Constants.ItemTypeEnum + "." + ObjectData.typeid #>;
+			FileName = "<#= ObjectData.typeid #>.json";
+		}
+
+<#
+    }
+		PushIndent("\t\t");
+
+        var members = new HashSet<string>();
+        foreach (var item in ObjectData.members)
+        {
+            if (!members.Add(item.name)) continue;
+			WriteSerializableClassMember(item, Schema, Context.GenerateAttributes, true);
+        }
+
+		PopIndent();
+#>
+	}
+}

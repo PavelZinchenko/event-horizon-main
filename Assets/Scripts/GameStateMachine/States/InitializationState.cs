@@ -17,6 +17,7 @@ using Zenject;
 using Services.Audio;
 using GameServices.Audio;
 using Constructor.Model;
+using GameServices.Developer;
 
 namespace GameStateMachine.States
 {
@@ -56,6 +57,14 @@ namespace GameStateMachine.States
             Application.targetFrameRate = 60;
 #endif
 
+#if UNITY_ANDROID && !UNITY_EDITOR
+            // Ask up front on Android versions where shared-storage access is
+            // still permission-gated.  Newer Android releases use the system
+            // document picker and this call resolves immediately as granted.
+            NativeFilePicker.RequestPermissionAsync(permission =>
+                Debug.Log("Ship layout storage permission: " + permission), true);
+#endif
+
 #if UNITY_STANDALONE
             Application.runInBackground = _settings.RunInBackground;
 #endif
@@ -92,6 +101,10 @@ namespace GameStateMachine.States
                 mod = string.Empty;
                 _database.LoadDefault();
             }
+
+            // Apply the local developer faction overrides before any galaxy,
+            // quest or starbase data is generated from the database.
+            FactionDeveloperSettings.Apply(_database);
 
             _localization.Initialize(_settings.Language, _database);
 

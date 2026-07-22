@@ -1,0 +1,16 @@
+{
+  "ItemType": 2,
+  "Id": 905,
+  "DeviceClass": 25,
+  "EnergyConsumption": 30.0,
+  "PassiveEnergyConsumption": 0.0,
+  "Power": 1.0,
+  "Size": 1.0,
+  "Cooldown": 20.0,
+  "Lifetime": 5.0,
+  "ActivationType": 1,
+  "Color": "#74E9FF",
+  "Sound": "shot_12",
+  "EffectPrefab": "FlashAdditive",
+  "ControlButtonIcon": "controls_ghost"
+}

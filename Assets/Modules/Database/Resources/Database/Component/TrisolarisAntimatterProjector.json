@@ -1,0 +1,19 @@
+{
+  "ItemType": 1,
+  "Id": 932,
+  "Name": "$TrisolarisAntimatterProjector",
+  "Description": "$TrisolarisAntimatterProjectorDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 1,
+  "Availability": 1,
+  "ComponentStatsId": 305,
+  "Faction": 22,
+  "Level": 100,
+  "Icon": "trisolaris_antimatter_projector",
+  "Color": "#FFFFFF",
+  "Layout": "110110110",
+  "CellType": "4",
+  "WeaponId": 139,
+  "AmmunitionId": 164,
+  "WeaponSlotType": "C"
+}

@@ -1,0 +1,19 @@
+{
+  "ItemType": 1,
+  "Id": 308,
+  "Name": "聚能激光",
+  "Description": "进一步优化、强化了高能能量聚合伤害与耗能",
+  "ContentSource": 1,
+  "DisplayCategory": 1,
+  "Availability": 1,
+  "ComponentStatsId": 296,
+  "Faction": 21,
+  "Level": 55,
+  "Icon": "starship_earth_laser",
+  "Color": "#FFFFFF",
+  "Layout": "010010010",
+  "CellType": "4",
+  "WeaponId": 136,
+  "AmmunitionId": 161,
+  "WeaponSlotType": "L"
+}

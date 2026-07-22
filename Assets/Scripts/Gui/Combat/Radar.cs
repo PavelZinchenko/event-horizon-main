@@ -7,6 +7,8 @@ using GameDatabase.Enums;
 using Services.Resources;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Combat.Ai.Calculations;
+using System.Linq;
 
 namespace Gui.Combat
 {
@@ -42,6 +44,17 @@ namespace Gui.Combat
             var camera = Camera.main;
             if (!camera) return;
 
+            var observer = _scene.PlayerShip;
+            var radarRange = observer.IsActive() ? CombatMinimap.GetRadarRange(observer) : 0f;
+            var detected = _ship.Type.Side == UnitSide.Ally ||
+                           (observer.IsActive() && Vector2.Distance(observer.Body.Position, _ship.Body.Position) <= radarRange);
+            if (!detected)
+            {
+                ShipIcon.enabled = false;
+                Background.enabled = false;
+                return;
+            }
+
             var itemPosition = _ship.Body.VisualPosition;
             var position = _scene.ViewPoint.Direction(itemPosition);
             var cameraHeight = camera.orthographicSize;
@@ -71,7 +84,12 @@ namespace Gui.Combat
                 gameObject.SetActive(true);
 
             RectTransform.anchoredPosition = new Vector2(x, y);
-            RectTransform.localScale = Vector3.one*scale;
+            var locked = _scene.LockedEnemyShip == _ship;
+            RectTransform.localScale = Vector3.one * scale * (locked ? 1.35f : 1f);
+            if (locked)
+                Background.color = CombatTargetLine.HighlightedTargetColor(_ship);
+            else
+                ApplyBackgroundColor();
             ShipIcon.transform.localEulerAngles = new Vector3(0, 0, _ship.Body.VisualRotation);
         }
 
@@ -96,28 +114,65 @@ namespace Gui.Combat
         private void Initialize(IResourceLocator resourceLocator)
         {
             var model = _ship.Specification.Stats;
-            var isAlly = _ship.Type.Side.IsAlly(UnitSide.Player);
+            var isAlly = _ship.Type.Side == UnitSide.Ally;
             var isDangerous = _ship.Specification.Info.Class >= DifficultyClass.Class3;
+
+            ApplyBackgroundColor();
 
             switch (model.ShipModel.SizeClass)
             {
                 case SizeClass.Starbase:
                     _offset = Size*1.8f;
-                    Background.color = StarbaseColor;
                     break;
                 case SizeClass.Titan:
                     _offset = Size*1.5f;
-                    Background.color = isAlly ? AllyColor : isDangerous ? DangerColor : BossColor;
                     break;
                 default:
                     _offset = Size;
-                    Background.color = isAlly ? AllyColor : isDangerous ? DangerColor : NormalColor;
                     break;
             }
 
             ShipIcon.sprite = resourceLocator.GetSprite(model.ShipModel.ModelImage);
+            UpdateAllyMarker(isAlly && _ship != _scene.PlayerShip);
 
             UpdateScreenSize();
+        }
+
+        private void ApplyBackgroundColor()
+        {
+            if (_ship == null) return;
+            var size = _ship.Specification.Stats.ShipModel.SizeClass;
+            var isAlly = _ship.Type.Side == UnitSide.Ally;
+            var isDangerous = _ship.Specification.Info.Class >= DifficultyClass.Class3;
+            if (size == SizeClass.Starbase) Background.color = new Color(0.68f, 0.2f, 1f, 1f);
+            else if (isAlly) Background.color = AllyColor;
+            else if (size == SizeClass.Titan) Background.color = isDangerous ? DangerColor : BossColor;
+            else if (size == SizeClass.Cruiser || size == SizeClass.Battleship) Background.color = new Color(1f, 0.45f, 0.05f, 1f);
+            else Background.color = NormalColor;
+        }
+
+        private void UpdateAllyMarker(bool visible)
+        {
+            if (_allyMarker == null)
+            {
+                var marker = new GameObject("AllyMarker", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                var rect = marker.GetComponent<RectTransform>();
+                rect.SetParent(RectTransform, false);
+                rect.anchorMin = new Vector2(0.5f, 0f);
+                rect.anchorMax = new Vector2(0.5f, 0f);
+                rect.pivot = new Vector2(0.5f, 0f);
+                rect.anchoredPosition = new Vector2(0f, 2f);
+                rect.sizeDelta = new Vector2(22f, 18f);
+                _allyMarker = marker.GetComponent<Text>();
+                _allyMarker.text = "▲";
+                _allyMarker.alignment = TextAnchor.LowerCenter;
+                _allyMarker.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                _allyMarker.fontSize = 18;
+                _allyMarker.color = new Color(0.15f, 0.55f, 1f, 1f);
+                _allyMarker.raycastTarget = false;
+            }
+
+            _allyMarker.gameObject.SetActive(visible);
         }
 
         protected override void OnRectTransformDimensionsChange()
@@ -138,5 +193,6 @@ namespace Gui.Combat
         private RectTransform _rectTransform;
         private IShip _ship;
         private IScene _scene;
+        private Text _allyMarker;
     }
 }

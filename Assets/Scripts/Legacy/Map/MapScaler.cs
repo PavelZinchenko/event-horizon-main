@@ -62,6 +62,10 @@ namespace Map
 
         private void Awake()
         {
+            _starZoomMax *= 3f;
+            _mapZoomMax *= 3f;
+            _galaxyZoomMin *= 3f;
+            _galaxyZoomMax *= 4f;
             _camera = GetComponent<Camera>();
         }
 

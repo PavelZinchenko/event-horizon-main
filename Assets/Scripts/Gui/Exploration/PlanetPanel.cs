@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ViewModel.Common;
 using Zenject;
+using Gui.Common;
 
 namespace Gui.Exploration
 {
@@ -51,8 +52,8 @@ namespace Gui.Exploration
 
 	        _planet = _factory.Create(_motherShip.Position, index);
 
-            _factionText.text = _localization.GetString(_planet.Faction.Name);
-	        _factionIcon.color = _planet.Faction.Color;
+	        _factionText.text = _localization.GetString(_planet.Faction.Name);
+            FactionIconUtility.Apply(_factionIcon, _planet.Faction, 64f);
 	        _levelText.text = _planet.Level.ToString();
 
             _fleetPanel.Initialize();

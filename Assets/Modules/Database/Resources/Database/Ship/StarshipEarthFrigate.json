@@ -1,0 +1,56 @@
+{
+  "ItemType": 6,
+  "Id": 161,
+  "ShipType": 0,
+  "SizeClass": 0,
+  "Name": "$StarshipEarthFrigate",
+  "Description": "$StarshipEarthFrigateDescription",
+  "Faction": 21,
+  "IconImage": "starship_earth_frigate_preview5",
+  "IconScale": 1.0,
+  "ModelImage": "starship_earth_frigate_preview5",
+  "ModelScale": 3.0,
+  "EngineColor": "#FF0000",
+  "Engines": [
+    {
+      "Position": {
+        "y": 0.0
+      },
+      "Size": 1.0
+    }
+  ],
+  "Layout": "0000000000000000000000000040304000000000000004030400000000000000433340000000000000003330000000000000003333300000000000000322230000000000000032223000000000000003323300000000000000332330000000000000332223300000000000033333330000000000003333333000000000000003330000000000000000333000000000000000555550000000000000055555000000000000005555500000000000000555550000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.9,
+        "y": 0.2
+      },
+      "WeaponClass": "CL"
+    },
+    {
+      "Position": {
+        "x": 0.9,
+        "y": -0.2
+      },
+      "WeaponClass": "CL"
+    },
+    {
+      "Position": {
+        "x": 0.55,
+        "y": -0.55
+      },
+      "Rotation": -90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
+    }
+  ],
+  "Features": {
+    "EnergyResistance": 1.0,
+    "KineticResistance": 1.0,
+    "HeatResistance": 1.0,
+    "ArmorBonus": 1.0,
+    "ShieldBonus": 1.0,
+    "DroneBuildSpeedBonus": 10.0
+  }
+}

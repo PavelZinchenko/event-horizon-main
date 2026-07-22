@@ -15,6 +15,8 @@ using Game.Exploration;
 using GameDatabase.DataModel;
 using GameModel.Quests;
 using UniRx;
+using Combat.Component.Unit.Classification;
+using GameServices.Gui;
 
 namespace GameStateMachine.States
 {
@@ -25,8 +27,9 @@ namespace GameStateMachine.States
 			IStateMachine stateMachine,
             GameStateFactory gameStateFactory,
 			IQuestManager questManager,
-			ISessionData session,
+            ISessionData session,
             IGuiManager guiManager,
+            GuiHelper guiHelper,
             MotherShip motherShip,
             PlayerResources playerResources,
 			StarData starData,
@@ -58,6 +61,7 @@ namespace GameStateMachine.States
             _playerResources = playerResources;
             _inventoryFactory = inventoryFactory;
             _guiManager = guiManager;
+            _guiHelper = guiHelper;
             _musicPlayer = musicPlayer;
             _questCombatModelFacctory = questCombatModelFacctory;
             _retreatSignal = retreatSignal;
@@ -94,7 +98,7 @@ namespace GameStateMachine.States
 
 		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.StarMap; } }
 
-		protected override void OnActivate()
+        protected override void OnActivate()
 		{
             _musicPlayer.Play(AudioTrackType.Game);
 
@@ -215,10 +219,10 @@ namespace GameStateMachine.States
 			var star = _session.StarMap.PlayerPosition;
 			var guardian = _starData.GetOccupant(star);
 
-		    if (guardian.IsAggressive)
+            if (guardian.IsAggressive)
 		    {
-		        UnityEngine.Debug.Log("Attacked by occupants");
-		        guardian.Attack();
+                UnityEngine.Debug.Log("Attacked by occupants");
+                guardian.Attack();
                 return true;
             }
 
@@ -251,7 +255,12 @@ namespace GameStateMachine.States
 
         public void SetFactionRelations(int starId, int value, bool additive)
         {
-            _session.Quests.SetFactionRelations(starId, additive ? value + _session.Quests.GetFactionRelations(starId) : value);
+            var relation = additive ? value + _session.Quests.GetFactionRelations(starId) : value;
+            _session.Quests.SetFactionRelations(starId, relation);
+            var faction = _starData.GetRegion(starId).Faction;
+            if (faction != null && faction.Id.Value > 0)
+                CombatRelations.SetRelation(0, faction.Id.Value,
+                    relation > 25);
         }
 
         public void SetFactionStarbasePower(int starId, int value, bool additive)
@@ -335,6 +344,7 @@ namespace GameStateMachine.States
         private readonly OpenWorkshopSignal _openWorkshopSignal;
         private readonly OpenShipyardSignal _openShipyardSignal;
         private readonly OpenEhopediaSignal _openEhopediaSignal;
+        private readonly GuiHelper _guiHelper;
         private readonly ExitSignal _exitSignal;
         private readonly EscapeKeyPressedSignal _escapeKeyPressedSignal;
         private readonly PlayerPositionChangedSignal _playerPositionChangedSignal;

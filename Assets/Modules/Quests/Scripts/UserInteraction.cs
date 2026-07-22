@@ -16,6 +16,7 @@ namespace Domain.Quests
         string Message { get; }
         string CharacterName { get; set; }
         SpriteId CharacterAvatar { get; set; }
+        string StoryImageResource { get; set; }
         RequiredViewMode RequiredView { get; }
         IEnumerable<UserAction> Actions { get; }
         QuestEnemyData EnemyData { get; }
@@ -51,6 +52,7 @@ namespace Domain.Quests
         public string Message { get; set; }
         public string CharacterName { get; set; }
         public SpriteId CharacterAvatar { get; set; }
+        public string StoryImageResource { get; set; }
         public RequiredViewMode RequiredView { get; set; }
         public IEnumerable<UserAction> Actions { get; set; }
         public ILoot Loot { get; set; }

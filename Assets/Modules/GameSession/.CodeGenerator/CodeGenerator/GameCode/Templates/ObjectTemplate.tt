@@ -1,0 +1,80 @@
+﻿<#@ template language="C#" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+<#@ include file="UtilsClassMember.tt" #>
+<#@ include file="UtilsSerializationCode.tt" #>
+<#@ include file="UtilsDeserializationCode.tt" #>
+
+using <#= Utils.RootNamespace #>.<#= Utils.UtilsNamespace #>;
+
+namespace <#= Utils.RootNamespace #>.<#= Context.GetObjectNamespace(ObjectData.name) #>
+{
+	public class <#= ObjectData.name #> : <#= Utils.CallbackInterface #>
+	{
+		private <#= Utils.CallbackInterface #> _parent;
+
+<#
+		PushIndent("\t\t");
+		foreach (var item in ObjectData.members)
+			WriteClassMember(item, Context, false);
+		PopIndent();
+#>
+
+		public const int VersionMinor = <#= Context.Version.Minor #>;
+		public const int VersionMajor = <#= Context.Version.Major #>;
+
+		public bool DataChanged { get; private set; }
+
+		internal <#= Utils.CallbackInterface #> Parent { get => _parent; set => _parent = value; }
+
+		public <#= ObjectData.name #>(<#= Utils.CallbackInterface #> parent)
+		{
+			_parent = parent;
+<#
+			PushIndent("\t\t\t");
+			foreach (var item in ObjectData.members)
+				WriteInitializer(item, Context, "this");
+			PopIndent();
+#>
+		}
+
+		public <#= ObjectData.name #>(<#= Utils.ReaderClass #> reader, <#= Utils.CallbackInterface #> parent)
+		{
+<#
+			PushIndent("\t\t\t");
+			foreach (var item in ObjectData.members)
+				WriteDeserializationCode(item, Context, "this");
+			PopIndent();
+#>
+			_parent = parent;
+			DataChanged = false;
+		}
+
+<#
+		PushIndent("\t\t");
+		foreach (var item in ObjectData.members)
+			WriteProperty(item, Context, false);
+		PopIndent();
+
+		if (Context.IsLatestObjectVersion(ObjectData.name))
+		{
+			WriteLine(string.Empty);
+			PushIndent("\t\t");
+			WriteLine($"public void Serialize({Utils.WriterClass} writer)");
+			WriteLine("{");
+			PushIndent("\t");
+			foreach (var item in ObjectData.members)
+				WriteSerializationCode(item, Context);
+			WriteLine("DataChanged = false;");
+			PopIndent();
+			WriteLine("}");
+			PopIndent();
+		}
+#>
+
+		public void <#= Utils.CallbackMethod #>()
+		{
+			DataChanged = true;
+			_parent?.<#= Utils.CallbackMethod #>();
+		}
+	}
+}

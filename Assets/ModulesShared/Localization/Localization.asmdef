@@ -1,0 +1,21 @@
+{
+    "name": "Localization",
+    "rootNamespace": "",
+    "references": [
+        "AppConfiguration",
+        "CommonComponents",
+        "Database",
+        "Unity.InputSystem",
+        "Zenject",
+        "Diagnostics"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

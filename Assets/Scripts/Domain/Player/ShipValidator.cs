@@ -151,7 +151,9 @@ namespace Domain.Shipyard
 
         private static bool TryInstallComponent(IntegratedComponent component, ShipLayoutModel layout, ComponentTracker tracker, IShipPartsStorage storage = null)
         {
-            if (!layout.IsSuitableLocation(component.X, component.Y, component.Info.Data) ||
+            var componentLayout = ShipEditor.Model.ComponentLayoutRotation.Get(
+                component.Info.Data.Layout, component.Rotation);
+            if (!layout.IsSuitableLocation(component.X, component.Y, component.Info.Data, componentLayout) ||
                 !tracker.IsCompatible(component.Info.Data))
             {
                 GameDiagnostics.Trace.LogError($"Invalid component {component.Info.Data.Name} at [{component.X},{component.Y}]");
@@ -160,7 +162,8 @@ namespace Domain.Shipyard
             }
 
             layout.InstallComponent(component.X, component.Y, component.Info,
-                new ComponentSettings(component.KeyBinding, component.Behaviour, component.Locked));
+                new ComponentSettings(component.KeyBinding, component.Behaviour, component.Locked,
+                    component.BarrelId, component.Rotation));
 
             return true;
         }

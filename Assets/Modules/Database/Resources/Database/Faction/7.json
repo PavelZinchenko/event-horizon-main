@@ -2,6 +2,7 @@
   "ItemType": 14,
   "Id": 7,
   "Name": "$Faction7",
+  "Icon": "faction_7",
   "HomeStarDistance": 40,
   "WanderingShipsDistance": 25
 }

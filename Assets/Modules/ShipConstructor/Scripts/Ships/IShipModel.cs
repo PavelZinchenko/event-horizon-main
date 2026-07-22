@@ -4,6 +4,7 @@ using Constructor.Ships.Modification;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
+using GameDatabase;
 using CommonComponents.Utils;
 
 namespace Constructor.Ships
@@ -16,6 +17,7 @@ namespace Constructor.Ships
         ShipRarity ShipRarity { get; }
         string OriginalName { get; }
         Faction Faction { get; }
+        IDatabase Database { get; }
         IShipLayout Layout { get; }
         ImmutableCollection<Barrel> Barrels { get; }
         SpriteId ModelImage { get; }

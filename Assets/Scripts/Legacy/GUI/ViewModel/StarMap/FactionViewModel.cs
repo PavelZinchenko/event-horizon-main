@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using Services.Localization;
 using Zenject;
+using Gui.Common;
 
 namespace ViewModel
 {
@@ -34,10 +35,18 @@ namespace ViewModel
         public void SetFaction(Faction faction)
 		{
 			_faction = faction;
-			var unlocked = _starMapManager.IsFactionDiscovered(faction) || _research.AnyResearchPointsObtained(faction);
+			// The two playable Three-Body factions ship with complete research trees
+			// and must remain inspectable even when an older save has no discovery
+			// flag or research points recorded for them.
+			var alwaysInspectable = faction.Id.Value == GameModel.Region.StarshipEarthFactionId ||
+			                        faction.Id.Value == GameModel.Region.TrisolarisFactionId;
+			var unlocked = alwaysInspectable || _starMapManager.IsFactionDiscovered(faction) ||
+			               _research.AnyResearchPointsObtained(faction);
 
 			var color = faction.Color;
-			Icon.color = color;
+            // Keep the technology-page faction strip compact so custom
+            // factions do not crowd the research-point controls.
+            FactionIconUtility.Apply(Icon, faction, 18f);
 			Background.color = new Color(color.R, color.G, color.B, 0.5f);
 			Name.text = unlocked ? _localization.GetString(faction.Name) : "???";
 			var researchPoints = _research.GetAvailablePoints(faction);

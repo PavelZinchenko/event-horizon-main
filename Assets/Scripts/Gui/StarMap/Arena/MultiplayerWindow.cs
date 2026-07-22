@@ -15,6 +15,7 @@ using ViewModel;
 using Zenject;
 using CommonComponents;
 using Status = GameServices.Multiplayer.Status;
+using Gui.Common;
 
 namespace Gui.Multiplayer
 {
@@ -84,7 +85,7 @@ namespace Gui.Multiplayer
         {
             var faction = _motherShip.CurrentStar.Region.Faction;
             _factionText.text = _localization.GetString("$ArenaPanelHeader"/*, _localization.GetString(faction.Name)*/);
-            _factionIcon.color = faction.Color;
+            FactionIconUtility.Apply(_factionIcon, faction, 64f);
             _levelText.text = _motherShip.CurrentStar.Level.ToString();
             UpdateResources();
 

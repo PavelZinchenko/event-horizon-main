@@ -28,6 +28,11 @@ namespace Combat.Component.Systems.Weapons
 
         public void Aim() => Platform.Aim(Info.BulletSpeed, Info.Range, Info.RelativeVelocityEffect);
 
+        public void SetCaptainDamageMultiplier(float multiplier)
+        {
+            BulletFactory.Stats.CaptainDamageMultiplier = Mathf.Max(0.01f, multiplier);
+        }
+
         protected Factory.IBulletFactory BulletFactory { get; }
         protected IBullet CreateBullet() => BulletFactory.Create(Platform, _weaponStats.Spread, 0, Vector2.zero);
 

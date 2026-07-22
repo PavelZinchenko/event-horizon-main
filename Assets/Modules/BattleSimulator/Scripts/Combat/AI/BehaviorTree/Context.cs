@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Combat.Component.Ship;
+using Combat.Component.Ship.Effects;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Scene;
@@ -21,6 +22,7 @@ namespace Combat.Ai.BehaviorTree
 		private ThreatList _threatList;
 		private float _targetListUpdateTime = _initialTime;
 		private float _threatListUpdateTime = _initialTime;
+		private IShip _targetShip;
 
 		private AutoExpandingList<IShip> _savedTargets;
 		private BitArray64 _savedFlags;
@@ -30,7 +32,11 @@ namespace Combat.Ai.BehaviorTree
 		public IShip Ship { get; }
 		public ShipControls Controls { get; } = new();
 
-        public IShip TargetShip { get; set; }
+        public IShip TargetShip
+        {
+            get => RadarStatus.IsJammed(Ship) ? null : _targetShip;
+            set => _targetShip = RadarStatus.IsJammed(Ship) ? null : value;
+        }
 
         public IShip Mothership 
         {
@@ -81,7 +87,21 @@ namespace Combat.Ai.BehaviorTree
 			DeltaTime = deltaTime;
 			FrameId++;
 			LockedEnergy = 0;
+
+            if (RadarStatus.IsJammed(Ship))
+            {
+                _targetShip = null;
+                LastMessageSender = null;
+                Controls.Reset();
+                ClearWeaponTargets();
+            }
 		}
+
+        private void ClearWeaponTargets()
+        {
+            for (var i = 0; i < _allWeapons.List.Count; ++i)
+                _allWeapons.List[i].Weapon.Platform.ActiveTarget = null;
+        }
 
 		public void UpdateTargetList(float cooldown)
 		{

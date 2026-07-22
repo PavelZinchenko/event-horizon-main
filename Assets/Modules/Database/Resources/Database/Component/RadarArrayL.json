@@ -1,0 +1,17 @@
+{
+  "ItemType": 1,
+  "Id": 913,
+  "Name": "深空相控阵雷达",
+  "Description": "重型深空探测阵列，雷达探测范围+2000。",
+  "ContentSource": 1,
+  "DisplayCategory": 6,
+  "Availability": 1,
+  "ComponentStatsId": 315,
+  "Faction": -1,
+  "Level": 80,
+  "Icon": "radar_array_l",
+  "Color": "#FFFFFF",
+  "Layout": "111111111",
+  "CellType": "2",
+  "DeviceId": 903
+}

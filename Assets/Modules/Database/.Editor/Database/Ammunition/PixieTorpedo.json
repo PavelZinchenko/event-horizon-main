@@ -1,0 +1,26 @@
+{
+  "ItemType": 25,
+  "Id": 120,
+  "Body": {
+    "Type": 4,
+    "Size": 1.5,
+    "Velocity": 30.0,
+    "Range": 80.0,
+    "Weight": 0.5,
+    "Color": "#B8FF00",
+    "BulletPrefab": 1,
+    "EnergyCost": 10.0,
+    "CanBeDisarmed": true
+  },
+  "Triggers": [
+    {
+      "Condition": 2,
+      "EffectType": 2,
+      "AudioClip": "explosion_08",
+      "Ammunition": 121,
+      "Quantity": 1,
+      "Size": 5.0,
+      "PowerMultiplier": 8.0
+    }
+  ]
+}

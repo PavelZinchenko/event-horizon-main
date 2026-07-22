@@ -107,38 +107,28 @@ namespace Combat.Manager
                 switch (_combatModel.Rules.TimeOutMode)
                 {
                     case TimeOutMode.CallNextEnemy:
-                        if (_combatManager.CanCallNextEnemy())
-                        {
-                            if (timeLeft <= 0)
-                            {
-                                _combatManager.CallNextEnemy();
-                                ResetTimer();
-                            }
-                        }
+                        if (_combatModel.EnemyFleet.IsAnyShipLeft())
+                            timeLeft = _combatManager.ReinforcementTimeLeft;
                         else
-                        {
                             timeLeft = 0;
-                        }
 
                         break;
                     case TimeOutMode.CallNextEnemyOrDraw:
                         var hasMoreShips = _combatModel.EnemyFleet.IsAnyShipLeft();
-                        if (!hasMoreShips)
-                            timeLeft += 2 * _combatModel.Rules.TimeLimit;
-
                         if (hasMoreShips)
                         {
-                            if (timeLeft <= 0 && _combatManager.CanCallNextEnemy())
-                            {
-                                _combatManager.CallNextEnemy();
-                                ResetTimer();
-                            }
+                            timeLeft = _combatManager.ReinforcementTimeLeft;
                         }
-                        else if (timeLeft > 0 && timeLeft < 15)
+                        else
+                        {
+                            timeLeft += 2 * _combatModel.Rules.TimeLimit;
+                        }
+
+                        if (!hasMoreShips && timeLeft > 0 && timeLeft < 15)
                         {
                             _background.OutOfTimeMode = true;
                         }
-                        else if (timeLeft <= 0)
+                        else if (!hasMoreShips && timeLeft <= 0)
                         {
                             _combatManager.Exit();
                         }

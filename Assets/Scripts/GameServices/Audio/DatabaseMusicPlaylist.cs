@@ -29,8 +29,11 @@ namespace GameServices.Audio
                 case AudioTrackType.Menu: return GetRandomTrack(_database.MusicPlaylist.MainMenuMusic);
                 case AudioTrackType.Game: return GetRandomTrack(_database.MusicPlaylist.GalaxyMapMusic);
                 case AudioTrackType.Exploration: return GetRandomTrack(_database.MusicPlaylist.ExplorationMusic);
-                case AudioTrackType.Combat: return GetRandomTrack(_customCombatPlaylist.Count > 0 ? 
-                    _customCombatPlaylist : _database.MusicPlaylist.CombatMusic);
+                // Every combat scene uses the bundled ThreeBody combat track.
+                // Returning null here deliberately falls through to the
+                // default bundle playlist in MusicPlayer, including missions
+                // that used to provide a custom combat soundtrack.
+                case AudioTrackType.Combat: return null;
             }
 
             return null;

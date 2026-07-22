@@ -2,6 +2,7 @@
 <data name="Faction" type="object" typeid="Faction" >
     <member name="Name" type="string" />
     <member name="Color" type="color" />
+    <member name="Icon" type="string" />
 
     <member name="NoTerritories" type="bool" />
     <member name="HomeStarDistance" type="int" minvalue="0" maxvalue="5000" />

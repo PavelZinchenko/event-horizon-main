@@ -14,6 +14,7 @@ using UnityEngine.UI;
 using ViewModel;
 using Zenject;
 using CommonComponents;
+using Gui.Common;
 
 namespace Gui.ShipService
 {
@@ -69,7 +70,7 @@ namespace Gui.ShipService
 
             var color = _faction.Color;
             _factionText.text = _localization.GetString(_faction.Name);
-            _factionIcon.color = color;
+            FactionIconUtility.Apply(_factionIcon, _faction, 72f);
             _techIcon.color = color;
             _levelText.text = _level.ToString();
 
@@ -139,7 +140,8 @@ namespace Gui.ShipService
             if (!visible) return;
 
             _shipLayout.Initialize(_ship.Model.Layout);
-            _shipLayout.BackgroundImage.sprite = _resourceLocator.GetSprite(_ship.Model.ModelImage);
+            _shipLayout.BackgroundImage.sprite = PlayerShipTextureOverrides.Get(_ship.Model.Id.Value,
+                _resourceLocator.GetSprite(_ship.Model.ModelImage));
             _coroutineManager.StartCoroutine(CalculateZoom());
         }
 

@@ -16,8 +16,18 @@ public class Square : MonoBehaviour
             _renderer.material.color = color;
     }
 
+    public void SetTexture(Texture2D texture)
+    {
+        Texture = texture != null ? texture : _defaultTexture;
+        if (_renderer == null)
+            _renderer = gameObject.GetComponent<Renderer>();
+        if (_renderer != null)
+            _renderer.material.mainTexture = Texture;
+    }
+
     void Awake()
     {
+        _defaultTexture = Texture;
         gameObject.transform.localScale = Vector3.one * Size;
         gameObject.CreateMeshFilter().sharedMesh = SharedResources.Instance.SquareMesh;
         if (Material != null)
@@ -27,4 +37,5 @@ public class Square : MonoBehaviour
     }
 
     private Renderer _renderer;
+    private Texture2D _defaultTexture;
 }

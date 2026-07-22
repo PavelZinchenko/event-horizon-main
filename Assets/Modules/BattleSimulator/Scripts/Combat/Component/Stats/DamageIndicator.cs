@@ -44,6 +44,12 @@ namespace Combat.Component.Stats
                 _direct += damage.CorrosiveDamage;
             }
 
+            if (damage.TrueDamage > 0)
+            {
+                _directChanged = true;
+                _direct += damage.TrueDamage;
+            }
+
             if (damage.ShieldDamage > 0)
             {
                 _shieldChanged = true;

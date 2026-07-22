@@ -1,0 +1,16 @@
+{
+  "ItemType": 1,
+  "Id": 299,
+  "Name": "$ElectronCompressor",
+  "Description": "$ElectronCompressorDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 3,
+  "Availability": 1,
+  "ComponentStatsId": 287,
+  "Faction": -1,
+  "Level": 0,
+  "Icon": "electron_compressor",
+  "Color": "#5CDFFF",
+  "Layout": "1111",
+  "CellType": "2"
+}

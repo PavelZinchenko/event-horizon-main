@@ -1,0 +1,296 @@
+﻿<#@ template language="C#" #>
+<#@ include file="FuncParams.tt" #>
+<#@ include file="WriteDeserializationCode.tt" #>
+<#@ include file="WriteDataClassMember.tt" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+
+using System.Linq;
+using <#= Utils.RootNamespace #>.<#= Utils.EnumsNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.SerializableNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.TypesNamespace #>;
+<#
+	var hasExpression = HasExpression(ObjectData);
+	if (hasExpression)
+		WriteLine("using CodeWriter.ExpressionParser;");
+#>
+
+namespace <#= Utils.RootNamespace #>.<#= Utils.ClassesNamespace #>
+{
+	public abstract partial class <#= Utils.DataClassName(ObjectData) #> <#= hasExpression ? ": IDefaultVariablesResolver" : "" #>
+	{
+		partial void OnDataDeserialized(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #>.Loader loader);
+
+		public static <#= Utils.DataClassName(ObjectData) #> <#= Utils.FactoryMethodName #>(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #>.Loader loader)
+		{
+			if (serializable == null) return DefaultValue;
+
+<#
+            SortMembers(ObjectData, out var baseMembers, out var extraMembers, out var switchEnumType);
+			var factoryName = "I" + Utils.DataClassName(ObjectData) + "Factory<T>";
+#>
+			switch (serializable.<#= ObjectData.switchEnum #>)
+		    {
+<#
+			foreach (var item in extraMembers)
+            {
+#>
+				case <#= switchEnumType + "." + item.Key #>:
+					return new <#= ExtraClassName(item.Key) #>(serializable, loader);
+<#
+			}
+#>
+				default:
+                    throw new DatabaseException("<#= ObjectData.name #>: Invalid content type - " + serializable.<#= ObjectData.switchEnum #>);
+			}
+		}
+
+		public abstract T Create<T>(<#= factoryName #> factory);
+
+		protected <#= Utils.DataClassName(ObjectData) #>(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #>.Loader loader)
+		{
+<#
+			if (ObjectType == ObjectType.Class)
+            {
+#>
+			Id = new ItemId<<#= Utils.DataClassName(ObjectData) #>>(serializable.Id);
+			loader.<#= Utils.ObjectSetterName(ObjectData.name) #>(serializable.Id, this);
+
+<#
+			}
+#>
+<#
+			PushIndent("\t\t\t");
+
+			if (hasExpression)
+				WriteLine("var variableResolver = GetVariableResolver();");
+			foreach (var item in baseMembers)
+				WriteDeserializationCode(item, Schema);
+
+			PopIndent();
+#>
+
+			OnDataDeserialized(serializable, loader);
+		}
+
+<#
+			if (hasExpression)
+			{
+#>
+		protected abstract IVariableResolver GetVariableResolver();
+
+		protected abstract class BaseVariableResolver : IVariableResolver
+		{
+			protected abstract <#= Utils.DataClassName(ObjectData) #> Context { get; }
+
+			public virtual IFunction<<#= Utils.VariantType #>> ResolveFunction(string name)
+            {
+<#
+				PushIndent("\t\t\t\t");
+
+				foreach(var item in baseMembers)
+					WriteVariableResolverResolveFunction(item);
+
+				PopIndent();
+#>
+				return ((IVariableResolver)Context).ResolveFunction(name);
+			}
+
+			public virtual Expression<<#= Utils.VariantType #>> ResolveVariable(string name)
+			{
+<#
+				PushIndent("\t\t\t\t");
+
+				foreach(var item in baseMembers)
+					WriteVariableResolverResolve(item);
+
+				PopIndent();
+#>
+				return ((IVariableResolver)Context).ResolveVariable(name);
+			}
+
+<#
+			PushIndent("\t\t\t");
+
+			foreach(var item in baseMembers)
+				WriteVariableResolverGetter(item, "Context");
+
+			PopIndent();
+#>
+		}
+<#
+			}
+#>
+
+<#
+		if (ObjectType == ObjectType.Class)
+        {
+#>
+		public readonly ItemId<<#= Utils.DataClassName(ObjectData) #>> Id;
+
+<#
+		}
+#>
+<#
+		PushIndent("\t\t");
+
+		foreach (var item in baseMembers) 
+			WriteDataClassMember(item, Schema);
+
+		PopIndent();
+#>
+
+		public static <#= Utils.DataClassName(ObjectData) #> DefaultValue { get; private set; }<#= ObjectType == ObjectType.Struct ? " = Create(new(), null);" : "" #>
+	}
+
+	public interface <#= factoryName #>
+    {
+<#
+		foreach (var item in extraMembers)
+        {
+#>
+	    T Create(<#= ExtraClassName(item.Key) #> content);
+<#
+		}
+#>
+    }
+
+<#
+	foreach (var content in extraMembers)
+    {
+#>
+    public partial class <#= ExtraClassName(content.Key) + " : " + Utils.DataClassName(ObjectData) #>
+    {
+		partial void OnDataDeserialized(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #>.Loader loader);
+
+  		public <#= ExtraClassName(content.Key) #>(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #>.Loader loader)
+            : base(serializable, loader)
+        {
+<#
+			PushIndent("\t\t\t");
+
+			if (hasExpression)
+				WriteLine("var variableResolver = GetVariableResolver();");
+
+			foreach (var item in content.Value)
+				WriteDeserializationCode(item, Schema);
+
+			PopIndent();
+#>
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(<#= factoryName #> factory)
+        {
+            return factory.Create(this);
+        }
+
+<#
+		PushIndent("\t\t");
+
+		foreach (var item in content.Value)
+			WriteDataClassMember(item, Schema);
+
+		PopIndent();
+#>
+
+<#
+		if (hasExpression)
+		{
+#>
+		private IVariableResolver _iVariableResolver;
+		protected override IVariableResolver GetVariableResolver() {
+			if(_iVariableResolver == null)
+				_iVariableResolver = new VariableResolver(this);
+			return _iVariableResolver;
+		}
+
+		private class VariableResolver : BaseVariableResolver
+		{
+			private <#= ExtraClassName(content.Key) #> _context;
+			
+			protected override <#= Utils.DataClassName(ObjectData) #> Context => _context;
+
+			public VariableResolver(<#= ExtraClassName(content.Key) #> context)
+			{
+				_context = context;
+			}
+
+			public override IFunction<<#= Utils.VariantType #>> ResolveFunction(string name)
+            {
+<#
+				PushIndent("\t\t\t\t");
+
+				foreach (var item in content.Value)
+					WriteVariableResolverResolveFunction(item);
+
+				PopIndent();
+#>
+				return base.ResolveFunction(name);
+			}
+
+			public override Expression<<#= Utils.VariantType #>> ResolveVariable(string name)
+			{
+<#
+				PushIndent("\t\t\t\t");
+
+				foreach(var item in content.Value)
+					WriteVariableResolverResolve(item);
+
+				PopIndent();
+#>
+				return base.ResolveVariable(name);
+			}
+
+<#
+			PushIndent("\t\t\t");
+
+			foreach(var item in content.Value)
+				WriteVariableResolverGetter(item);
+
+			PopIndent();
+#>
+		}
+<#
+		}
+#>
+
+    }
+<#
+	}
+#>
+
+}
+
+<#+
+    private void SortMembers(XmlClassItem data, out List<XmlClassMember> baseMembers, out Dictionary<string, List<XmlClassMember>> extraMembers, out string switchEnumType)
+    {
+        baseMembers = new List<XmlClassMember>();
+		switchEnumType = string.Empty;
+
+		foreach (var item in data.members)
+        {
+            if (!string.IsNullOrEmpty(item.caseValue)) continue;
+
+            baseMembers.Add(item);
+			if (item.name.Equals(ObjectData.switchEnum, StringComparison.Ordinal))
+				switchEnumType = item.typeid;
+        }
+
+		var switchEnum = Schema.GetEnum(switchEnumType);
+		extraMembers = switchEnum.items.ToDictionary(item => item.name, item => new List<XmlClassMember>());
+
+        foreach (var item in data.members)
+        {
+            if (string.IsNullOrEmpty(item.caseValue)) continue;
+
+            var caseValues = item.caseValue.Split(Constants.ValueSeparators, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var value in caseValues)
+				extraMembers[value].Add(item);
+        }
+    }
+
+	private string ExtraClassName(string type) { return Utils.DataClassName(ObjectData) + "_" + type; }
+#>

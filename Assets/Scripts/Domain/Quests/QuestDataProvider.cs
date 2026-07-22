@@ -1,4 +1,5 @@
 ﻿using Session;
+using GameDatabase;
 using System.Linq;
 using System.Collections.Generic;
 using Services.InternetTime;
@@ -12,7 +13,9 @@ namespace Domain.Quests
         private readonly GameTime _gameTime;
         private readonly Utilites.PcgRandom _random = new();
 
-        public QuestDataProvider(ISessionData session, GameTime gameTime)
+        public QuestDataProvider(
+            ISessionData session,
+            GameTime gameTime)
         {
             _session = session;
             _gameTime = gameTime;
@@ -31,11 +34,13 @@ namespace Domain.Quests
 
         public void SetQuestProgress(QuestProgress data) =>
             _session.Quests.SetQuestProgress(data.QuestId.Value, data.StarId, data.Seed, data.ActiveNode, _gameTime.TotalPlayTime);
-        public void SetQuestCompleted(int questId, int starId) => 
-            _session.Quests.SetQuestCompleted(questId, starId, true, _gameTime.TotalPlayTime);
+        public void SetQuestCompleted(int questId, int starId)
+            => _session.Quests.SetQuestCompleted(questId, starId, true, _gameTime.TotalPlayTime);
         public void SetQuestFailed(int questId, int starId) => 
             _session.Quests.SetQuestCompleted(questId, starId, false, _gameTime.TotalPlayTime);
         public void SetQuestCancelled(int questId, int starId) => _session.Quests.CancelQuest(questId, starId);
+        public int GetFactionRelations(int starId) => _session.Quests.GetFactionRelations(starId);
+        public void SetFactionRelations(int starId, int value) => _session.Quests.SetFactionRelations(starId, value);
 
         public int GenerateSeed(QuestModel quest, int starId)
         {
@@ -47,5 +52,6 @@ namespace Domain.Quests
             var seed = _session.Game.Seed + (id + starId + 1)*(totalStartCount + 1);
             return seed;
         }
+
     }
 }

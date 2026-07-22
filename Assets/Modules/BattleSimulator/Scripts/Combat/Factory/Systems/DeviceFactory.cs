@@ -1,9 +1,10 @@
-﻿using Combat.Component.Body;
+using Combat.Component.Body;
 using Combat.Component.Features;
 using Combat.Component.Ship;
 using Combat.Component.Systems;
 using Combat.Component.Systems.Devices;
 using Combat.Component.Triggers;
+using Combat.Component.Unit.Classification;
 using Combat.Effects;
 using Combat.Scene;
 using Combat.Services;
@@ -29,11 +30,49 @@ namespace Combat.Factory
         {
             var stats = deviceData.Device;
 
+            if (deviceData.ComponentId == 311)
+                return new DimensionalAscensionDevice(ship, stats, deviceData.KeyBinding >= 0 ? deviceData.KeyBinding : 0);
+
+            if (deviceData.ComponentId == 312)
+                return new SophonGuidanceDevice(ship, stats,
+                    ship.Type.Side == UnitSide.Enemy ? -1 : deviceData.KeyBinding >= 0 ? deviceData.KeyBinding : 0,
+                    _scene);
+
+            if (deviceData.ComponentId == 947)
+                return new LowDimensionalProjectionDevice(stats);
+
             SystemBase device;
             ConditionType soundEffectCondition = ConditionType.OnActivate;
 
             switch (stats.DeviceClass)
             {
+                case DeviceClass.Radar:
+                    device = new PassiveRadarDevice(stats);
+                    break;
+                case DeviceClass.RadarStealth:
+                    device = new RadarStealthDevice(ship, stats, deviceData.KeyBinding);
+                    break;
+                case DeviceClass.SophonJammer:
+                    {
+                        var bulletFactory = new BulletFactoryObsolete(
+                            CreateSophonEmpPulseStats(),
+                            _scene,
+                            _services,
+                            _spaceObjectFactory,
+                            _effectFactory,
+                            ship,
+                            false,
+                            ship,
+                            stats.Lifetime,
+                            0.20f,
+                            1f);
+                        device = new SophonJammerDevice(ship, stats, deviceData.KeyBinding, _scene, bulletFactory);
+
+                        var effect = CreateEffect(stats, ship.Body.Scale);
+                        if (effect != null)
+                            device.AddTrigger(new FlashEffect(effect, ship.Body, 0.6f, Vector2.zero, ConditionType.OnActivate));
+                    }
+                    break;
                 case DeviceClass.ClonningCenter:
                     device = new ClonningDevice(ship, stats, _shipFactory, shipSpec, _effectFactory, deviceData.KeyBinding);
                     break;
@@ -107,9 +146,16 @@ namespace Combat.Factory
                     device = new RepairSystem(ship, stats, deviceData.KeyBinding);
 
                     var repairRate = stats.Power * ship.Stats.Armor.MaxValue / 100;
+                    var energyRepairRate = 0f;
                     var hitPoints = ship.Stats.HitPointsMultiplier * stats.Size;
-                    var trigger = new RepairBotAction(ship, device, _satelliteFactory, repairRate, stats.Size, stats.Range, hitPoints, stats.Lifetime, 
-                        stats.Color, stats.Sound);
+                    if (deviceData.ComponentId == 940)
+                    {
+                        repairRate = ship.Stats.Armor.MaxValue * 0.05f;
+                        energyRepairRate = ship.Stats.Energy.MaxValue * 0.10f;
+                        hitPoints *= 5f;
+                    }
+                    var trigger = new RepairBotAction(ship, device, _satelliteFactory, repairRate, stats.Size, stats.Range, hitPoints, stats.Lifetime,
+                        stats.Color, stats.Sound, energyRepairRate);
 
                     device.AddTrigger(trigger);
                     soundEffectCondition = ConditionType.None;
@@ -128,7 +174,7 @@ namespace Combat.Factory
                         device.AddTrigger(new StaticEffect(stats.EffectPrefab, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
                     break;
                 case DeviceClass.TeleporterV2:
-                    device = new WarpDrive(ship, stats, deviceData.KeyBinding);
+                    device = new WarpDrive(ship, stats, deviceData.KeyBinding, _scene, deviceData.ComponentId == 305);
                     if (stats.VisualEffect != null)
                         device.AddTrigger(new StaticEffect(stats.VisualEffect, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
                     else if (stats.EffectPrefab)
@@ -179,6 +225,32 @@ namespace Combat.Factory
                 device.AddTrigger(CreateSoundEffect(stats, soundEffectCondition));
 
             return device;
+        }
+
+        private static AmmunitionObsoleteStats CreateSophonEmpPulseStats()
+        {
+            // Invisible, very short-ranged carrier used only to route Sophon EMP
+            // through the proven legacy bullet detonation pipeline. The Empty
+            // prefab has no rendered views, while Bomb guarantees OnExpire.
+            return new AmmunitionObsoleteStats
+            {
+                AmmunitionClass = AmmunitionClassObsolete.Bomb,
+                DamageType = DamageType.Energy,
+                Impulse = 0.01f,
+                Recoil = 0f,
+                Size = 0.03f,
+                AreaOfEffect = 0f,
+                Damage = 0f,
+                Range = 0.5f,
+                Velocity = 20f,
+                LifeTime = 0.05f,
+                HitPoints = 0,
+                IgnoresShipVelocity = true,
+                EnergyCost = 0f,
+                Color = new ColorData(new Color(1f, 1f, 1f, 0f)),
+                HitEffectPrefab = PrefabId.Empty,
+                BulletPrefab = new PrefabId("Empty", PrefabId.Type.Bullet),
+            };
         }
 
         private IEffect CreateEffect(DeviceStats stats, float scale, IBody parent = null)

@@ -1,0 +1,33 @@
+{
+  "ItemType": 6,
+  "Id": 166,
+  "ShipType": 0,
+  "SizeClass": 0,
+  "Name": "水滴",
+  "Description": "三体势力高速探测器。圆头为舰首，表面可镜面反射激光；碰撞敌舰时会贯穿并造成巨量动能伤害。",
+  "Faction": 22,
+  "IconImage": "waterdrop",
+  "IconScale": 0.6,
+  "ModelImage": "waterdrop",
+  "ModelScale": 5.6,
+  "EngineColor": "#86EFFF",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.72
+      },
+      "Size": 0.15
+    }
+  ],
+  "Layout": "0001000002220000222000022200005550000555000055500",
+  "Features": {
+    "ArmorBonus": 8.0,
+    "VelocityBonus": 0.25,
+    "TurnRateBonus": 0.25,
+    "ShipWeightBonus": 3.0,
+    "KineticResistance": 99.0,
+    "EnergyResistance": 4.0,
+    "HeatResistance": 4.0,
+    "CorrosiveResistance": 1.0
+  }
+}

@@ -14,6 +14,10 @@ namespace GameDatabase.Extensions
 				return "$EnergyDamage";
 			case DamageType.Heat:
 				return "$HeatDamage";
+			case DamageType.Corrosive:
+				return "$CorrosiveDamage";
+			case DamageType.True:
+				return "$TrueDamage";
 			default:
 				return "-";
 			}

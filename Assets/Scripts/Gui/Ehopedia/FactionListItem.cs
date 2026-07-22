@@ -2,6 +2,7 @@
 using Services.Localization;
 using UnityEngine;
 using UnityEngine.UI;
+using Gui.Common;
 
 namespace Gui.Ehopedia
 {
@@ -17,6 +18,7 @@ namespace Gui.Ehopedia
             Faction = faction;
             var color = faction.Color;
             _icon.color = color;
+            FactionIconUtility.Apply(_icon, faction, 56f);
             if (_background) _background.color = new Color(color.R, color.G, color.B, 0.5f);
             _name.text = unlocked ? localization.GetString(faction.Name) : "???";
             _toggle.isOn = false;

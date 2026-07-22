@@ -7,14 +7,15 @@ namespace GameDatabase.DataModel
     public partial class InstalledComponent
     {
         public InstalledComponent(
-            Component component, 
-            ComponentMod modification, 
-            ModificationQuality quality, 
-            int x, 
-            int y, 
-            int barrelId, 
-            int behaviour, 
-            int keyBinding)
+            Component component,
+            ComponentMod modification,
+            ModificationQuality quality,
+            int x,
+            int y,
+            int barrelId,
+            int behaviour,
+            int keyBinding,
+            int rotation = 0)
         {
             Component = component;
             Modification = modification;
@@ -24,6 +25,7 @@ namespace GameDatabase.DataModel
             BarrelId = barrelId;
             Behaviour = behaviour;
             KeyBinding = keyBinding;
+            Rotation = UnityEngine.Mathf.Clamp(rotation, 0, 3);
         }
 
         public InstalledComponentSerializable Serialize()
@@ -38,6 +40,7 @@ namespace GameDatabase.DataModel
                 BarrelId = BarrelId,
                 Behaviour = Behaviour,
                 KeyBinding = KeyBinding,
+                Rotation = Rotation,
             };
         }
     }

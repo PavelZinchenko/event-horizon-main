@@ -34,6 +34,7 @@ namespace GameDatabase.DataModel
 			BarrelId = UnityEngine.Mathf.Clamp(serializable.BarrelId, 0, 255);
 			Behaviour = UnityEngine.Mathf.Clamp(serializable.Behaviour, 0, 10);
 			KeyBinding = UnityEngine.Mathf.Clamp(serializable.KeyBinding, -10, 10);
+			Rotation = UnityEngine.Mathf.Clamp(serializable.Rotation, 0, 3);
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -46,6 +47,7 @@ namespace GameDatabase.DataModel
 		public int BarrelId { get; private set; }
 		public int Behaviour { get; private set; }
 		public int KeyBinding { get; private set; }
+		public int Rotation { get; private set; }
 
 		public static InstalledComponent DefaultValue { get; private set; }= new(new(), null);
 	}

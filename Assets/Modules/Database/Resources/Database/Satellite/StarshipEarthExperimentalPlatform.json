@@ -1,0 +1,10 @@
+{
+  "ItemType": 7,
+  "Id": 950,
+  "Name": "$StarshipEarthExperimentalPlatform",
+  "ModelImage": "starship_earth_experimental_platform",
+  "ModelScale": 0.25,
+  "SizeClass": 4,
+  "Layout": "6666",
+  "Barrels": []
+}

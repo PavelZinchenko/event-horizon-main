@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="ComponentModType">
+    <item name="Empty" />
+    <item name="Lightweight" />
+    <item name="LowEnergyCost" />
+    <item name="Fortified" />
+    <item name="ExtraHitPoints" />
+    <item name="Damage" />
+    <item name="Cooldown" />
+    <item name="Range" />
+    <item name="BulletVelocity" />
+    <item name="EnergyCapacity" />
+    <item name="RepairRate" />
+    <item name="EnginePower" />
+    <item name="RechargeRate" />
+    <item name="BulletVelocity2" />
+    <item name="AreaOfEffect" />
+    <item name="ShieldPower" />
+    <item name="Damage2" />
+    <item name="DroneDamage" />
+    <item name="DroneDefense" />
+    <item name="DroneSpeed" />
+    <item name="DroneRange" />
+    <item name="Recoil" />
+</data>

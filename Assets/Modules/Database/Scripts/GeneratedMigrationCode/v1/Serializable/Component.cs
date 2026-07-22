@@ -23,6 +23,7 @@ namespace DatabaseMigration.v1.Serializable
 
 		public string Name;
 		public string Description;
+		public ContentSource ContentSource;
 		public ComponentCategory DisplayCategory;
 		public Availability Availability;
 		public int ComponentStatsId;

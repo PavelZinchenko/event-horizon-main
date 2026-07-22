@@ -1,0 +1,79 @@
+{
+  "ItemType": 6,
+  "Id": 162,
+  "ShipType": 0,
+  "SizeClass": 1,
+  "Name": "$StarshipEarthDestroyer",
+  "Description": "$StarshipEarthDestroyerDescription",
+  "Faction": 21,
+  "IconImage": "starship_earth_destroyer_preview5",
+  "IconScale": 1.0,
+  "ModelImage": "starship_earth_destroyer_preview5",
+  "ModelScale": 3.0,
+  "EngineColor": "#FF0000",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.9
+      },
+      "Size": 1.0
+    }
+  ],
+  "Layout": "000000000000111000000000000000000000000111000000000000000000000000111000000000000000000000001111100000000000000000000001111100000000000000000000011111110000000000000000000011111110000000000000000000000111000000000000000000000040121040000000000000000000043222340000000000000000000043222340000000000000000000000222000000000000000000000003222300000000000000000000003222300000000000000000000003222300000000000000000000040222040000000000000000000043222340000000000000000000043222340000000000000000000000222000000000000000000000000323000000000000000000000003323300000000000000000000003323300000000000000000000033323330000000000000000000035555530000000000000000000005555500000000000000000000005555500000000000000000000005555500000000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.4,
+        "y": 0.2
+      },
+      "WeaponClass": "CL"
+    },
+    {
+      "Position": {
+        "x": 0.4,
+        "y": -0.2
+      },
+      "WeaponClass": "CL"
+    },
+    {
+      "Position": {
+        "x": -0.1,
+        "y": 0.2
+      },
+      "WeaponClass": "CL"
+    },
+    {
+      "Position": {
+        "x": -0.1,
+        "y": -0.2
+      },
+      "WeaponClass": "CL"
+    },
+    {
+      "Position": {
+        "x": -0.2,
+        "y": 0.62
+      },
+      "Rotation": 90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
+    },
+    {
+      "Position": {
+        "x": -0.2,
+        "y": -0.62
+      },
+      "Rotation": -90.0,
+      "AutoAimingArc": 360.0,
+      "WeaponClass": "L"
+    }
+  ],
+  "Features": {
+    "EnergyResistance": 1.0,
+    "KineticResistance": 1.0,
+    "HeatResistance": 1.0,
+    "ArmorBonus": 1.0,
+    "ShieldBonus": 1.0,
+    "DroneBuildSpeedBonus": 10.0
+  }
+}

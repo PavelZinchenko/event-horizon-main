@@ -31,8 +31,13 @@ namespace Gui.Exploration
 
         public void Initialize()
         {
-            _shipListContentFiller.SelectedShip = _playerFleet.ExplorationShip;
-            _shipListContentFiller.InitializeShips(_playerFleet.Ships.Where(IsShipAllowed).OrderBy(ship => ship.Id.Value));
+            var availableShips = _playerFleet.Ships.Where(IsShipAllowed).OrderBy(ship => ship.Id.Value).ToList();
+            var selected = availableShips.Contains(_playerFleet.ExplorationShip)
+                ? _playerFleet.ExplorationShip
+                : availableShips.FirstOrDefault();
+            _playerFleet.ExplorationShip = selected;
+            _shipListContentFiller.SelectedShip = selected;
+            _shipListContentFiller.InitializeShips(availableShips);
             _shipList.RefreshContent();
 
             var selectedIndex = _shipListContentFiller.SelectedShipIndex;
@@ -48,11 +53,10 @@ namespace Gui.Exploration
 
         private static bool IsShipAllowed(IShip ship)
         {
-            if (ship.Model.SizeClass == SizeClass.Frigate) return true;
-            //if (ship.Id.Value == 103) return true; // wormship
-            //if (ship.Id.Value == 78) return true; // scavenger
-
-            return false;
+            // Exploration used to silently require a frigate. That leaves the
+            // infected hive panel with no selectable ship for many valid fleets.
+            // Any mobile owned ship can carry an exploration team; stations cannot.
+            return ship != null && ship.Model.SizeClass != SizeClass.Starbase;
         }
     }
 }

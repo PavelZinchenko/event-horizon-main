@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="Muttering1">Потанцуем?</string>
+    <string name="Muttering2">Шоу началось</string>
+    <string name="Muttering3">Ни шагу назад!</string>
+    <string name="Muttering4">Не сдаваться!</string>
+    <string name="Muttering5">Вааааа</string>
+    <string name="Whining1">Просто царапина</string>
+    <string name="Whining2">Меня подбили</string>
+    <string name="Whining3">Плохо дело</string>
+    <string name="Whining4">У меня проблемы</string>
+    <string name="Whining5">Нужна помощь</string>
+    <string name="Battlecry1">За родину!</string>
+    <string name="Battlecry2">П@#$%!</string>
+    <string name="Battlecry3">Смерть лучше позора</string>
+    <string name="Battlecry4">В атаку!</string>
+    <string name="Battlecry5">Банзай!</string>
+    <string name="Provoking1">Моргалы выколю!</string>
+    <string name="Provoking2">Я твой дом труба шатал</string>
+    <string name="Provoking3">Это все что ты можешь?</string>
+    <string name="Provoking4">Хорошая попытка</string>
+    <string name="Provoking5">Твой ход</string>
+</resources>

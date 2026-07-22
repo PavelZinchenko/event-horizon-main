@@ -187,7 +187,7 @@ MonoBehaviour:
   _class: 4
   _waitOpenAnimationDone: 0
   _waitCloseAnimationDone: 0
-  _initiallyHidden: 0
+  _initiallyHidden: 1
   _escapeKeyAction: 2
   OnInitializedEvent:
     m_PersistentCalls:
@@ -576,7 +576,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &102501860
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11761,7 +11761,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1444238798}
-  - component: {fileID: 1444238799}
   m_Layer: 0
   m_Name: UnityEngineThread
   m_TagString: Untagged
@@ -11785,19 +11784,6 @@ Transform:
   m_Father: {fileID: 131907198}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1444238799
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 114607665358832224, guid: 035864ce2fdd631429f08fb636390c9b,
-    type: 2}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1444238797}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f00e7943a8a21e047ac098c7f852b05d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1445051587
 GameObject:
   m_ObjectHideFlags: 0

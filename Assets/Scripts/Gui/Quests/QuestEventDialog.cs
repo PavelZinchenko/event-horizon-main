@@ -1,4 +1,5 @@
 ﻿using Domain.Quests;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Services.Gui;
@@ -19,8 +20,17 @@ namespace Gui.Quests
         public void Initialize(WindowArgs args)
         {
             var data = args.Get<IUserInteraction>();
-            _description.Initialize(data.Message, data.CharacterName, data.CharacterAvatar);
-            _actions.Initialize(data.Actions);
+            if (!string.IsNullOrEmpty(data.StoryImageResource))
+            {
+                _description.InitializeStoryImage(data.StoryImageResource, data.Actions?.FirstOrDefault());
+                _actions.gameObject.SetActive(false);
+            }
+            else
+            {
+                _description.Initialize(data.Message, data.CharacterName, data.CharacterAvatar);
+                _actions.gameObject.SetActive(true);
+                _actions.Initialize(data.Actions);
+            }
             if (_fleet) _fleet.Initialize(_questCombatModelFacctory.CreateEnemyFleet(data.EnemyData));
             if (_items) _items.Initialize(data.Loot);
 

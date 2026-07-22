@@ -4,4 +4,5 @@
     <item name="Energy" />
     <item name="Heat" />
     <item name="Corrosive" />
+    <item name="True" />
 </data>

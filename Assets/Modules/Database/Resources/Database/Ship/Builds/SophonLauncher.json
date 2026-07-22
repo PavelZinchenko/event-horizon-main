@@ -1,0 +1,22 @@
+{
+  "ItemType": 8,
+  "Id": 1145148,
+  "ShipId": 1145148,
+  "AvailableForPlayer": true,
+  "AvailableForEnemy": true,
+  "DifficultyClass": 1,
+  "BuildFaction": 22,
+  "Components": [
+    { "ComponentId": 952, "X": 21, "Y": 13, "BarrelId": 0, "KeyBinding": 3 },
+    { "ComponentId": 932, "X": 4, "Y": 22, "BarrelId": 1, "KeyBinding": 0 },
+    { "ComponentId": 932, "X": 38, "Y": 22, "BarrelId": 2, "KeyBinding": 0 },
+    { "ComponentId": 931, "X": 21, "Y": 18 },
+    { "ComponentId": 931, "X": 23, "Y": 18 },
+    { "ComponentId": 941, "X": 18, "Y": 5 },
+    { "ComponentId": 941, "X": 26, "Y": 5 },
+    { "ComponentId": 935, "X": 21, "Y": 11 },
+    { "ComponentId": 935, "X": 23, "Y": 11 },
+    { "ComponentId": 942, "X": 21, "Y": 40 },
+    { "ComponentId": 942, "X": 23, "Y": 40 }
+  ]
+}

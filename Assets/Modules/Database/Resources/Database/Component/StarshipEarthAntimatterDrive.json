@@ -1,0 +1,21 @@
+{
+  "ItemType": 1,
+  "Id": 309,
+  "Name": "反物质引擎",
+  "Description": "利用正反物质湮灭爆发的巨大能量进行供能驱动的引擎",
+  "ContentSource": 1,
+  "DisplayCategory": 4,
+  "Availability": 1,
+  "ComponentStatsId": 297,
+  "Faction": 21,
+  "Level": 60,
+  "Icon": "engine6",
+  "Color": "#FFFFFF",
+  "Layout": "1010",
+  "CellType": "5",
+  "PossibleModifications": [
+    2,
+    11,
+    1
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "ItemType": 27,
+  "Id": 22,
+  "Shape": 1,
+  "Image": "emp_projectile",
+  "Size": 0.42,
+  "Margins": 0.14,
+  "MainColor": "#FFFFFFFF",
+  "MainColorMode": 0,
+  "SecondColor": "#74E9FF",
+  "SecondColorMode": 2
+}

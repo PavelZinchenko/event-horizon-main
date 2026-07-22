@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data type="enum" name="RewardCondition">
+    <item name="Default">0</item>
+    <item name="Always">1</item>
+    <item name="Never">2</item>
+</data>

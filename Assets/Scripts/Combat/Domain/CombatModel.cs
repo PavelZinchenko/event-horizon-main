@@ -15,15 +15,18 @@ namespace Combat.Domain
         private readonly Dictionary<IShip, long> _playerExperienceData = new Dictionary<IShip, long>();
         private readonly ShipDestroyedSignal _shipDestroyedSignal;
         private readonly FleetModel _playerFleet;
+        private readonly FleetModel _allyFleet;
         private readonly FleetModel _enemyFleet;
         private long _totalExperience;
 
         public CombatModel(
             FleetModel playerFleet, 
+            FleetModel allyFleet,
             FleetModel enemyFleet,
             ShipDestroyedSignal shipDestroyedSignal)
         {
             _playerFleet = playerFleet;
+            _allyFleet = allyFleet;
             _enemyFleet = enemyFleet;
             _shipDestroyedSignal = shipDestroyedSignal;
             _shipDestroyedSignal.Event += OnShipDestroyed;
@@ -38,7 +41,10 @@ namespace Combat.Domain
         }
 
         public IFleetModel PlayerFleet { get { return _playerFleet; } }
+        public IFleetModel AllyFleet { get { return _allyFleet; } }
         public IFleetModel EnemyFleet { get { return _enemyFleet; } }
+        public IShipInfo DefenseStarbase { get; internal set; }
+        public bool IsStarbaseDefense { get; internal set; }
 
         public IEnumerable<KeyValuePair<IShip, long>> PlayerExperience { get { return _playerExperienceData; } }
         public IEnumerable<IProduct> SpecialRewards { get; set; }

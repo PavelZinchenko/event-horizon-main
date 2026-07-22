@@ -23,6 +23,7 @@ namespace DatabaseMigration.v1.Serializable
 
 		public string Name;
 		public string Color;
+		public string Icon;
 		public bool NoTerritories;
 		public int HomeStarDistance;
 		public int HomeStarDistanceMax;

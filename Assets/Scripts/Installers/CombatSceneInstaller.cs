@@ -13,6 +13,7 @@ using Services.Messenger;
 using GameServices.SceneManager;
 using UnityEngine;
 using Zenject;
+using GameServices.Multiplayer;
 
 namespace Installers
 {
@@ -42,11 +43,12 @@ namespace Installers
 				NoEnemyMessages = !_gameSettings.ShowEnemyMessages,
 			};
 
-            var areaSize = _combatModel.Rules.BattleMapSize;
+            var areaSize = ThreeBody.CombatMapSizeSettings.Scale(_combatModel.Rules.BattleMapSize);
 
             Container.BindInterfacesTo<Messenger>().AsSingle().WithArguments(GameScene.Combat);
 
 			Container.BindInterfacesAndSelfTo<CombatManager>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<MultiplayerBattleSync>().AsSingle().NonLazy();
             Container.BindInterfacesTo<ViewRect>().AsTransient();
             Container.BindInterfacesTo<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = areaSize, AreaHeight = areaSize }).NonLazy();
             Container.BindInterfacesTo<CollisionManager>().AsSingle();

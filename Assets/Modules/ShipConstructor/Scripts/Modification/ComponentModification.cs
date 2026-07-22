@@ -19,6 +19,9 @@ namespace Constructor.Modification
 
 		public string GetDescription(ILocalization localization)
 		{
+			if (ThreeBodyComponentModifications.IsCustom(_modification))
+				return ThreeBodyComponentModifications.GetDescription(_modification.Id.Value);
+
 			if (_modification.Modifications.Count == 0)
 				return string.Empty;
 
@@ -44,6 +47,9 @@ namespace Constructor.Modification
 
 		public void Apply(ref ShipEquipmentStats stats)
 		{
+			if (ThreeBodyComponentModifications.Apply(_modification, ref stats))
+				return;
+
 			for (int i = 0; i < _modification.Modifications.Count; ++i)
 			{
 				var mod = _modification.Modifications[i];
@@ -125,6 +131,9 @@ namespace Constructor.Modification
 
 		public void Apply(ref DeviceStats device)
 		{
+			if (ThreeBodyComponentModifications.Apply(_modification, ref device))
+				return;
+
 			for (int i = 0; i < _modification.Modifications.Count; ++i)
 			{
 				var mod = _modification.Modifications[i];
@@ -151,6 +160,9 @@ namespace Constructor.Modification
 
 		public void Apply(ref WeaponStats weapon, ref AmmunitionObsoleteStats ammunition)
 		{
+			if (ThreeBodyComponentModifications.Apply(_modification, ref weapon, ref ammunition))
+				return;
+
 			for (int i = 0; i < _modification.Modifications.Count; ++i)
 			{
 				var mod = _modification.Modifications[i];
@@ -187,6 +199,9 @@ namespace Constructor.Modification
 
 		public void Apply(ref WeaponStatModifier statModifier)
 		{
+			if (ThreeBodyComponentModifications.Apply(_modification, ref statModifier))
+				return;
+
 			for (int i = 0; i < _modification.Modifications.Count; ++i)
 			{
 				var mod = _modification.Modifications[i];
@@ -221,6 +236,9 @@ namespace Constructor.Modification
 
 		public void Apply(ref DroneBayStats droneBay)
 		{
+			if (ThreeBodyComponentModifications.Apply(_modification, ref droneBay))
+				return;
+
 			for (int i = 0; i < _modification.Modifications.Count; ++i)
 			{
 				var mod = _modification.Modifications[i];

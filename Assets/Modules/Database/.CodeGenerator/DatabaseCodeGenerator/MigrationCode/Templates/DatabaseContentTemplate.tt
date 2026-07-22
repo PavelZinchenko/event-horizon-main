@@ -1,0 +1,157 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="Schema" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+using System;
+using System.Collections.Generic;
+using <#= Context.Namespace #>.<#= Utils.StorageNamespace #>;
+using <#= Context.Namespace #>.<#= Utils.TypesNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Schema.Version.ToNamespace() #>.<#= Utils.EnumsNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Schema.Version.ToNamespace() #>.<#= Utils.SerializableNamespace #>;
+
+namespace <#= Utils.RootNamespace #>.<#= Schema.Version.ToNamespace() #>.<#= Utils.StorageNamespace #>
+{
+    public class DatabaseContent : IContentLoader
+    {
+        public DatabaseContent(IJsonSerializer jsonSerializer, IDataStorage storage)
+        {
+            _serializer = jsonSerializer;
+            storage?.LoadContent(this);
+        }
+
+        public int VersionMajor 
+        {
+            get => <#= Utils.DatabaseSettings #> != null ? <#= Utils.DatabaseSettings #>.DatabaseVersion : <#= Schema.Version.Major #>;
+            set => Create<#= Utils.DatabaseSettings #>().<#= Utils.VersionMajor #> = value;
+        }
+
+        public int VersionMinor
+        {
+            get => <#= Utils.DatabaseSettings #> != null ? <#= Utils.DatabaseSettings #>.DatabaseVersionMinor : 0;
+            set => Create<#= Utils.DatabaseSettings #>().<#= Utils.VersionMinor #> = value;
+        }
+
+        public void LoadJson(string name, string content)
+        {
+            var item = _serializer.FromJson<SerializableItem>(content);
+            var type = item.ItemType;
+
+<#
+			var first = true;
+			foreach (var item in Schema.Objects)
+            {
+#>
+            <#= first ? "if" : "else if" #> (type == <#= Constants.ItemTypeEnum + "." + item.name #>)
+            {
+                var data = _serializer.FromJson<<#= Utils.SerializableClassName(item.name) #>>(content);
+                data.FileName = name;
+                <#= Utils.ObjectListPropertyName(item.name) #>.Add(data);
+            }
+<#
+				first = false;
+            }
+
+			foreach (var item in Schema.Configurations)
+            {
+#>
+            <#= first ? "if" : "else if" #> (type == <#= Constants.ItemTypeEnum + "." + item.name #>)
+            {
+                var data = _serializer.FromJson<<#= Utils.SerializableClassName(item.name) #>>(content);
+                data.FileName = name;
+                <#= item.name #> = data;
+            }
+<#
+				first = false;
+            }
+			if (!first)
+            {
+#>
+            else
+            {
+                throw new DatabaseException("Unknown file type - " + type + "(" + name + ")");
+            }
+<#
+			}
+#>
+        }
+
+        public void Export(IContentLoader contentLoader)
+        {
+<#
+		    foreach (var item in Schema.Objects)
+            {
+#>
+            foreach (var item in <#= Utils.ObjectListPropertyName(item.name) #>)
+                contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
+<#
+            }
+
+		    foreach (var item in Schema.Configurations)
+            {
+#>
+            if (<#= item.name #> != null)
+                contentLoader.LoadJson(<#= item.name #>.FileName, _serializer.ToJson(<#= item.name #>));
+<#
+            }
+#>
+            foreach (var item in _images)
+                contentLoader.LoadImage(item.Key, item.Value);
+            foreach (var item in _audioClips)
+                contentLoader.LoadAudioClip(item.Key, item.Value);
+            foreach (var item in _localizations)
+                contentLoader.LoadLocalization(item.Key, item.Value);
+        }
+
+		public void LoadLocalization(string name, string data)
+        {
+            _localizations.Add(name, data);
+        }
+
+        public void LoadImage(string name, <#= Utils.ImageType #> image)
+        {
+            _images.Add(name, image);
+        }
+
+        public void LoadAudioClip(string name, <#= Utils.AudioClipType #> audioClip)
+        {
+            _audioClips.Add(name, audioClip);
+        }
+
+<#
+		foreach (var item in Schema.Configurations)
+        {
+#>
+		public <#= Utils.SerializableClassName(item.name) + " " + item.name #> { get; private set; }
+<#
+        }
+#>
+
+<#
+		foreach (var item in Schema.Configurations)
+        {
+#>
+		public <#= $"{Utils.SerializableClassName(item.name)} Create{item.name}() => {item.name} ?? ({item.name} = new {Utils.SerializableClassName(item.name)}());" #>
+<#
+        }
+#>
+
+<#
+		foreach (var item in Schema.Objects)
+        {
+#>
+		public List<<#= Utils.SerializableClassName(item.name) #>> <#= Utils.ObjectListPropertyName(item.name) #> { get; } = new List<<#= Utils.SerializableClassName(item.name) #>>();
+<#
+        }
+#>
+
+        public IEnumerable<KeyValuePair<string, <#= Utils.ImageType #>>> Images => _images;
+        public IEnumerable<KeyValuePair<string, <#= Utils.AudioClipType #>>> AudioClips => _audioClips;
+        public IEnumerable<KeyValuePair<string, string>> Localizations => _localizations;
+
+        private readonly IJsonSerializer _serializer;
+
+        private readonly Dictionary<string, <#= Utils.ImageType #>> _images = new Dictionary<string, <#= Utils.ImageType #>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, <#= Utils.AudioClipType #>> _audioClips = new Dictionary<string, <#= Utils.AudioClipType #>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string> _localizations = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	}
+}

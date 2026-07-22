@@ -14,5 +14,6 @@ namespace GameDatabase.Enums
 		Energy,
 		Heat,
 		Corrosive,
+		True,
 	}
 }

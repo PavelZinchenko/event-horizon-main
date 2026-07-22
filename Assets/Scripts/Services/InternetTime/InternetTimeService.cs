@@ -32,7 +32,11 @@ namespace Services.InternetTime
                 .SelectMany(_ => GetNetworkTime())
                 .Subscribe(
                     OnTimeReceived,
-                    error => GameDiagnostics.Trace.LogError($"Error fetching time: {error}")
+                    error =>
+                    {
+                        GameDiagnostics.Trace.LogWarning($"Network time unavailable; using device time: {error.Message}");
+                        OnTimeReceived(DateTime.UtcNow);
+                    }
                 );
         }
 

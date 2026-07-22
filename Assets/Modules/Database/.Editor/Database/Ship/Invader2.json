@@ -1,0 +1,39 @@
+{
+  "ItemType": 6,
+  "Id": 80,
+  "ShipType": 3,
+  "Name": "Invader",
+  "IconImage": "space_invader",
+  "IconScale": 0.5,
+  "ModelImage": "space_invader",
+  "ModelScale": 3.0,
+  "EngineColor": "#40FFFFFF",
+  "Engines": [
+    {
+      "Position": {
+        "x": -0.4
+      },
+      "Size": 0.3
+    }
+  ],
+  "Layout": "0000000000000000000000000100010004010000010440114441104411144411140112252211000522522500000500050000000000000000000000000",
+  "Barrels": [
+    {
+      "Position": {
+        "x": 0.5,
+        "y": 0.9
+      }
+    },
+    {
+      "Position": {
+        "x": 0.5,
+        "y": -0.9
+      }
+    },
+    {
+      "Position": {
+        "x": 0.3
+      }
+    }
+  ]
+}

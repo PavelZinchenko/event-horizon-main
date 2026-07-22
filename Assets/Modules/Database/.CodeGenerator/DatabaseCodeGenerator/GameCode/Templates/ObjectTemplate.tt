@@ -1,0 +1,127 @@
+﻿<#@ template language="C#" #>
+<#@ include file="FuncParams.tt" #>
+<#@ include file="WriteDeserializationCode.tt" #>
+<#@ include file="WriteDataClassMember.tt" #>
+<#@ include file="GeneratedCodeWarning.tt" #>
+
+using System.Linq;
+using <#= Utils.RootNamespace #>.<#= Utils.EnumsNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.SerializableNamespace #>;
+using <#= Utils.RootNamespace #>.<#= Utils.TypesNamespace #>;
+<#
+	var hasExpression = HasExpression(ObjectData);
+	if (hasExpression)
+		WriteLine("using CodeWriter.ExpressionParser;");
+#>
+
+namespace <#= Utils.RootNamespace #>.<#= Utils.ClassesNamespace #>
+{
+	public partial class <#= Utils.DataClassName(ObjectData) #> <#= hasExpression ? ": IDefaultVariablesResolver" : "" #>
+	{
+		partial void OnDataDeserialized(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #>.Loader loader);
+
+		public static <#= Utils.DataClassName(ObjectData) #> <#= Utils.FactoryMethodName #>(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #>.Loader loader)
+		{
+			return serializable == null ? DefaultValue : new <#= Utils.DataClassName(ObjectData) #>(serializable, loader);
+		}
+
+		private <#= Utils.DataClassName(ObjectData) #>(<#= Utils.SerializableClassName(ObjectData.name) #> serializable, <#= Utils.DatabaseClassName #>.Loader loader)
+		{
+<#
+			if (ObjectType == ObjectType.Class)
+            {
+#>
+			Id = new ItemId<<#= Utils.DataClassName(ObjectData) #>>(serializable.Id);
+			loader.<#= Utils.ObjectSetterName(ObjectData.name) #>(serializable.Id, this);
+
+<#
+			}
+#>
+<#
+			PushIndent("\t\t\t");
+
+			if (hasExpression)
+				WriteLine("var variableResolver = new VariableResolver(this);");
+
+			foreach (var item in ObjectData.members)
+				WriteDeserializationCode(item, Schema);
+
+			PopIndent();
+#>
+
+			OnDataDeserialized(serializable, loader);
+		}
+
+<#
+		if (ObjectType == ObjectType.Class)
+        {
+#>
+		public readonly ItemId<<#= Utils.DataClassName(ObjectData) #>> Id;
+
+<#
+		}
+#>
+<#
+		PushIndent("\t\t");
+
+		foreach (var item in ObjectData.members)
+			WriteDataClassMember(item, Schema);
+
+		PopIndent();
+#>
+
+		public static <#= Utils.DataClassName(ObjectData) #> DefaultValue { get; private set; }<#= ObjectType == ObjectType.Struct ? "= new(new(), null);" : "" #>
+<#
+		if (hasExpression)
+		{
+#>
+
+		private class VariableResolver : IVariableResolver
+		{
+			private <#= Utils.DataClassName(ObjectData) #> _context;
+
+			public VariableResolver(<#= Utils.DataClassName(ObjectData) #> context)
+			{
+				_context = context;
+			}
+
+			public IFunction<<#= Utils.VariantType #>> ResolveFunction(string name)
+            {
+<#
+				PushIndent("\t\t\t\t");
+
+				foreach(var item in ObjectData.members)
+					WriteVariableResolverResolveFunction(item);
+
+				PopIndent();
+#>
+				return ((IVariableResolver)_context).ResolveFunction(name);
+			}
+
+			public Expression<<#= Utils.VariantType #>> ResolveVariable(string name)
+			{
+<#
+				PushIndent("\t\t\t\t");
+
+				foreach(var item in ObjectData.members)
+					WriteVariableResolverResolve(item);
+
+				PopIndent();
+#>
+				return ((IVariableResolver)_context).ResolveVariable(name);
+			}
+
+<#
+			PushIndent("\t\t\t");
+
+			foreach(var item in ObjectData.members)
+				WriteVariableResolverGetter(item);
+
+			PopIndent();
+#>
+		}
+<#
+		}
+#>
+	}
+}

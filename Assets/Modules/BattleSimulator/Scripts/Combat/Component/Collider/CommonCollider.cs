@@ -98,9 +98,16 @@ namespace Combat.Component.Collider
             if (unit == null || unit.Body == null) return false;
             
             if (Source == null) return true;
-            if (unit == Source || unit.Type.Owner == Source) return false;
+            if (unit == Source) return false;
+            if (unit.Type.Owner == Source && !IsBallLightning(unit)) return false;
 
             return true;
+        }
+
+        private static bool IsBallLightning(IUnit unit)
+        {
+            return unit is Combat.Component.Bullet.Bullet bullet &&
+                   bullet.Controller is Combat.Component.Controller.BallLightningController;
         }
 
         private void OnTriggerEnter2D(Collider2D collider)

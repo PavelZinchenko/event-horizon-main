@@ -1,0 +1,16 @@
+{
+  "ItemType": 1,
+  "Id": 296,
+  "Name": "$ZeroElementArmor",
+  "Description": "$ZeroElementArmorDescription",
+  "ContentSource": 1,
+  "DisplayCategory": 2,
+  "Availability": 1,
+  "ComponentStatsId": 284,
+  "Faction": -1,
+  "Level": 0,
+  "Icon": "zero_element_armor",
+  "Color": "#8CC8FF",
+  "Layout": "1111",
+  "CellType": "1"
+}

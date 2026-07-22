@@ -1,0 +1,19 @@
+{
+  "ItemType": 1,
+  "Id": 901,
+  "Name": "星舰地球制式导弹",
+  "Description": "一种配合雷达制导精准打击的高伤害导弹，命中率极高",
+  "ContentSource": 1,
+  "DisplayCategory": 1,
+  "Availability": 1,
+  "ComponentStatsId": 1,
+  "Faction": 21,
+  "Level": 75,
+  "Icon": "starship_earth_standard_missile",
+  "Color": "#FFFFFF",
+  "Layout": "1010",
+  "CellType": "4",
+  "WeaponId": 104,
+  "AmmunitionId": 901,
+  "WeaponSlotType": "M"
+}

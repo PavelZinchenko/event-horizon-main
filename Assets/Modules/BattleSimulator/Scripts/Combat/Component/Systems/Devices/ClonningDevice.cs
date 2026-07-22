@@ -101,6 +101,7 @@ namespace Combat.Component.Systems.Devices
             public IEnumerable<IDeviceData> ClonningCenters => _spec.ClonningCenters;
             public IEnumerable<IDroneBayData> DroneBays => Enumerable.Empty<IDroneBayData>();
 			public BehaviorTreeModel CustomAi => _spec.CustomAi;
+			public ThreeBodyModificationSummary ThreeBodyModifications => _spec.ThreeBodyModifications;
 
 			private readonly IShipStats _stats;
             private readonly IShipSpecification _spec;
@@ -148,10 +149,12 @@ namespace Combat.Component.Systems.Devices
             public float EnergyResistance => _stats.EnergyResistance * _defense;
             public float KineticResistance => _stats.KineticResistance * _defense;
             public float ThermalResistance => _stats.ThermalResistance * _defense;
+            public float CorrosiveResistance => _stats.CorrosiveResistance * _defense;
             public float EnergyAbsorptionPercentage => _stats.EnergyAbsorptionPercentage;
             public float KineticResistancePercentage => _stats.KineticResistancePercentage;
             public float EnergyResistancePercentage => _stats.EnergyResistancePercentage;
             public float ThermalResistancePercentage => _stats.ThermalResistancePercentage;
+            public float CorrosiveResistancePercentage => _stats.CorrosiveResistancePercentage;
             public bool Autopilot => false;
             public float DroneBuildSpeed => _stats.DroneBuildSpeed;
             public float DroneBuildTime => _stats.DroneBuildTime;
@@ -160,7 +163,6 @@ namespace Combat.Component.Systems.Devices
             public float TurnRateWihoutEnergy => _stats.TurnRateWihoutEnergy;
             public float ShieldCorrosiveResistancePercentage => _stats.ShieldCorrosiveResistancePercentage;
             public float EngineEnergyConsumption => _stats.EngineEnergyConsumption;
-
             private readonly float _size;
             private readonly float _attack;
             private readonly float _defense;

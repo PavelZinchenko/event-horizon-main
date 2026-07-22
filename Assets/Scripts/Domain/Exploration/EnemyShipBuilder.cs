@@ -26,6 +26,7 @@ namespace Game.Exploration
             var model = CreateShip();
             var spec = model.CreateBuilder().Build(_database.ShipSettings);
             var ship = shipFactory.CreateEnemyShip(spec, position, rotation, Maths.Distance.AiLevel(_level));
+            ship.Type.FactionId = model.Model.Faction.Id.Value;
             return ship;
         }
 

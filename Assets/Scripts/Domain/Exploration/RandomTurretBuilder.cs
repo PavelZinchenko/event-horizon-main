@@ -39,6 +39,7 @@ namespace Game.Exploration
 
             var spec = builder.Build(_database.ShipSettings);
             var starbase = shipFactory.CreateTurret(spec, position, rotation, UnitSide.Enemy);
+            starbase.Type.FactionId = ship.Model.Faction.Id.Value;
 
             return starbase;
         }
