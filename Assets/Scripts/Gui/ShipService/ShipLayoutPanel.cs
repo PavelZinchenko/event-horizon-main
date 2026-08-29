@@ -20,8 +20,19 @@ namespace Gui.ShipService
         public BlockViewModel WeaponBlock;
         public BlockViewModel InnerBlock;
         public BlockViewModel OuterBlock;
-        public BlockViewModel IoBlock;
         public BlockViewModel EngineBlock;
+
+        public BlockViewModel IoBlock;
+
+        public BlockViewModel OuterEngineBlock;
+        public BlockViewModel InnerEngineBlock;
+
+        public BlockViewModel WeaponEngineBlock;
+        public BlockViewModel WeaponOuterBlock;
+        public BlockViewModel WeaponInnerBlock;
+
+        public BlockViewModel AllBlock;
+
         public BlockViewModel CustomBlock;
         public BlockViewModel Selection;
         public Image BackgroundImage;
@@ -32,7 +43,7 @@ namespace Gui.ShipService
         [SerializeField] public BlockSelectedEvent _onBlockSelected = new BlockSelectedEvent();
 
         [Serializable]
-        public class BlockSelectedEvent : UnityEvent<int,int> { };
+        public class BlockSelectedEvent : UnityEvent<int, int> { };
 
         public void Reset()
         {
@@ -81,7 +92,16 @@ namespace Gui.ShipService
             WeaponBlock.gameObject.SetActive(false);
             InnerBlock.gameObject.SetActive(false);
             OuterBlock.gameObject.SetActive(false);
+
             IoBlock.gameObject.SetActive(false);
+
+            InnerEngineBlock.gameObject.SetActive(false);
+            OuterEngineBlock.gameObject.SetActive(false);
+            WeaponEngineBlock.gameObject.SetActive(false);
+            WeaponInnerBlock.gameObject.SetActive(false);
+            WeaponOuterBlock.gameObject.SetActive(false);
+            AllBlock.gameObject.SetActive(false);
+
             EngineBlock.gameObject.SetActive(false);
             CustomBlock.gameObject.SetActive(false);
             Cleanup();
@@ -116,26 +136,45 @@ namespace Gui.ShipService
 
         private BlockViewModel CreateBlock(/*ShipLayout.LayoutElement cell*/CellType cell)
         {
-			switch (cell)
+            switch (cell)
             {
                 case CellType.Outer:
                     return GameObject.Instantiate<BlockViewModel>(OuterBlock);
                 case CellType.Inner:
                     return GameObject.Instantiate<BlockViewModel>(InnerBlock);
+                case CellType.Weapon:
+                case Layout.CustomWeaponCell:
+                    var item = GameObject.Instantiate<BlockViewModel>(WeaponBlock);
+                    //item.Label.text = string.IsNullOrEmpty(cell.WeaponClass) ? "•" : cell.WeaponClass;
+                    return item;
+                case CellType.Engine:
+                    return GameObject.Instantiate<BlockViewModel>(EngineBlock);
+
+                case CellType.OuterEngine:
+                    return GameObject.Instantiate<BlockViewModel>(OuterEngineBlock);
+
                 case CellType.InnerOuter:
                     return GameObject.Instantiate<BlockViewModel>(IoBlock);
-				case CellType.Weapon:
-				case Layout.CustomWeaponCell:
-					var item = GameObject.Instantiate<BlockViewModel>(WeaponBlock);
-					//item.Label.text = string.IsNullOrEmpty(cell.WeaponClass) ? "•" : cell.WeaponClass;
-					return item;
-				case CellType.Engine:
-                    return GameObject.Instantiate<BlockViewModel>(EngineBlock);
-				case Layout.CustomizableCell:
-					return GameObject.Instantiate<BlockViewModel>(CustomBlock);
-			}
 
-			return null;
+                case CellType.InnerEngine:
+                    return GameObject.Instantiate<BlockViewModel>(InnerEngineBlock);
+
+                case CellType.All:
+                    return GameObject.Instantiate<BlockViewModel>(AllBlock);
+
+                case CellType.WeaponEngine:
+                    return GameObject.Instantiate<BlockViewModel>(WeaponEngineBlock);
+                case CellType.WeaponInner:
+                    return GameObject.Instantiate<BlockViewModel>(WeaponInnerBlock);
+                case CellType.WeaponOuter:
+                    return GameObject.Instantiate<BlockViewModel>(WeaponOuterBlock);
+
+
+                case Layout.CustomizableCell:
+                    return GameObject.Instantiate<BlockViewModel>(CustomBlock);
+            }
+
+            return null;
         }
 
         private void SetBlockLayout(RectTransform item, int x, int y, int size)
@@ -156,7 +195,15 @@ namespace Gui.ShipService
                     child == InnerBlock.transform ||
                     child == OuterBlock.transform ||
                     child == EngineBlock.transform ||
+
                     child == IoBlock.transform ||
+                    child == OuterEngineBlock.transform ||
+                    child == InnerEngineBlock.transform ||
+                    child == WeaponEngineBlock.transform ||
+                    child == WeaponOuterBlock.transform ||
+                    child == WeaponInnerBlock.transform ||
+                    child == AllBlock.transform ||
+
                     child == CustomBlock.transform ||
                     child == Selection.transform ||
                     child == BackgroundImage.transform)
