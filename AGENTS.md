@@ -11,8 +11,77 @@ Event Horizon is a Unity-based 2D space exploration and combat game with modular
 
 - [Game design](docs/game.md) - Product vision, design pillars, core gameplay loops, and foundational mechanics.
 - [Project structure](docs/project_structure.md) - High-level map of the repository and guidance on where new work belongs.
+- [Architecture](docs/architecture.md) - Dependency injection, game state machine, signals, data-driven design, and links to each subsystem's doc.
 - [Database module](docs/database.md) - Schema, generated code, runtime loading, mod storage, migrations, tooling, and validation workflow.
+- [Application layer](docs/application_layer.md) - `Assets/Scripts/`: composition root, game states, domain, UI, live vs. dead legacy code. Refactoring backlog: [issues](docs/issues/application_layer.md).
 - [GitHub issue handling](.issues/README.md) - Required workflow for syncing, analyzing, and responding to GitHub issues. Store local issue notes in `.issues/` and never modify GitHub issues without explicit user approval.
+
+## Keeping this file small
+
+This file loads into every session, so its size is a per-session tax. It is an
+**index**, not a design record.
+
+- New rationale — why a rule exists, the defect that motivated it, a worked example, a
+  schema, a code trace — goes in the owning `docs/<component>.md`. Never here.
+- This file may gain at most a **one-line** rule, and only when it spans components or
+  would be violated by default. The line names the doc that owns the detail.
+- If a bullet needs a second sentence, it belongs in a doc.
+- Same rule for every nested `CLAUDE.md` / `AGENTS.md`: budget **80 lines**, pointing at
+  its component doc.
+- When a section outgrows the budget, **move** it into a doc — don't summarize in place.
+
+## Task Management
+
+- Check `TASKS.md` to understand project status.
+- Before executing any work, mark the task `[In Progress]`. Except trivial tasks like
+  investigation, writing documentation, bug fixes, etc. Do not mark such tasks in TASKS.md.
+- When a task is complete, **delete its entry** — git remembers what was done.
+  `TASKS.md` holds only open, in-progress and planned work. Any residue the finished
+  work leaves behind (deferred steps, calibration, follow-ups) stays as its own `[ ]`.
+- Don't attempt unlisted tasks without modifying `TASKS.md` first — except bug fixes,
+  which are not added to the list.
+- One task, one line. No detailed task descriptions.
+
+## Tests
+
+For small edits or bug fixes, do not write new test suites automatically. Only write targeted tests
+if the touched file has an obvious nearby test file, or if explicitly requested. Prioritize cheap
+static checks (linting, typechecking) over generating or running heavy test suites. Stop generating
+tests once the specific user-defined acceptance criteria are met.
+
+## Output style
+
+You are my critical advisor, not my assistant. Never agree with me first; always challenge 
+my core assumptions and look for flaws or logical inconsistencies before offering support.
+Ban all filler phrases, sycophantic cheerleading, and empty praise (e.g., 'That's a great
+point,' 'Absolutely'). Lead with the uncomfortable truth or the core problem immediately.
+If I push back without providing new, valid evidence or arguments, hold your position instead
+of capitulating.
+
+No preamble. Tool result first. No explanation of actions. Stop.
+Use plain English, no corporate jargon, and lead with the conclusion.
+Give the answer in one line first. No caveats, background, or restating the point.
+
+Don't start implementing anything unless you're explicitly asked to do so. Otherwise just answer my questions.
+
+## How to explain things to me
+
+When explaining code, a plan, an error, or changes, aim for about 80% adherence to ASD-STE100:
+
+- Express one idea or action per sentence. Use no more than 20 words for instructions and 25 words for descriptions.
+- Use active voice: say who does what.
+- Use the same term for the same thing throughout. Define it once, then use it consistently.
+- Explain each new technical term in simple words when it first appears.
+- Give the answer first, then the details.
+- Present steps in a numbered list. Keep each paragraph to one topic and no more than six sentences.
+- Do not omit words just to make the text shorter.
+
+## Git & Commit Guidelines
+
+- NEVER create a git commit unless explicitly requested.
+- NEVER create a new branch unless explicitly requested.
+- Always present the file changes to the user and wait for manual approval before
+  staging or committing code.
 
 ## Development Commands
 
@@ -45,79 +114,6 @@ Assets\Modules\Database\.CodeGenerator\test.cmd
 
 ### Build Commands
 The project uses Unity's build system. Build configurations are managed through Unity Editor's Build Settings.
-
-## Architecture Overview
-
-### Module System
-The project is organized into autonomous modules using Unity Assembly Definitions:
-
-**Core Modules (Assets/Modules/):**
-- `Database` - Game data management, JSON serialization, code generation
-- `GameSession` - Save/load system, session state management
-- `BattleSimulator` - Combat mechanics and physics simulation
-- `ShipConstructor` - Ship building and component system
-- `Quests` - Quest system and narrative framework
-- `CommonComponents` - Shared utilities and data types
-- `AppConfiguration` - Application settings and configuration
-
-**Shared Modules (Assets/ModulesShared/):**
-- `Gui` - UI framework with theming and localization
-- `Localization` - Multi-language support system
-- `Diagnostics` - Logging and debugging utilities
-- `ShipEditor` - Visual ship design tools
-- `Utilites` - Common algorithms and data structures
-
-**Private Modules (Assets/ModulesPrivate/):**
-- `Security` - Encryption and anti-tampering
-- `Services` - Platform-specific integrations
-- `Plugins` - Third-party library wrappers
-
-### Key Architecture Patterns
-
-**Dependency Injection (Zenject):**
-- `GameInstaller.cs` - Main game container setup
-- Scene-specific installers for different game modes
-- Interface-based service registration
-
-**Data-Driven Design:**
-- JSON configuration files in `Assets/Modules/Database/Resources/`
-- Code generation from XML schemas for type safety
-- Mod support through database replacement
-
-**State Machine:**
-- `GameStateMachine` manages game flow
-- States: MainMenu, StarMap, Combat, Exploration, etc.
-- Located in `Assets/Scripts/GameStateMachine/`
-
-**Event System:**
-- Signal-based communication between modules
-- `CommonComponents.Signals` for decoupled messaging
-- Quest system uses events for progression tracking
-
-### Database System
-- **Schema-driven**: XML schemas define data structure
-- **Code generation**: `DatabaseCodeGenerator.exe` creates C# classes
-- **Modding support**: Database can be replaced via file system
-- **Versioning**: Migration system handles database updates
-- **Storage backends**: Resources, Files, or Folders
-
-### Combat System
-- **Physics-based**: Unity 2D physics for ship movement
-- **Component-driven**: Ships built from modular components
-- **AI system**: Behavior trees for enemy ships
-- **Real-time simulation**: 60fps combat with pause/resume
-
-### Save System
-- **Session-based**: `GameSession` module handles persistence
-- **Serialization**: Custom binary format with compression
-- **Versioning**: Migration system for save compatibility
-- **Platform-agnostic**: Works across all supported platforms
-
-### Localization
-- **XML-based**: Translation files in `Assets/ModulesShared/Localization/Resources/`
-- **Font management**: `FontTable` for language-specific fonts
-- **Runtime switching**: Language can be changed without restart
-- **Plural forms**: Grammar rules for different languages
 
 ## Important File Locations
 

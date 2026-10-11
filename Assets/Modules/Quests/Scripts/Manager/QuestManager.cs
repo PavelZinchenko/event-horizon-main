@@ -258,7 +258,6 @@ namespace Domain.Quests
                     break;
             }
 
-            ProcessQuestEvent(SimpleEventData.Timer);
             _context.EventProvider.FireQuestsUpdatedEvent();
         }
 
