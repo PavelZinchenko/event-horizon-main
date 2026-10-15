@@ -24,7 +24,7 @@ namespace ViewModel
 		        Color = Gui.Theme.UiTheme.Current.GetQualityColor(item.Type.Quality);
 
 				Icon.sprite = resourceLocator.GetSprite(item.Type.Icon);
-				Icon.color = item.Type.Color;
+				Icon.color = item.Type.Color.ToUnity();
 			    Background.color = Color.Lerp(Color.black, Color, 0.5f);
 
 				if (item.Quantity > 1)

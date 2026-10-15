@@ -30,7 +30,7 @@ namespace Economy.ItemType
         public string Name { get { return _localization.GetString("$XmasBox"); } }
         public string Description { get { return string.Empty; } }
         public SpriteId Icon => new("Textures/GUI/InAppPurchases/xmasbox", SpriteId.Type.Default);
-        public UnityEngine.Color Color { get { return UnityEngine.Color.white; } }
+        public ColorData Color { get { return ColorData.White; } }
         public Price Price { get { return Price.Premium(3); } }
         public ItemQuality Quality { get { return ItemQuality.Perfect; } }
 

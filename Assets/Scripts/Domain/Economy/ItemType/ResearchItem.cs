@@ -21,7 +21,7 @@ namespace Economy.ItemType
 		public string Name => _localization.Localize($"$AlienTechnology ({_faction.Name})");
 		public string Description => string.Empty;
         public SpriteId Icon => new("Textures/GUI/tech_icon", SpriteId.Type.Default);
-		public Color Color => _faction.Color;
+		public ColorData Color => _faction.Color;
 		public Price Price => Price.Premium(1);
 		public ItemQuality Quality => ItemQuality.Common;
 

@@ -23,7 +23,7 @@ namespace Economy.ItemType
         public string Name { get { return _localization.GetString(Satellite.Name); } }
         public string Description { get { return string.Empty; } }
         public SpriteId Icon => Satellite.ModelImage;
-        public Color Color { get { return Color.white; } }
+        public ColorData Color { get { return ColorData.White; } }
         public Price Price => _premium ? Price.Premium(Satellite.PriceInStars()) : Price.Common(Satellite.Price());
 
         public Currency Currency { get { return _premium ? Currency.Stars : Currency.Credits; } }

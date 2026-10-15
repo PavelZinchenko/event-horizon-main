@@ -118,7 +118,7 @@ namespace Combat.Factory
             }
         }
 
-        public Color Color { get { return _statModifier.Color ?? _ammunition.Body.Color; } }
+        public Color Color { get { return _statModifier.Color ?? _ammunition.Body.Color.ToUnity(); } }
         public float Weight { get { return _ammunition.Body.Weight * SizeMultiplier * _statModifier.WeightMultiplier.Value; } }
 
         public float BodySize
@@ -223,7 +223,7 @@ namespace Combat.Factory
         public float Range { get { return _stats.Range * RangeMultiplier; } }
         public float Damage { get { return _stats.Damage * DamageMultiplier; } }
         public float Size { get { return _stats.Size * SizeMultiplier; } }
-        public Color Color { get { return _stats.Color; } }
+        public Color Color { get { return _stats.Color.ToUnity(); } }
         public float Lifetime { get { return _stats.LifeTime * LifetimeMultiplier; } }
         public float Impulse { get { return _stats.Impulse * SizeMultiplier; } }
         public float Recoil { get { return _stats.Recoil * SizeMultiplier; } }

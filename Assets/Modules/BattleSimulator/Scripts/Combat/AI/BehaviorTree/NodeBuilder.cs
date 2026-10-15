@@ -251,7 +251,7 @@ namespace Combat.Ai.BehaviorTree
 			public INode Create(BehaviorTreeNode_MainTargetIsEnemy content) => new TargetIsEnemyNode();
 			public INode Create(BehaviorTreeNode_MainTargetLowHp content) => new TargetLowHpNode(content.MinValue);
 			public INode Create(BehaviorTreeNode_EnginePropulsionForce content) => new PropulsionForceNode(content.MinValue);
-			public INode Create(BehaviorTreeNode_ShowMessage content) => new ShowMessageNode(Localization.Localize(content.Text), content.Color);
+			public INode Create(BehaviorTreeNode_ShowMessage content) => new ShowMessageNode(Localization.Localize(content.Text), content.Color.ToUnity());
 			public INode Create(BehaviorTreeNode_DebugLog content) => new DebugLogNode(content.Text);
 			public INode Create(BehaviorTreeNode_SetValue content) => new SetValueNode(StrinToId(content.Name), content.Value);
 			public INode Create(BehaviorTreeNode_GetValue content) => new GetValueNode(StrinToId(content.Name));

@@ -105,7 +105,7 @@ namespace Combat.Factory
             CreateDestructionEffect(ship, stats.ShipModel, spec.Stats.ShipColor.Color);
 
             if (spec.Stats.ShieldPoints > 0)
-                ship.AddTrigger(CreateShield(ship, stats.ShipModel.EngineColor));
+                ship.AddTrigger(CreateShield(ship, stats.ShipModel.EngineColor.ToUnity()));
 
             foreach (var item in spec.Platforms)
             {
@@ -292,8 +292,8 @@ namespace Combat.Factory
         {
             foreach (var engine in model.ShipModel.Engines)
             {
-                ship.AddTrigger(CreateEngineLight(ship, engine.Position * 0.5f, 0f, 5 * engine.Size / model.ShipModel.ModelScale, model.ShipModel.EngineColor));
-                ship.AddTrigger(CreateTrail(ship, engine.Position * 0.5f, engine.Size, model.ShipModel.EngineColor, effectType));
+                ship.AddTrigger(CreateEngineLight(ship, engine.Position * 0.5f, 0f, 5 * engine.Size / model.ShipModel.ModelScale, model.ShipModel.EngineColor.ToUnity()));
+                ship.AddTrigger(CreateTrail(ship, engine.Position * 0.5f, engine.Size, model.ShipModel.EngineColor.ToUnity(), effectType));
             }
         }
 

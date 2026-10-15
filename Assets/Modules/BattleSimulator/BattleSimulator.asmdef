@@ -5,6 +5,7 @@
         "Zenject",
         "Database",
         "CommonComponents",
+        "CommonComponents.Unity",
         "ResourceLocator",
         "ShipConstructor",
         "Unity.InputSystem",

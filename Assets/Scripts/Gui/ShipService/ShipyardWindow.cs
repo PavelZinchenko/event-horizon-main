@@ -67,7 +67,7 @@ namespace Gui.ShipService
                 _level = Mathf.Max(5, star.Level);
             }
 
-            var color = _faction.Color;
+            var color = _faction.Color.ToUnity();
             _factionText.text = _localization.GetString(_faction.Name);
             _factionIcon.color = color;
             _techIcon.color = color;

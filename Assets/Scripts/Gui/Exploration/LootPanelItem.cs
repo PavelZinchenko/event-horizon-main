@@ -17,7 +17,7 @@ namespace Gui.Exploration
         {
             Icon.gameObject.SetActive(true);
             Icon.sprite = resourceLocator.GetSprite(product.Type.Icon);
-            Icon.color = product.Type.Color;
+            Icon.color = product.Type.Color.ToUnity();
             Name.text = product.Type.Name;
             Name.color = UiTheme.Current.GetQualityColor(product.Type.Quality);
 

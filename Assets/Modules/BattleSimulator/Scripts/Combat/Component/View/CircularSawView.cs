@@ -27,7 +27,7 @@ namespace Combat.Component.View
 
         public void Initialize(BulletPrefab data, IResourceLocator resourceLocator)
         {
-            _baseColor = data.MainColor;
+            _baseColor = data.MainColor.ToUnity();
             _colorMode = data.MainColorMode;
             _spriteRenderer.sprite = resourceLocator.GetSprite(data.Image);
         }

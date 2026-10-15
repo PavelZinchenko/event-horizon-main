@@ -99,7 +99,7 @@ namespace ViewModel.Craft
         private void CreateComponent(ComponentInfo info)
         {
             _icon.sprite = _resourceLocator.GetSprite(info.Data.Icon);
-            _icon.color = info.Data.Color;
+            _icon.color = info.Data.Color.ToUnity();
             _name.text = _localization.GetString(info.Data.Name);
             _name.color = UiTheme.Current.GetQualityColor(info.ItemQuality);
 
@@ -137,7 +137,7 @@ namespace ViewModel.Craft
         private void CreateDefault(IItemType item)
         {
             _icon.sprite = _resourceLocator.GetSprite(item.Icon);
-            _icon.color = item.Color;
+            _icon.color = item.Color.ToUnity();
             _name.text = item.Name;
             _name.color = UiTheme.Current.GetQualityColor(item.Quality);
 

@@ -21,18 +21,18 @@ namespace Combat.Component.Helpers
 
             if (LaserView)
             {
-                LaserView.Initialize(data.MainColor, data.MainColorMode);
+                LaserView.Initialize(data.MainColor.ToUnity(), data.MainColorMode);
                 LaserView.BorderSize = data.Margins;
                 LaserView.Thickness = data.Size;
             }
             else if (LightningView)
             {
-                LightningView.Initialize(data.MainColor, data.MainColorMode);
+                LightningView.Initialize(data.MainColor.ToUnity(), data.MainColorMode);
                 LightningView.Thickness = data.Size;
             }
             else if (ArcView)
             {
-                ArcView.Initialize(data.MainColor, data.MainColorMode, data.Margins, data.Deformation);
+                ArcView.Initialize(data.MainColor.ToUnity(), data.MainColorMode, data.Margins, data.Deformation);
             }
         }
 

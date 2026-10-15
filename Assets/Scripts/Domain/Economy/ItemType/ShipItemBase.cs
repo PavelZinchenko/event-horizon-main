@@ -56,7 +56,7 @@ namespace Economy.ItemType
         public SpriteId Icon => _ship.Model.ModelImage;
         public virtual Price Price => Price.Common(_ship.Price());
 
-        public Color Color => Color.white;
+        public ColorData Color => ColorData.White;
         public ItemQuality Quality => _ship.Model.Quality();
 
         public abstract void Consume(int amount);

@@ -91,9 +91,9 @@ namespace Gui.Craft
             }
 
 
-            var color =  _faction.Color;
+            var color =  _faction.Color.ToUnity();
             _factionText.text = _localization.GetString(_faction.Name);
-            _factionIcon.color = _faction.Color;
+            _factionIcon.color = _faction.Color.ToUnity();
 
             _techsIcon.color = color;
             _levelText.text = _level.ToString();

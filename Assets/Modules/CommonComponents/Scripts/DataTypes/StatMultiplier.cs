@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using Utilites;
 
 namespace GameDatabase.Model
 {
@@ -17,7 +17,7 @@ namespace GameDatabase.Model
         public float Value { get { return 1.0f + _value; } }
         public float Bonus { get { return _value; } }
 
-        public bool HasValue { get { return !Mathf.Approximately(_value, 0); } }
+        public bool HasValue { get { return !MathEx.Approximately(_value, 0); } }
 
         public static StatMultiplier operator +(StatMultiplier first, StatMultiplier second) => new(first._value + second._value);
         public static StatMultiplier operator -(StatMultiplier first, StatMultiplier second) => new(first._value - second._value);
@@ -28,7 +28,7 @@ namespace GameDatabase.Model
 
 		public override string ToString()
         {
-            return (_value >= 0 ? "+" : "") + Mathf.RoundToInt(100*_value) + "%";
+            return (_value >= 0 ? "+" : "") + MathEx.RoundToInt(100*_value) + "%";
         }
 
         private readonly float _value;

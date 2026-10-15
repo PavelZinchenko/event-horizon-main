@@ -20,7 +20,7 @@ namespace Economy.ItemType
         public string Name => _localization.GetString("$Snowflakes");
         public string Description => string.Empty;
         public SpriteId Icon => new("Textures/Artifacts/snowflake", SpriteId.Type.Default);
-        public Color Color => UiTheme.Current.GetCurrencyColor(Currency.Snowflakes);
+        public ColorData Color => UiTheme.Current.GetCurrencyColor(Currency.Snowflakes).ToData();
         public Price Price => new(1, Currency.Snowflakes);
         public ItemQuality Quality => ItemQuality.Common;
 
