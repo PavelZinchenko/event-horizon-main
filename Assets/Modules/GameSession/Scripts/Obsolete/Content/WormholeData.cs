@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using GameModel.Serialization;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class WormholeData : ISerializableDataObsolete
 	{
-        [Inject]
 		public WormholeData(byte[] buffer = null)
 		{
 			IsChanged = true;
@@ -71,7 +69,7 @@ namespace Session.ContentObsolete
 			var version = Helpers.DeserializeInt(buffer, ref index);
 			if (version != CurrentVersion)
 			{
-				UnityEngine.Debug.Log("WormholeData: incorrect data version");
+				GameDiagnostics.Trace.Log("WormholeData: incorrect data version");
                 throw new ArgumentException();
             }
 

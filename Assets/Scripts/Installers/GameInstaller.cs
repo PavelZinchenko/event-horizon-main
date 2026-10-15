@@ -160,6 +160,7 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<SessionDataStub>().AsSingle();
 #else
             Container.BindInterfacesAndSelfTo<SessionData>().AsSingle();
+            Container.BindInterfacesTo<Services.Unity.SessionPlayTimeTicker>().AsSingle();
 #endif
             Container.Bind<ContentFactory>().AsCached();
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Zenject;
 using GameModel.Serialization;
 
 namespace Session.ContentObsolete
@@ -16,7 +15,6 @@ namespace Session.ContentObsolete
 			Agressive,
         }
      
-        [Inject]   
         public StarMapData( byte[] buffer = null)
         {
             IsChanged = true;
@@ -192,7 +190,7 @@ namespace Session.ContentObsolete
 			var version = Helpers.DeserializeInt(buffer, ref index);
 			if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
 			{
-				UnityEngine.Debug.Log("StarMapData: incorrect data version");
+				GameDiagnostics.Trace.Log("StarMapData: incorrect data version");
                 throw new ArgumentException();
             }
 

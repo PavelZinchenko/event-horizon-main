@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameModel.Serialization;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class EventData : ISerializableDataObsolete
 	{
-        [Inject]
 		public EventData(byte[] buffer = null)
 		{
 			IsChanged = true;
@@ -63,7 +61,7 @@ namespace Session.ContentObsolete
 			var version = Helpers.DeserializeInt(buffer, ref index);
 			if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
 			{
-				UnityEngine.Debug.Log("EventData: incorrect data version");
+				GameDiagnostics.Trace.Log("EventData: incorrect data version");
                 throw new ArgumentException();
             }
 

@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameModel.Serialization;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class UpgradesData : ISerializableDataObsolete
 	{
-        [Inject]
 		public UpgradesData(byte[] buffer = null)
         {
             IsChanged = true;
@@ -94,7 +92,7 @@ namespace Session.ContentObsolete
             var resetRequired = false;
 			if (version != CurrentVersion && !TryUpgrade(ref buffer, version, out resetRequired))
 			{
-				UnityEngine.Debug.Log("UpgradesData: incorrect data version");
+				GameDiagnostics.Trace.Log("UpgradesData: incorrect data version");
                 throw new ArgumentException();
             }
 

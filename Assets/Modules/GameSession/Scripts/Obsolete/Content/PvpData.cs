@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameModel.Serialization;
-using UnityEngine;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class PvpData : ISerializableDataObsolete
     {
-        [Inject]
         public PvpData(byte[] buffer = null)
         {
             IsChanged = true;
@@ -86,7 +83,7 @@ namespace Session.ContentObsolete
             var version = Helpers.DeserializeInt(buffer, ref index);
             if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
             {
-                Debug.LogError("PvpData: incorrect data version");
+                GameDiagnostics.Trace.LogError("PvpData: incorrect data version");
                 throw new ArgumentException();
             }
 
@@ -115,7 +112,7 @@ namespace Session.ContentObsolete
 
         private static IEnumerable<byte> Upgrade_1_2(byte[] buffer)
         {
-            UnityEngine.Debug.Log("PvpData.Upgrade_1_2");
+            GameDiagnostics.Trace.Log("PvpData.Upgrade_1_2");
 
             var index = 0;
             Helpers.DeserializeInt(buffer, ref index);
