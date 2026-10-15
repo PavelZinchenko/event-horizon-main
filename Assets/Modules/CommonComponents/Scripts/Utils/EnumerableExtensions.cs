@@ -311,7 +311,7 @@ public static class EnumerableExtension
                 // results in numerical precision errors at low or high weights
                 // and adding logarithm to both sides of inequality doesn't change
                 // the result, but almost completely eliminates precision issues
-                _weight = 1f / weight * UnityEngine.Mathf.Log(random.NextFloat());
+                _weight = -1f / weight * UnityEngine.Mathf.Log(random.NextFloat());
             }
         }
 
