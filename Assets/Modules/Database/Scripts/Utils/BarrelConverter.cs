@@ -29,7 +29,7 @@ namespace GameDatabase.Utils
         {
             var index = 0;
             var size = layout.Size;
-            var barrels = layout.Data.Select(item => item == (char)CellType.Weapon ? index++ : -1).ToArray();
+            var barrels = layout.Data.Select(item => (item == (char)CellType.Weapon || item == (char)CellType.All || item == (char)CellType.WeaponInner || item == (char)CellType.WeaponOuter || item == (char)CellType.WeaponEngine) ? index++ : -1).ToArray();
 
             for (var k = 0; k < 1000; ++k)
             {

@@ -1,10 +1,10 @@
-using System; 
-using System.Linq;
-using System.Collections.Generic;
+using Constructor.Model;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
-using Constructor.Model;
+using System; 
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Constructor
 {
@@ -178,7 +178,7 @@ namespace Constructor
 			if (element.ComponentId >= 0)
 				return false;
 			
-			if (element.Type == CellType.Weapon && component.CellType == CellType.Weapon)
+			if ((element.Type == CellType.Weapon || element.Type == CellType.All || element.Type == CellType.WeaponEngine || element.Type == CellType.WeaponInner || element.Type == CellType.WeaponOuter) && component.CellType == CellType.Weapon)
 				return string.IsNullOrEmpty(element.WeaponClass) || component.WeaponSlotType == default || element.WeaponClass.Contains(component.WeaponSlotType);
 			
 			return component.CellType.CompatibleWith(element.Type);
@@ -235,7 +235,7 @@ namespace Constructor
             var index = y * Size + x;
             var item = _layout[index];
 
-			if (item.Type != CellType.Weapon || item.BarrelId >= 0)
+			if ((item.Type != CellType.Weapon  && item.Type != CellType.All && item.Type != CellType.WeaponEngine && item.Type != CellType.WeaponInner && item.Type != CellType.WeaponOuter) || item.BarrelId >= 0)
 				return false;
 
             var dataChanged = false;
@@ -256,7 +256,7 @@ namespace Constructor
 
 		private static bool TryAssignBarrelId(ref LayoutElement item, LayoutElement other)
 		{
-			if (other.Type == CellType.Weapon && !other.IsCustomWeaponCell && other.BarrelId >= 0)
+			if ((other.Type == CellType.Weapon || other.Type == CellType.All || other.Type == CellType.WeaponInner || other.Type == CellType.WeaponOuter || other.Type == CellType.WeaponEngine) && !other.IsCustomWeaponCell && other.BarrelId >= 0)
 			{
 				item.BarrelId = other.BarrelId;
 				item.WeaponClass = other.WeaponClass;
