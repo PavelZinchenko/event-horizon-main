@@ -9,3 +9,6 @@
 - [ ] Fix `StringExtensions.ContainsKey` word-boundary check (indexes `key` instead of `source`, inverted condition)
 - [ ] Emit enum `default` values as `Enum.Value`, not a quoted string, in game serializable DTOs
 - [ ] Parse expression `minvalue`/`maxvalue` as floats for `float` results
+
+## Active / Open (engine-free modules — `TODO/engine_free_modules.md`)
+- [In Progress] Make Database and GameSession engine-free (7 phases)
