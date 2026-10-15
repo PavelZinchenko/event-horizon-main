@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GameDatabase;
 using GameDatabase.DataModel;
-using UnityEngine.Assertions;
+using GameDiagnostics;
+using Assert = UnityEngine.Assertions.Assert;
 
 namespace Domain.Quests
 {
@@ -125,6 +127,11 @@ namespace Domain.Quests
             _database = database;
         }
 
+        public void SetRequirementCache(IRequirementCache requirementCache)
+        {
+            _requirementCache = requirementCache;
+        }
+
         public ILoot Get(LootModel loot, QuestInfo questInfo)
         {
             if (loot == null) return null;
@@ -134,7 +141,7 @@ namespace Domain.Quests
             ILoot value;
             if (!_cache.TryGetValue(key, out value))
             {
-                value = new Loot(loot, questInfo, _lootItemFactory, _database);
+                value = new Loot(loot, questInfo, _lootItemFactory,  _requirementCache, _database);
                 _cache.Add(key, value);
             }
 
@@ -144,5 +151,6 @@ namespace Domain.Quests
         private readonly IDatabase _database;
         private readonly ILootItemFactory _lootItemFactory;
         private readonly Dictionary<Key<LootModel>, ILoot> _cache = new Dictionary<Key<LootModel>, ILoot>();
+        private IRequirementCache _requirementCache;
     }
 }

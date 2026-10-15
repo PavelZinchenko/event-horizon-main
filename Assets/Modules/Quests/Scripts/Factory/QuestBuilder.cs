@@ -16,8 +16,9 @@ namespace Domain.Quests
             _seed = seed;
             _context = context;
             _lootCache = new LootCache(context.LootItemFactory, context.Database);
-            _enemyCache = new EnemyCache(context.Database);
             _requirementCache = new RequirementCache(_context, _lootCache);
+            _lootCache.SetRequirementCache(_requirementCache);
+            _enemyCache = new EnemyCache(context.Database);
             _parameters = new QuestInfo(_model, _context.StarMapDataProvider.GetStarData(_starId), seed);
         }
 

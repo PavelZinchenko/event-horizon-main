@@ -25,12 +25,14 @@ namespace GameDatabase.DataModel
 		private LootItem(LootItemSerializable serializable, Database.Loader loader)
 		{
 			Weight = UnityEngine.Mathf.Clamp(serializable.Weight, -3.402823E+38f, 3.402823E+38f);
+			Requirement = Requirement.Create(serializable.Requirement, loader);
 			Loot = LootContent.Create(serializable.Loot, loader);
 
 			OnDataDeserialized(serializable, loader);
 		}
 
 		public float Weight { get; private set; }
+		public Requirement Requirement { get; private set; }
 		public LootContent Loot { get; private set; }
 
 		public static LootItem DefaultValue { get; private set; }= new(new(), null);
