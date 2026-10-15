@@ -538,7 +538,7 @@ namespace Combat.Factory
                     return factory;
 
                 var stats = _factory._statModifier;
-                stats.Color = trigger.ColorMode.Apply(trigger.Color.ToUnity(), _factory._stats.Color);
+                stats.Color = trigger.ColorMode.Apply(trigger.Color.ToUnity(), _factory._stats.Color).ToData();
                 if (trigger.PowerMultiplier > 0)
                 {
                     stats.DamageMultiplier *= trigger.PowerMultiplier;

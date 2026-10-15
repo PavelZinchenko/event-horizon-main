@@ -2,6 +2,7 @@
     "name": "Quests",
     "rootNamespace": "",
     "references": [
+        "Localization.Abstractions",
         "Zenject",
         "CommonComponents",
         "Database",

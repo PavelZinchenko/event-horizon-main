@@ -2,6 +2,7 @@
     "name": "BattleSimulator",
     "rootNamespace": "",
     "references": [
+        "Localization.Abstractions",
         "Zenject",
         "Database",
         "Database.Unity",

@@ -102,7 +102,7 @@ namespace Combat.Factory
             if (createShadow)
                 ship.AddTrigger(CreateShadow(ship));
 
-            CreateDestructionEffect(ship, stats.ShipModel, spec.Stats.ShipColor.Color);
+            CreateDestructionEffect(ship, stats.ShipModel, spec.Stats.ShipColor.Color.ToUnity());
 
             if (spec.Stats.ShieldPoints > 0)
                 ship.AddTrigger(CreateShield(ship, stats.ShipModel.EngineColor.ToUnity()));
@@ -392,7 +392,7 @@ namespace Combat.Factory
         {
             var satellite = _satelliteFactory.CreateSatellite(ship, data);
             var parent = (IUnit)satellite ?? ship;
-            var position = data.Position * 0.5f;
+            var position = data.Position.ToUnity() * 0.5f;
             var rotation = data.Rotation;
             var offset = (data.Offset + data.Size) * 0.5f;
             var isTurret = (bool)data.Image && (data.Weapons.Any() || data.WeaponsObsolete.Any());
@@ -419,7 +419,7 @@ namespace Combat.Factory
                 var view = gameObject.GetComponent<IView>();
                 gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
                 view.ApplyHsv(color.Hue, color.Saturation, _materialCache);
-                platform.SetView(view, color.Color);
+                platform.SetView(view, color.Color.ToUnity());
                 gameObject.GetComponent<IBodyComponent>().Initialize(platform.Body, new Vector2(-0.5f * data.Size * parent.Body.Scale, 0), 0, scale * data.Size * parent.Body.Scale, Vector2.zero, 0, 0);
                 gameObject.IsActive = true;
                 ship.AddResource(gameObject);

@@ -21,7 +21,7 @@ namespace Constructor.Ships.Modification
         public string GetDescription(ILocalization localization)
         {
             return localization.GetString("$Ship_Infected",
-                UnityEngine.Mathf.RoundToInt((1f - _armorMultiplier)*100).ToString(), (_repairRate*100).ToString());
+                Utilites.MathEx.RoundToInt((1f - _armorMultiplier)*100).ToString(), (_repairRate*100).ToString());
         }
 
         public void Apply(ref ShipBaseStats stats)

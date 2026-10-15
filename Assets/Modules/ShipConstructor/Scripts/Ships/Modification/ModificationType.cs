@@ -1,7 +1,6 @@
 ﻿using System;
 using Economy;
 using GameDatabase.Model;
-using UnityEngine;
 
 namespace Constructor.Ships.Modification
 {
@@ -131,18 +130,18 @@ namespace Constructor.Ships.Modification
             }
         }
 
-        public static Color GetColor(this ModificationType type)
+        public static ColorData GetColor(this ModificationType type)
         {
             switch (type)
             {
                 case ModificationType.EnergyDefense:
                 case ModificationType.HeatDefense:
                 case ModificationType.KineticDefense:
-                    return Color.white;
+                    return ColorData.White;
                 case ModificationType.Empty:
-                    return new Color(0,0,0,0);
+                    return new ColorData(0,0,0,0);
                 default:
-                    return new Color(0.5f,1f,1f);
+                    return new ColorData(0.5f,1f,1f);
             }
         }
     }

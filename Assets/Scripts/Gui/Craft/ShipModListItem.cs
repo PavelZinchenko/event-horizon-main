@@ -19,7 +19,7 @@ namespace Gui.Craft
             Modification = modification;
 
             _icon.sprite = resourceLocator.GetSprite(modification.Type.GetIconId());
-            _icon.color = modification.Type.GetColor();
+            _icon.color = modification.Type.GetColor().ToUnity();
             _description.text = modification.GetDescription(localization);
 
             var price = modification.Type.GetInstallPrice();

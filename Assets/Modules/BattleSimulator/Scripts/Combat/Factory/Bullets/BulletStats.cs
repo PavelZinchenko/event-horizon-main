@@ -118,7 +118,7 @@ namespace Combat.Factory
             }
         }
 
-        public Color Color { get { return _statModifier.Color ?? _ammunition.Body.Color.ToUnity(); } }
+        public Color Color { get { return _statModifier.Color?.ToUnity() ?? _ammunition.Body.Color.ToUnity(); } }
         public float Weight { get { return _ammunition.Body.Weight * SizeMultiplier * _statModifier.WeightMultiplier.Value; } }
 
         public float BodySize

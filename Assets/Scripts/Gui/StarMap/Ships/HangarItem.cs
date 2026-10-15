@@ -115,7 +115,7 @@ namespace Gui.StarMap
                 _icon.transform.localScale = new Vector3(_ship.Model.SizeClass.IconSize(), _ship.Model.SizeClass.IconSize(), 1.0f);
 
                 _icon.sprite = _resourceLocator.GetSprite(_ship.Model.ModelImage);
-                _icon.color = _ship.ColorScheme.HsvColor;
+                _icon.color = _ship.ColorScheme.HsvColor.ToUnity();
             }
             else
             {

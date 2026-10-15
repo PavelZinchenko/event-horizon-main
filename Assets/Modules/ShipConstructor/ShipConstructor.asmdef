@@ -4,8 +4,7 @@
     "references": [
         "Database",
         "CommonComponents",
-        "CommonComponents.Unity",
-        "Localization",
+        "Localization.Abstractions",
         "Diagnostics",
         "Utilites"
     ],
@@ -17,5 +16,5 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
-    "noEngineReferences": false
+    "noEngineReferences": true
 }
