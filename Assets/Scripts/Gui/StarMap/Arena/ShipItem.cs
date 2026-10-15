@@ -19,7 +19,7 @@ namespace Gui.Multiplayer
             Ship = ship;
 
             _icon.sprite = resourceLocator.GetSprite(ship.Model.ModelImage);
-            _icon.color = ship.ColorScheme.Type == ShipColorScheme.SchemeType.Default ? _defaultColor : ship.ColorScheme.HsvColor;
+            _icon.color = ship.ColorScheme.Type == ShipColorScheme.SchemeType.Default ? _defaultColor : ship.ColorScheme.HsvColor.ToUnity();
             _name.text = localization.GetString(ship.Name);
             _notAllowedPanel.SetActive(!isAllowed);
             _allowedPanel.SetActive(isAllowed);

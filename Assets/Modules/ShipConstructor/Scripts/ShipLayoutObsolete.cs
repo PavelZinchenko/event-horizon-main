@@ -44,7 +44,7 @@ namespace Constructor
 				}
 				catch (Exception e)
 				{
-				    UnityEngine.Debug.LogException(e);
+				    GameDiagnostics.Trace.LogException(e);
                 }
 			}
 		}

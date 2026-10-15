@@ -160,7 +160,7 @@ All other files, including `id`, are skipped. File extensions are matched case-i
 
 ### Encryption (Format Version 1)
 
-Implemented in `GameDatabase/ModEncryption.cs`. The matching decryptor is `Assets/ModulesPrivate/Security/Scripts/ModEncryption.cs`, which is commercial and not part of open-source builds.
+Implemented in `GameDatabase/ModEncryption.cs`. The matching decryptor is `Assets/ModulesPrivate/Security/Crypto/ModEncryption.cs`, which is commercial and not part of open-source builds.
 
 This is hybrid authenticated encryption. Each mod gets a fresh random key that encrypts the content, and only that key is encrypted with RSA:
 

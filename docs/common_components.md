@@ -1,15 +1,16 @@
 # CommonComponents Module
 
-CommonComponents is the leaf assembly that most game assemblies share. It holds small value types (resource IDs, money, prices, stat multipliers), the galaxy coordinate system (star and region IDs), the signal types used for events between services, and a set of general helpers: collections, random selection, binary serialization, geometry, mesh generation, and some legacy Unity code. It has no runtime state of its own and no Zenject installer. Other modules create and own every object it defines.
+CommonComponents is the leaf assembly that most game assemblies share. It holds small value types (resource IDs, money, prices, stat multipliers), the galaxy coordinate system (star and region IDs), the signal types used for events between services, and a set of general helpers: collections, random selection, and binary serialization. The assembly is engine-free: geometry, mesh generation, Zenject bindings, and other Unity code are in the companion assembly `CommonComponents.Unity`. It has no runtime state of its own and no Zenject installer. Other modules create and own every object it defines.
 
 | | |
 | --- | --- |
-| Assembly | `CommonComponents` ([CommonComponents.asmdef](../Assets/Modules/CommonComponents/CommonComponents.asmdef)). References: Zenject, AppConfiguration (unused), Utilites. `autoReferenced: true`, so `Assets/Scripts` sees it without a reference. |
+| Assembly | `CommonComponents` ([CommonComponents.asmdef](../Assets/Modules/CommonComponents/CommonComponents.asmdef)). References: Utilites, Diagnostics. `noEngineReferences: true` ([Engine-free modules](architecture.md#engine-free-modules)). `autoReferenced: true`, so `Assets/Scripts` sees it without a reference. |
+| Engine assembly | `CommonComponents.Unity` ([`Unity/`](../Assets/Modules/CommonComponents/Unity/)). References: CommonComponents, Utilites, Zenject. Auto-referenced. |
 | Namespaces | No root namespace. Types use 13 namespaces plus the global namespace. See [Namespaces](#namespaces). |
 | Location | [`Assets/Modules/CommonComponents/`](../Assets/Modules/CommonComponents/) (main repository, not a submodule). |
-| Source | [`Scripts/`](../Assets/Modules/CommonComponents/Scripts/), 37 files, about 3,100 lines. |
+| Source | [`Scripts/`](../Assets/Modules/CommonComponents/Scripts/), 32 files, about 2,600 lines. [`Unity/`](../Assets/Modules/CommonComponents/Unity/), 7 files, about 640 lines. |
 | Assemblies that use it | BattleSimulator, Database, GalaxyMap, GameServices, GameSession, Quests, ResourceLocator, Services, ServicesFacade, ShipConstructor, Gui, Localization, ShipEditor, and the application (`Assets/Scripts`). |
-| Tests | [`Tests/CommonComponentsTests.cs`](../Assets/Modules/CommonComponents/Tests/CommonComponentsTests.cs): 7 cases for `Money` add, subtract, and multiply. |
+| Tests | [`Tests/CommonComponentsTests.cs`](../Assets/Modules/CommonComponents/Tests/CommonComponentsTests.cs): 7 cases for `Money` add, subtract, and multiply. They run in the Unity Test Runner and with `dotnet test` ([Engine-free modules](architecture.md#engine-free-modules)). |
 | Known issues | [CommonComponents issues](issues/common_components.md) |
 
 ## Contents
@@ -56,52 +57,55 @@ CommonComponents is the leaf assembly that most game assemblies share. It holds 
 
 ## Source map
 
-All paths are under [`Assets/Modules/CommonComponents/Scripts/`](../Assets/Modules/CommonComponents/Scripts/).
+Paths are relative to [`Assets/Modules/CommonComponents/`](../Assets/Modules/CommonComponents/). Files under `Scripts/` are in the engine-free `CommonComponents` assembly. Files under `Unity/` are in `CommonComponents.Unity`.
 
 | File | Types | Namespace | Purpose |
 | --- | --- | --- | --- |
-| [DataTypes/AudioClipId.cs](../Assets/Modules/CommonComponents/Scripts/DataTypes/AudioClipId.cs) | `AudioClipId` | `GameDatabase.Model` | Sound ID with a loop flag. |
-| [DataTypes/SpriteId.cs](../Assets/Modules/CommonComponents/Scripts/DataTypes/SpriteId.cs) | `SpriteId`, `SpriteId.Type` | `GameDatabase.Model` | Sprite ID with a category. |
-| [DataTypes/StatMultiplier.cs](../Assets/Modules/CommonComponents/Scripts/DataTypes/StatMultiplier.cs) | `StatMultiplier` | `GameDatabase.Model` | Stat bonus stored as "value − 1". |
-| [Economy/Money.cs](../Assets/Modules/CommonComponents/Scripts/Economy/Money.cs) | `Money` | `CommonComponents` | Non-negative, saturating, obscured `long`. |
-| [Economy/Price.cs](../Assets/Modules/CommonComponents/Scripts/Economy/Price.cs) | `Price` | `Economy` | `Money` plus `Currency`. |
-| [Economy/Currency.cs](../Assets/Modules/CommonComponents/Scripts/Economy/Currency.cs) | `Currency` | `Economy` | Currency enum. |
-| [Economy/ItemType/IItemType.cs](../Assets/Modules/CommonComponents/Scripts/Economy/ItemType/IItemType.cs) | `IItemType`, `ItemQuality`, `UnknownItem` | `Economy.ItemType` | Contract for anything that can be bought, sold, or rewarded. |
-| [Galaxy/StarLayout.cs](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs) | `StarLayout` | `GameModel` | Star ID ↔ grid position, world position, level, rings, hex distance. |
-| [Galaxy/RegionLayout.cs](../Assets/Modules/CommonComponents/Scripts/Galaxy/RegionLayout.cs) | `RegionLayout` | `GameModel` | Region ID ↔ grid position, home star. |
-| [Signals/ISignal.cs](../Assets/Modules/CommonComponents/Scripts/Signals/ISignal.cs) | `ISignal`, `ITrigger` | `CommonComponents.Signals` | Marker interfaces. |
-| [Signals/Signal.cs](../Assets/Modules/CommonComponents/Scripts/Signals/Signal.cs) | `Signal<TSignal[, T1[, T2]]>` | `CommonComponents.Signals` | Strong signals with 0–2 parameters. |
-| [Signals/SmartWeakSignal.cs](../Assets/Modules/CommonComponents/Scripts/Signals/SmartWeakSignal.cs) | `SmartWeakSignal<TSignal[, T1[, T2]]>` | `CommonComponents.Signals` | Weak signals with 0–2 parameters. |
-| [Signals/SignalExtensions.cs](../Assets/Modules/CommonComponents/Scripts/Signals/SignalExtensions.cs) | `SignalExtensions` | `CommonComponents.Signals` | `BindSignal`, `BindTrigger` for Zenject. |
-| [Utils/SmartWeakEvent.cs](../Assets/Modules/CommonComponents/Scripts/Utils/SmartWeakEvent.cs) | `SmartWeakEvent<T>` | `SmartWeakEvent` | Weak event list (third-party code, MIT, Daniel Grunwald 2008, modified). |
-| [Utils/ObservableCollection.cs](../Assets/Modules/CommonComponents/Scripts/Utils/ObservableCollection.cs) | `IItemCollection<T>`, `ObservableCollection<T>` | `CommonComponents.Utils` | List with change events. |
-| [Utils/GameItemCollection.cs](../Assets/Modules/CommonComponents/Scripts/Utils/GameItemCollection.cs) | `IReadOnlyGameItemCollection<T>`, `IGameItemCollection<T>`, `GameItemCollection<T>` | `CommonComponents.Utils` | Item → quantity map with a dirty flag. |
-| [Utils/EnumerableExtensions.cs](../Assets/Modules/CommonComponents/Scripts/Utils/EnumerableExtensions.cs) | `EnumerableExtension` | global | LINQ-like helpers, random selection, array helpers. |
-| [Utils/RandomExtensions.cs](../Assets/Modules/CommonComponents/Scripts/Utils/RandomExtensions.cs) | `RandomExtension` | global | Extensions on `System.Random`. |
-| [Utils/ValueFormatter.cs](../Assets/Modules/CommonComponents/Scripts/Utils/ValueFormatter.cs) | `ValueFormatter`, `DoubleFormatter`, `BigFormat` | `CommonComponents.Utils` | Number → display string. |
-| [Utils/FlexInt.cs](../Assets/Modules/CommonComponents/Scripts/Utils/FlexInt.cs) | `FlexInt` | `CommonComponents.Utils` | Integer-like `double` wrapper. Unused. |
-| [Utils/Lazy.cs](../Assets/Modules/CommonComponents/Scripts/Utils/Lazy.cs) | `Lazy<T>` | global | Lazy value. Shadows `System.Lazy<T>`. |
-| [Utils/Generic.cs](../Assets/Modules/CommonComponents/Scripts/Utils/Generic.cs) | `Generic` | global | `Swap`. |
-| [Serialization/Helpers.cs](../Assets/Modules/CommonComponents/Scripts/Serialization/Helpers.cs) | `Helpers` | `GameModel.Serialization` | Byte-level serialize/deserialize for the old save format. |
-| [Serialization/StreamExtensions.cs](../Assets/Modules/CommonComponents/Scripts/Serialization/StreamExtensions.cs) | `StreamExtensions` | `CommonComponents.Serialization` | Read `int`, `uint`, string, byte array from a `Stream`. |
-| [Serialization/Base64Encoder.cs](../Assets/Modules/CommonComponents/Scripts/Serialization/Base64Encoder.cs) | `Base64Encoder` | `Utils` | Base64 ↔ URL-safe Base64. |
-| [Services/IGameData.cs](../Assets/Modules/CommonComponents/Scripts/Services/IGameData.cs) | `IGameData` | `Services.Storage` | Save metadata. |
-| [Services/ISerializableGameData.cs](../Assets/Modules/CommonComponents/Scripts/Services/ISerializableGameData.cs) | `ISerializableGameData` | `Services.Storage` | Save metadata plus serialize/deserialize. |
-| [Math/Geometry.cs](../Assets/Modules/CommonComponents/Scripts/Math/Geometry.cs) | `Geometry` | global | Intercept, segment distance, Bezier, collision. |
-| [Math/RotationHelpers.cs](../Assets/Modules/CommonComponents/Scripts/Math/RotationHelpers.cs) | `RotationHelpers` | global | Cached direction table, angles, arcs. |
-| [Math/VectorExtensions.cs](../Assets/Modules/CommonComponents/Scripts/Math/VectorExtensions.cs) | `VectorExtensions` | global | `Vector2` helpers. |
-| [Math/ThreadSafe.cs](../Assets/Modules/CommonComponents/Scripts/Math/ThreadSafe.cs) | `ThreadSafe` | global | Lock-free `float` updates. |
-| [Math/Primitives.cs](../Assets/Modules/CommonComponents/Scripts/Math/Primitives.cs) | `Primitives` | global | Procedural meshes. |
-| [Legacy/BackgroundTask.cs](../Assets/Modules/CommonComponents/Scripts/Legacy/BackgroundTask.cs) | `BackgroundTask` | global | Worker thread base class. |
-| [Legacy/GameObjectExtensions.cs](../Assets/Modules/CommonComponents/Scripts/Legacy/GameObjectExtensions.cs) | `GameObjectExtensions` | global | Mesh/material setup and cleanup. |
-| [Legacy/NameGenerator.cs](../Assets/Modules/CommonComponents/Scripts/Legacy/NameGenerator.cs) | `NameGenerator` | `Model.Generators` | Star and planet names. |
-| [Legacy/WeakReference.cs](../Assets/Modules/CommonComponents/Scripts/Legacy/WeakReference.cs) | `WeakReference<T>` | global | Typed weak reference. Shadows `System.WeakReference<T>`. |
+| [Scripts/DataTypes/Vector2Data.cs](../Assets/Modules/CommonComponents/Scripts/DataTypes/Vector2Data.cs) | `Vector2Data` | `GameDatabase.Model` | Engine-free 2D vector. `[Serializable]`, fields `x`/`y`, so JSON matches `UnityEngine.Vector2`. |
+| [Scripts/DataTypes/ColorData.cs](../Assets/Modules/CommonComponents/Scripts/DataTypes/ColorData.cs) | `ColorData` | `GameDatabase.Model` | Engine-free RGBA color. Parses `#RRGGBB` and `#AARRGGBB`; invalid text gives white. |
+| [Scripts/DataTypes/AudioClipId.cs](../Assets/Modules/CommonComponents/Scripts/DataTypes/AudioClipId.cs) | `AudioClipId` | `GameDatabase.Model` | Sound ID with a loop flag. |
+| [Scripts/DataTypes/SpriteId.cs](../Assets/Modules/CommonComponents/Scripts/DataTypes/SpriteId.cs) | `SpriteId`, `SpriteId.Type` | `GameDatabase.Model` | Sprite ID with a category. |
+| [Scripts/DataTypes/StatMultiplier.cs](../Assets/Modules/CommonComponents/Scripts/DataTypes/StatMultiplier.cs) | `StatMultiplier` | `GameDatabase.Model` | Stat bonus stored as "value − 1". |
+| [Scripts/Economy/Money.cs](../Assets/Modules/CommonComponents/Scripts/Economy/Money.cs) | `Money` | `CommonComponents` | Non-negative, saturating, obscured `long`. |
+| [Scripts/Economy/Price.cs](../Assets/Modules/CommonComponents/Scripts/Economy/Price.cs) | `Price` | `Economy` | `Money` plus `Currency`. |
+| [Scripts/Economy/Currency.cs](../Assets/Modules/CommonComponents/Scripts/Economy/Currency.cs) | `Currency` | `Economy` | Currency enum. |
+| [Scripts/Economy/ItemType/IItemType.cs](../Assets/Modules/CommonComponents/Scripts/Economy/ItemType/IItemType.cs) | `IItemType`, `ItemQuality`, `UnknownItem` | `Economy.ItemType` | Contract for anything that can be bought, sold, or rewarded. |
+| [Scripts/Galaxy/StarLayout.cs](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs) | `StarLayout` | `GameModel` | Star ID ↔ grid position, world position, level, rings, hex distance. |
+| [Scripts/Galaxy/RegionLayout.cs](../Assets/Modules/CommonComponents/Scripts/Galaxy/RegionLayout.cs) | `RegionLayout` | `GameModel` | Region ID ↔ grid position, home star. |
+| [Scripts/Signals/ISignal.cs](../Assets/Modules/CommonComponents/Scripts/Signals/ISignal.cs) | `ISignal`, `ITrigger` | `CommonComponents.Signals` | Marker interfaces. |
+| [Scripts/Signals/Signal.cs](../Assets/Modules/CommonComponents/Scripts/Signals/Signal.cs) | `Signal<TSignal[, T1[, T2]]>` | `CommonComponents.Signals` | Strong signals with 0–2 parameters. |
+| [Scripts/Signals/SmartWeakSignal.cs](../Assets/Modules/CommonComponents/Scripts/Signals/SmartWeakSignal.cs) | `SmartWeakSignal<TSignal[, T1[, T2]]>` | `CommonComponents.Signals` | Weak signals with 0–2 parameters. |
+| [Unity/Signals/SignalExtensions.cs](../Assets/Modules/CommonComponents/Unity/Signals/SignalExtensions.cs) | `SignalExtensions` | `CommonComponents.Signals` | `BindSignal`, `BindTrigger` for Zenject. |
+| [Scripts/Utils/SmartWeakEvent.cs](../Assets/Modules/CommonComponents/Scripts/Utils/SmartWeakEvent.cs) | `SmartWeakEvent<T>` | `SmartWeakEvent` | Weak event list (third-party code, MIT, Daniel Grunwald 2008, modified). |
+| [Scripts/Utils/ObservableCollection.cs](../Assets/Modules/CommonComponents/Scripts/Utils/ObservableCollection.cs) | `IItemCollection<T>`, `ObservableCollection<T>` | `CommonComponents.Utils` | List with change events. |
+| [Scripts/Utils/GameItemCollection.cs](../Assets/Modules/CommonComponents/Scripts/Utils/GameItemCollection.cs) | `IReadOnlyGameItemCollection<T>`, `IGameItemCollection<T>`, `GameItemCollection<T>` | `CommonComponents.Utils` | Item → quantity map with a dirty flag. |
+| [Scripts/Utils/EnumerableExtensions.cs](../Assets/Modules/CommonComponents/Scripts/Utils/EnumerableExtensions.cs) | `EnumerableExtension` | global | LINQ-like helpers, random selection, array helpers. |
+| [Scripts/Utils/RandomExtensions.cs](../Assets/Modules/CommonComponents/Scripts/Utils/RandomExtensions.cs) | `RandomExtension` | global | Extensions on `System.Random`. |
+| [Scripts/Utils/ValueFormatter.cs](../Assets/Modules/CommonComponents/Scripts/Utils/ValueFormatter.cs) | `ValueFormatter`, `DoubleFormatter`, `BigFormat` | `CommonComponents.Utils` | Number → display string. |
+| [Scripts/Utils/FlexInt.cs](../Assets/Modules/CommonComponents/Scripts/Utils/FlexInt.cs) | `FlexInt` | `CommonComponents.Utils` | Integer-like `double` wrapper. Unused. |
+| [Scripts/Utils/Lazy.cs](../Assets/Modules/CommonComponents/Scripts/Utils/Lazy.cs) | `Lazy<T>` | global | Lazy value. Shadows `System.Lazy<T>`. |
+| [Scripts/Utils/Generic.cs](../Assets/Modules/CommonComponents/Scripts/Utils/Generic.cs) | `Generic` | global | `Swap`. |
+| [Scripts/Serialization/Helpers.cs](../Assets/Modules/CommonComponents/Scripts/Serialization/Helpers.cs) | `Helpers` | `GameModel.Serialization` | Byte-level serialize/deserialize for the old save format. |
+| [Scripts/Serialization/StreamExtensions.cs](../Assets/Modules/CommonComponents/Scripts/Serialization/StreamExtensions.cs) | `StreamExtensions` | `CommonComponents.Serialization` | Read `int`, `uint`, string, byte array from a `Stream`. |
+| [Scripts/Serialization/Base64Encoder.cs](../Assets/Modules/CommonComponents/Scripts/Serialization/Base64Encoder.cs) | `Base64Encoder` | `Utils` | Base64 ↔ URL-safe Base64. |
+| [Scripts/Services/IGameData.cs](../Assets/Modules/CommonComponents/Scripts/Services/IGameData.cs) | `IGameData` | `Services.Storage` | Save metadata. |
+| [Scripts/Services/ISerializableGameData.cs](../Assets/Modules/CommonComponents/Scripts/Services/ISerializableGameData.cs) | `ISerializableGameData` | `Services.Storage` | Save metadata plus serialize/deserialize. |
+| [Unity/Math/Geometry.cs](../Assets/Modules/CommonComponents/Unity/Math/Geometry.cs) | `Geometry` | global | Intercept, segment distance, Bezier, collision. |
+| [Unity/Math/RotationHelpers.cs](../Assets/Modules/CommonComponents/Unity/Math/RotationHelpers.cs) | `RotationHelpers` | global | Cached direction table, angles, arcs. |
+| [Unity/Math/VectorExtensions.cs](../Assets/Modules/CommonComponents/Unity/Math/VectorExtensions.cs) | `VectorExtensions` | global | `Vector2` helpers. |
+| [Scripts/Math/ThreadSafe.cs](../Assets/Modules/CommonComponents/Scripts/Math/ThreadSafe.cs) | `ThreadSafe` | global | Lock-free `float` updates. |
+| [Unity/Math/Primitives.cs](../Assets/Modules/CommonComponents/Unity/Math/Primitives.cs) | `Primitives` | global | Procedural meshes. |
+| [Scripts/Legacy/BackgroundTask.cs](../Assets/Modules/CommonComponents/Scripts/Legacy/BackgroundTask.cs) | `BackgroundTask` | global | Worker thread base class. |
+| [Unity/Legacy/GameObjectExtensions.cs](../Assets/Modules/CommonComponents/Unity/Legacy/GameObjectExtensions.cs) | `GameObjectExtensions` | global | Mesh/material setup and cleanup. |
+| [Unity/Converters.cs](../Assets/Modules/CommonComponents/Unity/Converters.cs) | `UnityConverters` | global | `ToUnity()` / `ToData()` between `Vector2Data`/`ColorData` and `Vector2`/`Color`. |
+| [Scripts/Legacy/NameGenerator.cs](../Assets/Modules/CommonComponents/Scripts/Legacy/NameGenerator.cs) | `NameGenerator` | `Model.Generators` | Star and planet names. |
+| [Scripts/Legacy/WeakReference.cs](../Assets/Modules/CommonComponents/Scripts/Legacy/WeakReference.cs) | `WeakReference<T>` | global | Typed weak reference. Shadows `System.WeakReference<T>`. |
 
 ## Assembly boundaries
 
 ### References
 
-The module uses Zenject only in [SignalExtensions.cs](../Assets/Modules/CommonComponents/Scripts/Signals/SignalExtensions.cs). It uses Utilites only for `ObscuredInt` in `GameItemCollection`. No file uses AppConfiguration. Many files use `UnityEngine` (`Mathf`, `Vector2`, `Color`, `Mesh`, `Random`, `Debug`), so the assembly cannot run outside Unity.
+`CommonComponents` sets `noEngineReferences: true`, so the Unity compiler rejects any `UnityEngine` use in `Scripts/`. It uses Utilites for `ObscuredInt`, `MathEx`, and `RandomState`, and Diagnostics for `Trace`. Code that needs the engine or Zenject (`Mesh`, `GameObject`, `Vector2` math, `UnityEngine.Random`, signal bindings) is in `CommonComponents.Unity`. Engine code converts `Vector2Data` and `ColorData` with `ToUnity()` and `ToData()` from [Converters.cs](../Assets/Modules/CommonComponents/Unity/Converters.cs). See [Engine-free modules](architecture.md#engine-free-modules).
 
 ### Namespaces
 
@@ -147,7 +151,7 @@ The module uses Zenject only in [SignalExtensions.cs](../Assets/Modules/CommonCo
 1. `+` adds bonuses. Use it to stack bonuses from several sources.
 2. `*` multiplies the full values (`Value × Value − 1`). Use it to apply one multiplier after another.
 3. `* float` also multiplies the full value. `AmplifyDelta` multiplies only the bonus.
-4. `HasValue` is false when the bonus is approximately zero (`Mathf.Approximately`).
+4. `HasValue` is false when the bonus is approximately zero (`MathEx.Approximately`, the same formula as `Mathf.Approximately`).
 
 ShipConstructor uses `StatMultiplier` for ship stats and BattleSimulator uses it for devices and drone bays.
 
@@ -209,7 +213,7 @@ The galaxy is an infinite grid of cells. Each cell has a star. [`StarLayout`](..
 
 ### Star ID spiral
 
-[`PositionToId`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L9) and [`IdToPosition`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L27) number cells ring by ring. Ring `d` holds the cells with `max(|x|, |y|) = d`. It is the border of a square with side `L = 2d + 1`. It has `8d` cells and uses IDs `(L−2)²` to `L² − 1`. Inside a ring, IDs count down from `L² − 1` in this order:
+[`PositionToId`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L10) and [`IdToPosition`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L28) number cells ring by ring. Ring `d` holds the cells with `max(|x|, |y|) = d`. It is the border of a square with side `L = 2d + 1`. It has `8d` cells and uses IDs `(L−2)²` to `L² − 1`. Inside a ring, IDs count down from `L² − 1` in this order:
 
 1. The bottom row (`y = −d`), from left to right.
 2. The top row (`y = d`), from left to right.
@@ -230,25 +234,23 @@ The mapping is a bijection: every cell has exactly one ID and every non-negative
 
 ### Star position and level
 
-[`GetStarPosition(id, seed)`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L52) places the grid on a hex layout:
+[`GetStarPosition(id, seed)`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L53) places the grid on a hex layout:
 
 1. Column step `DistanceX = 1`. Row step `DistanceY = √3 / 2`.
 2. Odd rows (`y % 2 != 0`, including negative odd rows) shift right by 0.5.
-3. [`GetStarOffset`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L161) adds a random offset inside a circle of radius 0.3. It calls `UnityEngine.Random.InitState(seed + id)` and reads `Random.insideUnitCircle`.
+3. [`GetStarOffset`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L162) adds a random offset inside a circle of radius 0.3. It creates a local PCG generator with `RandomState.FromSeed(seed + id)` and reads `InsideUnitCircle()` (Utilites). It does not touch any global random state.
 
-Step 3 changes the global Unity random state on every call. After any call, the next `UnityEngine.Random` values depend only on `seed + id`. See [CC3](issues/common_components.md#cc3-getstarposition-reseeds-the-global-unity-random-generator).
-
-[`GetStarLevel(id, seed)`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L60) is `round(|GetStarPosition(id, seed)|)`. Enemy strength, quest levels, and region levels use it.
+[`GetStarLevel(id, seed)`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L61) is `round(|GetStarPosition(id, seed)|)`. Enemy strength, quest levels, and region levels use it.
 
 ### Rings of neighbours
 
-[`GetAdjacentStars(id, distance = 1)`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L99) returns the `6 × distance` stars at exactly `distance` hex steps from the star. It handles even and odd rows with the `offset` variable. The local variable `odd` is true when `distance` is even, so the name is misleading. The order of the result is fixed and callers depend on it: quest code picks a star with `RandomElement(random)` from this sequence. With `distance = 0`, the method returns the center star four times.
+[`GetAdjacentStars(id, distance = 1)`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L100) returns the `6 × distance` stars at exactly `distance` hex steps from the star. It handles even and odd rows with the `offset` variable. The local variable `odd` is true when `distance` is even, so the name is misleading. The order of the result is fixed and callers depend on it: quest code picks a star with `RandomElement(random)` from this sequence. With `distance = 0`, the method returns the center star four times.
 
 Callers: [StarMap.GetNearestVisited](../Assets/Scripts/Domain/Galaxy/StarMap.cs#L58), [StarMapManager.ExploreAdjacentStars](../Assets/Scripts/Domain/Player/StarMapManager.cs#L80) (scanner range), [QuestGiver](../Assets/Modules/Quests/Scripts/QuestGiver/QuestGiver.cs#L40), [StarMapDataProvider](../Assets/Scripts/Domain/Quests/StarMapDataProvider.cs#L54), and the legacy `StarBorder`.
 
 ### Hex distance
 
-[`Distance(star1, star2)`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L142) converts both IDs to cells and calls [`Distance(x0, y0, x1, y1)`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L149). The formula uses the row parity of the first star, so it agrees with the hex layout of `GetStarPosition` and with `GetAdjacentStars`. Here too, `odd` means "the row is even".
+[`Distance(star1, star2)`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L143) converts both IDs to cells and calls [`Distance(x0, y0, x1, y1)`](../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L150). The formula uses the row parity of the first star, so it agrees with the hex layout of `GetStarPosition` and with `GetAdjacentStars`. Here too, `odd` means "the row is even".
 
 ### Regions
 
@@ -282,7 +284,7 @@ The self-referencing type parameter (`TSignal`) lets the nested `Trigger` class 
 
 ### Binding
 
-[`SignalExtensions`](../Assets/Modules/CommonComponents/Scripts/Signals/SignalExtensions.cs) has three methods:
+[`SignalExtensions`](../Assets/Modules/CommonComponents/Unity/Signals/SignalExtensions.cs) has three methods:
 
 | Method | Binding |
 | --- | --- |
@@ -317,7 +319,7 @@ Rules for subscribers:
 2. [`Add`](../Assets/Modules/CommonComponents/Scripts/Utils/SmartWeakEvent.cs#L67) stores the handler's `MethodInfo` and a `WeakReference` to its target (null for static methods). It throws `ArgumentException` when the method's declaring type is compiler-generated. Before it adds, it removes dead entries if the list is full.
 3. [`Remove`](../Assets/Modules/CommonComponents/Scripts/Utils/SmartWeakEvent.cs#L92) walks the list from the end and removes the last matching entry. It also drops dead entries that it passes.
 4. [`Raise`](../Assets/Modules/CommonComponents/Scripts/Utils/SmartWeakEvent.cs#L116) copies the list, calls each live handler with `MethodInfo.Invoke`, and removes dead entries at the end. Handlers added during `Raise` run from the next `Raise`.
-5. [`TryInvokeMethod`](../Assets/Modules/CommonComponents/Scripts/Utils/SmartWeakEvent.cs#L135) catches every exception and logs it with `Debug.LogException`.
+5. [`TryInvokeMethod`](../Assets/Modules/CommonComponents/Scripts/Utils/SmartWeakEvent.cs#L135) catches every exception and logs it with `Trace.LogException`.
 
 **What the closure check rejects.** The C# compiler puts every lambda that does not use `this` in a compiler-generated class: lambdas that capture local variables and also lambdas that capture nothing. Both throw. A lambda that uses only `this` and fields becomes a method of the subscriber class, so it passes. A named instance or static method always passes. See [CC6](issues/common_components.md#cc6-the-weak-event-rejects-lambdas-that-capture-nothing).
 
@@ -433,7 +435,7 @@ All helpers take a `System.Random`. Pass a seeded instance when the result goes 
 | --- | --- |
 | `int`, `short` | Little-endian, written with explicit shifts. |
 | `long`, `ulong`, `float` | `BitConverter.GetBytes`: machine byte order (little-endian on all supported platforms). |
-| `Vector2` | Two floats. |
+| `Vector2Data` | Two floats. |
 | `string` | `int` byte length + UTF-8 bytes. Null and empty both write length 0 and read back as `""`. |
 | `byte[]` | `int` length + bytes. Null and empty write length 0. |
 | `IEnumerable<int/long/string/byte[]>` | `int` count + items. Null writes count 0. The sequence is enumerated twice. |
@@ -463,7 +465,7 @@ So a truncated mod gives empty keys and empty data instead of an error ([CC13](i
 
 ### Geometry
 
-[`Geometry`](../Assets/Modules/CommonComponents/Scripts/Math/Geometry.cs) is used mostly by BattleSimulator AI and controllers.
+[`Geometry`](../Assets/Modules/CommonComponents/Unity/Math/Geometry.cs) is used mostly by BattleSimulator AI and controllers.
 
 | Method | Behavior |
 | --- | --- |
@@ -479,9 +481,9 @@ When the target speed equals the bullet speed, the quadratic term is 0 and the s
 
 ### RotationHelpers
 
-[`RotationHelpers`](../Assets/Modules/CommonComponents/Scripts/Math/RotationHelpers.cs) is used in 78 files, mostly in combat.
+[`RotationHelpers`](../Assets/Modules/CommonComponents/Unity/Math/RotationHelpers.cs) is used in 78 files, mostly in combat.
 
-1. [`Direction(angle)`](../Assets/Modules/CommonComponents/Scripts/Math/RotationHelpers.cs#L19) returns a `ref readonly` unit vector from a table of 1,801 entries (0.2° steps), built in the static constructor. It avoids `Sin`/`Cos` per call. A NaN angle gives an invalid index and throws `IndexOutOfRangeException`.
+1. [`Direction(angle)`](../Assets/Modules/CommonComponents/Unity/Math/RotationHelpers.cs#L19) returns a `ref readonly` unit vector from a table of 1,801 entries (0.2° steps), built in the static constructor. It avoids `Sin`/`Cos` per call. A NaN angle gives an invalid index and throws `IndexOutOfRangeException`.
 2. `Transform(point, angle)` rotates a point with the same table.
 3. `Angle(direction)` returns degrees in [0, 360).
 4. `IsRotationInArc(rotation, min, max)` normalizes all three angles to [0, 360). When `min > max` after normalization, the arc crosses 0°. When `min == max`, it returns true for every rotation ([CC17](issues/common_components.md#cc17-smaller-defects)).
@@ -505,7 +507,7 @@ The loops compare the old value with `==`. If the field is NaN, `NaN == NaN` is 
 
 ## Mesh primitives
 
-[`Primitives`](../Assets/Modules/CommonComponents/Scripts/Math/Primitives.cs) fills an existing `Mesh`. Each method calls `mesh.Clear(false)` first.
+[`Primitives`](../Assets/Modules/CommonComponents/Unity/Math/Primitives.cs) fills an existing `Mesh`. Each method calls `mesh.Clear(false)` first.
 
 | Method | Shape | Note |
 | --- | --- | --- |
@@ -534,7 +536,7 @@ Users: asteroid and wave views in combat, the planet background, and the legacy 
 
 ### GameObjectExtensions
 
-[`GameObjectExtensions`](../Assets/Modules/CommonComponents/Scripts/Legacy/GameObjectExtensions.cs) sets up meshes and materials for the legacy map objects and the ship editor layout.
+[`GameObjectExtensions`](../Assets/Modules/CommonComponents/Unity/Legacy/GameObjectExtensions.cs) sets up meshes and materials for the legacy map objects and the ship editor layout.
 
 | Method | Behavior |
 | --- | --- |
@@ -563,7 +565,7 @@ These outputs go into saves or into seeded content generation. A change to any o
 | Output | Source | Depends on |
 | --- | --- | --- |
 | Star ID ↔ cell | `StarLayout.PositionToId`, `IdToPosition` | Integer formulas. |
-| Star position and level | `GetStarPosition`, `GetStarLevel` | `UnityEngine.Random` (Xorshift128 in Unity) seeded with `seed + id`. A change in Unity's generator moves all stars and changes all levels. |
+| Star position and level | `GetStarPosition`, `GetStarLevel` | Utilites `RandomState` (PCG) seeded with `seed + id`, and `InsideUnitCircle`. A change to either moves all stars and changes levels. The move from `UnityEngine.Random` to PCG in 2026-10 already shifted about 1 star in 6 by ±1 level in existing saves (accepted by the owner). |
 | Neighbour order | `GetAdjacentStars` | Loop order. Quest targets use `RandomElement` on it. |
 | Region ID ↔ cell, home star | `RegionLayout` | Spiral + 1 and the (6, 4) scale. |
 | Star and planet names | `NameGenerator` | The sequence of `System.Random(int seed)`. A runtime that changes the seeded algorithm renames every star. |
@@ -590,7 +592,7 @@ No code outside the module calls these members: `FlexInt`, `BoundedSum`, `OddEle
 
 ## Validation checklist
 
-1. Run `CommonComponents.Tests` in the Unity Test Runner (EditMode).
+1. Run `dotnet test Tests~/EngineFree.Tests.csproj`, or `CommonComponents.Tests` in the Unity Test Runner (EditMode).
 2. For `Money` or `Price` changes, test rounding with `float` multipliers, saturation, and division by zero.
 3. For galaxy changes, round-trip `IdToPosition`/`PositionToId` for all IDs in the first 100 rings. Compare `GetStarPosition`, `GetStarLevel`, and `GetAdjacentStars` output with the previous version for several seeds.
 4. For signal changes, test subscribe, unsubscribe, a handler that throws, a destroyed `MonoBehaviour` subscriber, and a lambda subscriber.

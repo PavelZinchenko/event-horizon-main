@@ -79,7 +79,7 @@ The player must pay the unlock price again to remove a component that they alrea
 
 **Severity:** Medium. **Status:** Confirmed.
 
-**Where.** `EditorModeShip` writes only its component list to the build ([EditorModeShip.cs:44](../../Assets/Modules/ShipConstructor/Scripts/Ships/EditorModeShip.cs#L44)). `Database.SaveShipBuild` serializes only `Components` ([Database.cs:200](../../Assets/Modules/Database/Scripts/Database.cs#L200)). The `FirstSatellite` / `SecondSatellite` setters of `BaseShip` only set `DataChanged` ([BaseShip.cs:30](../../Assets/Modules/ShipConstructor/Scripts/Ships/BaseShip.cs#L30)). `EditorModeSatellite` writes its components to the shared `SatelliteBuild` ([EditorModeSatellite.cs](../../Assets/Modules/ShipConstructor/Scripts/Satellites/EditorModeSatellite.cs)).
+**Where.** `EditorModeShip` writes only its component list to the build ([EditorModeShip.cs:44](../../Assets/Modules/ShipConstructor/Scripts/Ships/EditorModeShip.cs#L44)). `Database.SaveShipBuild` serializes only `Components` ([Database.cs:203](../../Assets/Modules/Database/Scripts/Database.cs#L203)). The `FirstSatellite` / `SecondSatellite` setters of `BaseShip` only set `DataChanged` ([BaseShip.cs:30](../../Assets/Modules/ShipConstructor/Scripts/Ships/BaseShip.cs#L30)). `EditorModeSatellite` writes its components to the shared `SatelliteBuild` ([EditorModeSatellite.cs](../../Assets/Modules/ShipConstructor/Scripts/Satellites/EditorModeSatellite.cs)).
 
 **Failure.**
 1. A database author installs, replaces, or removes a satellite on a ship build. The editor shows the change. After exit, the build's `LeftSatelliteBuild` / `RightSatelliteBuild` are unchanged.

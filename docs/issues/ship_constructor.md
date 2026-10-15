@@ -28,7 +28,7 @@ Defects use Where / Failure / Fix. Structural issues use Problem / Evidence / Di
 | --- | --- | --- | --- |
 | [SC1](#sc1-a-saved-perk-without-a-factory-case-deletes-the-ship) | Medium | Plausible | An unknown saved perk type removes the ship from the fleet. |
 | [SC2](#sc2-changing-an-expanded-cell-counts-it-again) | Low | Confirmed (latent) | Changing an expanded cell counts it twice. |
-| [SC3](#sc3-random-build-colours-use-the-global-unity-generator) | Low | Confirmed | Random build colours ignore the fleet seed. |
+| [SC3](#sc3-random-build-colours-ignore-the-fleet-seed) | Low | Confirmed | Random build colours ignore the fleet seed. |
 | [SC4](#sc4-arena-ships-drop-experience-and-colour) | Low | Confirmed | Arena ships fight at level 0 with the default colour. |
 | [SC5](#sc5-smaller-defects) | Low | Mixed | Smaller defects. |
 | [SC6](#sc6-component-upgrades-are-wired-but-inert) | — | Structural | Component upgrades are wired but change nothing. |
@@ -65,13 +65,13 @@ The ship service panel lets the player select only `*` cells ([ShipLayoutPanel.c
 
 **Fix.** Increment the count only when the previous cell was `*`. Or reject cells that are already expanded.
 
-### SC3. Random build colours use the global Unity generator
+### SC3. Random build colours ignore the fleet seed
 
 **Severity:** Low. **Status:** Confirmed.
 
-**Where.** `CommonShip(ShipBuild)` sets a random hue and saturation with `UnityEngine.Random.value` when `RandomColor` is set ([CommonShip.cs:38](../../Assets/Modules/ShipConstructor/Scripts/Ships/CommonShip.cs#L38)). Enemy fleets create their ships with a seeded `System.Random` ([CommonFleet.cs:28](../../Assets/Scripts/Legacy/Model/Military/CommonFleet.cs#L28)), but this colour does not use it.
+**Where.** `CommonShip(ShipBuild)` sets a random hue and saturation from a static `RandomState` seeded from the tick count when `RandomColor` is set ([CommonShip.cs:39](../../Assets/Modules/ShipConstructor/Scripts/Ships/CommonShip.cs#L39)). Enemy fleets create their ships with a seeded `System.Random` ([CommonFleet.cs:28](../../Assets/Scripts/Legacy/Model/Military/CommonFleet.cs#L28)), but this colour does not use it.
 
-**Failure.** The same enemy fleet gets different colours each time it is created. The call also advances the global generator, which star drawing reseeds ([CC3](common_components.md#cc3-getstarposition-reseeds-the-global-unity-random-generator)). The effect is cosmetic; stats do not change.
+**Failure.** The same enemy fleet gets different colours each time it is created. The effect is cosmetic; stats do not change.
 
 `ModificationFactory.Create` also draws perk seeds from an unseeded `System.Random` ([ModificationFactory.cs:16](../../Assets/Modules/ShipConstructor/Scripts/Ships/Modification/ModificationFactory.cs#L16)). No perk reads its seed, so this has no effect today.
 

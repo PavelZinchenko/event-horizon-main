@@ -21,7 +21,7 @@ namespace Session.ContentObsolete
                 var component = database.GetComponent(new ItemId<Component>(item.Id));
                 if (component == null)
                 {
-                    UnityEngine.Debug.LogException(new ArgumentException("Unknown component - " + item.Id));
+                    GameDiagnostics.Trace.LogException(new ArgumentException("Unknown component - " + item.Id));
                     continue;
                 }
 

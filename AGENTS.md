@@ -15,6 +15,7 @@ Event Horizon is a Unity-based 2D space exploration and combat game with modular
 - [Database module](docs/database.md) - Schema, generated code, runtime loading, mod storage, migrations, tooling, and validation workflow.
 - [Application layer](docs/application_layer.md) - `Assets/Scripts/`: composition root, game states, domain, UI, live vs. dead legacy code. Refactoring backlog: [issues](docs/issues/application_layer.md).
 - [GitHub issue handling](.issues/README.md) - Required workflow for syncing, analyzing, and responding to GitHub issues. Store local issue notes in `.issues/` and never modify GitHub issues without explicit user approval.
+- [GitHub pull request handling](.pull_requests/README.md) - Follow the active pull request sync workflow and local file format.
 
 ## Keeping this file small
 
@@ -48,6 +49,8 @@ For small edits or bug fixes, do not write new test suites automatically. Only w
 if the touched file has an obvious nearby test file, or if explicitly requested. Prioritize cheap
 static checks (linting, typechecking) over generating or running heavy test suites. Stop generating
 tests once the specific user-defined acceptance criteria are met.
+
+Engine-free modules (no `UnityEngine`) run their tests with `dotnet test Tests~/EngineFree.Tests.csproj`; rules in [docs/architecture.md](docs/architecture.md#engine-free-modules).
 
 ## Output style
 

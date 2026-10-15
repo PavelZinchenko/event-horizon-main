@@ -413,7 +413,7 @@ namespace Constructor.Component
                 case BulletShape.Spark:
                 case BulletShape.Rocket:
                     if (nestingLevel > 0)
-                        aoe = UnityEngine.Mathf.Max(ammunition.Body.Range, ammunition.Body.Size);
+                        aoe = Utilites.MathEx.Max(ammunition.Body.Range, ammunition.Body.Size);
                     else if (ammunition.ImpactType != BulletImpactType.HitFirstTarget)
                         aoe = ammunition.Body.Size;
                     break;

@@ -10,7 +10,7 @@ using GameDatabase.Enums;
 using GameDatabase.Extensions;
 using GameDatabase.Model;
 using Services.Localization;
-using UnityEngine;
+using Utilites;
 using IComponent = Constructor.Component.IComponent;
 
 namespace Constructor
@@ -58,8 +58,8 @@ namespace Constructor
                 return false;
             }
 
-            var componentLevel = Mathf.Max(10, component.Level);
-            var requiredLevel = Mathf.Max(10, level);
+            var componentLevel = MathEx.Max(10, component.Level);
+            var requiredLevel = MathEx.Max(10, level);
             var componentQuality = ComponentQualityExtensions.FromLevel(requiredLevel, componentLevel).Randomize(random);
             if (componentQuality > maxQuality)
                 componentQuality = maxQuality;
@@ -79,8 +79,8 @@ namespace Constructor
         {
             foreach (var component in components.RandomElements(count, random))
             {
-                var componentLevel = Mathf.Max(10, component.Level);
-                var requiredLevel = Mathf.Max(10, level);
+                var componentLevel = MathEx.Max(10, component.Level);
+                var requiredLevel = MathEx.Max(10, level);
                 var componentQuality = ComponentQualityExtensions.FromLevel(requiredLevel, componentLevel).Randomize(random);
                 if (componentQuality > maxQuality)
                     componentQuality = maxQuality;
@@ -132,17 +132,11 @@ namespace Constructor
         {
             #if UNITY_EDITOR
             if (Data.Id.Value < 0 || Data.Id.Value > 0x3fff)
-            {
-                Debug.LogError("Bad component id - " + Data.Id.Value);
-                UnityEngine.Debug.Break();
-            }
+                GameDiagnostics.Trace.LogError("Bad component id - " + Data.Id.Value);
 
 			var modificationType = ModificationType.Id.Value;
             if (modificationType < 0 || modificationType > 0xff)
-            {
-                Debug.LogError("Bad modification type " + modificationType);
-                UnityEngine.Debug.Break();
-            }
+                GameDiagnostics.Trace.LogError("Bad modification type " + modificationType);
             #endif
 
             int value = Data.Id.Value & 0x3fff;
@@ -160,11 +154,11 @@ namespace Constructor
 #if UNITY_EDITOR
 			var modificationType = ModificationType.Id.Value;
 			if ((int)modificationType < 0 || (int)modificationType > 0xff)
-                Debug.Break();
+                GameDiagnostics.Trace.LogError("Bad modification type " + modificationType);
             if ((int)_quality < 0 || (int)_quality > 0xff)
-                Debug.Break();
+                GameDiagnostics.Trace.LogError("Bad component quality " + _quality);
             if ((int)_level < 0 || (int)_level > 0xff)
-                Debug.Break();
+                GameDiagnostics.Trace.LogError("Bad component level " + _level);
 #endif
 
             long value = Data.Id.Value;
@@ -275,7 +269,7 @@ namespace Constructor
             else
                 _quality = quality;
 
-            _level = Mathf.Clamp(level, 0, MaxUpgradeLevel);
+            _level = MathEx.Clamp(level, 0, MaxUpgradeLevel);
         }
 
         private static ModificationQuality FromItemQuality(ItemQuality itemQuality, System.Random random)

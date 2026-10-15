@@ -6,15 +6,12 @@ using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
 using GameModel;
-using UnityEngine;
-using Zenject;
 using Helpers = GameModel.Serialization.Helpers;
 
 namespace Session.ContentObsolete
 {
     public class RegionData : ISerializableDataObsolete
 	{
-        [Inject]
         public RegionData(int gameSeed, byte[] buffer = null)
 		{
 			IsChanged = true;
@@ -130,7 +127,7 @@ namespace Session.ContentObsolete
 			var version = Helpers.DeserializeInt(buffer, ref index);
 			if (version != CurrentVersion && !TryUpgrade(ref buffer, version, gameSeed))
 			{
-				UnityEngine.Debug.Log("RegionData: incorrect data version");
+				GameDiagnostics.Trace.Log("RegionData: incorrect data version");
                 throw new ArgumentException();
             }
 
@@ -219,7 +216,7 @@ namespace Session.ContentObsolete
             var regionFactions = defeatedFleetCount.Keys.ToDictionary(regionId => regionId, regionId =>
 	        {
                 var homeStar = RegionLayout.GetRegionHomeStar(regionId);
-	            var level = Mathf.RoundToInt(StarLayout.GetStarPosition(homeStar, gameSeed).magnitude);
+	            var level = Utilites.MathEx.RoundToInt(StarLayout.GetStarPosition(homeStar, gameSeed).magnitude);
 	            var random = new System.Random(homeStar + gameSeed);
                 var faction = factions.Where(item => item.Value <= level).RandomElements(1, random).First().Key;
                 return faction;

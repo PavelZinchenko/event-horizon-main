@@ -8,7 +8,7 @@ namespace GameDatabase.Tests
 	[TestFixture]
 	public class DatabaseTests
     {
-		private IDatabase Database { get; } = new Database();
+		private IDatabase Database { get; } = UnityDatabaseFactory.Create();
 
 		[OneTimeSetUp]
 		public void RunBeforeAnyTests()
@@ -48,7 +48,7 @@ namespace GameDatabase.Tests
 		public void FindEnemyShips(int distance)
 		{
 			var count = ShipBuildQuery.EnemyShips(Database).CommonAndRare().FilterByStarDistance(distance).All.Count();
-			UnityEngine.Debug.Log($"Found {count} valid enemy ship builds on distance {distance}");
+			TestContext.WriteLine($"Found {count} valid enemy ship builds on distance {distance}");
 			Assert.Greater(count, 0);
 		}
 
@@ -60,7 +60,7 @@ namespace GameDatabase.Tests
 				var factionShips = ShipBuildQuery.EnemyShips(Database).BelongToFaction(faction);
 				var ships = factionShips.CommonAndRare().All.Count();
 				var flagships = factionShips.Flagships().All.Count();
-				UnityEngine.Debug.Log($"Faction {faction.Name} has {ships} ships and {flagships} flagships");
+				TestContext.WriteLine($"Faction {faction.Name} has {ships} ships and {flagships} flagships");
 				Assert.IsTrue(ships + flagships > 0 || faction.NoTerritories && faction.NoWanderingShips);
 			}
 		}

@@ -30,6 +30,49 @@ For the folder-by-folder module map, see [Project structure](project_structure.m
 - Modules communicate through signals instead of direct references. The base types are in `Assets/Modules/CommonComponents/Scripts/Signals/` (`ISignal`, `Signal`, `SmartWeakSignal`).
 - The quest system follows progress through `QuestEventSignal`. See [Quests module](quests.md).
 
+## Engine-free modules
+
+The domain core compiles without `UnityEngine`, so its tests run with plain `dotnet test`. An engine-free assembly sets `"noEngineReferences": true` in its asmdef, and the Unity compiler then rejects any `UnityEngine` use in it. Code that needs the engine lives in a companion assembly, usually named `<Module>.Unity`.
+
+| Engine-free assembly | Engine-side companion | Owning doc |
+| --- | --- | --- |
+| `Diagnostics` | `Diagnostics.Unity` (`UnityLogger`) | [diagnostics.md](diagnostics.md) |
+| `Utilites` | — | [utilites.md](utilites.md) |
+| `CommonComponents` | `CommonComponents.Unity` (geometry, meshes, Zenject signal bindings, converters) | [common_components.md](common_components.md) |
+| `CodeWriter.ExpressionParser` | — | [expression_parser.md](expression_parser.md) |
+| `Security.Crypto` (commercial), `SecurityStub.Crypto` (open source) | `Security`, `SecurityStub` | [modules_private.md](modules_private.md), [services.md](services.md) |
+| `Database` | `Database.Unity` (`Resources` storage, Unity JSON, sprite and audio decoding, `UnityDatabaseFactory`) | [database.md](database.md) |
+| `NVorbis` (third-party) | — (`Database.Unity` uses it) | [plugins.md](plugins.md) |
+| `Localization.Abstractions` | `Localization` | [localization.md](localization.md) |
+| `ShipConstructor` | — | [ship_constructor.md](ship_constructor.md) |
+| `GameSession` | `Assets/Scripts/Services/Unity/SessionPlayTimeTicker.cs` | [game_session.md](game_session.md) |
+
+### Rules
+
+1. Do not reference an engine assembly, Zenject, or a non-engine-free module from an engine-free assembly.
+2. Use `GameDatabase.Model.Vector2Data` and `ColorData` instead of `Vector2` and `Color`. Engine code converts them with the `ToUnity()` and `ToData()` extensions in `CommonComponents.Unity`. C# has no implicit conversion between them, so every call site converts explicitly.
+3. Use `Utilites.MathEx` instead of `Mathf`. It matches `Mathf` exactly: `Clamp` never throws, `RoundToInt` rounds half to even. See [Utilites: MathEx](utilites.md#mathex).
+4. Log with `GameDiagnostics.Trace` (all builds) or `GameDiagnostics.Debug` (editor only). Outside Unity, `Trace` writes to the console. See [Diagnostics](diagnostics.md#redirecting-trace).
+5. Use Utilites `RandomState` or `PcgRandom` for randomness, or take an `IRandomSource` (ExpressionParser). Never use `UnityEngine.Random`. A change of generator in seeded code changes saves: ask the owner first.
+6. Pass engine services in from outside: frame time as a method argument (`SessionData.AddPlayTime`), storage and JSON through constructor parameters (`Database`), and `Resources` access through a static hook only when generated code cannot take a parameter (`MigrationResources.StorageProvider`).
+7. When a file moves into a `*.Unity` assembly, move it with `git mv` together with its `.meta` file, so the asset GUID stays the same.
+
+### Running the tests without Unity
+
+```bash
+dotnet test Tests~/EngineFree.Tests.csproj
+```
+
+[`Tests~/EngineFree.Tests.csproj`](../Tests~/EngineFree.Tests.csproj) compiles the sources of the engine-free assemblies and the test folders of Utilites, CommonComponents, ExpressionParser, Database, and GameSession into one .NET 8 test assembly. Unity ignores folders whose names end in `~`.
+
+1. The project uses C# 9 (the Unity language version) and NUnit 3.14. NUnit 4 removed the classic `Assert.AreEqual` that the tests use.
+2. BouncyCastle and IonicZlib come from the DLLs in `Assets/`. Newtonsoft comes from NuGet, at the version of Unity's `com.unity.nuget.newtonsoft-json` package.
+3. When `ModulesPrivate/Security/Crypto/ModEncryption.cs` exists, the project compiles the commercial crypto and defines `LICENSE_COMMERCIAL`, which enables `PackedModEncryptionTests`. Otherwise it compiles `SecurityStub.Crypto` and defines `LICENSE_OPENSOURCE`.
+4. `UNITY_EDITOR` and `IAP_DISABLED` are not defined, so the code compiles as in a release player build.
+5. All sources share one assembly, so `internal` members are visible everywhere. A test that compiles here can still fail to compile in Unity; Unity is the authority on assembly boundaries.
+6. To add a test folder or an engine-free assembly, add its folder to the `Compile` items of the project. Exclude its `Unity/` and `Tests/` subfolders where they belong to other assemblies.
+7. Tests that need `Resources` or other engine APIs (`Database.Unity.Tests`) run only in the Unity Test Runner.
+
 ## Subsystems
 
 | Subsystem | Summary | Owning doc |

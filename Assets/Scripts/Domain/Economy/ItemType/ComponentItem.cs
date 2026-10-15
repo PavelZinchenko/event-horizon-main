@@ -22,7 +22,7 @@ namespace Economy.ItemType
         public string Name { get { return Component.GetName(_localization); } }
         public string Description { get { return Component.CreateModification().GetDescription(_localization); } }
         public SpriteId Icon => Component.Data.Icon;
-        public Color Color { get { return Component.Data.Color; } }
+        public ColorData Color { get { return Component.Data.Color; } }
         public Price Price { get { return _premium ? Component.PremiumPrice : Component.Price; } }
         public ItemQuality Quality { get { return Component.ItemQuality; } }
 

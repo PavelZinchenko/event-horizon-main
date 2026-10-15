@@ -20,7 +20,7 @@ namespace Economy.ItemType
         public string Name { get { return _localization.GetString("$AdItemDescription"); } }
         public string Description { get { return string.Empty; } }
         public SpriteId Icon => new("Textures/GUI/InAppPurchases/video", SpriteId.Type.Default);
-        public Color Color { get { return Color.white; } }
+        public ColorData Color { get { return ColorData.White; } }
         public Price Price { get { return new Price(0, Currency.None); } }
         public ItemQuality Quality { get { return ItemQuality.Common; } }
 

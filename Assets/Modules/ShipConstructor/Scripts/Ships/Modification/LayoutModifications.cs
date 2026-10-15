@@ -210,7 +210,7 @@ namespace Constructor.Ships.Modification
                         if (cellType == CellType.Empty)
                             continue;
                         if (!TryModifyCell(j, i, cellType))
-                            UnityEngine.Debug.LogError($"Invalid modification - {cellType} [{j},{i}]");
+                            GameDiagnostics.Trace.LogError($"Invalid modification - {cellType} [{j},{i}]");
                     }
                 }
 
@@ -238,7 +238,7 @@ namespace Constructor.Ships.Modification
 					var y = index / size;
 
 					if (!TryModifyCell(x, y, (CellType)data[dataIndex]))
-                        UnityEngine.Debug.LogError($"Invalid modification [{x},{y}]");
+                        GameDiagnostics.Trace.LogError($"Invalid modification [{x},{y}]");
 
 					index++;
 					dataIndex++;

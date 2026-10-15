@@ -52,7 +52,7 @@ namespace Gui.Exploration
 	        _planet = _factory.Create(_motherShip.Position, index);
 
             _factionText.text = _localization.GetString(_planet.Faction.Name);
-	        _factionIcon.color = _planet.Faction.Color;
+	        _factionIcon.color = _planet.Faction.Color.ToUnity();
 	        _levelText.text = _planet.Level.ToString();
 
             _fleetPanel.Initialize();

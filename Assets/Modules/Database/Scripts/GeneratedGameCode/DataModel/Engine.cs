@@ -25,12 +25,12 @@ namespace GameDatabase.DataModel
 		private Engine(EngineSerializable serializable, Database.Loader loader)
 		{
 			Position = serializable.Position;
-			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 1f);
+			Size = Utilites.MathEx.Clamp(serializable.Size, 0f, 1f);
 
 			OnDataDeserialized(serializable, loader);
 		}
 
-		public UnityEngine.Vector2 Position { get; private set; }
+		public GameDatabase.Model.Vector2Data Position { get; private set; }
 		public float Size { get; private set; }
 
 		public static Engine DefaultValue { get; private set; }= new(new(), null);

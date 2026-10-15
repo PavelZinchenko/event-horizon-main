@@ -3,6 +3,7 @@ using System.Linq;
 using Constructor.Satellites;
 using GameDatabase.DataModel;
 using CommonComponents.Utils;
+using Utilites;
 
 namespace Constructor.Ships
 {
@@ -38,8 +39,8 @@ namespace Constructor.Ships
             if (build.RandomColor)
             {
                 ColorScheme.Type = ShipColorScheme.SchemeType.Hsv;
-                ColorScheme.Hue = UnityEngine.Random.value;
-                ColorScheme.Saturation = UnityEngine.Random.value * maxSaturation;
+                ColorScheme.Hue = _random.NextFloat();
+                ColorScheme.Saturation = _random.NextFloat() * maxSaturation;
             }
         }
 
@@ -62,5 +63,6 @@ namespace Constructor.Ships
 
         private readonly ObservableCollection<IntegratedComponent> _components = new ObservableCollection<IntegratedComponent>();
         private string _name;
+        private static RandomState _random = RandomState.FromTickCount();
     }
 }

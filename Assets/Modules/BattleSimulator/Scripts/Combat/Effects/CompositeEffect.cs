@@ -92,9 +92,9 @@ namespace Combat.Effects
                 {
                     var effect = factory.CreateEffect(element, gameObject.transform);
                     effect.Visible = false;
-                    effect.Color = element.Color;
+                    effect.Color = element.Color.ToUnity();
                     effect.Size = element.Size;
-                    effect.Position = element.Offset;
+                    effect.Position = element.Offset.ToUnity();
                     effect.Rotation = element.Rotation;
                     _effects.Add(effect);
 
@@ -258,7 +258,7 @@ namespace Combat.Effects
 
                 quantity--;
                 var effect = _effects[i];
-                effect.Color = element.ColorMode.Apply(element.Color, Color);
+                effect.Color = element.ColorMode.Apply(element.Color.ToUnity(), Color);
             }
         }
 

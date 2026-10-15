@@ -22,7 +22,7 @@ namespace Gui.Craft
                 var sprite = resourceLocator.GetSprite(modification.Type.GetIconId());
                 _icon.gameObject.SetActive(sprite != null);
                 _icon.sprite = sprite;
-                _icon.color = modification.Type.GetColor();
+                _icon.color = modification.Type.GetColor().ToUnity();
             }
         }
 

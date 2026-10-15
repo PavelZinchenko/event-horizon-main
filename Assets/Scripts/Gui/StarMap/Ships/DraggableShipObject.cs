@@ -14,7 +14,7 @@ namespace Gui.StarMap
         public void Initialize(ShipListItem item)
         {
             _icon.sprite = _resourceLocator.GetSprite(item.Ship.Model.ModelImage);
-            _icon.color = item.Ship.ColorScheme.HsvColor;
+            _icon.color = item.Ship.ColorScheme.HsvColor.ToUnity();
         }
     }
 }

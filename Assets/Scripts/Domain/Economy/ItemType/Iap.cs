@@ -21,7 +21,7 @@ namespace Economy.ItemType
         public string Name => "stars";
         public string Description => string.Empty;
         public SpriteId Icon => new("Textures/Currency/star", SpriteId.Type.Default);
-        public Color Color => UiTheme.Current.GetCurrencyColor(Currency.Money);
+        public ColorData Color => UiTheme.Current.GetCurrencyColor(Currency.Money).ToData();
         public Price Price => Price.Common(15000);
         public ItemQuality Quality => ItemQuality.Perfect;
 
@@ -57,7 +57,7 @@ namespace Economy.ItemType
         public string Name => "supporter pack";
         public string Description => string.Empty;
         public SpriteId Icon => new("Textures/GUI/shopping_cart.png", SpriteId.Type.Default);
-        public Color Color => UiTheme.Current.GetCurrencyColor(Currency.Money);
+        public ColorData Color => UiTheme.Current.GetCurrencyColor(Currency.Money).ToData();
         public Price Price => Price.Common(15000);
         public ItemQuality Quality => ItemQuality.Perfect;
 

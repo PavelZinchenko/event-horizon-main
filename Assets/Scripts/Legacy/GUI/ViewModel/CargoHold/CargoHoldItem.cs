@@ -20,7 +20,7 @@ namespace ViewModel
             Product = item;
             
             _icon.sprite = resourceLocator.GetSprite(item.Type.Icon);
-            _icon.color = item.Type.Color;
+            _icon.color = item.Type.Color.ToUnity();
 
             _nameText.text = item.Type.Name;
 

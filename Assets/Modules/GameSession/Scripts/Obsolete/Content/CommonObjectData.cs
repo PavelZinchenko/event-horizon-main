@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameModel.Serialization;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class CommonObjectData : ISerializableDataObsolete
 	{
-        [Inject]
 		public CommonObjectData(byte[] buffer = null)
 		{
 			IsChanged = true;
@@ -84,7 +82,7 @@ namespace Session.ContentObsolete
 			var version = Helpers.DeserializeInt(buffer, ref index);
 			if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
 			{
-				UnityEngine.Debug.Log("CommonObjectData: incorrect data version");
+				GameDiagnostics.Trace.Log("CommonObjectData: incorrect data version");
                 throw new ArgumentException();
             }
 
