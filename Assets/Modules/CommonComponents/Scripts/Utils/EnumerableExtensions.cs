@@ -266,6 +266,7 @@ public static class EnumerableExtension
             {
                 yield return item;
             }
+            yield break;
         }
         
         var indices = new List<WeightedIndex>(list.Count);
