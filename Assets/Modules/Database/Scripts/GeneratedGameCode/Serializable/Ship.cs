@@ -33,7 +33,7 @@ namespace GameDatabase.Serializable
 		public ShipVisualEffectsSerializable VisualEffects;
 		public ToggleState CellsExpansions;
 		public float ColliderTolerance = 0.02f;
-		public UnityEngine.Vector2 EnginePosition;
+		public GameDatabase.Model.Vector2Data EnginePosition;
 		public float EngineSize;
 		public int ShipCategory;
 		public float EnergyResistance;

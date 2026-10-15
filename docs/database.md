@@ -75,10 +75,11 @@ Related documents:
 | [`Scripts/Query/ShipBuildQuery.cs`](../Assets/Modules/Database/Scripts/Query/ShipBuildQuery.cs) | Lazy filter chain over ship builds. | Hand-written. |
 | [`Scripts/Legacy/`](../Assets/Modules/Database/Scripts/Legacy/) | Name-to-ID tables for saves from before numeric IDs. | Read-only legacy. |
 | [`Scripts/Utils/`](../Assets/Modules/Database/Scripts/Utils/) | `BarrelConverter` and old binary helpers. | Hand-written. |
-| [`Tests/`](../Assets/Modules/Database/Tests/) | Editor-only NUnit tests and packed-mod fixtures. | Add module tests here. |
+| [`Tests/`](../Assets/Modules/Database/Tests/) | Editor-only NUnit tests that need no Unity API, and packed-mod fixtures. | Add module tests here. |
+| [`Unity/`](../Assets/Modules/Database/Unity/) | `Database.Unity` assembly: `ResourceDatabaseStorage`, `UnityJsonSerializer`, `UnityDatabaseFactory`, sprite and audio converters, `OggAudioClip`, the WAV parser, `ColorMode.Apply`. `Unity/Tests/` holds the tests that load `Resources`. | Engine-side code. |
 | `Plugins/NVorbis/` | Git submodule. Ogg Vorbis decoder for mod audio. | Third-party. |
 
-The [assembly definition](../Assets/Modules/Database/Database.asmdef) references `Security`, `SecurityStub`, `CommonComponents`, `CodeWriter.ExpressionParser`, `Diagnostics`, and `NVorbis`. Some value types that the database uses live in `CommonComponents`: [`SpriteId`](../Assets/Modules/CommonComponents/Scripts/DataTypes/SpriteId.cs), [`AudioClipId`](../Assets/Modules/CommonComponents/Scripts/DataTypes/AudioClipId.cs), and [`StatMultiplier`](../Assets/Modules/CommonComponents/Scripts/DataTypes/StatMultiplier.cs).
+The [assembly definition](../Assets/Modules/Database/Database.asmdef) sets `noEngineReferences`, so the database compiles without UnityEngine. It references `Security.Crypto` (commercial) or `SecurityStub.Crypto` (open source), `CommonComponents`, `CodeWriter.ExpressionParser`, `Diagnostics`, and `Utilites`. Engine-side code is in `Database.Unity` ([`Unity/`](../Assets/Modules/Database/Unity/)). The game creates the database with [`UnityDatabaseFactory.Create()`](../Assets/Modules/Database/Unity/UnityDatabaseFactory.cs), which passes the `Resources` storage, the JSON serializer, and the mods folder to the `Database` constructor. Some value types that the database uses live in `CommonComponents`: [`SpriteId`](../Assets/Modules/CommonComponents/Scripts/DataTypes/SpriteId.cs), [`AudioClipId`](../Assets/Modules/CommonComponents/Scripts/DataTypes/AudioClipId.cs), and [`StatMultiplier`](../Assets/Modules/CommonComponents/Scripts/DataTypes/StatMultiplier.cs).
 
 ## The catalog at a glance
 
@@ -169,7 +170,7 @@ Every record has a `Disabled` flag. The loader keeps disabled records in `Databa
 
 ## JSON format
 
-The built-in catalog uses Unity's [`JsonUtility`](../Assets/Modules/Database/Scripts/Storage/UnityJsonSerializer.cs) for reading. Rules that follow from it:
+The built-in catalog uses Unity's [`JsonUtility`](../Assets/Modules/Database/Unity/Storage/UnityJsonSerializer.cs) for reading. Rules that follow from it:
 
 | Data | JSON form | Notes |
 | --- | --- | --- |
@@ -189,9 +190,9 @@ The built-in catalog uses Unity's [`JsonUtility`](../Assets/Modules/Database/Scr
 | Prefab | Prefab name string | Resolved under `Resources/Combat/Bullets/`, `Objects/`, or `Effects/` by the prefab kind. |
 | Expression | String formula | See [Expressions](#expressions). |
 
-`BehaviorTree` records are an exception: [`UnityJsonSerializer`](../Assets/Modules/Database/Scripts/Storage/UnityJsonSerializer.cs#L12) reads them with Newtonsoft.Json, because `JsonUtility` cannot read recursive classes. The external editor writes all records with Newtonsoft.Json and omits default values.
+`BehaviorTree` records are an exception: [`UnityJsonSerializer`](../Assets/Modules/Database/Unity/Storage/UnityJsonSerializer.cs#L12) reads them with Newtonsoft.Json, because `JsonUtility` cannot read recursive classes. The external editor writes all records with Newtonsoft.Json and omits default values.
 
-Unity's `Resources` system turns every file under `Resources/Database/` into an asset. [`ResourceDatabaseStorage`](../Assets/Modules/Database/Scripts/Storage/ResourceDatabaseStorage.cs) parses every `TextAsset` there as a record. A non-database text file there breaks loading. Keep each `.meta` file next to its JSON file.
+Unity's `Resources` system turns every file under `Resources/Database/` into an asset. [`ResourceDatabaseStorage`](../Assets/Modules/Database/Unity/Storage/ResourceDatabaseStorage.cs) parses every `TextAsset` there as a record. A non-database text file there breaks loading. Keep each `.meta` file next to its JSON file.
 
 ## Value types
 
@@ -226,10 +227,10 @@ Unity's `Resources` system turns every file under `Resources/Database/` into an 
 | --- | --- | --- |
 | `ItemId<T>` | [ItemId.cs](../Assets/Modules/Database/Scripts/Types/ItemId.cs) | Typed record ID. Hash and equality use the integer. |
 | `ImmutableCollection<T>` | [ImmutableCollection.cs](../Assets/Modules/Database/Scripts/Types/ImmutableCollection.cs) | Read-only list for list fields. The default value is an empty collection. |
-| `ColorData` | [ColorData.cs](../Assets/Modules/Database/Scripts/Types/ColorData.cs) | Parsed color. Converts implicitly to `UnityEngine.Color`. |
+| `ColorData` | [ColorData.cs](../Assets/Modules/CommonComponents/Scripts/DataTypes/ColorData.cs) | Parsed color, engine-free. Engine code converts it with `.ToUnity()`. |
 | `PrefabId` | [PrefabId.cs](../Assets/Modules/Database/Scripts/Types/PrefabId.cs) | Prefab name plus kind (`Bullet`, `Object`, `Effect`). |
 | `NodeId` | [NodeId.cs](../Assets/Modules/Database/Scripts/Types/NodeId.cs) | Quest node ID. Clamped to 0–1000. See [issue DB8](issues/database.md#db8-quest-node-ids-above-1000-collide). |
-| `ImageData`, `AudioClipData`, `OggAudioClip` | [Types/](../Assets/Modules/Database/Scripts/Types/) | Decoded mod media. Ogg clips over 100 KB stream from memory. |
+| `IImageData`, `IAudioClipData` | [ImageData.cs](../Assets/Modules/Database/Scripts/Types/ImageData.cs), [AudioClipData.cs](../Assets/Modules/Database/Scripts/Types/AudioClipData.cs) | Encoded mod media: png/jpg bytes, or wav/ogg bytes plus the format. `ToSprite()` and `ToAudioClip()` in [DatabaseAssetConverters.cs](../Assets/Modules/Database/Unity/DatabaseAssetConverters.cs) decode them once and cache the result. Ogg clips over 100 KB stream from memory. |
 
 ## Expressions
 
@@ -302,7 +303,7 @@ How schema options change the generated data model:
 | [`DataModel/InstalledComponent.cs`](../Assets/Modules/Database/Scripts/DataModel/InstalledComponent.cs), [`LootModel.cs`](../Assets/Modules/Database/Scripts/DataModel/LootModel.cs) | Constructors for runtime-created instances. |
 | [`Extensions/Price.cs`](../Assets/Modules/Database/Scripts/Extensions/Price.cs) | Hard-coded price and crafting formulas for components, ships, and satellites. |
 | [`Extensions/ComponentList.cs`](../Assets/Modules/Database/Scripts/Extensions/ComponentList.cs), [`Factions.cs`](../Assets/Modules/Database/Scripts/Extensions/Factions.cs) | Availability and faction filters. |
-| [`Extensions/Colors.cs`](../Assets/Modules/Database/Scripts/Extensions/Colors.cs) | `ColorMode.Apply`. |
+| [`Extensions/Colors.cs`](../Assets/Modules/Database/Unity/Extensions/Colors.cs) | `ColorMode.Apply`. |
 | [`Query/ShipBuildQuery.cs`](../Assets/Modules/Database/Scripts/Query/ShipBuildQuery.cs) | Ship build selection for enemies, players, starbases, and drones. Maps star level to difficulty class (`level / 25`). |
 | [`Legacy/`](../Assets/Modules/Database/Scripts/Legacy/) | Old string names of ships, builds, satellites, and technologies. Used only by obsolete save loaders in `GameSession`. |
 
@@ -313,7 +314,7 @@ How schema options change the generated data model:
 1. `LookForMods()` scans the mod folder. It creates a `FileDatabaseStorage` for each file and a `FolderDatabaseStorage` for each subfolder to read the name and ID. Invalid mods are logged and skipped.
 2. `TryAddModFromFile(path)` registers packed mods that the player chose outside the mod folder (`GameSettings.ExternalMods`).
 3. If `GameSettings.ActiveMod` is set, `TryLoad(id)` loads that mod. Otherwise, or on failure, `LoadDefault()` loads the built-in catalog.
-4. [`Database.Load`](../Assets/Modules/Database/Scripts/Database.cs#L140) clears all tables and raises `DatabaseLoading`.
+4. [`Database.Load`](../Assets/Modules/Database/Scripts/Database.cs#L143) clears all tables and raises `DatabaseLoading`.
 5. `LoadContent(storage)` reads the selected storage into a new `DatabaseContent`. If the storage version is not the current version, the [upgrader](#versioning-and-migration) reads it and exports the upgraded records instead.
 6. Unless the mod's `DatabaseSettings.UnloadOriginalDatabase` is true, `LoadExtraContent` reads the built-in catalog into the same content. Records that are already present are skipped.
 7. [`Database.Loader.Load`](../Assets/Modules/Database/Scripts/GeneratedGameCode/Database.cs#L271) creates data model objects for every non-disabled record, copies media, and creates every settings object. A missing settings record becomes an object with schema defaults.
@@ -350,7 +351,7 @@ A file in the mod folder is a packed mod. A subfolder is a folder mod.
 
 ## Storage backends
 
-| | [`ResourceDatabaseStorage`](../Assets/Modules/Database/Scripts/Storage/ResourceDatabaseStorage.cs) | [`FolderDatabaseStorage`](../Assets/Modules/Database/Scripts/Storage/FolderDatabaseStorage.cs) | [`FileDatabaseStorage`](../Assets/Modules/Database/Scripts/Storage/FileDatabaseStorage.cs) |
+| | [`ResourceDatabaseStorage`](../Assets/Modules/Database/Unity/Storage/ResourceDatabaseStorage.cs) | [`FolderDatabaseStorage`](../Assets/Modules/Database/Scripts/Storage/FolderDatabaseStorage.cs) | [`FileDatabaseStorage`](../Assets/Modules/Database/Scripts/Storage/FileDatabaseStorage.cs) |
 | --- | --- | --- | --- |
 | Source | `Resources/Database/` | Mod subfolder | Packed mod file |
 | Name and ID | Folder name, ID `""` | Folder name, or the two lines of an `id` file (name, then ID) | From the packed header |

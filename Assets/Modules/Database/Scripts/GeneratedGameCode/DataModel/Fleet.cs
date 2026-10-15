@@ -28,7 +28,7 @@ namespace GameDatabase.DataModel
 			loader.AddFleet(serializable.Id, this);
 
 			Factions = RequiredFactions.Create(serializable.Factions, loader);
-			LevelBonus = UnityEngine.Mathf.Clamp(serializable.LevelBonus, -10000, 10000);
+			LevelBonus = Utilites.MathEx.Clamp(serializable.LevelBonus, -10000, 10000);
 			NoRandomShips = serializable.NoRandomShips;
 			SpecificShips = new ImmutableCollection<ShipBuild>(serializable.SpecificShips?.Select(item => loader.GetShipBuild(new ItemId<ShipBuild>(item), true)));
 			CombatRules = loader?.GetCombatRules(new ItemId<CombatRules>(serializable.CombatRules)) ?? CombatRules.DefaultValue;

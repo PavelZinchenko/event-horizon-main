@@ -428,7 +428,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			Nodes = new ImmutableCollection<BehaviorTreeNode>(serializable.Nodes?.Select(item => BehaviorTreeNode.Create(item, loader)));
-			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0f, 3.402823E+38f);
+			Cooldown = Utilites.MathEx.Clamp(serializable.Cooldown, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -474,7 +474,7 @@ namespace GameDatabase.DataModel
 			Node = BehaviorTreeNode.Create(serializable.Node, loader);
 			ExecutionMode = serializable.ExecutionMode;
 			Result = serializable.Result;
-			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0f, 3.402823E+38f);
+			Cooldown = Utilites.MathEx.Clamp(serializable.Cooldown, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -586,7 +586,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_HasEnoughEnergy(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			FailIfLess = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
+			FailIfLess = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -607,7 +607,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_IsLowOnHp(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
+			MinValue = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -628,7 +628,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_IsNotControledByPlayer(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0.1f, 3.402823E+38f);
+			Cooldown = Utilites.MathEx.Clamp(serializable.Cooldown, 0.1f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -649,7 +649,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_HasIncomingThreat(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			TimeToCollision = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0f, 3.402823E+38f);
+			TimeToCollision = Utilites.MathEx.Clamp(serializable.Cooldown, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -689,7 +689,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_IsFasterThanTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Multiplier = UnityEngine.Mathf.Clamp(serializable.MinValue, 1f, 10f);
+			Multiplier = Utilites.MathEx.Clamp(serializable.MinValue, 1f, 10f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -767,7 +767,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_MainTargetLowHp(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
+			MinValue = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -788,7 +788,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_MainTargetWithinAttackRange(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinMaxLerp = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
+			MinMaxLerp = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -828,7 +828,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_TargetDistance(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 3.402823E+38f);
+			MaxDistance = Utilites.MathEx.Clamp(serializable.MaxValue, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -849,7 +849,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_HasLongerAttackRange(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Multiplier = UnityEngine.Mathf.Clamp(serializable.MinValue, 1f, 10f);
+			Multiplier = Utilites.MathEx.Clamp(serializable.MinValue, 1f, 10f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -870,8 +870,8 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_FindEnemy(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinCooldown = UnityEngine.Mathf.Clamp(serializable.MinValue, 0.5f, 3.402823E+38f);
-			MaxCooldown = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 3.402823E+38f);
+			MinCooldown = Utilites.MathEx.Clamp(serializable.MinValue, 0.5f, 3.402823E+38f);
+			MaxCooldown = Utilites.MathEx.Clamp(serializable.MaxValue, 0f, 3.402823E+38f);
 			InAttackRange = serializable.InRange;
 			IgnoreDrones = serializable.NoDrones;
 
@@ -897,8 +897,8 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_MoveToAttackRange(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinMaxLerp = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
-			Multiplier = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 1f);
+			MinMaxLerp = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1f);
+			Multiplier = Utilites.MathEx.Clamp(serializable.MaxValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1042,8 +1042,8 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_MaintainAttackRange(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinMaxLerp = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
-			Tolerance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 1f);
+			MinMaxLerp = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1f);
+			Tolerance = Utilites.MathEx.Clamp(serializable.MaxValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1065,7 +1065,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_Wait(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0f, 3.402823E+38f);
+			Cooldown = Utilites.MathEx.Clamp(serializable.Cooldown, 0f, 3.402823E+38f);
 			ResetIfInterrupted = serializable.InRange;
 
             OnDataDeserialized(serializable, loader);
@@ -1107,7 +1107,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_LookForAdditionalTargets(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0.1f, 3.402823E+38f);
+			Cooldown = Utilites.MathEx.Clamp(serializable.Cooldown, 0.1f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1128,7 +1128,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_LookForThreats(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0.1f, 3.402823E+38f);
+			Cooldown = Utilites.MathEx.Clamp(serializable.Cooldown, 0.1f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1149,7 +1149,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_MatchVelocityWithTarget(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Tolerance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 1f);
+			Tolerance = Utilites.MathEx.Clamp(serializable.MaxValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1191,8 +1191,8 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_RechargeEnergy(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			FailIfLess = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
-			RestoreUntil = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 1f);
+			FailIfLess = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1f);
+			RestoreUntil = Utilites.MathEx.Clamp(serializable.MaxValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1290,7 +1290,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_SlowDown(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Tolerance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 1f);
+			Tolerance = Utilites.MathEx.Clamp(serializable.MaxValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1368,8 +1368,8 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_KeepDistance(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinDistance = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1000f);
-			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 1000f);
+			MinDistance = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1000f);
+			MaxDistance = Utilites.MathEx.Clamp(serializable.MaxValue, 0f, 1000f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1545,8 +1545,8 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_FindDamagedAlly(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinCooldown = UnityEngine.Mathf.Clamp(serializable.MinValue, 0.5f, 3.402823E+38f);
-			MaxCooldown = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 3.402823E+38f);
+			MinCooldown = Utilites.MathEx.Clamp(serializable.MinValue, 0.5f, 3.402823E+38f);
+			MaxCooldown = Utilites.MathEx.Clamp(serializable.MaxValue, 0f, 3.402823E+38f);
 			InAttackRange = serializable.InRange;
 
             OnDataDeserialized(serializable, loader);
@@ -1570,7 +1570,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_EnginePropulsionForce(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
+			MinValue = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1629,8 +1629,8 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_FlyAroundMothership(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinDistance = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1000f);
-			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 1000f);
+			MinDistance = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1000f);
+			MaxDistance = Utilites.MathEx.Clamp(serializable.MaxValue, 0f, 1000f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1690,7 +1690,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_MothershipLowHp(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
+			MinValue = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1711,7 +1711,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_MothershipDistanceExceeded(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MaxDistance = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0f, 3.402823E+38f);
+			MaxDistance = Utilites.MathEx.Clamp(serializable.MaxValue, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1751,7 +1751,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_MothershipLowEnergy(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
+			MinValue = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -1772,7 +1772,7 @@ namespace GameDatabase.DataModel
   		public BehaviorTreeNode_MothershipLowShield(BehaviorTreeNodeSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0f, 1f);
+			MinValue = Utilites.MathEx.Clamp(serializable.MinValue, 0f, 1f);
 
             OnDataDeserialized(serializable, loader);
         }

@@ -41,7 +41,7 @@ namespace GameServices.Audio
             if (list.Count == 0) return null;
             var soundTrack = list[_random.Next() % list.Count].Audio.Id;
             var audioClip = _database.GetAudioClip(soundTrack);
-            return audioClip?.AudioClip;
+            return audioClip?.ToAudioClip();
         }
     }
 }

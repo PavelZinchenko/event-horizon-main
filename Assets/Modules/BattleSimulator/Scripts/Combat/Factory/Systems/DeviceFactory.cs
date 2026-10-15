@@ -52,7 +52,7 @@ namespace Combat.Factory
                         if (stats.EffectPrefab)
                         {
                             foreach (var engine in shipSpec.Stats.ShipModel.Engines)
-                                device.AddTrigger(new FlashEffect(CreateEffect(stats, ship.Body.Scale), ship.Body, 0.5f, engine.Position * 0.5f,
+                                device.AddTrigger(new FlashEffect(CreateEffect(stats, ship.Body.Scale), ship.Body, 0.5f, engine.Position.ToUnity() * 0.5f,
                                     ConditionType.OnRemainActive | ConditionType.OnActivate));
                         }
                     }
@@ -97,7 +97,7 @@ namespace Combat.Factory
                     break;
                 case DeviceClass.PartialShield:
                     {
-                        var energyShield = _satelliteFactory.CreateFrontalShield(ship, 1f / (stats.Power * shipSpec.Stats.ShieldMultiplier.Value), stats.Offset, stats.Size, stats.Color.ToUnity());
+                        var energyShield = _satelliteFactory.CreateFrontalShield(ship, 1f / (stats.Power * shipSpec.Stats.ShieldMultiplier.Value), stats.Offset.ToUnity(), stats.Size, stats.Color.ToUnity());
                         var energyShieldDevice = new FrontalShieldDevice(ship, stats, deviceData.KeyBinding);
                         device = energyShieldDevice;
                         device.AddTrigger(new AuxiliaryUnitAction(energyShieldDevice, energyShield));

@@ -27,7 +27,7 @@ namespace GameDatabase.DataModel
 			Id = new ItemId<ComponentGroupTag>(serializable.Id);
 			loader.AddComponentGroupTag(serializable.Id, this);
 
-			MaxInstallableComponents = UnityEngine.Mathf.Clamp(serializable.MaxInstallableComponents, 1, 2147483647);
+			MaxInstallableComponents = Utilites.MathEx.Clamp(serializable.MaxInstallableComponents, 1, 2147483647);
 
 			OnDataDeserialized(serializable, loader);
 		}

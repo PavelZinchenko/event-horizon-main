@@ -173,13 +173,13 @@ A member name may repeat only when the repeats have different `case` values. The
 
 | Schema `type` | JSON / DTO field | Game data class | Editor data class |
 | --- | --- | --- | --- |
-| `int` | `int` | `int`, clamped | `NumericValue<int>` with min/max |
-| `float` | `float` | `float`, clamped | `NumericValue<float>` with min/max |
+| `int` | `int` | `int`, clamped with `Utilites.MathEx.Clamp` | `NumericValue<int>` with min/max |
+| `float` | `float` | `float`, clamped with `Utilites.MathEx.Clamp` | `NumericValue<float>` with min/max |
 | `bool` | `bool` | `bool` | `bool` |
 | `char` | `string` | `char` (first character) | `char` |
 | `string` | `string` | `string` | `string` |
 | `color` | `string` `#AARRGGBB` | `ColorData` | `System.Drawing.Color` |
-| `vector` | `Vector2` | `UnityEngine.Vector2` | `Vector2` |
+| `vector` | `Vector2` | `GameDatabase.Model.Vector2Data` (engine-free, `[Serializable]`, fields `x`/`y`) | `Vector2` |
 | `layout` | `string` | `Layout` | `Layout` |
 | `image` | `string` | `SpriteId` with category `typeid` | `string` |
 | `audioclip` | `string` | `AudioClipId` | `string` |
@@ -252,7 +252,7 @@ Because one schema folder serves every minor version of a major, minor migration
 
 The hook bodies are hand-written and live outside the generated folders: the game's are in `Scripts/Migration/v1/DatabaseUpgrader_<a>_<b>.cs`, and the editor keeps its own copies in `.Editor/DatabaseModel/DatabaseModel/Migration/v1/`. Unimplemented `partial void` hooks compile to nothing, so a forgotten migration is silent.
 
-The two contexts differ in small ways. `upgrade_editor` adds `[DefaultValue]` attributes, like the editor DTOs. `upgrade_game` uses `UnityEngine.Vector2` and generates no attributes.
+The two contexts differ in small ways. `upgrade_editor` adds `[DefaultValue]` attributes, like the editor DTOs. `upgrade_game` uses `GameDatabase.Model.Vector2Data` and generates no attributes.
 
 ### Switch Objects
 

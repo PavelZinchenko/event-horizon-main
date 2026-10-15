@@ -3,16 +3,16 @@ using NVorbis;
 
 namespace GameDatabase.Model
 {
-    public class OggAudioClip : IAudioClipData
+    public class OggAudioClip
     {
-        public static IAudioClipData Create(byte[] data)
+        public static AudioClip Create(byte[] data)
         {
             const long maxSize = 1024*100; // clips bigger than 100 Kb will be streamed
 
             if (data.Length > maxSize)
-                return new OggAudioStream(data);
+                return new OggAudioStream(data).AudioClip;
             else
-                return new OggAudioClip(data);
+                return new OggAudioClip(data).AudioClip;
         }
 
         public AudioClip AudioClip { get; }
@@ -45,7 +45,7 @@ namespace GameDatabase.Model
         }
     }
 
-    public class OggAudioStream : IAudioClipData
+    public class OggAudioStream
     {
         private readonly VorbisReader _vorbisReader;
         private readonly AudioClip _audioClip;

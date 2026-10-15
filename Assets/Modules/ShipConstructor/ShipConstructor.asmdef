@@ -4,6 +4,7 @@
     "references": [
         "Database",
         "CommonComponents",
+        "CommonComponents.Unity",
         "Localization",
         "Diagnostics",
         "Utilites"

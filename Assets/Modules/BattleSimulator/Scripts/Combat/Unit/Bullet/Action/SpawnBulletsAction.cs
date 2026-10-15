@@ -47,7 +47,7 @@ namespace Combat.Component.Bullet.Action
             else
             {
                 for (var i = 0; i < _magazine; ++i)
-                    _factory.Create(this, 0, _spawnSettings.GetRotation(i), _spawnSettings.GetOffset(i));
+                    _factory.Create(this, 0, _spawnSettings.GetRotation(i), _spawnSettings.GetOffset(i).ToUnity());
             }
 
             if (_audioClipId) _soundPlayer.Play(_audioClipId, GetHashCode());

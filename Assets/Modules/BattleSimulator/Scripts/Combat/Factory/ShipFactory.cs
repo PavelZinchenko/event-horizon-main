@@ -292,8 +292,8 @@ namespace Combat.Factory
         {
             foreach (var engine in model.ShipModel.Engines)
             {
-                ship.AddTrigger(CreateEngineLight(ship, engine.Position * 0.5f, 0f, 5 * engine.Size / model.ShipModel.ModelScale, model.ShipModel.EngineColor.ToUnity()));
-                ship.AddTrigger(CreateTrail(ship, engine.Position * 0.5f, engine.Size, model.ShipModel.EngineColor.ToUnity(), effectType));
+                ship.AddTrigger(CreateEngineLight(ship, engine.Position.ToUnity() * 0.5f, 0f, 5 * engine.Size / model.ShipModel.ModelScale, model.ShipModel.EngineColor.ToUnity()));
+                ship.AddTrigger(CreateTrail(ship, engine.Position.ToUnity() * 0.5f, engine.Size, model.ShipModel.EngineColor.ToUnity(), effectType));
             }
         }
 

@@ -289,7 +289,7 @@ namespace Constructor
 		{
 			public WeaponPlatform(Barrel barrel)
 			{
-				Position = barrel.Position;
+				Position = barrel.Position.ToUnity();
 				Rotation = barrel.Rotation;
 				Offset = barrel.Offset;
 

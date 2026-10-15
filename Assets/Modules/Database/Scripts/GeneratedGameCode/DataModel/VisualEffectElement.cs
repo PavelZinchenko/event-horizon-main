@@ -28,15 +28,15 @@ namespace GameDatabase.DataModel
 			Image = new SpriteId(serializable.Image, SpriteId.Type.Effect);
 			ColorMode = serializable.ColorMode;
 			Color = new ColorData(serializable.Color);
-			Quantity = UnityEngine.Mathf.Clamp(serializable.Quantity, 1, 100);
-			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0.001f, 100f);
-			GrowthRate = UnityEngine.Mathf.Clamp(serializable.GrowthRate, -1f, 100f);
-			TurnRate = UnityEngine.Mathf.Clamp(serializable.TurnRate, -1000f, 1000f);
-			StartTime = UnityEngine.Mathf.Clamp(serializable.StartTime, 0f, 1000f);
-			Lifetime = UnityEngine.Mathf.Clamp(serializable.Lifetime, 0f, 1000f);
-			ParticleSize = UnityEngine.Mathf.Clamp(serializable.ParticleSize, 0.001f, 100f);
+			Quantity = Utilites.MathEx.Clamp(serializable.Quantity, 1, 100);
+			Size = Utilites.MathEx.Clamp(serializable.Size, 0.001f, 100f);
+			GrowthRate = Utilites.MathEx.Clamp(serializable.GrowthRate, -1f, 100f);
+			TurnRate = Utilites.MathEx.Clamp(serializable.TurnRate, -1000f, 1000f);
+			StartTime = Utilites.MathEx.Clamp(serializable.StartTime, 0f, 1000f);
+			Lifetime = Utilites.MathEx.Clamp(serializable.Lifetime, 0f, 1000f);
+			ParticleSize = Utilites.MathEx.Clamp(serializable.ParticleSize, 0.001f, 100f);
 			Offset = serializable.Offset;
-			Rotation = UnityEngine.Mathf.Clamp(serializable.Rotation, 0f, 360f);
+			Rotation = Utilites.MathEx.Clamp(serializable.Rotation, 0f, 360f);
 			Loop = serializable.Loop;
 			Inverse = serializable.Inverse;
 			UseRealTime = serializable.UseRealTime;
@@ -55,7 +55,7 @@ namespace GameDatabase.DataModel
 		public float StartTime { get; private set; }
 		public float Lifetime { get; private set; }
 		public float ParticleSize { get; private set; }
-		public UnityEngine.Vector2 Offset { get; private set; }
+		public GameDatabase.Model.Vector2Data Offset { get; private set; }
 		public float Rotation { get; private set; }
 		public bool Loop { get; private set; }
 		public bool Inverse { get; private set; }

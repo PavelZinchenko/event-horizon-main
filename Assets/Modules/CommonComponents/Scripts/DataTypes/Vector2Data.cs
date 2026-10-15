@@ -3,6 +3,7 @@ using System;
 namespace GameDatabase.Model
 {
     // Engine-free replacement for UnityEngine.Vector2. Field names match Unity, so JSON stays the same.
+    [Serializable]
     public struct Vector2Data
     {
         public float x;

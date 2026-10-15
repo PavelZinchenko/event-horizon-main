@@ -33,7 +33,7 @@ namespace GameDatabase.DataModel
 			InitialEnemyShips = _initialEnemyShips.Evaluate;
 			_maxEnemyShips = new Expressions.IntToInt(serializable.MaxEnemyShips, 1, 2147483647, variableResolver) { ParamName1 = "level" };
 			MaxEnemyShips = _maxEnemyShips.Evaluate;
-			BattleMapSize = UnityEngine.Mathf.Clamp(serializable.BattleMapSize, 50, 2147483647);
+			BattleMapSize = Utilites.MathEx.Clamp(serializable.BattleMapSize, 50, 2147483647);
 			_timeLimit = new Expressions.IntToInt(serializable.TimeLimit, 0, 2147483647, variableResolver) { ParamName1 = "level" };
 			TimeLimit = _timeLimit.Evaluate;
 			TimeOutMode = serializable.TimeOutMode;

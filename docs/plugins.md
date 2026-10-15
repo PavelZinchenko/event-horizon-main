@@ -18,7 +18,7 @@ Five plugins that the commercial build needs are git-ignored. A fresh clone does
 | [BouncyCastle](#bouncycastle) | 2.7.0 | MIT | `Assets/Plugins/BouncyCastle/` | yes | `Security` |
 | [IonicZlib (SimpleZip)](#ioniczlib-simplezip) | 1.0.0.0 | Ms-PL | `Assets/SimpleZip/` | yes | `Database`, `Services`, `Assembly-CSharp` |
 | [NVorbis](#nvorbis-and-openwavparser) | 0.10.x + fork | MIT | `Assets/Modules/Database/Plugins/NVorbis/` | submodule | `Database` |
-| [OpenWavParser](#nvorbis-and-openwavparser) | 1.0 | not stated | `Assets/Modules/Database/Plugins/eToile/` | yes | `Database` |
+| [OpenWavParser](#nvorbis-and-openwavparser) | 1.0 | not stated | `Assets/Modules/Database/Unity/Plugins/eToile/` | yes | `Database.Unity` |
 | [Collider optimizers](#collider-optimizers) | — | not stated | `Assets/Modules/BattleSimulator/Plugins/`, `Assets/Tools/` | yes | `BattleSimulator`; editor |
 
 Known issues: [Plugin issues](issues/plugins.md) and [Expression Parser issues](issues/expression_parser.md).
@@ -238,7 +238,7 @@ Both decode audio in mods. [Database: Media](database.md#media-images-and-audio)
 | Library | Version | License | Assembly | Use |
 | --- | --- | --- | --- | --- |
 | NVorbis (submodule `Assets/Modules/Database/Plugins/NVorbis` → `PavelZinchenko/NVorbis`) | Upstream state of 2022-10-16, plus an assembly definition | MIT, © 2020 Andrew Ward | `NVorbis` (every platform, no engine references) | Ogg Vorbis decoding. Clips over 100 KB stream from memory. |
-| OpenWavParser by eToile ([OpenWavParser.cs](../Assets/Modules/Database/Plugins/eToile/OpenWavParser/OpenWavParser.cs)) | 1.0 (PDF manual in the folder) | not stated | compiled into `Database` | `ByteArrayToAudioClip` for WAV files in mods. |
+| OpenWavParser by eToile ([OpenWavParser.cs](../Assets/Modules/Database/Unity/Plugins/eToile/OpenWavParser/OpenWavParser.cs)) | 1.0 (PDF manual in the folder) | not stated | compiled into `Database.Unity` | `ByteArrayToAudioClip` for WAV files in mods. |
 
 ## Collider optimizers
 

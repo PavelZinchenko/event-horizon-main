@@ -4,6 +4,7 @@
     "references": [
         "Zenject",
         "Database",
+        "Database.Unity",
         "CommonComponents",
         "CommonComponents.Unity",
         "ResourceLocator",

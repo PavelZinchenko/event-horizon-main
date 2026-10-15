@@ -15,7 +15,7 @@ namespace DatabaseMigration.v1.Serializable
 	[Serializable]
 	public class EngineSerializable
 	{
-		public UnityEngine.Vector2 Position;
+		public GameDatabase.Model.Vector2Data Position;
 		public float Size;
 	}
 }

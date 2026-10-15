@@ -24,9 +24,9 @@ namespace GameDatabase.DataModel
 
 		private NodeTransition(NodeTransitionSerializable serializable, Database.Loader loader)
 		{
-			TargetNode = UnityEngine.Mathf.Clamp(serializable.TargetNode, 1, 999999);
+			TargetNode = Utilites.MathEx.Clamp(serializable.TargetNode, 1, 999999);
 			Requirement = Requirement.Create(serializable.Requirement, loader);
-			Weight = UnityEngine.Mathf.Clamp(serializable.Weight, 0f, 1000f);
+			Weight = Utilites.MathEx.Clamp(serializable.Weight, 0f, 1000f);
 
 			OnDataDeserialized(serializable, loader);
 		}

@@ -84,7 +84,7 @@ namespace Services.Resources
             }
 
             if (sprite == null && _database != null)
-                sprite = _database.GetImage(spriteId.Id).Sprite;
+                sprite = _database.GetImage(spriteId.Id).ToSprite();
 
             return sprite;
         }
@@ -92,7 +92,7 @@ namespace Services.Resources
         public AudioClip GetAudioClip(AudioClipId id)
         {
             if (!id) return null;
-            return Audio.TryGetValue(id.Id, out var audioClip) ? audioClip : _database.GetAudioClip(id.Id).AudioClip;
+            return Audio.TryGetValue(id.Id, out var audioClip) ? audioClip : _database.GetAudioClip(id.Id).ToAudioClip();
         }
 
         public Sprite GetSprite(string name)

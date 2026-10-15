@@ -15,7 +15,7 @@ namespace GameDatabase.Serializable
 	[Serializable]
 	public class BarrelSerializable
 	{
-		public UnityEngine.Vector2 Position;
+		public GameDatabase.Model.Vector2Data Position;
 		public float Rotation;
 		public float Offset;
 		public int PlatformType;

@@ -1,6 +1,5 @@
 using System;
 using GameDatabase.Model;
-using UnityEngine;
 
 namespace GameDatabase.DataModel
 {

@@ -94,7 +94,7 @@ namespace Combat.Effects
                     effect.Visible = false;
                     effect.Color = element.Color.ToUnity();
                     effect.Size = element.Size;
-                    effect.Position = element.Offset;
+                    effect.Position = element.Offset.ToUnity();
                     effect.Rotation = element.Rotation;
                     _effects.Add(effect);
 

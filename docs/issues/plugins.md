@@ -29,7 +29,7 @@ The exact plugin versions are recorded only in this documentation.
 
 **Severity:** Medium. **Status:** Confirmed.
 
-**Where.** NativeFilePicker copies every picked file on Android to one fixed path, `temporaryCachePath/pickedFile` ([NativeFilePicker.cs:76](../../Assets/Plugins/NativeFilePicker/NativeFilePicker.cs#L76)). [SettingsDatabase.cs:50](../../Assets/Scripts/Gui/MainMenu/SettingsDatabase.cs#L50) ignores a path that is already in `ExternalMods`, and [line 58](../../Assets/Scripts/Gui/MainMenu/SettingsDatabase.cs#L58) stores the cache path. `Database.TryLoad` opens the stored path without checking the mod ID ([Database.cs:121](../../Assets/Modules/Database/Scripts/Database.cs#L121)).
+**Where.** NativeFilePicker copies every picked file on Android to one fixed path, `temporaryCachePath/pickedFile` ([NativeFilePicker.cs:76](../../Assets/Plugins/NativeFilePicker/NativeFilePicker.cs#L76)). [SettingsDatabase.cs:50](../../Assets/Scripts/Gui/MainMenu/SettingsDatabase.cs#L50) ignores a path that is already in `ExternalMods`, and [line 58](../../Assets/Scripts/Gui/MainMenu/SettingsDatabase.cs#L58) stores the cache path. `Database.TryLoad` opens the stored path without checking the mod ID ([Database.cs:124](../../Assets/Modules/Database/Scripts/Database.cs#L124)).
 
 **Failure.**
 1. On Android, the player taps **Browse** and picks mod A. The game lists A with the path `…/cache/pickedFile`.

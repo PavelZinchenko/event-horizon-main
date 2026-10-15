@@ -24,19 +24,19 @@ namespace GameDatabase.DataModel
 
 		private ShipFeatures(ShipFeaturesSerializable serializable, Database.Loader loader)
 		{
-			EnergyResistance = UnityEngine.Mathf.Clamp(serializable.EnergyResistance, -100f, 100f);
-			KineticResistance = UnityEngine.Mathf.Clamp(serializable.KineticResistance, -100f, 100f);
-			HeatResistance = UnityEngine.Mathf.Clamp(serializable.HeatResistance, -100f, 100f);
-			ShipWeightBonus = UnityEngine.Mathf.Clamp(serializable.ShipWeightBonus, -1f, 100f);
-			EquipmentWeightBonus = UnityEngine.Mathf.Clamp(serializable.EquipmentWeightBonus, -1f, 100f);
-			VelocityBonus = UnityEngine.Mathf.Clamp(serializable.VelocityBonus, -1f, 100f);
-			TurnRateBonus = UnityEngine.Mathf.Clamp(serializable.TurnRateBonus, -1f, 100f);
-			ArmorBonus = UnityEngine.Mathf.Clamp(serializable.ArmorBonus, -1f, 100f);
-			ShieldBonus = UnityEngine.Mathf.Clamp(serializable.ShieldBonus, -1f, 100f);
-			EnergyBonus = UnityEngine.Mathf.Clamp(serializable.EnergyBonus, -1f, 100f);
-			DroneBuildSpeedBonus = UnityEngine.Mathf.Clamp(serializable.DroneBuildSpeedBonus, -1f, 100f);
-			DroneAttackBonus = UnityEngine.Mathf.Clamp(serializable.DroneAttackBonus, -1f, 100f);
-			DroneDefenseBonus = UnityEngine.Mathf.Clamp(serializable.DroneDefenseBonus, -1f, 100f);
+			EnergyResistance = Utilites.MathEx.Clamp(serializable.EnergyResistance, -100f, 100f);
+			KineticResistance = Utilites.MathEx.Clamp(serializable.KineticResistance, -100f, 100f);
+			HeatResistance = Utilites.MathEx.Clamp(serializable.HeatResistance, -100f, 100f);
+			ShipWeightBonus = Utilites.MathEx.Clamp(serializable.ShipWeightBonus, -1f, 100f);
+			EquipmentWeightBonus = Utilites.MathEx.Clamp(serializable.EquipmentWeightBonus, -1f, 100f);
+			VelocityBonus = Utilites.MathEx.Clamp(serializable.VelocityBonus, -1f, 100f);
+			TurnRateBonus = Utilites.MathEx.Clamp(serializable.TurnRateBonus, -1f, 100f);
+			ArmorBonus = Utilites.MathEx.Clamp(serializable.ArmorBonus, -1f, 100f);
+			ShieldBonus = Utilites.MathEx.Clamp(serializable.ShieldBonus, -1f, 100f);
+			EnergyBonus = Utilites.MathEx.Clamp(serializable.EnergyBonus, -1f, 100f);
+			DroneBuildSpeedBonus = Utilites.MathEx.Clamp(serializable.DroneBuildSpeedBonus, -1f, 100f);
+			DroneAttackBonus = Utilites.MathEx.Clamp(serializable.DroneAttackBonus, -1f, 100f);
+			DroneDefenseBonus = Utilites.MathEx.Clamp(serializable.DroneDefenseBonus, -1f, 100f);
 			Regeneration = serializable.Regeneration;
 			BuiltinDevices = new ImmutableCollection<Device>(serializable.BuiltinDevices?.Select(item => loader.GetDevice(new ItemId<Device>(item), true)));
 
