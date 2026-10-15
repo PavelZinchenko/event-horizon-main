@@ -32,7 +32,7 @@ namespace Session
 			}
 			catch (Exception e)
 			{
-				UnityEngine.Debug.LogException(e);
+				GameDiagnostics.Trace.LogException(e);
 				content = null;
 				return false;
 			}

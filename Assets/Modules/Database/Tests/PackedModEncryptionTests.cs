@@ -1,8 +1,8 @@
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using GameDatabase.Storage;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace GameDatabase.Tests
 {
@@ -100,14 +100,12 @@ namespace GameDatabase.Tests
 
         private static string FixturePath(string name)
         {
-            return Path.Combine(
-                Application.dataPath,
-                "Modules",
-                "Database",
-                "Tests",
-                "Fixtures",
-                name);
+            return Path.Combine(Path.GetDirectoryName(SourceFilePath()), "Fixtures", name);
         }
+
+        // The compiler records this file's path, so the fixtures are found without UnityEngine.Application.
+        // Unity records a path relative to the project folder, which is the working directory in the editor.
+        private static string SourceFilePath([CallerFilePath] string path = "") => path;
 
         private static void WriteInt32(byte[] destination, int offset, int value)
         {

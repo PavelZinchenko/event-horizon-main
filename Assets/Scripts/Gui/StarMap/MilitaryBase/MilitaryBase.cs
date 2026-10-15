@@ -43,7 +43,7 @@ namespace Gui.StarMap
         {
             var faction = _motherShip.CurrentStar.Region.Faction;
             _factionText.text = _localization.GetString("$MilitaryBase", _localization.GetString(faction.Name));
-            _factionIcon.color = faction.Color;
+            _factionIcon.color = faction.Color.ToUnity();
             _levelText.text = Level.ToString();
 
             UpdateContent();

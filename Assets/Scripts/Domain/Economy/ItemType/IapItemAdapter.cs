@@ -19,7 +19,7 @@ namespace Economy.ItemType
         public string Name => _iapItem.Name;
         public string Description => _iapItem.Description;
         public SpriteId Icon => _iapItem.Icon;
-        public Color Color => UiTheme.Current.GetCurrencyColor(Currency.Money);
+        public ColorData Color => UiTheme.Current.GetCurrencyColor(Currency.Money).ToData();
         public Price Price => new Price(0, Currency.Money);
         public string PriceText => _iapItem.PriceText;
         public ItemQuality Quality => ItemQuality.Common;

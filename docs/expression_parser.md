@@ -106,14 +106,14 @@ A value is true when it is not zero.
 | `LOG(a)` | 1 | Base-10 logarithm, float. |
 | `LOG(a, b)` | 2 | Logarithm of `a` to base `b`, float. |
 | `SIN`, `COS`, `TAN`, `ATAN` | 1 | Float, radians. |
-| `ATAN2(y, x)` | 2 | Float, radians, the angle of the point (`x`, `y`). The code names the parameters `x, y`, but passes them to `Mathf.Atan2(y, x)` in that order. |
+| `ATAN2(y, x)` | 2 | Float, radians, the angle of the point (`x`, `y`). The code names the parameters `x, y`, but passes them to `Math.Atan2(y, x)` in that order. |
 | `RAD2DEG(a)`, `DEG2RAD(a)` | 1 | Float. |
-| `RANDOM(a, b)` | 2 | Float from `UnityEngine.Random.Range(a, b)`. Both ends are included. |
+| `RANDOM(a, b)` | 2 | Float from the parser's `IRandomSource` (`IRandomSource.Range(a, b)`). Both ends are included. |
 | `RANDOM_INT(a, b)` | 2 | Declared, but cannot be called ([EP1](issues/expression_parser.md#ep1-random_int-cannot-be-called)). |
 
 Any other name followed by `(` is an external function. The context resolves it when the formula is bound.
 
-`RANDOM` uses the shared `UnityEngine.Random` state. It does not use the game's seeded random generators. A formula that uses `RANDOM` therefore gives a different value on each call and changes the sequence of every other `UnityEngine.Random` user.
+`RANDOM` uses the `IRandomSource` that the parser receives in its constructor. The database passes `RandomStateSource.Shared`, a PCG generator seeded from the tick count ([RandomStateSource.cs](../Assets/Modules/Database/Scripts/Expression/RandomStateSource.cs)). It does not use the game's seeded random generators, so a formula that uses `RANDOM` gives a different value on each call. A parser created without a source uses `SystemRandomSource.Shared`.
 
 ## Variant values
 
@@ -142,7 +142,7 @@ A `bool` takes part in arithmetic as 0 or 1 (`TRUE + TRUE = 2`).
 | `<`, `<=`, `!=` | integer 0 or 1 |
 | `>`, `>=`, `==` | `bool` |
 
-`==` with a float on either side uses `Mathf.Approximately`. Otherwise it is true only when both sides have the same type and the same integer value. So `1 == TRUE` is false, and `(1 < 2) == (2 > 1)` is false ([EP3](issues/expression_parser.md#ep3-comparison-results-have-mixed-types)).
+`==` with a float on either side uses `MathCompat.Approximately`, the same formula as `Mathf.Approximately`. Otherwise it is true only when both sides have the same type and the same integer value. So `1 == TRUE` is false, and `(1 < 2) == (2 > 1)` is false ([EP3](issues/expression_parser.md#ep3-comparison-results-have-mixed-types)).
 
 ### Conversion out of a `Variant`
 
@@ -174,7 +174,7 @@ Evaluation errors are not caught. For example, `100 / level` with `level = 0` th
 
 ## Tests
 
-The tests run in the Unity Test Runner (Edit Mode). `ParserTests` covers the float parser: operators, precedence, functions, variables, and errors. `VariantTests` has seven cases for `Variant` literals and addition. No test covers `Variant` division or comparison, the functions that the fork added, or external functions.
+The tests run in the Unity Test Runner (Edit Mode) and with `dotnet test Tests~/EngineFree.Tests.csproj` ([Engine-free modules](architecture.md#engine-free-modules)). `ParserTests` covers the float parser: operators, precedence, functions, variables, and errors. `VariantTests` has seven cases for `Variant` literals and addition. No test covers `Variant` division or comparison, the functions that the fork added, or external functions.
 
 ## Working on the parser
 

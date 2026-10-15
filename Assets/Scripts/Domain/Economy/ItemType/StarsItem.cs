@@ -20,7 +20,7 @@ namespace Economy.ItemType
         public string Name => _localization.GetString("$StarCurrency");
         public string Description => string.Empty;
         public SpriteId Icon => new("Textures/Currency/star", SpriteId.Type.Default);
-        public Color Color => UiTheme.Current.GetCurrencyColor(Currency.Stars);
+        public ColorData Color => UiTheme.Current.GetCurrencyColor(Currency.Stars).ToData();
         public Price Price => Price.Common(15000);
         public ItemQuality Quality => ItemQuality.Perfect;
 

@@ -21,7 +21,7 @@ namespace Constructor.Ships.Modification
 
         public string GetDescription(ILocalization localization)
         {
-            return localization.GetString("$Ship_ShieldCooldownMod", UnityEngine.Mathf.RoundToInt(_shieldReduction*100));
+            return localization.GetString("$Ship_ShieldCooldownMod", Utilites.MathEx.RoundToInt(_shieldReduction*100));
         }
 
         public void Apply(ref ShipBaseStats stats)

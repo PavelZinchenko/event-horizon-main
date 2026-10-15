@@ -92,13 +92,13 @@ namespace GameDatabase.DataModel
         {
 			BodyImage = new SpriteId(serializable.Image1, SpriteId.Type.Satellite);
 			JointImage = new SpriteId(serializable.Image2, SpriteId.Type.Satellite);
-			JointImageScale = UnityEngine.Mathf.Clamp(serializable.ImageScale, 0f, 10f);
-			JointImageOffset = UnityEngine.Mathf.Clamp(serializable.ImageOffset, -1f, 1f);
-			BoneLength = UnityEngine.Mathf.Clamp(serializable.Length, 0f, 1f);
-			JointOffset = UnityEngine.Mathf.Clamp(serializable.Offset1, 0f, 1f);
-			HeadOffset = UnityEngine.Mathf.Clamp(serializable.Offset2, -1f, 1f);
-			MaxRotation = UnityEngine.Mathf.Clamp(serializable.Angle1, 0f, 180f);
-			MaxHeadRotation = UnityEngine.Mathf.Clamp(serializable.Angle2, 0f, 180f);
+			JointImageScale = Utilites.MathEx.Clamp(serializable.ImageScale, 0f, 10f);
+			JointImageOffset = Utilites.MathEx.Clamp(serializable.ImageOffset, -1f, 1f);
+			BoneLength = Utilites.MathEx.Clamp(serializable.Length, 0f, 1f);
+			JointOffset = Utilites.MathEx.Clamp(serializable.Offset1, 0f, 1f);
+			HeadOffset = Utilites.MathEx.Clamp(serializable.Offset2, -1f, 1f);
+			MaxRotation = Utilites.MathEx.Clamp(serializable.Angle1, 0f, 180f);
+			MaxHeadRotation = Utilites.MathEx.Clamp(serializable.Angle2, 0f, 180f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -128,7 +128,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			Image = new SpriteId(serializable.Image1, SpriteId.Type.Effect);
-			ImageScale = UnityEngine.Mathf.Clamp(serializable.ImageScale, 0f, 10f);
+			ImageScale = Utilites.MathEx.Clamp(serializable.ImageScale, 0f, 10f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -151,9 +151,9 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			Image = new SpriteId(serializable.Image1, SpriteId.Type.Effect);
-			ImageScale = UnityEngine.Mathf.Clamp(serializable.ImageScale, 0f, 10f);
-			Thickness = UnityEngine.Mathf.Clamp(serializable.Thickness, 0f, 1f);
-			AspectRatio = UnityEngine.Mathf.Clamp(serializable.AspectRatio, 0f, 100f);
+			ImageScale = Utilites.MathEx.Clamp(serializable.ImageScale, 0f, 10f);
+			Thickness = Utilites.MathEx.Clamp(serializable.Thickness, 0f, 1f);
+			AspectRatio = Utilites.MathEx.Clamp(serializable.AspectRatio, 0f, 100f);
 
             OnDataDeserialized(serializable, loader);
         }

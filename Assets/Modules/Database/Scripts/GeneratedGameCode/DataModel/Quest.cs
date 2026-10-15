@@ -30,10 +30,10 @@ namespace GameDatabase.DataModel
 			Name = serializable.Name;
 			QuestType = serializable.QuestType;
 			StartCondition = serializable.StartCondition;
-			Weight = UnityEngine.Mathf.Clamp(serializable.Weight, 0f, 1000f);
+			Weight = Utilites.MathEx.Clamp(serializable.Weight, 0f, 1000f);
 			Origin = QuestOrigin.Create(serializable.Origin, loader);
 			Requirement = Requirement.Create(serializable.Requirement, loader);
-			Level = UnityEngine.Mathf.Clamp(serializable.Level, 0, 1000);
+			Level = Utilites.MathEx.Clamp(serializable.Level, 0, 1000);
 			UseRandomSeed = serializable.UseRandomSeed;
 			Nodes = new ImmutableCollection<Node>(serializable.Nodes?.Select(item => Node.Create(item, loader)));
 

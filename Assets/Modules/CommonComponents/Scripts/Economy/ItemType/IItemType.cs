@@ -1,5 +1,4 @@
 ﻿using GameDatabase.Model;
-using UnityEngine;
 
 namespace Economy.ItemType
 {
@@ -18,7 +17,7 @@ namespace Economy.ItemType
         string Name { get; }
         string Description { get; }
         SpriteId Icon { get; }
-        Color Color { get; }
+        ColorData Color { get; }
         Price Price { get; }
         ItemQuality Quality { get; }
 
@@ -34,7 +33,7 @@ namespace Economy.ItemType
         public string Name => "???";
         public string Description => string.Empty;
         public SpriteId Icon => SpriteId.Empty;
-        public Color Color => Color.white;
+        public ColorData Color => ColorData.White;
         public Price Price => new();
         public ItemQuality Quality => ItemQuality.Common;
         public int MaxItemsToConsume => int.MaxValue;

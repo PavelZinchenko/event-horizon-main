@@ -72,7 +72,7 @@ Structural issues use Problem / Evidence / Effect / Direction. Defects use Where
 **Problem.** The same bad file has a different result in each storage backend and build type.
 
 **Evidence.**
-- `ResourceDatabaseStorage` catches JSON parse errors in the Editor ([ResourceDatabaseStorage.cs:34](../../Assets/Modules/Database/Scripts/Storage/ResourceDatabaseStorage.cs#L34)), but not in builds ([line 39](../../Assets/Modules/Database/Scripts/Storage/ResourceDatabaseStorage.cs#L39)).
+- `ResourceDatabaseStorage` catches JSON parse errors in the Editor ([ResourceDatabaseStorage.cs:34](../../Assets/Modules/Database/Unity/Storage/ResourceDatabaseStorage.cs#L34)), but not in builds ([line 39](../../Assets/Modules/Database/Unity/Storage/ResourceDatabaseStorage.cs#L39)).
 - `FolderDatabaseStorage` does not catch them, so the whole load fails ([FolderDatabaseStorage.cs:81](../../Assets/Modules/Database/Scripts/Storage/FolderDatabaseStorage.cs#L81)).
 - `FileDatabaseStorage` logs the error and skips the file ([FileDatabaseStorage.cs:58](../../Assets/Modules/Database/Scripts/Storage/FileDatabaseStorage.cs#L58)).
 - `notnull` and `object_list` references throw and stop the whole load ([Database.cs:404](../../Assets/Modules/Database/Scripts/GeneratedGameCode/Database.cs#L404), [Component.cs:50](../../Assets/Modules/Database/Scripts/GeneratedGameCode/DataModel/Component.cs#L50) for `PossibleModifications`). Plain references to missing records silently become null.
@@ -150,7 +150,7 @@ Structural issues use Problem / Evidence / Effect / Direction. Defects use Where
 
 - `CombatRules.NextEnemyButton`. The button uses `CombatManager.CanCallNextEnemy` instead.
 - `Character.Faction`, `Inventory`, `Fleet`, `Relations`, `IsUnique`. The game reads only `Name` and `AvatarIcon`. Session relations start at 0, not at `Character.Relations`.
-- `DatabaseSettings.ModVersion`, `ModId`, and `ModName`. `ModName` only feeds `IDatabase.Name` ([Database.cs:26](../../Assets/Modules/Database/Scripts/Database.cs#L26)), which nothing reads. The mod list and the save key use the name and ID of the storage (the `id` file or the packed header).
+- `DatabaseSettings.ModVersion`, `ModId`, and `ModName`. `ModName` only feeds `IDatabase.Name` ([Database.cs:33](../../Assets/Modules/Database/Scripts/Database.cs#L33)), which nothing reads. The mod list and the save key use the name and ID of the storage (the `id` file or the packed header).
 - `SatelliteBuild.NotAvailableInGame`, `AmmunitionObsolete.InitialPosition`.
 - `ShipModSettings.RemoveUnlimitedRespawnMod`. The code that reads it is commented out ([ModificationFactory.cs:64](../../Assets/Modules/ShipConstructor/Scripts/Ships/Modification/ModificationFactory.cs#L64)).
 - Tables `StatUpgradeTemplate` and `ComponentStatUpgrade`, enum `SkillType`, structure `ShipToValue`.
@@ -173,13 +173,13 @@ Structural issues use Problem / Evidence / Effect / Direction. Defects use Where
 
 **Severity:** Low. **Status:** Confirmed.
 
-**Problem.** `LookForMods` constructs a storage for every mod at startup ([Database.cs:51](../../Assets/Modules/Database/Scripts/Database.cs#L51)).
+**Problem.** `LookForMods` constructs a storage for every mod at startup ([Database.cs:58](../../Assets/Modules/Database/Scripts/Database.cs#L58)).
 
 **Evidence.**
 - `FolderDatabaseStorage.TryFindDatabaseVersion` reads and parses every JSON file with Newtonsoft ([FolderDatabaseStorage.cs:35](../../Assets/Modules/Database/Scripts/Storage/FolderDatabaseStorage.cs#L35)).
 - `FileDatabaseStorage` unwraps the RSA key and decrypts the whole file with AES-GCM to read the header ([FileDatabaseStorage.cs:171](../../Assets/Modules/Database/Scripts/Storage/FileDatabaseStorage.cs#L171)).
 - Both repeat the work when the mod loads.
-- `ResourceDatabaseStorage` calls `AssetDatabase.Refresh()` on every Editor load ([ResourceDatabaseStorage.cs:24](../../Assets/Modules/Database/Scripts/Storage/ResourceDatabaseStorage.cs#L24)).
+- `ResourceDatabaseStorage` calls `AssetDatabase.Refresh()` on every Editor load ([ResourceDatabaseStorage.cs:24](../../Assets/Modules/Database/Unity/Storage/ResourceDatabaseStorage.cs#L24)).
 
 **Effect.** Startup time grows with the number and size of installed mods.
 
@@ -227,4 +227,4 @@ Structural issues use Problem / Evidence / Effect / Direction. Defects use Where
 | DB15.26 | [RandomNode.cs:25](../../Assets/Modules/Quests/Scripts/Nodes/RandomNode.cs#L25) | `GetRequirementsText` returns `Message` without localization, unlike `SwitchNode` and `ConditionNode` ([SwitchNode.cs:24](../../Assets/Modules/Quests/Scripts/Nodes/SwitchNode.cs#L24)). A `$` key shows as raw text in the quest log. The built-in random node has no message. | Confirmed (latent) |
 | DB15.27 | [WriteDeserializationCode.tt:94](../../Assets/Modules/Database/.CodeGenerator/DatabaseCodeGenerator/GameCode/Templates/WriteDeserializationCode.tt#L94) | The generator reads expression bounds with `MinMaxInt`, which uses `int.TryParse` ([Extensions.cs:7](../../Assets/Modules/Database/.CodeGenerator/DatabaseCodeGenerator/Schema/Extensions.cs#L7)). A fractional bound is dropped silently. `SkillSettings.FlightRange` has `minvalue="1.5"`, and the generated expression has no lower bound ([SkillSettings.cs:45](../../Assets/Modules/Database/Scripts/GeneratedGameCode/DataModel/SkillSettings.cs#L45)). The built-in formula never goes below 1.5. | Confirmed (latent) |
 | DB15.28 | [MainMenu.cs:162](../../Assets/Scripts/Gui/MainMenu/MainMenu.cs#L162) | `OnDatabaseLoaded` hides the credits text when `UiSettings.NoCreditsText` is true and never shows it again. The main menu stays open across mod changes, so after the player switches from such a mod to a catalog without the flag, the credits stay hidden until the game restarts. | Confirmed |
-| DB15.29 | [DatabaseContent.cs:23](../../Assets/Modules/Database/Scripts/GeneratedGameCode/Storage/DatabaseContent.cs#L23) | The constructor sets `_allowDuplicates = true` only after it loads its storage. [`Database.LoadContent`](../../Assets/Modules/Database/Scripts/Database.cs#L180) passes a current-version mod to the constructor, so a duplicate ID or a second settings record in that mod throws and the mod does not load. The same mod at an older version goes through the upgrader into a content built without a storage, so the duplicate is skipped silently. A mod that loads at 1.6 can stop loading after the author raises it to 1.7. | Confirmed (latent) |
+| DB15.29 | [DatabaseContent.cs:23](../../Assets/Modules/Database/Scripts/GeneratedGameCode/Storage/DatabaseContent.cs#L23) | The constructor sets `_allowDuplicates = true` only after it loads its storage. [`Database.LoadContent`](../../Assets/Modules/Database/Scripts/Database.cs#L183) passes a current-version mod to the constructor, so a duplicate ID or a second settings record in that mod throws and the mod does not load. The same mod at an older version goes through the upgrader into a content built without a storage, so the duplicate is skipped silently. A mod that loads at 1.6 can stop loading after the author raises it to 1.7. | Confirmed (latent) |

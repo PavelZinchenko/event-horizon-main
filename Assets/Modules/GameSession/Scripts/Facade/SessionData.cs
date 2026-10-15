@@ -2,11 +2,10 @@
 using Session.Content;
 using System.Collections.Generic;
 using Session.Utils;
-using Zenject;
 
 namespace Session
 {
-	public class SessionData : ISessionData, Services.Storage.ISerializableGameData, ITickable, IDataChangedCallback
+	public class SessionData : ISessionData, Services.Storage.ISerializableGameData, IDataChangedCallback
 	{
 		private readonly SessionSerializer _serializer;
 		private readonly ContentFactory _contentFactory;
@@ -74,10 +73,10 @@ namespace Session
 		public string ModId { get; private set; }
 		public long TimePlayed { get => (long)_timePlayed; private set => _timePlayed = value; }
 
-		public void Tick()
+		public void AddPlayTime(float seconds)
 		{
 			if (_content != null && _content.Game.StartTime > 0)
-				_timePlayed += UnityEngine.Time.deltaTime;
+				_timePlayed += seconds;
 		}
 
 		public long DataVersion => _dataVersion;
@@ -105,7 +104,7 @@ namespace Session
 			}
 			catch (Exception e)
 			{
-				UnityEngine.Debug.LogException(e);
+				GameDiagnostics.Trace.LogException(e);
 				return false;
 			}
 
@@ -116,7 +115,7 @@ namespace Session
 			}
 			catch (Exception e)
 			{
-				UnityEngine.Debug.LogException(e);
+				GameDiagnostics.Trace.LogException(e);
 			}
 
 			return true;

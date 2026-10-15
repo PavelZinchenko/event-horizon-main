@@ -40,7 +40,7 @@ namespace Constructor.Satellites
 
         private void OnDataChanged()
         {
-            UnityEngine.Debug.Log("EditorModeSatellite.OnDataChanged");
+            GameDiagnostics.Trace.Log("EditorModeSatellite.OnDataChanged");
             _build.SetComponents(_components.Select(item => ToDatabaseModel(item)));
             _database.SaveSatelliteBuild(_build.Id);
         }

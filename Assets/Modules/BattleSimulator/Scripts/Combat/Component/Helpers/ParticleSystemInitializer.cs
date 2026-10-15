@@ -11,7 +11,7 @@ namespace Combat.Component.Helpers
 
         public void Initialize(BulletPrefab data, IResourceLocator resourceLocator)
         {
-            View.Initialize(data.MainColor, data.MainColorMode);
+            View.Initialize(data.MainColor.ToUnity(), data.MainColorMode);
             View.transform.localScale = Vector3.one * data.Size;
         }
 

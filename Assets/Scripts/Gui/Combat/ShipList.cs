@@ -114,7 +114,7 @@ namespace Gui.Combat
             var viewModel = item.GetComponent<SelectShipPanelItemViewModel>();
 
             viewModel.Icon.sprite = _resourceLocator.GetSprite(ship.ShipData.Model.ModelImage);
-            viewModel.Icon.color = ship.ShipData.ColorScheme.HsvColor;
+            viewModel.Icon.color = ship.ShipData.ColorScheme.HsvColor.ToUnity();
             viewModel.DisabledIcon.gameObject.SetActive(ship.Status == ShipStatus.Destroyed);
             viewModel.ConditionText.gameObject.SetActive(ship.Condition > 0 && ship.Condition < 1);
             viewModel.ConditionText.text = Mathf.FloorToInt(ship.Condition * 100) + "%";

@@ -43,7 +43,7 @@ namespace Constructor.Ships
 
         private void SaveComponents()
         {
-            UnityEngine.Debug.Log("EditorModeShip.SaveComponents");
+            GameDiagnostics.Trace.Log("EditorModeShip.SaveComponents");
             _shipBuild.SetComponents(_components.Select(item => ToDatabaseModel(item)));
             _database.SaveShipBuild(_shipBuild.Id);
         }

@@ -1,7 +1,6 @@
 ﻿using DatabaseMigration.v1.Enums;
 using DatabaseMigration.v1.Serializable;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace DatabaseMigration.v1
 {
@@ -78,7 +77,7 @@ namespace DatabaseMigration.v1
             public int Create(string key, int maxComponents)
             {
                 if (!_tags.TryGetValue(key, out var data))
-                    data = new(_tags.Count + 1, Mathf.Max(1, maxComponents));
+                    data = new(_tags.Count + 1, Utilites.MathEx.Max(1, maxComponents));
                 else if (data.maxCount < maxComponents)
                     data.maxCount = maxComponents;
 

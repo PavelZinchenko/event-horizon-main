@@ -7,7 +7,7 @@ namespace GameDatabase.DataModel
     {
         static Faction()
         {
-            DefaultValue = Empty = new Faction(0, UnityEngine.Color.gray, "$NeutralFaction");
+            DefaultValue = Empty = new Faction(0, ColorData.Gray, "$NeutralFaction");
         }
 
         partial void OnDataDeserialized(FactionSerializable serializable, Database.Loader loader)
@@ -20,7 +20,7 @@ namespace GameDatabase.DataModel
                 HomeStarDistanceMax != 0 ? HomeStarDistanceMax : int.MaxValue);
         }
 
-        private Faction(int id, UnityEngine.Color color, string name)
+        private Faction(int id, ColorData color, string name)
         {
             Id = new ItemId<Faction>(id);
             Color = color;

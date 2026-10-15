@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Runs the tests of the engine-free assemblies without Unity:
+      dotnet test Tests~/EngineFree.Tests.csproj
+    Unity ignores folders that end in '~'. See docs/architecture.md#engine-free-modules.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <Assets>$(MSBuildThisFileDirectory)..\Assets\</Assets>
+  </PropertyGroup>
+
+  <!-- Crypto: commercial when the private submodule is checked out, otherwise the open-source stub. -->
+  <PropertyGroup Condition="Exists('$(Assets)ModulesPrivate\Security\Crypto\ModEncryption.cs')">
+    <DefineConstants>$(DefineConstants);LICENSE_COMMERCIAL</DefineConstants>
+    <CryptoSources>$(Assets)ModulesPrivate\Security\Crypto\**\*.cs</CryptoSources>
+  </PropertyGroup>
+  <PropertyGroup Condition="!Exists('$(Assets)ModulesPrivate\Security\Crypto\ModEncryption.cs')">
+    <DefineConstants>$(DefineConstants);LICENSE_OPENSOURCE</DefineConstants>
+    <CryptoSources>$(Assets)Modules\SecurityStub\Crypto\**\*.cs</CryptoSources>
+  </PropertyGroup>
+
+  <ItemGroup Label="Engine-free sources">
+    <Compile Include="$(Assets)ModulesShared\Diagnostics\**\*.cs" Exclude="$(Assets)ModulesShared\Diagnostics\Unity\**" />
+    <Compile Include="$(Assets)ModulesShared\Utilites\**\*.cs" Exclude="$(Assets)ModulesShared\Utilites\Tests\**" />
+    <Compile Include="$(Assets)Modules\CommonComponents\**\*.cs" Exclude="$(Assets)Modules\CommonComponents\Unity\**;$(Assets)Modules\CommonComponents\Tests\**" />
+    <Compile Include="$(Assets)ExpressionParser\Runtime\**\*.cs" />
+    <Compile Include="$(CryptoSources)" />
+    <Compile Include="$(Assets)Modules\Database\Scripts\**\*.cs" />
+    <Compile Include="$(Assets)ModulesShared\Localization\Abstractions\**\*.cs" />
+    <Compile Include="$(Assets)Modules\ShipConstructor\**\*.cs" />
+    <Compile Include="$(Assets)Modules\GameSession\Scripts\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Label="Tests">
+    <Compile Include="$(Assets)ModulesShared\Utilites\Tests\**\*.cs" />
+    <Compile Include="$(Assets)Modules\CommonComponents\Tests\**\*.cs" />
+    <Compile Include="$(Assets)ExpressionParser\Tests\**\*.cs" />
+    <Compile Include="$(Assets)Modules\Database\Tests\**\*.cs" />
+    <Compile Include="$(Assets)Modules\GameSession\Tests\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Same Newtonsoft version as com.unity.nuget.newtonsoft-json 3.2.x. -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <!-- NUnit 3: Unity's test framework is NUnit 3, and NUnit 4 removed the classic asserts. -->
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Cryptography">
+      <HintPath>$(Assets)Plugins\BouncyCastle\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="IonicZlib">
+      <HintPath>$(Assets)SimpleZip\Plugins\IonicZlib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

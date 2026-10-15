@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Database.Legacy;
 using CommonComponents.Utils;
-using Zenject;
 using Helpers = GameModel.Serialization.Helpers;
 
 namespace Session.ContentObsolete
 {
     public class InventoryData : ISerializableDataObsolete
     {
-        [Inject]
         public InventoryData(byte[] buffer = null)
         {
             if (buffer != null && buffer.Length > 0)
@@ -71,7 +69,7 @@ namespace Session.ContentObsolete
 
             if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
             {
-                UnityEngine.Debug.Log("InventoryData: incorrect data version");
+                GameDiagnostics.Trace.Log("InventoryData: incorrect data version");
                 throw new ArgumentException();
             }
 
@@ -124,7 +122,7 @@ namespace Session.ContentObsolete
 
         private static IEnumerable<byte> Upgrade_1_2(byte[] buffer)
         {
-            UnityEngine.Debug.Log("InventoryData.Upgrade_1_2");
+            GameDiagnostics.Trace.Log("InventoryData.Upgrade_1_2");
 
             var index = 0;
             Helpers.DeserializeInt(buffer, ref index);
@@ -167,7 +165,7 @@ namespace Session.ContentObsolete
 
         private static IEnumerable<byte> Upgrade_2_3(byte[] buffer)
         {
-            UnityEngine.Debug.Log("InventoryData.Upgrade_2_3");
+            GameDiagnostics.Trace.Log("InventoryData.Upgrade_2_3");
 
             var index = 0;
             Helpers.DeserializeInt(buffer, ref index);

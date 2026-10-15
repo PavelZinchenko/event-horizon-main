@@ -35,11 +35,11 @@ namespace GameDatabase.Model
 
             try 
             {
-                return new VariantExpressionParser().Compile(expression, _context, false);
+                return new VariantExpressionParser(RandomStateSource.Shared).Compile(expression, _context, false);
             }
             catch (System.Exception e)
             {
-                UnityEngine.Debug.LogException(e);
+                GameDiagnostics.Trace.LogException(e);
                 return Empty;
             }
         }

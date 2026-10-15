@@ -71,7 +71,7 @@ Related documents:
 
 ## Dependencies
 
-The assembly references `Diagnostics`, `Zenject`, `CommonComponents`, `Database`, `ShipConstructor`, and `Utilites`.
+The assembly references `Diagnostics`, `CommonComponents`, `Database`, `ShipConstructor`, and `Utilites`. It sets `noEngineReferences: true` and has no Zenject reference, so it compiles without Unity and its tests run with `dotnet test` ([Engine-free modules](architecture.md#engine-free-modules)).
 
 | Dependency | Used for |
 | --- | --- |
@@ -79,7 +79,6 @@ The assembly references `Diagnostics`, `Zenject`, `CommonComponents`, `Database`
 | `CommonComponents` | Storage contracts [`IGameData`](../Assets/Modules/CommonComponents/Scripts/Services/IGameData.cs) and [`ISerializableGameData`](../Assets/Modules/CommonComponents/Scripts/Services/ISerializableGameData.cs) (namespace `Services.Storage`), `SmartWeakSignal`, and the legacy `GameModel.Serialization.Helpers`. |
 | `Database` | `IDatabase` and record types for conversions in `Scripts/Model/`; legacy name tables for the obsolete reader. |
 | `ShipConstructor` | `IShip`, `IShipPreset`, `ISatellite`, `IntegratedComponent`, `ComponentInfo` for ship conversions. |
-| `Zenject` | `ITickable` on `SessionData`. |
 | `Diagnostics` | `GameDiagnostics.Trace` logging. |
 
 Two different interfaces are called `IGameData`: `Services.Storage.IGameData` (storage metadata) and `Session.Content.IGameData` (the game facade). `ISessionData` implements the first and exposes the second as `Game`.
@@ -117,7 +116,7 @@ Two different interfaces are called `IGameData`: `Services.Storage.IGameData` (s
 
 `SessionData` owns the current `Model.SaveGameData` and one instance of each facade. A load or a new game replaces the model and **all** facades. Never cache a facade or a model collection across a load: take it from `ISessionData` each time, or rebuild your state in a [`SessionCreatedSignal`](#signals) handler.
 
-**Play time.** `Tick` adds `Time.deltaTime` to `TimePlayed` while `Game.StartTime > 0` ([SessionData.cs:77](../Assets/Modules/GameSession/Scripts/Facade/SessionData.cs#L77)). `TimePlayed` is storage metadata. It is not part of the model and does not mark the session dirty. Storage passes it back on load.
+**Play time.** `AddPlayTime(seconds)` adds to `TimePlayed` while `Game.StartTime > 0` ([SessionData.cs:76](../Assets/Modules/GameSession/Scripts/Facade/SessionData.cs#L76)). [`SessionPlayTimeTicker`](../Assets/Scripts/Services/Unity/SessionPlayTimeTicker.cs), a Zenject `ITickable` bound in `GameInstaller`, calls it with `Time.deltaTime` every frame. `TimePlayed` is storage metadata. It is not part of the model and does not mark the session dirty. Storage passes it back on load.
 
 **Game started.** `IsGameStarted()` is true when `Game.GameStartTime > 0` ([ISessionData.cs:35](../Assets/Modules/GameSession/Scripts/Facade/ISessionData.cs#L35)). A new session has start time 0 until the new-game flow sets it. `GameDataManager` does not save a session that has not started.
 

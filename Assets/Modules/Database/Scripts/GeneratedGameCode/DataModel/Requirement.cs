@@ -199,8 +199,8 @@ namespace GameDatabase.DataModel
   		public Requirement_PlayerPosition(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0, 10000);
-			MaxValue = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0, 10000);
+			MinValue = Utilites.MathEx.Clamp(serializable.MinValue, 0, 10000);
+			MaxValue = Utilites.MathEx.Clamp(serializable.MaxValue, 0, 10000);
 			AllowUnsafeStars = serializable.BoolValue;
 
             OnDataDeserialized(serializable, loader);
@@ -224,8 +224,8 @@ namespace GameDatabase.DataModel
   		public Requirement_RandomStarSystem(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0, 10000);
-			MaxValue = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0, 10000);
+			MinValue = Utilites.MathEx.Clamp(serializable.MinValue, 0, 10000);
+			MaxValue = Utilites.MathEx.Clamp(serializable.MaxValue, 0, 10000);
 			AllowUnsafeStars = serializable.BoolValue;
 
             OnDataDeserialized(serializable, loader);
@@ -310,8 +310,8 @@ namespace GameDatabase.DataModel
   		public Requirement_CharacterRelations(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, -100, 100);
-			MaxValue = UnityEngine.Mathf.Clamp(serializable.MaxValue, -100, 100);
+			MinValue = Utilites.MathEx.Clamp(serializable.MinValue, -100, 100);
+			MaxValue = Utilites.MathEx.Clamp(serializable.MaxValue, -100, 100);
 			Character = loader?.GetCharacter(new ItemId<Character>(serializable.Character)) ?? Character.DefaultValue;
 
             OnDataDeserialized(serializable, loader);
@@ -335,8 +335,8 @@ namespace GameDatabase.DataModel
   		public Requirement_FactionRelations(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, -100, 100);
-			MaxValue = UnityEngine.Mathf.Clamp(serializable.MaxValue, -100, 100);
+			MinValue = Utilites.MathEx.Clamp(serializable.MinValue, -100, 100);
+			MaxValue = Utilites.MathEx.Clamp(serializable.MaxValue, -100, 100);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -377,8 +377,8 @@ namespace GameDatabase.DataModel
   		public Requirement_FactionStarbasePower(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinValue = UnityEngine.Mathf.Clamp(serializable.MinValue, 0, 100000);
-			MaxValue = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0, 100000);
+			MinValue = Utilites.MathEx.Clamp(serializable.MinValue, 0, 100000);
+			MaxValue = Utilites.MathEx.Clamp(serializable.MaxValue, 0, 100000);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -441,7 +441,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			QuestItem = loader?.GetQuestItem(new ItemId<QuestItem>(serializable.ItemId)) ?? QuestItem.DefaultValue;
-			Amount = UnityEngine.Mathf.Clamp(serializable.MinValue, 1, 1000000);
+			Amount = Utilites.MathEx.Clamp(serializable.MinValue, 1, 1000000);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -526,8 +526,8 @@ namespace GameDatabase.DataModel
   		public Requirement_TimeSinceQuestStart(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Minutes = UnityEngine.Mathf.Clamp(serializable.MinValue, 0, 999999);
-			Hours = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0, 999999);
+			Minutes = Utilites.MathEx.Clamp(serializable.MinValue, 0, 999999);
+			Hours = Utilites.MathEx.Clamp(serializable.MaxValue, 0, 999999);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -549,8 +549,8 @@ namespace GameDatabase.DataModel
   		public Requirement_TimeSinceLastCompletion(RequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Minutes = UnityEngine.Mathf.Clamp(serializable.MinValue, 0, 999999);
-			Hours = UnityEngine.Mathf.Clamp(serializable.MaxValue, 0, 999999);
+			Minutes = Utilites.MathEx.Clamp(serializable.MinValue, 0, 999999);
+			Hours = Utilites.MathEx.Clamp(serializable.MaxValue, 0, 999999);
 
             OnDataDeserialized(serializable, loader);
         }

@@ -22,7 +22,7 @@ namespace Constructor.Ships.Modification
 
         public string GetDescription(ILocalization localization)
         {
-            return localization.GetString("$Ship_WeaponClassMod", UnityEngine.Mathf.RoundToInt(_attackReduction*100));
+            return localization.GetString("$Ship_WeaponClassMod", Utilites.MathEx.RoundToInt(_attackReduction*100));
         }
 
         public void Apply(ref ShipBaseStats stats)

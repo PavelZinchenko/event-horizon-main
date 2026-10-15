@@ -9,7 +9,7 @@ using Constructor.Ships;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
-using UnityEngine;
+using Utilites;
 using Utilites.Collections;
 
 namespace Constructor
@@ -305,7 +305,7 @@ namespace Constructor
 
 		    public void ChangeAutoAimingArc(float angle)
 		    {
-		        _rotationArc = Mathf.Max(AutoAimingArc, angle);
+		        _rotationArc = MathEx.Max(AutoAimingArc, angle);
 		    }
 
             public void ChangeTurnRate(float deltaAngle)
@@ -313,7 +313,7 @@ namespace Constructor
 				RotationSpeed += deltaAngle;
 			}
 
-            public Vector2 Position { get; }
+            public Vector2Data Position { get; }
 			public float Rotation { get; }
 			public float Offset { get; }
             public float Size { get; }

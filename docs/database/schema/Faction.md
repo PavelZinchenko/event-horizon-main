@@ -72,7 +72,7 @@ Every star level needs at least one faction with territories. When no faction fi
 - Missions: [FactionPanelViewModel.cs:61](../../../Assets/Scripts/Legacy/GUI/ViewModel/StarMap/FactionPanelViewModel.cs#L61) (no missions) and [line 97](../../../Assets/Scripts/Legacy/GUI/ViewModel/StarMap/FactionPanelViewModel.cs#L97) (reputation panel), [HostileFactionRequirement.cs](../../../Assets/Modules/Quests/Scripts/Requirements/HostileFactionRequirement.cs).
 - Skills: the "beat all enemies" requirement uses `SkillSettings.BeatAllEnemiesFactionList`, or every faction without `NoTerritories` when the list is empty ([Skills.cs:63](../../../Assets/Scripts/Domain/Skills/Skills.cs#L63)).
 - Starbase defense: [FactionsSettings](FactionsSettings.md), not this table.
-- Test: [DatabaseTests.cs:64](../../../Assets/Modules/Database/Tests/DatabaseTests.cs#L64) requires ships for every faction that has territories or wandering ships.
+- Test: [DatabaseTests.cs:64](../../../Assets/Modules/Database/Unity/Tests/DatabaseTests.cs#L64) requires ships for every faction that has territories or wandering ships.
 
 ### Data rules
 

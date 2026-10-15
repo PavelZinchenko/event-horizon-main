@@ -400,7 +400,7 @@ namespace GameDatabase.DataModel
   		public BehaviorNodeRequirement_HasLongRangeWeapon(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Range = UnityEngine.Mathf.Clamp(serializable.Value, 0f, 3.402823E+38f);
+			Range = Utilites.MathEx.Clamp(serializable.Value, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -497,7 +497,7 @@ namespace GameDatabase.DataModel
   		public BehaviorNodeRequirement_HasKineticResistance(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Value = UnityEngine.Mathf.Clamp(serializable.Value, 0f, 3.402823E+38f);
+			Value = Utilites.MathEx.Clamp(serializable.Value, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -518,7 +518,7 @@ namespace GameDatabase.DataModel
   		public BehaviorNodeRequirement_HasHighManeuverability(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Value = UnityEngine.Mathf.Clamp(serializable.Value, 0f, 3.402823E+38f);
+			Value = Utilites.MathEx.Clamp(serializable.Value, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -539,7 +539,7 @@ namespace GameDatabase.DataModel
   		public BehaviorNodeRequirement_HasHighRammingDamage(BehaviorNodeRequirementSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			Value = UnityEngine.Mathf.Clamp(serializable.Value, 0f, 3.402823E+38f);
+			Value = Utilites.MathEx.Clamp(serializable.Value, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }

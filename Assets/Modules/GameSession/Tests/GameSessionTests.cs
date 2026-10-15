@@ -91,8 +91,8 @@ namespace Session.Tests
 			using (var writer = new SessionDataWriter(stream))
 				bitset.Serialize(writer, EncodingType.EliasGamma);
 
-			UnityEngine.Debug.Log($"Size = {stream.Position} bytes");
-			UnityEngine.Debug.Log($"LastIndex = {bitset.LastIndex}");
+			TestContext.WriteLine($"Size = {stream.Position} bytes");
+			TestContext.WriteLine($"LastIndex = {bitset.LastIndex}");
 
 			var reader = new SessionDataReader(new MemoryReaderStream(_buffer));
 			bitset = new ObservableBitset(reader, EncodingType.EliasGamma, null);

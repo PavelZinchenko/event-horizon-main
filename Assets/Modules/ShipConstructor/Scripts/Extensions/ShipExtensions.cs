@@ -103,7 +103,7 @@ namespace Constructor.Extensions
 
         public static IShip Create(this ShipBuild data, int distance, Random random, IDatabase database)
         {
-            var delta = UnityEngine.Mathf.Min(10, distance / 5);
+            var delta = Utilites.MathEx.Min(10, distance / 5);
             var shipLevel = database.GalaxySettings.EnemyLevel(distance + random.Range(-delta, delta));
             var ship = new EnemyShip(data, database) { Experience = Maths.Experience.FromLevel(shipLevel) };
 

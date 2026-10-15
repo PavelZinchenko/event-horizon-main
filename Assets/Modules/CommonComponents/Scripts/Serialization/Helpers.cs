@@ -1,4 +1,4 @@
-using UnityEngine;
+using GameDatabase.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,7 +108,7 @@ namespace GameModel
 					yield return value;
 			}
 			
-			public static IEnumerable<byte> Serialize(Vector2 data)
+			public static IEnumerable<byte> Serialize(Vector2Data data)
 			{
 				foreach (var value in BitConverter.GetBytes(data.x))
 					yield return value;
@@ -233,9 +233,9 @@ namespace GameModel
                 return value;
             }
  
-			public static Vector2 DeserializeVector2(byte[] data, ref int index)
+			public static Vector2Data DeserializeVector2(byte[] data, ref int index)
 			{
-				return new Vector2(DeserializeFloat(data, ref index), DeserializeFloat(data, ref index));
+				return new Vector2Data(DeserializeFloat(data, ref index), DeserializeFloat(data, ref index));
 			}			
 
 			public static string DeserializeString(byte[] data, ref int index)

@@ -24,7 +24,7 @@ namespace GameDatabase.Serializable
 		public float Size;
 		public float Cooldown;
 		public float Lifetime;
-		public UnityEngine.Vector2 Offset;
+		public GameDatabase.Model.Vector2Data Offset;
 		public ActivationType ActivationType;
 		public string Color;
 		public string Sound;

@@ -35,7 +35,7 @@ namespace Gui.StarMap
                     break;
                 case StarObjectType.StarBase:
                     _icon.sprite = StarBaseIcon;
-                    _icon.color = star.Region.Faction.Color;
+                    _icon.color = star.Region.Faction.Color.ToUnity();
                     break;
                 case StarObjectType.Hive:
                     _icon.sprite = PandemicIcon;

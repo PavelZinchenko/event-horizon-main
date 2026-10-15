@@ -29,11 +29,11 @@ namespace GameDatabase.DataModel
 			    throw new DatabaseException("ObjectTemplate.Component cannot be null - " + serializable.ComponentId);
 			Modification = loader?.GetComponentMod(new ItemId<ComponentMod>(serializable.Modification)) ?? ComponentMod.DefaultValue;
 			Quality = serializable.Quality;
-			X = UnityEngine.Mathf.Clamp(serializable.X, -32768, 32767);
-			Y = UnityEngine.Mathf.Clamp(serializable.Y, -32768, 32767);
-			BarrelId = UnityEngine.Mathf.Clamp(serializable.BarrelId, 0, 255);
-			Behaviour = UnityEngine.Mathf.Clamp(serializable.Behaviour, 0, 10);
-			KeyBinding = UnityEngine.Mathf.Clamp(serializable.KeyBinding, -10, 10);
+			X = Utilites.MathEx.Clamp(serializable.X, -32768, 32767);
+			Y = Utilites.MathEx.Clamp(serializable.Y, -32768, 32767);
+			BarrelId = Utilites.MathEx.Clamp(serializable.BarrelId, 0, 255);
+			Behaviour = Utilites.MathEx.Clamp(serializable.Behaviour, 0, 10);
+			KeyBinding = Utilites.MathEx.Clamp(serializable.KeyBinding, -10, 10);
 
 			OnDataDeserialized(serializable, loader);
 		}

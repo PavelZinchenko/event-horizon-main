@@ -30,7 +30,7 @@ namespace Gui.StarMap
                 var sprite = resourceLocator.GetSprite(mod.Type.GetIconId());
                 _icons[i].gameObject.SetActive(sprite != null);
                 _icons[i].sprite = sprite;
-                _icons[i].color = mod.Type.GetColor();
+                _icons[i].color = mod.Type.GetColor().ToUnity();
             }
         }
     }

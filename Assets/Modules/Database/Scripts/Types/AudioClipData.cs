@@ -1,23 +1,41 @@
-﻿using UnityEngine;
-
-namespace GameDatabase.Model
+﻿namespace GameDatabase.Model
 {
+    public enum AudioFormat
+    {
+        None,
+        Wav,
+        Ogg,
+    }
+
+    // Encoded audio. Database.Unity turns it into an AudioClip with ToAudioClip().
     public interface IAudioClipData
     {
-        public AudioClip AudioClip { get; }
+        AudioFormat Format { get; }
+
+        // Returns the encoded bytes, or null when there is no audio.
+        // May release the bytes, so read it once and cache the result (ToAudioClip() does).
+        byte[] LoadData();
     }
 
     public class AudioClipData : IAudioClipData
     {
-        public static AudioClipData Empty = new();
+        public static AudioClipData Empty = new(null, AudioFormat.None);
 
-        public AudioClip AudioClip { get; }
+        private byte[] _data;
 
-        public AudioClipData(byte[] data)
+        public AudioFormat Format { get; }
+
+        public AudioClipData(byte[] data, AudioFormat format)
         {
-            AudioClip = OpenWavParser.ByteArrayToAudioClip(data);
+            _data = data;
+            Format = format;
         }
 
-        private AudioClipData() { }
+        public byte[] LoadData()
+        {
+            var data = _data;
+            _data = null;
+            return data;
+        }
     }
 }

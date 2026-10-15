@@ -2,12 +2,12 @@
     "name": "Database",
     "rootNamespace": "GameDatabase",
     "references": [
-        "Security",
-        "SecurityStub",
+        "Security.Crypto",
+        "SecurityStub.Crypto",
         "CommonComponents",
         "CodeWriter.ExpressionParser",
         "Diagnostics",
-        "NVorbis"
+        "Utilites"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -17,5 +17,5 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
-    "noEngineReferences": false
+    "noEngineReferences": true
 }

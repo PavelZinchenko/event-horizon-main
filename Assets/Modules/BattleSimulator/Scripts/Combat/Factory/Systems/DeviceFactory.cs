@@ -52,7 +52,7 @@ namespace Combat.Factory
                         if (stats.EffectPrefab)
                         {
                             foreach (var engine in shipSpec.Stats.ShipModel.Engines)
-                                device.AddTrigger(new FlashEffect(CreateEffect(stats, ship.Body.Scale), ship.Body, 0.5f, engine.Position * 0.5f,
+                                device.AddTrigger(new FlashEffect(CreateEffect(stats, ship.Body.Scale), ship.Body, 0.5f, engine.Position.ToUnity() * 0.5f,
                                     ConditionType.OnRemainActive | ConditionType.OnActivate));
                         }
                     }
@@ -74,7 +74,7 @@ namespace Combat.Factory
                         var pointDefense = new PointDefenseSystem(ship, stats, deviceData.KeyBinding);
                         device = pointDefense;
                         device.AddTrigger(new PointDefenseAction(ship, pointDefense, stats.Size + ship.Body.Scale/2f, 
-                            stats.Power*shipSpec.Stats.DamageMultiplier.Value, stats.EnergyConsumption, stats.Cooldown, stats.Color, _satelliteFactory, stats.Sound));
+                            stats.Power*shipSpec.Stats.DamageMultiplier.Value, stats.EnergyConsumption, stats.Cooldown, stats.Color.ToUnity(), _satelliteFactory, stats.Sound));
                         soundEffectCondition = ConditionType.None;
                     }
                     break;
@@ -89,7 +89,7 @@ namespace Combat.Factory
                 case DeviceClass.EnergyShield:
                     {
                         var prefab = stats.Prefab != null ? _services.PrefabCache.LoadPrefab(stats.Prefab) : _services.PrefabCache.LoadPrefab(stats.EffectPrefab);
-                        var energyShield = _satelliteFactory.CreateEnergyShield(ship, prefab, 1f / (stats.Power * shipSpec.Stats.ShieldMultiplier.Value), stats.Size, stats.Color);
+                        var energyShield = _satelliteFactory.CreateEnergyShield(ship, prefab, 1f / (stats.Power * shipSpec.Stats.ShieldMultiplier.Value), stats.Size, stats.Color.ToUnity());
                         var energyShieldDevice = new EnergyShieldDevice(ship, stats, deviceData.KeyBinding);
                         device = energyShieldDevice;
                         device.AddTrigger(new AuxiliaryUnitAction(energyShieldDevice, energyShield));
@@ -97,7 +97,7 @@ namespace Combat.Factory
                     break;
                 case DeviceClass.PartialShield:
                     {
-                        var energyShield = _satelliteFactory.CreateFrontalShield(ship, 1f / (stats.Power * shipSpec.Stats.ShieldMultiplier.Value), stats.Offset, stats.Size, stats.Color);
+                        var energyShield = _satelliteFactory.CreateFrontalShield(ship, 1f / (stats.Power * shipSpec.Stats.ShieldMultiplier.Value), stats.Offset.ToUnity(), stats.Size, stats.Color.ToUnity());
                         var energyShieldDevice = new FrontalShieldDevice(ship, stats, deviceData.KeyBinding);
                         device = energyShieldDevice;
                         device.AddTrigger(new AuxiliaryUnitAction(energyShieldDevice, energyShield));
@@ -109,7 +109,7 @@ namespace Combat.Factory
                     var repairRate = stats.Power * ship.Stats.Armor.MaxValue / 100;
                     var hitPoints = ship.Stats.HitPointsMultiplier * stats.Size;
                     var trigger = new RepairBotAction(ship, device, _satelliteFactory, repairRate, stats.Size, stats.Range, hitPoints, stats.Lifetime, 
-                        stats.Color, stats.Sound);
+                        stats.Color.ToUnity(), stats.Sound);
 
                     device.AddTrigger(trigger);
                     soundEffectCondition = ConditionType.None;
@@ -123,16 +123,16 @@ namespace Combat.Factory
                 case DeviceClass.Teleporter:
                     device = new TeleporterDevice(ship, stats, deviceData.KeyBinding);
                     if (stats.VisualEffect != null)
-                        device.AddTrigger(new StaticEffect(stats.VisualEffect, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
+                        device.AddTrigger(new StaticEffect(stats.VisualEffect, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color.ToUnity(), ConditionType.OnActivate | ConditionType.OnDeactivate));
                     else if (stats.EffectPrefab)
-                        device.AddTrigger(new StaticEffect(stats.EffectPrefab, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
+                        device.AddTrigger(new StaticEffect(stats.EffectPrefab, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color.ToUnity(), ConditionType.OnActivate | ConditionType.OnDeactivate));
                     break;
                 case DeviceClass.TeleporterV2:
                     device = new WarpDrive(ship, stats, deviceData.KeyBinding);
                     if (stats.VisualEffect != null)
-                        device.AddTrigger(new StaticEffect(stats.VisualEffect, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
+                        device.AddTrigger(new StaticEffect(stats.VisualEffect, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color.ToUnity(), ConditionType.OnActivate | ConditionType.OnDeactivate));
                     else if (stats.EffectPrefab)
-                        device.AddTrigger(new StaticEffect(stats.EffectPrefab, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color, ConditionType.OnActivate | ConditionType.OnDeactivate));
+                        device.AddTrigger(new StaticEffect(stats.EffectPrefab, _effectFactory, ship.Body, 0.5f, stats.Size * ship.Body.Scale, stats.Color.ToUnity(), ConditionType.OnActivate | ConditionType.OnDeactivate));
                     break;
                 case DeviceClass.Brake:
                     device = new BrakeDevice(ship, stats, ship.Body.Weight);
@@ -191,7 +191,7 @@ namespace Combat.Factory
             else
                 return null;
 
-            effect.Color = stats.Color;
+            effect.Color = stats.Color.ToUnity();
             effect.Size = stats.Size * scale;
 
             return effect;

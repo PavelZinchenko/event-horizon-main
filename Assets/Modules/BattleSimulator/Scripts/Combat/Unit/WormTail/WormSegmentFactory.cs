@@ -118,7 +118,7 @@ namespace Combat.Component.Unit
 
         private static Color SpawnEffectColor(in ColorScheme colorScheme)
         {
-            var color = colorScheme.Color;
+            var color = colorScheme.Color.ToUnity();
             color.a *= 0.5f;
             return color;
         }

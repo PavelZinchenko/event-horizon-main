@@ -18,7 +18,6 @@ All source paths below are relative to [`Assets/Modules/CommonComponents/Scripts
 | --- | --- | --- | --- |
 | [CC1](#cc1-money--double-rounds-float-error-up) | Medium | Confirmed | `Money * double` adds 1 for float error. |
 | [CC2](#cc2-double-to-long-saturation-is-unspecified) | Low | Confirmed (latent) | Huge `double` → `Money` can become 0. |
-| [CC3](#cc3-getstarposition-reseeds-the-global-unity-random-generator) | Medium | Confirmed | Star queries reseed `UnityEngine.Random`. |
 | [CC4](#cc4-threadsafe-loops-never-end-on-nan) | Medium | Confirmed (latent) | NaN hangs the hit point and energy updates. |
 | [CC5](#cc5-the-weak-event-logs-the-same-exception-several-times) | Low | Confirmed | Duplicate exception logs. |
 | [CC6](#cc6-the-weak-event-rejects-lambdas-that-capture-nothing) | Low | Confirmed | Wrong closure check. |
@@ -35,7 +34,7 @@ All source paths below are relative to [`Assets/Modules/CommonComponents/Scripts
 | [CC17](#cc17-smaller-defects) | Low | Mixed | Smaller defects. |
 | [CC-S1](#cc-s1-global-types-shadow-framework-types) | Medium | Confirmed | `Lazy<T>`, `WeakReference<T>` replace the BCL types silently. |
 | [CC-S2](#cc-s2-the-module-borrows-other-modules-namespaces) | Low | — | Namespace sprawl. |
-| [CC-S3](#cc-s3-the-leaf-assembly-holds-feature-and-unity-code) | Low | — | Wrong contents for a leaf assembly. |
+| [CC-S3](#cc-s3-the-leaf-assembly-holds-feature-code) | Low | — | Wrong contents for a leaf assembly. |
 | [CC-S4](#cc-s4-deterministic-outputs-have-no-tests) | Medium | — | Save-critical code without tests. |
 | [CC-S5](#cc-s5-it-duplicates-utilites) | Low | — | Two copies of the same infrastructure. |
 | [CC-S6](#cc-s6-unused-code) | Low | Needs review | Dead code. Do not delete before review. |
@@ -78,27 +77,6 @@ return first.Amount > 0 && second > 0 && result == 0 ? 1 : result;
 
 **Fix.** Compare before the cast: `if (value >= 9.2233720368547758E18) return long.MaxValue; if (!(value > 0)) return 0;`.
 
-### CC3. `GetStarPosition` reseeds the global Unity random generator
-
-**Severity:** Medium. **Status:** Confirmed.
-
-**Where.** [StarLayout.cs:163](../../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L163) calls `UnityEngine.Random.InitState(gameseed + id)` on every `GetStarPosition` and `GetStarLevel` call. The game calls these often: `StarData.GetPosition/GetLevel`, `Occupants`, `QuestCollection`, `StarDataProvider.Level`, `Region.HomeStarLevel`, `DailyReward`.
-
-**Failure.** After any of these calls, every later `UnityEngine.Random` value in the same frame is fixed by the last star ID that was queried. Code that expects fresh randomness gets repeated values. Examples of global-random users: [`Primitives.CreateSphere`](../../Assets/Modules/CommonComponents/Scripts/Math/Primitives.cs#L86) (noise offset of planets and asteroids), and [ScrapPanelViewModel](../../Assets/Scripts/Legacy/GUI/ViewModel/CargoHold/ScrapPanelViewModel.cs#L49) (scrap price roll). When a star query runs earlier in the same frame, these values repeat for that star. The effect is hard to see and hard to debug.
-
-**Fix.** Keep the exact output (it is save data) and restore the state:
-
-```csharp
-var saved = UnityEngine.Random.state;
-UnityEngine.Random.InitState(gameseed + id);
-var offset = UnityEngine.Random.insideUnitCircle * _offset;
-UnityEngine.Random.state = saved;
-```
-
-A later change can move to a seeded hash, but only with a galaxy migration ([CC-S4](#cc-s4-deterministic-outputs-have-no-tests)).
-
-**Approval.** This fix touches seeded generation. Ask the owner before applying it ([rule](../common_components.md#determinism-and-save-compatibility)).
-
 ### CC4. `ThreadSafe` loops never end on NaN
 
 **Severity:** Medium. **Status:** Confirmed (latent).
@@ -122,7 +100,7 @@ The main thread or the AI thread hangs during a battle. The callers guard agains
 
 ```csharp
 for (var ex = e; ex != null; ex = ex.InnerException)
-    UnityEngine.Debug.LogException(e);
+    GameDiagnostics.Trace.LogException(e);
 ```
 
 **Failure.** The loop logs `e` instead of `ex`. `MethodInfo.Invoke` wraps the handler's exception in `TargetInvocationException`, so the chain has at least two levels. Every handler exception is logged at least twice, and the top entry is the wrapper, not the real error.
@@ -165,7 +143,7 @@ for (var ex = e; ex != null; ex = ex.InnerException)
 
 **Severity:** Low. **Status:** Confirmed.
 
-**Where.** [GameObjectExtensions.cs:62–78](../../Assets/Modules/CommonComponents/Scripts/Legacy/GameObjectExtensions.cs#L62):
+**Where.** [GameObjectExtensions.cs:62–78](../../Assets/Modules/CommonComponents/Unity/Legacy/GameObjectExtensions.cs#L62):
 
 ```csharp
 if (!meshFilter.sharedMesh)
@@ -270,9 +248,9 @@ Nothing sets `Paused` today, so item 1 is latent.
 ### CC17. Smaller defects
 
 1. **Division by zero.** `Money / Money` and `Price / int` throw `DivideByZeroException` for a zero divisor ([Money.cs:15](../../Assets/Modules/CommonComponents/Scripts/Economy/Money.cs#L15), [Price.cs:64](../../Assets/Modules/CommonComponents/Scripts/Economy/Price.cs#L64)).
-2. **Ring 0.** `GetAdjacentStars(id, 0)` returns the center star four times. A negative distance returns wrong stars. Negative star IDs give garbage in `IdToPosition`. The `odd` variables in `GetAdjacentStars` and `Distance` mean "even" ([StarLayout.cs:103](../../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L103), [:152](../../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L152)).
-3. **Zero-width arc.** `IsRotationInArc` returns true for every rotation when `min == max` after normalization ([RotationHelpers.cs:63](../../Assets/Modules/CommonComponents/Scripts/Math/RotationHelpers.cs#L63)). The only caller uses arcs of at least 5°, so this is latent.
-4. **Equal speeds.** In `GetTargetPosition`, the quadratic coefficient `a` is 0 when target speed equals bullet speed. The solver divides by zero and returns `true` with an infinite time and position ([Geometry.cs:139](../../Assets/Modules/CommonComponents/Scripts/Math/Geometry.cs#L139)). The second overload then makes the time NaN.
+2. **Ring 0.** `GetAdjacentStars(id, 0)` returns the center star four times. A negative distance returns wrong stars. Negative star IDs give garbage in `IdToPosition`. The `odd` variables in `GetAdjacentStars` and `Distance` mean "even" ([StarLayout.cs:104](../../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L104), [:153](../../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L153)).
+3. **Zero-width arc.** `IsRotationInArc` returns true for every rotation when `min == max` after normalization ([RotationHelpers.cs:63](../../Assets/Modules/CommonComponents/Unity/Math/RotationHelpers.cs#L63)). The only caller uses arcs of at least 5°, so this is latent.
+4. **Equal speeds.** In `GetTargetPosition`, the quadratic coefficient `a` is 0 when target speed equals bullet speed. The solver divides by zero and returns `true` with an infinite time and position ([Geometry.cs:139](../../Assets/Modules/CommonComponents/Unity/Math/Geometry.cs#L139)). The second overload then makes the time NaN.
 5. **Negative formatting.** `ToTruncatedInGameString` and `ToExpandedInGameString` use `Math.Floor`, so −1,234 becomes `-2K` and −123,456.7 becomes `-124K`. `AsDecimal` uses the current culture while the other formatters use the invariant culture. The `K/M/B` suffixes are not localized.
 6. **AudioClipId.** The constructor removes the first `*` anywhere in the name, not only a leading one ([AudioClipId.cs:9](../../Assets/Modules/CommonComponents/Scripts/DataTypes/AudioClipId.cs#L9)).
 7. **IsNull.** `GameObjectExtensions.IsNull` tests `GetHashCode() == 0`. A destroyed object keeps its instance ID, so the test is always false for it. Unused.
@@ -309,24 +287,23 @@ Nothing sets `Paused` today, so item 1 is latent.
 
 **Direction.** Set `rootNamespace: CommonComponents` for new files. Move existing types only together with their callers, one folder at a time.
 
-### CC-S3. The leaf assembly holds feature and Unity code
+### CC-S3. The leaf assembly holds feature code
 
 **Severity:** Low.
 
-**Problem.** A leaf assembly should hold small, stable types that many assemblies need. This one also holds code that only one feature uses, and code that needs the Unity engine:
+**Problem.** A leaf assembly should hold small, stable types that many assemblies need. This one also holds code that only one feature uses. The engine code (`Primitives`, `GameObjectExtensions`, `Geometry`, `RotationHelpers`, `VectorExtensions`, `SignalExtensions`) moved to `CommonComponents.Unity` in 2026-10; it still has few users each.
 
 | Code | Only user |
 | --- | --- |
 | `BackgroundTask` | BattleSimulator `AiManager` |
 | `ThreadSafe` | BattleSimulator `IResourcePoints` |
-| `Primitives`, `GameObjectExtensions` | Legacy map objects, combat views, ShipEditor |
 | `NameGenerator` | Galaxy / exploration / quests |
 | `Helpers` (old save format) | GameSession obsolete content, storage |
 | `Base64Encoder` | Private `WebStorage` |
 
-**Evidence.** 14 assemblies reference the module, so any change recompiles all of them. `StatMultiplier` needs `Mathf` and `IItemType` needs `Color`, so even the value types cannot be tested without Unity. The AppConfiguration reference is not used by any file.
+**Evidence.** 14 assemblies reference the module, so any change recompiles all of them. The assembly is now engine-free, and its tests run with `dotnet test`.
 
-**Direction.** Remove the AppConfiguration reference. Move single-user code into its user's module when that code is next changed. Keep new code out of `Legacy/`.
+**Direction.** Move single-user code into its user's module when that code is next changed. Keep new code out of `Legacy/`.
 
 ### CC-S4. Deterministic outputs have no tests
 
@@ -334,7 +311,7 @@ Nothing sets `Paused` today, so item 1 is latent.
 
 **Problem.** Star IDs, star positions, star levels, neighbour order, region home stars, star names, and seeded selection helpers all feed saves or seeded content (see [Determinism and save compatibility](../common_components.md#determinism-and-save-compatibility)). A change to any of them moves stars, changes levels, or changes quest targets in existing saves.
 
-**Evidence.** [CommonComponentsTests.cs](../../Assets/Modules/CommonComponents/Tests/CommonComponentsTests.cs) has only 7 `Money` cases. Fixes such as [CC3](#cc3-getstarposition-reseeds-the-global-unity-random-generator) and [CC15](#cc15-shuffle-is-biased) cannot be checked for unchanged output. `GetStarPosition` also depends on Unity's internal random algorithm, so a Unity upgrade can change it without any code change.
+**Evidence.** [CommonComponentsTests.cs](../../Assets/Modules/CommonComponents/Tests/CommonComponentsTests.cs) has only 7 `Money` cases. A fix such as [CC15](#cc15-shuffle-is-biased) cannot be checked for unchanged output. The tests now run with `dotnet test` ([Engine-free modules](../architecture.md#engine-free-modules)), so golden-value tests need no Unity.
 
 **Direction.** Add golden-value tests: a table of (seed, ID) → position, level, name, neighbour list, and region home star, recorded from the current build. Add round-trip tests for `IdToPosition`/`PositionToId` over the first 100 rings. Tests only record current output, so they need no approval. A test failure after a change means the change needs approval.
 

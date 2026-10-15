@@ -4,11 +4,12 @@ The Diagnostics module gives the project one logging entry point that does not d
 
 | | |
 | --- | --- |
-| Assembly | `Diagnostics` ([Diagnostics.asmdef](../Assets/ModulesShared/Diagnostics/Diagnostics.asmdef)). No references. Auto-referenced. |
+| Assembly | `Diagnostics` ([Diagnostics.asmdef](../Assets/ModulesShared/Diagnostics/Diagnostics.asmdef)). No references. `noEngineReferences: true` ([Engine-free modules](architecture.md#engine-free-modules)). Auto-referenced. |
+| Engine assembly | `Diagnostics.Unity` ([`Unity/`](../Assets/ModulesShared/Diagnostics/Unity/)): `UnityLogger` and its bootstrap. References Diagnostics. Auto-referenced; Gui references it explicitly. |
 | Namespace | `GameDiagnostics` |
 | Location | [`Assets/ModulesShared/Diagnostics/`](../Assets/ModulesShared/Diagnostics/), inside the `Assets/ModulesShared` Git submodule. |
-| Source | [`Scripts/`](../Assets/ModulesShared/Diagnostics/Scripts/) (3 files, 100 lines) |
-| Assemblies that use it | Database, GameSession, ShipConstructor, BattleSimulator, Localization, Gui, ShipEditor, and the application (`Assets/Scripts`). |
+| Source | [`Scripts/`](../Assets/ModulesShared/Diagnostics/Scripts/) (2 files) and [`Unity/`](../Assets/ModulesShared/Diagnostics/Unity/) (1 file), about 110 lines. |
+| Assemblies that use it | CommonComponents, Database, GameSession, ShipConstructor, BattleSimulator, Localization, Gui, ShipEditor, and the application (`Assets/Scripts`). |
 | Redirection | [`DebugConsoleLogger`](gui.md#debug-console) in the Gui module. |
 | Tests | None. |
 | Known issues | [Diagnostics issues](issues/diagnostics.md) |
@@ -27,25 +28,25 @@ The Diagnostics module gives the project one logging entry point that does not d
 
 `Assets/ModulesShared` is a separate Git repository ([event-horizon-modules](https://github.com/PavelZinchenko/event-horizon-modules)). Its README says it holds "components shared between Event Horizon and Frontier". Frontier is another game by the same developer. This repository does not contain Frontier, so the effect of a change on Frontier cannot be checked here.
 
-For Diagnostics the constraint is light. The assembly has no references, so it compiles in any Unity project. Do not add a reference to an Event Horizon assembly. Do not change the meaning of `Debug` or `Trace`; both games compile against them.
+For Diagnostics the constraint is light. The assembly has no references, so it compiles in any Unity project and in plain .NET. Do not add a reference to an Event Horizon assembly. Do not change the meaning of `Debug` or `Trace`; both games compile against them.
 
 ## Source map
 
 | File | Contents |
 | --- | --- |
-| [Debug.cs](../Assets/ModulesShared/Diagnostics/Scripts/Debug.cs) | `ILogger` interface; static `Debug` (editor only) and `Trace` (all builds). |
-| [UnityLogger.cs](../Assets/ModulesShared/Diagnostics/Scripts/UnityLogger.cs) | `UnityLogger`: the default `ILogger`. Forwards to `UnityEngine.Debug`. `UnityLogger.Instance` is a shared instance. |
+| [Debug.cs](../Assets/ModulesShared/Diagnostics/Scripts/Debug.cs) | `ILogger` interface; `ConsoleLogger` (engine-free default, writes to `System.Console`); static `Debug` (editor only) and `Trace` (all builds). |
+| [UnityLogger.cs](../Assets/ModulesShared/Diagnostics/Unity/UnityLogger.cs) | `UnityLogger`: forwards to `UnityEngine.Debug`. `UnityLogger.Instance` is a shared instance. `UnityLoggerBootstrap` makes it the default logger in the player and the editor. |
 | [Assert.cs](../Assets/ModulesShared/Diagnostics/Scripts/Assert.cs) | Editor-only assertions that throw `InvalidOperationException`. |
 
 ## Debug and Trace
 
-`ILogger` has four methods: `Log`, `LogWarning`, `LogError`, and `LogException`. Each takes an optional `GameObject` context, which Unity uses to highlight the object in the Console.
+`ILogger` has four methods: `Log`, `LogWarning`, `LogError`, and `LogException`. Each takes an optional `object` context. `UnityLogger` passes it on when it is a `UnityEngine.Object`, and Unity highlights that object in the Console. `ConsoleLogger` ignores it.
 
 | | `GameDiagnostics.Debug` | `GameDiagnostics.Trace` |
 | --- | --- | --- |
 | Builds | Unity Editor only. Every method has `[Conditional("UNITY_EDITOR")]`. | All builds. |
 | Effect in a player build | The compiler removes the call and the evaluation of its arguments. | The message goes to the current logger. |
-| Logger | Always `UnityLogger.Instance`. | `Trace.Logger`. Default `UnityLogger.Instance`. Can be replaced. |
+| Logger | Always `Trace.DefaultLogger`. | `Trace.Logger`, which falls back to `Trace.DefaultLogger`. Can be replaced. |
 | Context object | Supported. | Not passed. `Trace` methods have no context parameter. |
 
 A conditional method is a method that the C# compiler removes at the call site when the named symbol is not defined. `UNITY_EDITOR` is defined only when the Unity Editor compiles the scripts. So `Debug.LogError` in a player build costs nothing and shows nothing.
@@ -54,7 +55,10 @@ A conditional method is a method that the C# compiler removes at the call site w
 
 ## Redirecting Trace
 
-`Trace.Logger` is a static property. Its getter returns the assigned logger, or `UnityLogger.Instance` when none is assigned. Setting it to `null` restores the default.
+`Trace` has two static properties:
+
+1. `Trace.DefaultLogger` starts as `ConsoleLogger.Instance`, so engine-free code and `dotnet test` log to the console. In Unity, `UnityLoggerBootstrap` sets it to `UnityLogger.Instance` before any scene loads (`[RuntimeInitializeOnLoadMethod(SubsystemRegistration)]`) and after each editor domain reload (`[InitializeOnLoadMethod]`). Setting it to `null` restores `ConsoleLogger`.
+2. `Trace.Logger` returns the assigned logger, or `Trace.DefaultLogger` when none is assigned. Setting it to `null` restores the default.
 
 The only code that sets it is [`DebugConsoleLogger`](gui.md#debug-console):
 
@@ -74,14 +78,14 @@ No code calls `GameDiagnostics.Assert`. The 11 assertion sites in the project us
 
 ## Use in the project
 
-Counts are from a search of `Assets/` on 2026-10-12.
+Counts are from a search of `Assets/` on 2026-10-15, after the engine-free work replaced `UnityEngine.Debug` in the engine-free assemblies.
 
 | Call | Count | Where |
 | --- | --- | --- |
-| `Trace.LogError` | 46 | Database (loading, JSON parse errors, invalid images and colors, migration), GameSession (unknown format, missing EOF marker), ShipConstructor (invalid builds), Localization (missing key), Gui component list, ShipEditor limits, application domain (inventory, ship validation, products). |
+| `Trace.LogError` | 55 | Database (loading, JSON parse errors, invalid images and colors, migration), GameSession (unknown format, missing EOF marker), ShipConstructor (invalid builds), CommonComponents (invalid color), Localization (missing key), Gui component list, ShipEditor limits, BattleSimulator, application domain (inventory, ship validation, products). |
 | `Trace.LogWarning` | 8 | Database and session migration steps. |
-| `Trace.Log` | 2 | `InitializationState` progress. |
-| `Trace.LogException` | 1 | `Database.TryLoad`. |
+| `Trace.Log` | 49 | Mostly GameSession obsolete content upgrades (41); also `BackgroundTask`, `InitializationState` progress, ShipConstructor, Database. |
+| `Trace.LogException` | 21 | Database, GameSession, CommonComponents (`SmartWeakEvent`, `BackgroundTask`), ShipConstructor. |
 | `Debug.*` | 7 | `UiTheme` (missing font), `ThemedImage` and `ThemedText` (theme errors), `ShipValidator` (component replaced), `TravelState` (3 progress lines). |
 
 Most code in the project still calls `UnityEngine.Debug` directly. Those messages reach the Unity log, but the in-game console captures only exceptions from them (see [Debug console](gui.md#debug-console)).

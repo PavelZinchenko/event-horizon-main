@@ -48,7 +48,7 @@ namespace GameDatabase.DataModel
 			var variableResolver = GetVariableResolver();
 			Condition = serializable.Condition;
 			EffectType = serializable.EffectType;
-			Cooldown = UnityEngine.Mathf.Clamp(serializable.Cooldown, 0f, 1000f);
+			Cooldown = Utilites.MathEx.Clamp(serializable.Cooldown, 0f, 1000f);
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -151,8 +151,8 @@ namespace GameDatabase.DataModel
 			AudioClip = new AudioClipId(serializable.AudioClip);
 			Color = new ColorData(serializable.Color);
 			ColorMode = serializable.ColorMode;
-			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 100f);
-			Lifetime = UnityEngine.Mathf.Clamp(serializable.Lifetime, 0f, 1000f);
+			Size = Utilites.MathEx.Clamp(serializable.Size, 0f, 100f);
+			Lifetime = Utilites.MathEx.Clamp(serializable.Lifetime, 0f, 1000f);
 			OncePerCollision = serializable.OncePerCollision;
 			UseBulletPosition = serializable.UseBulletPosition;
 			SyncLifetimeWithBullet = serializable.SyncLifetimeWithBullet;
@@ -228,11 +228,11 @@ namespace GameDatabase.DataModel
 			Ammunition = loader?.GetAmmunition(new ItemId<Ammunition>(serializable.Ammunition)) ?? Ammunition.DefaultValue;
 			Color = new ColorData(serializable.Color);
 			ColorMode = serializable.ColorMode;
-			Quantity = UnityEngine.Mathf.Clamp(serializable.Quantity, 0, 1000);
-			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 100f);
-			RandomFactor = UnityEngine.Mathf.Clamp(serializable.RandomFactor, 0f, 1f);
-			PowerMultiplier = UnityEngine.Mathf.Clamp(serializable.PowerMultiplier, 0f, 3.402823E+38f);
-			MaxNestingLevel = UnityEngine.Mathf.Clamp(serializable.MaxNestingLevel, 0, 100);
+			Quantity = Utilites.MathEx.Clamp(serializable.Quantity, 0, 1000);
+			Size = Utilites.MathEx.Clamp(serializable.Size, 0f, 100f);
+			RandomFactor = Utilites.MathEx.Clamp(serializable.RandomFactor, 0f, 1f);
+			PowerMultiplier = Utilites.MathEx.Clamp(serializable.PowerMultiplier, 0f, 3.402823E+38f);
+			MaxNestingLevel = Utilites.MathEx.Clamp(serializable.MaxNestingLevel, 0, 100);
 			_rotation = new Expressions.IntToFloat(serializable.Rotation, -2147483648, 2147483647, variableResolver) { ParamName1 = "i" };
 			Rotation = _rotation.Evaluate;
 			_offsetX = new Expressions.IntToFloat(serializable.OffsetX, -2147483648, 2147483647, variableResolver) { ParamName1 = "i" };
@@ -372,8 +372,8 @@ namespace GameDatabase.DataModel
 			AudioClip = new AudioClipId(serializable.AudioClip);
 			Color = new ColorData(serializable.Color);
 			ColorMode = serializable.ColorMode;
-			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 100f);
-			Lifetime = UnityEngine.Mathf.Clamp(serializable.Lifetime, 0f, 1000f);
+			Size = Utilites.MathEx.Clamp(serializable.Size, 0f, 100f);
+			Lifetime = Utilites.MathEx.Clamp(serializable.Lifetime, 0f, 1000f);
 			OncePerCollision = serializable.OncePerCollision;
 
             OnDataDeserialized(serializable, loader);
@@ -437,8 +437,8 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			var variableResolver = GetVariableResolver();
-			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 100f);
-			PowerMultiplier = UnityEngine.Mathf.Clamp(serializable.PowerMultiplier, 0f, 3.402823E+38f);
+			Size = Utilites.MathEx.Clamp(serializable.Size, 0f, 100f);
+			PowerMultiplier = Utilites.MathEx.Clamp(serializable.PowerMultiplier, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }

@@ -10,7 +10,7 @@ namespace Exploration
 		public void Initialize(IProduct product, IResourceLocator resourceLocator)
 		{
 			_icon.sprite = resourceLocator.GetSprite(product.Type.Icon);
-			_icon.color = product.Type.Color;
+			_icon.color = product.Type.Color.ToUnity();
 			_name.text = product.Type.Name;
 
 			if (product.Quantity > 1)

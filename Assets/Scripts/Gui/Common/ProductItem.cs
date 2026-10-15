@@ -21,7 +21,7 @@ namespace Gui.StarMap
             Product = item;
 
             _icon.sprite = resourceLocator.GetSprite(item.Type.Icon);
-            _icon.color = item.Type.Color;
+            _icon.color = item.Type.Color.ToUnity();
             _name.text = item.Type.Name;
             _name.color = Gui.Theme.UiTheme.Current.GetQualityColor(item.Type.Quality);
 
