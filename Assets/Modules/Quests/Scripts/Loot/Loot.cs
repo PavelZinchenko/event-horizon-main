@@ -164,8 +164,8 @@ namespace Domain.Quests
             foreach (var item in content.Items.WeightedRandomUniqueElements(amount, _random, item => item.Weight))
             {
                 if (itemsLeft <= 0) yield break;
-                itemsLeft--;
                 if (!_requirementCache.Get(item.Requirement, _questInfo).IsMet) continue;
+                itemsLeft--;
                 foreach (var lootItem in item.Loot.Create(this))
                 {
                     yield return lootItem;
