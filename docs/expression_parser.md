@@ -174,7 +174,7 @@ Evaluation errors are not caught. For example, `100 / level` with `level = 0` th
 
 ## Tests
 
-The tests run in the Unity Test Runner (Edit Mode). `ParserTests` covers the float parser: operators, precedence, functions, variables, and errors. `VariantTests` has seven cases for `Variant` literals and addition. No test covers `Variant` division or comparison, the functions that the fork added, or external functions.
+The tests run in the Unity Test Runner (Edit Mode) and with `dotnet test Tests~/EngineFree.Tests.csproj` ([Engine-free modules](architecture.md#engine-free-modules)). `ParserTests` covers the float parser: operators, precedence, functions, variables, and errors. `VariantTests` has seven cases for `Variant` literals and addition. No test covers `Variant` division or comparison, the functions that the fork added, or external functions.
 
 ## Working on the parser
 

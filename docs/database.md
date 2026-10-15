@@ -181,7 +181,7 @@ The built-in catalog uses Unity's [`JsonUtility`](../Assets/Modules/Database/Uni
 | Missing field | Omitted | Becomes the schema `default`, or the C# default (`0`, `false`, `null`) when the schema has none. |
 | Reference | Integer `Id` | `0` means none. See [Null references](#null-references). |
 | Reference list | Array of integers | `[3, 7]` |
-| Color | `"#RRGGBB"` or `"#AARRGGBB"` | Hex. Six digits get alpha `FF`. Invalid text becomes white and logs an error. See [`ColorData`](../Assets/Modules/Database/Scripts/Types/ColorData.cs). |
+| Color | `"#RRGGBB"` or `"#AARRGGBB"` | Hex. Six digits get alpha `FF`. Invalid text becomes white and logs an error. See [`ColorData`](../Assets/Modules/CommonComponents/Scripts/DataTypes/ColorData.cs). |
 | Vector | `{"x": 0.5, "y": -0.25}` | Lowercase keys. |
 | Char | One-character string | `"WeaponSlotType": "C"` |
 | Layout | String of cell characters | Read row by row. See [Layout](#layout). |
@@ -411,7 +411,7 @@ A storage whose version equals the compiled version loads directly. Any other ve
 | 1.0 → 1.1 | [DatabaseUpgrader_0_1.cs](../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_0_1.cs) | Converts barrel and component `PlatformType`/`AlterWeaponPlatform` to `AutoAimingArc` (1→360°, 2→80°, 3→20°). Moves `Ship.EnginePosition`/`EngineSize` into `Engines`. Maps `Ship.ShipCategory` to `ShipType`, `ShipRarity`, and `SizeClass`. Moves ship resistances, weight, regeneration, and built-in devices into `Features`. Maps `Faction.Hidden` and `Hostile` to the new flags. Clamps negative `BuildFaction` to 0. |
 | 1.1 → 1.2 | [DatabaseUpgrader_1_2.cs](../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_1_2.cs) | Creates a starting-inventory `Loot` (100 credits, 20 stars, five components, two satellites) with the next free loot ID, and sets `GalaxySettings.StartingInvenory`. |
 | 1.2 → 1.3 | [DatabaseUpgrader_2_3.cs](../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_2_3.cs) | Moves `StartingInvenory` to the correctly spelled `StartingInventory`. Derives `ShipBuild.AvailableForEnemy` and `AvailableForPlayer` from `NotAvailableInGame`, the hull rarity, and the difficulty class. |
-| 1.3 → 1.4 | [DatabaseUpgrader_3_4.cs](../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_3_4.cs) | Deletes all component modifications and loads the built-in set from `Resources/DatabaseMigration/v1.3/`. |
+| 1.3 → 1.4 | [DatabaseUpgrader_3_4.cs](../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_3_4.cs) | Deletes all component modifications and loads the built-in set from `Resources/DatabaseMigration/v1.3/`. It reads them through [`MigrationResources.GetStorage`](../Assets/Modules/Database/Scripts/Migration/MigrationResources.cs). `UnityDatabaseFactory.Create()` sets `MigrationResources.StorageProvider`; without it, this step throws `InvalidOperationException`. Code that builds a `Database` outside Unity must set the provider before it loads a 1.3 mod. |
 | 1.4 → 1.5 | [DatabaseUpgrader_4_5.cs](../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_4_5.cs) | Adds `CombatRules` 1 with defaults and sets `CombatSettings.DefaultCombatRules` to 1. |
 | 1.5 → 1.6 | [DatabaseUpgrader_5_6.cs](../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_5_6.cs) | Converts the obsolete `BulletBody.Type` to `AiBulletBehavior`, `ParentVelocityEffect`, `AttachedToParent`, and a controller (`Homing`, `Beam`). Throws when new and obsolete fields are mixed. |
 | 1.6 → 1.7 | [DatabaseUpgrader_6_7.cs](../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_6_7.cs) | Replaces `ComponentRestrictions.UniqueComponentTag` strings with `ComponentGroupTag` records. Adds implicit group tags for unique device classes (one teleporter, one stealth, one shield, and so on), numbered from 1. |
@@ -477,8 +477,8 @@ Some code refers to records by number. A mod that removes or changes these recor
 | `notnull` and list references | Generated `Loader` | Every load. Throws. |
 | Barrel count vs. weapon cells | `BarrelConverter` | Every load. Logs. |
 | Ship build viability, satellite fit, tech dependencies | `InitializationState` | Startup, editable databases only. Logs. |
-| Default catalog sanity | [`DatabaseTests`](../Assets/Modules/Database/Tests/DatabaseTests.cs) | Unity Test Runner (Edit Mode). Spawn distance order, player ships exist, enemy ships exist at distances 0–1000, each faction has ships. |
-| Packed mod envelope | [`PackedModEncryptionTests`](../Assets/Modules/Database/Tests/PackedModEncryptionTests.cs) | Unity Test Runner. Commercial license only (`LICENSE_COMMERCIAL`). |
+| Default catalog sanity | [`DatabaseTests`](../Assets/Modules/Database/Unity/Tests/DatabaseTests.cs) | Unity Test Runner (Edit Mode). Spawn distance order, player ships exist, enemy ships exist at distances 0–1000, each faction has ships. |
+| Packed mod envelope | [`PackedModEncryptionTests`](../Assets/Modules/Database/Tests/PackedModEncryptionTests.cs) | Unity Test Runner, or `dotnet test Tests~/EngineFree.Tests.csproj` without Unity ([Engine-free modules](architecture.md#engine-free-modules)). Commercial license only (`LICENSE_COMMERCIAL`). |
 | Broken references, statistics | External Analyzer (`analyzer.cmd`) | Manual. |
 
 A schema-driven scan of the built-in catalog on 2026-10-11 found:
