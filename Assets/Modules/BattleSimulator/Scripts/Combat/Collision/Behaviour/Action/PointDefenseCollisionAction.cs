@@ -4,7 +4,6 @@ using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
 using Combat.Factory;
 using UnityEngine;
-using Combat.Collision.Behaviour;
 
 namespace Combat.Collision.Behaviour.Action
 {
@@ -20,9 +19,6 @@ namespace Combat.Collision.Behaviour.Action
         public void Invoke(IUnit self, IUnit target, CollisionData collisionData, ref Impact selfImpact, ref Impact targetImpact)
         {
             if (!collisionData.IsNew)
-                return;
-
-            if (target.CollisionBehaviour is GravityBombCollisionBehaviour)
                 return;
 
             if (target.Type.Side.IsAlly(self.Type.Side))

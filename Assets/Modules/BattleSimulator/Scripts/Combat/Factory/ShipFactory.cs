@@ -228,9 +228,25 @@ namespace Combat.Factory
 
         public Ship CreateStarbase(IShipSpecification spec, Vector2 position, float rotation, UnitSide unitSide)
         {
-            var ship = CreateShip(spec, _controllerFactory.CreateStarbaseController(spec.CustomAi, true), position, rotation, null, unitSide, _settings.Shadows);
-            ship.Engine = new StarbaseEngine(10f);
-            return ship;
+            if (unitSide == UnitSide.Player)
+            {
+                var controllerFactory = _controllerFactory.CreateKeyboardController();
+                var ship = CreateShip(spec, controllerFactory, position, rotation, null, UnitSide.Player, _settings.Shadows);
+
+                ship.Engine = new StarbaseEngine(10f);
+
+                if (spec.Stats.Autopilot)
+                    _aiManager.Add(_controllerFactory.CreateAutopilotController().Create(ship));
+
+                return ship;
+            }
+            else
+            {
+                var controllerFactory = _controllerFactory.CreateStarbaseController(spec.CustomAi, true);
+                var ship = CreateShip(spec, controllerFactory, position, rotation, null, unitSide, _settings.Shadows);
+                ship.Engine = new StarbaseEngine(10f);
+                return ship;
+            }
         }
 
         public Ship CreateTurret(IShipSpecification spec, Vector2 position, float rotation, UnitSide side)
