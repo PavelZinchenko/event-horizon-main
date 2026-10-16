@@ -83,7 +83,7 @@ namespace Combat.Factory
             bullet.AddResource(bulletGameObject);
 
             bullet.Collider = ConfigureCollider(bulletGameObject.GetComponent<ICollider>(), bullet);
-            bullet.CollisionBehaviour = CreateCollisionBehaviour(_effectFactory, parent, color, lifetime);
+            bullet.CollisionBehaviour = CreateCollisionBehaviour(_effectFactory, parent, color);
 
             bullet.Physics = bulletGameObject.GetComponent<PhysicsManager>();
 
@@ -204,7 +204,7 @@ namespace Combat.Factory
             return _bulletStats.RandomFactor > 0 ? _stats.Velocity*(1f + (Random.value - 0.5f)* _bulletStats.RandomFactor) : _stats.Velocity;
         }
 
-        private BulletCollisionBehaviour CreateCollisionBehaviour(EffectFactory effectFactory, IWeaponPlatform platform, Color color, ILifetime lifetime)
+        private BulletCollisionBehaviour CreateCollisionBehaviour(EffectFactory effectFactory, IWeaponPlatform platform, Color color)
         {
             var collisionBehaviour = new BulletCollisionBehaviour();
 
@@ -220,7 +220,7 @@ namespace Combat.Factory
             else if (_stats.AmmunitionClass == AmmunitionClassObsolete.SmallVampiricRay)
                 collisionBehaviour.AddAction(new SiphonHitPointsAction(_stats.DamageType, _bulletStats.Damage, 0.1f, BulletImpactType.DamageOverTime));
             else if (_stats.LifeTime >= 0.5f && _stats.AmmunitionClass.IsBeam())
-                collisionBehaviour.AddAction(new DealFadingDamageAction(lifetime, _stats.DamageType, _bulletStats.Damage));
+                collisionBehaviour.AddAction(new DealFadingDamageAction(_stats.DamageType, _bulletStats.Damage));
             else if (_stats.AmmunitionClass.IsDot())
                 collisionBehaviour.AddAction(new DealDamageAction(_stats.DamageType, _bulletStats.Damage, BulletImpactType.DamageOverTime));
             else if (_stats.AmmunitionClass.HasDirectDamage(_stats))
