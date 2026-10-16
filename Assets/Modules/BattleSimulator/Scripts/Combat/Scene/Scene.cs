@@ -201,47 +201,48 @@ namespace Combat.Scene
 
         private void CheckBounds()
         {
+            if (_activePlayerShip == null)
+                return;
+
+            if (_cooldown > 0)
+            {
+                _cooldown -= Time.deltaTime;
+                return;
+            }
+            _cooldown = 0.5f;
+
+            var center = _activePlayerShip.Body.Position;
+            var width = _settings.AreaWidth;
+            var height = _settings.AreaHeight;
+
             lock (_unitList.LockObject)
             {
                 foreach (var unit in _unitList.Items)
                 {
+                    if (unit == _activePlayerShip)
+                        continue;
                     if (unit.Body.Parent != null)
                         continue;
                     if (unit.Type.Class == UnitClass.Limb)
                         continue;
 
-                    var changed = false;
-
                     var position = unit.Body.Position;
+                    if (!float.IsFinite(position.x) || !float.IsFinite(position.y))
+                        continue;
 
-                    while (position.x > 0.5f * _settings.AreaWidth)
-                    {
-                        position.x -= _settings.AreaWidth;
-                        changed = true;
-                    }
-                    while (position.x < -0.5f * _settings.AreaWidth)
-                    {
-                        position.x += _settings.AreaWidth;
-                        changed = true;
-                    }
+                    var dx = position.x - center.x;
+                    var dy = position.y - center.y;
+                    if (Mathf.Abs(dx) <= 0.5f * width && Mathf.Abs(dy) <= 0.5f * height)
+                        continue;
 
-                    while (position.y > 0.5f * _settings.AreaHeight)
-                    {
-                        position.y -= _settings.AreaHeight;
-                        changed = true;
-                    }
-                    while (position.y < -0.5f * _settings.AreaHeight)
-                    {
-                        position.y += _settings.AreaHeight;
-                        changed = true;
-                    }
-
-                    if (changed)
-                        unit.Body.Move(position);
+                    unit.Body.Move(new Vector2(
+                        center.x + Mathf.Repeat(dx + 0.5f * width, width) - 0.5f * width,
+                        center.y + Mathf.Repeat(dy + 0.5f * height, height) - 0.5f * height));
                 }
             }
         }
 
+        private float _cooldown;
         private float _disturbance;
         private float _lastUpdateTime;
 
