@@ -64,7 +64,7 @@ namespace Combat.Component.Controller
                     targetPosition = _target.Body.WorldPosition();
                 }            
             
-                var direction = _unit.Body.WorldPosition().Direction(targetPosition);
+                var direction = WrapDirection(_unit.Body.WorldPosition(), targetPosition);
                 var target = RotationHelpers.Angle(direction);
                 var rotation = _unit.Body.WorldRotation();
                 var delta = Mathf.DeltaAngle(rotation, target);
@@ -83,6 +83,22 @@ namespace Combat.Component.Controller
                 if(!Mathf.Approximately(turn, 0))
                     _unit.Body.Turn(turn);
             }
+        }
+
+        private Vector2 WrapDirection(Vector2 from, Vector2 to)
+        {
+            var dx = to.x - from.x;
+            var dy = to.y - from.y;
+            var halfWidth = _scene.Settings.AreaWidth * 0.5f;
+            var halfHeight = _scene.Settings.AreaHeight * 0.5f;
+
+            if (dx > halfWidth) dx -= _scene.Settings.AreaWidth;
+            else if (dx < -halfWidth) dx += _scene.Settings.AreaWidth;
+
+            if (dy > halfHeight) dy -= _scene.Settings.AreaHeight;
+            else if (dy < -halfHeight) dy += _scene.Settings.AreaHeight;
+
+            return new Vector2(dx, dy);
         }
 
         private float _timeFromLastUpdate = _targetUpdateCooldown;
