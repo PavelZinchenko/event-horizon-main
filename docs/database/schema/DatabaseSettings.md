@@ -22,10 +22,10 @@ The record has the `ItemType` [common field](index.md#common-fields) and no `Id`
 | --- | --- | --- | --- | --- |
 | `DatabaseVersion` | int | 1… | 1 | Major data version. The storage reads it before the load and compares it with the compiled version ([Versioning and migration](../../database.md#versioning-and-migration)). |
 | `DatabaseVersionMinor` | int | 0… | 7 | Minor data version. A lower value runs the migration steps from that version up to the current one. |
-| `ModName` | string | | | No effect. It only feeds `IDatabase.Name` ([Database.cs:26](../../../Assets/Modules/Database/Scripts/Database.cs#L26)), and no code reads that property. |
+| `ModName` | string | | | No effect. It only feeds `IDatabase.Name` ([Database.cs:33](../../../Assets/Modules/Database/Scripts/Database.cs#L33)), and no code reads that property. |
 | `ModId` | string | | | No effect. No code reads it. |
 | `ModVersion` | int | | | No effect. No code reads it ([DB11](../../issues/database.md#db11-schema-fields-without-runtime-effect)). |
-| `UnloadOriginalDatabase` | bool | | | `true`: the game does not load the built-in catalog under the mod ([Database.cs:149](../../../Assets/Modules/Database/Scripts/Database.cs#L149)). The mod must then contain every record that the game needs. |
+| `UnloadOriginalDatabase` | bool | | | `true`: the game does not load the built-in catalog under the mod ([Database.cs:152](../../../Assets/Modules/Database/Scripts/Database.cs#L152)). The mod must then contain every record that the game needs. |
 
 ## Notes
 
@@ -33,7 +33,7 @@ The record has the `ItemType` [common field](index.md#common-fields) and no `Id`
 
 | Storage | Where the version comes from | Code |
 | --- | --- | --- |
-| Built-in catalog | Unity Editor: the first `DatabaseSettings` record. Player build: the compiled version. | [ResourceDatabaseStorage.cs:91](../../../Assets/Modules/Database/Scripts/Storage/ResourceDatabaseStorage.cs#L91) |
+| Built-in catalog | Unity Editor: the first `DatabaseSettings` record. Player build: the compiled version. | [ResourceDatabaseStorage.cs:91](../../../Assets/Modules/Database/Unity/Storage/ResourceDatabaseStorage.cs#L91) |
 | Folder mod | The first JSON file with item type `102`. Without one: version 1.0. | [FolderDatabaseStorage.cs:35](../../../Assets/Modules/Database/Scripts/Storage/FolderDatabaseStorage.cs#L35) |
 | Packed mod | The file header. The database editor writes this record's version into the header. | [MainWindow.cs:283](../../../Assets/Modules/Database/.Editor/GameDatabase/MainWindow.cs#L283) |
 

@@ -1,5 +1,5 @@
 ﻿using GameDatabase.DataModel;
-using UnityEngine;
+using Utilites;
 
 namespace Constructor.Model
 {
@@ -27,13 +27,13 @@ namespace Constructor.Model
 
         public EngineStats(float enginePower, float turnRate, float shipWeight, int shipCellCount, ShipSettings shipSettings)
         {
-            var sqrtWeight = Mathf.Sqrt(shipWeight);
+            var sqrtWeight = MathEx.Sqrt(shipWeight);
             VelocityLimit = shipSettings.MaxVelocity;
             AngularVelocityLimit = shipSettings.MaxAngularVelocity * _unitsToDegrees;
-            Velocity = Mathf.Min(shipSettings.MaxVelocity, enginePower * _velocityFactor / (sqrtWeight * shipCellCount));
-            AngularVelocityInUnits = Mathf.Min(shipSettings.MaxAngularVelocity, turnRate * _angularVelocityFactor / (sqrtWeight * shipCellCount));
-            Propulsion = Mathf.Min(shipSettings.MaxAcceleration, enginePower * _propulsionFactor / (shipWeight * shipCellCount));
-            TurnRateInUnits = Mathf.Min(shipSettings.MaxAngularAcceleration, turnRate * _turnRateFactor / (shipWeight * sqrtWeight * shipCellCount));
+            Velocity = MathEx.Min(shipSettings.MaxVelocity, enginePower * _velocityFactor / (sqrtWeight * shipCellCount));
+            AngularVelocityInUnits = MathEx.Min(shipSettings.MaxAngularVelocity, turnRate * _angularVelocityFactor / (sqrtWeight * shipCellCount));
+            Propulsion = MathEx.Min(shipSettings.MaxAcceleration, enginePower * _propulsionFactor / (shipWeight * shipCellCount));
+            TurnRateInUnits = MathEx.Min(shipSettings.MaxAngularAcceleration, turnRate * _turnRateFactor / (shipWeight * sqrtWeight * shipCellCount));
         }
     }
 }

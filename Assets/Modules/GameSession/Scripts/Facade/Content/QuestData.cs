@@ -153,9 +153,9 @@ namespace Session.Content
 		}
 
 		public int GetFactionRelations(int starId) => _data.Quests.FactionRelations.TryGetValue(starId, out int value) ? value : 0;
-		public void SetFactionRelations(int starId, int value) => _data.Quests.FactionRelations.SetValue(starId, UnityEngine.Mathf.Clamp(value, -100, 100));
+		public void SetFactionRelations(int starId, int value) => _data.Quests.FactionRelations.SetValue(starId, Utilites.MathEx.Clamp(value, -100, 100));
 		public int GetCharacterRelations(int characterId) => _data.Quests.CharacterRelations.TryGetValue(characterId, out int value) ? value : 0;
-		public void SetCharacterRelations(int characterId, int value) => _data.Quests.CharacterRelations.SetValue(characterId, UnityEngine.Mathf.Clamp(value, -100, 100));
+		public void SetCharacterRelations(int characterId, int value) => _data.Quests.CharacterRelations.SetValue(characterId, Utilites.MathEx.Clamp(value, -100, 100));
 
 		public void Reset()
 		{

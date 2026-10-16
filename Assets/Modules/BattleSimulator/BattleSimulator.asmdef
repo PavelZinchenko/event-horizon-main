@@ -2,9 +2,12 @@
     "name": "BattleSimulator",
     "rootNamespace": "",
     "references": [
+        "Localization.Abstractions",
         "Zenject",
         "Database",
+        "Database.Unity",
         "CommonComponents",
+        "CommonComponents.Unity",
         "ResourceLocator",
         "ShipConstructor",
         "Unity.InputSystem",

@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using Ionic.Zlib;
-using UnityEngine;
 using CommonComponents.Serialization;
 
 namespace GameDatabase.Storage
@@ -58,14 +57,14 @@ namespace GameDatabase.Storage
                     catch (Exception e)
                     {
                         // Skip files with errors to allow loading mods created with differen database version
-                        Debug.LogException(e);
+                        GameDiagnostics.Trace.LogException(e);
                     }
                 }
                 else if (type == 2) // image
                 {
                     var key = content.ReadString();
                     var image = content.ReadByteArray();
-                    loader.LoadImage(key, new LazyImageDataLoader(image));
+                    loader.LoadImage(key, new Model.ImageData(image));
                 }
                 else if (type == 3) // localization
                 {
@@ -77,13 +76,13 @@ namespace GameDatabase.Storage
                 {
                     var key = content.ReadString();
                     var audioClip = content.ReadByteArray();
-                    loader.LoadAudioClip(key, new LazyAudioDataLoader(audioClip, LazyAudioDataLoader.Format.Wav));
+                    loader.LoadAudioClip(key, new Model.AudioClipData(audioClip, Model.AudioFormat.Wav));
                 }
                 else if (type == 5) // ogg audioClip
                 {
                     var key = content.ReadString();
                     var audioClip = content.ReadByteArray();
-                    loader.LoadAudioClip(key, new LazyAudioDataLoader(audioClip, LazyAudioDataLoader.Format.Ogg));
+                    loader.LoadAudioClip(key, new Model.AudioClipData(audioClip, Model.AudioFormat.Ogg));
                 }
             }
 
@@ -269,75 +268,6 @@ namespace GameDatabase.Storage
                     Clear(_buffer);
                 base.Dispose(disposing);
             }
-        }
-    }
-
-    public class LazyImageDataLoader : Model.IImageData
-    {
-        private byte[] _rawData;
-        private Model.ImageData _imageData;
-
-        public Sprite Sprite
-        {
-            get
-            {
-                if (_imageData == null)
-                {
-                    _imageData = new(_rawData);
-                    _rawData = null;
-                }
-
-                return _imageData.Sprite;
-            }
-        }
-
-        public LazyImageDataLoader(byte[] rawData)
-        {
-            _rawData = rawData;
-        }
-    }
-
-    public class LazyAudioDataLoader : Model.IAudioClipData
-    {
-        public enum Format
-        {
-            Wav,
-            Ogg,
-        }
-
-        private readonly Format _format;
-        private byte[] _rawData;
-        private Model.IAudioClipData _audioClipData;
-
-        public AudioClip AudioClip
-        {
-            get
-            {
-                if (_audioClipData == null)
-                {
-                    switch (_format)
-                    {
-                        case Format.Wav:
-                            _audioClipData = new Model.AudioClipData(_rawData);
-                            break;
-                        case Format.Ogg:
-                            _audioClipData = Model.OggAudioClip.Create(_rawData);
-                            break;
-                        default:
-                            throw new InvalidOperationException();
-                    }
-
-                    _rawData = null;
-                }
-
-                return _audioClipData.AudioClip;
-            }
-        }
-
-        public LazyAudioDataLoader(byte[] rawData, Format format)
-        {
-            _rawData = rawData;
-            _format = format;
         }
     }
 }

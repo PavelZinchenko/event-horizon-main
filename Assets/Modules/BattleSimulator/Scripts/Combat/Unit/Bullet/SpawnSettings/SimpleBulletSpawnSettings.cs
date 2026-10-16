@@ -7,7 +7,7 @@ namespace Combat.Component.Bullet.SpawnSettings
     {
         public SimpleBulletSpawnSettings(Vector2 offset, float rotation)
         {
-            _offset = offset;
+            _offset = offset.ToData();
             _rotation = rotation;
         }
 
@@ -16,7 +16,7 @@ namespace Combat.Component.Bullet.SpawnSettings
             return new SimpleBulletSpawnSettings(new Vector2(offset, 0), 0);
         }
 
-        public Vector2 GetOffset(int bulletIndex)
+        public Vector2Data GetOffset(int bulletIndex)
         {
             return _offset;
         }
@@ -26,7 +26,7 @@ namespace Combat.Component.Bullet.SpawnSettings
             return _rotation;
         }
 
-        private readonly Vector2 _offset;
+        private readonly Vector2Data _offset;
         private readonly float _rotation;
     }
 }

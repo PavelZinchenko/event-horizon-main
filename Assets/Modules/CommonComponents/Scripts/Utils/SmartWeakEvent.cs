@@ -142,7 +142,7 @@ namespace SmartWeakEvent
 	        catch (Exception e)
 	        {
                 for (var ex = e; ex != null; ex = ex.InnerException)
-	                UnityEngine.Debug.LogException(e);
+	                GameDiagnostics.Trace.LogException(e);
 
 	            return false;
 	        }

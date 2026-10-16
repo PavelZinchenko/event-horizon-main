@@ -29,15 +29,15 @@ namespace GameDatabase.DataModel
 			RemoveEnergyRechargeCdMod = serializable.RemoveEnergyRechargeCdMod;
 			RemoveShieldRechargeCdMod = serializable.RemoveShieldRechargeCdMod;
 			RemoveBiggerSatellitesMod = serializable.RemoveBiggerSatellitesMod;
-			HeatDefenseValue = UnityEngine.Mathf.Clamp(serializable.HeatDefenseValue, 0f, 10f);
-			KineticDefenseValue = UnityEngine.Mathf.Clamp(serializable.KineticDefenseValue, 0f, 10f);
-			EnergyDefenseValue = UnityEngine.Mathf.Clamp(serializable.EnergyDefenseValue, 0f, 10f);
-			RegenerationValue = UnityEngine.Mathf.Clamp(serializable.RegenerationValue, 0f, 1f);
-			RegenerationArmor = UnityEngine.Mathf.Clamp(serializable.RegenerationArmor, 0f, 1f);
-			WeightReduction = UnityEngine.Mathf.Clamp(serializable.WeightReduction, 0f, 1f);
-			AttackReduction = UnityEngine.Mathf.Clamp(serializable.AttackReduction, 0f, 1f);
-			EnergyReduction = UnityEngine.Mathf.Clamp(serializable.EnergyReduction, 0f, 1f);
-			ShieldReduction = UnityEngine.Mathf.Clamp(serializable.ShieldReduction, 0f, 1f);
+			HeatDefenseValue = Utilites.MathEx.Clamp(serializable.HeatDefenseValue, 0f, 10f);
+			KineticDefenseValue = Utilites.MathEx.Clamp(serializable.KineticDefenseValue, 0f, 10f);
+			EnergyDefenseValue = Utilites.MathEx.Clamp(serializable.EnergyDefenseValue, 0f, 10f);
+			RegenerationValue = Utilites.MathEx.Clamp(serializable.RegenerationValue, 0f, 1f);
+			RegenerationArmor = Utilites.MathEx.Clamp(serializable.RegenerationArmor, 0f, 1f);
+			WeightReduction = Utilites.MathEx.Clamp(serializable.WeightReduction, 0f, 1f);
+			AttackReduction = Utilites.MathEx.Clamp(serializable.AttackReduction, 0f, 1f);
+			EnergyReduction = Utilites.MathEx.Clamp(serializable.EnergyReduction, 0f, 1f);
+			ShieldReduction = Utilites.MathEx.Clamp(serializable.ShieldReduction, 0f, 1f);
 
 			OnDataDeserialized(serializable, loader);
 		}

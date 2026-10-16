@@ -41,18 +41,18 @@ namespace GameDatabase.DataModel
 		{
 			AmmunitionClass = serializable.AmmunitionClass;
 			DamageType = serializable.DamageType;
-			Impulse = UnityEngine.Mathf.Clamp(serializable.Impulse, 0f, 10f);
-			Recoil = UnityEngine.Mathf.Clamp(serializable.Recoil, 0f, 10f);
-			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 1000f);
+			Impulse = Utilites.MathEx.Clamp(serializable.Impulse, 0f, 10f);
+			Recoil = Utilites.MathEx.Clamp(serializable.Recoil, 0f, 10f);
+			Size = Utilites.MathEx.Clamp(serializable.Size, 0f, 1000f);
 			InitialPosition = serializable.InitialPosition;
-			AreaOfEffect = UnityEngine.Mathf.Clamp(serializable.AreaOfEffect, 0f, 1000f);
-			Damage = UnityEngine.Mathf.Clamp(serializable.Damage, 0f, 1E+09f);
-			Range = UnityEngine.Mathf.Clamp(serializable.Range, 0f, 1000f);
-			Velocity = UnityEngine.Mathf.Clamp(serializable.Velocity, 0f, 1000f);
-			LifeTime = UnityEngine.Mathf.Clamp(serializable.LifeTime, 0f, 1E+09f);
-			HitPoints = UnityEngine.Mathf.Clamp(serializable.HitPoints, 0, 999999999);
+			AreaOfEffect = Utilites.MathEx.Clamp(serializable.AreaOfEffect, 0f, 1000f);
+			Damage = Utilites.MathEx.Clamp(serializable.Damage, 0f, 1E+09f);
+			Range = Utilites.MathEx.Clamp(serializable.Range, 0f, 1000f);
+			Velocity = Utilites.MathEx.Clamp(serializable.Velocity, 0f, 1000f);
+			LifeTime = Utilites.MathEx.Clamp(serializable.LifeTime, 0f, 1E+09f);
+			HitPoints = Utilites.MathEx.Clamp(serializable.HitPoints, 0, 999999999);
 			IgnoresShipVelocity = serializable.IgnoresShipVelocity;
-			EnergyCost = UnityEngine.Mathf.Clamp(serializable.EnergyCost, 0f, 1E+09f);
+			EnergyCost = Utilites.MathEx.Clamp(serializable.EnergyCost, 0f, 1E+09f);
 			CoupledAmmunition = loader?.GetAmmunitionObsolete(new ItemId<AmmunitionObsolete>(serializable.CoupledAmmunitionId)) ?? AmmunitionObsolete.DefaultValue;
 			Color = new ColorData(serializable.Color);
 			FireSound = new AudioClipId(serializable.FireSound);
@@ -68,7 +68,7 @@ namespace GameDatabase.DataModel
 		public float Impulse;
 		public float Recoil;
 		public float Size;
-		public UnityEngine.Vector2 InitialPosition;
+		public GameDatabase.Model.Vector2Data InitialPosition;
 		public float AreaOfEffect;
 		public float Damage;
 		public float Range;

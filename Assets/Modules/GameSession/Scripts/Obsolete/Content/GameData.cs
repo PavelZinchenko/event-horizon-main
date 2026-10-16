@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameModel.Serialization;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class GameData : ISerializableDataObsolete
 	{
-        [Inject]
 		public GameData(byte[] buffer = null)
         {
             _seed = (int)System.DateTime.Now.Ticks;
@@ -108,14 +106,14 @@ namespace Session.ContentObsolete
             var version = Helpers.DeserializeInt(buffer, ref index);
             if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
             {
-                UnityEngine.Debug.Log("GameData: incorrect data version - " + version);
+                GameDiagnostics.Trace.Log("GameData: incorrect data version - " + version);
                 throw new ArgumentException();
             }
 
             _seed = Helpers.DeserializeInt(buffer, ref index);
             _gameStartTime = Helpers.DeserializeLong(buffer, ref index);
 
-            UnityEngine.Debug.Log("Start time: " + _gameStartTime);
+            GameDiagnostics.Trace.Log("Start time: " + _gameStartTime);
 
             _supplyShipStartTime = Helpers.DeserializeLong(buffer, ref index);
             _totalPlayTime = Helpers.DeserializeLong(buffer, ref index);

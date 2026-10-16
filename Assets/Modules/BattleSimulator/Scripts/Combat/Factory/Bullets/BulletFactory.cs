@@ -489,7 +489,7 @@ namespace Combat.Factory
             {
                 if (trigger.VisualEffect == null) return;
 
-                var color = trigger.ColorMode.Apply(trigger.Color, _factory._stats.Color);
+                var color = trigger.ColorMode.Apply(trigger.Color.ToUnity(), _factory._stats.Color);
                 var size = trigger.Size > 0 ? trigger.Size : 1.0f;
 
                 if (condition == ConditionType.OnCollide && !trigger.UseBulletPosition)
@@ -517,7 +517,7 @@ namespace Combat.Factory
             {
                 if (trigger.VisualEffect == null) return;
 
-                var color = trigger.ColorMode.Apply(trigger.Color, _factory._stats.Color);
+                var color = trigger.ColorMode.Apply(trigger.Color.ToUnity(), _factory._stats.Color);
                 var size = trigger.Size > 0 ? trigger.Size : 1.0f;
 
                 if (condition == ConditionType.OnCollide)
@@ -538,7 +538,7 @@ namespace Combat.Factory
                     return factory;
 
                 var stats = _factory._statModifier;
-                stats.Color = trigger.ColorMode.Apply(trigger.Color, _factory._stats.Color);
+                stats.Color = trigger.ColorMode.Apply(trigger.Color.ToUnity(), _factory._stats.Color).ToData();
                 if (trigger.PowerMultiplier > 0)
                 {
                     stats.DamageMultiplier *= trigger.PowerMultiplier;

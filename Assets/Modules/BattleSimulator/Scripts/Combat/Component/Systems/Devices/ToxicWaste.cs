@@ -17,7 +17,7 @@ namespace Combat.Component.Systems.Devices
         {
 			DeviceClass = deviceSpec.DeviceClass;
             _unit = unit;
-            _color = deviceSpec.Color;
+            _color = deviceSpec.Color.ToUnity();
             _damage = deviceSpec.Power*damageMultiplier;
             _lifetime = deviceSpec.Lifetime;
             _size = deviceSpec.Size;

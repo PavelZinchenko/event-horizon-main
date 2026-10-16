@@ -5,13 +5,11 @@ using Database.Legacy;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
 using GameModel.Serialization;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class StatisticsData : ISerializableDataObsolete
 	{
-        [Inject]
 		public StatisticsData(byte[] buffer = null)
 		{
 			IsChanged = true;
@@ -67,7 +65,7 @@ namespace Session.ContentObsolete
 			var version = Helpers.DeserializeInt(buffer, ref index);
 			if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
 			{
-				UnityEngine.Debug.Log("StatisticsData: incorrect data version");
+				GameDiagnostics.Trace.Log("StatisticsData: incorrect data version");
                 throw new ArgumentException();
             }
 
@@ -97,7 +95,7 @@ namespace Session.ContentObsolete
 		
 		private static IEnumerable<byte> Upgrade_3()
 		{
-			UnityEngine.Debug.Log("StatisticsData.Upgrade_3");
+			GameDiagnostics.Trace.Log("StatisticsData.Upgrade_3");
 			
 			int index = 0;
 			
@@ -113,7 +111,7 @@ namespace Session.ContentObsolete
 
         private static IEnumerable<byte> Upgrade_3_4(byte[] buffer)
         {
-            UnityEngine.Debug.Log("StatisticsData.Upgrade_3_4");
+            GameDiagnostics.Trace.Log("StatisticsData.Upgrade_3_4");
 
             int index = 0;
 

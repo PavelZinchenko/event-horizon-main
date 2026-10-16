@@ -16,7 +16,7 @@ namespace Constructor.Ships.Modification
 
         public string GetDescription(ILocalization localization)
         {
-            return localization.GetString("$Ship_Lightweight", UnityEngine.Mathf.RoundToInt(-_value.Bonus * 100).ToString());
+            return localization.GetString("$Ship_Lightweight", Utilites.MathEx.RoundToInt(-_value.Bonus * 100).ToString());
         }
 
         public void Apply(ref ShipBaseStats ship)

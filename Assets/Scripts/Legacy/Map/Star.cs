@@ -68,7 +68,7 @@ public class Star : MonoBehaviour
 		StarObject.transform.localScale = Vector3.one * Size * 0.2f;
         _miniObjectScale = Vector3.one*Size*(star.IsVisited ? 0.4f : 0.2f);
         MiniObject.transform.localScale = _miniObjectScale;
-		var color = star.Region.Faction.Color;
+		var color = star.Region.Faction.Color.ToUnity();
 
 		MiniObject.GetComponent<Renderer>().material.color = star.IsVisited ? (Color)color : UnknownStarColor;
 

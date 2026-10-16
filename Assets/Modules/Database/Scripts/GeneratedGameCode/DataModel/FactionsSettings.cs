@@ -28,8 +28,8 @@ namespace GameDatabase.DataModel
 			var variableResolver = new VariableResolver(this);
 			_starbaseInitialDefense = new Expressions.IntToInt(serializable.StarbaseInitialDefense, 1, 100000, variableResolver) { ParamName1 = "distance" };
 			StarbaseInitialDefense = _starbaseInitialDefense.Evaluate;
-			StarbaseMinDefense = UnityEngine.Mathf.Clamp(serializable.StarbaseMinDefense, 1, 2147483647);
-			DefenseLossPerEnemyDefeated = UnityEngine.Mathf.Clamp(serializable.DefenseLossPerEnemyDefeated, 0, 2147483647);
+			StarbaseMinDefense = Utilites.MathEx.Clamp(serializable.StarbaseMinDefense, 1, 2147483647);
+			DefenseLossPerEnemyDefeated = Utilites.MathEx.Clamp(serializable.DefenseLossPerEnemyDefeated, 0, 2147483647);
 
 			OnDataDeserialized(serializable, loader);
 		}

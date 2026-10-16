@@ -1,0 +1,16 @@
+{
+    "name": "SecurityStub.Crypto",
+    "rootNamespace": "Security",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "LICENSE_OPENSOURCE"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

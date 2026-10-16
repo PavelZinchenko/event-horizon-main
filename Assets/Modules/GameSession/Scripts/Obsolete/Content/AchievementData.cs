@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameModel.Serialization;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class AchievementData : ISerializableDataObsolete
     {
-        [Inject]
         public AchievementData(byte[] buffer = null)
         {
             IsChanged = true;
@@ -59,7 +57,7 @@ namespace Session.ContentObsolete
             var version = Helpers.DeserializeInt(buffer, ref index);
             if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
             {
-                UnityEngine.Debug.Log("AchievementData: incorrect data version");
+                GameDiagnostics.Trace.Log("AchievementData: incorrect data version");
                 throw new ArgumentException();
             }
 
@@ -80,7 +78,7 @@ namespace Session.ContentObsolete
 
         private static IEnumerable<byte> Upgrade_3()
         {
-            UnityEngine.Debug.Log("AchievementData.Upgrade_3");
+            GameDiagnostics.Trace.Log("AchievementData.Upgrade_3");
 
             var version = 3;
             foreach (var value in Helpers.Serialize(version))

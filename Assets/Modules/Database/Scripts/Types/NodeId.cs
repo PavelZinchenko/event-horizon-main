@@ -8,7 +8,7 @@ namespace GameDatabase.Model
     {
         public NodeId(int id)
         {
-            _id = UnityEngine.Mathf.Clamp(id, 0, 999999);
+            _id = Utilites.MathEx.Clamp(id, 0, 999999);
         }
 
         public static implicit operator NodeId(int value)

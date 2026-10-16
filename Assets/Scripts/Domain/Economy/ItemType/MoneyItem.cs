@@ -21,7 +21,7 @@ namespace Economy.ItemType
         public string Description => string.Empty;
         public SpriteId Icon => new("Textures/GUI/credit", SpriteId.Type.Default);
         public Price Price => Price.Common(1);
-        public Color Color => UiTheme.Current.GetCurrencyColor(Currency.Credits);
+        public ColorData Color => UiTheme.Current.GetCurrencyColor(Currency.Credits).ToData();
         public ItemQuality Quality => ItemQuality.Common;
 
         public void Consume(int amount)

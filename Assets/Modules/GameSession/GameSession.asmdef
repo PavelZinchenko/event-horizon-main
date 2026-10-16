@@ -3,7 +3,6 @@
     "rootNamespace": "",
     "references": [
         "Diagnostics",
-        "Zenject",
         "CommonComponents",
         "Database",
         "ShipConstructor",
@@ -17,5 +16,5 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
-    "noEngineReferences": false
+    "noEngineReferences": true
 }

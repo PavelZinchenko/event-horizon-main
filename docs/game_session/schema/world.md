@@ -51,7 +51,7 @@ The three bitsets replaced the v1 `StarData` map in v2; see [v1.0 → v2.0](../s
 | `LastPlayerPosition` | The previous star. A runtime field of the facade: not saved, 0 after every load or new game. | — |
 | `MapScaleFactor`, `StarScaleFactor` | Get and set the two zoom fields. | — |
 | `IsVisited(starId)`, `SetVisited(starId)` | Read and add a `DiscoveredStars` bit. | — |
-| `FurthestVisitedStar` | `DiscoveredStars.LastIndex`: the highest visited star ID ([StarMapData.cs:78](../../../Assets/Modules/GameSession/Scripts/Facade/Content/StarMapData.cs#L78)). Star IDs are assigned in square rings around the center ([StarLayout.cs:27](../../../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L27)), so a higher ID is on the same or an outer ring. The value therefore serves as a progress measure. | — |
+| `FurthestVisitedStar` | `DiscoveredStars.LastIndex`: the highest visited star ID ([StarMapData.cs:78](../../../Assets/Modules/GameSession/Scripts/Facade/Content/StarMapData.cs#L78)). Star IDs are assigned in square rings around the center ([StarLayout.cs:27](../../../Assets/Modules/CommonComponents/Scripts/Galaxy/StarLayout.cs#L28)), so a higher ID is on the same or an outer ring. The value therefore serves as a progress measure. | — |
 | `GetEnemy(starId)`, `SetEnemy(starId, occupant)` | Read and write the occupant state. | `NewStarSecuredSignal(starId)`; see below. |
 | `GetPlanetData`, `SetPlanetData` | Read (default 0) and write a planet's bits. | — |
 | `GetBookmark`, `HasBookmark`, `SetBookmark` | Read (default `""`) and write. An empty or `null` text removes the bookmark. | — |

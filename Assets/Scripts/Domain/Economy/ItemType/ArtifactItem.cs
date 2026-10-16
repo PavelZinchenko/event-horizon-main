@@ -21,7 +21,7 @@ namespace Economy.ItemType
         public string Name { get { return _localization.GetString(_questItem.Name); } }
         public string Description { get { return _localization.GetString(_questItem.Description); } }
         public SpriteId Icon => _questItem.Icon;
-        public Color Color { get { return _questItem.Color; } }
+        public ColorData Color { get { return _questItem.Color; } }
         public Price Price { get { return Price.Common(_questItem.Price); } }
         public ItemQuality Quality { get { return ItemQuality.High; } }
 

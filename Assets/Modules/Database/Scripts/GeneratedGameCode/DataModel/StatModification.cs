@@ -25,12 +25,12 @@ namespace GameDatabase.DataModel
 		private StatModification(StatModificationSerializable serializable, Database.Loader loader)
 		{
 			Type = serializable.Type;
-			Gray3 = UnityEngine.Mathf.Clamp(serializable.Gray3, -3.402823E+38f, 3.402823E+38f);
-			Gray2 = UnityEngine.Mathf.Clamp(serializable.Gray2, -3.402823E+38f, 3.402823E+38f);
-			Gray1 = UnityEngine.Mathf.Clamp(serializable.Gray1, -3.402823E+38f, 3.402823E+38f);
-			Green = UnityEngine.Mathf.Clamp(serializable.Green, -3.402823E+38f, 3.402823E+38f);
-			Purple = UnityEngine.Mathf.Clamp(serializable.Purple, -3.402823E+38f, 3.402823E+38f);
-			Gold = UnityEngine.Mathf.Clamp(serializable.Gold, -3.402823E+38f, 3.402823E+38f);
+			Gray3 = Utilites.MathEx.Clamp(serializable.Gray3, -3.402823E+38f, 3.402823E+38f);
+			Gray2 = Utilites.MathEx.Clamp(serializable.Gray2, -3.402823E+38f, 3.402823E+38f);
+			Gray1 = Utilites.MathEx.Clamp(serializable.Gray1, -3.402823E+38f, 3.402823E+38f);
+			Green = Utilites.MathEx.Clamp(serializable.Green, -3.402823E+38f, 3.402823E+38f);
+			Purple = Utilites.MathEx.Clamp(serializable.Purple, -3.402823E+38f, 3.402823E+38f);
+			Gold = Utilites.MathEx.Clamp(serializable.Gold, -3.402823E+38f, 3.402823E+38f);
 
 			OnDataDeserialized(serializable, loader);
 		}

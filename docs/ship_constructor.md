@@ -4,7 +4,7 @@ The ShipConstructor module is the ship model of the game. It describes a ship as
 
 | | |
 | --- | --- |
-| Assembly | `ShipConstructor` ([ShipConstructor.asmdef](../Assets/Modules/ShipConstructor/ShipConstructor.asmdef)). References: Database, CommonComponents, Localization, Diagnostics, Utilites. |
+| Assembly | `ShipConstructor` ([ShipConstructor.asmdef](../Assets/Modules/ShipConstructor/ShipConstructor.asmdef)). References: Database, CommonComponents, Localization.Abstractions, Diagnostics, Utilites. `noEngineReferences: true` ([Engine-free modules](architecture.md#engine-free-modules)). |
 | Namespaces | `Constructor` (component data, builder), `Constructor.Component`, `Constructor.Model` (stats, layout), `Constructor.Modification` (component modifications), `Constructor.Ships`, `Constructor.Ships.Modification` (perks), `Constructor.Satellites`, `Constructor.Extensions`, `Constructor.Detail` (builder output), `Maths`. `ModificationFactory` is in the global namespace. |
 | Source | [`Assets/Modules/ShipConstructor/Scripts/`](../Assets/Modules/ShipConstructor/Scripts/) (66 files, about 5,600 lines) |
 | Referenced by | BattleSimulator, GameSession, Gui (component list), ShipEditor, GalaxyMap (reference not used), and 84 files of the application layer. |
@@ -110,7 +110,7 @@ IShip  (CommonShip / EnemyShip / ArenaShip / EditorModeShip)
 
 | Class | Created by | Components | Special behaviour |
 | --- | --- | --- | --- |
-| `CommonShip` | Session load (`ShipInfo.ToShip`), crafting (`Technology.CreateItem`), market, outposts, turrets | `ObservableCollection`; a change sets `DataChanged` | Editable name. From a `ShipBuild`, it creates `CommonSatellite` objects and marks every component locked. `RandomColor` builds get a random HSV colour from `UnityEngine.Random`. |
+| `CommonShip` | Session load (`ShipInfo.ToShip`), crafting (`Technology.CreateItem`), market, outposts, turrets | `ObservableCollection`; a change sets `DataChanged` | Editable name. From a `ShipBuild`, it creates `CommonSatellite` objects and marks every component locked. `RandomColor` builds get a random HSV colour from a static `RandomState` (PCG) seeded from the tick count. |
 | `EnemyShip` | Enemy fleets (`ShipExtensions.Create`), challenges, exploration | As `CommonShip` | `ExtraThreatLevel` = build `DifficultyClass`. When that is not `Default`, `CreateBuilder` installs an `EnemyComponentConverter` seeded by the experience value. |
 | `ArenaShip` | `ArenaFleet` (offline multiplayer) | Copy of the source list | Copies name, components, and satellites only. Experience starts at 0 and the colour is default ([SC4](issues/ship_constructor.md#sc4-arena-ships-drop-experience-and-colour)). `CreateBuilder` multiplies armor, shield, damage, and ramming by the arena power multiplier. |
 | `EditorModeShip` | ShipEditor database mode | Lazy list from the build; `Locked` cleared | `Name` is the build ID. Every collection change writes the build to its JSON file through `IDatabase.SaveShipBuild`. |

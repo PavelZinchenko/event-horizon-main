@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameModel.Serialization;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class QuestData : ISerializableDataObsolete
     {
-        [Inject]
         public QuestData(byte[] buffer = null)
         {
             IsChanged = true;
@@ -187,7 +185,7 @@ namespace Session.ContentObsolete
         public void SetFactionRelations(int starId, int value)
         {
             IsChanged = true;
-            _factionRelations[starId] = UnityEngine.Mathf.Clamp(value, -100, 100);
+            _factionRelations[starId] = Utilites.MathEx.Clamp(value, -100, 100);
         }
 
         public int GetCharacterRelations(int characterId)
@@ -199,7 +197,7 @@ namespace Session.ContentObsolete
         public void SetCharacterRelations(int characterId, int value)
         {
             IsChanged = true;
-            _characterRelations[characterId] = UnityEngine.Mathf.Clamp(value, -100, 100);
+            _characterRelations[characterId] = Utilites.MathEx.Clamp(value, -100, 100);
         }
 
         public void Reset()
@@ -270,7 +268,7 @@ namespace Session.ContentObsolete
             var version = Helpers.DeserializeInt(buffer, ref index);
             if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
             {
-                UnityEngine.Debug.Log("QuestData: incorrect data version");
+                GameDiagnostics.Trace.Log("QuestData: incorrect data version");
                 throw new ArgumentException();
             }
 

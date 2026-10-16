@@ -21,7 +21,7 @@ namespace Combat.Component.Systems.Devices
 
             _ship = ship;
             _energyCost = deviceSpec.EnergyConsumption;
-            _color = deviceSpec.Color;
+            _color = deviceSpec.Color.ToUnity();
             _factory = factory;
             _lifetime = deviceSpec.Lifetime;
             _range = deviceSpec.Range * Mathf.Sqrt(_ship.Body.Scale);

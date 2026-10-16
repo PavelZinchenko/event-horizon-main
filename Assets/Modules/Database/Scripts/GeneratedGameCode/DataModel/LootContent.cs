@@ -124,7 +124,7 @@ namespace GameDatabase.DataModel
   		public LootContent_SomeMoney(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			ValueRatio = UnityEngine.Mathf.Clamp(serializable.ValueRatio, 0.001f, 1000f);
+			ValueRatio = Utilites.MathEx.Clamp(serializable.ValueRatio, 0.001f, 1000f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -145,8 +145,8 @@ namespace GameDatabase.DataModel
   		public LootContent_Fuel(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
-			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
+			MinAmount = Utilites.MathEx.Clamp(serializable.MinAmount, 0, 999999999);
+			MaxAmount = Utilites.MathEx.Clamp(serializable.MaxAmount, 0, 999999999);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -168,8 +168,8 @@ namespace GameDatabase.DataModel
   		public LootContent_Money(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
-			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
+			MinAmount = Utilites.MathEx.Clamp(serializable.MinAmount, 0, 999999999);
+			MaxAmount = Utilites.MathEx.Clamp(serializable.MaxAmount, 0, 999999999);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -191,8 +191,8 @@ namespace GameDatabase.DataModel
   		public LootContent_Stars(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
-			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
+			MinAmount = Utilites.MathEx.Clamp(serializable.MinAmount, 0, 999999999);
+			MaxAmount = Utilites.MathEx.Clamp(serializable.MaxAmount, 0, 999999999);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -233,9 +233,9 @@ namespace GameDatabase.DataModel
   		public LootContent_RandomComponents(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
-			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
-			ValueRatio = UnityEngine.Mathf.Clamp(serializable.ValueRatio, 0.001f, 1000f);
+			MinAmount = Utilites.MathEx.Clamp(serializable.MinAmount, 0, 999999999);
+			MaxAmount = Utilites.MathEx.Clamp(serializable.MaxAmount, 0, 999999999);
+			ValueRatio = Utilites.MathEx.Clamp(serializable.ValueRatio, 0.001f, 1000f);
 			Factions = RequiredFactions.Create(serializable.Factions, loader);
 
             OnDataDeserialized(serializable, loader);
@@ -260,8 +260,8 @@ namespace GameDatabase.DataModel
   		public LootContent_RandomItems(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
-			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
+			MinAmount = Utilites.MathEx.Clamp(serializable.MinAmount, 0, 999999999);
+			MaxAmount = Utilites.MathEx.Clamp(serializable.MaxAmount, 0, 999999999);
 			Items = new ImmutableCollection<LootItem>(serializable.Items?.Select(item => LootItem.Create(item, loader)));
 
             OnDataDeserialized(serializable, loader);
@@ -330,8 +330,8 @@ namespace GameDatabase.DataModel
 			QuestItem = loader?.GetQuestItem(new ItemId<QuestItem>(serializable.ItemId)) ?? QuestItem.DefaultValue;
 			if (loader != null && QuestItem == null)
 			    throw new DatabaseException("MutableObjectTemplate.QuestItem cannot be null - " + serializable.ItemId);
-			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
-			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
+			MinAmount = Utilites.MathEx.Clamp(serializable.MinAmount, 0, 999999999);
+			MaxAmount = Utilites.MathEx.Clamp(serializable.MaxAmount, 0, 999999999);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -403,8 +403,8 @@ namespace GameDatabase.DataModel
 			Component = loader?.GetComponent(new ItemId<Component>(serializable.ItemId)) ?? Component.DefaultValue;
 			if (loader != null && Component == null)
 			    throw new DatabaseException("MutableObjectTemplate.Component cannot be null - " + serializable.ItemId);
-			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
-			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
+			MinAmount = Utilites.MathEx.Clamp(serializable.MinAmount, 0, 999999999);
+			MaxAmount = Utilites.MathEx.Clamp(serializable.MaxAmount, 0, 999999999);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -450,8 +450,8 @@ namespace GameDatabase.DataModel
   		public LootContent_ResearchPoints(LootContentSerializable serializable, Database.Loader loader)
             : base(serializable, loader)
         {
-			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
-			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
+			MinAmount = Utilites.MathEx.Clamp(serializable.MinAmount, 0, 999999999);
+			MaxAmount = Utilites.MathEx.Clamp(serializable.MaxAmount, 0, 999999999);
 			Factions = RequiredFactions.Create(serializable.Factions, loader);
 
             OnDataDeserialized(serializable, loader);
@@ -478,8 +478,8 @@ namespace GameDatabase.DataModel
 			Satellite = loader?.GetSatellite(new ItemId<Satellite>(serializable.ItemId)) ?? Satellite.DefaultValue;
 			if (loader != null && Satellite == null)
 			    throw new DatabaseException("MutableObjectTemplate.Satellite cannot be null - " + serializable.ItemId);
-			MinAmount = UnityEngine.Mathf.Clamp(serializable.MinAmount, 0, 999999999);
-			MaxAmount = UnityEngine.Mathf.Clamp(serializable.MaxAmount, 0, 999999999);
+			MinAmount = Utilites.MathEx.Clamp(serializable.MinAmount, 0, 999999999);
+			MaxAmount = Utilites.MathEx.Clamp(serializable.MaxAmount, 0, 999999999);
 
             OnDataDeserialized(serializable, loader);
         }

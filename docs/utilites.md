@@ -4,12 +4,12 @@ The Utilites module holds small, dependency-free building blocks: inventory coll
 
 | | |
 | --- | --- |
-| Assembly | `Utilites` ([Utilites.asmdef](../Assets/ModulesShared/Utilites/Utilites.asmdef)). No references. Auto-referenced. |
-| Namespaces | `Utilites.Collections` (inventories, `SecureList`), `Utilites` (random), `Session.Utils` (serialization). `ObscuredInt` and `ObscuredLong` are in the global namespace. |
+| Assembly | `Utilites` ([Utilites.asmdef](../Assets/ModulesShared/Utilites/Utilites.asmdef)). No references. `noEngineReferences: true` ([Engine-free modules](architecture.md#engine-free-modules)). Auto-referenced. |
+| Namespaces | `Utilites.Collections` (inventories, `SecureList`), `Utilites` (random, `MathEx`), `Session.Utils` (serialization). `ObscuredInt` and `ObscuredLong` are in the global namespace. |
 | Location | [`Assets/ModulesShared/Utilites/`](../Assets/ModulesShared/Utilites/), inside the `Assets/ModulesShared` Git submodule. |
-| Source | 24 files, about 2,000 lines, plus 2 test files |
+| Source | 25 files, about 2,050 lines, plus 2 test files |
 | Assemblies that reference it | BattleSimulator, CommonComponents, GalaxyMap, GameSession, Quests, ShipConstructor, Gui, ShipEditor, and the application (`Assets/Scripts`, through auto-reference). |
-| Tests | [`Tests/`](../Assets/ModulesShared/Utilites/Tests/) (`Utilites.Tests`, editor only): `CollectionsTests`, `PcgRandomTests`. Serialization tests are in GameSession ([list](game_session.md#tests-and-validation)). |
+| Tests | [`Tests/`](../Assets/ModulesShared/Utilites/Tests/) (`Utilites.Tests`, editor only; also run by `dotnet test`): `CollectionsTests`, `PcgRandomTests`. Serialization tests are in GameSession ([list](game_session.md#tests-and-validation)). |
 | Known issues | [Utilites issues](issues/utilites.md) |
 
 ## Contents
@@ -19,11 +19,12 @@ The Utilites module holds small, dependency-free building blocks: inventory coll
 3. [Inventories](#inventories)
 4. [SecureList](#securelist)
 5. [Random numbers](#random-numbers)
-6. [Obscured integers](#obscured-integers)
-7. [Serialization](#serialization)
-8. [Observable collections](#observable-collections)
-9. [Tests](#tests)
-10. [Change rules](#change-rules)
+6. [MathEx](#mathex)
+7. [Obscured integers](#obscured-integers)
+8. [Serialization](#serialization)
+9. [Observable collections](#observable-collections)
+10. [Tests](#tests)
+11. [Change rules](#change-rules)
 
 ## Shared code constraint
 
@@ -46,6 +47,7 @@ For this module the constraint is strict, because two kinds of output are persis
 | [Collections/SecureList.cs](../Assets/ModulesShared/Utilites/Collections/SecureList.cs) | `IList<T>` that stores items in shuffled slots behind masked indices. |
 | [Random/PcgRandomAlgorithm.cs](../Assets/ModulesShared/Utilites/Random/PcgRandomAlgorithm.cs) | PCG32 step, seeding, and stream selection. |
 | [Random/PcgRandom.cs](../Assets/ModulesShared/Utilites/Random/PcgRandom.cs) | `PcgRandom` class: seed and stream. |
+| [Math/MathEx.cs](../Assets/ModulesShared/Utilites/Math/MathEx.cs) | `MathEx`: engine-free replacement for the `UnityEngine.Mathf` members that engine-free code uses. |
 | [Random/RandomState.cs](../Assets/ModulesShared/Utilites/Random/RandomState.cs), [RandomStateExtensions.cs](../Assets/ModulesShared/Utilites/Random/RandomStateExtensions.cs) | `RandomState` struct and its `Next`, `NextUint`, `NextFloat`, `NextDouble`. |
 | [Security/ObscuredInt.cs](../Assets/ModulesShared/Utilites/Security/ObscuredInt.cs), [ObscuredLong.cs](../Assets/ModulesShared/Utilites/Security/ObscuredLong.cs) | Masked `int` and `long` values. |
 | [Serialization/](../Assets/ModulesShared/Utilites/Serialization/) (14 files) | Streams, the variable-length integer coder, `SessionDataReader` and `SessionDataWriter`, observable collections, `IDataChangedCallback`. |
@@ -91,7 +93,7 @@ The module implements PCG32 (permuted congruential generator, the `XSH RR` outpu
 | Type | State | Seeding | Use |
 | --- | --- | --- | --- |
 | `PcgRandom` (class) | `ulong` state and increment | `PcgRandom()` uses `Environment.TickCount`; `PcgRandom(seed)` uses the default stream; `PcgRandom(seed, sequence)` uses stream `sequence`. | Quests (`QuestCollection.CreateRandomWeighted`, random quest seeds in `NodeBuilder`), `QuestDataProvider`, `DatabaseMusicPlaylist`. |
-| `RandomState` (struct) | `ulong Value` only; always the default stream | `FromSeed(seed)`, `FromTickCount()` | `LayeredEffect` in combat, `HolidayManager` (holiday quest seeds). |
+| `RandomState` (struct) | `ulong Value` only; always the default stream | `FromSeed(seed)`, `FromTickCount()` | `StarLayout` star offsets (save-affecting), `LayeredEffect` in combat, `HolidayManager` (holiday quest seeds), `CommonShip` random colours, the Database expression random source. |
 
 Seeding follows the reference PCG code: start from 0, step once, add the seed, step once.
 
@@ -103,10 +105,26 @@ Output:
 | `Next()` | 0 to 2^31−1 | `NextUint() & 0x7FFFFFFF`. |
 | `NextDouble()` | [0, 1) | `NextUint() / 2^32`. 32 bits of precision. |
 | `NextFloat()` | [0, **1**] | `(NextUint() % (2^24 + 1)) / 2^24`. Can return exactly 1.0. See [UT2](issues/utilites.md#ut2-nextfloat-can-return-10). |
+| `InsideUnitCircle()` | Point with radius ≤ 1 | `r = sqrt(NextFloat())`, `angle = 2π·NextFloat()`; returns `(float x, float y)`. `StarLayout` uses it for star offsets, so a change moves every star in every save. |
 
 `RandomState` is a value type. Pass it by `ref` (the extension methods take `this ref`); a copy continues the same sequence independently.
 
 The project also uses `System.Random` and `UnityEngine.Random` in many places. `PcgRandom` gives the same sequence on every platform and runtime, which matters for seeded quest content. Some users (`QuestDataProvider`, `DatabaseMusicPlaylist`, `LayeredEffect`) seed it from the clock and do not need that property.
+
+## MathEx
+
+[`MathEx`](../Assets/ModulesShared/Utilites/Math/MathEx.cs) replaces `UnityEngine.Mathf` in engine-free code. Each member gives the same result as its `Mathf` counterpart, so a switch from `Mathf` to `MathEx` changes no game output.
+
+| Member | Behavior that must stay |
+| --- | --- |
+| `Clamp(float)`, `Clamp(int)`, `Clamp01` | Never throws. `System.Math.Clamp` throws when `min > max`, so do not use it as a replacement. |
+| `RoundToInt` | `(int)Math.Round(value)`: rounds half to even, like `Mathf.RoundToInt`. |
+| `Min`, `Max` (float, int) | Two-argument forms only. |
+| `Lerp` | Clamps `t` to [0, 1]. |
+| `Approximately` | The `Mathf.Approximately` formula. |
+| `Sqrt`, `PI`, `Deg2Rad`, `Rad2Deg` | `float` versions. |
+
+`Sin`, `Cos`, `Atan2`, `DeltaAngle`, and `PerlinNoise` are not in `MathEx`: only engine code uses them. Add a member only when engine-free code needs it, and match `Mathf` exactly. ExpressionParser does not reference Utilites; it has its own internal `MathCompat` ([Expression parser](expression_parser.md)).
 
 ## Obscured integers
 
@@ -163,7 +181,7 @@ All five are structs that hold a reference to the inner collection. Copying the 
 | `PcgRandomTests.PcgSeedDistributionTest` | Spread of first outputs over consecutive seeds, within a tolerance. |
 | `PcgRandomTests.PcgRandomTest` | Stream selection: `Sequence` round trip; different streams differ. |
 
-No test fixes reference outputs. A change in the algorithm would pass these tests and still change seeded content. Run them in the Unity Test Runner (EditMode, assembly `Utilites.Tests`).
+No test fixes reference outputs. A change in the algorithm would pass these tests and still change seeded content. Run them in the Unity Test Runner (EditMode, assembly `Utilites.Tests`) or with `dotnet test Tests~/EngineFree.Tests.csproj`.
 
 ## Change rules
 

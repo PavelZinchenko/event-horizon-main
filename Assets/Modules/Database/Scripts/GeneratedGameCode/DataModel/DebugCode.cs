@@ -24,7 +24,7 @@ namespace GameDatabase.DataModel
 
 		private DebugCode(DebugCodeSerializable serializable, Database.Loader loader)
 		{
-			Code = UnityEngine.Mathf.Clamp(serializable.Code, 0, 999999);
+			Code = Utilites.MathEx.Clamp(serializable.Code, 0, 999999);
 			Loot = LootContent.Create(serializable.Loot, loader);
 
 			OnDataDeserialized(serializable, loader);
