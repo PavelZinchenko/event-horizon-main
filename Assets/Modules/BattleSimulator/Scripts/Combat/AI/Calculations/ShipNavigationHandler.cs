@@ -118,7 +118,7 @@ namespace Combat.Ai.Calculations
 			//AboutToHit,
 		}
 
-		public static Status ChaseAndRam(IShip ship, IShip enemy, ShipControls controls, out float timeToHit, out float deltaAngle)
+		public static Status ChaseAndRam(IShip ship, IShip enemy, ShipControls controls, float areaWidth, float areaHeight, out float timeToHit, out float deltaAngle)
 		{
             deltaAngle = float.MaxValue;
             timeToHit = float.MaxValue;
@@ -128,7 +128,7 @@ namespace Combat.Ai.Calculations
 			var canHit = TryInterceptTarget(ship, enemy, out var target, out timeToHit);
 			var status = canHit ? Status.Chasing : Status.Following;
 
-			var direction = ship.Body.Position.Direction(target);
+			var direction = WrapDirection(ship.Body.Position, target, areaWidth, areaHeight);
 			var course = RotationHelpers.Angle(direction);
 			controls.Course = course;
 
