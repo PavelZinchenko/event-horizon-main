@@ -98,7 +98,7 @@ namespace Combat.Ai
 
 			_enemyUpdateCooldown = EnemyUpdateInterval;
 
-			var newEnemy = _scene.Ships.GetEnemyForMissile(_ship, 0, _attackRange, 360, true, true);
+			var newEnemy = _scene.Ships.GetEnemyForMissile(_ship, 0, _attackRange, 360, true, true, _scene.Settings.AreaWidth, _scene.Settings.AreaHeight);
 			if (newEnemy != _enemy)
 				_strategy = null;
 

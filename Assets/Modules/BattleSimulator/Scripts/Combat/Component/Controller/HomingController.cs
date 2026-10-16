@@ -27,7 +27,7 @@ namespace Combat.Component.Controller
 
             if (_timeFromLastUpdate > _targetUpdateCooldown)
             {
-                _target = _scene.Ships.GetEnemyForMissile(_unit, 0f, _maxRange*1.3f, 30f, false, false);
+                _target = _scene.Ships.GetEnemyForMissile(_unit, 0f, _maxRange*1.3f, 30f, false, false, _scene.Settings.AreaWidth, _scene.Settings.AreaHeight);
                 _timeFromLastUpdate = 0;
             }
             
