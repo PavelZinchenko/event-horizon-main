@@ -50,7 +50,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
             var isActive = context.Ship.Systems.All[_accelerationDeviceId].Active;
             if (!isActive && context.Ship.Stats.Energy.Percentage < minEnergy) return;
 
-            var distance = Helpers.Distance(context.Ship, context.TargetShip);
+            var distance = Helpers.DistanceWrap(context.Ship, context.TargetShip, context.Scene.Settings.AreaWidth, context.Scene.Settings.AreaHeight);
             if (distance < minDistance) return;
 
             context.Controls.ActivateSystem(_accelerationDeviceId);
