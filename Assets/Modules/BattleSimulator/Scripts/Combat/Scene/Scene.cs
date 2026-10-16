@@ -201,17 +201,10 @@ namespace Combat.Scene
 
         private void CheckBounds()
         {
-            if (_activePlayerShip == null)
-                return;
-
-            var center = _activePlayerShip.Body.Position;
-
             lock (_unitList.LockObject)
             {
                 foreach (var unit in _unitList.Items)
                 {
-                    if (unit == _activePlayerShip)
-                        continue;
                     if (unit.Body.Parent != null)
                         continue;
                     if (unit.Type.Class == UnitClass.Limb)
@@ -221,23 +214,23 @@ namespace Combat.Scene
 
                     var position = unit.Body.Position;
 
-                    while (position.x - center.x > 0.5f * _settings.AreaWidth)
+                    while (position.x > 0.5f * _settings.AreaWidth)
                     {
                         position.x -= _settings.AreaWidth;
                         changed = true;
                     }
-                    while (position.x - center.x < -0.5f * _settings.AreaWidth)
+                    while (position.x < -0.5f * _settings.AreaWidth)
                     {
                         position.x += _settings.AreaWidth;
                         changed = true;
                     }
 
-                    while (position.y - center.y > 0.5f * _settings.AreaHeight)
+                    while (position.y > 0.5f * _settings.AreaHeight)
                     {
                         position.y -= _settings.AreaHeight;
                         changed = true;
                     }
-                    while (position.y - center.y < -0.5f * _settings.AreaHeight)
+                    while (position.y < -0.5f * _settings.AreaHeight)
                     {
                         position.y += _settings.AreaHeight;
                         changed = true;
