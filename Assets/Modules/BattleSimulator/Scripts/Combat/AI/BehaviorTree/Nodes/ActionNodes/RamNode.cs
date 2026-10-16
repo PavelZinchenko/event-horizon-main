@@ -20,7 +20,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 
 		public NodeState Evaluate(Context context)
 		{
-			var status = ShipNavigationHandler.ChaseAndRam(context.Ship, context.TargetShip, context.Controls, out var timeToHit, out var deltaAngle);
+			var status = ShipNavigationHandler.ChaseAndRam(context.Ship, context.TargetShip, context.Controls, context.Scene.Settings.AreaWidth, context.Scene.Settings.AreaHeight, out var timeToHit, out var deltaAngle);
 
             if (timeToHit < 1.0f)
             {
