@@ -4,7 +4,8 @@ The Localization module turns localization keys into text in the player's langua
 
 | | |
 | --- | --- |
-| Assembly | `Localization` ([Localization.asmdef](../Assets/ModulesShared/Localization/Localization.asmdef)). References: AppConfiguration, CommonComponents, Database, Diagnostics, Unity.InputSystem, Zenject. |
+| Assembly | `Localization` ([Localization.asmdef](../Assets/ModulesShared/Localization/Localization.asmdef)). References: Localization.Abstractions, AppConfiguration, CommonComponents, Database, Diagnostics, Unity.InputSystem, Zenject. |
+| Abstractions | `Localization.Abstractions` ([`Abstractions/`](../Assets/ModulesShared/Localization/Abstractions/)): `ILocalization` and the XML data classes. References Database and CommonComponents. `noEngineReferences: true`, so engine-free modules such as ShipConstructor can use `ILocalization` ([Engine-free modules](architecture.md#engine-free-modules)). |
 | Namespace | `Services.Localization` |
 | Location | [`Assets/ModulesShared/Localization/`](../Assets/ModulesShared/Localization/), inside the `Assets/ModulesShared` Git submodule. |
 | Source | [`Scripts/Localization/`](../Assets/ModulesShared/Localization/Scripts/Localization/) |
@@ -56,7 +57,7 @@ The Localization module turns localization keys into text in the player's langua
 
 | File | Contents |
 | --- | --- |
-| [ILocalization.cs](../Assets/ModulesShared/Localization/Scripts/Localization/ILocalization.cs) | `ILocalization` (public API), XML data classes (`XmlLanguageInfo`, `XmlLocalizationList`, `XmlKeyValuePair`, `XmlLocalization`), `LocalizationException`, and `LocalizationChangedSignal`. |
+| [ILocalization.cs](../Assets/ModulesShared/Localization/Abstractions/ILocalization.cs) | `ILocalization` (public API), XML data classes (`XmlLanguageInfo`, `XmlLocalizationList`, `XmlKeyValuePair`, `XmlLocalization`), `LocalizationException`, and `LocalizationChangedSignal`. |
 | [LocalizationManager.cs](../Assets/ModulesShared/Localization/Scripts/Localization/LocalizationManager.cs) | `LocalizationManager`, the only `ILocalization` implementation. It holds the active and default dictionaries, selects the language, runs `Localize`, and fires the signal. |
 | [Localization.cs](../Assets/ModulesShared/Localization/Scripts/Localization/Localization.cs) | `Localization` (internal): one dictionary, key lookup, parameter expansion, nested keys, plural forms, and enumerations. |
 | [ResourceLoader.cs](../Assets/ModulesShared/Localization/Scripts/Localization/ResourceLoader.cs) | `ResourceLoader` (internal, static): reads the language list and the catalogs from Resources and from `IDatabase`. |
@@ -139,7 +140,7 @@ The language list only fills the settings dropdown. It does not limit which fold
 
 ## String catalogs
 
-Each language folder holds catalogs with this shape ([`XmlLocalization`](../Assets/ModulesShared/Localization/Scripts/Localization/ILocalization.cs#L50)):
+Each language folder holds catalogs with this shape ([`XmlLocalization`](../Assets/ModulesShared/Localization/Abstractions/ILocalization.cs#L50)):
 
 ```xml
 <resources>

@@ -1,4 +1,3 @@
-using UnityEngine;
 using System.Collections.Generic;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
@@ -35,7 +34,7 @@ namespace Constructor
 
 	public interface IWeaponPlatformData
 	{
-		Vector2 Position { get; }
+		Vector2Data Position { get; }
 		float Rotation { get; }
 		float Offset { get; }
         float Size { get; }
@@ -74,7 +73,7 @@ namespace Constructor
         public StatMultiplier HitPointsMultiplier;
         public StatMultiplier WeightMultiplier;
         public StatMultiplier EffectPowerMultiplier;
-        public Color? Color;
+        public ColorData? Color;
     }
 
     public interface IWeaponDataObsolete

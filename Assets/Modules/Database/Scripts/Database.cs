@@ -5,7 +5,6 @@ using System.Linq;
 using GameDatabase.DataModel;
 using GameDatabase.Storage;
 using GameDatabase.Model;
-using UnityEngine;
 
 namespace GameDatabase
 {
@@ -13,10 +12,18 @@ namespace GameDatabase
     {
         private IDataStorage _storage;
         private DatabaseContent _content;
-        private readonly IDataStorage _defaultStorage = new ResourceDatabaseStorage(DefaultPath);
-		private readonly IJsonSerializer _jsonSerializer = new UnityJsonSerializer();
+        private readonly IDataStorage _defaultStorage;
+        private readonly IJsonSerializer _jsonSerializer;
+        private readonly string _modsPath;
         private readonly List<ModInfo> _mods = new List<ModInfo>();
-        private const string DefaultPath = "Database";
+
+        // defaultStorage holds the built-in database. modsPath is the mods folder, or empty when the platform has no mods.
+        public Database(IDataStorage defaultStorage, IJsonSerializer jsonSerializer, string modsPath)
+        {
+            _defaultStorage = defaultStorage;
+            _jsonSerializer = jsonSerializer;
+            _modsPath = modsPath;
+        }
 
         public event Action<IDataStorage> DatabaseLoading;
         public event Action DatabaseLoaded;
@@ -41,7 +48,7 @@ namespace GameDatabase
             catch (Exception e)
             {
                 GameDiagnostics.Trace.LogError("invalid mod file - " + path);
-                Debug.LogException(e);
+                GameDiagnostics.Trace.LogException(e);
                 return false;
             }
 
@@ -52,14 +59,10 @@ namespace GameDatabase
         {
             _mods.Clear();
 
-#if UNITY_ANDROID && !UNITY_EDITOR
-            var path = Application.persistentDataPath + "/Mods/";
-#elif UNITY_STANDALONE || UNITY_EDITOR
-            var path = Application.dataPath + "/../Mods/";
-#else
-            var path = string.Empty;
-            return;
-#endif
+            if (string.IsNullOrEmpty(_modsPath))
+                return;
+
+            var path = _modsPath;
             try
             {
                 var info = new DirectoryInfo(path);
@@ -76,7 +79,7 @@ namespace GameDatabase
                     catch (Exception e)
                     {
                         GameDiagnostics.Trace.LogError("invalid database - " + directoryInfo.FullName);
-                        Debug.LogException(e);
+                        GameDiagnostics.Trace.LogException(e);
                     }
                 }
             }
@@ -94,7 +97,7 @@ namespace GameDatabase
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                GameDiagnostics.Trace.LogException(e);
             }
         }
 

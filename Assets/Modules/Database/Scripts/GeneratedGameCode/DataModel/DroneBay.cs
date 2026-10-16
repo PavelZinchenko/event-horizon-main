@@ -39,15 +39,15 @@ namespace GameDatabase.DataModel
 
 		public DroneBayStats(DroneBaySerializable serializable, Database.Loader loader)
 		{
-			EnergyConsumption = UnityEngine.Mathf.Clamp(serializable.EnergyConsumption, 0f, 1E+09f);
-			PassiveEnergyConsumption = UnityEngine.Mathf.Clamp(serializable.PassiveEnergyConsumption, 0f, 1E+09f);
-			Range = UnityEngine.Mathf.Clamp(serializable.Range, 1f, 1000f);
-			DamageMultiplier = UnityEngine.Mathf.Clamp(serializable.DamageMultiplier, 0.01f, 1000f);
-			DefenseMultiplier = UnityEngine.Mathf.Clamp(serializable.DefenseMultiplier, 0.01f, 1000f);
-			SpeedMultiplier = UnityEngine.Mathf.Clamp(serializable.SpeedMultiplier, 0.01f, 1000f);
-			BuildExtraCycles = UnityEngine.Mathf.Clamp(serializable.BuildExtraCycles, 0, 100);
+			EnergyConsumption = Utilites.MathEx.Clamp(serializable.EnergyConsumption, 0f, 1E+09f);
+			PassiveEnergyConsumption = Utilites.MathEx.Clamp(serializable.PassiveEnergyConsumption, 0f, 1E+09f);
+			Range = Utilites.MathEx.Clamp(serializable.Range, 1f, 1000f);
+			DamageMultiplier = Utilites.MathEx.Clamp(serializable.DamageMultiplier, 0.01f, 1000f);
+			DefenseMultiplier = Utilites.MathEx.Clamp(serializable.DefenseMultiplier, 0.01f, 1000f);
+			SpeedMultiplier = Utilites.MathEx.Clamp(serializable.SpeedMultiplier, 0.01f, 1000f);
+			BuildExtraCycles = Utilites.MathEx.Clamp(serializable.BuildExtraCycles, 0, 100);
 			ImprovedAi = serializable.ImprovedAi;
-			Capacity = UnityEngine.Mathf.Clamp(serializable.Capacity, 1, 1000);
+			Capacity = Utilites.MathEx.Clamp(serializable.Capacity, 1, 1000);
 			ActivationType = serializable.ActivationType;
 			LaunchSound = new AudioClipId(serializable.LaunchSound);
 			LaunchEffectPrefab = new PrefabId(serializable.LaunchEffectPrefab, PrefabId.Type.Effect);

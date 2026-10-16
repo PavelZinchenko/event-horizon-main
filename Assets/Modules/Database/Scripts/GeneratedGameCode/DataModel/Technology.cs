@@ -42,11 +42,11 @@ namespace GameDatabase.DataModel
 			loader.AddTechnology(serializable.Id, this);
 
 			Type = serializable.Type;
-			Price = UnityEngine.Mathf.Clamp(serializable.Price, 0, 10000);
+			Price = Utilites.MathEx.Clamp(serializable.Price, 0, 10000);
 			Hidden = serializable.Hidden;
 			Special = serializable.Special;
 			Dependencies = new ImmutableCollection<Technology>(serializable.Dependencies?.Select(item => loader.GetTechnology(new ItemId<Technology>(item), true)));
-			CustomCraftingLevel = UnityEngine.Mathf.Clamp(serializable.CustomCraftingLevel, 0, 2147483647);
+			CustomCraftingLevel = Utilites.MathEx.Clamp(serializable.CustomCraftingLevel, 0, 2147483647);
 
 			OnDataDeserialized(serializable, loader);
 		}

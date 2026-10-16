@@ -18,7 +18,7 @@ namespace Combat.Component.Systems.Devices
             _energyCost = deviceSpec.EnergyConsumption;
             _lifetime = deviceSpec.Lifetime;
             _hitPoints = decoyHitPoints;
-            _color = deviceSpec.Color;
+            _color = deviceSpec.Color.ToUnity();
             _factory = factory;
             _count = Mathf.RoundToInt(deviceSpec.Power);
             _range = deviceSpec.Range;

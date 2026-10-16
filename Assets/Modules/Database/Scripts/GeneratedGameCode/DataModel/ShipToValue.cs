@@ -25,7 +25,7 @@ namespace GameDatabase.DataModel
 		private ShipToValue(ShipToValueSerializable serializable, Database.Loader loader)
 		{
 			Ship = loader?.GetShip(new ItemId<Ship>(serializable.Ship)) ?? Ship.DefaultValue;
-			Value = UnityEngine.Mathf.Clamp(serializable.Value, 0, 2147483647);
+			Value = Utilites.MathEx.Clamp(serializable.Value, 0, 2147483647);
 
 			OnDataDeserialized(serializable, loader);
 		}

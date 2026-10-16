@@ -24,7 +24,7 @@ namespace GameDatabase.Extensions
 
         public static Money CraftingStars(this Satellite satellite)
         {
-            return UnityEngine.Mathf.Max(0, satellite.Layout.CellCount / 7 - 1);
+            return Utilites.MathEx.Max(0, satellite.Layout.CellCount / 7 - 1);
         }
 
         public static Money CraftingPrice(this Component component)

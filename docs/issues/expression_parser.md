@@ -27,7 +27,7 @@ The same rule blocks any external function whose name contains `_`.
 
 **Severity:** Medium. **Status:** Confirmed (latent).
 
-**Where.** `Variant.Parse` tries `int.TryParse` with `NumberStyles.Any` first ([Variant.cs:50](../../Assets/ExpressionParser/Runtime/Variant.cs#L50)). That style accepts `2.0` as the integer 2.
+**Where.** `Variant.Parse` tries `int.TryParse` with `NumberStyles.Any` first ([Variant.cs:49](../../Assets/ExpressionParser/Runtime/Variant.cs#L49)). That style accepts `2.0` as the integer 2.
 
 **Failure.** With `level = 3`:
 
@@ -45,7 +45,7 @@ A modder who writes `.0` to force float division gets integer division. The valu
 
 **Severity:** Low. **Status:** Confirmed (latent).
 
-**Where.** [VariantExpressionParser.cs:22](../../Assets/ExpressionParser/Runtime/VariantExpressionParser.cs#L22) to line 27. `<`, `<=`, and `!=` return the integer 1 or 0. `>`, `>=`, and `==` return a `bool`. `Variant ==` returns false when the two types differ and neither is a float ([Variant.cs:114](../../Assets/ExpressionParser/Runtime/Variant.cs#L114)).
+**Where.** [VariantExpressionParser.cs:28](../../Assets/ExpressionParser/Runtime/VariantExpressionParser.cs#L28) to line 33. `<`, `<=`, and `!=` return the integer 1 or 0. `>`, `>=`, and `==` return a `bool`. `Variant ==` returns false when the two types differ and neither is a float ([Variant.cs:113](../../Assets/ExpressionParser/Runtime/Variant.cs#L113)).
 
 **Failure.**
 
@@ -77,7 +77,7 @@ The guard in the second formula does not help, because `AND` does not short-circ
 
 **Severity:** Low. **Status:** Confirmed (latent).
 
-**Where.** `Variant.Sign` and `FloatExpressionParser.Sign` call `Mathf.Sign` ([Variant.cs:212](../../Assets/ExpressionParser/Runtime/Variant.cs#L212), [FloatExpressionParser.cs:48](../../Assets/ExpressionParser/Runtime/FloatExpressionParser.cs#L48)). `Mathf.Sign(0f)` is 1. The code comment promises 0.
+**Where.** `Variant.Sign` and `FloatExpressionParser.Sign` call `MathCompat.Sign` ([Variant.cs:214](../../Assets/ExpressionParser/Runtime/Variant.cs#L214), [FloatExpressionParser.cs:54](../../Assets/ExpressionParser/Runtime/FloatExpressionParser.cs#L54)). It copies `Mathf.Sign`, so `SIGN(0.0)` is 1. The code comment promises 0.
 
 **Failure.** `SIGN(0.5 - 0.5)` is 1. `SIGN(0)` and `SIGN(0.0)` are 0, but only because both literals are integers ([EP2](#ep2-a-literal-with-0-is-an-integer)).
 

@@ -36,9 +36,9 @@ namespace ViewModel
 			_faction = faction;
 			var unlocked = _starMapManager.IsFactionDiscovered(faction) || _research.AnyResearchPointsObtained(faction);
 
-			var color = faction.Color;
+			var color = faction.Color.ToUnity();
 			Icon.color = color;
-			Background.color = new Color(color.R, color.G, color.B, 0.5f);
+			Background.color = new Color(color.r, color.g, color.b, 0.5f);
 			Name.text = unlocked ? _localization.GetString(faction.Name) : "???";
 			var researchPoints = _research.GetAvailablePoints(faction);
 			ResearchPointPanel.gameObject.SetActive(researchPoints > 0);

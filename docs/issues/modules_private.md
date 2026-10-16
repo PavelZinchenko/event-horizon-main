@@ -117,7 +117,7 @@ Items 2 and 3 matter only after [MP1](#mp1-the-purchase-backup-is-never-written)
 
 **Severity:** Low. **Status:** Confirmed.
 
-**Where.** [EncryptedStream.cs:22](../../Assets/ModulesPrivate/Security/Scripts/EncryptedStream.cs#L22). The stream stops one byte before the end and sums the bytes into `_checksumm`, but never reads or compares the last byte.
+**Where.** [EncryptedStream.cs:22](../../Assets/ModulesPrivate/Security/Crypto/EncryptedStream.cs#L22). The stream stops one byte before the end and sums the bytes into `_checksumm`, but never reads or compares the last byte.
 
 **Failure.** A damaged legacy packed mod is passed to the decompressor and the parser. It fails later with a less useful error, or loads with damaged content.
 
@@ -210,6 +210,6 @@ Items 2 and 3 matter only after [MP1](#mp1-the-purchase-backup-is-never-written)
 
 **Problem.** Authenticated packed mods are decrypted on the device, so every commercial build contains the RSA private key in obfuscated form. A key extracted from any build decrypts every mod made for that key. The key cannot be rotated without breaking all existing mods, because the format has no key ID.
 
-**Evidence.** [ModPrivateKey.cs](../../Assets/ModulesPrivate/Security/Scripts/ModPrivateKey.cs); [Database Editor: What it protects](../database/editor.md#what-it-protects).
+**Evidence.** [ModPrivateKey.cs](../../Assets/ModulesPrivate/Security/Crypto/ModPrivateKey.cs); [Database Editor: What it protects](../database/editor.md#what-it-protects).
 
 **Direction.** Treat the encryption as protection against casual copying only, and say so in the mod documentation. Add a key ID to the next format version, so a leaked key can be replaced while old mods still load.

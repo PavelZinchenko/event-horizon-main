@@ -4,6 +4,7 @@
     "references": [
         "CommonComponents",
         "Database",
+        "Database.Unity",
         "Zenject",
         "ServicesFacade"
     ],

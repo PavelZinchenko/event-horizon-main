@@ -26,7 +26,7 @@ namespace Economy.ItemType
         public string Description { get { return string.Empty; } }
         public SpriteId Icon => new("Textures/GUI/starmap", SpriteId.Type.Default);
         public Price Price { get { return Price.Common(Distance.Credits(_star.Level)); } }
-        public Color Color { get { return Color.cyan; } }
+        public ColorData Color { get { return ColorData.Cyan; } }
         public ItemQuality Quality { get { return ItemQuality.Medium; } }
 
         public void Consume(int amount)

@@ -26,7 +26,7 @@ namespace Economy.ItemType
         public string Description { get { return string.Empty; } }
         public SpriteId Icon => _ship.ModelImage;
         public Price Price { get { return Price.Common(_ship.Layout.CellCount * _ship.Layout.CellCount); } }
-        public Color Color { get { return Gui.Theme.UiTheme.Current.GetQualityColor(Quality); } }
+        public ColorData Color { get { return Gui.Theme.UiTheme.Current.GetQualityColor(Quality).ToData(); } }
         public ItemQuality Quality { get { return _ship.Quality(); } }
 
         public void Consume(int amount)

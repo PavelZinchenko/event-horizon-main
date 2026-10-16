@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Zenject;
 using GameModel.Serialization;
 using CommonComponents.Utils;
 
@@ -9,7 +8,6 @@ namespace Session.ContentObsolete
 {
     public class ResourcesData : ISerializableDataObsolete
 	{
-        [Inject]
         public ResourcesData(byte[] buffer = null)
         {
             IsChanged = true;
@@ -121,7 +119,7 @@ namespace Session.ContentObsolete
 			var version = Helpers.DeserializeInt(buffer, ref index);
 			if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
 			{
-				UnityEngine.Debug.Log("ResourcesData: incorrect data version");
+				GameDiagnostics.Trace.Log("ResourcesData: incorrect data version");
                 throw new ArgumentException();
             }
 
@@ -132,10 +130,10 @@ namespace Session.ContentObsolete
 		    _resources.Assign(Helpers.DeserializeDictionary(buffer, ref index));
 
 #if UNITY_EDITOR
-			UnityEngine.Debug.Log("ResourcesData: money = " + _money);
-			UnityEngine.Debug.Log("ResourcesData: fuel = " + _fuel);
-			UnityEngine.Debug.Log("ResourcesData: stars = " + _stars);
-            UnityEngine.Debug.Log("ResourcesData: tokens = " + _tokens);
+			GameDiagnostics.Trace.Log("ResourcesData: money = " + _money);
+			GameDiagnostics.Trace.Log("ResourcesData: fuel = " + _fuel);
+			GameDiagnostics.Trace.Log("ResourcesData: stars = " + _stars);
+            GameDiagnostics.Trace.Log("ResourcesData: tokens = " + _tokens);
 #endif
 
             IsChanged = false;

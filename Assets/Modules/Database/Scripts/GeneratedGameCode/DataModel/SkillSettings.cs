@@ -58,11 +58,11 @@ namespace GameDatabase.DataModel
 			CraftingPriceFactor = _craftingPriceFactor.Evaluate;
 			_craftingLevelReduction = new Expressions.IntToInt(serializable.CraftingLevelReduction, 0, 2147483647, variableResolver) { ParamName1 = "level" };
 			CraftingLevelReduction = _craftingLevelReduction.Evaluate;
-			MaxPlayerShipsLevel = UnityEngine.Mathf.Clamp(serializable.MaxPlayerShipsLevel, 0, 500);
-			IncreasedLevelLimit = UnityEngine.Mathf.Clamp(serializable.IncreasedLevelLimit, 0, 1000);
-			BaseFuelCapacity = UnityEngine.Mathf.Clamp(serializable.BaseFuelCapacity, 10, 2147483647);
-			BaseFlightRange = UnityEngine.Mathf.Clamp(serializable.BaseFlightRange, 1.5f, 3.402823E+38f);
-			BaseFlightSpeed = UnityEngine.Mathf.Clamp(serializable.BaseFlightSpeed, 1f, 3.402823E+38f);
+			MaxPlayerShipsLevel = Utilites.MathEx.Clamp(serializable.MaxPlayerShipsLevel, 0, 500);
+			IncreasedLevelLimit = Utilites.MathEx.Clamp(serializable.IncreasedLevelLimit, 0, 1000);
+			BaseFuelCapacity = Utilites.MathEx.Clamp(serializable.BaseFuelCapacity, 10, 2147483647);
+			BaseFlightRange = Utilites.MathEx.Clamp(serializable.BaseFlightRange, 1.5f, 3.402823E+38f);
+			BaseFlightSpeed = Utilites.MathEx.Clamp(serializable.BaseFlightSpeed, 1f, 3.402823E+38f);
 
 			OnDataDeserialized(serializable, loader);
 		}

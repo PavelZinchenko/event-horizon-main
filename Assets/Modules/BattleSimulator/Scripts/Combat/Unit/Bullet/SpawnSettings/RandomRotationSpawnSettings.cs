@@ -8,7 +8,7 @@ namespace Combat.Component.Bullet.SpawnSettings
         private static readonly RandomRotationSpawnSettings _instance = new();
 
         public static IBulletSpawnSettings Instance => _instance;
-        public Vector2 GetOffset(int bulletIndex) => Vector2.zero;
+        public Vector2Data GetOffset(int bulletIndex) => Vector2Data.Zero;
         public float GetRotation(int bulletIndex) => Random.Range(0, 360);
     }
 }

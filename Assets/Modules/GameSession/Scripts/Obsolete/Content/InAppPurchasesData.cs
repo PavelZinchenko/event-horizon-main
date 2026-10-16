@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameModel.Serialization;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class InAppPurchasesData : ISerializableDataObsolete
 	{
-        [Inject]
 		public InAppPurchasesData(byte[] buffer = null)
         {
             IsChanged = true;
@@ -112,7 +110,7 @@ namespace Session.ContentObsolete
 			var version = Helpers.DeserializeInt(buffer, ref index);
 			if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
 			{
-				UnityEngine.Debug.Log("InAppPurchasesData: incorrect data version");
+				GameDiagnostics.Trace.Log("InAppPurchasesData: incorrect data version");
                 throw new ArgumentException();
             }
 
@@ -122,9 +120,9 @@ namespace Session.ContentObsolete
 			_shouldUpgradeToV3 = buffer[index++] != 0;
 
 #if UNITY_EDITOR
-			UnityEngine.Debug.Log("InAppPurchasesData: removeads = " + _removeAds);
-			UnityEngine.Debug.Log("InAppPurchasesData: fuel = " + _supporterPack);
-			UnityEngine.Debug.Log("InAppPurchasesData: stars = " + _purchasedStars);
+			GameDiagnostics.Trace.Log("InAppPurchasesData: removeads = " + _removeAds);
+			GameDiagnostics.Trace.Log("InAppPurchasesData: fuel = " + _supporterPack);
+			GameDiagnostics.Trace.Log("InAppPurchasesData: stars = " + _purchasedStars);
 #endif
 
             IsChanged = false;
@@ -149,7 +147,7 @@ namespace Session.ContentObsolete
 		
 		private static IEnumerable<byte> Upgrade_1_2(byte[] buffer)
 		{
-			UnityEngine.Debug.Log("InAppPurchasesData.Upgrade_1_2");
+			GameDiagnostics.Trace.Log("InAppPurchasesData.Upgrade_1_2");
 			
 			int index = 0;
 			
@@ -168,7 +166,7 @@ namespace Session.ContentObsolete
 
 		private static IEnumerable<byte> Upgrade_2_3(byte[] buffer)
 		{
-			UnityEngine.Debug.Log("InAppPurchasesData.Upgrade_2_3");
+			GameDiagnostics.Trace.Log("InAppPurchasesData.Upgrade_2_3");
 			foreach (var value in buffer)
 				yield return value;
 

@@ -27,19 +27,19 @@ namespace GameDatabase.DataModel
 		{
 			var variableResolver = new VariableResolver(this);
 			EnableXmasEvent = serializable.EnableXmasEvent;
-			XmasDaysBefore = UnityEngine.Mathf.Clamp(serializable.XmasDaysBefore, 0, 30);
-			XmasDaysAfter = UnityEngine.Mathf.Clamp(serializable.XmasDaysAfter, 0, 30);
+			XmasDaysBefore = Utilites.MathEx.Clamp(serializable.XmasDaysBefore, 0, 30);
+			XmasDaysAfter = Utilites.MathEx.Clamp(serializable.XmasDaysAfter, 0, 30);
 			XmasQuest = loader?.GetQuest(new ItemId<QuestModel>(serializable.XmasQuest)) ?? QuestModel.DefaultValue;
 			XmasCombatRules = loader?.GetCombatRules(new ItemId<CombatRules>(serializable.XmasCombatRules)) ?? CombatRules.DefaultValue;
 			_convertCreditsToSnowflakes = new Expressions.IntToInt(serializable.ConvertCreditsToSnowflakes, 1, 2147483647, variableResolver) { ParamName1 = "credits" };
 			ConvertCreditsToSnowflakes = _convertCreditsToSnowflakes.Evaluate;
 			EnableEasterEvent = serializable.EnableEasterEvent;
-			EasterDaysBefore = UnityEngine.Mathf.Clamp(serializable.EasterDaysBefore, 0, 30);
-			EasterDaysAfter = UnityEngine.Mathf.Clamp(serializable.EasterDaysAfter, 0, 30);
+			EasterDaysBefore = Utilites.MathEx.Clamp(serializable.EasterDaysBefore, 0, 30);
+			EasterDaysAfter = Utilites.MathEx.Clamp(serializable.EasterDaysAfter, 0, 30);
 			EasterQuest = loader?.GetQuest(new ItemId<QuestModel>(serializable.EasterQuest)) ?? QuestModel.DefaultValue;
 			EnableHalloweenEvent = serializable.EnableHalloweenEvent;
-			HalloweenDaysBefore = UnityEngine.Mathf.Clamp(serializable.HalloweenDaysBefore, 0, 30);
-			HalloweenDaysAfter = UnityEngine.Mathf.Clamp(serializable.HalloweenDaysAfter, 0, 30);
+			HalloweenDaysBefore = Utilites.MathEx.Clamp(serializable.HalloweenDaysBefore, 0, 30);
+			HalloweenDaysAfter = Utilites.MathEx.Clamp(serializable.HalloweenDaysAfter, 0, 30);
 			HalloweenQuest = loader?.GetQuest(new ItemId<QuestModel>(serializable.HalloweenQuest)) ?? QuestModel.DefaultValue;
 
 			OnDataDeserialized(serializable, loader);

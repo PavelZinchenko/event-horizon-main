@@ -43,7 +43,7 @@ namespace Session
 #if UNITY_EDITOR
                 foreach (var item in Data)
                     if (item.IsChanged)
-                        UnityEngine.Debug.Log("IsChanged: " + item.FileName);
+                        GameDiagnostics.Trace.Log("IsChanged: " + item.FileName);
 #endif
                 //_version++;
             }
@@ -155,7 +155,7 @@ namespace Session
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogException(e);
+                GameDiagnostics.Trace.LogException(e);
                 return null;
             }
 
@@ -167,7 +167,7 @@ namespace Session
             switch (key)
             {
                 default:
-                    UnityEngine.Debug.Log("DatabaseContent: unknown key - " + key);
+                    GameDiagnostics.Trace.Log("DatabaseContent: unknown key - " + key);
                     break;
             }
         }

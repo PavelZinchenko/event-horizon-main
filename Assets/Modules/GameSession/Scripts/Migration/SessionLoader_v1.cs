@@ -23,9 +23,9 @@ namespace Session
                 else
                 {
                     var homeStar = GameModel.RegionLayout.GetRegionHomeStar(item.Key);
-                    var distance = UnityEngine.Mathf.RoundToInt(GameModel.StarLayout.GetStarPosition(homeStar, oldData.Game.Seed).magnitude);
-                    var maxPower = UnityEngine.Mathf.Min(300 + 5 * distance, 1000);
-                    var power = (uint)UnityEngine.Mathf.Max(50, maxPower - item.Value*10);
+                    var distance = Utilites.MathEx.RoundToInt(GameModel.StarLayout.GetStarPosition(homeStar, oldData.Game.Seed).magnitude);
+                    var maxPower = Utilites.MathEx.Min(300 + 5 * distance, 1000);
+                    var power = (uint)Utilites.MathEx.Max(50, maxPower - item.Value*10);
                     newData.Regions.MilitaryPower.Add(item.Key, power);
                 }
             }

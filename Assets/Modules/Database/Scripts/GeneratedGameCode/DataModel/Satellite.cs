@@ -29,7 +29,7 @@ namespace GameDatabase.DataModel
 
 			Name = serializable.Name;
 			ModelImage = new SpriteId(serializable.ModelImage, SpriteId.Type.Satellite);
-			ModelScale = UnityEngine.Mathf.Clamp(serializable.ModelScale, 0.1f, 100f);
+			ModelScale = Utilites.MathEx.Clamp(serializable.ModelScale, 0.1f, 100f);
 			SizeClass = serializable.SizeClass;
 			Layout = new Layout(serializable.Layout);
 			Barrels = new ImmutableCollection<Barrel>(serializable.Barrels?.Select(item => Barrel.Create(item, loader)));

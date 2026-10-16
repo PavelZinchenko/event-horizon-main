@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameModel.Serialization;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class BossData : ISerializableDataObsolete
 	{
-        [Inject]
 		public BossData(byte[] buffer = null)
 		{
 			IsChanged = true;
@@ -77,7 +75,7 @@ namespace Session.ContentObsolete
 			var version = Helpers.DeserializeInt(buffer, ref index);
 			if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
 			{
-				UnityEngine.Debug.Log("BossData: incorrect data version");
+				GameDiagnostics.Trace.Log("BossData: incorrect data version");
                 throw new ArgumentException();
             }
 
@@ -107,7 +105,7 @@ namespace Session.ContentObsolete
 
 		private static IEnumerable<byte> Upgrade_1_2(byte[] buffer)
 		{
-			UnityEngine.Debug.Log("BossData.Upgrade_1_2");
+			GameDiagnostics.Trace.Log("BossData.Upgrade_1_2");
 			
 			int index = 0;
 			

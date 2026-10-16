@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using GameDatabase.Model;
+using Utilites;
 
 namespace Constructor.Ships
 {
@@ -7,7 +8,7 @@ namespace Constructor.Ships
         public ShipColorScheme()
         {
             Type = SchemeType.Default;
-            Color = Color.white;
+            Color = ColorData.White;
             Hue = 0;
             Saturation = 0;
         }
@@ -52,14 +53,14 @@ namespace Constructor.Ships
             }
         }
 
-        public Color Color
+        public ColorData Color
         {
-            get { return new Color(_r/255f, _g/255f, _b/255f); }
+            get { return new ColorData(_r/255f, _g/255f, _b/255f); }
             set
             {
-                var r = (byte)Mathf.RoundToInt(Mathf.Clamp01(value.r) * 255);
-                var g = (byte)Mathf.RoundToInt(Mathf.Clamp01(value.g) * 255);
-                var b = (byte)Mathf.RoundToInt(Mathf.Clamp01(value.b) * 255);
+                var r = (byte)MathEx.RoundToInt(MathEx.Clamp01(value.R) * 255);
+                var g = (byte)MathEx.RoundToInt(MathEx.Clamp01(value.G) * 255);
+                var b = (byte)MathEx.RoundToInt(MathEx.Clamp01(value.B) * 255);
                 if (r == _r && g == _g && b == _b) return;
 
                 _r = r;
@@ -69,14 +70,14 @@ namespace Constructor.Ships
             }
         }
 
-        public Color HsvColor { get { return new Color(_hue/255f, _saturation/255f, 0, 1); } }
+        public ColorData HsvColor { get { return new ColorData(_hue/255f, _saturation/255f, 0, 1); } }
 
         public float Hue
         {
             get { return _hue / 255f; }
             set
             {
-                var hue = (byte)Mathf.RoundToInt(Mathf.Clamp01(value) * 255);
+                var hue = (byte)MathEx.RoundToInt(MathEx.Clamp01(value) * 255);
                 if (_hue == hue) return;
 
                 _hue = hue;
@@ -89,7 +90,7 @@ namespace Constructor.Ships
             get { return _saturation / 255f; }
             set
             {
-                var saturation = (byte)Mathf.RoundToInt(Mathf.Clamp01(value) * 255);
+                var saturation = (byte)MathEx.RoundToInt(MathEx.Clamp01(value) * 255);
                 if (_saturation == saturation) return;
 
                 _saturation = saturation;

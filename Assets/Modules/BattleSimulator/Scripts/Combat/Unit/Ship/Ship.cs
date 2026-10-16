@@ -38,7 +38,7 @@ namespace Combat.Component.Ship
             AddResource(_systems = new ShipSystems(this));
             AddResource(_effects = new ShipEffects(this));
             AddResource(CollisionBehaviour = new DefaultCollisionBehaviour(spec.Stats.RammingDamageMultiplier));
-            AddResource(Features = new Features.Features(type.Class == UnitClass.Drone ? TargetPriority.Low : TargetPriority.Normal, spec.Stats.ShipColor.Color));
+            AddResource(Features = new Features.Features(type.Class == UnitClass.Drone ? TargetPriority.Low : TargetPriority.Normal, spec.Stats.ShipColor.Color.ToUnity()));
             AddResource(Stats = stats);
             _state = UnitState.Active;
             Specification = spec;

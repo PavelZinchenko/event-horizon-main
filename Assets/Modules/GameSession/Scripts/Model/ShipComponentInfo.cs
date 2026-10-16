@@ -52,7 +52,7 @@ namespace Session.Model
 			var component = database.GetComponent(new ItemId<Component>(_id));
 			if (component == null)
 			{
-				UnityEngine.Debug.LogException(new System.ArgumentException("Unknown component - " + _id));
+				GameDiagnostics.Trace.LogException(new System.ArgumentException("Unknown component - " + _id));
 				return null;
 			}
 

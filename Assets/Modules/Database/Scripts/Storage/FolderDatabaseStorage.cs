@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using UnityEngine;
 
 namespace GameDatabase.Storage
 {
@@ -64,11 +63,11 @@ namespace GameDatabase.Storage
                 }
                 else if (fileInfo.Extension.Equals(".wav", StringComparison.OrdinalIgnoreCase))
                 {
-                    loader.LoadAudioClip(Path.GetFileNameWithoutExtension(file), new LazyAudioFileLoader(file, LazyAudioFileLoader.Format.Wav));
+                    loader.LoadAudioClip(Path.GetFileNameWithoutExtension(file), new LazyAudioFileLoader(file, Model.AudioFormat.Wav));
                 }
                 else if (fileInfo.Extension.Equals(".ogg", StringComparison.OrdinalIgnoreCase))
                 {
-                    loader.LoadAudioClip(Path.GetFileNameWithoutExtension(file), new LazyAudioFileLoader(file, LazyAudioFileLoader.Format.Ogg));
+                    loader.LoadAudioClip(Path.GetFileNameWithoutExtension(file), new LazyAudioFileLoader(file, Model.AudioFormat.Ogg));
                 }
                 else if (fileInfo.Extension.Equals(".xml", StringComparison.OrdinalIgnoreCase))
                 {
@@ -106,7 +105,7 @@ namespace GameDatabase.Storage
             }
             catch (Exception e)
             {
-                Debug.LogError(e.Message);
+                GameDiagnostics.Trace.LogError(e.Message);
             }
         }
 
@@ -117,27 +116,17 @@ namespace GameDatabase.Storage
     public class LazyImageFileLoader : Model.IImageData
     {
         private readonly string _filename;
-        private Model.ImageData _imageData;
 
-        public Sprite Sprite
+        public byte[] LoadData()
         {
-            get
+            try
             {
-                if (_imageData == null)
-                {
-                    try 
-                    {
-                        var rawData = File.ReadAllBytes(_filename);
-                        _imageData = new(rawData);
-                    }
-                    catch (Exception e) 
-                    {
-                        Debug.LogException(e);
-                        _imageData = Model.ImageData.Empty;
-                    }
-                }
-
-                return _imageData.Sprite;
+                return File.ReadAllBytes(_filename);
+            }
+            catch (Exception e)
+            {
+                GameDiagnostics.Trace.LogException(e);
+                return null;
             }
         }
 
@@ -149,55 +138,29 @@ namespace GameDatabase.Storage
 
     public class LazyAudioFileLoader : Model.IAudioClipData
     {
-        public enum Format
-        {
-            Wav,
-            Ogg,
-        }
-
         private readonly string _filename;
-        private Model.IAudioClipData _audioClipData;
-        private readonly Format _format;
 
-        public AudioClip AudioClip
+        public Model.AudioFormat Format { get; }
+
+        public byte[] LoadData()
         {
-            get
+            GameDiagnostics.Trace.Log($"Loading audio clip: {_filename}");
+
+            try
             {
-                if (_audioClipData == null)
-                {
-                    Debug.Log($"Loading audio clip: {_filename}");
-
-                    try
-                    {
-                        var rawData = File.ReadAllBytes(_filename);
-
-                        switch (_format)
-                        {
-                            case Format.Wav:
-                                _audioClipData = new Model.AudioClipData(rawData);
-                                break;
-                            case Format.Ogg:
-                                _audioClipData = Model.OggAudioClip.Create(rawData);
-                                break;
-                            default:
-                                throw new InvalidOperationException();
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
-                        _audioClipData = Model.AudioClipData.Empty;
-                    }
-                }
-
-                return _audioClipData.AudioClip;
+                return File.ReadAllBytes(_filename);
+            }
+            catch (Exception e)
+            {
+                GameDiagnostics.Trace.LogException(e);
+                return null;
             }
         }
 
-        public LazyAudioFileLoader(string fliename, Format format)
+        public LazyAudioFileLoader(string fliename, Model.AudioFormat format)
         {
             _filename = fliename;
-            _format = format;
+            Format = format;
         }
     }
 }

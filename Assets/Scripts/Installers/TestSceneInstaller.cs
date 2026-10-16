@@ -61,7 +61,7 @@ namespace Installers
 
 		private static IDatabase LoadDatabase(InjectContext context)
 		{
-			var database = new GameDatabase.Database();
+			var database = GameDatabase.UnityDatabaseFactory.Create();
 			database.LoadDefault();
 			return database;
 		}

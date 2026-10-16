@@ -47,7 +47,7 @@ namespace Galaxy
 
         public bool IsVisited(int starId) { return _session.StarMap.IsVisited(starId); }
         public void SetVisited(int starId) { _session.StarMap.SetVisited(starId); }
-        public Vector2 GetPosition(int starId) { return StarLayout.GetStarPosition(starId, _random.Seed); }
+        public Vector2 GetPosition(int starId) { return StarLayout.GetStarPosition(starId, _random.Seed).ToUnity(); }
         public int GetLevel(int starId) { return StarLayout.GetStarLevel(starId, _random.Seed); }
         public string GetName(int starId) { return NameGenerator.GetStarName(starId); }
         public string GetBookmark(int starId) { return _session.StarMap.GetBookmark(starId); }
