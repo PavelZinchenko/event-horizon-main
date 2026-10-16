@@ -14,11 +14,11 @@ namespace Combat.Component.Systems.Weapons
             : base(platform, weaponStats, bulletFactory, keyBinding)
         {
             _energyConsumption = bulletFactory.Stats.EnergyCost;
-            _chargeTotalTime = 1.0f / weaponStats.FireRate;
+            _chargeTotalTime = weaponStats.FireRate > 0 ? 1.0f / weaponStats.FireRate : float.PositiveInfinity;
 			_bullets = BulletCompositeDisposable.Create(BulletFactory.Stats);
         }
 
-        public override bool CanBeActivated { get { return _chargeTime > 0 || (Platform.IsReady && Platform.EnergyPoints.Value >= _energyConsumption*0.5f); } }
+        public override bool CanBeActivated { get { return base.CanBeActivated && (_chargeTime > 0 || (Platform.IsReady && Platform.EnergyPoints.Value >= _energyConsumption*0.5f)); } }
         public override float Cooldown => Platform.Cooldown;
 
         public override float PowerLevel => Mathf.Clamp01(_chargeTime / _chargeTotalTime);
