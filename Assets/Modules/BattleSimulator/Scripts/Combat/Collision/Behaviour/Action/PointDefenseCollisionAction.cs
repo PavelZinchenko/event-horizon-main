@@ -31,6 +31,8 @@ namespace Combat.Collision.Behaviour.Action
                     targetImpact.Effects |= CollisionEffect.Disarm;
                     break;
                 case UnitClass.Drone:
+                    // Gravity bombs are side-less drones with no hit points.
+                    if (target.Type.Side == UnitSide.Undefined) return;
                     targetImpact.EnergyDamage += _damage;
                     break;
                 default:
