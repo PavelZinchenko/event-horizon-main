@@ -26,7 +26,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			if (distance <= 0) 
 				return NodeState.Failure;
 
-			if (ShipNavigationHandler.KeepDistance(context.Ship, context.TargetShip, 0, distance, context.Controls))
+			if (ShipNavigationHandler.KeepDistance(context.Ship, context.TargetShip, 0, distance, context.Controls, context.Scene.Settings.AreaWidth, context.Scene.Settings.AreaHeight))
 				return NodeState.Success;
 
 			return NodeState.Running;

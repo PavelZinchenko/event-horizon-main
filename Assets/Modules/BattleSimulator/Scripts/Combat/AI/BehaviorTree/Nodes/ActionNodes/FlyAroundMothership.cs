@@ -21,7 +21,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			if (!mothership.IsActive())
 				return NodeState.Failure;
 
-			if (ShipNavigationHandler.FlyAround(ship, mothership, _distance, _distance, 1, context.Controls))
+			if (ShipNavigationHandler.FlyAround(ship, mothership, _distance, _distance, 1, context.Controls, context.Scene.Settings.AreaWidth, context.Scene.Settings.AreaHeight))
 				return NodeState.Success;
 
 			return NodeState.Running;
