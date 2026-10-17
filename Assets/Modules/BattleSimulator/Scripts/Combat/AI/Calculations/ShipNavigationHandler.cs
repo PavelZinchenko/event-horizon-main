@@ -125,7 +125,7 @@ namespace Combat.Ai.Calculations
 			if (AttackHelpers.CantDetectTarget(ship, enemy)) return Status.NoTarget;
 			if (controls.MovementLocked) return Status.Chasing;
 
-			var canHit = TryInterceptTarget(ship, enemy, out var target, out timeToHit);
+			var canHit = TryInterceptTarget(ship, enemy, areaWidth, areaHeight, out var target, out timeToHit);
 			var status = canHit ? Status.Chasing : Status.Following;
 
 			var direction = WrapDirection(ship.Body.Position, target, areaWidth, areaHeight);
@@ -166,11 +166,12 @@ namespace Combat.Ai.Calculations
 			return false;
 		}
 
-		private static bool TryInterceptTarget(IShip ship, IShip enemy, out Vector2 target, out float timeToHit)
+		private static bool TryInterceptTarget(IShip ship, IShip enemy, float areaWidth, float areaHeight, out Vector2 target, out float timeToHit)
 		{
 			var enemyVelocity = enemy.Body.Velocity;
 			var enemyPosition = enemy.Body.Position;
 			var shipPosition = ship.Body.Position;
+			enemyPosition = shipPosition + WrapDirection(shipPosition, enemyPosition, areaWidth, areaHeight);
 			var maxVelocity = Mathf.Max(ship.Body.Velocity.magnitude, ship.Engine.MaxVelocity);
 
 			var canHit = Geometry.GetTargetPosition(

@@ -57,14 +57,17 @@ namespace Combat.Component.Controller
             float requiredAngularVelocity = 0;
             if (_target.IsActive())
             {
-                if (!_smartAim || !Geometry.GetTargetPosition(_target.Body.WorldPosition(), _target.Body.Velocity,
-                        _unit.Body.WorldPosition(),
-                        _maxVelocity, out var targetPosition, out _))
+                var position = _unit.Body.WorldPosition();
+                var targetPosition = _target.Body.WorldPosition();
+                targetPosition = position + WrapDirection(position, targetPosition);
+                if (_smartAim && Geometry.GetTargetPosition(targetPosition, _target.Body.Velocity,
+                        position,
+                        _maxVelocity, out var interceptPosition, out _))
                 {
-                    targetPosition = _target.Body.WorldPosition();
-                }            
-            
-                var direction = WrapDirection(_unit.Body.WorldPosition(), targetPosition);
+                    targetPosition = interceptPosition;
+                }
+
+                var direction = position.Direction(targetPosition);
                 var target = RotationHelpers.Angle(direction);
                 var rotation = _unit.Body.WorldRotation();
                 var delta = Mathf.DeltaAngle(rotation, target);
