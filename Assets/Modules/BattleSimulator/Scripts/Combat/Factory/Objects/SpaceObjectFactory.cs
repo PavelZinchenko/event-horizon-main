@@ -301,7 +301,8 @@ namespace Combat.Factory
             var body = gameObject.GetComponent<IBodyComponent>();
             body.Initialize(null, owner.Body.WorldPosition(), 0f, 2 * radius, Vector2.zero, 0f, 1.0f);
             var collider = gameObject.GetComponent<ICollider>();
-            var unit = new ShortLivedObject(body, new EmptyView(), collider, lifetime, new UnitType(UnitClass.AreaOfEffect, owner.Type.Side, owner, true));
+            var side = UnitSide.Undefined; //owner.Type.Side;
+            var unit = new ShortLivedObject(body, new EmptyView(), collider, lifetime, new UnitType(UnitClass.Drone, side, owner, true));
             unit.AddResource(gameObject);
             unit.SetCollisionBehaviour(new GravityBombCollisionBehaviour(power));
             gameObject.IsActive = true;
