@@ -2,6 +2,7 @@
 using Combat.Component.Body;
 using Combat.Component.Unit;
 using GameDatabase.Enums;
+using UnityEngine;
 
 namespace Combat.Collision.Behaviour.Action
 {
@@ -31,8 +32,21 @@ namespace Combat.Collision.Behaviour.Action
         {
             var center = self.Body.WorldPosition();
             var position = target.Body.WorldPosition();
-            var impulse = (position - center).normalized * power;
-            targetImpact.AddImpulse(center, impulse);
+            var direction = position - center;
+            var distance = direction.magnitude;
+            if (distance < 0.01f)
+                return;
+            var weight = Mathf.Max(target.Body.Weight, 0.001f);
+            var impulse = ClampImpulse(direction / distance * power, weight);
+            targetImpact.AddCappedImpulse(center, impulse, 24f * weight);
+        }
+
+        private static Vector2 ClampImpulse(Vector2 impulse, float targetWeight)
+        {
+            var limit = 8f * targetWeight;
+            if (impulse.sqrMagnitude > limit * limit)
+                return impulse.normalized * limit;
+            return impulse;
         }
 
         public void Dispose() { }

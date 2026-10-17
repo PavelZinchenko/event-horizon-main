@@ -53,6 +53,25 @@ namespace Combat.Collision
             _count = 0;
         }
 
+        public float TotalMagnitude()
+        {
+            var total = 0f;
+            for (var i = 0; i < _count; i += 2)
+                total += _values[i + 1].magnitude;
+            return total;
+        }
+
+        public void LimitTotal(float maxMagnitude)
+        {
+            var total = TotalMagnitude();
+            if (total <= maxMagnitude || total <= 0f)
+                return;
+
+            var factor = maxMagnitude / total;
+            for (var i = 0; i < _count; i += 2)
+                _values[i + 1] *= factor;
+        }
+
         private int _count;
         private Vector2[] _values;
     }
@@ -109,6 +128,18 @@ namespace Combat.Collision
                 Impulse = new Impulse();
 
             Impulse.Append(position, impulse);
+        }
+
+        public void AddCappedImpulse(in Vector2 position, in Vector2 impulse, float maxMagnitude)
+        {
+            if (Impulse == null)
+                Impulse = new Impulse();
+
+            if (Impulse.TotalMagnitude() >= maxMagnitude)
+                return;
+
+            Impulse.Append(position, impulse);
+            Impulse.LimitTotal(maxMagnitude);
         }
 
         public void ApplyImpulse(IBody body)
