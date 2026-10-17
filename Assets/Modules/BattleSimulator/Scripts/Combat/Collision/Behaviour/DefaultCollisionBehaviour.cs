@@ -21,7 +21,12 @@ namespace Combat.Collision.Behaviour
                 var damage = 0.1f * collisionData.RelativeVelocity.magnitude * impulse * _rammingDamageMultiplier;
 
                 if (damage > 1)
+                {
+                    var cap = 200f * impulse;
+                    if (damage > cap)
+                        damage = cap;
                     targetImpact.AddDamage(DamageType.Impact, damage);
+                }
             }
         }
 
