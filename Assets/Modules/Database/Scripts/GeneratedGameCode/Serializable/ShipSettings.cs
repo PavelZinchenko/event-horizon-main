@@ -31,6 +31,8 @@ namespace GameDatabase.Serializable
 		public float MaxAngularVelocity = 30f;
 		public float MaxAcceleration = 300f;
 		public float MaxAngularAcceleration = 300f;
+		public float SatelliteModelScaleMultiplier = 2f;
+		public bool SatelliteRequireModelScaleWithSizeClass = true;
 		public bool DisableCellsExpansions;
 		public int ShipExplosionEffect;
 		public string ShipExplosionSound;

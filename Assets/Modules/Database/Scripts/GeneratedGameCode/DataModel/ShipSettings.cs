@@ -40,6 +40,8 @@ namespace GameDatabase.DataModel
 			MaxAngularVelocity = Utilites.MathEx.Clamp(serializable.MaxAngularVelocity, 5f, 100f);
 			MaxAcceleration = Utilites.MathEx.Clamp(serializable.MaxAcceleration, 5f, 1000f);
 			MaxAngularAcceleration = Utilites.MathEx.Clamp(serializable.MaxAngularAcceleration, 5f, 1000f);
+			SatelliteModelScaleMultiplier = Utilites.MathEx.Clamp(serializable.SatelliteModelScaleMultiplier, 1f, 100f);
+			SatelliteRequireModelScaleWithSizeClass = serializable.SatelliteRequireModelScaleWithSizeClass;
 			DisableCellsExpansions = serializable.DisableCellsExpansions;
 			ShipExplosionEffect = loader?.GetVisualEffect(new ItemId<VisualEffect>(serializable.ShipExplosionEffect)) ?? VisualEffect.DefaultValue;
 			ShipExplosionSound = new AudioClipId(serializable.ShipExplosionSound);
@@ -65,6 +67,8 @@ namespace GameDatabase.DataModel
 		public float MaxAngularVelocity { get; private set; }
 		public float MaxAcceleration { get; private set; }
 		public float MaxAngularAcceleration { get; private set; }
+		public float SatelliteModelScaleMultiplier { get; private set; }
+		public bool SatelliteRequireModelScaleWithSizeClass { get; private set; }
 		public bool DisableCellsExpansions { get; private set; }
 		public VisualEffect ShipExplosionEffect { get; private set; }
 		public AudioClipId ShipExplosionSound { get; private set; }

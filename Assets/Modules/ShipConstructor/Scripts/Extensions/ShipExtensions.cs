@@ -112,7 +112,7 @@ namespace Constructor.Extensions
 
             var companionClass = Maths.Distance.CompanionClass(distance);
 
-            var companions = database.SatelliteBuildList.LimitClass(companionClass).SuitableFor(data.Ship);
+            var companions = database.SatelliteBuildList.LimitClass(companionClass).SuitableFor(data.Ship, database.ShipSettings);
 
             if (companions.Any())
             {
