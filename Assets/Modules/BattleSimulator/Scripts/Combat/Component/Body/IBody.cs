@@ -45,6 +45,13 @@ namespace Combat.Component.Body
         void SetSize(float size);
         void ApplyAcceleration(Vector2 acceleration);
         void ApplyAngularAcceleration(float acceleration);
+
+        /// <summary>
+        /// Multiplies the current linear and angular velocity by factor.
+        /// Uses the live physics velocity, so several calls in one frame combine multiplicatively.
+        /// </summary>
+        void ScaleVelocity(float factor);
+
         void ApplyForce(Vector2 position, Vector2 force);
 
         void UpdatePhysics(float elapsedTime);

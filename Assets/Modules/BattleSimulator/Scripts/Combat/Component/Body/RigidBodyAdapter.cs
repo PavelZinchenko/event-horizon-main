@@ -151,6 +151,15 @@ namespace Combat.Component.Body
                 _rigidbody.AddTorque(acceleration * Mathf.Deg2Rad * _rigidbody.inertia, ForceMode2D.Impulse);
         }
 
+        public void ScaleVelocity(float factor)
+        {
+            if (Parent == null)
+            {
+                _rigidbody.linearVelocity *= factor;
+                _rigidbody.angularVelocity *= factor;
+            }
+        }
+
         public void ApplyForce(Vector2 position, Vector2 force)
         {
             if (Parent == null)

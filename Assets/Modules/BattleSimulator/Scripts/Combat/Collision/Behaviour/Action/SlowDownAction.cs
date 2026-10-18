@@ -30,11 +30,10 @@ namespace Combat.Collision.Behaviour.Action
                 _isAlive = _impactType == BulletImpactType.HitAllTargets;
             }
 
-            if (target is IShip ship)
+            if (target is IShip)
             {
                 power = Mathf.Clamp01(power / Mathf.Sqrt(target.Body.Weight));
-                target.Body.ApplyAcceleration(-target.Body.Velocity * power);
-                target.Body.ApplyAngularAcceleration(-target.Body.AngularVelocity * power);
+                target.Body.ScaleVelocity(1f - power);
             }
         }
 
