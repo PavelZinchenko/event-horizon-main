@@ -159,17 +159,18 @@ namespace Domain.Quests
         public IEnumerable<LootItem> Create(LootContent_RandomItems content)
         {
             var amount = _random.Range(content.MinAmount, content.MaxAmount);
+            if (amount <= 0) yield break;
 
             var itemsLeft = amount;
-            foreach (var item in content.Items.WeightedRandomUniqueElements(amount, _random, item => item.Weight))
+            foreach (var item in content.Items.WeightedShuffle(_random, item => item.Weight))
             {
-                if (itemsLeft <= 0) yield break;
                 if (!_requirementCache.Get(item.Requirement, _questInfo).IsMet) continue;
-                itemsLeft--;
                 foreach (var lootItem in item.Loot.Create(this))
                 {
                     yield return lootItem;
                 }
+                
+                if (--itemsLeft <= 0) yield break;
             }
         }
 
