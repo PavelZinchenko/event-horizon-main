@@ -19,6 +19,7 @@ namespace GameDatabase.Serializable
 		public string ModelImage;
 		public float ModelScale;
 		public SizeClass SizeClass;
+		public bool NotAvailableInBlackMarket;
 		public string Layout;
 		public BarrelSerializable[] Barrels;
 	}
