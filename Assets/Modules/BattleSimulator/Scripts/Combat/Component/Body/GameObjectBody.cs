@@ -58,6 +58,12 @@ namespace Combat.Component.Body
         public void ApplyAcceleration(Vector2 acceleration) => Velocity += acceleration;
 		public void ApplyAngularAcceleration(float acceleration) => AngularVelocity += acceleration;
 
+        public void ScaleVelocity(float factor)
+        {
+            Velocity *= factor;
+            AngularVelocity *= factor;
+        }
+
         public void ApplyForce(Vector2 position, Vector2 force)
         {
             if (Parent != null)

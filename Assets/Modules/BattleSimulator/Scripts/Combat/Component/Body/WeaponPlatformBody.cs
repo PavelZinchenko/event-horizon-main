@@ -56,6 +56,7 @@ namespace Combat.Component.Platform
         public void Turn(float rotation) {}
         public void ApplyAcceleration(Vector2 acceleration) {}
         public void ApplyAngularAcceleration(float acceleration) {}
+        public void ScaleVelocity(float factor) {}
         public void SetSize(float size) {}
 
         public void ApplyForce(Vector2 position, Vector2 force)

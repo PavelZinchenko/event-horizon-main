@@ -15,14 +15,14 @@ namespace Combat.Collision
 
         public void Apply(IBody body)
         {
-            for (var i = 0; i < _count; ++i)
-                body.ApplyForce(_values[i*2], _values[i*2 + 1]);
+            for (var i = 0; i < _count; i += 2)
+                body.ApplyForce(_values[i], _values[i + 1]);
         }
 
         public void Apply(IBody body, float multiplier)
         {
-            for (var i = 0; i < _count; ++i)
-                body.ApplyForce(_values[i * 2], _values[i * 2 + 1] * multiplier);
+            for (var i = 0; i < _count; i += 2)
+                body.ApplyForce(_values[i], _values[i + 1] * multiplier);
         }
 
         public void Append(Vector2 position, Vector2 impulse)

@@ -82,6 +82,8 @@ namespace Combat.Component.Body
             //    _parent.ApplyAngularAcceleration(acceleration);
         }
 
+        public void ScaleVelocity(float factor) { }
+
         public void ApplyForce(Vector2 position, Vector2 force)
         {
             if (Parent != null)
