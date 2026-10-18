@@ -25,7 +25,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 			if (context.TargetShip == null)
 				return NodeState.Failure;
 
-			var status = ShipNavigationHandler.ChaseAndRam(context.Ship, context.TargetShip, context.Controls, out var timeToHit, out var deltaAngle);
+			var status = ShipNavigationHandler.ChaseAndRam(context.Ship, context.TargetShip, context.Controls, context.Scene.Settings.AreaWidth, context.Scene.Settings.AreaHeight, out var timeToHit, out var deltaAngle);
 
             if (status == ShipNavigationHandler.Status.FullThrottle)
             {
@@ -47,7 +47,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
             if (!isActive && context.Ship.Stats.Energy.Percentage < minEnergy) return;
 
             var minAttackRange = context.SelectedWeapons.RangeMin;
-            var distance = Helpers.Distance(context.Ship, context.TargetShip) - minAttackRange;
+            var distance = Helpers.DistanceWrap(context.Ship, context.TargetShip, context.Scene.Settings.AreaWidth, context.Scene.Settings.AreaHeight) - minAttackRange;
             if (distance <= minDistance) return;
 
             context.Controls.ActivateSystem(_accelerationDeviceId);
@@ -62,7 +62,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
             if (!isActive && deltaAngle > maxDeltaAngle) return;
 
             var minAttackRange = context.SelectedWeapons.RangeMin;
-            var distance = Helpers.Distance(context.Ship, context.TargetShip) - minAttackRange;
+            var distance = Helpers.DistanceWrap(context.Ship, context.TargetShip, context.Scene.Settings.AreaWidth, context.Scene.Settings.AreaHeight) - minAttackRange;
             if (distance <= 0 || distance > _maxWarpDistance || !isActive && distance < minJumpDistance) return;
 
             context.Controls.ActivateSystem(_warpDriveDeviceId);

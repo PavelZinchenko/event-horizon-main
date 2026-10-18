@@ -20,7 +20,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
 
 		public NodeState Evaluate(Context context)
 		{
-			var status = ShipNavigationHandler.ChaseAndRam(context.Ship, context.TargetShip, context.Controls, out var timeToHit, out var deltaAngle);
+			var status = ShipNavigationHandler.ChaseAndRam(context.Ship, context.TargetShip, context.Controls, context.Scene.Settings.AreaWidth, context.Scene.Settings.AreaHeight, out var timeToHit, out var deltaAngle);
 
             if (timeToHit < 1.0f)
             {
@@ -50,7 +50,7 @@ namespace Combat.Ai.BehaviorTree.Nodes
             var isActive = context.Ship.Systems.All[_accelerationDeviceId].Active;
             if (!isActive && context.Ship.Stats.Energy.Percentage < minEnergy) return;
 
-            var distance = Helpers.Distance(context.Ship, context.TargetShip);
+            var distance = Helpers.DistanceWrap(context.Ship, context.TargetShip, context.Scene.Settings.AreaWidth, context.Scene.Settings.AreaHeight);
             if (distance < minDistance) return;
 
             context.Controls.ActivateSystem(_accelerationDeviceId);
