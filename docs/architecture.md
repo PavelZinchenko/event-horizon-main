@@ -46,6 +46,7 @@ The domain core compiles without `UnityEngine`, so its tests run with plain `dot
 | `Localization.Abstractions` | `Localization` | [localization.md](localization.md) |
 | `ShipConstructor` | — | [ship_constructor.md](ship_constructor.md) |
 | `GameSession` | `Assets/Scripts/Services/Unity/SessionPlayTimeTicker.cs` | [game_session.md](game_session.md) |
+| `CombatSimulation.Physics` | — | [combat_simulation.md](combat_simulation.md) |
 
 ### Rules
 
@@ -63,7 +64,7 @@ The domain core compiles without `UnityEngine`, so its tests run with plain `dot
 dotnet test Tests~/EngineFree.Tests.csproj
 ```
 
-[`Tests~/EngineFree.Tests.csproj`](../Tests~/EngineFree.Tests.csproj) compiles the sources of the engine-free assemblies and the test folders of Utilites, CommonComponents, ExpressionParser, Database, and GameSession into one .NET 8 test assembly. Unity ignores folders whose names end in `~`.
+[`Tests~/EngineFree.Tests.csproj`](../Tests~/EngineFree.Tests.csproj) compiles the sources of the engine-free assemblies and the test folders of Utilites, CommonComponents, ExpressionParser, Database, GameSession, and CombatSimulation.Physics into one .NET 8 test assembly. Unity ignores folders whose names end in `~`.
 
 1. The project uses C# 9 (the Unity language version) and NUnit 3.14. NUnit 4 removed the classic `Assert.AreEqual` that the tests use.
 2. BouncyCastle and IonicZlib come from the DLLs in `Assets/`. Newtonsoft comes from NuGet, at the version of Unity's `com.unity.nuget.newtonsoft-json` package.

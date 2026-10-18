@@ -9,12 +9,13 @@ For the game itself, see [Game design](game.md). For how the parts work together
 - `Assets/` contains gameplay code, scenes, resources, art, editor tools, and vendored Unity plugins.
 - `Packages/` declares Unity Package Manager dependencies. `manifest.json` is the primary package configuration. See [Build pipeline: Package dependencies](build.md#package-dependencies).
 - `ProjectSettings/` stores project-wide Unity settings, including the editor version and per-platform build settings. See [Build pipeline: Platform settings](build.md#platform-settings).
-- `docs/` contains contributor-facing technical documentation. `docs/issues/` holds one known-defects file per documented area.
+- `docs/` contains contributor-facing documentation. `docs/game_design/` holds the [game design chapters](game_design/index.md); `docs/issues/` holds known defects by component.
 - `UIElementsSchema/` contains schemas used by Unity UI authoring tools.
 - `README.md` provides the public project and community overview.
 - `.gitmodules` lists the 7 Git submodules. Each module doc describes its own submodule.
 - `.issues/` holds local notes on GitHub issues. See [GitHub issue handling](../.issues/README.md).
 - `TASKS.md` lists open and planned work. `TODO/` holds working plans and the documentation tools.
+- `Experimental/` holds throwaway spikes for working plans, as standalone .NET projects outside `Assets/`. Game code never references them.
 
 Git ignores these local folders. They are not part of a clone:
 
@@ -56,6 +57,7 @@ Assembly boundaries are defined by `.asmdef` files. Check references before movi
 
 `Assets/ModulesShared/` is a Git submodule that Event Horizon shares with Event Horizon: Frontier. A change here can break Frontier, and this repository cannot check that. See [Gui: Shared code constraint](gui.md#shared-code-constraint).
 
+- `CombatSimulation` - New battle simulator, shared with Frontier. In progress: it holds only the engine-free physics library now. See [Combat simulation](combat_simulation.md).
 - `Diagnostics` - Project logging, assertion, and Unity logger adapters. See [Diagnostics module](diagnostics.md).
 - `Gui` - Shared UI framework, window management, themes, the debug console, and reusable controls. See [Gui module](gui.md).
 - `Localization` - Runtime localization and language-specific XML translation resources. See [Localization module](localization.md).

@@ -66,6 +66,8 @@ The analysis was done by reading the code on 2026-10-11. No issue was reproduced
 
 **Direction.** Decide whether the default database and supported mods still need each legacy path. Convert data with a migration where possible, then delete the old path.
 
+**Decision (2026-10-16).** Legacy ammunition: convert, then delete. Legacy AI and worm tail V1: keep, because mods use them. Details: [step 7 of the refactoring plan](../../TODO/battle_simulator_investigation.md#step-7-legacy-content-audit).
+
 ### B5. Dead and unreachable code
 
 **Problem.** The module contains types, members, and features that have no effect.
@@ -82,6 +84,8 @@ The analysis was done by reading the code on 2026-10-11. No issue was reproduced
 **Effect.** Readers spend time on code that does nothing. Some dead features look active (statistics, immunity, culling).
 
 **Direction.** Delete the dead types and fields. Finish or remove statistics, immunity, and culling. Check prefabs before you delete a `MonoBehaviour` type.
+
+**Status (2026-10-16).** Re-checked: every type above still has no callers and no prefab references. The owner decided to mark this code, not delete it. Do not port it to the new core.
 
 ### B6. Simulation rules depend on Unity statics and cannot be tested
 
@@ -107,6 +111,19 @@ The analysis was done by reading the code on 2026-10-11. No issue was reproduced
 **Effect.** Garbage collection spikes in large battles, mostly on mobile.
 
 **Direction.** Pool composite effects, reuse the threat list buffer, remove LINQ from update loops, and keep one random source per scene.
+
+### B8. Torus-wrap distance has no shared helper
+
+**Problem.** The map is a torus, but there is no shared function for the shortest vector across the wrap line. Each call site either measures the raw world distance or carries its own copy of the wrap code.
+
+**Evidence.**
+- PR #600 (head f27b0ae0) adds the same wrap code in four places: `HomingController.WrapDirection`, `ShipNavigationHandler.WrapDirection`, `ShipListExtensions.WrapDirection`, and inline in `Helpers.DistanceWrap`. It passes the area width and height separately through 12 call sites.
+- About 30 raw `Distance` and `Direction` calls remain under `Combat/AI`: attack-range conditions, target locators, `TargetingHelpers`, `ThreatList`, and the legacy actions.
+- Navigation and missile targeting are wrapped after #600. Range checks and aiming are not. The two disagree for AI-vs-AI pairs on opposite sides of the wrap line.
+
+**Effect.** Copies can drift. Each new wrap fix copies the code again. Pairs that include the player are not affected, because `CheckBounds` keeps every unit within half an area of the player.
+
+**Direction.** Owner decision (2026-10-17): do not require deduplication in #600. Handle it in the refactoring: one minimum-image helper (shortest vector on the torus) on the scene, used by all distance and direction code. See [step 5 of the refactoring plan](../../TODO/battle_simulator_investigation.md#step-5-physics-requirements).
 
 ## Defects
 
@@ -222,3 +239,87 @@ The analysis was done by reading the code on 2026-10-11. No issue was reproduced
 | D13.10 | [SpaceObjectFactory.cs:210](../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Objects/SpaceObjectFactory.cs#L210) | `CreateDecoy` calls `Run` twice on the same flash effect. The first call has no effect. | Confirmed |
 | D13.11 | `EnergyShieldDamageHandler.RemoveDamage` | The last line reduces corrosive damage after an earlier line set it to zero. | Confirmed |
 | D13.12 | `LongRange` and `AggressiveClone` constructors | The `AvoidThreats` and `UseAccelerators` policies are added twice. | Confirmed |
+
+### D14. The gravity bomb is classified as a drone — Medium, Confirmed
+
+**Where.** [SpaceObjectFactory.cs:305](../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Objects/SpaceObjectFactory.cs#L305). `GravityGenerator` creates the bomb as `UnitClass.Drone` with `UnitSide.Undefined`, so it uses the Drone-Undefined collision layer (23).
+
+**Failure.** Code that handles real drones also acts on the bomb (issue #535):
+- `PointDefenseCollisionAction` fires at it and spends energy ([line 33](../../Assets/Modules/BattleSimulator/Scripts/Combat/Collision/Behaviour/Action/PointDefenseCollisionAction.cs#L33)).
+- `StickyController` lets missiles stick to it ([line 72](../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Controller/StickyController.cs#L72)).
+- `DetonateAtTargetAction` detonates bullets on it ([line 17](../../Assets/Modules/BattleSimulator/Scripts/Combat/Collision/Behaviour/Action/DetonateAtTargetAction.cs#L17)).
+- `RestoreLifeAction` extends bullet lifetime on contact ([line 35](../../Assets/Modules/BattleSimulator/Scripts/Combat/Collision/Behaviour/Action/RestoreLifeAction.cs#L35)).
+- `AffectDroneAction` changes its owner ([line 30](../../Assets/Modules/BattleSimulator/Scripts/Combat/Collision/Behaviour/Action/AffectDroneAction.cs#L30)).
+
+PR #599 proposes a point-defense-only patch (skip drones with `UnitSide.Undefined`). That patch leaves the other four effects.
+
+**Fix.** Add `UnitClass.GravityField` at the end of the enum, and create the bomb with it.
+1. Map it to the Drone layers in `UnitType.GetCollisionLayer`, so its collisions do not change. The method throws on an unknown class.
+2. Return `false` for it in `ThreatAnalyzer.IsThreat`. Otherwise the side check marks the side-less bomb as a threat for every ship.
+3. Remove the PR #599 point-defense special case.
+4. Check every other `switch` on `UnitClass`; their defaults already ignore the bomb.
+
+Do this after PR #599 merges.
+
+### D15. Progressive damage restarts its ramp for all targets — Medium, Confirmed
+
+**Where.** [ProgressiveDamageAction.cs:30](../../Assets/Modules/BattleSimulator/Scripts/Combat/Collision/Behaviour/Action/ProgressiveDamageAction.cs#L30). The action stores one `_elapsedTime` per bullet, not per target. A new contact sets it to zero and deals no damage.
+
+**Failure.** A damage-over-time bullet with `ProgressiveDamage` touches target A, then target B. The contact with B resets the ramp, so A also drops back to the start of the ramp. A beam or aura that sweeps over several units never reaches full damage.
+
+**Fix.** Keep the elapsed time per target, for example in a dictionary keyed by the target unit, and clear entries that get no contact for one step.
+
+### D16. Damage over time counts once per target collider — Medium, Plausible
+
+**Where.** [CommonCollider.cs](../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Collider/CommonCollider.cs) `OnTriggerStay2D`. Unity reports one stay event per collider pair. `OnCollisionStay2D` skips repeats in one step with `TryUpdateActiveCollision`, but `OnTriggerStay2D` has no such check. 32 of 146 ship prefabs have 2–5 `Collider2D` components on one GameObject (for example `fas3`, `flagship13`, `starbase_red`).
+
+**Failure.** A damage-over-time bullet that overlaps three colliders of one ship deals three times the damage per step. Large ships with several colliders take more damage from clouds, auras and webs than other ships.
+
+**Fix.** Confirm in Play Mode. Then de-duplicate stay events per target unit and step, as `TryUpdateActiveCollision` does.
+
+### D17. Some ship modifiers depend on install order — Low, Confirmed
+
+**Where.** Modifiers run in device order: built-in devices first, then component devices in install order ([Ship.cs](../../Assets/Modules/BattleSimulator/Scripts/Combat/Unit/Ship/Ship.cs) `AddSystem`). Some modifiers set a value instead of combining it:
+
+- `JammerDevice` sets `TargetPriority = High`. `StealthDevice` sets `TargetPriority = None` while active.
+- `WarpDrive` sets `Throttle = 0` and `Deceleration = 0` during warp. `BrakeDevice` adds deceleration when the throttle is zero. `AcceleratorDevice` sets `Throttle = 1`.
+
+**Failure.**
+- A ship with a jammer installed after a stealth device stays a high-priority target while it is invisible.
+- A ship with a brake installed after a warp drive decelerates during warp, so it warps a shorter distance. An accelerator installed after the warp drive can thrust during warp.
+
+**Fix.** Give conflicting values an explicit priority: `None` beats `High` for target priority, and warp locks beat throttle and deceleration changes. See [battle simulator investigation](../../TODO/battle_simulator_investigation.md), step 1.2.
+
+### D18. A time machine undoes the ship's own detonation — question
+
+**Where.** `DetonatorDevice` destroys the ship through `Ship.Affect` with the `Destroy` effect. `Ship.Affect` then raises `DamageTaken`. `InfinityStone.OnEvent` sees zero armor and restores the ship when it is off cooldown.
+
+**Effect.** A ship with both devices makes the explosion and survives. The owner must decide if this combination is intended. If not, skip the restore when the impact has the `Destroy` effect from the ship itself.
+
+### D19. The torus wrap tears jointed units apart — Low, Plausible
+
+**Where.** [Scene.cs:202](../../Assets/Modules/BattleSimulator/Scripts/Combat/Scene/Scene.cs#L202) `CheckBounds` moves each root unit separately. It skips units of class `Limb`, which both worm tail versions use for their segments. Jointed groups are not moved together: worm tails (hinge joints), harpoons (distance joint to the owner, fixed joint to the target) and tractor beams (distance joint).
+
+**Failure.**
+- An enemy worm-tail ship that crosses the wrap line jumps one area width. Its tail segments stay behind, and the hinge joints pull them across the map.
+- A harpoon or tractor beam whose two ends are on different sides of the wrap line gets one end moved. The joint then pulls with a very large force.
+
+**Fix.** Confirm in Play Mode. Then wrap connected groups as one: find the root of each joint group and move all its bodies by the same offset.
+
+### D20. Missile dodge rolls allocate and share one seed — Low, Plausible
+
+**Where.** [ShipListExtensions.cs:208](../../Assets/Modules/BattleSimulator/Scripts/Combat/Scene/ShipListExtensions.cs#L208) `GetEnemyForMissile` creates `new System.Random()` for every candidate ship with `ChanceToAvoidMissile > 0`.
+
+**Failure.**
+- Each check allocates a `Random` object (B7). Homing and magnetic missiles search again every 2 s, so many missiles make many allocations.
+- On Mono and IL2CPP, the parameterless constructor seeds from the system tick count. Missiles that search in the same millisecond get the same roll, so they all skip the same target or all lock onto it.
+
+**Fix.** Use one seeded random source for the scene. Do this only with owner approval, because it changes seeded combat results.
+
+### D21. A non-finite player position moves every unit to `NaN` — Low, Confirmed
+
+**Where.** [Scene.cs:214](../../Assets/Modules/BattleSimulator/Scripts/Combat/Scene/Scene.cs#L214) `CheckBounds` uses the player position as the wrap center. It checks that each unit position is finite, but it does not check the center. The gap came in with PR #598.
+
+**Failure.** If the player position becomes `NaN` or infinite, for example after a physics blow-up, `dx` and `dy` are `NaN`. The in-range check is false, so `Body.Move` puts every root unit at `NaN`. The code before #598 moved nothing in this case. A `NaN` player already breaks the camera, so the change only spreads the damage.
+
+**Fix.** Return early from `CheckBounds` when `center.x` or `center.y` is not finite.
