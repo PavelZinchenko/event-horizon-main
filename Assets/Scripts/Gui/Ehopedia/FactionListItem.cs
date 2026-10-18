@@ -15,9 +15,9 @@ namespace Gui.Ehopedia
         public void Initialize(Faction faction, bool unlocked, ILocalization localization)
         {
             Faction = faction;
-            var color = faction.Color;
+            var color = faction.Color.ToUnity();
             _icon.color = color;
-            if (_background) _background.color = new Color(color.R, color.G, color.B, 0.5f);
+            if (_background) _background.color = new Color(color.r, color.g, color.b, 0.5f);
             _name.text = unlocked ? localization.GetString(faction.Name) : "???";
             _toggle.isOn = false;
             _toggle.interactable = unlocked;

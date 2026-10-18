@@ -15,9 +15,9 @@ namespace Combat.Component.Bullet.SpawnSettings
             _rotation = rotation;
         }
 
-        public Vector2 GetOffset(int bulletIndex)
+        public Vector2Data GetOffset(int bulletIndex)
         {
-            return _parent.GetOffset(bulletIndex) + _offset;
+            return _parent.GetOffset(bulletIndex) + _offset.ToData();
         }
 
         public float GetRotation(int bulletIndex)

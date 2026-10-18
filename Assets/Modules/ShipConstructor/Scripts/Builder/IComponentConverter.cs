@@ -1,6 +1,6 @@
 ﻿using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using UnityEngine;
+using Utilites;
 
 namespace Constructor
 {
@@ -48,7 +48,7 @@ namespace Constructor
             var barrelId = component.BarrelId >= 0 ? component.BarrelId + firstBarrelId : -1;
 
             var minQuality = _level < 150 ? 0 : 1;
-            var maxQuality = Mathf.Min(_level / 75, 3);
+            var maxQuality = MathEx.Min(_level / 75, 3);
             var quality = _random.SquareRange(minQuality, maxQuality);
 
             ComponentInfo info;

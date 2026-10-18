@@ -1,4 +1,5 @@
-using UnityEngine;
+using GameDatabase.Model;
+using Utilites;
 using System;
 using System.Collections.Generic;
 
@@ -49,18 +50,18 @@ namespace GameModel
 			}
 		}
 
-		public static Vector2 GetStarPosition(int id, int gameseed)
+		public static Vector2Data GetStarPosition(int id, int gameseed)
 		{
 			int x,y;
 			StarLayout.IdToPosition(id, out x, out y);
 			var offset = y % 2 == 0 ? 0.0f : 0.5f;
-			return new Vector2((x+offset)*_stepX, y*_stepY) + GetStarOffset(id, gameseed);
+			return new Vector2Data((x+offset)*_stepX, y*_stepY) + GetStarOffset(id, gameseed);
 		}
 
         public static int GetStarLevel(int id, int gameseed)
         {
             var position = GetStarPosition(id, gameseed);
-            return Mathf.RoundToInt(position.magnitude);
+            return MathEx.RoundToInt(position.magnitude);
         }
 
         /*public static IEnumerable<int> GetAdjacentStars(int id)
@@ -158,14 +159,15 @@ namespace GameModel
 		public static float DistanceX { get { return _stepX; } }
 		public static float DistanceY { get { return _stepY; } }
 
-		private static Vector2 GetStarOffset(int id, int gameseed)
+		private static Vector2Data GetStarOffset(int id, int gameseed)
 		{
-            UnityEngine.Random.InitState(gameseed + id);
-            return UnityEngine.Random.insideUnitCircle * _offset;
+            var random = RandomState.FromSeed(gameseed + id);
+            var (x, y) = random.InsideUnitCircle();
+            return new Vector2Data(x * _offset, y * _offset);
         }
 
 	    private const float _offset = 0.3f;
 	    private const float _stepX = 1.0f;
-	    private static readonly float _stepY = Mathf.Sqrt(3)/2;
+	    private static readonly float _stepY = MathEx.Sqrt(3)/2;
 	}
 }

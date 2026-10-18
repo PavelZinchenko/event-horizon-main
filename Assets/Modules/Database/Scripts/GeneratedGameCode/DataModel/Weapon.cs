@@ -40,15 +40,15 @@ namespace GameDatabase.DataModel
 		public WeaponStats(WeaponSerializable serializable, Database.Loader loader)
 		{
 			WeaponClass = serializable.WeaponClass;
-			FireRate = UnityEngine.Mathf.Clamp(serializable.FireRate, 0f, 100f);
-			Spread = UnityEngine.Mathf.Clamp(serializable.Spread, 0f, 360f);
-			Magazine = UnityEngine.Mathf.Clamp(serializable.Magazine, 0, 999999999);
+			FireRate = Utilites.MathEx.Clamp(serializable.FireRate, 0f, 100f);
+			Spread = Utilites.MathEx.Clamp(serializable.Spread, 0f, 360f);
+			Magazine = Utilites.MathEx.Clamp(serializable.Magazine, 0, 999999999);
 			ActivationType = serializable.ActivationType;
 			ShotSound = new AudioClipId(serializable.ShotSound);
 			ChargeSound = new AudioClipId(serializable.ChargeSound);
 			ShotEffectPrefab = new PrefabId(serializable.ShotEffectPrefab, PrefabId.Type.Effect);
 			VisualEffect = loader?.GetVisualEffect(new ItemId<VisualEffect>(serializable.VisualEffect)) ?? VisualEffect.DefaultValue;
-			EffectSize = UnityEngine.Mathf.Clamp(serializable.EffectSize, 0f, 100f);
+			EffectSize = Utilites.MathEx.Clamp(serializable.EffectSize, 0f, 100f);
 			ControlButtonIcon = new SpriteId(serializable.ControlButtonIcon, SpriteId.Type.ActionButton);
 
 			OnDataDeserialized(serializable, loader);

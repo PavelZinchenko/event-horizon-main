@@ -40,7 +40,7 @@ namespace Gui.Craft
             if (ship != null)
             {
                 _shipImage.sprite = _resourceLocator.GetSprite(ship.Model.ModelImage);
-                _shipImage.color = ship.ColorScheme.HsvColor;
+                _shipImage.color = ship.ColorScheme.HsvColor.ToUnity();
             }
 
             InitializeSlots();

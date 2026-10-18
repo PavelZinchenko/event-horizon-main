@@ -53,7 +53,7 @@ namespace ViewModel
 			if (faction != Faction.Empty)
 			{
 				FactionNameText.gameObject.SetActive(true);
-				FactionNameText.color = faction.Color;
+				FactionNameText.color = faction.Color.ToUnity();
 				FactionNameText.text = _localization.GetString(faction.Name);
 			}
 			else

@@ -38,7 +38,7 @@ namespace Combat.Effects
             _material = renderer.material;
             _material.mainTexture = sprite == null ? null : sprite.texture;
 
-            _view.Initialize(data.Color, data.ColorMode);
+            _view.Initialize(data.Color.ToUnity(), data.ColorMode);
             _view.Animated = data.Type == GameDatabase.Enums.VisualEffectType.Lightning;
             _view.Fading = data.Type == GameDatabase.Enums.VisualEffectType.LightningStrike;
             _thickness = data.ParticleSize;

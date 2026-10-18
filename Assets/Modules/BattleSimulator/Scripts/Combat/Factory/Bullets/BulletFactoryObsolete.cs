@@ -67,7 +67,7 @@ namespace Combat.Factory
 
         public IBullet Create(IWeaponPlatform parent, float spread, float rotation, Vector2 offset)
         {
-            var color = _stats.AmmunitionClass == AmmunitionClassObsolete.Fireworks ? Color.Lerp(_stats.Color, new Color(Random.value, Random.value, Random.value), 0.75f) : (UnityEngine.Color)_stats.Color;
+            var color = _stats.AmmunitionClass == AmmunitionClassObsolete.Fireworks ? Color.Lerp(_stats.Color.ToUnity(), new Color(Random.value, Random.value, Random.value), 0.75f) : _stats.Color.ToUnity();
             var velocity = GetVelocity();
 
             var bulletGameObject = new GameObjectHolder(_prefab, _services);

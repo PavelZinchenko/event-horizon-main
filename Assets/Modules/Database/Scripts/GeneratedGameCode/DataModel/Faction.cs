@@ -30,11 +30,11 @@ namespace GameDatabase.DataModel
 			Name = serializable.Name;
 			Color = new ColorData(serializable.Color);
 			NoTerritories = serializable.NoTerritories;
-			HomeStarDistance = UnityEngine.Mathf.Clamp(serializable.HomeStarDistance, 0, 5000);
-			HomeStarDistanceMax = UnityEngine.Mathf.Clamp(serializable.HomeStarDistanceMax, 0, 5000);
+			HomeStarDistance = Utilites.MathEx.Clamp(serializable.HomeStarDistance, 0, 5000);
+			HomeStarDistanceMax = Utilites.MathEx.Clamp(serializable.HomeStarDistanceMax, 0, 5000);
 			NoWanderingShips = serializable.NoWanderingShips;
-			WanderingShipsDistance = UnityEngine.Mathf.Clamp(serializable.WanderingShipsDistance, 0, 5000);
-			WanderingShipsDistanceMax = UnityEngine.Mathf.Clamp(serializable.WanderingShipsDistanceMax, 0, 5000);
+			WanderingShipsDistance = Utilites.MathEx.Clamp(serializable.WanderingShipsDistance, 0, 5000);
+			WanderingShipsDistanceMax = Utilites.MathEx.Clamp(serializable.WanderingShipsDistanceMax, 0, 5000);
 			HideFromMerchants = serializable.HideFromMerchants;
 			HideResearchTree = serializable.HideResearchTree;
 			NoMissions = serializable.NoMissions;

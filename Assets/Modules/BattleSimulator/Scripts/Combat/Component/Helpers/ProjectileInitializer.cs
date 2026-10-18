@@ -19,19 +19,19 @@ namespace Combat.Component.Helpers
         {
             if (BulletView)
             {
-                BulletView.Initialize(resourceLocator.GetSprite(data.Image), data.MainColor, data.MainColorMode);
+                BulletView.Initialize(resourceLocator.GetSprite(data.Image), data.MainColor.ToUnity(), data.MainColorMode);
                 BulletView.SetMargins(data.Margins);
             }
 
             if (BulletObject) BulletObject.localScale = Vector3.one * data.Size;
 
-            if (EngineView) EngineView.Initialize(null, data.SecondColor, data.SecondColorMode);
+            if (EngineView) EngineView.Initialize(null, data.SecondColor.ToUnity(), data.SecondColorMode);
             if (EngineObject) EngineObject.localPosition = new Vector3(-data.Margins, 0, 0);
 
-            if (TrailView) TrailView.Initialize(data.SecondColor, data.SecondColorMode);
+            if (TrailView) TrailView.Initialize(data.SecondColor.ToUnity(), data.SecondColorMode);
             if (TrailObject) TrailObject.localPosition = new Vector3(-data.Margins - 0.1f, 0, 0);
 
-            if (JointVisualizer) JointVisualizer.Color = data.SecondColor;
+            if (JointVisualizer) JointVisualizer.Color = data.SecondColor.ToUnity();
         }
     }
 }

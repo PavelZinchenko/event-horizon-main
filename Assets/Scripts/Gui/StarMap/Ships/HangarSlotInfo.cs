@@ -114,7 +114,7 @@ namespace Gui.StarMap
             if (ship != null)
             {
                 _shipIcon.sprite = _resourceLocator.GetSprite(ship.Model.ModelImage);
-                _shipIcon.color = ship.ColorScheme.HsvColor;
+                _shipIcon.color = ship.ColorScheme.HsvColor.ToUnity();
                 _shipNameText.text = _localization.GetString(ship.Name);
                 _shipNameText.color = UiTheme.Current.GetQualityColor(ship.Model.Quality());
                 _shipLevelText.text = ship.Experience.Level.ToString();

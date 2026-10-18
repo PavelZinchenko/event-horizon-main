@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Combat.Component.Body;
 using Combat.Component.Ship;
 using Combat.Component.Unit;
@@ -212,6 +212,8 @@ namespace Combat.Scene
             _cooldown = 0.5f;
 
             var center = _activePlayerShip.Body.Position;
+            var width = _settings.AreaWidth;
+            var height = _settings.AreaHeight;
 
             lock (_unitList.LockObject)
             {
@@ -224,34 +226,18 @@ namespace Combat.Scene
                     if (unit.Type.Class == UnitClass.Limb)
                         continue;
 
-                    var changed = false;
-
                     var position = unit.Body.Position;
+                    if (!float.IsFinite(position.x) || !float.IsFinite(position.y))
+                        continue;
 
-                    if (position.x - center.x > 0.5f * _settings.AreaWidth)
-                    {
-                        position.x -= _settings.AreaWidth;
-                        changed = true;
-                    }
-                    else if (position.x - center.x < -0.5f * _settings.AreaWidth)
-                    {
-                        position.x += _settings.AreaWidth;
-                        changed = true;
-                    }
+                    var dx = position.x - center.x;
+                    var dy = position.y - center.y;
+                    if (Mathf.Abs(dx) <= 0.5f * width && Mathf.Abs(dy) <= 0.5f * height)
+                        continue;
 
-                    if (position.y - center.y > 0.5f * _settings.AreaHeight)
-                    {
-                        position.y -= _settings.AreaHeight;
-                        changed = true;
-                    }
-                    else if (position.y - center.y < -0.5f * _settings.AreaHeight)
-                    {
-                        position.y += _settings.AreaHeight;
-                        changed = true;
-                    }
-
-                    if (changed)
-                        unit.Body.Move(position);
+                    unit.Body.Move(new Vector2(
+                        center.x + Mathf.Repeat(dx + 0.5f * width, width) - 0.5f * width,
+                        center.y + Mathf.Repeat(dy + 0.5f * height, height) - 0.5f * height));
                 }
             }
         }

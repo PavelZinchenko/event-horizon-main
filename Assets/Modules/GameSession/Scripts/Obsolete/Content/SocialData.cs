@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameModel.Serialization;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class SocialData : ISerializableDataObsolete
     {
-        [Inject]
         public SocialData(byte[] buffer = null)
         {
             IsChanged = true;
@@ -83,7 +81,7 @@ namespace Session.ContentObsolete
             var version = Helpers.DeserializeInt(buffer, ref index);
             if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
             {
-                UnityEngine.Debug.Log("SocialData: incorrect data version - " + version);
+                GameDiagnostics.Trace.Log("SocialData: incorrect data version - " + version);
                 throw new ArgumentException();
             }
 

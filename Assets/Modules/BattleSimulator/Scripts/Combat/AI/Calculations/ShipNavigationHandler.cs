@@ -5,12 +5,12 @@ namespace Combat.Ai.Calculations
 {
 	public static class ShipNavigationHandler
 	{
-		public static bool FlyAround(IShip ship, IShip target, float min, float max, int spin, ShipControls controls)
+		public static bool FlyAround(IShip ship, IShip target, float min, float max, int spin, ShipControls controls, float areaWidth, float areaHeight)
 		{
 			var minDistance = min + ship.Body.Scale/3 + target.Body.Scale/3;
 			var maxDistance = minDistance - min + max;
 
-			var direction = ship.Body.Position.Direction(target.Body.Position);
+			var direction = WrapDirection(ship.Body.Position, target.Body.Position, areaWidth, areaHeight);
 			var alpha = RotationHelpers.Angle(direction);
 
 			var distance = direction.magnitude;
@@ -50,7 +50,7 @@ namespace Combat.Ai.Calculations
 			return false;
 		}
 
-		public static bool KeepDistance(IShip ship, IShip target, float min, float max, ShipControls controls)
+		public static bool KeepDistance(IShip ship, IShip target, float min, float max, ShipControls controls, float areaWidth, float areaHeight)
 		{
 			var maxVelocity = ship.Engine.MaxVelocity;
 
@@ -58,7 +58,7 @@ namespace Combat.Ai.Calculations
             var minDistance = min + shipSummarySize;
 			var maxDistance = max + shipSummarySize;
 
-			var direction = ship.Body.Position.Direction(target.Body.Position);
+			var direction = WrapDirection(ship.Body.Position, target.Body.Position, areaWidth, areaHeight);
             var distance = direction.magnitude;
             if (distance >= minDistance && distance <= maxDistance)
                 return true;
@@ -93,6 +93,22 @@ namespace Combat.Ai.Calculations
             return false;
 		}
 
+		private static Vector2 WrapDirection(Vector2 from, Vector2 to, float areaWidth, float areaHeight)
+		{
+			var dx = to.x - from.x;
+			var dy = to.y - from.y;
+			var halfWidth = areaWidth * 0.5f;
+			var halfHeight = areaHeight * 0.5f;
+
+			if (dx > halfWidth) dx -= areaWidth;
+			else if (dx < -halfWidth) dx += areaWidth;
+
+			if (dy > halfHeight) dy -= areaHeight;
+			else if (dy < -halfHeight) dy += areaHeight;
+
+			return new Vector2(dx, dy);
+		}
+
 		public enum Status
 		{
 			NoTarget,
@@ -102,17 +118,17 @@ namespace Combat.Ai.Calculations
 			//AboutToHit,
 		}
 
-		public static Status ChaseAndRam(IShip ship, IShip enemy, ShipControls controls, out float timeToHit, out float deltaAngle)
+		public static Status ChaseAndRam(IShip ship, IShip enemy, ShipControls controls, float areaWidth, float areaHeight, out float timeToHit, out float deltaAngle)
 		{
             deltaAngle = float.MaxValue;
             timeToHit = float.MaxValue;
 			if (AttackHelpers.CantDetectTarget(ship, enemy)) return Status.NoTarget;
 			if (controls.MovementLocked) return Status.Chasing;
 
-			var canHit = TryInterceptTarget(ship, enemy, out var target, out timeToHit);
+			var canHit = TryInterceptTarget(ship, enemy, areaWidth, areaHeight, out var target, out timeToHit);
 			var status = canHit ? Status.Chasing : Status.Following;
 
-			var direction = ship.Body.Position.Direction(target);
+			var direction = WrapDirection(ship.Body.Position, target, areaWidth, areaHeight);
 			var course = RotationHelpers.Angle(direction);
 			controls.Course = course;
 
@@ -150,11 +166,12 @@ namespace Combat.Ai.Calculations
 			return false;
 		}
 
-		private static bool TryInterceptTarget(IShip ship, IShip enemy, out Vector2 target, out float timeToHit)
+		private static bool TryInterceptTarget(IShip ship, IShip enemy, float areaWidth, float areaHeight, out Vector2 target, out float timeToHit)
 		{
 			var enemyVelocity = enemy.Body.Velocity;
 			var enemyPosition = enemy.Body.Position;
 			var shipPosition = ship.Body.Position;
+			enemyPosition = shipPosition + WrapDirection(shipPosition, enemyPosition, areaWidth, areaHeight);
 			var maxVelocity = Mathf.Max(ship.Body.Velocity.magnitude, ship.Engine.MaxVelocity);
 
 			var canHit = Geometry.GetTargetPosition(

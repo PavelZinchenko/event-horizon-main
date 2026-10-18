@@ -51,6 +51,10 @@ namespace Combat.Component.Body
         {
         }
 
+        public void ScaleVelocity(float factor)
+        {
+        }
+
         public void ApplyForce(Vector2 position, Vector2 force)
         {
             Parent?.ApplyForce(position, force);

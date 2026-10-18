@@ -122,6 +122,9 @@ namespace GameDatabase.Storage
 			}
 		}
 
+		// Resources textures are already decoded. ToSprite() uses Sprite directly and never calls this.
+		public byte[] LoadData() => null;
+
 		public TextureAdapter(Texture2D texture)
 		{
 			_texture = texture;

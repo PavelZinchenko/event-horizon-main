@@ -29,7 +29,7 @@ namespace GameDatabase.DataModel
 			loader.AddStatUpgradeTemplate(serializable.Id, this);
 
 			var variableResolver = new VariableResolver(this);
-			MaxLevel = UnityEngine.Mathf.Clamp(serializable.MaxLevel, 0, 2147483647);
+			MaxLevel = Utilites.MathEx.Clamp(serializable.MaxLevel, 0, 2147483647);
 			_stars = new Expressions.IntToInt(serializable.Stars, -2147483648, 2147483647, variableResolver) { ParamName1 = "level" };
 			Stars = _stars.Evaluate;
 			_credits = new Expressions.IntToInt(serializable.Credits, -2147483648, 2147483647, variableResolver) { ParamName1 = "level" };

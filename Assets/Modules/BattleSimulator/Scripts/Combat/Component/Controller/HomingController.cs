@@ -27,7 +27,7 @@ namespace Combat.Component.Controller
 
             if (_timeFromLastUpdate > _targetUpdateCooldown)
             {
-                _target = _scene.Ships.GetEnemyForMissile(_unit, 0f, _maxRange*1.3f, 30f, false, false);
+                _target = _scene.Ships.GetEnemyForMissile(_unit, 0f, _maxRange*1.3f, 30f, false, false, _scene.Settings.AreaWidth, _scene.Settings.AreaHeight);
                 _timeFromLastUpdate = 0;
             }
             
@@ -57,14 +57,17 @@ namespace Combat.Component.Controller
             float requiredAngularVelocity = 0;
             if (_target.IsActive())
             {
-                if (!_smartAim || !Geometry.GetTargetPosition(_target.Body.WorldPosition(), _target.Body.Velocity,
-                        _unit.Body.WorldPosition(),
-                        _maxVelocity, out var targetPosition, out _))
+                var position = _unit.Body.WorldPosition();
+                var targetPosition = _target.Body.WorldPosition();
+                targetPosition = position + WrapDirection(position, targetPosition);
+                if (_smartAim && Geometry.GetTargetPosition(targetPosition, _target.Body.Velocity,
+                        position,
+                        _maxVelocity, out var interceptPosition, out _))
                 {
-                    targetPosition = _target.Body.WorldPosition();
-                }            
-            
-                var direction = _unit.Body.WorldPosition().Direction(targetPosition);
+                    targetPosition = interceptPosition;
+                }
+
+                var direction = position.Direction(targetPosition);
                 var target = RotationHelpers.Angle(direction);
                 var rotation = _unit.Body.WorldRotation();
                 var delta = Mathf.DeltaAngle(rotation, target);
@@ -83,6 +86,22 @@ namespace Combat.Component.Controller
                 if(!Mathf.Approximately(turn, 0))
                     _unit.Body.Turn(turn);
             }
+        }
+
+        private Vector2 WrapDirection(Vector2 from, Vector2 to)
+        {
+            var dx = to.x - from.x;
+            var dy = to.y - from.y;
+            var halfWidth = _scene.Settings.AreaWidth * 0.5f;
+            var halfHeight = _scene.Settings.AreaHeight * 0.5f;
+
+            if (dx > halfWidth) dx -= _scene.Settings.AreaWidth;
+            else if (dx < -halfWidth) dx += _scene.Settings.AreaWidth;
+
+            if (dy > halfHeight) dy -= _scene.Settings.AreaHeight;
+            else if (dy < -halfHeight) dy += _scene.Settings.AreaHeight;
+
+            return new Vector2(dx, dy);
         }
 
         private float _timeFromLastUpdate = _targetUpdateCooldown;

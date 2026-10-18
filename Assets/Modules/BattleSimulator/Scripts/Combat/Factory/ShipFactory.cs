@@ -102,10 +102,10 @@ namespace Combat.Factory
             if (createShadow)
                 ship.AddTrigger(CreateShadow(ship));
 
-            CreateDestructionEffect(ship, stats.ShipModel, spec.Stats.ShipColor.Color);
+            CreateDestructionEffect(ship, stats.ShipModel, spec.Stats.ShipColor.Color.ToUnity());
 
             if (spec.Stats.ShieldPoints > 0)
-                ship.AddTrigger(CreateShield(ship, stats.ShipModel.EngineColor));
+                ship.AddTrigger(CreateShield(ship, stats.ShipModel.EngineColor.ToUnity()));
 
             foreach (var item in spec.Platforms)
             {
@@ -228,9 +228,25 @@ namespace Combat.Factory
 
         public Ship CreateStarbase(IShipSpecification spec, Vector2 position, float rotation, UnitSide unitSide)
         {
-            var ship = CreateShip(spec, _controllerFactory.CreateStarbaseController(spec.CustomAi, true), position, rotation, null, unitSide, _settings.Shadows);
-            ship.Engine = new StarbaseEngine(10f);
-            return ship;
+            if (unitSide == UnitSide.Player)
+            {
+                var controllerFactory = _controllerFactory.CreateKeyboardController();
+                var ship = CreateShip(spec, controllerFactory, position, rotation, null, UnitSide.Player, _settings.Shadows);
+
+                ship.Engine = new StarbaseEngine(10f);
+
+                if (spec.Stats.Autopilot)
+                    _aiManager.Add(_controllerFactory.CreateAutopilotController().Create(ship));
+
+                return ship;
+            }
+            else
+            {
+                var controllerFactory = _controllerFactory.CreateStarbaseController(spec.CustomAi, true);
+                var ship = CreateShip(spec, controllerFactory, position, rotation, null, unitSide, _settings.Shadows);
+                ship.Engine = new StarbaseEngine(10f);
+                return ship;
+            }
         }
 
         public Ship CreateTurret(IShipSpecification spec, Vector2 position, float rotation, UnitSide side)
@@ -276,8 +292,8 @@ namespace Combat.Factory
         {
             foreach (var engine in model.ShipModel.Engines)
             {
-                ship.AddTrigger(CreateEngineLight(ship, engine.Position * 0.5f, 0f, 5 * engine.Size / model.ShipModel.ModelScale, model.ShipModel.EngineColor));
-                ship.AddTrigger(CreateTrail(ship, engine.Position * 0.5f, engine.Size, model.ShipModel.EngineColor, effectType));
+                ship.AddTrigger(CreateEngineLight(ship, engine.Position.ToUnity() * 0.5f, 0f, 5 * engine.Size / model.ShipModel.ModelScale, model.ShipModel.EngineColor.ToUnity()));
+                ship.AddTrigger(CreateTrail(ship, engine.Position.ToUnity() * 0.5f, engine.Size, model.ShipModel.EngineColor.ToUnity(), effectType));
             }
         }
 
@@ -376,7 +392,7 @@ namespace Combat.Factory
         {
             var satellite = _satelliteFactory.CreateSatellite(ship, data);
             var parent = (IUnit)satellite ?? ship;
-            var position = data.Position * 0.5f;
+            var position = data.Position.ToUnity() * 0.5f;
             var rotation = data.Rotation;
             var offset = (data.Offset + data.Size) * 0.5f;
             var isTurret = (bool)data.Image && (data.Weapons.Any() || data.WeaponsObsolete.Any());
@@ -403,7 +419,7 @@ namespace Combat.Factory
                 var view = gameObject.GetComponent<IView>();
                 gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
                 view.ApplyHsv(color.Hue, color.Saturation, _materialCache);
-                platform.SetView(view, color.Color);
+                platform.SetView(view, color.Color.ToUnity());
                 gameObject.GetComponent<IBodyComponent>().Initialize(platform.Body, new Vector2(-0.5f * data.Size * parent.Body.Scale, 0), 0, scale * data.Size * parent.Body.Scale, Vector2.zero, 0, 0);
                 gameObject.IsActive = true;
                 ship.AddResource(gameObject);

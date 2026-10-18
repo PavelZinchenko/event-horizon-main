@@ -24,18 +24,18 @@ namespace GameDatabase.DataModel
 
 		private BulletBody(BulletBodySerializable serializable, Database.Loader loader)
 		{
-			Size = UnityEngine.Mathf.Clamp(serializable.Size, 0f, 1000f);
-			Length = UnityEngine.Mathf.Clamp(serializable.Length, 0f, 1000f);
-			Velocity = UnityEngine.Mathf.Clamp(serializable.Velocity, 0f, 1000f);
-			ParentVelocityEffect = UnityEngine.Mathf.Clamp(serializable.ParentVelocityEffect, -1000f, 1000f);
+			Size = Utilites.MathEx.Clamp(serializable.Size, 0f, 1000f);
+			Length = Utilites.MathEx.Clamp(serializable.Length, 0f, 1000f);
+			Velocity = Utilites.MathEx.Clamp(serializable.Velocity, 0f, 1000f);
+			ParentVelocityEffect = Utilites.MathEx.Clamp(serializable.ParentVelocityEffect, -1000f, 1000f);
 			AttachedToParent = serializable.AttachedToParent;
-			Range = UnityEngine.Mathf.Clamp(serializable.Range, 0f, 1E+09f);
-			Lifetime = UnityEngine.Mathf.Clamp(serializable.Lifetime, 0f, 1E+09f);
-			Weight = UnityEngine.Mathf.Clamp(serializable.Weight, 0f, 1E+09f);
-			HitPoints = UnityEngine.Mathf.Clamp(serializable.HitPoints, 0, 999999999);
+			Range = Utilites.MathEx.Clamp(serializable.Range, 0f, 1E+09f);
+			Lifetime = Utilites.MathEx.Clamp(serializable.Lifetime, 0f, 1E+09f);
+			Weight = Utilites.MathEx.Clamp(serializable.Weight, 0f, 1E+09f);
+			HitPoints = Utilites.MathEx.Clamp(serializable.HitPoints, 0, 999999999);
 			Color = new ColorData(serializable.Color);
 			BulletPrefab = loader?.GetBulletPrefab(new ItemId<BulletPrefab>(serializable.BulletPrefab)) ?? BulletPrefab.DefaultValue;
-			EnergyCost = UnityEngine.Mathf.Clamp(serializable.EnergyCost, 0f, 1E+09f);
+			EnergyCost = Utilites.MathEx.Clamp(serializable.EnergyCost, 0f, 1E+09f);
 			CanBeDisarmed = serializable.CanBeDisarmed;
 			FriendlyFire = serializable.FriendlyFire;
 			DetonateWhenDestroyed = serializable.DetonateWhenDestroyed;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Assertions;
 
 namespace CommonComponents.Utils
 {
@@ -123,7 +122,7 @@ namespace CommonComponents.Utils
 
         public void Assign(IEnumerable<T> items)
         {
-            Assert.IsNotNull(items);
+            if (items == null) throw new ArgumentNullException(nameof(items));
 
             if (_readOnly)
                 throw new InvalidOperationException();

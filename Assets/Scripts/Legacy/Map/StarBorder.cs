@@ -62,12 +62,12 @@ public class StarBorder : MonoBehaviour
 			if (regions[id1] == regionId)
 				continue;
 
-			var pos0 = StarLayout.GetStarPosition(star0, seed);
-			var pos1 = StarLayout.GetStarPosition(star1, seed);
-			var pos2 = StarLayout.GetStarPosition(star2, seed);
+			var pos0 = StarLayout.GetStarPosition(star0, seed).ToUnity();
+			var pos1 = StarLayout.GetStarPosition(star1, seed).ToUnity();
+			var pos2 = StarLayout.GetStarPosition(star2, seed).ToUnity();
 
 			var p0 = regions[id0] != regionId ? (pos0 - center)/2 : (pos0 + pos1)/2 - center;
-			var p1 = (StarLayout.GetStarPosition(star1, seed) - center)/2;
+			var p1 = (StarLayout.GetStarPosition(star1, seed).ToUnity() - center)/2;
 			var p2 = regions[id2] != regionId ? (pos2 - center)/2 : (pos1 + pos2)/2 - center;
 
 			CreateSegment(vertices, uv, triangles, Vector2.Lerp(p0,p1,0.5f), p1, Vector2.Lerp(p1,p2,0.5f));

@@ -24,22 +24,22 @@ namespace GameDatabase.DataModel
 
 		private ShipSettings(ShipSettingsSerializable serializable, Database.Loader loader)
 		{
-			DefaultWeightPerCell = UnityEngine.Mathf.Clamp(serializable.DefaultWeightPerCell, 1f, 1000000f);
-			MinimumWeightPerCell = UnityEngine.Mathf.Clamp(serializable.MinimumWeightPerCell, 1f, 1000000f);
-			BaseArmorPoints = UnityEngine.Mathf.Clamp(serializable.BaseArmorPoints, 0f, 1000000f);
-			ArmorPointsPerCell = UnityEngine.Mathf.Clamp(serializable.ArmorPointsPerCell, 0f, 1000000f);
-			ArmorRepairCooldown = UnityEngine.Mathf.Clamp(serializable.ArmorRepairCooldown, 0f, 60f);
-			BaseEnergyPoints = UnityEngine.Mathf.Clamp(serializable.BaseEnergyPoints, 0f, 1000000f);
-			BaseEnergyRechargeRate = UnityEngine.Mathf.Clamp(serializable.BaseEnergyRechargeRate, 0f, 1000000f);
-			EnergyRechargeCooldown = UnityEngine.Mathf.Clamp(serializable.EnergyRechargeCooldown, 0f, 60f);
-			BaseShieldRechargeRate = UnityEngine.Mathf.Clamp(serializable.BaseShieldRechargeRate, 0f, 1000000f);
-			ShieldRechargeCooldown = UnityEngine.Mathf.Clamp(serializable.ShieldRechargeCooldown, 0f, 60f);
-			BaseDroneReconstructionSpeed = UnityEngine.Mathf.Clamp(serializable.BaseDroneReconstructionSpeed, 0f, 100f);
-			ShieldCorrosiveResistance = UnityEngine.Mathf.Clamp(serializable.ShieldCorrosiveResistance, 0f, 1f);
-			MaxVelocity = UnityEngine.Mathf.Clamp(serializable.MaxVelocity, 5f, 100f);
-			MaxAngularVelocity = UnityEngine.Mathf.Clamp(serializable.MaxAngularVelocity, 5f, 100f);
-			MaxAcceleration = UnityEngine.Mathf.Clamp(serializable.MaxAcceleration, 5f, 1000f);
-			MaxAngularAcceleration = UnityEngine.Mathf.Clamp(serializable.MaxAngularAcceleration, 5f, 1000f);
+			DefaultWeightPerCell = Utilites.MathEx.Clamp(serializable.DefaultWeightPerCell, 1f, 1000000f);
+			MinimumWeightPerCell = Utilites.MathEx.Clamp(serializable.MinimumWeightPerCell, 1f, 1000000f);
+			BaseArmorPoints = Utilites.MathEx.Clamp(serializable.BaseArmorPoints, 0f, 1000000f);
+			ArmorPointsPerCell = Utilites.MathEx.Clamp(serializable.ArmorPointsPerCell, 0f, 1000000f);
+			ArmorRepairCooldown = Utilites.MathEx.Clamp(serializable.ArmorRepairCooldown, 0f, 60f);
+			BaseEnergyPoints = Utilites.MathEx.Clamp(serializable.BaseEnergyPoints, 0f, 1000000f);
+			BaseEnergyRechargeRate = Utilites.MathEx.Clamp(serializable.BaseEnergyRechargeRate, 0f, 1000000f);
+			EnergyRechargeCooldown = Utilites.MathEx.Clamp(serializable.EnergyRechargeCooldown, 0f, 60f);
+			BaseShieldRechargeRate = Utilites.MathEx.Clamp(serializable.BaseShieldRechargeRate, 0f, 1000000f);
+			ShieldRechargeCooldown = Utilites.MathEx.Clamp(serializable.ShieldRechargeCooldown, 0f, 60f);
+			BaseDroneReconstructionSpeed = Utilites.MathEx.Clamp(serializable.BaseDroneReconstructionSpeed, 0f, 100f);
+			ShieldCorrosiveResistance = Utilites.MathEx.Clamp(serializable.ShieldCorrosiveResistance, 0f, 1f);
+			MaxVelocity = Utilites.MathEx.Clamp(serializable.MaxVelocity, 5f, 100f);
+			MaxAngularVelocity = Utilites.MathEx.Clamp(serializable.MaxAngularVelocity, 5f, 100f);
+			MaxAcceleration = Utilites.MathEx.Clamp(serializable.MaxAcceleration, 5f, 1000f);
+			MaxAngularAcceleration = Utilites.MathEx.Clamp(serializable.MaxAngularAcceleration, 5f, 1000f);
 			DisableCellsExpansions = serializable.DisableCellsExpansions;
 			ShipExplosionEffect = loader?.GetVisualEffect(new ItemId<VisualEffect>(serializable.ShipExplosionEffect)) ?? VisualEffect.DefaultValue;
 			ShipExplosionSound = new AudioClipId(serializable.ShipExplosionSound);

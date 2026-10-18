@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Zenject;
 using Session.ContentObsolete;
 
 namespace Session
 {
-    public class SessionDataObsolete : Services.Storage.ISerializableGameData, ISessionDataObsolete, ITickable
+    public class SessionDataObsolete : Services.Storage.ISerializableGameData, ISessionDataObsolete
     {
-        [Inject]
         public SessionDataObsolete(ContentFactoryObsolete contentFactory)
         {
             _contentFactory = contentFactory;
@@ -16,12 +14,6 @@ namespace Session
         public long GameId { get; private set;  }
         public long TimePlayed { get { return (long) _timePlayed; } private set { _timePlayed = value; } }
         public string ModId { get; private set; }
-
-        public void Tick()
-        {
-            if (_content != null && _content.Game.GameStartTime > 0)
-                _timePlayed += UnityEngine.Time.deltaTime;
-        }
 
         public long DataVersion
         {
@@ -47,13 +39,13 @@ namespace Session
         {
             try
             {
-                UnityEngine.Debug.Log("SessionData.TryDeserialize");
+                GameDiagnostics.Trace.Log("SessionData.TryDeserialize");
 
                 var content = DatabaseContentObsolete.TryDeserialize(data, startIndex, _contentFactory);
                 if (content == null)
                     return false;
 
-                UnityEngine.Debug.Log("SessionData.TryDeserialize - success " + content.Game.GameStartTime + "/" + dataVersion);
+                GameDiagnostics.Trace.Log("SessionData.TryDeserialize - success " + content.Game.GameStartTime + "/" + dataVersion);
 
                 GameId = gameId;
                 TimePlayed = timePlayed;
@@ -63,7 +55,7 @@ namespace Session
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.Log(e.Message);
+                GameDiagnostics.Trace.Log(e.Message);
                 return false;
             }
 
@@ -74,7 +66,7 @@ namespace Session
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogException(e);
+                GameDiagnostics.Trace.LogException(e);
             }
 
             return true;
@@ -82,7 +74,7 @@ namespace Session
 
         public void CreateNewGame(string modId, bool keepPurchases = true)
         {
-            UnityEngine.Debug.Log("SessionData.CreateNewGame");
+            GameDiagnostics.Trace.Log("SessionData.CreateNewGame");
 
             if (_content != null && keepPurchases)
                 _content = new DatabaseContentObsolete(_contentFactory, _content.Purchases, _content.Achievements);

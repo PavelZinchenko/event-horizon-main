@@ -41,7 +41,17 @@ public class Joystick : UIBehaviour, IPointerDownHandler, IPointerUpHandler, IDr
 		}
 	}
 
-	protected override void OnRectTransformDimensionsChange()
+    protected override void Start()
+    {
+        OnSizeChanged();
+    }
+
+    protected override void OnRectTransformDimensionsChange()
+    {
+        OnSizeChanged();
+    }
+
+    private void OnSizeChanged()
 	{
 		var rectTransform = GetComponent<RectTransform>();
 		var corners = new Vector3[4];

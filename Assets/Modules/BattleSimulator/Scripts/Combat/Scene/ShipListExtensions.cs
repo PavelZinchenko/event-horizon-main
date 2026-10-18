@@ -182,7 +182,7 @@ namespace Combat.Scene
             return enemy;
         }
 
-        public static IShip GetEnemyForMissile(this IUnitList<IShip> shipList, IUnit unit, float rotation, float maxRange, float maxDeviation, bool trueVision, bool ignoreDrones)
+        public static IShip GetEnemyForMissile(this IUnitList<IShip> shipList, IUnit unit, float rotation, float maxRange, float maxDeviation, bool trueVision, bool ignoreDrones, float areaWidth, float areaHeight)
         {
             IShip enemy = null;
             float minRange = float.MaxValue;
@@ -211,7 +211,7 @@ namespace Combat.Scene
 					if (ignoreDrones && ship.Type.Class == UnitClass.Drone)
                         continue;
 
-                    var dir = unit.Body.Position.Direction(ship.Body.Position);
+                    var dir = WrapDirection(unit.Body.Position, ship.Body.Position, areaWidth, areaHeight);
                     var range = dir.magnitude - unit.Body.Scale / 2 - ship.Body.Scale / 2;
                     var deviation =
                         Mathf.Abs(Mathf.DeltaAngle(RotationHelpers.Angle(dir), unit.Body.Rotation + rotation));
@@ -250,6 +250,22 @@ namespace Combat.Scene
             }
 
             return enemy;
+        }
+
+        private static Vector2 WrapDirection(Vector2 from, Vector2 to, float areaWidth, float areaHeight)
+        {
+            var dx = to.x - from.x;
+            var dy = to.y - from.y;
+            var halfWidth = areaWidth * 0.5f;
+            var halfHeight = areaHeight * 0.5f;
+
+            if (dx > halfWidth) dx -= areaWidth;
+            else if (dx < -halfWidth) dx += areaWidth;
+
+            if (dy > halfHeight) dy -= areaHeight;
+            else if (dy < -halfHeight) dy += areaHeight;
+
+            return new Vector2(dx, dy);
         }
 
         /// <summary>

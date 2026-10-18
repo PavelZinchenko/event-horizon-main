@@ -84,7 +84,7 @@ namespace Gui.Multiplayer
         {
             var faction = _motherShip.CurrentStar.Region.Faction;
             _factionText.text = _localization.GetString("$ArenaPanelHeader"/*, _localization.GetString(faction.Name)*/);
-            _factionIcon.color = faction.Color;
+            _factionIcon.color = faction.Color.ToUnity();
             _levelText.text = _motherShip.CurrentStar.Level.ToString();
             UpdateResources();
 

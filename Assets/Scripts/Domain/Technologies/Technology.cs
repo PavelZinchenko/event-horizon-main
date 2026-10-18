@@ -197,7 +197,7 @@ namespace DataModel.Technology
             return new CraftingPrice(credits, stars, techs);
 	    }
 
-        public override UnityEngine.Color Color { get { return Component.Color; } }
+        public override UnityEngine.Color Color { get { return Component.Color.ToUnity(); } }
         public override Faction Faction => _technology.Faction;
         public override bool RequiredToUnlock => !_technology.DoesnPreventUnlocking;
 

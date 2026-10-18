@@ -21,8 +21,8 @@ SpriteAtlas:
       crunchedCompression: 0
       sRGB: 1
     platformSettings:
-    - serializedVersion: 3
-      m_BuildTarget: iPhone
+    - serializedVersion: 4
+      m_BuildTarget: iOS
       m_MaxTextureSize: 2048
       m_ResizeAlgorithm: 0
       m_TextureFormat: 54
@@ -34,7 +34,7 @@ SpriteAtlas:
       m_IgnorePlatformSupport: 0
       m_AndroidETC2FallbackOverride: 0
       m_ForceMaximumCompressionQuality_BC6H_BC7: 1
-    - serializedVersion: 3
+    - serializedVersion: 4
       m_BuildTarget: DefaultTexturePlatform
       m_MaxTextureSize: 2048
       m_ResizeAlgorithm: 0

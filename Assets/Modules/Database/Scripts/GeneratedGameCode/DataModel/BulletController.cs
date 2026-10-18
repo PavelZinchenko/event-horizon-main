@@ -144,7 +144,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			var variableResolver = GetVariableResolver();
-			StartingVelocityModifier = UnityEngine.Mathf.Clamp(serializable.StartingVelocityModifier, 0f, 1000f);
+			StartingVelocityModifier = Utilites.MathEx.Clamp(serializable.StartingVelocityModifier, 0f, 1000f);
 			IgnoreRotation = serializable.IgnoreRotation;
 			SmartAim = serializable.SmartAim;
 
@@ -431,7 +431,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			var variableResolver = GetVariableResolver();
-			Lifetime = UnityEngine.Mathf.Clamp(serializable.Lifetime, 0f, 3.402823E+38f);
+			Lifetime = Utilites.MathEx.Clamp(serializable.Lifetime, 0f, 3.402823E+38f);
 
             OnDataDeserialized(serializable, loader);
         }

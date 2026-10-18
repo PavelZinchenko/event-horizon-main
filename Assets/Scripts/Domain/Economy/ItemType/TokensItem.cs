@@ -20,7 +20,7 @@ namespace Economy.ItemType
         public string Name => _localization.GetString("$TokenCurrency");
         public string Description => string.Empty;
         public SpriteId Icon => new("Textures/Currency/tokens", SpriteId.Type.Default);
-        public Color Color => UiTheme.Current.GetCurrencyColor(Currency.Tokens);
+        public ColorData Color => UiTheme.Current.GetCurrencyColor(Currency.Tokens).ToData();
         public Price Price => Price.Tokens(1);
         public ItemQuality Quality => ItemQuality.Perfect;
 

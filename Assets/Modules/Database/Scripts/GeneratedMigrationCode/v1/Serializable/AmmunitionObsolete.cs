@@ -26,7 +26,7 @@ namespace DatabaseMigration.v1.Serializable
 		public float Impulse;
 		public float Recoil;
 		public float Size;
-		public UnityEngine.Vector2 InitialPosition;
+		public GameDatabase.Model.Vector2Data InitialPosition;
 		public float AreaOfEffect;
 		public float Damage;
 		public float Range;

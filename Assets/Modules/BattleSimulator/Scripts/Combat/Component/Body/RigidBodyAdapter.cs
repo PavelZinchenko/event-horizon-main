@@ -104,7 +104,7 @@ namespace Combat.Component.Body
                 if (Parent == null)
                 {
                     _cachedVelocity = value;
-                    _rigidbody.velocity = value;
+                    _rigidbody.linearVelocity = value;
                 }
             }
         }
@@ -151,6 +151,15 @@ namespace Combat.Component.Body
                 _rigidbody.AddTorque(acceleration * Mathf.Deg2Rad * _rigidbody.inertia, ForceMode2D.Impulse);
         }
 
+        public void ScaleVelocity(float factor)
+        {
+            if (Parent == null)
+            {
+                _rigidbody.linearVelocity *= factor;
+                _rigidbody.angularVelocity *= factor;
+            }
+        }
+
         public void ApplyForce(Vector2 position, Vector2 force)
         {
             if (Parent == null)
@@ -176,7 +185,7 @@ namespace Combat.Component.Body
 
         public void UpdatePhysics(float elapsedTime)
         {
-            var velocity = _rigidbody.velocity;
+            var velocity = _rigidbody.linearVelocity;
 
             if (_limitMaxVelocity)
             {
@@ -184,7 +193,7 @@ namespace Combat.Component.Body
                 if (speed > _velocityHardLimit)
                 {
                     velocity = velocity * _velocityHardLimit / speed;
-                    _rigidbody.velocity = velocity;
+                    _rigidbody.linearVelocity = velocity;
                 }
             }
 

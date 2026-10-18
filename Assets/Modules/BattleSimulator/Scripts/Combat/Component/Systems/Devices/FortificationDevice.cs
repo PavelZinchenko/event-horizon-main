@@ -17,7 +17,7 @@ namespace Combat.Component.Systems.Devices
             MaxCooldown = deviceSpec.Cooldown;
 
             _ship = ship;
-            _activeColor = deviceSpec.Color;
+            _activeColor = deviceSpec.Color.ToUnity();
             _energyCost = deviceSpec.EnergyConsumption;
 
             _power = deviceSpec.Power / 100;

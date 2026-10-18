@@ -21,7 +21,7 @@ namespace Economy.ItemType
         public string Description { get { return string.Empty; } }
         public SpriteId Icon => new("Textures/Currency/fuel", SpriteId.Type.Default);
         public Price Price { get { return Price.Common(1); } }
-        public Color Color { get { return Color.cyan; } }
+        public ColorData Color { get { return ColorData.Cyan; } }
         public ItemQuality Quality { get { return ItemQuality.Common; } }
 
         public void Consume(int amount)

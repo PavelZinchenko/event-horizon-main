@@ -21,7 +21,7 @@ namespace Economy.ItemType
         public string Name { get { return _localization.GetString("$Blueprint", _technology.GetName(_localization)); } }
         public string Description { get { return string.Empty; } }
         public SpriteId Icon => new("Textures/Icons/icon_blueprint", SpriteId.Type.Default);
-        public Color Color { get { return Color.white; } }
+        public ColorData Color { get { return ColorData.White; } }
         public Price Price { get { return Price.Common((long)_technology.GetCraftPrice(CraftItemQuality.Common).Credits*3); } }
         public ItemQuality Quality { get { return ItemQuality.Medium; } }
 

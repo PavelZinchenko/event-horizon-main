@@ -43,7 +43,7 @@ namespace Gui.Craft
             _techsText.text = ValueFormatter.AsMoney(price.Techs);
             var enoughTechs = _research.GetAvailablePoints(faction) >= price.Techs;
             _techsText.color = enoughTechs ? _enoughColor : _notEnoughColor;
-            _techsImage.color = faction.Color;
+            _techsImage.color = faction.Color.ToUnity();
 
             HaveEnoughResources = enoughTechs && enoughMoney && enoughStars;
         }

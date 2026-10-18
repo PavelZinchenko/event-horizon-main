@@ -12,6 +12,21 @@ namespace Combat.Ai
 		{
 		    return Mathf.Max(0.001f, Vector2.Distance(first.Body.Position, second.Body.Position) - first.Body.Scale/2 - second.Body.Scale/2);
 		}
+		public static float DistanceWrap(IUnit first, IUnit second, float areaWidth, float areaHeight)
+		{
+			var dx = second.Body.Position.x - first.Body.Position.x;
+			var dy = second.Body.Position.y - first.Body.Position.y;
+			var halfWidth = areaWidth * 0.5f;
+			var halfHeight = areaHeight * 0.5f;
+
+			if (dx > halfWidth) dx -= areaWidth;
+			else if (dx < -halfWidth) dx += areaWidth;
+
+			if (dy > halfHeight) dy -= areaHeight;
+			else if (dy < -halfHeight) dy += areaHeight;
+
+			return Mathf.Max(0.001f, new Vector2(dx, dy).magnitude - first.Body.Scale/2 - second.Body.Scale/2);
+		}
 
 		public static float ShipMinRange(IShip ship)
 		{

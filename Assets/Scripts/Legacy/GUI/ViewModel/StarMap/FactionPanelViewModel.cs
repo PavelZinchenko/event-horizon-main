@@ -74,7 +74,7 @@ namespace ViewModel
 			var region = _motherShip.CurrentStar.Region;
 
 		    FactionName.text = _localization.GetString(region.Faction.Name);
-            FactionName.color = region.Faction.Color;
+            FactionName.color = region.Faction.Color.ToUnity();
 
 		    var reputation = _session.Quests.GetFactionRelations(region.HomeStar);
 

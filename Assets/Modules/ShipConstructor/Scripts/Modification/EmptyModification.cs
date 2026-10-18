@@ -2,7 +2,6 @@
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using Services.Localization;
-using UnityEngine;
 
 namespace Constructor.Modification
 {

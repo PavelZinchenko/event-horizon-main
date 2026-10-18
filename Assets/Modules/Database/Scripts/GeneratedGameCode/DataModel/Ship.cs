@@ -34,9 +34,9 @@ namespace GameDatabase.DataModel
 			Description = serializable.Description;
 			Faction = loader?.GetFaction(new ItemId<Faction>(serializable.Faction)) ?? Faction.DefaultValue;
 			IconImage = new SpriteId(serializable.IconImage, SpriteId.Type.ShipIcon);
-			IconScale = UnityEngine.Mathf.Clamp(serializable.IconScale, 0.1f, 100f);
+			IconScale = Utilites.MathEx.Clamp(serializable.IconScale, 0.1f, 100f);
 			ModelImage = new SpriteId(serializable.ModelImage, SpriteId.Type.Ship);
-			ModelScale = UnityEngine.Mathf.Clamp(serializable.ModelScale, 0.1f, 500f);
+			ModelScale = Utilites.MathEx.Clamp(serializable.ModelScale, 0.1f, 500f);
 			EngineColor = new ColorData(serializable.EngineColor);
 			Engines = new ImmutableCollection<Engine>(serializable.Engines?.Select(item => Engine.Create(item, loader)));
 			Layout = new Layout(serializable.Layout);
@@ -44,7 +44,7 @@ namespace GameDatabase.DataModel
 			Features = ShipFeatures.Create(serializable.Features, loader);
 			VisualEffects = ShipVisualEffects.Create(serializable.VisualEffects, loader);
 			CellsExpansions = serializable.CellsExpansions;
-			ColliderTolerance = UnityEngine.Mathf.Clamp(serializable.ColliderTolerance, 0f, 1f);
+			ColliderTolerance = Utilites.MathEx.Clamp(serializable.ColliderTolerance, 0f, 1f);
 
 			OnDataDeserialized(serializable, loader);
 		}

@@ -7,14 +7,12 @@ using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
 using CommonComponents.Utils;
-using Zenject;
 using Helpers = GameModel.Serialization.Helpers;
 
 namespace Session.ContentObsolete
 {
     public class FleetData : ISerializableDataObsolete
     {
-        [Inject]
         public FleetData(IDatabase database, byte[] buffer = null)
         {
             if (buffer != null && buffer.Length > 0)
@@ -82,7 +80,7 @@ namespace Session.ContentObsolete
 
             if (version != CurrentVersion && !TryUpgrade(ref buffer, version, database))
             {
-                UnityEngine.Debug.Log("FleetData: incorrect data version");
+                GameDiagnostics.Trace.Log("FleetData: incorrect data version");
                 throw new ArgumentException();
             }
 

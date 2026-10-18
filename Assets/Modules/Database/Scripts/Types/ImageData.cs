@@ -1,38 +1,29 @@
-﻿using UnityEngine;
-
-namespace GameDatabase.Model
+﻿namespace GameDatabase.Model
 {
+    // An encoded image (png or jpg). Database.Unity turns it into a sprite with ToSprite().
     public interface IImageData
     {
-        Sprite Sprite { get; }
+        // Returns the encoded bytes, or null when there is no image.
+        // May release the bytes, so read it once and cache the result (ToSprite() does).
+        byte[] LoadData();
     }
 
     public class ImageData : IImageData
     {
-        public static ImageData Empty = new();
+        public static ImageData Empty = new(null);
 
-        public Sprite Sprite { get; }
+        private byte[] _data;
 
         public ImageData(byte[] data)
         {
-            var texture = new Texture2D(2, 2);
-
-            if (!texture.LoadImage(data))
-            {
-                GameDiagnostics.Trace.LogError("Invalid texture format");
-                return;
-            }
-
-            if (IsPowerOfTwo(texture.width) && IsPowerOfTwo(texture.height))
-                texture.Compress(true);
-            else
-                GameDiagnostics.Trace.LogError($"Texture dimensions({texture.width},{texture.height}) are not powers of two. Compression will be disabled. Consider resizing it for improved performance and reduced memory usage.") ;
-
-            Sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), texture.width);
+            _data = data;
         }
 
-        private static bool IsPowerOfTwo(int n) => n > 0 && (n & (n - 1)) == 0;
-
-        private ImageData() { }
+        public byte[] LoadData()
+        {
+            var data = _data;
+            _data = null;
+            return data;
+        }
     }
 }

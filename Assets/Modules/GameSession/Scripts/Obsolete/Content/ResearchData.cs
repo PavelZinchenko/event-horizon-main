@@ -6,13 +6,11 @@ using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
 using GameModel.Serialization;
-using Zenject;
 
 namespace Session.ContentObsolete
 {
     public class ResearchData : ISerializableDataObsolete
 	{
-        [Inject]
         public ResearchData(byte[] buffer = null)
 		{
 			IsChanged = true;
@@ -81,7 +79,7 @@ namespace Session.ContentObsolete
 			var version = Helpers.DeserializeInt(buffer, ref index);
 			if (version != CurrentVersion && !TryUpgrade(ref buffer, version))
 			{
-				UnityEngine.Debug.Log("ResearchData: incorrect data version");
+				GameDiagnostics.Trace.Log("ResearchData: incorrect data version");
                 throw new ArgumentException();
             }
 

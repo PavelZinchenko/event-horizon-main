@@ -34,7 +34,7 @@ namespace Gui.ShipService
             _shipIcon.sprite = _resourceLocator.GetSprite(_ship.Model.ModelImage);
             _nameText.text = _localization.GetString(_ship.Name);
             _levelText.text = _ship.Experience.Level.ToString();
-            _techIcon.color = _faction.Color;
+            _techIcon.color = _faction.Color.ToUnity();
 
             _color = new Color(ship.ColorScheme.Hue, ship.ColorScheme.Saturation, 0);
             _colorSlider.value = _color.r;

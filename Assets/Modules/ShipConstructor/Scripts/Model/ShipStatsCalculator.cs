@@ -2,7 +2,7 @@
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
-using UnityEngine;
+using Utilites;
 
 namespace Constructor.Model
 {
@@ -121,7 +121,7 @@ namespace Constructor.Model
             get
             {
                 var regeneration = _ship.Features.Regeneration ? 0.01f + BaseStats.RegenerationRate : BaseStats.RegenerationRate;
-                return EquipmentStats.ArmorRepairRate * Bonuses.ArmorPointsMultiplier.Value * BaseStats.ArmorMultiplier.Value + Mathf.Max(0, ArmorPoints * regeneration);
+                return EquipmentStats.ArmorRepairRate * Bonuses.ArmorPointsMultiplier.Value * BaseStats.ArmorMultiplier.Value + MathEx.Max(0, ArmorPoints * regeneration);
             }
         }
 
@@ -159,9 +159,9 @@ namespace Constructor.Model
 
         public float ShieldCorrosiveResistancePercentage => ShipSettings.ShieldCorrosiveResistance;
 
-        public float ArmorRepairCooldown => (EquipmentStats.ArmorRepairBaseCooldown + ShipSettings.ArmorRepairCooldown) * Mathf.Max(EquipmentStats.ArmorRepairCooldownMultiplier.Value, 0);
-        public float EnergyRechargeCooldown => (EquipmentStats.EnergyRechargeBaseCooldown + ShipSettings.EnergyRechargeCooldown) * Mathf.Max(EquipmentStats.EnergyRechargeCooldownMultiplier.Value * BaseStats.EnergyRechargeCooldownMultiplier.Value, 0);
-        public float ShieldRechargeCooldown => (EquipmentStats.ShieldRechargeBaseCooldown + ShipSettings.ShieldRechargeCooldown) * Mathf.Max(EquipmentStats.ShieldRechargeCooldownMultiplier.Value * BaseStats.ShieldRechargeCooldownMultiplier.Value, 0);
+        public float ArmorRepairCooldown => (EquipmentStats.ArmorRepairBaseCooldown + ShipSettings.ArmorRepairCooldown) * MathEx.Max(EquipmentStats.ArmorRepairCooldownMultiplier.Value, 0);
+        public float EnergyRechargeCooldown => (EquipmentStats.EnergyRechargeBaseCooldown + ShipSettings.EnergyRechargeCooldown) * MathEx.Max(EquipmentStats.EnergyRechargeCooldownMultiplier.Value * BaseStats.EnergyRechargeCooldownMultiplier.Value, 0);
+        public float ShieldRechargeCooldown => (EquipmentStats.ShieldRechargeBaseCooldown + ShipSettings.ShieldRechargeCooldown) * MathEx.Max(EquipmentStats.ShieldRechargeCooldownMultiplier.Value * BaseStats.ShieldRechargeCooldownMultiplier.Value, 0);
 
         public float EnergyAbsorptionPercentage => EnergyAbsorption / (ArmorPoints + EnergyAbsorption);
         public float KineticResistancePercentage => KineticResistance / (ArmorPoints + KineticResistance);
@@ -178,7 +178,7 @@ namespace Constructor.Model
                 var equipmentWeight = EquipmentStats.Weight * equipmentWeightMultiplier + EquipmentStats.WeightReduction;
                 var minWeight = ShipSettings.MinimumWeightPerCell*CellCount*baseWeightMultiplier;
                 if (minWeight < 5*ShipSettings.MinimumWeightPerCell) minWeight = 5*ShipSettings.MinimumWeightPerCell;
-                return Mathf.Max(minWeight, baseWeight + equipmentWeight) / 1000f;
+                return MathEx.Max(minWeight, baseWeight + equipmentWeight) / 1000f;
             }
         }
 
