@@ -48,11 +48,8 @@ namespace Constructor.Satellites
         /// leaves the consumption half alone, so a build that is neutral on its own turns
         /// negative on a ship with a negative energy bonus.
         /// </summary>
-        /// <returns>True when the build does not drag the ship's energy regen down.</returns>
-        public static bool HasNonNegativeEnergyRegen(this SatelliteBuild build, Ship ship)
+        public static float GetEnergyRegenContribution(this SatelliteBuild build, float energyMultiplier)
         {
-            var energyMultiplier = 1f + ship.Features.EnergyBonus;
-
             float recharge = 0;
             float consumption = 0;
             foreach (var item in build.Components)
@@ -69,7 +66,24 @@ namespace Constructor.Satellites
                     consumption -= stats.EnergyRechargeRate * multiplier;
             }
 
-            return recharge * energyMultiplier - consumption >= 0;
+            return recharge * energyMultiplier - consumption;
+        }
+
+        /// <summary>
+        /// True when the build does not drag the ship's energy regen down.
+        /// Reports the first rejection of each build so a modder sees which build is
+        /// ignored and why, without one message per enemy ship spawn.
+        /// </summary>
+        public static bool HasNonNegativeEnergyRegen(this SatelliteBuild build, Ship ship)
+        {
+            var contribution = build.GetEnergyRegenContribution(1f + ship.Features.EnergyBonus);
+            if (contribution >= 0)
+                return true;
+
+            if (_reportedEnergyRejects.Add(build.Id.Value))
+                GameDiagnostics.Trace.LogWarning($"Satellite build {build.Id} ignored: energy regen {contribution:F3} on {ship.Name}");
+
+            return false;
         }
 
         public static IEnumerable<SatelliteBuild> SuitableFor(this IEnumerable<SatelliteBuild> satellites, Ship ship, ShipSettings settings)
@@ -83,5 +97,19 @@ namespace Constructor.Satellites
         {
             return satellites.Where(item => item.DifficultyClass <= shipClass);
         }
+
+        public static void ReportNegativeEnergyBuilds(this IEnumerable<SatelliteBuild> builds)
+        {
+            foreach (var build in builds)
+            {
+                var contribution = build.GetEnergyRegenContribution(1f);
+                if (contribution < 0)
+                    GameDiagnostics.Trace.LogError($"invalid satellite build: {build.Id} energy regen {contribution:F3}");
+            }
+
+            _reportedEnergyRejects.Clear();
+        }
+
+        private static readonly HashSet<int> _reportedEnergyRejects = new HashSet<int>();
     }
 }

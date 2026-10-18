@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GameServices.SceneManager;
 using Constructor;
 using Constructor.Ships;
+using Constructor.Satellites;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
@@ -94,6 +95,8 @@ namespace GameStateMachine.States
             }
 
             _localization.Initialize(_settings.Language, _database);
+
+            _database.SatelliteBuildList.ReportNegativeEnergyBuilds();
 
 		    if (_database.IsEditable)
 		    {
