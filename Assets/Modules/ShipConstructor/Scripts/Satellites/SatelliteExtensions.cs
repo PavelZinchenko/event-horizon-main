@@ -42,19 +42,40 @@ namespace Constructor.Satellites
                 : sizeClassOk || modelScaleOk;
         }
 
-        public static bool HasPositiveEnergyRegen(this SatelliteBuild build)
+        /// <summary>
+        /// Energy a satellite build adds to a ship, mirroring ShipStatsCalculator.
+        /// ShipStatsCalculator multiplies the recharge half by the ship EnergyMultiplier and
+        /// leaves the consumption half alone, so a build that is neutral on its own turns
+        /// negative on a ship with a negative energy bonus.
+        /// </summary>
+        /// <returns>True when the build does not drag the ship's energy regen down.</returns>
+        public static bool HasNonNegativeEnergyRegen(this SatelliteBuild build, Ship ship)
         {
-            float total = 0;
-            foreach (var item in build.Components)
-                total += item.Component.Stats.EnergyRechargeRate;
+            var energyMultiplier = 1f + ship.Features.EnergyBonus;
 
-            return total > 0;
+            float recharge = 0;
+            float consumption = 0;
+            foreach (var item in build.Components)
+            {
+                var component = item.Component;
+                var stats = component.Stats;
+
+                // PerOneCell components contribute once per cell, same as ShipEquipmentStats.
+                var multiplier = stats.Type == ComponentStatsType.PerOneCell ? component.Layout.CellCount : 1f;
+
+                if (stats.EnergyRechargeRate > 0)
+                    recharge += stats.EnergyRechargeRate * multiplier;
+                else
+                    consumption -= stats.EnergyRechargeRate * multiplier;
+            }
+
+            return recharge * energyMultiplier - consumption >= 0;
         }
 
         public static IEnumerable<SatelliteBuild> SuitableFor(this IEnumerable<SatelliteBuild> satellites, Ship ship, ShipSettings settings)
         {
             return satellites.Where(item => !item.NotAvailableInGame &&
-                                            item.HasPositiveEnergyRegen() &&
+                                            item.HasNonNegativeEnergyRegen(ship) &&
                                             item.Satellite.IsSuitable(ship.SizeClass, ship.ModelScale, settings));
         }
 
