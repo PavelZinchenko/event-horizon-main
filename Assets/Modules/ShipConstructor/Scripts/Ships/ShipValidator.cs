@@ -3,7 +3,7 @@ using Constructor.Ships.Modification;
 using Database.Legacy;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
-using UnityEngine;
+using Utilites;
 
 namespace Constructor.Ships
 {
@@ -48,7 +48,7 @@ namespace Constructor.Ships
                 foreach (var item in platform.Weapons)
                 {
                     var multiplier = stats.WeaponEnergyCostMultiplier.Value;
-                    var effectiveCost = item.Ammunition.Body.EnergyCost / Mathf.Max(0.001f, multiplier);
+                    var effectiveCost = multiplier > 0 ? item.Ammunition.Body.EnergyCost / multiplier : 0f;
                     if (effectiveCost > stats.EnergyPoints)
                         return false;
                     weaponCount++;
@@ -81,7 +81,7 @@ namespace Constructor.Ships
             if (ship.SecondSatellite != null)
                 if (ship.SecondSatellite.Components.Any(item => IsForbiddenOnArena(ship, item)))
                     return false;
-            
+
             return IsShipViable(ship, settings);
         }
 
