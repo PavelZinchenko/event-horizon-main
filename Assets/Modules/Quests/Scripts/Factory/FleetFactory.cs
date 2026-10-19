@@ -63,7 +63,7 @@ namespace Domain.Quests
             var ships = ShipBuildQuery.EnemyShips(_database).
 				Common().
 				FilterByStarDistance(level, ShipBuildQuery.FilterMode.SizeAndDifficulty).
-				Where(item => factionFilter.IsSuitableForFleet(item.Ship.Faction)).
+				Where(item => factionFilter.IsSuitableForFleet(item.Faction)).
 				SelectRandom(numberOfShips, random).
 				Concat(enemy.SpecificShips);
 
