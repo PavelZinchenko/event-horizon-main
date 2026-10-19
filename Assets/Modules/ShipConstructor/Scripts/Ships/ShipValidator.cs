@@ -3,6 +3,7 @@ using Constructor.Ships.Modification;
 using Database.Legacy;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
+using UnityEngine;
 
 namespace Constructor.Ships
 {
@@ -46,7 +47,9 @@ namespace Constructor.Ships
 
                 foreach (var item in platform.Weapons)
                 {
-                    if (item.Ammunition.Body.EnergyCost > stats.EnergyPoints)
+                    var multiplier = stats.WeaponEnergyCostMultiplier.Value;
+                    var effectiveCost = item.Ammunition.Body.EnergyCost / Mathf.Max(0.001f, multiplier);
+                    if (effectiveCost > stats.EnergyPoints)
                         return false;
                     weaponCount++;
                 }
