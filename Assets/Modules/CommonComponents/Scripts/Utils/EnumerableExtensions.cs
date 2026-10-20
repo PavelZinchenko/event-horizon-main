@@ -239,33 +239,17 @@ public static class EnumerableExtension
     /// which ensures unbiased distribution of values even in extreme cases
     /// (for example: one element with high weight and a lot of elements with
     /// low weight)
-    ///
-    /// If requested elements count is equal to or higher than list size, no
-    /// shuffling is performed and list elements are returned as-is
-    ///
-    /// If list is empty or zero elements are requested, no shuffling is
-    /// performed and no elements are returned 
+    /// 
     /// </summary>
     /// <param name="list">The list to sample</param>
-    /// <param name="count">Amount of elements to sample</param>
     /// <param name="random">Random generator</param>
     /// <param name="weightFunc">Function for getting weights from list elements</param>
-    public static IEnumerable<T> WeightedRandomUniqueElements<T>(this IReadOnlyList<T> list, int count,
+    public static IEnumerable<T> WeightedShuffle<T>(this IReadOnlyList<T> list,
         System.Random random, Func<T, float> weightFunc)
     {
-        // empty collection or 0 items requested
-        if (list.Count == 0 || count <= 0)
+        // empty collection requested
+        if (list.Count == 0)
         {
-            yield break;
-        }
-
-        // more items requested than available, return all
-        if (count >= list.Count)
-        {
-            foreach (var item in list)
-            {
-                yield return item;
-            }
             yield break;
         }
         
@@ -280,8 +264,6 @@ public static class EnumerableExtension
 
         foreach (var item in indices)
         {
-            if(count <= 0) yield break;
-            count--;
             yield return item.Get(list);
         }
     }
@@ -296,11 +278,13 @@ public static class EnumerableExtension
         public WeightedIndex(int index, float weight, System.Random random)
         {
             _index = index;
-            if (weight == 0)
+            if (float.IsNaN(weight) || weight <= 0)
             {
+				// NANs, zeros, and negatives sort last in no specific order
                 _weight = float.PositiveInfinity;
-            } else if (!float.IsFinite(weight))
+            } else if (float.IsPositiveInfinity(weight))
             {
+				// Positive infinity is first 
                 _weight = 0;
             }
             else
@@ -312,7 +296,7 @@ public static class EnumerableExtension
                 // results in numerical precision errors at low or high weights
                 // and adding logarithm to both sides of inequality doesn't change
                 // the result, but almost completely eliminates precision issues
-                _weight = -1f / weight * UnityEngine.Mathf.Log(random.NextFloat());
+                _weight = -Utilites.MathEx.Log(random.NextFloat()) / weight;
             }
         }
 

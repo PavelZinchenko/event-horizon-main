@@ -24,7 +24,7 @@ namespace GameDatabase.DataModel
 
 		private LootItem(LootItemSerializable serializable, Database.Loader loader)
 		{
-			Weight = UnityEngine.Mathf.Clamp(serializable.Weight, -3.402823E+38f, 3.402823E+38f);
+			Weight = Utilites.MathEx.Clamp(serializable.Weight, -3.402823E+38f, 3.402823E+38f);
 			Requirement = Requirement.Create(serializable.Requirement, loader);
 			Loot = LootContent.Create(serializable.Loot, loader);
 
