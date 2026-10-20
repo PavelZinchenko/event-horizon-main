@@ -210,7 +210,7 @@ namespace ViewModel.Craft
                 yield return new KeyValuePair<string, string>("$Energy", SignedPercent(energyBonus));
 
             foreach (var item in data.Features.BuiltinDevices)
-                yield return new KeyValuePair<string, string>("$Device", GetDeviceName(item.Stats.DeviceClass, localization));
+                yield return new KeyValuePair<string, string>("$Device", GetDeviceName(item.Stats.DeviceClass, ship, localization));
         }
 
         private static IEnumerable<KeyValuePair<string, string>> GetSatelliteDescription(Satellite satellite)
@@ -238,8 +238,21 @@ namespace ViewModel.Craft
             return sb.ToString();
         }
 
-        private static string GetDeviceName(DeviceClass deviceClass, ILocalization localization)
+        private static string GetDeviceName(DeviceClass deviceClass, IShip ship, ILocalization localization)
         {
+            // Components that carry the device give more specific names than the device
+            // class, and they are already localized.
+            var names = new List<string>();
+            foreach (var component in ship.Components)
+            {
+                var device = component.Info.Data.Device;
+                if (device != null && device.Stats.DeviceClass == deviceClass)
+                    names.Add(component.Info.GetName(localization));
+            }
+
+            if (names.Count > 0)
+                return string.Join(", ", names);
+
             switch (deviceClass)
             {
                 case DeviceClass.TimeMachine:
