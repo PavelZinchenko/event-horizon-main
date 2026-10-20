@@ -108,13 +108,9 @@ namespace Combat.Manager
             {
                 case UnitSide.Player:
                     _shipControlsPanel.Load(ship);
-                    _messenger.Broadcast(EventType.PlayerShipCountChanged,
-                        _combatModel.PlayerFleet.Ships.Count(item => item.Status == ShipStatus.Ready));
                     break;
                 case UnitSide.Enemy:
                     _radarPanel.Add(ship);
-                    _messenger.Broadcast(EventType.EnemyShipCountChanged,
-                        _combatModel.EnemyFleet.Ships.Count(item => item.Status == ShipStatus.Ready));
                     break;
             }
         }
@@ -256,7 +252,7 @@ namespace Combat.Manager
                     }
                     else if (_combatModel.Rules.ShipSelection.CanChooseShip())
                     {
-                        _shipSelectionPanel.Open(_combatModel);
+                        _shipSelectionPanel.Open();
                     }
                     else
                     {

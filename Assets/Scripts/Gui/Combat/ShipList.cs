@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Combat.Component.Ship;
 using Combat.Domain;
+using Combat.Integration;
 using Services.Localization;
 using Services.Resources;
 using UnityEngine;
@@ -20,23 +20,23 @@ namespace Gui.Combat
         [SerializeField] private CanvasGroup CanvasGroup;
         [SerializeField] private Text ShipNameText;
 
-        public IShipInfo SelectedShip { get { return _selectedIndex >= 0 ? _fleet.Ships[_selectedIndex] : null; } }
+        public IRosterSlotView SelectedShip { get { return _selectedIndex >= 0 ? _slots[_selectedIndex] : null; } }
         public int SelectedShipIndex { get { return _selectedIndex; } set { _targetIndex = value; UpdateSelection(); } }
 
-        public void Initialize(IFleetModel fleet, int activeShipIndex)
+        public void Initialize(IReadOnlyList<IRosterSlotView> slots, int activeShipIndex)
         {
-            _fleet = fleet;
+            _slots = slots;
             _targetIndex = activeShipIndex;
 
-            IEnumerator<IShipInfo> enumerator;
-            if (fleet.Ships.Count <= MaxShipCount)
+            IEnumerator<IRosterSlotView> enumerator;
+            if (slots.Count <= MaxShipCount)
             {
-                enumerator = fleet.Ships.Take(MaxShipCount).GetEnumerator();
+                enumerator = slots.Take(MaxShipCount).GetEnumerator();
             }
             else
             {
                 _firstShipIndex = Mathf.Max(_targetIndex - MaxShipCount / 2, 0);
-                enumerator = fleet.Ships.Skip(_firstShipIndex).Take(MaxShipCount).GetEnumerator();
+                enumerator = slots.Skip(_firstShipIndex).Take(MaxShipCount).GetEnumerator();
             }
 
             RectTransform item = null;
@@ -80,7 +80,7 @@ namespace Gui.Combat
                     _targetIndex = -1;
 
                 if (ShipNameText != null)
-                    ShipNameText.text = _localization.GetString(_fleet.Ships[_selectedIndex].ShipData.Name);
+                    ShipNameText.text = _localization.GetString(_slots[_selectedIndex].ShipData.Name);
             }
             else
             {
@@ -93,7 +93,7 @@ namespace Gui.Combat
                         continue;
 
                     var delta = currentPosition - item.anchoredPosition.x;
-                    if (Mathf.Abs(delta) < Mathf.Abs(deltaMin) && _fleet.Ships[index].Status != ShipStatus.Destroyed)
+                    if (Mathf.Abs(delta) < Mathf.Abs(deltaMin) && _slots[index].Status != ShipStatus.Destroyed)
                     {
                         deltaMin = delta;
                         _selectedIndex = index;
@@ -104,10 +104,10 @@ namespace Gui.Combat
             }
 
             if (ShipNameText != null && _selectedIndex >= 0)
-                ShipNameText.text = _localization.GetString(_fleet.Ships[_selectedIndex].ShipData.Name);
+                ShipNameText.text = _localization.GetString(_slots[_selectedIndex].ShipData.Name);
         }
 
-        private void UpdateShipItem(RectTransform item, IShipInfo ship)
+        private void UpdateShipItem(RectTransform item, IRosterSlotView ship)
         {
             item.gameObject.SetActive(true);
             item.localScale = Vector3.one;
@@ -133,7 +133,7 @@ namespace Gui.Combat
         private float _selectedDistance;
         private int _selectedIndex;
         private int _firstShipIndex;
-        private IFleetModel _fleet;
+        private IReadOnlyList<IRosterSlotView> _slots;
         private const int MaxShipCount = 24;
     }
 }

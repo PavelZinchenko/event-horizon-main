@@ -54,6 +54,8 @@ namespace Installers
 			Container.Bind<Combat.Ai.BehaviorTree.BehaviorTreeBuilder>().AsSingle();
 			Container.BindInterfacesAndSelfTo<CombatTimer>().AsSingle().NonLazy();
 			Container.BindInterfacesAndSelfTo<Combat.Integration.Legacy.LegacyCombatAdapter>().AsSingle().NonLazy();
+			Container.BindInterfacesTo<CombatTimerPresenter>().AsSingle().NonLazy();
+			Container.BindExecutionOrder<CombatTimerPresenter>(1);
             Container.Bind<ShipStatsPanel>().FromInstance(_playerStatsPanel).When(context => context.MemberName.Contains("player"));
             Container.Bind<ShipStatsPanel>().FromInstance(_enemyStatsPanel).When(context => context.MemberName.Contains("enemy"));
             Container.Bind<ShipControlsPanel>().FromInstance(_shipControlsPanel);

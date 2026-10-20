@@ -167,13 +167,15 @@ namespace Combat.Integration.Legacy
             _entityIds.Clear();
         }
 
+        // A ship that is no longer active has no live entity, even before the scene removes it.
+        // Removal handlers read _entityIds directly.
         private EntityId GetEntityId(IShip ship)
         {
-            if (ship == null)
+            if (ship == null || !ship.IsActive())
                 return EntityId.None;
             if (_entityIds.TryGetValue(ship, out var id))
                 return id;
-            if (_frozen || !ship.IsActive())
+            if (_frozen)
                 return EntityId.None;
 
             id = new EntityId(_nextEntityId++);
