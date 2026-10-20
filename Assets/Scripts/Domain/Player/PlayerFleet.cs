@@ -93,7 +93,7 @@ namespace GameServices.Player
             var storage = new Domain.Shipyard.FleetPartsStorage(_inventory);
 
             foreach (var ship in _ships)
-                Domain.Shipyard.ShipValidator.RemoveInvalidParts(ship, storage);
+                Domain.Shipyard.ShipValidator.RemoveInvalidParts(ship, _database.ShipSettings, storage);
 
             _activeShips.CheckIfValid(_playerSkills, true);
         }

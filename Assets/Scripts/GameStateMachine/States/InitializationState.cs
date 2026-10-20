@@ -96,7 +96,7 @@ namespace GameStateMachine.States
 
             _localization.Initialize(_settings.Language, _database);
 
-            _database.SatelliteBuildList.ReportNegativeEnergyBuilds();
+            _database.SatelliteBuildList.ReportNegativeEnergyBuilds(Hulls(), _database.ShipSettings);
 
 		    if (_database.IsEditable)
 		    {
@@ -105,7 +105,7 @@ namespace GameStateMachine.States
                 foreach (var item in _database.ShipBuildList)
 		        {
                     var ship = new CommonShip(item, _database);
-                    Domain.Shipyard.ShipValidator.RemoveInvalidParts(ship);
+                    Domain.Shipyard.ShipValidator.RemoveInvalidParts(ship, _database.ShipSettings);
 		            if ((item.Ship.ShipType == ShipType.Common || item.Ship.ShipType == ShipType.Drone) && (item.AvailableForPlayer || item.AvailableForEnemy) &&
 		                !ShipValidator.IsShipViable(new CommonShip(item, _database), _database.ShipSettings))
 		            {
@@ -169,6 +169,14 @@ namespace GameStateMachine.States
 
         protected override void OnResume()
         {
+        }
+
+        private IEnumerable<IShip> Hulls()
+        {
+            return _database.ShipBuildList
+                .Where(item => item.Ship.ShipType == ShipType.Common)
+                .Select(item => (IShip)new CommonShip(item, _database))
+                .ToList();
         }
 
         private readonly SessionData _sessionData;

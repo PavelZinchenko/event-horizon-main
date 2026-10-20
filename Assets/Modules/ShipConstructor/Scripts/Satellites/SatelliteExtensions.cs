@@ -1,19 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Constructor;
+using Constructor.Ships;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 
 namespace Constructor.Satellites
 {
-    public static class SatelliteDefaults
-    {
-        /// <summary>
-        /// Fallback for call sites that have no database, so the values match the schema defaults.
-        /// </summary>
-        public static readonly ShipSettings Settings = ShipSettings.Create(
-            new GameDatabase.Serializable.ShipSettingsSerializable(), null);
-    }
-
     public static class SatelliteExtensions
     {
         public static ISatellite CreateCopy(this ISatellite satellite)
@@ -24,22 +17,19 @@ namespace Constructor.Satellites
             return new CommonSatellite(satellite.Information, satellite.Components);
         }
 
-        public static bool IsSuitable(this Satellite satellite, SizeClass shipClass, float shipModelScale)
-        {
-            return IsSuitable(satellite, shipClass, shipModelScale, SatelliteDefaults.Settings);
-        }
-
         public static bool IsSuitable(this Satellite satellite, SizeClass shipClass, float shipModelScale, ShipSettings settings)
         {
-            bool sizeClassOk = satellite.SizeClass == SizeClass.Undefined || shipClass >= satellite.SizeClass;
-            bool modelScaleOk = shipModelScale >= satellite.ModelScale * settings.SatelliteModelScaleMultiplier;
+            var modelScaleOk = shipModelScale >= satellite.ModelScale * settings.SatelliteModelScaleMultiplier;
 
-            // A satellite with a SizeClass must satisfy both checks by default, so a small
-            // capital cannot carry a large satellite. Turn the setting off to let either
-            // check decide.
-            return settings.SatelliteRequireModelScaleWithSizeClass
-                ? sizeClassOk && modelScaleOk
-                : sizeClassOk || modelScaleOk;
+            // A satellite without a size class is only limited by its model scale.
+            if (satellite.SizeClass == SizeClass.Undefined)
+                return modelScaleOk;
+
+            // The size class always has to fit. The model scale only has to fit as well
+            // while the setting requires it, so a relaxed mode lets the size class decide
+            // on its own.
+            return shipClass >= satellite.SizeClass &&
+                   (modelScaleOk || !settings.SatelliteRequireModelScaleWithSizeClass);
         }
 
         /// <summary>
@@ -48,22 +38,19 @@ namespace Constructor.Satellites
         /// leaves the consumption half alone, so a build that is neutral on its own turns
         /// negative on a ship with a negative energy bonus.
         /// </summary>
-        public static float GetEnergyRegenContribution(this SatelliteBuild build, float energyMultiplier)
+        public static float GetEnergyRegenContribution(this SatelliteBuild build, int shipSize, float energyMultiplier)
         {
             float recharge = 0;
             float consumption = 0;
             foreach (var item in build.Components)
             {
-                var component = item.Component;
-                var stats = component.Stats;
+                // Use the same stats the ship builder uses, so component modifications and
+                // the passive costs of devices and drone bays are included.
+                var stats = new ComponentInfo(item.Component, item.Modification, item.Quality)
+                    .CreateComponent(shipSize).GetStats();
 
-                // PerOneCell components contribute once per cell, same as ShipEquipmentStats.
-                var multiplier = stats.Type == ComponentStatsType.PerOneCell ? component.Layout.CellCount : 1f;
-
-                if (stats.EnergyRechargeRate > 0)
-                    recharge += stats.EnergyRechargeRate * multiplier;
-                else
-                    consumption -= stats.EnergyRechargeRate * multiplier;
+                recharge += stats.EnergyRecharge;
+                consumption += stats.EnergyConsumption;
             }
 
             return recharge * energyMultiplier - consumption;
@@ -74,9 +61,12 @@ namespace Constructor.Satellites
         /// Reports the first rejection of each build so a modder sees which build is
         /// ignored and why, without one message per enemy ship spawn.
         /// </summary>
-        public static bool HasNonNegativeEnergyRegen(this SatelliteBuild build, Ship ship)
+        public static bool HasNonNegativeEnergyRegen(this SatelliteBuild build, IShip ship)
         {
-            var contribution = build.GetEnergyRegenContribution(1f + ship.Features.EnergyBonus);
+            var contribution = build.GetEnergyRegenContribution(
+                ship.Model.Layout.CellCount,
+                ship.Model.Stats.EnergyMultiplier.Value);
+
             if (contribution >= 0)
                 return true;
 
@@ -86,11 +76,12 @@ namespace Constructor.Satellites
             return false;
         }
 
-        public static IEnumerable<SatelliteBuild> SuitableFor(this IEnumerable<SatelliteBuild> satellites, Ship ship, ShipSettings settings)
+        public static IEnumerable<SatelliteBuild> SuitableFor(this IEnumerable<SatelliteBuild> satellites, IShip ship, ShipSettings settings)
         {
             return satellites.Where(item => !item.NotAvailableInGame &&
-                                            item.HasNonNegativeEnergyRegen(ship) &&
-                                            item.Satellite.IsSuitable(ship.SizeClass, ship.ModelScale, settings));
+                                            item.Satellite.IsSuitable(ship.Model.MaxSatelliteSize, ship.Model.MaxSatelliteModelSize, settings) &&
+                                            item.HasNonNegativeEnergyRegen(ship))
+                             .ToList();
         }
 
         public static IEnumerable<SatelliteBuild> LimitClass(this IEnumerable<SatelliteBuild> satellites, DifficultyClass shipClass)
@@ -98,13 +89,25 @@ namespace Constructor.Satellites
             return satellites.Where(item => item.DifficultyClass <= shipClass);
         }
 
-        public static void ReportNegativeEnergyBuilds(this IEnumerable<SatelliteBuild> builds)
+        public static void ReportNegativeEnergyBuilds(this IEnumerable<SatelliteBuild> builds, IEnumerable<IShip> hulls, ShipSettings settings)
         {
             foreach (var build in builds)
             {
-                var contribution = build.GetEnergyRegenContribution(1f);
-                if (contribution < 0)
-                    GameDiagnostics.Trace.LogError($"invalid satellite build: {build.Id} energy regen {contribution:F3}");
+                foreach (var hull in hulls)
+                {
+                    if (!build.Satellite.IsSuitable(hull.Model.MaxSatelliteSize, hull.Model.MaxSatelliteModelSize, settings))
+                        continue;
+
+                    var contribution = build.GetEnergyRegenContribution(
+                        hull.Model.Layout.CellCount,
+                        1f + hull.Model.OriginalShip.Features.EnergyBonus);
+
+                    if (contribution < 0)
+                    {
+                        GameDiagnostics.Trace.LogError($"invalid satellite build: {build.Id} energy regen {contribution:F3} on {hull.Name}");
+                        break;
+                    }
+                }
             }
 
             _reportedEnergyRejects.Clear();
