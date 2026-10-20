@@ -48,6 +48,8 @@ namespace Combat.Integration.Legacy
         public DifficultyClass Class => _ship.Specification.Info.Class;
         public int Level => _ship.Specification.Info.Level;
 
+        public float Rotation => _ship.Body.Rotation;
+
         public Vector2 VisualPosition => _ship.Body.VisualPosition;
         public float VisualRotation => _ship.Body.VisualRotation;
 

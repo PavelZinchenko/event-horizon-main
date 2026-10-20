@@ -56,6 +56,9 @@ namespace Combat.Integration
         DifficultyClass Class { get; }
         int Level { get; }
 
+        // Simulation rotation in degrees. Input uses it to resolve a course.
+        float Rotation { get; }
+
         // Presentation pose: interpolated, in Unity units and degrees. Input must not use it.
         Vector2 VisualPosition { get; }
         float VisualRotation { get; }

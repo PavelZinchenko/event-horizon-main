@@ -40,7 +40,6 @@ namespace Combat.Manager
 
         [Inject] private readonly IScene _scene;
         [Inject] private readonly IDatabase _database;
-        [Inject] private readonly ShipControlsPanel _shipControlsPanel;
         [Inject] private readonly ShipFactory _shipFactory;
         [Inject] private readonly ControllerFactory _controllerFactory;
         [Inject] private readonly SpaceObjectFactory _spaceObjectFactory;
@@ -100,9 +99,6 @@ namespace Combat.Manager
                 return;
 
             CheckIfCanCallNextEnemy();
-
-            if (ship.Type.Side == UnitSide.Player)
-                _shipControlsPanel.Load(ship);
         }
 
         public void OnShipDestroyed(IShip ship)

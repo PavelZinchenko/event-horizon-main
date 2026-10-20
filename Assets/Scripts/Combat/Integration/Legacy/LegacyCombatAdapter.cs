@@ -14,7 +14,7 @@ namespace Combat.Integration.Legacy
     // Projects the legacy simulator through the application contracts.
     // ShipInfo, FleetModel, CombatManager and CombatTimer remain the authority:
     // commands are delegated to them, and the projection only observes their state.
-    public sealed class LegacyCombatAdapter : IRosterView, IBattleView, IShipViews, ICombatCommands, ITickable, IDisposable
+    public sealed class LegacyCombatAdapter : IRosterView, IBattleView, IShipViews, IShipControlSource, ICombatCommands, ITickable, IDisposable
     {
         [Inject]
         public LegacyCombatAdapter(
@@ -92,6 +92,31 @@ namespace Combat.Integration.Legacy
             var found = _viewsById.TryGetValue(id, out var view);
             ship = view;
             return found;
+        }
+
+        #endregion
+
+        #region IShipControlSource
+
+        public bool TryGetControls(EntityId id, out IShipControlDescription description, out IShipCommandSink commands)
+        {
+            if (!_controlsById.TryGetValue(id, out var controls))
+            {
+                var ship = FindShip(id);
+                if (ship == null)
+                {
+                    description = null;
+                    commands = null;
+                    return false;
+                }
+
+                controls = new LegacyShipControls(ship);
+                _controlsById.Add(id, controls);
+            }
+
+            description = controls;
+            commands = controls;
+            return true;
         }
 
         #endregion
@@ -174,6 +199,7 @@ namespace Combat.Integration.Legacy
             _exitSignal.Event -= OnExit;
             _views.Clear();
             _viewsById.Clear();
+            _controlsById.Clear();
         }
 
         // A ship that is no longer active has no live entity, even before the scene removes it.
@@ -198,6 +224,18 @@ namespace Combat.Integration.Legacy
             return _views.TryGetValue(ship, out var view) ? view.Id : EntityId.None;
         }
 
+        private IShip FindShip(EntityId id)
+        {
+            if (!id.IsValid)
+                return null;
+
+            foreach (var item in _views)
+                if (item.Value.Id == id)
+                    return item.Key;
+
+            return null;
+        }
+
         private void OnShipCreated(IShip ship)
         {
             if (_frozen || ship.Type.Class != UnitClass.Ship)
@@ -220,6 +258,7 @@ namespace Combat.Integration.Legacy
             var entity = FindEntityId(ship);
             _views.Remove(ship);
             _viewsById.Remove(entity);
+            _controlsById.Remove(entity);
 
             if (ship.Type.Class != UnitClass.Ship)
                 return;
@@ -335,6 +374,7 @@ namespace Combat.Integration.Legacy
         private readonly List<Slot> _enemySlots = new List<Slot>();
         private readonly Dictionary<IShip, LegacyShipView> _views = new Dictionary<IShip, LegacyShipView>();
         private readonly Dictionary<EntityId, LegacyShipView> _viewsById = new Dictionary<EntityId, LegacyShipView>();
+        private readonly Dictionary<EntityId, LegacyShipControls> _controlsById = new Dictionary<EntityId, LegacyShipControls>();
         private int _nextEntityId = 1;
         private int _deploymentCounter;
         private bool _frozen;

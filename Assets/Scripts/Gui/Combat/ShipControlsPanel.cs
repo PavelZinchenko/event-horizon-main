@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Combat.Component.Ship;
-using Combat.Unit;
+using Combat.Integration;
+using Combat.Integration.Legacy;
 using Services.Settings;
 using Gui.Windows;
 using Services.Gui;
@@ -20,23 +20,29 @@ namespace Gui.Combat
         [Inject] private readonly IGameSettings _gameSettings;
         [Inject] private readonly IResourceLocator _resourceLocator;
 
+        // Temporary entry for exploration and the legacy controls scene until phase 6.
         public void Load(IShip ship)
         {
-            if (!ship.IsActive())
+            var controls = ship != null ? new LegacyShipControls(ship) : null;
+            Load(LegacyShipView.Of(ship), controls, controls);
+        }
+
+        public void Load(IShipView ship, IShipControlDescription description, IShipCommandSink commands)
+        {
+            if (ship == null || !ship.IsActive)
             {
                 Window.Close(WindowExitCode.Ok);
                 return;
             }
 
             Window.Open();
-            Initialize(ship);
+            Initialize(ship, description, commands);
         }
 
         public void Reload()
         {
-            var ship = _ship;
-            if (ship.IsActive() && GetComponent<IWindow>().IsVisible)
-                Initialize(ship);
+            if (IsShipActive && GetComponent<IWindow>().IsVisible)
+                Initialize(_ship, _description, _commands);
         }
 
         public void OnJoystickPressed(Vector2 direction)
@@ -47,20 +53,20 @@ namespace Gui.Combat
         public void OnJoystickReleased()
         {
             _joystickDirection = Vector2.zero;
-            if (_thrustWithJoystick && _ship != null)
-                _ship.Controls.Throttle = 0f;
+            if (_thrustWithJoystick && _commands != null)
+                _commands.SetThrottle(0f);
         }
 
         public void OnThrustPressed()
         {
-            if (_ship.IsActive())
-                _ship.Controls.Throttle = 1;
+            if (IsShipActive)
+                _commands.SetThrottle(1);
         }
 
         public void OnThrustReleased()
         {
-            if (_ship.IsActive())
-                _ship.Controls.Throttle = 0;
+            if (IsShipActive)
+                _commands.SetThrottle(0);
         }
 
         public void OnLeftPressed()
@@ -76,38 +82,38 @@ namespace Gui.Combat
         public void OnLeftRightReleased()
         {
             _rightPressed = _leftPressed = false;
-            if (_ship.IsActive())
-                _ship.Controls.Course = null;
+            if (IsShipActive)
+                _commands.SetCourse(null);
         }
 
         public void ActivateSystem(int id)
         {
             ActiveButtons++;
-            if (_ship.IsActive())
-                _ship.Controls.Systems.SetState(id, true);
+            if (IsShipActive)
+                _commands.SetSystemState(id, true);
         }
 
         public void DeactivateSystem(int id)
         {
             ActiveButtons--;
-            if (_ship.IsActive())
-                _ship.Controls.Systems.SetState(id, false);
+            if (IsShipActive)
+                _commands.SetSystemState(id, false);
         }
 
         public void ActivateDroneBays()
         {
             ActiveButtons++;
-            if (_ship.IsActive())
-                foreach (var id in _ship.Systems.All.GetDroneBayIndices())
-                    _ship.Controls.Systems.SetState(id, true);
+            if (IsShipActive)
+                foreach (var id in _description.DroneBays)
+                    _commands.SetSystemState(id, true);
         }
 
         public void DeactivateDroneBays()
         {
             ActiveButtons--;
-            if (_ship.IsActive())
-                foreach (var id in _ship.Systems.All.GetDroneBayIndices())
-                    _ship.Controls.Systems.SetState(id, false);
+            if (IsShipActive)
+                foreach (var id in _description.DroneBays)
+                    _commands.SetSystemState(id, false);
         }
 
         public void OnKeyPressed(int key)
@@ -124,9 +130,11 @@ namespace Gui.Combat
                     DeactivateSystem(id);
         }
 
-        private void Initialize(IShip ship)
+        private void Initialize(IShipView ship, IShipControlDescription description, IShipCommandSink commands)
         {
             _ship = ship;
+            _description = description;
+            _commands = commands;
             _joystickDirection = Vector2.zero;
             _leftPressed = false;
             _rightPressed = false;
@@ -162,11 +170,11 @@ namespace Gui.Combat
             UpdateLayout(buttons, "Action0,1470,70,90 Action1,1370,70,90 Action2,1270,70,90 Action3,1170,70,90 Action4,1070,70,90 Action5,970,70,90");
 #else
             _navigationPanel.gameObject.SetActive(_slideToMove);
-            _navigationPanel.Initialize(ship);
+            _navigationPanel.Initialize(ship, commands);
             _navigationPanel.AllowThrust = _thrustWithJoystick;
             UpdateLayout(buttons, layout);
 #endif
-            UpdateActionButtons(ship, buttons);
+            UpdateActionButtons(buttons);
         }
 
         private void UpdateLayout(IDictionary<string, RectTransform> items, string layoutData)
@@ -198,9 +206,9 @@ namespace Gui.Combat
             }
         }
 
-        private void UpdateActionButtons(IShip ship, IDictionary<string, RectTransform> buttons)
+        private void UpdateActionButtons(IDictionary<string, RectTransform> buttons)
         {
-            _keyBindings = ship.Systems.All.GetKeyBindings();
+            _keyBindings = _description.KeyBindings;
             _buttons = new List<ActionButton>();
 
             RectTransform item;
@@ -210,8 +218,8 @@ namespace Gui.Combat
                 {
                     item.gameObject.SetActive(true);
                     var button = item.GetComponent<ActionButton>();
-                    button.Image.sprite = _resourceLocator.GetSprite(_ship.Systems.All[_keyBindings[i].First()].ControlButtonIcon);
-                    button.ReleaseImmediately = _keyBindings[i].Select(id => _ship.Systems.All[id]).ShouReleaseButtonImmediately();
+                    button.Image.sprite = _resourceLocator.GetSprite(_description.GetButtonIcon(_keyBindings[i][0]));
+                    button.ReleaseImmediately = _description.ReleaseImmediately(i);
                     _buttons.Add(button);
                 }
                 else
@@ -223,9 +231,9 @@ namespace Gui.Combat
 
         public void Update()
         {
-            if (!_ship.IsActive())
+            if (!IsShipActive)
             {
-                Load(null);
+                Window.Close(WindowExitCode.Ok);
                 return;
             }
 
@@ -233,22 +241,22 @@ namespace Gui.Combat
             if (_joystickDirection != Vector2.zero)
             {
                 var rotation = RotationHelpers.Angle(_joystickDirection);
-                _ship.Controls.Course = rotation;
+                _commands.SetCourse(rotation);
                 if (_thrustWithJoystick && !(_stopWhenWeaponActive && _activeButtons > 0))
-                    _ship.Controls.Throttle = Mathf.Abs(Mathf.DeltaAngle(_ship.Body.Rotation, rotation)) < 30 ? Mathf.Clamp01(_joystickDirection.magnitude * 2) : 0f;
+                    _commands.SetThrottle(Mathf.Abs(Mathf.DeltaAngle(_ship.Rotation, rotation)) < 30 ? Mathf.Clamp01(_joystickDirection.magnitude * 2) : 0f);
 
                 isActive = true;
             }
 
             if (_leftPressed)
             {
-                _ship.Controls.Course = _ship.Body.Rotation + 175;
+                _commands.SetCourse(_ship.Rotation + 175);
                 isActive = true;
             }
 
             if (_rightPressed)
             {
-                _ship.Controls.Course = _ship.Body.Rotation - 175;
+                _commands.SetCourse(_ship.Rotation - 175);
                 isActive = true;
             }
 
@@ -263,9 +271,7 @@ namespace Gui.Combat
                 var maxCooldown = 0.0f;
                 for (int j = 0; j < systems.Count; ++j)
                 {
-                    var systemId = systems[j];
-                    var system = _ship.Systems.All[systemId];
-                    var cooldown = system.Cooldown;
+                    var cooldown = _description.GetCooldown(systems[j]);
                     if (cooldown < minCooldown)
                         minCooldown = cooldown;
                     if (cooldown > maxCooldown)
@@ -288,9 +294,9 @@ namespace Gui.Combat
             set
             {
                 _activeButtons = value;
-                if (_activeButtons > 0 && _stopWhenWeaponActive && _ship.IsActive())
+                if (_activeButtons > 0 && _stopWhenWeaponActive && IsShipActive)
                 {
-                    _ship.Controls.Throttle = 0;
+                    _commands.SetThrottle(0);
                 }
 
                 _navigationPanel.AllowThrust = _thrustWithJoystick && !(_stopWhenWeaponActive && _activeButtons > 0);
@@ -299,7 +305,9 @@ namespace Gui.Combat
 
         private AnimatedWindow Window { get { return _window ?? (_window = GetComponent<AnimatedWindow>()); } }
 
-        private List<List<int>> _keyBindings;
+        private bool IsShipActive => _ship != null && _ship.IsActive;
+
+        private IReadOnlyList<IReadOnlyList<int>> _keyBindings;
         private List<ActionButton> _buttons;
 
         private int _activeButtons;
@@ -311,7 +319,9 @@ namespace Gui.Combat
         private bool _thrustWithJoystick;
         private bool _stopWhenWeaponActive;
 
-        private IShip _ship;
+        private IShipView _ship;
+        private IShipControlDescription _description;
+        private IShipCommandSink _commands;
 
         private AnimatedWindow _window;
     }
