@@ -20,9 +20,6 @@ namespace Combat.Integration
         EntityId ControlledShip { get; }
         EntityId TargetShip { get; }
 
-        float MapWidth { get; }
-        float MapHeight { get; }
-
         CombatTimerState Timer { get; }
 
         bool CanChangeShip { get; }

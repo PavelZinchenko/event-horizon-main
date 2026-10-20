@@ -34,6 +34,7 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<ExplorationSceneManager>().AsSingle().NonLazy();
             Container.BindInterfacesTo<ExplorationViewRect>().AsTransient();
             Container.BindInterfacesTo<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = 1000, AreaHeight = 1000, PlayerAlwaysInCenter = true }).NonLazy();
+            Container.BindInterfacesTo<Combat.Integration.Legacy.LegacyScenePresentation>().AsSingle();
             Container.BindInterfacesTo<CollisionManager>().AsSingle();
             Container.BindInterfacesTo<AiManager>().AsSingle().NonLazy();
             Container.Bind<ShipStatsPanel>().FromInstance(_playerStatsPanel).When(context => context.MemberName.Contains("player"));

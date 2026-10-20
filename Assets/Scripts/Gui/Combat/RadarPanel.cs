@@ -4,7 +4,8 @@ using System.Linq;
 using Combat.Component.Ship;
 using Combat.Component.Unit;
 using Combat.Component.Unit.Classification;
-using Combat.Scene;
+using Combat.Integration;
+using Combat.Integration.Legacy;
 using Services.Resources;
 using Zenject;
 
@@ -13,7 +14,7 @@ namespace Gui.Combat
     public class RadarPanel : MonoBehaviour
     {
         [Inject] private readonly IResourceLocator _resourceLocator;
-        [Inject] private readonly IScene _scene;
+        [Inject] private readonly IScenePresentation _scene;
 
         [Inject]
         private void Initialize()
@@ -22,7 +23,13 @@ namespace Gui.Combat
             _beaconRadars.AddRange(transform.Children<BeaconRadar>());
         }
 
+        // Temporary entry for exploration, which has no combat adapter, until phase 6.
         public void Add(IShip ship)
+        {
+            Add(LegacyShipView.Of(ship));
+        }
+
+        public void Add(IShipView ship)
         {
             (_radars.FirstOrDefault(item => !item.gameObject.activeSelf) ?? CreateRadar()).Open(ship, _scene, _resourceLocator);
         }
@@ -52,7 +59,7 @@ namespace Gui.Combat
                     if (radarIndex >= radarCount)
                         CreateRadar();
 
-                    _radars[radarIndex].Open((IShip)item, _scene, _resourceLocator);
+                    _radars[radarIndex].Open(LegacyShipView.Of((IShip)item), _scene, _resourceLocator);
 
                     radarIndex++;
                 }

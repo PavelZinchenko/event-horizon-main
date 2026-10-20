@@ -49,6 +49,7 @@ namespace Installers
 			Container.BindInterfacesAndSelfTo<CombatManager>().AsSingle().NonLazy();
             Container.BindInterfacesTo<ViewRect>().AsTransient();
             Container.BindInterfacesTo<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = areaSize, AreaHeight = areaSize }).NonLazy();
+            Container.BindInterfacesTo<Combat.Integration.Legacy.LegacyScenePresentation>().AsSingle();
             Container.BindInterfacesTo<CollisionManager>().AsSingle();
             Container.BindInterfacesTo<AiManager>().AsSingle().NonLazy();
 			Container.Bind<Combat.Ai.BehaviorTree.BehaviorTreeBuilder>().AsSingle();
@@ -56,6 +57,7 @@ namespace Installers
 			Container.BindInterfacesAndSelfTo<Combat.Integration.Legacy.LegacyCombatAdapter>().AsSingle().NonLazy();
 			Container.BindInterfacesTo<CombatTimerPresenter>().AsSingle().NonLazy();
 			Container.BindExecutionOrder<CombatTimerPresenter>(1);
+			Container.BindInterfacesTo<CombatHudPresenter>().AsSingle().NonLazy();
             Container.Bind<ShipStatsPanel>().FromInstance(_playerStatsPanel).When(context => context.MemberName.Contains("player"));
             Container.Bind<ShipStatsPanel>().FromInstance(_enemyStatsPanel).When(context => context.MemberName.Contains("enemy"));
             Container.Bind<ShipControlsPanel>().FromInstance(_shipControlsPanel);

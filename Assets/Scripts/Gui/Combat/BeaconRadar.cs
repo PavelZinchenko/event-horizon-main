@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using Combat.Component.Unit;
-using Combat.Scene;
+using Combat.Integration;
 using Combat.Unit;
 using UnityEngine.UI;
 
@@ -12,7 +12,7 @@ namespace Gui.Combat
         [SerializeField] private Image Background;
         [SerializeField] private float Size = 24;
 
-        public void Open(IUnit unit, IScene scene)
+        public void Open(IUnit unit, IScenePresentation scene)
         {
             _scene = scene;
             _unit = unit;
@@ -50,8 +50,8 @@ namespace Gui.Combat
             Image.enabled = true;
             Background.enabled = true;
 
-            var width = _scene.Settings.AreaWidth/2;
-            var height = _scene.Settings.AreaHeight/2;
+            var width = _scene.MapWidth/2;
+            var height = _scene.MapHeight/2;
             var dx = ((position.x > 0 ? position.x : -position.x) - cameraWidth) / (width - cameraWidth);
             var dy = ((position.y > 0 ? position.y : -position.y) - cameraHeight) / (height - cameraHeight);
             var scale = Mathf.Max(1 - Mathf.Max(dx, dy), 0.25f);
@@ -96,6 +96,6 @@ namespace Gui.Combat
         private Vector2 _screenSize;
         private RectTransform _rectTransform;
         private IUnit _unit;
-        private IScene _scene;
+        private IScenePresentation _scene;
     }
 }

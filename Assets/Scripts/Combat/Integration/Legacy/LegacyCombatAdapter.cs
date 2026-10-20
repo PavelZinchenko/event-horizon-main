@@ -14,7 +14,7 @@ namespace Combat.Integration.Legacy
     // Projects the legacy simulator through the application contracts.
     // ShipInfo, FleetModel, CombatManager and CombatTimer remain the authority:
     // commands are delegated to them, and the projection only observes their state.
-    public sealed class LegacyCombatAdapter : IRosterView, IBattleView, ICombatCommands, ITickable, IDisposable
+    public sealed class LegacyCombatAdapter : IRosterView, IBattleView, IShipViews, ICombatCommands, ITickable, IDisposable
     {
         [Inject]
         public LegacyCombatAdapter(
@@ -77,14 +77,22 @@ namespace Combat.Integration.Legacy
         public EntityId ControlledShip => GetEntityId(_scene.PlayerShip);
         public EntityId TargetShip => GetEntityId(_scene.EnemyShip);
 
-        public float MapWidth => _scene.Settings.AreaWidth;
-        public float MapHeight => _scene.Settings.AreaHeight;
-
         public CombatTimerState Timer => _timer.State;
 
         public bool CanChangeShip => _manager.CanChangeShip();
         public bool CanCallReinforcement => _manager.CanCallNextEnemy();
         public bool KillAllAllowedByRules => _manager.CanKillAllEnemies;
+
+        #endregion
+
+        #region IShipViews
+
+        public bool TryGetShip(EntityId id, out IShipView ship)
+        {
+            var found = _viewsById.TryGetValue(id, out var view);
+            ship = view;
+            return found;
+        }
 
         #endregion
 
@@ -164,23 +172,30 @@ namespace Combat.Integration.Legacy
             _shipCreatedSignal.Event -= OnShipCreated;
             _shipDestroyedSignal.Event -= OnShipDestroyed;
             _exitSignal.Event -= OnExit;
-            _entityIds.Clear();
+            _views.Clear();
+            _viewsById.Clear();
         }
 
         // A ship that is no longer active has no live entity, even before the scene removes it.
-        // Removal handlers read _entityIds directly.
+        // Removal handlers read _views directly.
         private EntityId GetEntityId(IShip ship)
         {
             if (ship == null || !ship.IsActive())
                 return EntityId.None;
-            if (_entityIds.TryGetValue(ship, out var id))
-                return id;
+            if (_views.TryGetValue(ship, out var view))
+                return view.Id;
             if (_frozen)
                 return EntityId.None;
 
-            id = new EntityId(_nextEntityId++);
-            _entityIds.Add(ship, id);
-            return id;
+            view = new LegacyShipView(ship, new EntityId(_nextEntityId++));
+            _views.Add(ship, view);
+            _viewsById.Add(view.Id, view);
+            return view.Id;
+        }
+
+        private EntityId FindEntityId(IShip ship)
+        {
+            return _views.TryGetValue(ship, out var view) ? view.Id : EntityId.None;
         }
 
         private void OnShipCreated(IShip ship)
@@ -202,8 +217,9 @@ namespace Combat.Integration.Legacy
             if (_frozen)
                 return;
 
-            _entityIds.TryGetValue(ship, out var entity);
-            _entityIds.Remove(ship);
+            var entity = FindEntityId(ship);
+            _views.Remove(ship);
+            _viewsById.Remove(entity);
 
             if (ship.Type.Class != UnitClass.Ship)
                 return;
@@ -242,9 +258,7 @@ namespace Combat.Integration.Legacy
                 if (slot.Deployed != null && !includeDeployed)
                     continue;
 
-                var entity = EntityId.None;
-                if (slot.Deployed != null)
-                    _entityIds.TryGetValue(slot.Deployed, out entity);
+                var entity = slot.Deployed != null ? FindEntityId(slot.Deployed) : EntityId.None;
 
                 Publish(slot, RosterChangeReason.ForcedDestruction, entity);
             }
@@ -319,7 +333,8 @@ namespace Combat.Integration.Legacy
 
         private readonly List<Slot> _playerSlots = new List<Slot>();
         private readonly List<Slot> _enemySlots = new List<Slot>();
-        private readonly Dictionary<IShip, EntityId> _entityIds = new Dictionary<IShip, EntityId>();
+        private readonly Dictionary<IShip, LegacyShipView> _views = new Dictionary<IShip, LegacyShipView>();
+        private readonly Dictionary<EntityId, LegacyShipView> _viewsById = new Dictionary<EntityId, LegacyShipView>();
         private int _nextEntityId = 1;
         private int _deploymentCounter;
         private bool _frozen;

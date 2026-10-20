@@ -1,5 +1,5 @@
 using UnityEngine;
-using Combat.Scene;
+using Combat.Integration;
 using GameServices.Settings;
 using Zenject;
 
@@ -19,7 +19,7 @@ namespace Combat
             [SerializeField] private float ZoomOverride = -1;
 
 		    [Inject]
-		    private void Initialize(IScene scene, GameSettings gameSettings)
+		    private void Initialize(IScenePresentation scene, GameSettings gameSettings)
 		    {
 		        _scene = scene;
 		        _gameSettings = gameSettings;
@@ -45,7 +45,7 @@ namespace Combat
 			}
 
 			private float _zoom;
-            private IScene _scene;
+            private IScenePresentation _scene;
 		    private GameSettings _gameSettings;
 		}
     }

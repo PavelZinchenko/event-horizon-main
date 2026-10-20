@@ -47,11 +47,8 @@ namespace Combat.Manager
         [Inject] private readonly EffectFactory _effectFactory;
 
         [Inject] private readonly ShipSelectionPanel _shipSelectionPanel;
-        [Inject] private readonly ShipStatsPanel _playerStatsPanel;
-        [Inject] private readonly ShipStatsPanel _enemyStatsPanel;
         [Inject] private readonly CombatMenu _combatMenu;
         [Inject] private readonly Settings _settings;
-        [Inject] private readonly RadarPanel _radarPanel;
         [Inject] private readonly ICombatModel _combatModel;
 
         public void Initialize()
@@ -104,15 +101,8 @@ namespace Combat.Manager
 
             CheckIfCanCallNextEnemy();
 
-            switch (ship.Type.Side)
-            {
-                case UnitSide.Player:
-                    _shipControlsPanel.Load(ship);
-                    break;
-                case UnitSide.Enemy:
-                    _radarPanel.Add(ship);
-                    break;
-            }
+            if (ship.Type.Side == UnitSide.Player)
+                _shipControlsPanel.Load(ship);
         }
 
         public void OnShipDestroyed(IShip ship)
@@ -127,8 +117,6 @@ namespace Combat.Manager
         {
             ship.Create(_shipFactory, _scene.FindFreePlace(40, ship.Side), _combatModel.EnemyFleet.AiLevel);
         }
-
-        public bool IsGamePaused { get { return _pausedCount > 0; } }
 
         public void OnEscapeKeyPressed()
         {
@@ -261,11 +249,6 @@ namespace Combat.Manager
                     }
                 }
             }
-            else if (!IsGamePaused)
-            {
-                _playerStatsPanel.Open(player);
-                _enemyStatsPanel.Open(enemy);
-            }
         }
 
         private bool IsPlayerDefeated()
@@ -286,7 +269,6 @@ namespace Combat.Manager
         private float _nextPlayerShipCooldown = _nextShipMaxCooldown;
         private const float _nextShipMaxCooldown = 3.0f;
 
-        private int _pausedCount;
         private readonly ISoundPlayer _soundPlayer;
         private readonly ExitSignal.Trigger _exitTrigger;
         private readonly IMessenger _messenger;
