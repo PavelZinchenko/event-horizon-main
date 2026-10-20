@@ -53,6 +53,7 @@ namespace Installers
             Container.BindInterfacesTo<AiManager>().AsSingle().NonLazy();
 			Container.Bind<Combat.Ai.BehaviorTree.BehaviorTreeBuilder>().AsSingle();
 			Container.BindInterfacesAndSelfTo<CombatTimer>().AsSingle().NonLazy();
+			Container.BindInterfacesAndSelfTo<Combat.Integration.Legacy.LegacyCombatAdapter>().AsSingle().NonLazy();
             Container.Bind<ShipStatsPanel>().FromInstance(_playerStatsPanel).When(context => context.MemberName.Contains("player"));
             Container.Bind<ShipStatsPanel>().FromInstance(_enemyStatsPanel).When(context => context.MemberName.Contains("enemy"));
             Container.Bind<ShipControlsPanel>().FromInstance(_shipControlsPanel);

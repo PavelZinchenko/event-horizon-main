@@ -37,6 +37,8 @@ namespace Combat.Manager
             }
         }
 
+        public Integration.CombatTimerState State { get; private set; }
+
         public void ResetTimer()
         {
             _elapsedTime = 0;
@@ -90,8 +92,12 @@ namespace Combat.Manager
             _elapsedTime += Time.deltaTime;
             _background.OutOfTimeMode = false;
 
+            var visible = true;
+            var secondsLeft = 0;
+
             if (_activeEnemyShipCount == 0 || _activePlayerShipCount == 0)
             {
+                visible = false;
                 _timerPanel.Enabled = false;
             }
             else if (_combatModel.Rules.TimeLimit <= 0)
@@ -154,11 +160,13 @@ namespace Combat.Manager
                         break;
                 }
 
+                secondsLeft = Mathf.Max(0, timeLeft);
                 _timerPanel.Enabled = true;
-                _timerPanel.Time = Mathf.Max(0, timeLeft);
+                _timerPanel.Time = secondsLeft;
             }
 
             SetAlarm(_background.OutOfTimeMode);
+            State = new Integration.CombatTimerState(visible, secondsLeft, _background.OutOfTimeMode);
         }
 
         private void SetAlarm(bool value)
