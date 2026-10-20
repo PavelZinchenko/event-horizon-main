@@ -55,6 +55,7 @@ namespace Installers
 			Container.Bind<Combat.Ai.BehaviorTree.BehaviorTreeBuilder>().AsSingle();
 			Container.BindInterfacesAndSelfTo<CombatTimer>().AsSingle().NonLazy();
 			Container.BindInterfacesAndSelfTo<Combat.Integration.Legacy.LegacyCombatAdapter>().AsSingle().NonLazy();
+			Container.BindInterfacesTo<Combat.Integration.CombatExperienceRecorder>().AsSingle().NonLazy();
 			Container.BindInterfacesTo<CombatTimerPresenter>().AsSingle().NonLazy();
 			Container.BindExecutionOrder<CombatTimerPresenter>(1);
 			Container.BindInterfacesTo<CombatHudPresenter>().AsSingle().NonLazy();
