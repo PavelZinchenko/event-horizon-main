@@ -4,6 +4,20 @@ This folder stores active pull requests from `PavelZinchenko/event-horizon-main`
 Active means open and not merged. Include draft pull requests.
 Track active pull requests only. When a pull request is merged or closed, delete all of its local files.
 
+## Index
+
+[INDEX.md](INDEX.md) lists every active pull request, one row each, with the last synchronization time.
+Each row has a status, links to the snapshot and review, the confirmed-issue count, and a short result.
+Add a row when synchronization creates a snapshot. Delete the row when the pull request is merged or closed.
+
+Use one of these statuses:
+
+- `Needs review`: `needs_review` is `true` in the snapshot.
+- `Changes required`: the latest review found confirmed issues at the current head.
+- `Ready to merge`: the latest review passed at the current head; the merge waits for the owner's confirmation.
+
+Update the status after each synchronization, review, and merge.
+
 ## Workflow
 
 1. **Update.** Synchronize with GitHub (see [Synchronization](#synchronization)). Create files for new pull requests. Mark each pull request that changed and needs a review.
@@ -111,7 +125,7 @@ Before writing a review:
 5. Verify the issue against surrounding code and identify its trigger and impact.
 6. Recheck the head commit after fetching changes. Refresh the review if it moved.
 7. Write or update the review and preserve unrelated local notes.
-8. Read back the review, set `needs_review: false` in the snapshot, and update the index below.
+8. Read back the review, set `needs_review: false` in the snapshot, and update its row in [INDEX.md](INDEX.md).
 
 If a patch is omitted, inspect the file at the recorded head and state any remaining comparison limitation.
 For large pull requests, record the actual coverage and all retrieval limits.
@@ -120,18 +134,6 @@ Label a targeted review explicitly and do not treat it as merge approval.
 
 Reviews remain local unless the user explicitly approves publishing the exact review content to GitHub.
 Do not implement fixes, stage files, or create commits as part of a review request.
-
-### Review index
-
-Latest reviews: #594 and #586 on 2026-10-15; #547 on 2026-10-16; #572 rechecked on 2026-10-18 at 06:57 UTC; #571 on 2026-10-18 at 07:45 UTC. Counts include confirmed issues only; each file also lists potential risks.
-
-| Pull request | Snapshot | Review | Confirmed issues | Result and coverage |
-| --- | --- | --- | ---: | --- |
-| #547 — LootItem requirements | [547.md](547.md) | [547.review.md](547.review.md) | 2 | Changes required; re-reviewed at 83201454: two earlier issues fixed, requirement-budget fix incomplete; seeded loot change needs owner approval. |
-| #571 — Negative fire rate | [571.md](571.md) | [571.review.md](571.review.md) | 1 | Changes required; re-reviewed at 30724329: ChargeableCannon fixed; P1 regression — fire rate 0 now blocks all 17 built-in beam weapons (missed by earlier reviews). |
-| #572 — Beam damage | [572.md](572.md) | [572.review.md](572.review.md) | 1 | P3 cleanup only; re-reviewed at 1dffc706, rechecked against main a177bdd5: runtime and calculator agree; beam damage doubling approved by owner 2026-10-18. |
-| #586 — Mixed slot types | [586.md](586.md) | [586.review.md](586.review.md) | 4 | Changes required; seven paths, schema, prefab bindings, and dependency checked. |
-| #594 — Beta5.1 | [594.md](594.md) | [594.review.md](594.review.md) | 5 | Changes required; targeted review of 37 head files within 7,180 changed paths. |
 
 ### Local command fallback
 
@@ -143,25 +145,28 @@ Keep the same filesystem and network permissions. Continue to use the GitHub int
 
 Merge only after the review passes and the owner confirms the merge.
 Before merging, recheck that the head commit still equals the reviewed head and that the pull request merges cleanly.
-Ask the owner for the merge method (merge commit or squash) unless they named one.
+Choose the merge method unless the owner specifies one.
 After the merge, delete the pull request's local files and its index row.
 
 ## Comment drafts
 
 Store a draft in `<number>.comment-draft.md`. Write it for the pull request author, not for the owner.
-Make each draft detailed. Write it so the author can apply the fix without reading the local review.
+Keep it short. The author must be able to apply the fix without reading the local review.
 
 Each draft must contain:
 
-- A short opening: what works, what blocks the merge, and owner decisions already made.
+- An opening of one to three sentences: what blocks the merge, and owner decisions already made.
+  Add requested description changes or reverts here, in one line.
 - The reviewed head commit.
-- One section per issue, with commit-pinned links to the affected lines.
-- For each issue: the code at fault, the trigger, the step-by-step failure path, and the impact.
-- A suggested fix as complete code blocks that the author can paste, with any edge cases it covers.
-- A way to reproduce or test the fix, before and after.
-- A list of requested reverts or description changes, when there are any.
+- One section per issue:
+  - A commit-pinned link to the affected lines.
+  - The trigger with concrete values, and the impact. Use two or three sentences.
+  - The fix, shown only as the change: a short diff or the changed lines, with file and line.
+    Do not paste whole methods or classes. When the fix spans many call sites, list them instead of patching each.
+  - Optionally, one `Check:` line for a case the fix could easily break.
 
-Leave out findings that cannot trigger, and internal notes meant only for the owner.
+Leave out findings that cannot trigger, generic test steps, summary sections that repeat the issues,
+and internal notes meant only for the owner.
 Show the draft to the owner before posting. Post it only after the owner confirms.
 End every draft and every posted comment with an AI attribution line, after a `---` rule. Use the name of the assistant that wrote the comment, not the name from earlier comments:
 
@@ -182,6 +187,7 @@ After posting, record the comment URL in the review and delete the draft file.
 5. Check that the list contains unique paths and matches GitHub's changed-file count.
 6. Create missing files and refresh GitHub-derived content in existing files.
 7. Set `needs_review` in each snapshot: `true` for a new pull request or a moved head commit, otherwise unchanged.
+   Add or update each row in [INDEX.md](INDEX.md) and set its status.
 8. For each local pull request missing from the active results, fetch its state directly. If it is merged or closed, delete its local files and its index row.
 9. Preserve all local analysis, owner notes, and response drafts of active pull requests.
 10. Read back the written files and verify their descriptions, metadata, and file counts.

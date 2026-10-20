@@ -2,7 +2,7 @@
 
 `Assets/ModulesShared/CombatSimulation/` is the new battle simulator. It will replace `Assets/Modules/BattleSimulator/` ([battle simulator](battle_simulator.md)). Event Horizon and Frontier share one copy through the `ModulesShared` submodule ([Gui: Shared code constraint](gui.md#shared-code-constraint)).
 
-Status: in progress. Only the physics library exists. Stage P1 is closed (2026-10-17, with the known limits below). It has the stage P1 features: torus broad phase, circles, convex polygons, a soft-step contact solver with speculative contacts, and a free-position query. Stage P2 is closed (2026-10-18, with the known limits below): capsules, convex decomposition, compound bodies, whole-body depenetration, inner-edge contacts and the time-of-impact check of speculative contacts. Swept bullets, ray casts and joints come in stages P3–P4. The plan and its progress are in `TODO/battle_simulator_implementation.md`. The findings and decisions are in `TODO/battle_simulator_investigation.md`. The `TODO/` folder is local and is not part of this repository.
+Status: in progress. Only the physics library exists. Stage P1 is closed (2026-10-17, with the known limits below). It has the stage P1 features: torus broad phase, circles, convex polygons, a soft-step contact solver with speculative contacts, and a free-position query. Stage P2 is closed (2026-10-18, with the known limits below): capsules, convex decomposition, compound bodies, whole-body depenetration, inner-edge contacts and the time-of-impact check of speculative contacts. Stage P3 is closed (2026-10-19, with the known limits below): collision filters, bullets with swept hits and pass-through, ray casts and circle overlaps. Stage P4 is closed (2026-10-19, with the known limits below): hinges, ropes, bullets attached to bodies, group teleport, and contact and joint impulses. The plan and its progress are in `TODO/battle_simulator_implementation.md`; stage results in `TODO/battle_simulator_physics.md`. The findings and decisions are in `TODO/battle_simulator_investigation.md`. The `TODO/` folder is local and is not part of this repository.
 
 ## Assemblies
 
@@ -27,9 +27,10 @@ Rules:
 3. Merge the pairs into the persistent contacts.
 4. Update the manifolds.
 5. Continue, end and start whole-body depenetrations.
-6. Run the soft-step solver.
+6. Prepare the joints, then run the soft-step solver (joints, then contacts, in each stage).
 7. Set the touching flags and the begin/end events.
 8. Write back the poses.
+9. Sweep the bullets against the bodies' motion of this step and against each other, then move them (`BulletHits`); attached bullets move with their parent. Skipped without bullets.
 
 Conventions:
 
@@ -45,7 +46,7 @@ Conventions:
 | Manifold timing | `Step` computes manifolds before the solve, from the poses at the start of the step. After a step, `GetContact` describes the previous poses, not the new ones. |
 | Touching | A contact touches when a point is closer than `LinearSlop`, or when the solver pushed in the step. A fast hit can bounce on a speculative point before the gap closes, and it still counts. |
 | Allocation | The step allocates nothing once its buffers have grown to the scene size. |
-| Determinism | The same inputs on the same build give bit-identical results. Cross-platform equality is not a goal (investigation 6.2). Measured in P1 and P2 (P2-4: 358 scene hashes): the gate scenes give bit-identical results on desktop .NET (x64) and Android IL2CPP (ARM64); a compiler change can break this. |
+| Determinism | The same inputs on the same build give bit-identical results. Cross-platform equality is not a goal (investigation 6.2). Measured in P1 and P2 (P2-4: 358 scene hashes): the gate scenes give bit-identical results on desktop .NET (x64) and Android IL2CPP (ARM64); a compiler change can break this. P3-1: 454 of 460 match; the energy-shield bullet scene and the bullet cost scene differ (same verdicts). |
 
 Shapes:
 
@@ -96,19 +97,67 @@ Whole-body depenetration (`Separate`, `Dynamics/Separation.cs`) separates two ov
 Ghost passes (`Dynamics/SpeculativeContacts.cs`, `Collision/Distance.cs`, `Collision/TimeOfImpact.cs`). A speculative point takes its normal from the closest features at the start of the step, and the solver stops any approach along that normal. A body that passes close by, but does not touch, would stop too: in P2-1 passes at a gap of 0.05 lost 31–113% of their speed. Before the solve, a time of impact checks such contacts and clears their points for the step when the shapes do not come within the speculative distance (owner decision 2026-10-18: keep the motion-based margin, add a time of impact only where needed).
 
 1. Which contacts: all points speculative (gap above `4 × LinearSlop`), and the gap can close within the step plus one substep, from the velocities, forces, damping and spin of both bodies. The extra substep is the relax pass after the last substep, which already stops an approach into the next substep. Other contacts keep their points, so the solver result does not change for them.
-2. Free motion only: the time of impact assumes that no other contact acts on the two bodies. An island is a group of movable bodies linked by contacts with points; a body that can neither move nor turn links nothing. When an island holds a contact that the solver acts on (touching, deep, a time-of-impact hit, a depenetration), no contact in it is cleared. Without this rule, crowds pushed drones into neighbours whose contacts were cleared (2 blow-ups to 76% in the 40-position crowd sweep), and a hull that hit with one part turned another part into the target.
+2. Free motion only: the time of impact assumes that no other contact acts on the two bodies. An island is a group of movable bodies linked by contacts with points and by joints; a body that can neither move nor turn links nothing. When an island holds a contact that the solver acts on (touching, deep, a time-of-impact hit, a depenetration) or a joint, no contact in it is cleared. Without this rule, crowds pushed drones into neighbours whose contacts were cleared (2 blow-ups to 76% in the 40-position crowd sweep), and a hull that hit with one part turned another part into the target.
 3. Time of impact: GJK distance and conservative advancement on separating axes (adapted from Box2D, `b2ShapeDistance`, `b2TimeOfImpact`). The path is the solver's own free motion: the poses after each substep, a straight line between them and a normalized lerp of the rotation. A pair that only translates on one line is checked over the whole step in one go; the separation along a fixed axis is then concave, so the ends of the interval bound it. Otherwise the step is split at the substeps, and up to 4 times more while the bodies turn; the largest dip that the turn can add within an interval is added to the target.
 4. Result (P2-4): every ghost-pass row passes (0.000% speed change, no begin event, 8 directions × 24 hull pairs, 8 reference passes). A brute-force check of about 16,000 cleared contacts (2,000 distance samples each, fast hit, fast spin, ghost pass, crowd, impact and cost scenes) found no pair that came closer than the target.
 5. Cost (desktop): the step-cost scenes check 0 contacts per step at the median, 5 at most; step time unchanged (0.145 ms median). `TimeOfImpactCount` and `DroppedSpeculativeCount` give the last step's numbers.
 
+Bullets, filters and queries (P3; `Dynamics/Bullet.cs`, `Dynamics/BulletSweep.cs`, `Collision/ShapeCast.cs`, `Queries/Queries.cs`).
+
+| Item | Rule |
+| --- | --- |
+| Filter | `ShapeDef.Filter` and `BulletDef.Filter`: `Categories` and `Ignore` (64 bits each; the core puts side × class in them). Two filters pair unless one ignores a category of the other. All zero pairs with everything, so a `ShapeDef` without a filter behaves as before filters existed (the inverse of the Box2D mask, where a zero mask pairs with nothing). The filter applies to solid contacts (in the broad phase), bullet hits and queries. `SetShapeFilter` switches a shape at run time (a shield on and off). |
+| Bullets | `CreateBullet` with one circle, polygon or capsule. Not bodies: the solver never sees them (about 2,000 of the 2,130 R2 bodies are bullets, and they need detection only). The core sets the velocity (homing); the world moves a bullet on a straight line and never turns it. The `Owner` body is the bullet's broad-phase group, so a bullet never hits its own ship, and bullets of one ship never hit each other. The core destroys bullets. |
+| Sweep | After the solve, each bullet is cast along its motion relative to each candidate: a body keeps its start rotation and moves its centre on a line from its start to its end pose (P3 owner decision 3); two bullets both move on their lines. Shapes that overlap at the start hit at fraction 0. |
+| Target unit | Hits are counted per unit: the shapes of one body with the same filter categories are one target (the parts of a hull), a shield shape with other categories is another. A bullet without pass-through reports its first hit only; a pass-through bullet reports the first hit on each unit in the step. `Begin` is set when the bullet did not hit that unit in the previous step. |
+| Order | `BulletHits` is sorted by fraction, then bullet index, then target (bodies before bullets, by index), then shape index (contact ordering, investigation 1.5; the core maps indices to entity IDs). Each bullet of a hit pair gets its own hit on the other. |
+| Shape cast | Newton steps on the GJK distance of the cores. For a pure translation the distance is convex in time, so each step lands at or before the first contact and never passes through. A flat face converges in one step. Tolerance: a gap of 1e-5 u plus the float resolution of the cast frame (computed near the origin, not at map coordinates); a tolerance relative to the bullet size let large bullets report a graze, early, as their hit. A step below 1e-6 of the translation counts as converged, so float noise never turns a contact into a miss. |
+| Contact normal | The direction between the closest core points while they are apart (always for circles and capsules). When a vertex lands exactly on a face, the cores touch and that direction is noise; the face normal with the largest separation then gives the normal (separating axis test, cut edges excluded). Polygon manifolds are not used for this: they prefer a face of A within a tolerance, also when a vertex of A touches a face of B. Shapes that overlap at the start take the manifold normal and its deepest point. |
+| Ray cast | `RayCast`: a point cast through the query grid (grid walk in unwrapped cell coordinates). The ray is clipped to `min(Width, Height)`, each target is tested in each torus image that its cells cover and keeps its nearest hit, and the `ignore` body (the shooter) is never hit. Without pass-through it returns the first hit; with pass-through up to `hits.Length` (8 in the game), the nearest, and an overflow flag. A ray that starts inside a target hits it at 0, with the reverse ray direction as the normal. |
+| Overlap | `OverlapCircle`: exact distance to each convex part (not a bounding circle), each unit once at its nearest image, nearest surface first, up to `results.Length` (32) with an overflow flag. |
+| Query grid | Tight boxes of the current poses of shapes and bullets, rebuilt on the first query after a step or after a change of shapes, poses or bullets. |
+| Allocation | The step and the queries allocate nothing once their buffers have grown. A new peak still grows a buffer once (P3 cost scene: the sweep pair buffer, 2,048 → 4,096 pairs, 32 KB, in one of 1,000 steps). |
+
+Joints (P4; `Dynamics/Joint.cs`, `Dynamics/JointSolver.cs`).
+
+| Item | Rule |
+| --- | --- |
+| Hinge | `CreateHinge(HingeDef)`: a shared point of two bodies (Box2D v3 revolute joint, without spring and motor; P4 owner decision 2). Anchors are body-local and relative to the body origin, as Unity anchors. An optional limit holds the joint angle within `[LowerAngle, UpperAngle]`, both within [-π, π]. |
+| Rope | `CreateRope(RopeDef)`: the distance between two anchors never exceeds `Length` (Box2D v3 distance joint with only the upper limit: no spring, no lower limit, never rigid). It only pulls. While slack it acts as a speculative constraint: the ends may reach the rope length within the substep, but no more; it applies no impulse otherwise. `SetRopeLength` reels in or out; a shorter rope pulls the ends together at the joint softness. `GetJointKind` tells hinges and ropes apart. |
+| Joint impulse | `GetJointImpulse`: the sum of the linear impulses that the joint applied to body B in the last step, through its anchor (warm start and solve; body A got the negative). Hinge limits apply angular impulses only, which the sum leaves out. |
+| Joint angle | Angle of B relative to A minus `ReferenceAngle`, in (-π, π]. The caller always passes the reference angle; the library never takes it from the current poses (P4 owner decision 3). Today's `HingeJoint2D` takes it at creation, before the rigidbody sync, which is a candidate cause of the tail that coils at an impossible angle. |
+| Solver | Soft step, as the contacts: the point constraint and the limits are soft with bias (`JointHertz` 200, `JointDampingRatio` 2, the hertz capped at half the substep rate; Box2D v3 solves joints with twice the contact hertz), and the relax pass removes the bias velocity. A limit that is not reached acts as a speculative constraint: the angle may reach the limit within the substep, but no more. Joints come before contacts in each stage. |
+| Seam | Prepared from `Torus.Delta` of the two centres at the start of the step; within the step only the motion of the two bodies counts. A chain across the wrap line needs no special case. Each offset across the line rounds at the precision of coordinates near the map size (about 1.5e-5 u on map 200), so a chaotic chain across the line drifts from the same chain in the middle (unit test: 5e-3 u after 60 steps, 3e-4 u away from the line). |
+| Contacts | `CollideConnected` off (the default, as in Unity): the two bodies get no contact. `CreateHinge` drops the pair's existing contacts at once; touching ones end in the next step's events. |
+| Islands | A joint links its bodies into one island and marks it: no contact in that island is cleared by the time of impact, because a joined body never moves freely. |
+| Teleport | `TeleportGroup(body, position)` moves the body and every body joined to it by hinges (P4 owner decision 4); rotations and velocities are not written. A rope never moves its other end. `TeleportGroup(body, position, angle)` also turns the group about the body's origin and turns the velocities. Relative positions keep their value within 2 ulp of the coordinates (P4 owner decision 5). |
+| Lifetime | `DestroyJoint`; `DestroyBody` destroys the body's joints. |
+| Contact impulse | `ManifoldPoint.TotalNormalImpulse` and `TotalTangentImpulse`: the impulse the point applied in the whole step (Box2D v3.1 `totalNormalImpulse`), for momentum checks and ramming damage. Body B received it. |
+
+Attachment (P4; `Dynamics/Bullet.cs`, `Dynamics/BulletSweep.cs`): a bullet that follows a body (harpoon hook, sticky mine, `AttachedToParent` ammunition). It is not a joint.
+
+| Item | Rule |
+| --- | --- |
+| Pose | `AttachBullet(bullet, parent, local)` stores the pose in the parent's frame, relative to its origin; `AttachBullet(bullet, parent)` takes the current world pose. The world pose is the parent pose times the local pose. The local pose is never written back, so it stays exact to the last bit. `SetBulletPose` throws for an attached bullet. |
+| Motion | Each step sweeps the bullet from its pose on the parent's start pose to its pose on the parent's end pose, with the parent's start rotation (as bodies in the sweep), and never against its parent. The velocity is that of the parent's point. A teleport of the parent (`SetPose`, `TeleportGroup`) moves it at once. |
+| Lifetime | `DetachBullet` keeps the world pose and the point velocity. When the parent is destroyed, the bullet comes free at the next step with its last pose and velocity. |
+| Rope to a hook | The core anchors the rope on the target at the hook's local point (`GetBulletLocalPose`); the rope anchor and the hook are then at the same point to the last bit. |
+
 Known limits:
 
 1. A polygon against a circle gives one manifold point. A polygon that spins fast after a glancing hit can swing another corner into the circle for one step (P1 impact results).
-2. When an incident edge overlaps the reference face only partly, the point of its corner past the face end measures against the face plane. This is conservative: a body can stop slightly early (ghost collision), never late. Corner past corner measures the true gap. The time of impact removes these early stops for bodies in free motion; in an island with an active contact they stay. Example: a ship that passes close to a hull while drones rest on that hull is still braked.
+2. When an incident edge overlaps the reference face only partly, the point of its corner past the face end measures against the face plane. This is conservative: a body can stop slightly early (ghost collision), never late. Corner past corner measures the true gap. The time of impact removes these early stops for bodies in free motion; in an island with an active contact or a joint they stay. Example: a ship that passes close to a hull while drones rest on that hull is still braked; so is a ship that passes close to a worm.
 3. An AABB must be smaller than half the torus on each axis.
 4. Soft contacts give way under load: penetration grows with the force (P1 crowd results).
 5. The solver handles each contact once per substep, in a fixed order. When other contacts push the same body in the same substep, a fast pair can pass its speculative limit and overlap deeply for 1–3 steps; it then separates at no more than the push speed. Seen when crowd drones bounce off a target into drones that still arrive (P1 arrival peak).
 6. Fast spin: a hull whose tip moves at 140 u/s (f6s1 at 233 rad/s, flagship4 at 47 rad/s) can sink 31–45% for one step. The manifold point comes from the start of the step, and a fast turn brings another feature in. Before P2-4 the ghost stop of the previous step braked some of these spins early (flagship4: 0%).
+7. Bullet sweeps ignore the target's spin within the step (P3 owner decision 3). A hull tip that turns through a bullet in one step is missed; the bullet is then inside the hull at the next step and hits it at fraction 0 there, one step late.
+8. A bullet, its swept box and the boxes of its targets must stay below half the torus (limit 3). On map 50 the P3 sweep scene skips its 30 u bullets for that reason.
+9. Joints have no friction or motor. A worm tail sways for seconds after the head stops; only the core's sideways damping rule removes energy.
+10. Warm start after a sudden stop: in the first step after a strong turn kick ends, the warm-started joint impulses can raise the kinetic energy by a few percent (6% at the ship engine caps). Box2D v3 behaves the same.
+11. A chain far faster than the database worms (engine caps: 1,200°/s) opens its joints by up to 18% and whips the tail tip past 120 u/s. The core caps the worm's turn rate.
+12. A rope is stiff and inelastic: a jerk stops the far end at the rope length without a bounce.
+13. Chaotic joint scenes (a swinging chain) drift apart between any two positions, also away from the wrap line, through float rounding. Seam checks compare the first steps only.
 
 Third-party code: [THIRD_PARTY.md](../Assets/ModulesShared/CombatSimulation/Physics/THIRD_PARTY.md) (Box2D, MIT).
 
