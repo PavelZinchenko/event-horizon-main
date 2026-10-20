@@ -41,7 +41,8 @@ namespace Domain.Quests
             if (_type == FactionFilterType.AllAvailable)
             {
                 if (IsInList(faction)) return false;
-                return !faction.HideFromMerchants && faction.HomeStarRange.Contains(_starLevel);
+                return !faction.HideFromMerchants &&
+                    (faction == Faction.Empty || faction.HomeStarRange.Contains(_starLevel));
             }
 
             return IsSuitable(faction, _starFaction);
@@ -52,7 +53,8 @@ namespace Domain.Quests
             if (_type == FactionFilterType.AllAvailable)
             {
                 if (IsInList(faction)) return false;
-                return !faction.HideResearchTree && faction.HomeStarRange.Contains(_starLevel);
+                return !faction.HideResearchTree &&
+                    (faction == Faction.Empty || faction.HomeStarRange.Contains(_starLevel));
             }
 
             return IsSuitable(faction, _starFaction);
