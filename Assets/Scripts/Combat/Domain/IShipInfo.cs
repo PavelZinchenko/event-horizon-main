@@ -17,6 +17,10 @@ namespace Combat.Domain
 
         Component.Ship.IShip ShipUnit { get; }
         Constructor.Ships.IShip ShipData { get; }
+
+        // Built once by the fleet model, with player skills where the rules allow them.
+        Constructor.IShipSpecification Specification { get; }
+
         float Condition { get; }
         float ActivationTime { get; }
         UnitSide Side { get; }

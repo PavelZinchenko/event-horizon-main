@@ -20,6 +20,7 @@ namespace GameServices.SceneManager
 		Exploration,
 		Ehopedia,
 		Settings,
+		CoreCombat,
 	}
 
     public static class GameSceneExtension
@@ -65,6 +66,8 @@ namespace GameServices.SceneManager
 					return "EhopediaScene";
 				case GameScene.Settings:
 					return "SettingsScene";
+				case GameScene.CoreCombat:
+					return "CoreCombatScene";
 				default:
                     throw new InvalidEnumArgumentException("scene", (int)scene, scene.GetType());
             }

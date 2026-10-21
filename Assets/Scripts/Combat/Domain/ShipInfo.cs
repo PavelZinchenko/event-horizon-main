@@ -47,6 +47,7 @@ namespace Combat.Domain
 
         public IShip ShipUnit { get; private set; }
         public Constructor.Ships.IShip ShipData { get { return _shipData; } }
+        public IShipSpecification Specification => _shipSpec;
         public float ActivationTime { get; private set; }
 
         public float Condition

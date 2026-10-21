@@ -39,11 +39,18 @@ namespace GameStateMachine.States
 
             _exitSignal = exitSignal;
             _exitSignal.Event += OnCombatCompleted;
+
+            // '@' runs the battle on the new combat core (migration phase 3c), with or without test ship IDs.
+#if UNITY_EDITOR
+            _useCombatCore = settings.TestShipId?.Contains('@') == true;
+#else
+            _useCombatCore = _database.IsEditable && settings.TestShipId?.Contains('@') == true;
+#endif
         }
 
         public override StateType Type => StateType.QuickCombat;
 
-		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.Combat; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return _useCombatCore ? GameScene.CoreCombat : GameScene.Combat; } }
 
 		public override void InstallBindings(DiContainer container)
 		{
@@ -145,6 +152,7 @@ namespace GameStateMachine.States
 		}
 
 		private readonly Settings _settings;
+		private readonly bool _useCombatCore;
 		private readonly IDatabase _database;
 		private readonly ISessionData _session;
 		private readonly ExitSignal _exitSignal;
