@@ -54,7 +54,8 @@ namespace Combat.Integration.Core
             var seed = (ulong)(uint)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
             var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, timeLimitTicks);
             var torus = new Torus(setup.Width, setup.Height);
-            _runner = new BattleRunner(setup, new ChasePilotProvider(torus));
+            _pilots = new CorePilotProvider(torus, PlayerSide);
+            _runner = new BattleRunner(setup, _pilots);
 
             var bulletSprite = resourceLocator.GetSprite(new SpriteId(BulletSpriteName, SpriteId.Type.Ammunition));
             _renderer = new BattleRenderer(torus, PlayerSide, bulletSprite, scene);
@@ -121,12 +122,19 @@ namespace Combat.Integration.Core
 
         #region IShipControlSource
 
-        // Player input comes with step 5.
+        // Only player ships have controls. A redeployed ship has a new pilot and a new description.
         public bool TryGetControls(EntityId ship, out IShipControlDescription description, out IShipCommandSink commands)
         {
             description = null;
             commands = null;
-            return false;
+            if (!IsRunning || !_ids.TryGetCore(ship, out var core) || !_viewsByCore.TryGetValue(core, out var view))
+                return false;
+            if (!_pilots.TryGetPlayerPilot(core, out var pilot))
+                return false;
+
+            description = view.Controls;
+            commands = pilot;
+            return true;
         }
 
         #endregion
@@ -192,6 +200,7 @@ namespace Combat.Integration.Core
             _views.Clear();
             _viewsByCore.Clear();
             _ids.Clear();
+            _pilots.Clear();
         }
 
         private void RunSteps()
@@ -308,7 +317,7 @@ namespace Combat.Integration.Core
 
             var id = _ids.Assign(item.EntityId);
             var specification = slot.Info.Specification;
-            var view = new CoreShipView(id, slot.Side, specification, state);
+            var view = new CoreShipView(id, slot.Side, specification, state, new CoreShipControls(state.Definition));
             _views.Add(id, view);
             _viewsByCore.Add(item.EntityId, view);
 
@@ -322,6 +331,7 @@ namespace Combat.Integration.Core
             if (_viewsByCore.TryGetValue(item.EntityId, out var view))
                 view.Deactivate();
 
+            _pilots.Release(item.EntityId);
             _renderer.RemoveShip(item.EntityId, item.RemovalReason);
             _removed.Add(item.EntityId);
         }
@@ -526,6 +536,7 @@ namespace Combat.Integration.Core
         private const string BulletSpriteName = "ball";
 
         private BattleRunner _runner;
+        private readonly CorePilotProvider _pilots;
         // The drawn controlled ship, or its last position: every other entity is drawn at its image nearest to it.
         private Vector2 _anchor;
         private float _accumulator;

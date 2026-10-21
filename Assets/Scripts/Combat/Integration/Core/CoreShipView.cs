@@ -9,10 +9,12 @@ namespace Combat.Integration.Core
     // so the view never holds a snapshot span (spans are valid only until the next step).
     public sealed class CoreShipView : IShipView
     {
-        public CoreShipView(EntityId id, CombatSide side, Constructor.IShipSpecification specification, in ShipState state)
+        public CoreShipView(EntityId id, CombatSide side, Constructor.IShipSpecification specification, in ShipState state,
+            CoreShipControls controls)
         {
             Id = id;
             Side = side;
+            Controls = controls;
             _specification = specification;
             _state = state;
             IsActive = true;
@@ -45,6 +47,9 @@ namespace Combat.Integration.Core
         public float VisualRotation { get; private set; }
 
         public ShipState State => _state;
+
+        // The control description of this deployment; the adapter hands it out only for player ships.
+        public CoreShipControls Controls { get; }
 
         public void Update(in ShipState state) => _state = state;
 

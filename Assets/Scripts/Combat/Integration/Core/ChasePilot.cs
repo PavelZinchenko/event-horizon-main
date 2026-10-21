@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using CombatSimulation.Core;
 using CombatSimulation.Physics;
 using CombatSimulation.Runtime;
+using CoreEntityId = CombatSimulation.Core.EntityId;
 
 namespace Combat.Integration.Core
 {
@@ -92,20 +94,38 @@ namespace Combat.Integration.Core
         private readonly float _standOff;
     }
 
-    // Gives every ship a chase pilot. Step 5 gives the player ship its input pilot.
-    public sealed class ChasePilotProvider : IPilotProvider
+    // Gives each player ship a new player pilot and every other ship a chase pilot. The runner creates the pilot
+    // at the spawn event, so it exists before the adapter handles that event.
+    public sealed class CorePilotProvider : IPilotProvider
     {
-        public ChasePilotProvider(Torus arena)
+        public CorePilotProvider(Torus arena, int playerSide)
         {
             _arena = arena;
+            _playerSide = playerSide;
         }
 
         public IPilot CreatePilot(BattleSnapshot snapshot, in ShipState ship, out PilotSchedule schedule)
         {
+            if (ship.Side == _playerSide && !ship.IsDrone)
+            {
+                var pilot = new PlayerPilot();
+                _playerPilots[ship.Id] = pilot;
+                schedule = PlayerPilot.Schedule;
+                return pilot;
+            }
+
             schedule = ship.IsDrone ? PilotSchedule.Drone : PilotSchedule.Ship;
             return new ChasePilot(ship.Definition, _arena);
         }
 
+        public bool TryGetPlayerPilot(CoreEntityId ship, out PlayerPilot pilot) => _playerPilots.TryGetValue(ship, out pilot);
+
+        public void Release(CoreEntityId ship) => _playerPilots.Remove(ship);
+
+        public void Clear() => _playerPilots.Clear();
+
         private readonly Torus _arena;
+        private readonly int _playerSide;
+        private readonly Dictionary<CoreEntityId, PlayerPilot> _playerPilots = new Dictionary<CoreEntityId, PlayerPilot>();
     }
 }

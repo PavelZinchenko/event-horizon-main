@@ -44,6 +44,11 @@ namespace Installers
 
             Container.BindInterfacesTo<InputSystemMouse>().AsSingle().WithArguments(_camera);
             Container.BindInterfacesTo<InputSystemKeyboard>().AsSingle();
+
+            // After the mouse reader and before the adapter, so the frame's input reaches the frame's steps.
+            Container.BindInterfacesTo<CoreKeyboardDriver>().AsSingle();
+            Container.BindExecutionOrder<InputSystemMouse>(-2);
+            Container.BindExecutionOrder<CoreKeyboardDriver>(-1);
         }
     }
 }
