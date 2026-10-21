@@ -14,8 +14,8 @@
 - [ ] After PR #547 merges: record in `docs/issues/quests.md` that loot requirements are re-evaluated on every load, so state-dependent requirements can change quest loot after a reload
 
 ## Planned (battle simulator — `docs/issues/battle_simulator.md`)
-- [ ] Migration phase 2: first production core slice with core-owned roster (`TODO/battle_simulator_migration.md`)
-- [ ] Migration phase 3a step 0: resolve unclear behavior with the owner and record acceptance examples (`TODO/battle_simulator_migration.md`)
+- [ ] Performance gate: snapshot copy is 188 KiB per tick at R2, 3.2× the estimate; decide on changed ranges or smaller states (`TODO/battle_simulator_core.md`, risk 3)
+- [ ] Migration phase 3a step 0: owner decision B3 (campaign abort) and its acceptance examples (`TODO/battle_simulator_migration.md`)
 - [ ] Migration phase 3b: relay simulator, network gate and roster agreement checks (`TODO/battle_simulator_network.md`)
 - [ ] Migration phase 3c: new combat scene, adapter, input and presentation (`TODO/battle_simulator_migration.md`)
 - [ ] Before migration phase 4: decide save rollback, active-mod admission and campaign abort policies (`TODO/battle_simulator_migration.md`)
