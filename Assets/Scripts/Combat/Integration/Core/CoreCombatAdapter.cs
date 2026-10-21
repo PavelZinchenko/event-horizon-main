@@ -6,6 +6,8 @@ using CombatSimulation.Physics;
 using CombatSimulation.Runtime;
 using CombatView;
 using GameDatabase;
+using GameDatabase.Enums;
+using GameDatabase.Extensions;
 using GameDatabase.Model;
 using GameStateMachine.States;
 using Gui.Combat;
@@ -31,12 +33,14 @@ namespace Combat.Integration.Core
             IMessenger messenger,
             IResourceLocator resourceLocator,
             LazyInject<CombatMenu> combatMenu,
+            LazyInject<ShipSelectionPanel> shipSelectionPanel,
             ExitSignal.Trigger exitTrigger,
             UnityEngine.SceneManagement.Scene scene)
         {
             _combatModel = combatModel;
             _resourceLocator = resourceLocator;
             _combatMenu = combatMenu;
+            _shipSelectionPanel = shipSelectionPanel;
             _exitTrigger = exitTrigger;
 
             var mapper = new CoreShipMapper(database);
@@ -48,7 +52,10 @@ namespace Combat.Integration.Core
                 AddSlot(new RosterId(nextId++), CombatSide.Enemy, info, mapper, roster);
 
             var size = combatModel.Rules.BattleMapSize;
-            var timeLimitTicks = Math.Max(0, combatModel.Rules.TimeLimit) * TicksPerSecond;
+
+            // No time limit: the core ends a battle in a draw at timeout, but quick combat (CallNextEnemy) never
+            // ends on time. The TimeOutMode values and reinforcements come in phase 4 (owner, 2026-10-21).
+            const long timeLimitTicks = 0;
 
             // The seed is drawn here, outside the core, which never uses a random source of its own.
             var seed = (ulong)(uint)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
@@ -96,9 +103,15 @@ namespace Combat.Integration.Core
         public EntityId ControlledShip => FindActiveEntity(_playerSlots);
         public EntityId TargetShip => FindActiveEntity(_enemySlots);
 
-        // Timer and ship change come with the battle flow (step 6); reinforcements with phase 4.
-        public CombatTimerState Timer => default;
-        public bool CanChangeShip => false;
+        // Shown while both sides have an active ship, so the pause button is there. No digits: legacy hides them
+        // when it cannot call the next enemy, and reinforcements come in phase 4.
+        public CombatTimerState Timer => new CombatTimerState(
+            IsRunning && Count(CombatSide.Player, ShipStatus.Active) > 0 && Count(CombatSide.Enemy, ShipStatus.Active) > 0, 0, false);
+
+        // Legacy CombatManager.CanChangeShip.
+        public bool CanChangeShip =>
+            IsRunning && _combatModel.Rules.ShipSelection == PlayerShipSelectionMode.Default && Count(CombatSide.Player, ShipStatus.Ready) > 0;
+
         public bool CanCallReinforcement => false;
         public bool KillAllAllowedByRules => _combatModel.Rules.KillThemAllButton;
 
@@ -151,10 +164,12 @@ namespace Combat.Integration.Core
 
         public void Retreat(EntityId ship)
         {
-            if (!IsRunning || ship != ControlledShip || !_ids.TryGetCore(ship, out var core))
+            // One request per ship: the snapshot shows the retreat only after the next step.
+            if (!CanChangeShip || ship != ControlledShip || ship == _retreatRequested || !_ids.TryGetCore(ship, out var core))
                 return;
 
-            _runner.Retreat(core, _runner.Tick);
+            if (_runner.Retreat(core, _runner.Tick))
+                _retreatRequested = ship;
         }
 
         public void CallReinforcement() { }
@@ -266,8 +281,8 @@ namespace Combat.Integration.Core
             if (!IsRunning)
                 return;
 
-            RunCommander(CombatSide.Player);
-            RunCommander(CombatSide.Enemy);
+            RunEnemyCommander();
+            RunPlayerCommander();
 
             _runner.Step();
             var snapshot = _runner.Snapshot;
@@ -329,7 +344,11 @@ namespace Combat.Integration.Core
         private void OnShipRemoved(in BattleEvent item)
         {
             if (_viewsByCore.TryGetValue(item.EntityId, out var view))
+            {
                 view.Deactivate();
+                if (view.Id == _retreatRequested)
+                    _retreatRequested = EntityId.None;
+            }
 
             _pilots.Release(item.EntityId);
             _renderer.RemoveShip(item.EntityId, item.RemovalReason);
@@ -401,22 +420,43 @@ namespace Combat.Integration.Core
             _removed.Clear();
         }
 
-        // Temporary for both sides (legacy quick combat rule for the enemy): deploy the first ready ship at once at the
-        // start, and 3 s after the side's last ship left. Step 6 gives the player side the ship selection panel.
-        private void RunCommander(CombatSide side)
+        // Legacy quick combat rule: deploy the first ready enemy at once at the start, and 3 s after the last one left.
+        private void RunEnemyCommander()
         {
-            if (_runner.Tick < _nextDeployTick[(int)side])
+            if (_runner.Tick < _nextDeployTick[(int)CombatSide.Enemy])
                 return;
 
-            var slots = side == CombatSide.Player ? _playerSlots : _enemySlots;
-            for (var i = 0; i < slots.Count; ++i)
-            {
-                if (slots[i].Status != ShipStatus.Ready)
-                    continue;
+            var slot = FirstReady(_enemySlots);
+            if (slot != null)
+                TryDeploy(slot);
+        }
 
-                TryDeploy(slots[i]);
+        // Legacy CombatManager.UpdateLocalGame: the player side waits for an active enemy. Then, at once at the start
+        // and 3 s after the player ship left, the selection panel opens, or ByOrder deploys the first ready ship.
+        // A closed panel opens again 3 s later, as the legacy cooldown restarts.
+        private void RunPlayerCommander()
+        {
+            if (_runner.Tick < _nextDeployTick[(int)CombatSide.Player])
+                return;
+            if (Count(CombatSide.Enemy, ShipStatus.Active) == 0 || Count(CombatSide.Player, ShipStatus.Active) > 0)
+                return;
+            if (IsDeployPending(_enemySlots) || IsDeployPending(_playerSlots))
+                return;
+
+            var slot = FirstReady(_playerSlots);
+            if (slot == null)
+                return;
+
+            if (!_combatModel.Rules.ShipSelection.CanChooseShip())
+            {
+                TryDeploy(slot);
                 return;
             }
+
+            _nextDeployTick[(int)CombatSide.Player] = _runner.Tick + DeployDelayTicks;
+            var panel = _shipSelectionPanel.Value;
+            if (panel)
+                panel.Open();
         }
 
         private void TryDeploy(Slot slot)
@@ -432,6 +472,24 @@ namespace Combat.Integration.Core
             var tick = _runner.Tick;
             if (_runner.Deploy(ToCore(slot.Id), tick))
                 slot.PendingDeployTick = tick;
+        }
+
+        private static Slot FirstReady(List<Slot> slots)
+        {
+            for (var i = 0; i < slots.Count; ++i)
+                if (slots[i].Status == ShipStatus.Ready)
+                    return slots[i];
+
+            return null;
+        }
+
+        private static bool IsDeployPending(List<Slot> slots)
+        {
+            for (var i = 0; i < slots.Count; ++i)
+                if (slots[i].PendingDeployTick != NoPendingDeploy)
+                    return true;
+
+            return false;
         }
 
         // Temporary: leaves at once. Step 7 adds the freeze and the 3 s wait.
@@ -541,6 +599,7 @@ namespace Combat.Integration.Core
         private Vector2 _anchor;
         private float _accumulator;
         private int _deploymentCounter;
+        private EntityId _retreatRequested = EntityId.None;
         private bool _exited;
         private readonly long[] _nextDeployTick = new long[2];
 
@@ -558,6 +617,7 @@ namespace Combat.Integration.Core
         private readonly ICombatModel _combatModel;
         private readonly IResourceLocator _resourceLocator;
         private readonly LazyInject<CombatMenu> _combatMenu;
+        private readonly LazyInject<ShipSelectionPanel> _shipSelectionPanel;
         private readonly ExitSignal.Trigger _exitTrigger;
     }
 }
