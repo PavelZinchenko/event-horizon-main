@@ -13,13 +13,16 @@ namespace Combat.Component.Systems.Weapons
         public ChargeableCannon(IWeaponPlatform platform, WeaponStats weaponStats, Factory.IBulletFactory bulletFactory, int keyBinding)
             : base(platform, weaponStats, bulletFactory, keyBinding)
         {
+            // MaxCooldown only blocks the weapon when it can't fire; charging uses _chargeTotalTime.
+            MaxCooldown = weaponStats.FireRate > 0 ? 0f : float.PositiveInfinity;
+
             _energyConsumption = bulletFactory.Stats.EnergyCost;
-            _chargeTotalTime = 1.0f / weaponStats.FireRate;
+            _chargeTotalTime = weaponStats.FireRate > 0 ? 1.0f / weaponStats.FireRate : float.PositiveInfinity;
 			_bullets = BulletCompositeDisposable.Create(BulletFactory.Stats);
         }
 
-        public override bool CanBeActivated { get { return _chargeTime > 0 || (Platform.IsReady && Platform.EnergyPoints.Value >= _energyConsumption*0.5f); } }
-        public override float Cooldown => Platform.Cooldown;
+        public override bool CanBeActivated { get { return base.CanBeActivated && (_chargeTime > 0 || (Platform.IsReady && Platform.EnergyPoints.Value >= _energyConsumption*0.5f)); } }
+        public override float Cooldown => Mathf.Max(Platform.Cooldown, base.Cooldown);
 
         public override float PowerLevel => Mathf.Clamp01(_chargeTime / _chargeTotalTime);
         public override IBullet ActiveBullet => HasActiveBullet ? _activeBullet : null;
