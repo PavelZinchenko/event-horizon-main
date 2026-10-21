@@ -2,7 +2,7 @@
 
 `Assets/ModulesShared/CombatSimulation/` is the new battle simulator. It will replace `Assets/Modules/BattleSimulator/` ([battle simulator](battle_simulator.md)). Event Horizon and Frontier share one copy through the `ModulesShared` submodule ([Gui: Shared code constraint](gui.md#shared-code-constraint)).
 
-Status: in progress. Physics and the phase 2 core (steps 1–11) exist; phase 2 is complete: a scripted battle runs on the core rules without Unity. Core provides the fixed tick loop, spawn identity, the core-owned roster, roster commands, the battle result, the timer, ships with an engine, resources and control frames, the published snapshot and event batch, the contact pipeline with damage and ramming, the bullet store with the cannon, homing missile and beam, point defense, drone bays with persistent inventory, and the per-tick target grid; Runtime runs pilots in locked mode, including drone self-destruct requests. Stage P1 is closed (2026-10-17, with the known limits below). It has the stage P1 features: torus broad phase, circles, convex polygons, a soft-step contact solver with speculative contacts, and a free-position query. Stage P2 is closed (2026-10-18, with the known limits below): capsules, convex decomposition, compound bodies, whole-body depenetration, inner-edge contacts and the time-of-impact check of speculative contacts. Stage P3 is closed (2026-10-19, with the known limits below): collision filters, bullets with swept hits and pass-through, ray casts and circle overlaps. Stage P4 is closed (2026-10-19, with the known limits below): hinges, ropes, bullets attached to bodies, group teleport, and contact and joint impulses. The plan and its progress are in `TODO/battle_simulator_implementation.md`; stage results in `TODO/battle_simulator_physics.md`. The findings and decisions are in `TODO/battle_simulator_investigation.md`. The `TODO/` folder is local and is not part of this repository.
+Status: in progress. Physics and the phase 2 core (steps 1–11) exist; phase 2 is complete: a scripted battle runs on the core rules without Unity. Migration phase 3c is complete: quick combat runs on the core in a debug scene ([Unity integration](#unity-integration)). Core provides the fixed tick loop, spawn identity, the core-owned roster, roster commands, the battle result, the timer, ships with an engine, resources and control frames, the published snapshot and event batch, the contact pipeline with damage and ramming, the bullet store with the cannon, homing missile and beam, point defense, drone bays with persistent inventory, and the per-tick target grid; Runtime runs pilots in locked mode, including drone self-destruct requests. Stage P1 is closed (2026-10-17, with the known limits below). It has the stage P1 features: torus broad phase, circles, convex polygons, a soft-step contact solver with speculative contacts, and a free-position query. Stage P2 is closed (2026-10-18, with the known limits below): capsules, convex decomposition, compound bodies, whole-body depenetration, inner-edge contacts and the time-of-impact check of speculative contacts. Stage P3 is closed (2026-10-19, with the known limits below): collision filters, bullets with swept hits and pass-through, ray casts and circle overlaps. Stage P4 is closed (2026-10-19, with the known limits below): hinges, ropes, bullets attached to bodies, group teleport, and contact and joint impulses. The plan and its progress are in `TODO/battle_simulator_implementation.md`; stage results in `TODO/battle_simulator_physics.md`. The findings and decisions are in `TODO/battle_simulator_investigation.md`. The `TODO/` folder is local and is not part of this repository.
 
 ## Assemblies
 
@@ -21,6 +21,7 @@ Rules:
 3. Phase 2 does not reference `Database` or `ShipConstructor`. Phase 4 adds the database path using contracts shared with Frontier.
 4. Unit tests go into `Physics/Tests/` or `Core/Tests/` with an Editor-only asmdef. `Tests~/EngineFree.Tests.csproj` compiles both. Runtime tests live in `Core/Tests/`.
 5. Core grants internal access only to Runtime and Core tests. Core does not reference Network or the application.
+6. Physics, Core and Runtime are `autoReferenced`, so the application adapter in Assembly-CSharp can use them. An asmdef cannot reference Assembly-CSharp, where the application contracts live.
 
 ## Core foundation
 
@@ -279,6 +280,63 @@ Phase 2 step 11. `Core/Tests/ScriptedBattle.cs` is test code: the core knows not
 5. **Determinism.** The log holds every event and a per-tick digest of ship and bullet poses, velocities and resources as raw float bits. One run alone and two runs stepped interleaved in one process give the same log.
 6. **Allocation.** The same fleet with huge armor and energy, all three slots active, steps 3000 ticks after a 1500-tick warm-up with zero bytes allocated, pilots included. The window has bolts, missiles, beam hits, point-defense zaps and eight live drones. Buffers grow until about tick 510, at the first salvo peak; afterwards nothing allocates.
 7. **Snapshot size.** Element sizes on .NET 8 x64, measured as the allocation of a 1024-element array: `ShipState` 128 B, `BulletState` 88 B, `RosterSlotState` 64 B, `BattleEvent` 152 B. The scripted battle copies 1.8 KB per tick on average and 3.6 KB at most (peak 12 ships, 16 bullets). At R2 (2,000 bullets, 130 ships) the ship and bullet copy is 192,640 B per tick, about 9.6 MB/s at 50 Hz. That is 3.2 times the design estimate of 60 KB, which assumed 24-byte bullets. The performance gate decides whether to publish only changed ranges or shrink the states.
+
+## Unity integration
+
+Migration phase 3c. Quick combat runs on the core in a separate scene; the old scene stays the default. The plan and its decisions (S1–S5) are in `TODO/battle_simulator_scene.md`.
+
+| Part | Location |
+| --- | --- |
+| Adapter, ship mapper, entity ID map, pilots, keyboard driver | `Assets/Scripts/Combat/Integration/Core/` |
+| Views | `Assets/Modules/CombatView/` (references Core and Physics; the core never references it) |
+| Installer | `Assets/Scripts/Installers/CoreCombatSceneInstaller.cs` |
+| Scene | `Assets/Scenes/CoreCombatScene.unity` (`GameScene.CoreCombat`) |
+| Editor entry | `Assets/Editor/CoreCombatLauncher.cs`: menu `Tools/Combat/Start Core Quick Combat` |
+
+### Scene selection
+
+`@` in the `TestShipId` debug setting selects the new scene, with or without ship IDs (`@34`). `QuickCombatState.RequiredScenes` then returns `GameScene.CoreCombat`. Outside the Editor the flag needs an editable database. The state binds the same `ICombatModel` for both scenes.
+`CoreCombatSceneInstaller` binds only the adapter, its scene presentation, the HUD presenters, the HUD panels and input. It binds no legacy `CombatManager`, `Scene`, AI or factories.
+
+### Adapter
+
+`CoreCombatAdapter` owns the `BattleRunner` and implements the application contracts: `IRosterView`, `IBattleView`, `IShipViews`, `IShipControlSource` and `ICombatCommands`. `CoreScenePresentation` implements `IScenePresentation` over it. The HUD reads these contracts and works unchanged.
+
+1. **Setup.** Player slots get roster IDs 1…n, then enemy slots. The arena is `BattleMapSize` square. The seed comes from `UnityEngine.Random`. There is no time limit: the core draws at timeout, but quick combat never ends on time.
+2. **Driver.** `Tick` adds `Time.deltaTime` to an accumulator and steps every `0.02` s, at most 5 steps per frame. A longer frame drops the rest. The adapter handles each tick's events right after its `Step()`, so no event is lost.
+3. **Projection.** Slots and ship views copy what they need from the snapshot. They keep no spans. `EntityIdMap` gives each core entity a sequential application `EntityId` at its spawn event and releases it after the removal. The 64-bit core ID is never truncated.
+4. **Commands.** Deploy, retreat, surrender and kill-all go to the runner. One retreat request per ship. Surrender steps once at once, because the menu pauses the game.
+5. **Battle flow (legacy quick combat).** The enemy deploys its first ready ship at the start and 3 s after its active ship leaves. When an enemy is active and the player has none, the selection panel opens: at once at the start, 3 s after a player ship leaves. `ShipSelection` modes that cannot choose deploy the first ready ship. The open panel pauses the game, so a deployment applies when it closes.
+6. **HUD values.** The timer panel shows while both sides have an active ship, without digits. `CanChangeShip` follows the legacy rule. `CanCallReinforcement` is false. Device cooldowns are 0: the snapshot has none.
+7. **Completion.** At the result, stepping stops and the last frame stays on screen. After 3 s of real time the adapter fires `ExitSignal` once. Real time, because surrender comes from the open menu, which pauses the game. `QuickCombatState` returns to the main menu. Quick combat has no rewards.
+8. **Unload.** `Dispose` drops the runner and the views without roster events.
+
+### Ships and pilots
+
+`CoreShipMapper` maps each quick-combat ship to a `ShipDefinition` (decision S1). Armor, shield, energy, weight and ramming come from the ship stats. The engine uses the legacy `EngineStats` formula, with degrees converted to radians. The hull is a circle of radius `ModelScale / 2`.
+Every ship gets the same fixture loadout: one cannon on device 0 (cooldown 0.2 s, 20 damage, range 15). Real devices come in phases 4-5.
+
+`CorePilotProvider` gives each player ship a new `PlayerPilot` (`PilotSchedule.PlayerShip`) and every other ship a `ChasePilot` (decision S3). `ChasePilot` is a copy of the scripted battle's pilot; its stand-off distance comes from the cannon range. Behavior trees replace it in phase 4.
+`PlayerPilot` implements `IShipCommandSink` and submits the stored throttle, course and system bits each tick. A new deployment gets a new pilot, so it starts with empty controls.
+`CoreKeyboardDriver` applies the legacy `KeyboardController` rules over `IKeyboard` and `IMouse`. It writes a value to the sink only when its own value changes, so HUD buttons keep theirs. A key held across a ship change acts on the new ship, as in legacy.
+
+### Views
+
+`BattleRenderer` (`CombatView` module) draws ships and bullets as sprites under one root in the combat scene. Scenes load additively and the active scene never changes, so the root is moved into the combat scene.
+
+1. Ships use the model sprite at scale `ModelScale`. Bullets are pooled generic sprites tinted by side. Beams, homing bullets and drones get the generic sprite and one warning per kind until phases 4-5.
+2. A removal by death fades the ship out in 0.4 s. There are no other effects or sounds.
+3. Each view keeps the previous and current pose and interpolates with alpha = accumulator / 0.02 s.
+4. Torus wrap: the controlled ship goes to its image nearest to the anchor, and the anchor follows it. Every other view goes to its image nearest to the new anchor. `IShipView.VisualPosition` is that image, so the radar and the camera agree. Drawn coordinates can leave the base map; simulation positions are never written back.
+5. The camera uses the legacy `Combat.Scene.ViewRect` framing of the player and the target, and zooms in on each player deployment.
+
+### Known limits
+
+1. The fixture cannon is untuned and ships die within seconds. The S1 stat mapping is unvalidated.
+2. The snapshot has no device cooldowns; the HUD shows none.
+3. No time limit, reinforcement, `OnlyOneShip` rule or reward. Campaign battles still use the old scene.
+4. A new player ship spawns at a random map point, so the camera whips toward it (legacy spawns the same way).
+5. The Editor pauses the game when it loses focus with an Android build target (`MobileApplication`). Play-mode checks from the CLI must force focus.
 
 ## Physics library
 
