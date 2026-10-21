@@ -31,6 +31,7 @@ namespace GameDatabase.DataModel
 			ModelImage = new SpriteId(serializable.ModelImage, SpriteId.Type.Satellite);
 			ModelScale = Utilites.MathEx.Clamp(serializable.ModelScale, 0.1f, 100f);
 			SizeClass = serializable.SizeClass;
+			NotAvailableInBlackMarket = serializable.NotAvailableInBlackMarket;
 			Layout = new Layout(serializable.Layout);
 			Barrels = new ImmutableCollection<Barrel>(serializable.Barrels?.Select(item => Barrel.Create(item, loader)));
 
@@ -43,6 +44,7 @@ namespace GameDatabase.DataModel
 		public SpriteId ModelImage { get; private set; }
 		public float ModelScale { get; private set; }
 		public SizeClass SizeClass { get; private set; }
+		public bool NotAvailableInBlackMarket { get; private set; }
 		public Layout Layout { get; private set; }
 		public ImmutableCollection<Barrel> Barrels { get; private set; }
 

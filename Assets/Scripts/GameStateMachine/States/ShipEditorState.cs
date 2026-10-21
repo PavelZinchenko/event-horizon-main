@@ -72,7 +72,7 @@ namespace GameStateMachine.States
 			private readonly ITechnologies _technologies;
 			private readonly Research _research;
 
-			public ShipEditorContext(IShip ship, IInventoryProvider inventory, IShipPresetStorage presetStorage, ITechnologies technologies, Research research)
+			public ShipEditorContext(IShip ship, IInventoryProvider inventory, IShipPresetStorage presetStorage, ITechnologies technologies, Research research, IDatabase database)
 			{
 				Ship = ship;
 				Inventory = inventory;
@@ -80,6 +80,7 @@ namespace GameStateMachine.States
 				_technologies = technologies;
                 ShipPresetStorage = presetStorage;
                 UpgradesProvider = new UpgradesProvider();
+                ShipSettings = database.ShipSettings;
 			}
 
 			public IShip Ship { get; }
@@ -88,6 +89,7 @@ namespace GameStateMachine.States
             public bool IsShipNameEditable => true;
             public IShipPresetStorage ShipPresetStorage { get; }
             public IComponentUpgradesProvider UpgradesProvider { get; }
+            public ShipSettings ShipSettings { get; }
 
             public bool CanBeUnlocked(Component component)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using Constructor.Ships;
 using Constructor.Ships.Modification;
+using GameDatabase;
 using GameDatabase.DataModel;
 using GameServices.Gui;
 using GameServices.Player;
@@ -23,6 +24,7 @@ namespace Gui.Craft
         [Inject] private readonly ISoundPlayer _soundPlayer;
         [Inject] private readonly GuiHelper _guiHelper;
         [Inject] private readonly ModificationFactory _modificationFactory;
+        [Inject] private readonly IDatabase _database;
 
         [SerializeField] private Image _shipImage;
         [SerializeField] private ShipModSlot[] _modSlots;
@@ -87,7 +89,7 @@ namespace Gui.Craft
                     return;
 
                 _selectedShip.Model.Modifications[index] = _modificationFactory.Create(mod.Type);
-                Domain.Shipyard.ShipValidator.RemoveInvalidParts(_selectedShip, new Domain.Shipyard.FleetPartsStorage(_playerInventory));
+                Domain.Shipyard.ShipValidator.RemoveInvalidParts(_selectedShip, _database.ShipSettings, new Domain.Shipyard.FleetPartsStorage(_playerInventory));
 
                 InitializeSlots();
                 UpdateActions();
