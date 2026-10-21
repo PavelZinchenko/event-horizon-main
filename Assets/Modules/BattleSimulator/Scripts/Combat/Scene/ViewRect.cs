@@ -27,13 +27,22 @@ namespace Combat.Scene
 
         public void Update(IShip playerShip, IShip enemyShip, bool playerInTheMiddle)
         {
+            Update(
+                playerShip.IsActive() ? playerShip.Body.WorldPosition() : (Vector2?)null,
+                enemyShip.IsActive() ? enemyShip.Body.WorldPosition() : (Vector2?)null,
+                playerInTheMiddle);
+        }
+
+        // Null keeps the last known position. The core combat scene uses this overload (migration phase 3c).
+        public void Update(Vector2? playerPosition, Vector2? enemyPosition, bool playerInTheMiddle)
+        {
             if (_zoom < 1.0f)
                 _zoom = Mathf.Clamp01(_zoom + 0.3f*Time.deltaTime);
 
-            if (playerShip.IsActive())
-                _lastPlayerPosition = playerShip.Body.WorldPosition();
-            if (enemyShip.IsActive())
-                _lastEnemyPosition = enemyShip.Body.WorldPosition();
+            if (playerPosition.HasValue)
+                _lastPlayerPosition = playerPosition.Value;
+            if (enemyPosition.HasValue)
+                _lastEnemyPosition = enemyPosition.Value;
 
             if (playerInTheMiddle)
             {

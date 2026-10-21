@@ -4,14 +4,18 @@ using Combat.Domain;
 using CombatSimulation.Core;
 using CombatSimulation.Physics;
 using CombatSimulation.Runtime;
+using CombatView;
 using GameDatabase;
+using GameDatabase.Model;
 using GameStateMachine.States;
 using Gui.Combat;
 using Services.Messenger;
+using Services.Resources;
 using UnityEngine;
 using Zenject;
 using CoreEntityId = CombatSimulation.Core.EntityId;
 using CoreRosterId = CombatSimulation.Core.RosterId;
+using LegacyViewRect = Combat.Scene.ViewRect;
 
 namespace Combat.Integration.Core
 {
@@ -25,10 +29,13 @@ namespace Combat.Integration.Core
             ICombatModel combatModel,
             IDatabase database,
             IMessenger messenger,
+            IResourceLocator resourceLocator,
             LazyInject<CombatMenu> combatMenu,
-            ExitSignal.Trigger exitTrigger)
+            ExitSignal.Trigger exitTrigger,
+            UnityEngine.SceneManagement.Scene scene)
         {
             _combatModel = combatModel;
+            _resourceLocator = resourceLocator;
             _combatMenu = combatMenu;
             _exitTrigger = exitTrigger;
 
@@ -46,7 +53,12 @@ namespace Combat.Integration.Core
             // The seed is drawn here, outside the core, which never uses a random source of its own.
             var seed = (ulong)(uint)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
             var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, timeLimitTicks);
-            _runner = new BattleRunner(setup, new ChasePilotProvider(new Torus(setup.Width, setup.Height)));
+            var torus = new Torus(setup.Width, setup.Height);
+            _runner = new BattleRunner(setup, new ChasePilotProvider(torus));
+
+            var bulletSprite = resourceLocator.GetSprite(new SpriteId(BulletSpriteName, SpriteId.Type.Ammunition));
+            _renderer = new BattleRenderer(torus, PlayerSide, bulletSprite, scene);
+            _anchor = new Vector2(0.5f * setup.Width, 0.5f * setup.Height);
 
             messenger.AddListener(EventType.EscapeKeyPressed, OnEscapeKeyPressed);
         }
@@ -100,8 +112,10 @@ namespace Combat.Integration.Core
             return found;
         }
 
-        // The view of the ship the camera follows, or null.
-        public CoreShipView ControlledShipView => _views.TryGetValue(ControlledShip, out var view) ? view : null;
+        // Camera framing by the legacy rule: the player ship and the target with margins, zoomed in on each new
+        // player ship. Drawn positions are continuous across the wrap, so the camera never jumps at the map edge.
+        public Rect CameraRect => _framing.Rect;
+        public Vector2 ViewPoint => _framing.Center;
 
         #endregion
 
@@ -164,6 +178,24 @@ namespace Combat.Integration.Core
 
         public void Tick()
         {
+            if (_runner == null)
+                return;
+
+            RunSteps();
+            Render();
+        }
+
+        public void Dispose()
+        {
+            _runner = null;
+            _renderer.Dispose();
+            _views.Clear();
+            _viewsByCore.Clear();
+            _ids.Clear();
+        }
+
+        private void RunSteps()
+        {
             if (!IsRunning)
                 return;
 
@@ -184,13 +216,27 @@ namespace Combat.Integration.Core
             }
         }
 
-        public void Dispose()
+        // Also after the result, so the last frame stays on screen; only the stepping stops.
+        private void Render()
         {
-            _runner = null;
-            _views.Clear();
-            _viewsByCore.Clear();
-            _ids.Clear();
+            var controlled = default(CoreEntityId);
+            var player = ActiveView(ControlledShip);
+            if (player != null)
+                _ids.TryGetCore(player.Id, out controlled);
+
+            var alpha = IsRunning ? Mathf.Clamp01(_accumulator / Battle.TickDuration) : 1f;
+            _renderer.Render(alpha, controlled, ref _anchor, Time.deltaTime);
+
+            foreach (var pair in _viewsByCore)
+                if (_renderer.TryGetShipPose(pair.Key, out var position, out var degrees))
+                    pair.Value.SetVisualPose(position, degrees);
+
+            // Legacy Scene.UpdateEnemies: the player stays in the middle when more than one enemy is active.
+            var target = ActiveView(TargetShip);
+            _framing.Update(player?.VisualPosition, target?.VisualPosition, Count(CombatSide.Enemy, ShipStatus.Active) > 1);
         }
+
+        private CoreShipView ActiveView(EntityId id) => _views.TryGetValue(id, out var view) && view.IsActive ? view : null;
 
         // False after the result (the core then throws on every step and command) and after disposal.
         private bool IsRunning => _runner != null && !_runner.IsCompleted;
@@ -217,6 +263,7 @@ namespace Combat.Integration.Core
             _runner.Step();
             var snapshot = _runner.Snapshot;
             HandleEvents(snapshot);
+            _renderer.Capture(snapshot);
             UpdateProjection(snapshot);
 
             if (snapshot.IsCompleted)
@@ -232,11 +279,19 @@ namespace Combat.Integration.Core
                 switch (item.Kind)
                 {
                     case BattleEventKind.Spawn:
-                        if (!item.IsBullet && !item.IsDrone)
+                        if (item.IsBullet)
+                            _renderer.AddBullet(item);
+                        else if (item.IsDrone)
+                            _renderer.AddDrone(item.EntityId, item.Definition);
+                        else
                             OnShipSpawned(snapshot, item);
                         break;
                     case BattleEventKind.Removal:
-                        if (!item.IsBullet && !item.IsDrone)
+                        if (item.IsBullet)
+                            _renderer.RemoveBullet(item.EntityId);
+                        else if (item.IsDrone)
+                            _renderer.RemoveShip(item.EntityId, item.RemovalReason);
+                        else
                             OnShipRemoved(item);
                         break;
                     case BattleEventKind.RosterTransition:
@@ -252,9 +307,13 @@ namespace Combat.Integration.Core
                 return;
 
             var id = _ids.Assign(item.EntityId);
-            var view = new CoreShipView(id, slot.Side, slot.Info.Specification, state);
+            var specification = slot.Info.Specification;
+            var view = new CoreShipView(id, slot.Side, specification, state);
             _views.Add(id, view);
             _viewsByCore.Add(item.EntityId, view);
+
+            var model = specification.Stats.ShipModel;
+            _renderer.AddShip(item.EntityId, _resourceLocator.GetSprite(model.ModelImage), model.ModelScale);
         }
 
         // The roster transition of the same removal comes later in the batch, so the ID stays mapped until the tick ends.
@@ -263,6 +322,7 @@ namespace Combat.Integration.Core
             if (_viewsByCore.TryGetValue(item.EntityId, out var view))
                 view.Deactivate();
 
+            _renderer.RemoveShip(item.EntityId, item.RemovalReason);
             _removed.Add(item.EntityId);
         }
 
@@ -280,6 +340,9 @@ namespace Combat.Integration.Core
 
             if (item.TransitionReason == RosterTransitionReason.Deployed)
             {
+                if (slot.Side == CombatSide.Player)
+                    _framing.Zoom();
+
                 slot.DeploymentOrder = ++_deploymentCounter;
                 slot.ActiveEntity = entity;
                 slot.PendingDeployTick = NoPendingDeploy;
@@ -460,8 +523,11 @@ namespace Combat.Integration.Core
         private const int MaxStepsPerFrame = 5;
         private const long DeployDelayTicks = 3 * TicksPerSecond;
         private const long NoPendingDeploy = -1;
+        private const string BulletSpriteName = "ball";
 
         private BattleRunner _runner;
+        // The drawn controlled ship, or its last position: every other entity is drawn at its image nearest to it.
+        private Vector2 _anchor;
         private float _accumulator;
         private int _deploymentCounter;
         private bool _exited;
@@ -475,8 +541,11 @@ namespace Combat.Integration.Core
         private readonly Dictionary<CoreEntityId, CoreShipView> _viewsByCore = new Dictionary<CoreEntityId, CoreShipView>();
         private readonly List<CoreEntityId> _removed = new List<CoreEntityId>();
         private readonly EntityIdMap _ids = new EntityIdMap();
+        private readonly BattleRenderer _renderer;
+        private readonly LegacyViewRect _framing = new LegacyViewRect();
 
         private readonly ICombatModel _combatModel;
+        private readonly IResourceLocator _resourceLocator;
         private readonly LazyInject<CombatMenu> _combatMenu;
         private readonly ExitSignal.Trigger _exitTrigger;
     }

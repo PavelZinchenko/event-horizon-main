@@ -27,7 +27,7 @@ namespace Installers
         {
             Container.BindInterfacesTo<Messenger>().AsSingle().WithArguments(GameScene.CoreCombat);
 
-            Container.BindInterfacesAndSelfTo<CoreCombatAdapter>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<CoreCombatAdapter>().AsSingle().WithArguments(gameObject.scene).NonLazy();
             Container.BindInterfacesTo<CoreScenePresentation>().AsSingle();
             Container.BindInterfacesTo<CombatTimerPresenter>().AsSingle().NonLazy();
             Container.BindExecutionOrder<CombatTimerPresenter>(1);

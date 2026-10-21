@@ -16,6 +16,8 @@ namespace Combat.Integration.Core
             _specification = specification;
             _state = state;
             IsActive = true;
+            VisualPosition = new Vector2(state.Position.X, state.Position.Y);
+            VisualRotation = Rotation;
         }
 
         public EntityId Id { get; }
@@ -37,13 +39,21 @@ namespace Combat.Integration.Core
 
         public float Rotation => _state.Angle * Mathf.Rad2Deg;
 
-        // The raw pose of the last step. Step 4 adds interpolation and the torus image nearest to the camera.
-        public Vector2 VisualPosition => new Vector2(_state.Position.X, _state.Position.Y);
-        public float VisualRotation => Rotation;
+        // The drawn pose: interpolated, at the torus image nearest to the view point. The camera and the
+        // radar read it, so they agree with the sprite. Rotation above stays the simulation value.
+        public Vector2 VisualPosition { get; private set; }
+        public float VisualRotation { get; private set; }
 
         public ShipState State => _state;
 
         public void Update(in ShipState state) => _state = state;
+
+        public void SetVisualPose(Vector2 position, float degrees)
+        {
+            VisualPosition = position;
+            VisualRotation = degrees;
+        }
+
         public void Deactivate() => IsActive = false;
 
         private static ResourceValue ToValue(ResourceState resource)
