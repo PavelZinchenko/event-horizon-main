@@ -181,8 +181,8 @@ namespace Combat.Integration.Core
             if (!_runner.Surrender(PlayerSide, _runner.Tick))
                 return;
 
-            // The menu can pause the game, and the player expects to leave at once. Surrender decides the battle
-            // within its own tick, so one step outside the frame accumulator reaches the result.
+            // The menu pauses the game, so the frame accumulator does not advance. Surrender decides the battle
+            // within its own tick, so one step outside the accumulator reaches the result.
             Step();
         }
 
@@ -206,8 +206,10 @@ namespace Combat.Integration.Core
 
             RunSteps();
             Render();
+            UpdateExit();
         }
 
+        // Scene unload. Clears the battle without events: the roster outcome is already final or abandoned.
         public void Dispose()
         {
             _runner = null;
@@ -492,10 +494,22 @@ namespace Combat.Integration.Core
             return false;
         }
 
-        // Temporary: leaves at once. Step 7 adds the freeze and the 3 s wait.
+        // The battle freezes at the result: stepping stops, and the last frame and the death fades stay on screen.
+        // Surrender ends the same way.
         private void OnCompleted()
         {
-            if (_exited)
+            if (_exitDelay < 0f)
+                _exitDelay = ExitDelaySeconds;
+        }
+
+        // Real time, not game time: surrender comes from the menu, which pauses the game and stays open.
+        private void UpdateExit()
+        {
+            if (_exitDelay < 0f || _exited)
+                return;
+
+            _exitDelay -= Time.unscaledDeltaTime;
+            if (_exitDelay > 0f)
                 return;
 
             _exited = true;
@@ -591,6 +605,7 @@ namespace Combat.Integration.Core
         private const int MaxStepsPerFrame = 5;
         private const long DeployDelayTicks = 3 * TicksPerSecond;
         private const long NoPendingDeploy = -1;
+        private const float ExitDelaySeconds = 3f;
         private const string BulletSpriteName = "ball";
 
         private BattleRunner _runner;
@@ -600,6 +615,8 @@ namespace Combat.Integration.Core
         private float _accumulator;
         private int _deploymentCounter;
         private EntityId _retreatRequested = EntityId.None;
+        // Seconds left until the exit after the result; negative while the battle runs.
+        private float _exitDelay = -1f;
         private bool _exited;
         private readonly long[] _nextDeployTick = new long[2];
 
