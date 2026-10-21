@@ -11,7 +11,7 @@ This file records problems in `Assets/Modules/Quests/` and in the application co
 | [DB15.25](database.md#db15-smaller-defects) | Start requirements are built without a quest star and quest ID. |
 | [DB15.26](database.md#db15-smaller-defects) | `RandomNode` does not localize its message. |
 
-The analysis was done by reading the code and the built-in quest data on 2026-10-12. No issue was reproduced in Play Mode. Each issue has a severity (High, Medium, or Low) and a status:
+The initial analysis used the code and built-in quest data on 2026-10-12. Later entries state their verification separately. No issue was reproduced in Play Mode. Each issue has a severity (High, Medium, or Low) and a status:
 
 - **Confirmed** – the code path is certain. The failure follows directly from the code.
 - **Confirmed (latent)** – the code path is certain, but built-in data does not trigger it. Mod data can.
@@ -138,10 +138,25 @@ No built-in node has these gaps.
 | Q10.2 | [ActionNode.cs:6](../../Assets/Modules/Quests/Scripts/Nodes/ActionNode.cs#L6) | `ActionNode` is in the global namespace. The rest of the module uses `Domain.Quests`. | Confirmed |
 | Q10.3 | [HolidayManager.cs:82](../../Assets/Scripts/GameServices/HolidayManager.cs#L82), [QuestManager.cs:142](../../Assets/Modules/Quests/Scripts/Manager/QuestManager.cs#L142) | `HolidayManager` calls `StartQuest` at every session start in the holiday period. While the `Storyline` holiday quest is active or after it is completed, the restart rule refuses, and `StartQuest` logs an error at each load. | Confirmed |
 | Q10.4 | [QuestManager.cs:134](../../Assets/Modules/Quests/Scripts/Manager/QuestManager.cs#L134), [QuestFactory.cs:28](../../Assets/Modules/Quests/Scripts/Factory/QuestFactory.cs#L28) | `StartQuest` computes a seed for the requirement check, and `QuestFactory` computes the quest seed again. With `UseRandomSeed` both calls return different random numbers, so the checked requirement and the built quest use different seeds. | Confirmed (latent) |
-| Q10.5 | [Loot.cs:162](../../Assets/Modules/Quests/Scripts/Loot/Loot.cs#L162) | `RandomItems` with zero total weight yields unique random items and then falls through into the weighted loop. The loop adds nothing (every check is `0 >= 0`), but it consumes random numbers, which changes the rolls of later loot content. A `yield break` is missing. | Confirmed |
 | Q10.6 | [QuestData.cs:147](../../Assets/Modules/GameSession/Scripts/Facade/Content/QuestData.cs#L147) | A failure also sets `LastCompletionTime`. `TimeSinceLastCompletion` therefore counts from the last completion *or failure*. The name and the schema text say "completion". | Confirmed |
 | Q10.7 | [StarbaseCapturedRequirement.cs:5](../../Assets/Modules/Quests/Scripts/Requirements/StarbaseCapturedRequirement.cs#L5), [QuestCombatModelFacctory.cs:10](../../Assets/Scripts/Domain/Quests/QuestCombatModelFacctory.cs#L10) | Misspelled type names: `StarbaseCaprturedRequirement`, `QuestCombatModelFacctory` (see also [application issue 15](application_layer.md#15-inconsistent-naming-and-namespaces)). | Confirmed |
 | Q10.8 | [QuestManager.cs:269](../../Assets/Modules/Quests/Scripts/Manager/QuestManager.cs#L269) | `BeaconActivated`, `LocalEncounter`, `NewStarSystemSecured`, and `FactionMissionAccepted` return before `ProcessQuestEvent`. Waiting nodes in active quests see these changes only at the next event, up to 10 seconds later. | Confirmed |
+
+Q10.5 (zero-weight fall-through) was resolved by [PR #547](https://github.com/PavelZinchenko/event-horizon-main/pull/547). Q14 records the remaining zero-weight ordering defect.
+
+### Q14. Zero-weight loot fallback always selects by file order
+
+**Severity:** Medium (P2). **Status:** Confirmed (latent).
+
+**Where.** Introduced by [PR #547](https://github.com/PavelZinchenko/event-horizon-main/pull/547), reviewed at `6fa761b5237933f3b13e1e5668cfef3b59c56292`. `WeightedIndex` assigns positive infinity to zero weights ([EnumerableExtensions.cs:287](https://github.com/PavelZinchenko/event-horizon-main/blob/6fa761b5237933f3b13e1e5668cfef3b59c56292/Assets/Modules/CommonComponents/Scripts/Utils/EnumerableExtensions.cs#L287)). Equal keys sort by original index ([line 330](https://github.com/PavelZinchenko/event-horizon-main/blob/6fa761b5237933f3b13e1e5668cfef3b59c56292/Assets/Modules/CommonComponents/Scripts/Utils/EnumerableExtensions.cs#L330)). `RandomItems` takes eligible entries from that order ([Loot.cs:165](https://github.com/PavelZinchenko/event-horizon-main/blob/6fa761b5237933f3b13e1e5668cfef3b59c56292/Assets/Modules/Quests/Scripts/Loot/Loot.cs#L165)).
+
+**Failure.** With three eligible entries weighted `[0, 0, 0]` and `MinAmount = MaxAmount = 1`, every seed selects the first entry. Mods that omit weights or set all weights to zero lose random rewards. When positive-weight entries cannot fill the requested amount, the earliest eligible zero-weight entries always fill the remaining slots.
+
+**Verification.** On 2026-10-21, isolated C# 9 checks compiled the PR's actual helper and collection source. Across 1,000 seeds, selection counts were `1000, 0, 0`; the previous uniform fallback produced `332, 334, 334`. No zero-weight `RandomItems` entries were found in the inspected built-in quest data. No Unity build was run.
+
+**Fix.** Give the zero-weight fallback group a seeded random order. Keep that group after positive-weight entries. Use the original index only to break remaining ties.
+
+The owner accepted merging PR #547 with this defect deferred on 2026-10-21.
 
 ## Structural issues
 
@@ -189,3 +204,13 @@ No built-in node has these gaps.
 1. Map `StartCondition` to a collection in a dictionary.
 2. Compute the action-required quest on demand from the quest list.
 3. Move persistence calls into a small service that observes quest status changes.
+
+## Accepted behavior
+
+### Loot requirements are evaluated again after loading
+
+PR #547 adds requirements to individual loot entries. Loading a saved quest rebuilds its loot objects. Their first evaluation checks requirements against the current game state ([Loot.cs:90](https://github.com/PavelZinchenko/event-horizon-main/blob/6fa761b5237933f3b13e1e5668cfef3b59c56292/Assets/Modules/Quests/Scripts/Loot/Loot.cs#L90), [line 165](https://github.com/PavelZinchenko/event-horizon-main/blob/6fa761b5237933f3b13e1e5668cfef3b59c56292/Assets/Modules/Quests/Scripts/Loot/Loot.cs#L165)).
+
+The save retains the seed, not the resolved rewards. State-dependent requirements can therefore change receive, remove, or trade loot after a reload, even with the same seed. Loot stays cached after its first evaluation during that session.
+
+The owner accepted this behavior on 2026-10-16. Seeded loot changes caused by replacing the sampling algorithm were also accepted.
