@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data name="Device" type="object" typeid="Device" options="legacy" >
+    <member name="Name" type="string" default="$Device" />
     <member name="DeviceClass" type="enum" typeid="DeviceClass" />
     <member name="EnergyConsumption" type="float" minvalue="0" maxvalue="999999999" />
     <member name="PassiveEnergyConsumption" type="float" minvalue="0" maxvalue="999999999" />
