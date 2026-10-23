@@ -240,17 +240,23 @@ namespace ViewModel.Craft
 
         private static string GetDeviceName(Device device, IShip ship, ILocalization localization)
         {
+            if (device == null)
+                return string.Empty;
+
             // Modder can set Name to a localization key for a specific variant.
             if (!string.IsNullOrEmpty(device.Stats.Name) && !string.Equals(device.Stats.Name, "$Device", System.StringComparison.Ordinal))
                 return localization.GetString(device.Stats.Name);
 
             // Fall back to the component that carries the device, if any, so a ship with
             // an unusual variant gets a meaningful name instead of the generic class one.
-            foreach (var component in ship.Components)
+            if (ship != null)
             {
-                var cDevice = component.Info.Data.Device;
-                if (cDevice != null && cDevice.Stats.DeviceClass == device.Stats.DeviceClass)
-                    return component.Info.GetName(localization);
+                foreach (var component in ship.Components)
+                {
+                    var cDevice = component.Info.Data.Device;
+                    if (cDevice != null && cDevice.Stats.DeviceClass == device.Stats.DeviceClass)
+                        return component.Info.GetName(localization);
+                }
             }
 
             switch (device.Stats.DeviceClass)
