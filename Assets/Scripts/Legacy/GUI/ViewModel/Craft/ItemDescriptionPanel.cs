@@ -210,7 +210,7 @@ namespace ViewModel.Craft
                 yield return new KeyValuePair<string, string>("$Energy", SignedPercent(energyBonus));
 
             foreach (var item in data.Features.BuiltinDevices)
-                yield return new KeyValuePair<string, string>("$Device", GetDeviceName(item.Stats.DeviceClass, localization));
+                yield return new KeyValuePair<string, string>("$Device", GetDeviceName(item, ship, localization));
         }
 
         private static IEnumerable<KeyValuePair<string, string>> GetSatelliteDescription(Satellite satellite)
@@ -238,9 +238,28 @@ namespace ViewModel.Craft
             return sb.ToString();
         }
 
-        private static string GetDeviceName(DeviceClass deviceClass, ILocalization localization)
+        private static string GetDeviceName(Device device, IShip ship, ILocalization localization)
         {
-            switch (deviceClass)
+            if (device == null)
+                return string.Empty;
+
+            // Modder can set Name to a localization key for a specific variant.
+            if (!string.IsNullOrEmpty(device.Stats.Name) && !string.Equals(device.Stats.Name, "$Device", System.StringComparison.Ordinal))
+                return localization.GetString(device.Stats.Name);
+
+            // Fall back to the component that carries the device, if any, so a ship with
+            // an unusual variant gets a meaningful name instead of the generic class one.
+            if (ship != null)
+            {
+                foreach (var component in ship.Components)
+                {
+                    var cDevice = component.Info.Data.Device;
+                    if (cDevice != null && cDevice.Stats.DeviceClass == device.Stats.DeviceClass)
+                        return component.Info.GetName(localization);
+                }
+            }
+
+            switch (device.Stats.DeviceClass)
             {
                 case DeviceClass.TimeMachine:
                     return localization.GetString("$InfinityStone_S");
@@ -255,7 +274,7 @@ namespace ViewModel.Craft
                 case DeviceClass.RepairBot:
                     return localization.GetString("$RepairBot_M");
                 default:
-                    return deviceClass.ToString();
+                    return device.Stats.DeviceClass.ToString();
             }
         }
 
