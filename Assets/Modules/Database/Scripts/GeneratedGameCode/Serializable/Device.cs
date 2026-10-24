@@ -15,7 +15,7 @@ namespace GameDatabase.Serializable
 	[Serializable]
 	public class DeviceSerializable : SerializableItem
 	{
-		public string Name = "$Device";
+		public string Name;
 		public DeviceClass DeviceClass;
 		public float EnergyConsumption;
 		public float PassiveEnergyConsumption;
