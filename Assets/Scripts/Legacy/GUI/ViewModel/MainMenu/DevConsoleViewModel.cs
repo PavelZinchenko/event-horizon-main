@@ -86,7 +86,7 @@ namespace ViewModel
 			DeviceId.gameObject.SetActive(false);
 		}
 
-		private void OnDestroy()
+		private void OnDisable()
 		{
 			_database.DatabaseLoaded -= OnDatabaseLoaded;
 		}
