@@ -16,6 +16,7 @@ namespace GameDatabase
 {
 	public partial interface IDatabase
 	{
+		BlackMarketSettings BlackMarketSettings { get; }
 		CombatSettings CombatSettings { get; }
 		DatabaseSettings DatabaseSettings { get; }
 		DebugSettings DebugSettings { get; }
@@ -24,6 +25,7 @@ namespace GameDatabase
 		GalaxySettings GalaxySettings { get; }
 		LocalizationSettings LocalizationSettings { get; }
 		MusicPlaylist MusicPlaylist { get; }
+		RuinsSettings RuinsSettings { get; }
 		ShipModSettings ShipModSettings { get; }
 		ShipSettings ShipSettings { get; }
 		SkillSettings SkillSettings { get; }
@@ -95,8 +97,9 @@ namespace GameDatabase
     public partial class Database : IDatabase
     {
 		public const int VersionMajor = 1;
-		public const int VersionMinor = 7;
+		public const int VersionMinor = 8;
 
+		public BlackMarketSettings BlackMarketSettings { get; private set; }
 		public CombatSettings CombatSettings { get; private set; }
 		public DatabaseSettings DatabaseSettings { get; private set; }
 		public DebugSettings DebugSettings { get; private set; }
@@ -105,6 +108,7 @@ namespace GameDatabase
 		public GalaxySettings GalaxySettings { get; private set; }
 		public LocalizationSettings LocalizationSettings { get; private set; }
 		public MusicPlaylist MusicPlaylist { get; private set; }
+		public RuinsSettings RuinsSettings { get; private set; }
 		public ShipModSettings ShipModSettings { get; private set; }
 		public ShipSettings ShipSettings { get; private set; }
 		public SkillSettings SkillSettings { get; private set; }
@@ -202,6 +206,7 @@ namespace GameDatabase
 			_visualEffectMap.Clear();
 			_weaponMap.Clear();
 
+			BlackMarketSettings = null;
 			CombatSettings = null;
 			DatabaseSettings = null;
 			DebugSettings = null;
@@ -210,6 +215,7 @@ namespace GameDatabase
 			GalaxySettings = null;
 			LocalizationSettings = null;
 			MusicPlaylist = null;
+			RuinsSettings = null;
 			ShipModSettings = null;
 			ShipSettings = null;
 			SkillSettings = null;
@@ -364,6 +370,8 @@ namespace GameDatabase
                     if (!_database._localizations.ContainsKey(item.Key))
                         _database._localizations.Add(item.Key, item.Value);
 
+				if (_database.BlackMarketSettings == null)
+					_database.BlackMarketSettings = BlackMarketSettings.Create(_content.BlackMarketSettings ?? new Serializable.BlackMarketSettingsSerializable { ItemType = Enums.ItemType.BlackMarketSettings }, this);
 				if (_database.CombatSettings == null)
 					_database.CombatSettings = CombatSettings.Create(_content.CombatSettings ?? new Serializable.CombatSettingsSerializable { ItemType = Enums.ItemType.CombatSettings }, this);
 				if (_database.DatabaseSettings == null)
@@ -380,6 +388,8 @@ namespace GameDatabase
 					_database.LocalizationSettings = LocalizationSettings.Create(_content.LocalizationSettings ?? new Serializable.LocalizationSettingsSerializable { ItemType = Enums.ItemType.LocalizationSettings }, this);
 				if (_database.MusicPlaylist == null)
 					_database.MusicPlaylist = MusicPlaylist.Create(_content.MusicPlaylist ?? new Serializable.MusicPlaylistSerializable { ItemType = Enums.ItemType.MusicPlaylist }, this);
+				if (_database.RuinsSettings == null)
+					_database.RuinsSettings = RuinsSettings.Create(_content.RuinsSettings ?? new Serializable.RuinsSettingsSerializable { ItemType = Enums.ItemType.RuinsSettings }, this);
 				if (_database.ShipModSettings == null)
 					_database.ShipModSettings = ShipModSettings.Create(_content.ShipModSettings ?? new Serializable.ShipModSettingsSerializable { ItemType = Enums.ItemType.ShipModSettings }, this);
 				if (_database.ShipSettings == null)

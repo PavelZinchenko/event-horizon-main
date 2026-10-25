@@ -25,6 +25,7 @@ The record also has the [common fields](index.md#common-fields).
 | `Name` | string | | Display name, usually a localization key. |
 | `ModelImage` | image (`Satellite`) | | Sprite in combat, the ship editor, and the workshop. The name also selects an optional combat prefab `Resources/Combat/Satellites/<name>`. |
 | `ModelScale` | float | 0.1…100 | Size in combat world units. It also sets the distance from the ship and the fit for satellites without a size class. |
+| `NotAvailableInBlackMarket` | bool | `false` | Obsolete. Read only by migration 1.7 -> 1.8, which moves the exclusion into [BlackMarketSettings](BlackMarketSettings.md). |
 | `SizeClass` | enum [SizeClass](enums.md#sizeclass) | `Frigate` | Smallest ship class that can carry the satellite. `Undefined` uses `ModelScale` instead (see [Fit](#fit)). The default `Frigate` fits every hull except hulls of class `Undefined`. |
 | `Layout` | [layout](../../database.md#layout) | | Cell grid for components. The cell count sets the weight, the price, and the threat. |
 | `Barrels` | struct list [Barrel](structures.md#barrel) | | The weapon mount. Use zero or one barrel. More than one barrel makes the ship builder throw ([DB15.6](../../issues/database.md#db15-smaller-defects)). |
