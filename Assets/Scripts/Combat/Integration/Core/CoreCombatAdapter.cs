@@ -323,6 +323,9 @@ namespace Combat.Integration.Core
                     case BattleEventKind.RosterTransition:
                         OnRosterTransition(snapshot, item);
                         break;
+                    case BattleEventKind.Rename:
+                        _renderer.RenameBullet(item.PreviousId, item.EntityId);
+                        break;
                 }
             }
         }

@@ -87,6 +87,16 @@ namespace CombatView
             _bulletPool.Push(view);
         }
 
+        // A predicted copy took its owner's ID (network plan, P2): the view stays.
+        public void RenameBullet(EntityId previous, EntityId id)
+        {
+            if (!_bullets.TryGetValue(previous, out var view) || _bullets.ContainsKey(id))
+                return;
+
+            _bullets.Remove(previous);
+            _bullets.Add(id, view);
+        }
+
         // After every step. Copies the poses; the snapshot spans are valid only until the next step.
         public void Capture(BattleSnapshot snapshot)
         {
