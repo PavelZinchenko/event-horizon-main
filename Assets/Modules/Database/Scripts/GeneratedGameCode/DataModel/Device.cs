@@ -39,6 +39,7 @@ namespace GameDatabase.DataModel
 
 		public DeviceStats(DeviceSerializable serializable, Database.Loader loader)
 		{
+			Name = serializable.Name;
 			DeviceClass = serializable.DeviceClass;
 			EnergyConsumption = Utilites.MathEx.Clamp(serializable.EnergyConsumption, 0f, 1E+09f);
 			PassiveEnergyConsumption = Utilites.MathEx.Clamp(serializable.PassiveEnergyConsumption, 0f, 1E+09f);
@@ -62,6 +63,7 @@ namespace GameDatabase.DataModel
 			OnDataDeserialized(serializable, loader);
 		}
 
+		public string Name;
 		public DeviceClass DeviceClass;
 		public float EnergyConsumption;
 		public float PassiveEnergyConsumption;

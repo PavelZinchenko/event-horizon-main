@@ -210,7 +210,7 @@ namespace ViewModel.Craft
                 yield return new KeyValuePair<string, string>("$Energy", SignedPercent(energyBonus));
 
             foreach (var item in data.Features.BuiltinDevices)
-                yield return new KeyValuePair<string, string>("$Device", GetDeviceName(item.Stats.DeviceClass, localization));
+                yield return new KeyValuePair<string, string>("$Device", GetDeviceName(item, localization));
         }
 
         private static IEnumerable<KeyValuePair<string, string>> GetSatelliteDescription(Satellite satellite)
@@ -238,9 +238,16 @@ namespace ViewModel.Craft
             return sb.ToString();
         }
 
-        private static string GetDeviceName(DeviceClass deviceClass, ILocalization localization)
+        private static string GetDeviceName(Device device, ILocalization localization)
         {
-            switch (deviceClass)
+            if (device == null)
+                return string.Empty;
+
+            // Modder can set Name to a localization key for a specific variant.
+            if (!string.IsNullOrEmpty(device.Stats.Name))
+                return localization.GetString(device.Stats.Name);
+
+            switch (device.Stats.DeviceClass)
             {
                 case DeviceClass.TimeMachine:
                     return localization.GetString("$InfinityStone_S");
@@ -255,7 +262,7 @@ namespace ViewModel.Craft
                 case DeviceClass.RepairBot:
                     return localization.GetString("$RepairBot_M");
                 default:
-                    return deviceClass.ToString();
+                    return device.Stats.DeviceClass.ToString();
             }
         }
 
