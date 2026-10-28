@@ -13,10 +13,10 @@ namespace Constructor.Extensions
 {
     public static class ShipExtensions
     {
-        public static bool IsSuitableSatelliteSize(this IShip ship, Satellite satellite)
+        public static bool IsSuitableSatelliteSize(this IShip ship, Satellite satellite, ShipSettings settings)
         {
 			if (ship.Model.ShipType == ShipType.Starbase) return false;
-			return satellite.IsSuitable(ship.Model.MaxSatelliteSize, ship.Model.MaxSatelliteModelSize);
+			return satellite.IsSuitable(ship.Model.MaxSatelliteSize, ship.Model.MaxSatelliteModelSize, settings);
         }
 
         public static int Price(this IShip ship)
@@ -112,7 +112,7 @@ namespace Constructor.Extensions
 
             var companionClass = Maths.Distance.CompanionClass(distance);
 
-            var companions = database.SatelliteBuildList.LimitClass(companionClass).SuitableFor(data.Ship);
+            var companions = database.SatelliteBuildList.LimitClass(companionClass).SuitableFor(ship, database.ShipSettings);
 
             if (companions.Any())
             {

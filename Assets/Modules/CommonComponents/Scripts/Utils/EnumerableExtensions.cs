@@ -4,25 +4,25 @@ using System.Collections.Generic;
 
 public static class EnumerableExtension
 {
-	public static T MinValue<T,TResult>(this IEnumerable<T> collection, Func<T, TResult> predicate)
-		where TResult: IComparable
-	{
-		TResult minValue = default(TResult);
-		T currentItem = default(T);
-		bool inited = false;
-		foreach (var item in collection)
-		{
-			var value = predicate(item);
-			if (!inited || value.CompareTo(minValue) < 0)
-			{
-				inited = true;
-				minValue = value;
-				currentItem = item;
-			}
-		}
+    public static T MinValue<T, TResult>(this IEnumerable<T> collection, Func<T, TResult> predicate)
+        where TResult : IComparable
+    {
+        TResult minValue = default(TResult);
+        T currentItem = default(T);
+        bool inited = false;
+        foreach (var item in collection)
+        {
+            var value = predicate(item);
+            if (!inited || value.CompareTo(minValue) < 0)
+            {
+                inited = true;
+                minValue = value;
+                currentItem = item;
+            }
+        }
 
-		return currentItem;
-	}
+        return currentItem;
+    }
 
     public static int FindIndex<T>(this IList<T> source, Predicate<T> match)
     {
@@ -34,6 +34,7 @@ public static class EnumerableExtension
                 return i;
             }
         }
+
         return -1;
     }
 
@@ -58,6 +59,19 @@ public static class EnumerableExtension
         return list.Count == 0;
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis - only the last element is removed
+    /// <summary>
+    /// Removes the last element from the list and returns it
+    /// </summary>
+    /// <returns>Former last element of the list, or null if called on an empty list</returns>
+    public static T Pop<T>(this IList<T> list)
+    {
+        if (list.Count == 0) return default(T);
+        var item = list[list.Count - 1];
+        list.RemoveAt(list.Count - 1);
+        return item;
+    }
+
     public static int IndexOf<T>(this IReadOnlyList<T> list, T value)
     {
         return IndexOf(list, value, EqualityComparer<T>.Default);
@@ -73,34 +87,34 @@ public static class EnumerableExtension
     }
 
     public static IList<T> Shuffle<T>(this IList<T> list, System.Random random)
-	{
-		for (int i = 0; i < list.Count; ++i)
-		{
-			var j = random.Next(list.Count);
-			if (i == j)
-				continue;
+    {
+        for (int i = 0; i < list.Count; ++i)
+        {
+            var j = random.Next(list.Count);
+            if (i == j)
+                continue;
 
-			var temp = list[i];
-			list[i] = list[j];
-			list[j] = temp;
-		}
+            var temp = list[i];
+            list[i] = list[j];
+            list[j] = temp;
+        }
 
         return list;
     }
 
     public static IEnumerable<T> OddElements<T>(this IEnumerable<T> collection)
-	{
-		int index = 0;
-		foreach (var item in collection)
-			if ((++index & 1) == 0)
-				yield return item;
-	}		
+    {
+        int index = 0;
+        foreach (var item in collection)
+            if ((++index & 1) == 0)
+                yield return item;
+    }
 
-	public static T RandomElement<T>(this IList<T> collection, System.Random random)
-	{
-	    var count = collection.Count;
-		return count > 0 ? collection[random.Next(count)] : default(T);
-	}
+    public static T RandomElement<T>(this IList<T> collection, System.Random random)
+    {
+        var count = collection.Count;
+        return count > 0 ? collection[random.Next(count)] : default(T);
+    }
 
     public static T RandomElement<T>(this IEnumerable<T> collection, System.Random random)
     {
@@ -126,10 +140,10 @@ public static class EnumerableExtension
     }
 
     public static IEnumerable<T> RandomElements<T>(this IEnumerable<T> collection, int count, System.Random random)
-	{
+    {
         if (count <= 0) return Enumerable.Empty<T>();
         return collection.RandomElements(count, collection.Count(), random);
-	}
+    }
 
     public static IEnumerable<T> Repeat<T>(this IEnumerable<T> collection, int requiredElements)
     {
@@ -142,7 +156,7 @@ public static class EnumerableExtension
             {
                 yield return item;
 
-                if (++count == requiredElements) 
+                if (++count == requiredElements)
                     yield break;
             }
 
@@ -151,51 +165,55 @@ public static class EnumerableExtension
         }
     }
 
-    public static IEnumerable<T> RandomElements<T>(this IEnumerable<T> collection, int count, int size, System.Random random)
-	{
+    public static IEnumerable<T> RandomElements<T>(this IEnumerable<T> collection, int count, int size,
+        System.Random random)
+    {
         if (count <= 0) yield break;
 
-		var itemsLeft = count;
-		foreach (var item in collection)
-		{
-			if (itemsLeft <= 0)
-				yield break;
+        var itemsLeft = count;
+        foreach (var item in collection)
+        {
+            if (itemsLeft <= 0)
+                yield break;
 
-			var itemsCount = itemsLeft;
-			for (int i = 0; i < itemsCount; ++i)
-			{
-				if (random.Next(size) == 0)
-				{
-					itemsLeft--;
-					yield return item;
-				}
-			}
-            
-			size--;			
+            var itemsCount = itemsLeft;
+            for (int i = 0; i < itemsCount; ++i)
+            {
+                if (random.Next(size) == 0)
+                {
+                    itemsLeft--;
+                    yield return item;
+                }
+            }
+
+            size--;
         }
     }
-    
-    public static IEnumerable<T> RandomUniqueElements<T>(this IEnumerable<T> collection, int count, System.Random random)
-	{
-		return collection.RandomUniqueElements(count, collection.Count(), random);
-	}
 
-	public static IEnumerable<T> RandomUniqueElements<T>(this IEnumerable<T> collection, int count, int size, System.Random random)
-	{
-		var itemsLeft = count;
-		foreach (var item in collection)
-		{
-			if (itemsLeft <= 0)
-				yield break;
-			
-			if (random.Next(size) < itemsLeft)
-			{
-				itemsLeft--;
-				yield return item;
-			}
-			size--;
-		}
-	}
+    public static IEnumerable<T> RandomUniqueElements<T>(this IEnumerable<T> collection, int count,
+        System.Random random)
+    {
+        return collection.RandomUniqueElements(count, collection.Count(), random);
+    }
+
+    public static IEnumerable<T> RandomUniqueElements<T>(this IEnumerable<T> collection, int count, int size,
+        System.Random random)
+    {
+        var itemsLeft = count;
+        foreach (var item in collection)
+        {
+            if (itemsLeft <= 0)
+                yield break;
+
+            if (random.Next(size) < itemsLeft)
+            {
+                itemsLeft--;
+                yield return item;
+            }
+
+            size--;
+        }
+    }
 
     public static IEnumerable<int> RandomUniqueNumbers(int min, int max, int count, System.Random random)
     {
@@ -212,14 +230,118 @@ public static class EnumerableExtension
                 itemsLeft--;
                 yield return i;
             }
+
             size--;
         }
     }
 
+    /// <summary>
+    /// This method returns elements from the list in a weighted shuffled order
+    ///
+    /// Shuffling is done by using the provided weights to generate a list of
+    /// random keys and sorting on them.
+    ///
+    /// Generation of random keys is done using the function equivalent to <c>random() ^ (1 / weight)</c>
+    /// which ensures unbiased distribution of values even in extreme cases
+    /// (for example: one element with high weight and a lot of elements with
+    /// low weight)
+    /// 
+    /// </summary>
+    /// <param name="list">The list to sample</param>
+    /// <param name="random">Random generator</param>
+    /// <param name="weightFunc">Function for getting weights from list elements</param>
+    public static IEnumerable<T> WeightedShuffle<T>(this IReadOnlyList<T> list,
+        System.Random random, Func<T, float> weightFunc)
+    {
+        // empty collection requested
+        if (list.Count == 0)
+        {
+            yield break;
+        }
+
+        var indices = new List<WeightedIndex>(list.Count);
+
+        for (var i = 0; i < list.Count; i++)
+        {
+            indices.Add(new WeightedIndex(i, weightFunc(list[i]), random));
+        }
+
+        indices.Sort();
+
+        foreach (var item in indices)
+        {
+            yield return item.Get(list);
+        }
+    }
+
+    /// <summary>
+    /// Struct holding weighted indices
+    ///
+    /// Compares in descending order on supplied weight
+    /// </summary>
+    public readonly struct WeightedIndex : IEquatable<WeightedIndex>, IComparable<WeightedIndex>
+    {
+        public WeightedIndex(int index, float weight, System.Random random)
+        {
+            _index = index;
+            if (float.IsNaN(weight) || weight <= 0)
+            {
+                // NANs, zeros, and negatives sort last in no specific order
+                _weight = float.PositiveInfinity;
+            }
+            else if (float.IsPositiveInfinity(weight))
+            {
+                // Positive infinity is first 
+                _weight = 0;
+            }
+            else
+            {
+                // this computation produces weights, that when sorted act like
+                // a weighted shuffle
+                //
+                // The original approach is `random() ^ (1 / weight)`, but it
+                // results in numerical precision errors at low or high weights
+                // and adding logarithm to both sides of inequality doesn't change
+                // the result, but almost completely eliminates precision issues
+                _weight = -1 * (float)Math.Log(random.NextFloat()) / weight;
+            }
+        }
+
+        public T Get<T>(IReadOnlyList<T> list)
+        {
+            return list[_index];
+        }
+
+        public bool Equals(WeightedIndex other)
+        {
+            return _index == other._index && _weight.Equals(other._weight);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is WeightedIndex other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_index, _weight);
+        }
+
+        public int CompareTo(WeightedIndex other)
+        {
+            var weightComparison = _weight.CompareTo(other._weight);
+            if (weightComparison != 0) return weightComparison;
+            return _index.CompareTo(other._index);
+        }
+
+        private readonly int _index;
+        private readonly float _weight;
+    }
+
     public static IEnumerable<T> ToEnumerable<T>(this T item)
-	{
-		yield return item;
-	}
+    {
+        yield return item;
+    }
 
     public static T[] Add<T>(this T[] target, T item)
     {
@@ -264,7 +386,7 @@ public static class EnumerableExtension
         }
 
         if (index == 0)
-            return new T[] {};
+            return new T[] { };
 
         var result = new T[index];
         Array.Copy(target, result, index);
@@ -285,7 +407,8 @@ public static class EnumerableExtension
         list[index] = value;
     }
 
-    public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value, Func<TValue,TValue,TValue> mergeFunc)
+    public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value,
+        Func<TValue, TValue, TValue> mergeFunc)
     {
         TValue oldValue;
         if (!dictionary.TryGetValue(key, out oldValue))

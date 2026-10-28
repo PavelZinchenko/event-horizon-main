@@ -8,6 +8,7 @@ namespace DatabaseMigration
     public static class MigrationResources
     {
         public static Func<string, IDataStorage> StorageProvider { get; set; }
+        public static IJsonSerializer Serializer { get; set; }
 
         public static IDataStorage GetStorage(string path)
         {

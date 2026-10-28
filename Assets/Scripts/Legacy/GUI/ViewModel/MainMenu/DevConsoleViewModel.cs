@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using GameServices.Settings;
 using Services.Audio;
+using GameDatabase;
 using Zenject;
 
 namespace ViewModel
@@ -11,6 +12,7 @@ namespace ViewModel
 	{
 	    [Inject] private readonly ISoundPlayer _soundPlayer;
 	    [Inject] private readonly Cheats _cheats;
+	    [Inject] private readonly IDatabase _database;
 
         public RectTransform[] Buttons;
 		public AudioClip ClickSound;
@@ -71,16 +73,36 @@ namespace ViewModel
 
 		private void OnEnable()
 		{
-			if (!AppConfig.enableCheats)
+			if (!AppConfig.enableCheats || IsBlockedByMod())
 			{
 				GameObject.Destroy(gameObject);
 				return;
 			}
 
+			_database.DatabaseLoaded += OnDatabaseLoaded;
 			_value = string.Empty;
 			foreach (var item in Buttons)
 				item.gameObject.SetActive(false);
 			DeviceId.gameObject.SetActive(false);
+		}
+
+		private void OnDisable()
+		{
+			_database.DatabaseLoaded -= OnDatabaseLoaded;
+		}
+
+		private void OnDatabaseLoaded()
+		{
+			if (IsBlockedByMod())
+				GameObject.Destroy(gameObject);
+		}
+
+		// A loaded mod can turn the code-entry numpad off through its Debug.json.
+		// The vanilla database keeps the build-time constant.
+		private bool IsBlockedByMod()
+		{
+			return !string.IsNullOrEmpty(_database.Id) && !_database.IsEditable &&
+				(_database.DebugSettings == null || !_database.DebugSettings.EnableDebugConsole);
 		}
 
 		private bool TryExecuteCommand(string command)

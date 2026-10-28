@@ -1,5 +1,6 @@
 ﻿using Constructor.Ships;
 using Economy;
+using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameServices.Gui;
@@ -41,7 +42,8 @@ namespace Gui.ShipService
         [Inject] private readonly IResourceLocator _resourceLocator;
         [Inject] private readonly ILocalization _localization;
         [Inject] private readonly ISoundPlayer _soundPlayer;
-        
+        [Inject] private readonly IDatabase _database;
+
         public void Initialize(IShip ship, Faction faction, int level)
         {
             _ship = ship;
@@ -105,7 +107,7 @@ namespace Gui.ShipService
             if (!_shipInfo.CanReset || !_shipInfo.ResetPrice.IsEnough(_playerResources)) return;
 
             _ship.Model.LayoutModifications.Reset();
-            Domain.Shipyard.ShipValidator.RemoveInvalidParts(_ship, new Domain.Shipyard.FleetPartsStorage(_playerInventory));
+            Domain.Shipyard.ShipValidator.RemoveInvalidParts(_ship, _database.ShipSettings, new Domain.Shipyard.FleetPartsStorage(_playerInventory));
 
             _shipInfo.ResetPrice.Withdraw(_playerResources);
             _soundPlayer.Play(_buySound);

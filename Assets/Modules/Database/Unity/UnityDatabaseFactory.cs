@@ -10,8 +10,10 @@ namespace GameDatabase
 
         public static Database Create()
         {
+            var serializer = new UnityJsonSerializer();
             DatabaseMigration.MigrationResources.StorageProvider = path => new ResourceDatabaseStorage(path);
-            return new Database(new ResourceDatabaseStorage(DefaultPath), new UnityJsonSerializer(), ModsPath);
+            DatabaseMigration.MigrationResources.Serializer = serializer;
+            return new Database(new ResourceDatabaseStorage(DefaultPath), serializer, ModsPath);
         }
 
         private static string ModsPath

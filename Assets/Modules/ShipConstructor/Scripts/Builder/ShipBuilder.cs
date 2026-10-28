@@ -165,7 +165,7 @@ namespace Constructor
             }
 
             foreach (var spec in component.WeaponsObsolete)
-                platform.AddWeapon(spec.Key, spec.Value, item.KeyBinding);
+                platform.AddWeapon(spec.Key, spec.Value, item.KeyBinding, item.Info.Data.Weapon.Stats.FireRate > 0);
         }
 
         private int Size
@@ -361,9 +361,9 @@ namespace Constructor
 				}
 			}
 			
-			public void AddWeapon(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition, int key)
+			public void AddWeapon(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition, int key, bool hasPositiveBaseRate)
 			{
-				_weaponsObsolete.Add(new WeaponDataObsolete(weapon, ammunition, key));
+				_weaponsObsolete.Add(new WeaponDataObsolete(weapon, ammunition, key, hasPositiveBaseRate));
 			}
 
 		    public void AddWeapon(Weapon weapon, Ammunition ammunition, in WeaponStatModifier stats, int key)
@@ -414,10 +414,11 @@ namespace Constructor
 
             public class WeaponDataObsolete : IWeaponDataObsolete
             {
-				public WeaponDataObsolete(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition, int key)
+				public WeaponDataObsolete(in WeaponStats weapon, in AmmunitionObsoleteStats ammunition, int key, bool hasPositiveBaseRate)
 				{
 					_weapon = weapon;
 				    _ammunition = ammunition;
+					_hasPositiveBaseRate = hasPositiveBaseRate;
 					KeyBinding = weapon.ActivationType.ValidateKey(key);
 				}
 
@@ -426,7 +427,11 @@ namespace Constructor
 			        get
 			        {
 			            var stats = _weapon;
-                        stats.FireRate *= FireRateMultiplier;
+                        // A base rate of 0 means "no cooldown", so it stays 0. A positive base
+                        // rate that a modifier drives to 0 or below blocks the weapon.
+                        stats.FireRate = _hasPositiveBaseRate && (stats.FireRate <= 0 || FireRateMultiplier <= 0)
+                            ? -1f
+                            : stats.FireRate * FireRateMultiplier;
 			            return stats;
 			        }
                 }
@@ -452,6 +457,7 @@ namespace Constructor
 
                 private readonly WeaponStats _weapon;
                 private readonly AmmunitionObsoleteStats _ammunition;
+                private readonly bool _hasPositiveBaseRate;
             }
 		}
 		

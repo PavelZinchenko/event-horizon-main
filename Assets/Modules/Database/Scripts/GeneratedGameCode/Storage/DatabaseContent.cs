@@ -384,6 +384,19 @@ namespace GameDatabase.Storage
                 if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate Weapon ID - " + item.Id + " (" + name + ")");
             }
+            else if (type == ItemType.BlackMarketSettings)
+            {
+                if (BlackMarketSettings == null)
+                {
+                    var data = _serializer.FromJson<BlackMarketSettingsSerializable>(content);
+                    data.FileName = name;
+                    BlackMarketSettings = data;
+                    return;
+                }
+
+				if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate BlackMarketSettings file found - " + name);
+            }
             else if (type == ItemType.CombatSettings)
             {
                 if (CombatSettings == null)
@@ -488,6 +501,19 @@ namespace GameDatabase.Storage
 				if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate MusicPlaylist file found - " + name);
             }
+            else if (type == ItemType.RuinsSettings)
+            {
+                if (RuinsSettings == null)
+                {
+                    var data = _serializer.FromJson<RuinsSettingsSerializable>(content);
+                    data.FileName = name;
+                    RuinsSettings = data;
+                    return;
+                }
+
+				if (!_allowDuplicates)
+                    throw new DatabaseException("Duplicate RuinsSettings file found - " + name);
+            }
             else if (type == ItemType.ShipModSettings)
             {
                 if (ShipModSettings == null)
@@ -587,6 +613,7 @@ namespace GameDatabase.Storage
             _audioClips.Add(name, audioClip);
         }
 
+		public BlackMarketSettingsSerializable BlackMarketSettings { get; private set; }
 		public CombatSettingsSerializable CombatSettings { get; private set; }
 		public DatabaseSettingsSerializable DatabaseSettings { get; private set; }
 		public DebugSettingsSerializable DebugSettings { get; private set; }
@@ -595,6 +622,7 @@ namespace GameDatabase.Storage
 		public GalaxySettingsSerializable GalaxySettings { get; private set; }
 		public LocalizationSettingsSerializable LocalizationSettings { get; private set; }
 		public MusicPlaylistSerializable MusicPlaylist { get; private set; }
+		public RuinsSettingsSerializable RuinsSettings { get; private set; }
 		public ShipModSettingsSerializable ShipModSettings { get; private set; }
 		public ShipSettingsSerializable ShipSettings { get; private set; }
 		public SkillSettingsSerializable SkillSettings { get; private set; }

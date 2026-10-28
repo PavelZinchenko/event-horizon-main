@@ -22,8 +22,8 @@ namespace Combat.Component.Systems
         public bool Active { get; set; }
 
         public virtual float ActivationCost { get { return 0; } }
-        public virtual bool CanBeActivated { get { return Enabled && TimeFromLastUse >= MaxCooldown; } }
-        public virtual float Cooldown { get { return !Enabled ? 1.0f : MaxCooldown > 0 ? Mathf.Clamp01((MaxCooldown - TimeFromLastUse)/MaxCooldown) : 0f; } }
+        public virtual bool CanBeActivated { get { return Enabled && (MaxCooldown <= 0 || TimeFromLastUse >= MaxCooldown); } }
+        public virtual float Cooldown { get { return !Enabled ? 1.0f : float.IsPositiveInfinity(MaxCooldown) ? 1.0f : MaxCooldown <= 0 ? 0f : Mathf.Clamp01((MaxCooldown - TimeFromLastUse)/MaxCooldown); } }
 
         public int KeyBinding { get { return _keyBinding; } }
         public SpriteId ControlButtonIcon { get { return _controlButtonIcon; } }

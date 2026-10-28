@@ -46,7 +46,8 @@ namespace Constructor.Ships
 
                 foreach (var item in platform.Weapons)
                 {
-                    if (item.Ammunition.Body.EnergyCost > stats.EnergyPoints)
+                    var effectiveCost = item.Ammunition.Body.EnergyCost * item.Stats.EnergyCostMultiplier.Value;
+                    if (effectiveCost > stats.EnergyPoints)
                         return false;
                     weaponCount++;
                 }

@@ -111,6 +111,8 @@ Every collection record also has the three [common fields](#common-fields).
 | 112 | [MusicPlaylist](MusicPlaylist.md) | Music per game screen. |
 | 117 | [LocalizationSettings](LocalizationSettings.md) | Labels for corrosive damage. |
 | 118 | [WeaponSlots](WeaponSlots.md) | Names and icons of weapon-slot letters. |
+| 119 | [BlackMarketSettings](BlackMarketSettings.md) | Satellites excluded from the smuggler market. |
+| 120 | [RuinsSettings](RuinsSettings.md) | Satellites excluded from ruins loot and the loot cell limit. |
 
 ### Unused and reserved
 

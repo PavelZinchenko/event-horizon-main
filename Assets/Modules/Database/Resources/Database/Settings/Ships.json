@@ -12,6 +12,8 @@
   "MaxAngularVelocity": 40.0,
   "MaxAcceleration": 400.0,
   "MaxAngularAcceleration": 400.0,
+  "SatelliteModelScaleMultiplier": 2.0,
+  "SatelliteRequireModelScaleWithSizeClass": true,
   "ShipExplosionEffect": 20,
   "ShipExplosionSound": "explosion_01",
   "DroneExplosionEffect": 21,
