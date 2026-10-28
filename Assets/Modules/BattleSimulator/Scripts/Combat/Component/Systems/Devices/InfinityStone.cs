@@ -46,10 +46,14 @@ namespace Combat.Component.Systems.Devices
         {
             if (eventType == SystemEventType.DamageTaken && !_ship.Stats.IsAlive)
             {
-                if (_invulnerabilityTime > 0)
-                    RestoreShip();
-                else if (CanBeActivated)
+                if (CanBeActivated)
+                {
                     Activate();
+                }
+                else if (_invulnerabilityTime <= 0)
+                {
+                    RestoreShip();
+                }
             }
         }
 
@@ -64,8 +68,10 @@ namespace Combat.Component.Systems.Devices
         private void RestoreShip()
         {
             _ship.Stats.Energy.Get(-_ship.Stats.Energy.MaxValue);
-            _ship.Stats.Armor.Get(-_ship.Stats.Armor.MaxValue);
             _ship.Stats.Shield.Get(-_ship.Stats.Shield.MaxValue);
+            // Restore armor (ship HP via HitPoints); Get() may not restore from dead state correctly
+            if (_ship.Stats.Armor.Exists)
+                _ship.Stats.Armor.Get(-_ship.Stats.Armor.MaxValue);
         }
 
         protected override void OnUpdateView(float elapsedTime)
