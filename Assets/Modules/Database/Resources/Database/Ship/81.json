@@ -26,5 +26,13 @@
       },
       "WeaponClass": "L"
     }
+  ],
+  "Collider": [
+    {
+      "Points": [
+        {}
+      ],
+      "Radius": 0.42
+    }
   ]
 }

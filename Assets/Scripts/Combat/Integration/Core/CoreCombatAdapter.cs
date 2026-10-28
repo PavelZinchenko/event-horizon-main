@@ -43,7 +43,7 @@ namespace Combat.Integration.Core
             _shipSelectionPanel = shipSelectionPanel;
             _exitTrigger = exitTrigger;
 
-            var mapper = new CoreShipMapper(database);
+            var mapper = new CoreShipMapper(database, resourceLocator);
             var roster = new List<RosterSlotSetup>();
             var nextId = 1;
             foreach (var info in combatModel.PlayerFleet.Ships)

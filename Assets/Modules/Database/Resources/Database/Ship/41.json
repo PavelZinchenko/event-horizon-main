@@ -31,5 +31,15 @@
     "BuiltinDevices": [
       18
     ]
-  }
+  },
+  "Collider": [
+    {
+      "Points": [
+        {
+          "x": -0.1
+        }
+      ],
+      "Radius": 0.4
+    }
+  ]
 }

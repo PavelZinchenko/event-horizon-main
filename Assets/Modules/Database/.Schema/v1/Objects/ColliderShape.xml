@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- One hull shape at ModelScale 1. 1 point: circle. 2 points: capsule. 3 or more: outline, concave allowed. Radius only with 1 or 2 points. -->
+<data name="ColliderShape" type="struct" >
+    <member name="Points" type="vector_list" />
+    <member name="Radius" type="float" minvalue="0" maxvalue="100" />
+</data>

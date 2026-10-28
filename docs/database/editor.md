@@ -100,7 +100,7 @@ The editor has no per-type forms. `Controls/StructDataEditor` builds the UI by r
 | `ItemId<T>` | Drop-down of all records of `T`, plus empty. |
 | `IObjectWrapper` | Optional nested object (create/clear). |
 | `IDataAdapter` | Nested editor. Used for structs and switch-driven objects. |
-| Collections | `CollectionEditor` |
+| Collections | `CollectionEditor`. A list with more than 15 items shows "List is too long" instead. A `vector_list` is a `ValueWrapper<Vector2>[]`, so each point gets a `VectorEditor` (range -10 to 10). |
 
 Member tooltips also come from the schema: the text content of a `<member>` element becomes a `[TooltipText]` attribute.
 

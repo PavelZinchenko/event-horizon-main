@@ -180,6 +180,7 @@ A member name may repeat only when the repeats have different `case` values. The
 | `string` | `string` | `string` | `string` |
 | `color` | `string` `#AARRGGBB` | `ColorData` | `System.Drawing.Color` |
 | `vector` | `Vector2` | `GameDatabase.Model.Vector2Data` (engine-free, `[Serializable]`, fields `x`/`y`) | `Vector2` |
+| `vector_list` | `Vector2Data[]` | `ImmutableCollection<Vector2Data>` | `ValueWrapper<Vector2>[]` |
 | `layout` | `string` | `Layout` | `Layout` |
 | `image` | `string` | `SpriteId` with category `typeid` | `string` |
 | `audioclip` | `string` | `AudioClipId` | `string` |
@@ -191,6 +192,8 @@ A member name may repeat only when the repeats have different `case` values. The
 | `object_list` | `int[]` IDs | `ImmutableCollection<T>` | `Wrapper<T>[]` |
 | `struct` | Nested DTO | Data class | `ObjectWrapper<T>` |
 | `struct_list` | Nested DTO array | `ImmutableCollection<T>` | `T[]` |
+
+`vector_list` takes no `default`; the generator rejects one. The editor model wraps each point in `ValueWrapper` so the collection editor can change it in place.
 
 The categories for `image` and `prefab` map to hand-written enums: `SpriteId.Type` in `Assets/Modules/CommonComponents/Scripts/DataTypes/SpriteId.cs` and `PrefabId.Type` in `Scripts/Types/PrefabId.cs`. A new category must be added there first, or the generated code will not compile.
 

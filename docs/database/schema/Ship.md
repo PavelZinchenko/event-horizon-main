@@ -40,11 +40,26 @@ The record also has the [common fields](index.md#common-fields).
 | `VisualEffects` | struct [ShipVisualEffects](#shipvisualeffects) | | Overrides of the destruction effect, sound, and wreck. |
 | `CellsExpansions` | enum [ToggleState](enums.md#togglestate) | `Default` | Whether the player can buy extra cells around the layout. `Default` uses `ShipSettings.DisableCellsExpansions`. See [Cell expansions](#cell-expansions). |
 | `ColliderTolerance` | float | 0.02, 0…1 | Simplification tolerance of the polygon collider that combat builds from the sprite. A larger value gives fewer vertices. No built-in record sets it. |
+| `Collider` | struct list [ColliderShape](#collidershape) | | Hull shapes for the new combat core. Empty: the core builds the hull from the sprite (see [Combat object](#combat-object)). The old combat scene ignores it and uses the prefab. |
 | `EnginePosition`, `EngineSize` | vector, float | obsolete | One engine nozzle. Migration 1.0 → 1.1 adds it to `Engines` ([DatabaseUpgrader_0_1.cs:29](../../../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_0_1.cs#L29)). |
 | `ShipCategory` | int | obsolete | Old role. Migration 1.0 → 1.1 maps 1 → `Rare`, 2 → `Flagship`, 3 → `Special`, 4 → `Starbase` (type and size class), 5 → `Hidden`, 6 → `Drone` ([line 42](../../../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_0_1.cs#L42)). |
 | `EnergyResistance`, `KineticResistance`, `HeatResistance`, `Regeneration`, `BuiltinDevices`, `BaseWeightModifier` | | obsolete | Old hull bonuses. Migration 1.0 → 1.1 moves them into `Features`. `BaseWeightModifier` becomes `ShipWeightBonus` ([line 65](../../../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_0_1.cs#L65)). The migration replaces an existing `Features` value. |
 
 ## Structures
+
+### ColliderShape
+
+One hull shape of the new combat core (phase 4, D5). Schema: [ColliderShape.xml](../../../Assets/Modules/Database/.Schema/v1/Objects/ColliderShape.xml).
+
+| Field | Type | Default / range | Meaning |
+| --- | --- | --- | --- |
+| `Points` | vector list | | 1 point: a circle. 2 points: a capsule. 3 or more: an outline, concave allowed; the core splits it into convex parts. |
+| `Radius` | float | 0…100 | Circle or capsule radius. Must be 0 for an outline. |
+
+- Units are the prefab units at `ModelScale` 1: the sprite spans about −0.5…0.5. This differs from `Engine.Position` and `Barrel.Position`, which use −1…1. The mapper multiplies points and radius by `ModelScale`.
+- Shape order is the physics part order, so a change of order changes contact ordering and the duel hull hash.
+- `Ship.OnDataDeserialized` logs an invalid shape on load ([DataModel/ColliderShape.cs](../../../Assets/Modules/Database/Scripts/DataModel/ColliderShape.cs)). The core mapper skips it.
+- The built-in data comes from the prefab colliders: menu *Tools/Database/Export Ship Colliders* ([ShipColliderExporter.cs](../../../Assets/Modules/Database/Unity/Editor/ShipColliderExporter.cs)). Boxes become 4-point outlines; holes and paths with fewer than 3 points are left out. Running it again replaces the field.
 
 ### ShipFeatures
 
@@ -158,6 +173,8 @@ A shipyard can add a modification slot to a player ship. The required level is t
 2. Otherwise the `Default` prefab gets the `ModelImage` sprite. A hull with `SizeClass` `Undefined` gets a circle collider. Other hulls get a polygon collider from the sprite, simplified with `ColliderTolerance`.
 3. The body scale is `ModelScale`. The body mass is the ship weight ([line 324](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/ShipFactory.cs#L324)).
 4. Each engine gets a light of size `5 × Engine.Size / ModelScale` and a trail, both in `EngineColor` ([line 277](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/ShipFactory.cs#L277)).
+
+The new combat core does not load prefabs. `CoreHullBuilder` reads `Collider`; when the field has no valid shape, it applies rule 2 to the sprite ([CoreHullBuilder.cs](../../../Assets/Scripts/Combat/Integration/Core/CoreHullBuilder.cs)).
 
 Destruction ([ShipFactory.cs:284](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/ShipFactory.cs#L284)):
 

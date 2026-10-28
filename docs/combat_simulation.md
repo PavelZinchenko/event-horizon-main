@@ -250,7 +250,9 @@ Production warnings are errors. Core.Tests retains its existing CS0649 fixture w
 
 `BattleSetup` holds immutable battle ID, match seed, roster, arena dimensions, time limit and the active-ship limit per side. Dimensions default to 200 × 200 and must be finite and positive.
 The roster is a read-only copy of the caller's slot list. Each `RosterSlotSetup` has a unique roster ID, a side (0 or 1), an owner (player index, 0 in phase 2) and a `ShipDefinition`. Each side needs at least one slot.
-`ShipDefinition` holds hull radius, mass, the engine, an optional engine without energy, maximum armor, the shield and energy `ResourceDefinition` (maximum, recharge rate, recharge delay), barrels and devices. The hull is one circle until phase 4 loads collider outlines.
+`ShipDefinition` holds the hull, mass, the engine, an optional engine without energy, maximum armor, the shield and energy `ResourceDefinition` (maximum, recharge rate, recharge delay), barrels and devices.
+
+The hull is a list of `HullShape` (phase 4, D5): 1 point is a circle, 2 points a capsule, 3 or more an outline. Only circles and capsules have a radius. The `HullShape` constructor validates the shape and splits an outline with `ConvexDecomposition`, so an invalid shape throws at setup. `HullParts` lists the physics parts (`HullPart`: circle, capsule or convex polygon) in shape order, each shape's parts in decomposition order. Mass is set by the definition; the centre of mass and the inertia come from the parts. `HullRadius` is the farthest hull point from the body origin. `HullHash` hashes every part's geometry bit by bit, in order; the phase 7 handshake compares it so both duel peers build the same hull. A second constructor takes a radius and extra circles, for code fixtures.
 `EngineDefinition` holds derived stats in core units: propulsion (u/s²), maximum velocity (u/s), turn rate (rad/s²) and maximum angular velocity (rad/s). Phase 4 derives them from engine power and weight.
 Each `Battle` owns a separate `PhysicsWorld`. Physics state is internal; the public surface exposes setup, battle ID, tick, `IsCompleted`, `Snapshot`, `Submit(RosterCommand)`, `Submit(ControlFrame)` and `Step()`.
 
@@ -605,7 +607,7 @@ A frame for an unknown or removed entity is dropped, logged and counted in `Reje
 
 Stages 8–11 run one pipeline for every contact source. Physics only reports; the core selects the valid hits. Ramming, bullet sweeps, beam rays and point-defense overlaps share this pipeline.
 
-1. **Shape table.** Physics shapes carry no user data. `ShapeTable` maps each live `ShapeId` to its entity, its hit priority (`Shield` before `Hull`) and its order in the definition. A lookup checks the shape generation. A stale `ShapeId` therefore resolves to nothing: the delayed end event of a destroyed body, or a reused index. Deploy adds the hull circles in `ShipDefinition.HullParts` order: the main circle first, then the extra parts. Removal releases them.
+1. **Shape table.** Physics shapes carry no user data. `ShapeTable` maps each live `ShapeId` to its entity, its hit priority (`Shield` before `Hull`) and its order in the definition. A lookup checks the shape generation. A stale `ShapeId` therefore resolves to nothing: the delayed end event of a destroyed body, or a reused index. Deploy adds the hull parts in `ShipDefinition.HullParts` order. That order is the shape order of hit records. Removal releases them.
 2. **Candidates.** Each source adds `ContactCandidate`s to `ContactResolver` at stage 8. The sort key is a tuple, not one packed number, so the 64-bit IDs stay intact. The key order is: time (a fraction of the step), kind (`Disarm` before `Hit`), attacker ID, attacker device index (point defense; -1 otherwise), ray distance fraction, target shape priority, target ID, target shape order. Non-ray sources use zero for ray distance. Beam time stays zero; distance selects the nearest valid target within that ray. Without this field, the global sort could select a farther target by ID. Two candidates with the same key are a defect: the battle throws when `ThrowOnDefect` is set, and logs otherwise.
 3. **Walk (stage 9).** The resolver walks the sorted candidates. It keeps per-bullet state for the step: stop time, disarmed, consumed own hit, damage taken. A candidate is skipped when:
    - its attacker is disarmed, has already stopped at its own hit, or stopped at an earlier time;
@@ -801,7 +803,7 @@ Migration phase 3c. Quick combat runs on the core in a separate scene; the old s
 
 ### Ships and pilots
 
-`CoreShipMapper` maps each quick-combat ship to a `ShipDefinition` (decision S1). Armor, shield, energy, weight and ramming come from the ship stats. The engine uses the legacy `EngineStats` formula, with degrees converted to radians. The hull is a circle of radius `ModelScale / 2`.
+`CoreShipMapper` maps each quick-combat ship to a `ShipDefinition` (decision S1). Armor, shield, energy, weight and ramming come from the ship stats. The engine uses the legacy `EngineStats` formula, with degrees converted to radians. `CoreHullBuilder` builds the hull from `Ship.Collider` times `ModelScale`. It skips an invalid shape with one warning per ship. A ship with no valid shape gets the legacy sprite collider: a circle around the sprite for `SizeClass.Undefined`, otherwise the sprite physics shape reduced with `ColliderTolerance`. It runs on the main thread; the core receives shapes only. The fixture muzzle sits at `HullRadius`. The Editor menu *Tools/Combat/Check Ship Hulls* builds the hull of every built-in ship from the data and from the sprite and reports parts, inertia and radius.
 Every ship gets the same fixture loadout: one cannon on device 0 (cooldown 0.2 s, 20 damage, range 15). Real devices come in phases 4-5.
 
 `CorePilotProvider` gives each player ship a new `PlayerPilot` (`PilotSchedule.PlayerShip`) and every other ship a `ChasePilot` (decision S3). `ChasePilot` is a copy of the scripted battle's pilot; its stand-off distance comes from the cannon range. Behavior trees replace it in phase 4.
@@ -874,7 +876,7 @@ A compound body is a body with several shapes. Mass, centre of mass and inertia 
 4. Outline data: each part knows which of its edges are cuts (inside the outline, between two parts) and the outline normals at each vertex. `ConvexDecomposition.AttachOutline` adds the same data to parts made by hand. A part edge that continues a cut along the outline in one straight line counts as outer.
 5. Deterministic: plain arithmetic in a fixed order, so the same outline gives the same parts on every run of the same build.
 6. It allocates; it is for loading, not for the step.
-7. Holes: a clockwise path inside another path is a hole in Unity. The hull loader must skip it, so the outer path makes the hole solid (the harness does this; 2 holes in `mothership`). Decomposing a hole as its own path puts overlapping parts on top of the outer path.
+7. Holes: a clockwise path inside another path is a hole in Unity. The hull loader must skip it, so the outer path makes the hole solid (`ConvexDecomposition.IsHole`; the collider export and the sprite fallback use it; 2 holes in `mothership`). Decomposing a hole as its own path puts overlapping parts on top of the outer path.
 
 Measured on the 124 ship outline paths (ship prefabs, scaled × 2): all decompose; parts per path median 4, 90th percentile 9, max 33 (`mothership`); area error at most 0.005%.
 

@@ -3,17 +3,20 @@ using CombatSimulation.Core;
 using CombatSimulation.Physics;
 using Constructor.Model;
 using GameDatabase;
+using Services.Resources;
 
 namespace Combat.Integration.Core
 {
     // Maps a quick-combat ship to a core ship definition (migration phase 3c, owner decision S1).
-    // Stats come from the ship; every ship gets the same fixture loadout: one cannon on device 0.
+    // Stats come from the ship and the hull from Ship.Collider (phase 4, step 2); every ship gets the same fixture
+    // loadout: one cannon on device 0.
     // Unvalidated: phase 4 replaces it with the tested stat mapping and the real devices.
     public sealed class CoreShipMapper
     {
-        public CoreShipMapper(IDatabase database)
+        public CoreShipMapper(IDatabase database, IResourceLocator resourceLocator)
         {
             _database = database;
+            _hullBuilder = new CoreHullBuilder(resourceLocator);
         }
 
         public ShipDefinition Map(IShipInfo info)
@@ -21,13 +24,18 @@ namespace Combat.Integration.Core
             var stats = info.Specification.Stats;
             var cellCount = stats.Layout.CellCount;
 
-            // Approximation: the model sprite fills a square of side ModelScale.
-            var hullRadius = Positive(0.5f * stats.ShipModel.ModelScale);
-            var muzzle = new BarrelDefinition(new Vec2(hullRadius, 0f));
+            var hull = _hullBuilder.Build(stats.ShipModel);
+
+            // The fixture muzzle sits on the hull edge ahead of the ship; step 3 maps the real barrels.
+            var reach = 0f;
+            foreach (var shape in hull)
+            foreach (var part in shape.Parts)
+                reach = System.Math.Max(reach, part.Reach);
+            var muzzle = new BarrelDefinition(new Vec2(reach, 0f));
             var cannon = new CannonDefinition(0, CannonCooldown, CannonEnergyCost, 0f, Bullet);
 
             return new ShipDefinition(
-                hullRadius,
+                hull,
                 Positive(stats.Weight),
                 ToEngine(new EngineStats(stats.EnginePower, stats.TurnRate, stats.Weight, cellCount, _database.ShipSettings)),
                 Positive(stats.ArmorPoints),
@@ -60,5 +68,6 @@ namespace Combat.Integration.Core
         private const float DegreesToRadians = (float)(System.Math.PI / 180.0);
 
         private readonly IDatabase _database;
+        private readonly CoreHullBuilder _hullBuilder;
     }
 }

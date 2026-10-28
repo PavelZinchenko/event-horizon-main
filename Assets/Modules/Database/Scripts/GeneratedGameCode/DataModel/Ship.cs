@@ -45,6 +45,7 @@ namespace GameDatabase.DataModel
 			VisualEffects = ShipVisualEffects.Create(serializable.VisualEffects, loader);
 			CellsExpansions = serializable.CellsExpansions;
 			ColliderTolerance = Utilites.MathEx.Clamp(serializable.ColliderTolerance, 0f, 1f);
+			Collider = new ImmutableCollection<ColliderShape>(serializable.Collider?.Select(item => ColliderShape.Create(item, loader)));
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -69,6 +70,7 @@ namespace GameDatabase.DataModel
 		public ShipVisualEffects VisualEffects { get; private set; }
 		public ToggleState CellsExpansions { get; private set; }
 		public float ColliderTolerance { get; private set; }
+		public ImmutableCollection<ColliderShape> Collider { get; private set; }
 
 		public static Ship DefaultValue { get; private set; }
 	}

@@ -33,5 +33,20 @@
     "VelocityBonus": 0.5,
     "TurnRateBonus": 0.5,
     "EnergyBonus": -0.5
-  }
+  },
+  "Collider": [
+    {
+      "Points": [
+        {
+          "x": -0.280886,
+          "y": 6.33824E-09
+        },
+        {
+          "x": 0.17454794,
+          "y": 6.33824E-09
+        }
+      ],
+      "Radius": 0.22456856
+    }
+  ]
 }

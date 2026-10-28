@@ -183,6 +183,7 @@ The built-in catalog uses Unity's [`JsonUtility`](../Assets/Modules/Database/Uni
 | Reference list | Array of integers | `[3, 7]` |
 | Color | `"#RRGGBB"` or `"#AARRGGBB"` | Hex. Six digits get alpha `FF`. Invalid text becomes white and logs an error. See [`ColorData`](../Assets/Modules/CommonComponents/Scripts/DataTypes/ColorData.cs). |
 | Vector | `{"x": 0.5, "y": -0.25}` | Lowercase keys. |
+| Vector list (`vector_list`) | Array of vectors | `[{"x": 0.5}, {"y": -0.25}, {}]`. A zero coordinate is left out. |
 | Char | One-character string | `"WeaponSlotType": "C"` |
 | Layout | String of cell characters | Read row by row. See [Layout](#layout). |
 | Image | Sprite name string | Resolved by [`ResourceLocator`](../Assets/Modules/ResourceLocator/Scripts/ResourceLocator.cs). See [Media](#media-images-and-audio). |
