@@ -53,7 +53,8 @@ namespace Combat.Integration.Core
         // Fixture loadout. Untuned proposal values; change them here.
         private const float CannonCooldown = 0.2f;
         private const float CannonEnergyCost = 2f;
-        private static readonly BulletDefinition Bullet = new BulletDefinition(radius: 0.15f, speed: 30f, range: 15f, damage: 20f);
+        private static readonly BulletDefinition Bullet = new BulletDefinition(radius: 0.15f, speed: 30f, range: 15f, damage: 20f,
+            damageType: LegacyDamageModel.Impact);
 
         private const float MinValue = 0.01f;
         private const float DegreesToRadians = (float)(System.Math.PI / 180.0);

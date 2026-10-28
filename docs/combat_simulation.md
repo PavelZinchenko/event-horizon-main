@@ -178,7 +178,7 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
 2. Input uses its own bit-packed section (`InputCodec`, version 1), not this header: version (8 bits), battle ID low 32 bits, base tick,
    then records until zero padding. A record holds control index, base tick − original tick, course (9 bits; 511: none), throttle (7 bits)
    and systems. Index, tick offset and systems are `VarUInt`. The sender is the owner of every record.
-   **Tick batch (reliable, G2, `SessionCodec` version 5).** One reliable message per tick holds the tick's operations in sequence
+   **Tick batch (reliable, G2, `SessionCodec` version 6).** One reliable message per tick holds the tick's operations in sequence
    order, then its hits. Header: version (8 bits), tick and last operation sequence (`VarUInt`). No battle ID: the connection is
    bound to one battle. Then records until zero padding: kind (3 bits, from 1), record tick − batch tick (zigzag `VarUInt`; a beam
    end record is one tick ahead), then the record fields. The sender is the owner of every record.
@@ -194,7 +194,8 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
    - Removal: 1 kind bit, reason (3 bits), control index or bullet age. A drone's bay comes from its launch record.
    - Hit: attacker (1 kind bit plus index or age), target (1 kind bit, then a control index in the receiver's stream or, for a
      bullet, its 64-bit entity ID: the sender may know only a predicted copy, which no stream names), shape and device + 1
-     (`VarUInt`), contact (2 bits), impact (3 bits), amount (32-bit float: the target owner commits damage from it).
+     (`VarUInt`), contact (2 bits), impact (3 bits), amount (32-bit float: the target owner commits damage from it), damage
+     type (`VarUInt`, below `DamageTypeTable.MaxTypes`; version 6, D4). The target's core rejects a type its table lacks.
    - Retreat: ship control index. Roster changes and drone launches are rare and keep full-width IDs, records and poses.
    - Missile target (kind 7, 9d P3): missile bullet age, then target control index + 1 in the receiver's stream (`VarUInt`;
      0: no target). About 1.5 bytes in a real batch.
@@ -612,8 +613,19 @@ Stages 8–11 run one pipeline for every contact source. Physics only reports; t
 
    A target that stops at the same time stays valid, so two bullets that hit each other both take the hit. A hit on a bullet with `TargetHitPoints` above 0 adds its damage to the target's damage taken. The hit that brings it to the hit points stops the target at that time. Several weak hits in one step therefore stop a missile at the lethal one. A candidate with `OncePerTargetEntity` (damage over time, D16) counts once per attacker and target entity per step. Ships never become invalid within a step.
 4. **Ramming (Q8).** Stage 4 stores each active ship's linear velocity before the step (`PreStepVelocity`). Physics reports a touch only after the solve, when the velocities have already changed. `RammingTracker` counts the touching shape pairs per enemy ship pair. At stage 8 it handles begin events first, then end events. When a count goes from 0 to 1, it adds one candidate per direction at time 1. The damage is `0.1 × |vA − vB| × min(mass A, mass B) × the attacker's RammingDamageMultiplier`, and it applies only above 1 (legacy `DefaultCollisionBehaviour`). The candidate's target shape is the smallest (priority, order) among the pair's begin events in that step. A removal forgets every pair of the removed ship. Ally pairs are not tracked.
-5. **Damage (stage 10).** Stage 9 adds each accepted hit on a ship or a missile to its `PendingDamage` and emits a `Hit` event. Stage 10 applies the total in one pass, as legacy `Impact.ApplyShield` and `ShipStats.ApplyDamage` do. The shield absorbs up to its value and restarts its delay; the rest goes to armor. A missile loses hit points (legacy `MissileDamageHandler`). The resolver and stage 10 add the same values in the same order, so they agree on a missile's death. Stage 10 applies damage only to local targets; the authority rules above decide which contacts supply that damage.
+5. **Damage (stage 10).** Stage 9 adds each accepted hit on a ship or a missile to its `PendingDamage` and emits a `Hit` event. A ship keeps one pending amount per damage type. Stage 10 applies the totals in one pass, as legacy `Impact.ApplyShield` and `ShipStats.ApplyDamage` do (see "Damage types"). A missile loses hit points (legacy `MissileDamageHandler`). The resolver and stage 10 add the same values in the same order, so they agree on a missile's death. Stage 10 applies damage only to local targets; the authority rules above decide which contacts supply that damage.
 6. **Deaths (stage 11).** A ship with armor 0 or less is marked; stage 12 removes it with reason `Death` and a `Killed` transition. A missile with hit points 0 or less gets removal reason `Death`; it wins over an expiry in the same tick. `QueueDeath` remains as a test hook.
+
+### Damage types
+
+Phase 4 step 1 (D4, owner 2026-10-28): the legacy formula, with every type rule as data. Examples: `TODO/battle_simulator_phase4.md`, "Damage examples (D4)"; tests: `Core/Tests/DamageTypeTests.cs`.
+
+1. **Table.** `BattleSetup.DamageTypes` is a `DamageTypeTable`: one `DamageTypeDefinition` per type and a `RammingDamageType`. A damage type is an index into it. The default is `LegacyDamageModel.Types`: impact, energy, heat, corrosive in database enum order; ramming deals impact.
+2. **Sources.** `BulletDefinition`, `BeamDefinition` and `PointDefenseDefinition` carry `DamageType` (point defense defaults to energy, legacy `PointDefenseCollisionAction`). `BattleSetup` rejects a type its table lacks, on roster ships and their drones.
+3. **Resistances.** `ShipDefinition.Resistances` holds one `DamageResistance` per type, or none (every type in full). `Armor` is the fraction removed before armor, `Shield` the fraction removed before the shield, `EnergyGain` the energy per point that passes the shield. `Armor` and `Shield` are at most 1, so no damage heals. `LegacyDamageModel.Resistances` builds them from the legacy percentages: corrosive takes half of the smallest armor resistance and the shield corrosive resistance; energy absorption over the armor multiplier is the energy gain.
+4. **Stage 10.** The shield meets the types group by group in `ShieldOrder` (legacy: corrosive first). A type's load is its damage times `1 − Shield`. A group within the shield left is absorbed; a larger group keeps the same share of each type, and the shield empties. The shield restarts its delay. Armor then takes each remaining amount times `1 − Armor`. Energy gains each remaining amount times `EnergyGain`, up to its maximum, without restarting its delay.
+5. **Bullet targets** take damage without types or resistances (legacy `MissileDamageHandler`).
+6. **Network.** A hit record carries its damage type. Prediction and the correction replay use the copy's resistances and the same function.
 
 ### Result and timer
 
@@ -755,7 +767,7 @@ Phase 2 step 11. `Core/Tests/ScriptedBattle.cs` is test code: the core knows not
 4. **Result (seed 7).** Side 0 wins by elimination at tick 3506 (70 s). The battle has 4 roster deaths, 3 drone deaths, 2 retreats and 2 redeployments. It spawns 8 ships, 8 drones, 1119 bolts, 34 missiles and 46 beams. It has 2053 hits (1222 beam, 8 ramming) and 54 disarms.
 5. **Determinism.** The log holds every event and a per-tick digest of ship and bullet poses, velocities and resources as raw float bits. One run alone and two runs stepped interleaved in one process give the same log.
 6. **Allocation.** The same fleet with huge armor and energy, all three slots active, steps 3000 ticks after a 1500-tick warm-up with zero bytes allocated, pilots included. The window has bolts, missiles, beam hits, point-defense zaps and eight live drones. Buffers grow until about tick 510, at the first salvo peak; afterwards nothing allocates.
-7. **Snapshot size.** Element sizes on .NET 8 x64, measured as the allocation of a 1024-element array: `ShipState` 128 B, `BulletState` 88 B, `RosterSlotState` 64 B, `BattleEvent` 152 B. The scripted battle copies 1.8 KB per tick on average and 3.6 KB at most (peak 12 ships, 16 bullets). At R2 (2,000 bullets, 130 ships) the ship and bullet copy is 192,640 B per tick, about 9.6 MB/s at 50 Hz. That is 3.2 times the design estimate of 60 KB, which assumed 24-byte bullets. The performance gate decides whether to publish only changed ranges or shrink the states.
+7. **Snapshot size.** Element sizes on .NET 8 x64, measured as the allocation of a 1024-element array: `ShipState` 128 B, `BulletState` 88 B, `RosterSlotState` 64 B, `BattleEvent` 152 B. The scripted battle copies 1.8 KB per tick on average and 3.6 KB at most (peak 12 ships, 16 bullets). At R2 (2,000 bullets, 130 ships) the ship and bullet copy is 192,640 B per tick, about 9.6 MB/s at 50 Hz. That is 3.2 times the design estimate of 60 KB, which assumed 24-byte bullets. Timed on R1 (2026-10-28), `BattleSnapshot.Write` takes 0.24 ms per tick at R2; the byte copy is about a tenth of it ([core design](../TODO/battle_simulator_core.md), risk 3).
 
 ## Unity integration
 
@@ -1091,7 +1103,7 @@ accepted defects are in `TODO/battle_simulator_network.md`, "Gate result".
    every run. Bandwidth median at most 9.6 KB/s, payload plus Relay header (limit 16).
 2. Failing rows: shooter advantage at cap in 3, 5 and 7 of 42 rows at 100, 150 and 200 ms (accepted, owner); one Above-cap
    position row; one Above-cap tick offset row. The asymmetric tick offset is an expected failure.
-3. Correction interval: none passes every row. The owner chose 150 ms (2026-10-27); the session default stays 100 ms.
+3. Correction interval: none passes every row. The owner chose 150 ms (2026-10-27); it is the session default.
 4. R1 (`Results/R1-2026-10-27-spin.md`): `--r1-host` on the desktop, `--r1-peer` on the phone over TCP and `adb reverse`, At cap,
    150 ms, Dogfight and Churn. 4 of 8 runs pass; only shooter advantage differs from the desktop verdict. The phone's session
    is replayed on the desktop: 0 differing tick hashes in 19 phone runs, so the full core is bit-identical on IL2CPP ARM64.

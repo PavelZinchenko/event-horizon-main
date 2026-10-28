@@ -11,8 +11,7 @@
 - [ ] Parse expression `minvalue`/`maxvalue` as floats for `float` results
 
 ## Planned (battle simulator — `docs/issues/battle_simulator.md`)
-- [ ] Performance gate: snapshot copy is 188 KiB per tick at R2, 3.2× the estimate; decide on changed ranges or smaller states (`TODO/battle_simulator_core.md`, risk 3)
-- [ ] Network session: default correction interval 150 ms, the gate's choice (`NetworkSessionOptions`; `TODO/battle_simulator_network.md`, "Gate result")
+- [ ] Performance gate: set a snapshot budget or close the risk; R1 measured 0.24 ms per tick at R2 (`TODO/battle_simulator_core.md`, risk 3)
 - [ ] Phase 7: run the network session on its own thread with short loop gaps (`TODO/battle_simulator_network.md`, "Open after the gate")
 - [ ] Phase 7: repeat the network bandwidth and drift rows with real ships, with 8-bit resource precision (`TODO/battle_simulator_network.md`, "Open after the gate")
 - [ ] Set the missile correction budget (300-byte placeholder) from a playable scene (`TODO/battle_simulator_network.md`, "Open after the gate")
@@ -20,7 +19,8 @@
 - [ ] Phase 5 homing rework: homing copies that orbit a drone explode about 1 s early (`TODO/battle_simulator_network.md`, accepted defects)
 - [ ] Core combat scene: device cooldowns in the snapshot, sounds, legacy-quality effects, beacons (`TODO/battle_simulator_scene.md`, out of scope)
 - [ ] Core combat scene: decide the camera whip toward a new player ship (`TODO/battle_simulator_scene.md`, step 4)
-- [ ] Migration phase 4: original ships/content and campaign result integration (`TODO/battle_simulator_migration.md`)
+- [In Progress] Migration phase 4: original ships/content and campaign result integration (`TODO/battle_simulator_phase4.md`; decisions D7-D11 open)
+- [ ] Database editor: collider editor for `Ship.Collider`, after migration phase 4 (`TODO/battle_simulator_phase4.md`, D5)
 - [ ] Migration phase 5: built-in device coverage, data-model gate and explicit deferrals (`TODO/battle_simulator_migration.md`)
 - [ ] Migration phase 6: exploration and controls configuration (`TODO/battle_simulator_migration.md`)
 - [ ] Migration phase 7: live duel, release gates and GitHub alpha (`TODO/battle_simulator_migration.md`)
