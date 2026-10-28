@@ -12,7 +12,12 @@
 
 ## Planned (battle simulator — `docs/issues/battle_simulator.md`)
 - [ ] Performance gate: snapshot copy is 188 KiB per tick at R2, 3.2× the estimate; decide on changed ranges or smaller states (`TODO/battle_simulator_core.md`, risk 3)
-- [In Progress] Migration phase 3b: relay simulator, network gate and roster agreement checks (`TODO/battle_simulator_network_plan.md`)
+- [ ] Network session: default correction interval 150 ms, the gate's choice (`NetworkSessionOptions`; `TODO/battle_simulator_network.md`, "Gate result")
+- [ ] Phase 7: run the network session on its own thread with short loop gaps (`TODO/battle_simulator_network.md`, "Open after the gate")
+- [ ] Phase 7: repeat the network bandwidth and drift rows with real ships, with 8-bit resource precision (`TODO/battle_simulator_network.md`, "Open after the gate")
+- [ ] Set the missile correction budget (300-byte placeholder) from a playable scene (`TODO/battle_simulator_network.md`, "Open after the gate")
+- [ ] Network target rule and gate scene for auto-aiming barrels and satellites when phase 4 or 5 adds them (`TODO/battle_simulator_network_plan.md`, open items)
+- [ ] Phase 5 homing rework: homing copies that orbit a drone explode about 1 s early (`TODO/battle_simulator_network.md`, accepted defects)
 - [ ] Core combat scene: device cooldowns in the snapshot, sounds, legacy-quality effects, beacons (`TODO/battle_simulator_scene.md`, out of scope)
 - [ ] Core combat scene: decide the camera whip toward a new player ship (`TODO/battle_simulator_scene.md`, step 4)
 - [ ] Migration phase 4: original ships/content and campaign result integration (`TODO/battle_simulator_migration.md`)

@@ -178,7 +178,7 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
 2. Input uses its own bit-packed section (`InputCodec`, version 1), not this header: version (8 bits), battle ID low 32 bits, base tick,
    then records until zero padding. A record holds control index, base tick − original tick, course (9 bits; 511: none), throttle (7 bits)
    and systems. Index, tick offset and systems are `VarUInt`. The sender is the owner of every record.
-   **Tick batch (reliable, G2, `SessionCodec` version 3).** One reliable message per tick holds the tick's operations in sequence
+   **Tick batch (reliable, G2, `SessionCodec` version 5).** One reliable message per tick holds the tick's operations in sequence
    order, then its hits. Header: version (8 bits), tick and last operation sequence (`VarUInt`). No battle ID: the connection is
    bound to one battle. Then records until zero padding: kind (3 bits, from 1), record tick − batch tick (zigzag `VarUInt`; a beam
    end record is one tick ahead), then the record fields. The sender is the owner of every record.
@@ -192,9 +192,12 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
      from the arena) and launch angle (14 bits); 51 bits in a 200-unit arena. The receiver derives the entity ID with
      `SpawnIdentity.CreateChild`; Core checks it.
    - Removal: 1 kind bit, reason (3 bits), control index or bullet age. A drone's bay comes from its launch record.
-   - Hit: attacker (1 kind bit plus index or age), target (control index in the receiver's stream), shape and device + 1 (`VarUInt`),
-     contact and impact (2 bits each), amount (32-bit float: the target owner commits damage from it).
+   - Hit: attacker (1 kind bit plus index or age), target (1 kind bit, then a control index in the receiver's stream or, for a
+     bullet, its 64-bit entity ID: the sender may know only a predicted copy, which no stream names), shape and device + 1
+     (`VarUInt`), contact (2 bits), impact (3 bits), amount (32-bit float: the target owner commits damage from it).
    - Retreat: ship control index. Roster changes and drone launches are rare and keep full-width IDs, records and poses.
+   - Missile target (kind 7, 9d P3): missile bullet age, then target control index + 1 in the receiver's stream (`VarUInt`;
+     0: no target). About 1.5 bytes in a real batch.
    - The sender throws on a record its streams cannot name or on a sequence gap: that is a session bug.
    - The receiver decodes the whole batch before it submits any record, so a malformed batch submits nothing. Its records named
      entities by count, so the stream stops there: every later batch is dropped too. Its operation sequences stay missing, so the
@@ -206,9 +209,10 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
    or final result exists. Cost: a remote bullet the owner never fired leaves up to 4 ticks later in quiet periods.
    Measured reason (step 9a): a separate watermark every tick was 49 messages/s, and each message used its own datagram.
 3. Owner-operation payloads preserve roster records, spawn poses and velocities, drone bay identities, removal reasons, fire identity inputs,
-   and retreat starts (entity and tick only). Hit payloads preserve contact boundaries, authority fields, and resolved damage.
-4. **Corrections (G1, `CorrectionCodec`, version 1).** One unreliable section per batch: version (8 bits), battle ID low 32 bits,
-   batch tick and applied hit sequence (`VarUInt`), then bodies in increasing control index order until zero padding.
+   retreat starts (entity and tick only) and missile targets (missile, target, tick). Hit payloads preserve contact boundaries, authority fields, and resolved damage.
+4. **Corrections (G1 and 9d P3, `CorrectionCodec`, version 2).** One unreliable section per batch: version (8 bits), battle ID low
+   32 bits, batch tick, applied hit sequence and missile count (`VarUInt`), the missiles, then bodies in increasing control index
+   order until zero padding.
    The configured interval is 100, 150, or 200 milliseconds; default 100. At 50 Hz, 150 milliseconds alternates eight and seven ticks.
    - A body is named by its control index, as the gap to the previous index (`VarUInt`). No counts travel: both peers take the
      definition from the spawn record of that index.
@@ -216,6 +220,14 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
      linear velocity 15 bits per axis on a 1/128 unit/s grid, angular velocity 14 bits on a 1/512 rad/s grid. Velocity field 0 escapes to a 32-bit float.
    - Armor, shield, energy: no bits for a maximum of 0; 1 bit full; if not full, 1 bit "delay running" (only for a resource that recharges) and an 8-bit level.
    - Point-defense timers only, stop then query: 1 bit ready, otherwise the age in ticks (`VarUInt`). Other devices and barrels send nothing.
+   - Missile (P3), in increasing bullet index order: the absolute bullet index of the sender's stream as the gap to the previous
+     one (`VarUInt`; the stream age does not work on an unreliable channel), position on the body grid, angle 14 bits, a velocity
+     flag and, with it, velocity as for a body. Without the flag the missile flies at `Speed` along its angle: the owner sends the
+     velocity only while it differs from that by more than 1/64 unit/s. 52 bits without velocity, about 83 with it. The receiver
+     skips an index it does not know.
+   - Missile budget: `NetworkSessionOptions.MissileCorrectionBytes`, default 300 (a placeholder; the owner sets it from a playable
+     scene), at most half of the datagram payload. Runtime takes Core's missiles in priority order while their bits fit, counting
+     each with its absolute index. The missiles go in the batch's first section only.
    - A batch that does not fit continues in more self-contained sections. Both endpoints use the same datagram size, default 1,200 bytes.
      The batch byte limit defaults to 1 MiB and is configurable. An empty batch is not sent.
 5. Each section is submitted on its own. Core drops a body that is not newer than the correction it holds or applied, so a late or
@@ -257,10 +269,23 @@ Migration phase 3b, step 2 is implemented. Core remains transport-free.
 2. For ships and drones, the attacker's owner decides the contact. A local attacker damages a local target, shield first.
    Against a remote target, it emits a resolved outgoing hit. Since step 5 the copy also takes the damage as a prediction (see "Corrections and predicted damage").
    Remote attackers produce presentation predictions without damaging ships or drones from local contacts.
-3. A bullet's owner decides every hit on that bullet, including hits from remote attackers.
-   Local bullets take damage or disarm normally. No outgoing hit record ever targets a bullet.
-   Resolver calculations can remove a remote bullet by prediction, without changing its hit points.
-   Several weak hits in one tick can predict a removal; weak hits across ticks do not accumulate remote damage.
+3. A bullet's owner commits every change of that bullet. A contact between two bullets, or between point defense and a
+   bullet, counts if either owner's device sees it (network plan 9d; owner, 2026-10-26). Before, only the bullet owner's view
+   counted, so one device could lose its missile in a collision the other never saw while the other's missile flew on.
+   - Local bullets take damage, stop or disarm normally.
+   - Resolver calculations remove a remote bullet by prediction, without changing its hit points. Several weak hits in one
+     tick can predict a removal; weak hits across ticks do not accumulate remote damage.
+   - When a contact changes a remote bullet, the device that saw it sends an outgoing hit with `TargetIsBullet` to that
+     bullet's owner: a local projectile's or ray's damage (`Impact`, `Energy`; a ray sends one `DamageOverTime` record per
+     tick), a local point defense's `Disarm`, or `Stop` for a remote projectile that stopped at a local bullet. The attacker is
+     always the sender's bullet or ship.
+   - The owner applies the record at stage 10 if its bullet is still alive: `Disarm` removes it with `Disposal`, `Stop` with
+     `Death`, damage reduces its hit points. A projectile's damage counts once per attacker and bullet (a ray's once per
+     tick), whether the owner's own contact or the record supplied it. A record for a bullet that is gone has no effect.
+   - Accepted limits (owner, 2026-10-26): the record arrives one one-way delay later. If the bullet hits a ship before that,
+     the hit stands, and the device that saw the collision takes a hit from a bullet it no longer shows. Each device runs every
+     ship's point defense; a zap that only a ship's copy makes costs the real ship no energy and starts no cooldown until the
+     next correction resets the copy's energy and timers.
 4. Only local ships and drones commit deaths, retreat completion, forced destruction, and drone inventory losses.
    Public commands cannot deploy, retreat, or self-destruct remote entities. Side destruction affects only local slots.
    Remote drone bays do not launch automatically. Owner records supply remote deployments and launches (step 3).
@@ -295,7 +320,7 @@ The complete 8,050-line single-player event/state log matches the pre-change bas
 Its SHA-256 is `518251C30445EA37B539A066AE26D06AB4EBCAC868D8A5AF6B2B09E685231DC9`; side 0 wins at tick 3506.
 Physics, Core, Runtime, and Core.Tests compile separately with Unity 6000.0.75f1's compiler and .NET Standard 2.1 references.
 Production assemblies treat warnings as errors. Core.Tests retains the existing CS0649 warning for `PilotSchedulingTests.Provider.PilotedSide`.
-Live Editor import has not been verified.
+Live Editor import verified (owner, 2026-10-27).
 
 Step 6 adds Runtime scheduling and result agreement. The relay simulator, gate matrix, and platform run remain steps 7-11.
 The existing single-player adapter needs no change because all its owners remain local.
@@ -341,7 +366,7 @@ Validation (2026-10-22): 32 inbound cases; all 686 engine-free tests pass. Tests
 late beam boundaries, revision gaps, retained resources, drone inventory, bullet removals, and zero warmed allocations.
 The single-player event/state digest remains `518251C30445EA37B539A066AE26D06AB4EBCAC868D8A5AF6B2B09E685231DC9`.
 Core, Runtime, and Core.Tests compile separately with Unity 6000.0.75f1's compiler and .NET Standard 2.1 references.
-Production warnings are errors. Live Editor import has not been verified.
+Production warnings are errors. Live Editor import verified (owner, 2026-10-27).
 
 ### Fire confirmations
 
@@ -392,7 +417,7 @@ Validation (2026-10-22): 13 fire-confirmation cases; all 699 engine-free tests p
 on two cores, late additions at the owner's pose, the history fallback, watermark gaps, beam replacement, and zero warmed allocations.
 The single-player event/state digest remains `518251C30445EA37B539A066AE26D06AB4EBCAC868D8A5AF6B2B09E685231DC9`.
 Physics, Core, Runtime, and Core.Tests compile separately with Unity 6000.0.75f1's compiler and .NET Standard 2.1 references.
-Production warnings are errors. Live Editor import has not been verified.
+Production warnings are errors. Live Editor import verified (owner, 2026-10-27).
 
 ### Corrections and predicted damage
 
@@ -414,9 +439,13 @@ Migration phase 3b, step 5 is implemented. Core still has no wire format and no 
    Own entities are never corrected.
    A correction that is not newer than the held or the last applied one is dropped, so a receive batch applies only the newest.
    It applies at stage 1, after received operations and before commands, once its tick has run locally.
-4. Each remote ship and drone keeps 16 end-of-tick body states (stage 14). Movement error = sent state − local state at tick t.
-   Position uses the minimum image, the angle wraps to ±π, and velocities subtract. The error is added to the present body.
-   The same error shifts the body states from t and the spawn samples after t, so a later correction measures only the remaining error.
+4. Each remote ship and drone keeps 16 end-of-tick body states (stage 14) and the engine input of each tick (stage 4).
+   Movement error = sent state − local state at tick t. Position uses the minimum image, the angle wraps to ±π, and velocities subtract.
+   C1 (owner, 2026-10-27): the error grows while the correction waits, for example when owner and copy turn in opposite
+   directions near the opposite heading. Both states at t are re-run to the last completed tick with the copy's engine input and
+   free motion (the solver's integration without contacts, force or damping). The difference of the two runs is the error at each
+   later tick: it is added to the present body, the body states from t and the spawn samples after t, so a later correction
+   measures only the remaining error. The copy keeps its own contact and recoil response; only the error is carried.
    A correction older than the history skips movement and still applies the gameplay part.
 5. Resources (G1). Each gets a candidate: the owner's level at t, recharged for the ticks from t + 1 to the last completed tick,
    then minus the replayed damage (item 8). The candidate replaces the copy's value only when they differ by more than 1/256 of
@@ -440,7 +469,40 @@ stale and held corrections, out-of-history corrections, recharge after a correct
 late-input drift, discrete and beam replay with D = 3, and zero warmed allocations.
 The single-player event/state digest remains `518251C30445EA37B539A066AE26D06AB4EBCAC868D8A5AF6B2B09E685231DC9`.
 Physics, Core, Runtime, and Core.Tests compile separately with Unity 6000.0.75f1's compiler and .NET Standard 2.1 references.
-Production warnings are errors. Live Editor import has not been verified.
+Production warnings are errors. Live Editor import verified (owner, 2026-10-27).
+
+### Homing missile sync (9d P3)
+
+Plain projectiles fly straight, so their spawn and launch pose fix their path (P1). A homing copy steers on the receiver's
+world, so its target choice and its path drift from the owner's. Measured without P3 (`Results/N-homing-drift-2026-10-26-p3a.md`,
+At cap): position error p95 1-3 units by 2-4 s of flight, and 1-7% of the samples on another target, with errors of 10-100 units.
+
+1. **Target records.** Each change of a homing projectile's target at an owner search (every 2 s, and at once after a target loss)
+   captures `OwnerOperation.MissileTargetChanged` (missile, target or null, tick). Single player captures nothing.
+   On the receiver it applies before the steering of its tick (stage 4); an overdue one at stage 1. The copy takes the target and
+   the owner's schedule: next search at tick + 2 s. Between records the copy searches locally. A record for a missile that is
+   already gone commits without effect; a target that is gone here makes the copy search at once.
+2. **Search phase on adoption.** A copy adopted under P2 moves its next search by the same amount as its spawn tick.
+3. **Corrections.** `WriteCorrections` lists every live homing projectile of the owner (`CorrectionBatch.Missiles`), highest priority
+   first. A missile never corrected comes first, older first: the early correction after spawn. Otherwise the priority is the ticks
+   since its last sent correction times its weight: 4 within one second of flight of a ship of the peer or inside that ship's
+   point-defense range, 1 elsewhere. Equal weights give round-robin. Runtime reports each sent missile back
+   (`MissileCorrectionSent`). Ships and drones keep every-batch corrections; the interval is shared.
+4. **Replacement.** A held missile correction applies at stage 1, after ship corrections, once its tick has run locally. The copy
+   takes the owner's position, angle and velocity at tick t, then the homing steering runs again from t + 1 to the last completed
+   tick toward the target's present position, without searches or hit tests (`HomingSteering.Advance`). There is no per-missile
+   history, so a correction cannot overshoot. Contacts the copy made stay; no event. An older or repeated correction is dropped.
+5. The observer reports a missile correction with `IsMissile`; the position and angle errors are the change of the present state.
+
+Measured (`Results/N9d-P3.log`, At cap, seeds 1-3): Homing shooter advantage 0.003-0.018 (P2: up to 0.069), hit position p95
+0.20-0.24 radius (P2: 0.51-0.84). The HomingDrones scene (fixture N8-5, 20 drones per side as extra targets; not in the gate
+matrix): shooter advantage 0.11-0.18 → 0.030-0.066, hit position p95 1.4-3.0 → 0.36-0.50. Copies older than 0.26 s: target
+mismatch 0%, position p95 0.05-0.20 units. About +0.4 KB/s in HomingDrones (6 live missiles). Dogfight gameplay rows are unchanged.
+The MissileSwarm stress scene (fixture N8-6, about 100 live missiles per side; not in the matrix) saturates the 300-byte budget at
+19-24 missiles per batch; position error p95 stays 0.05-0.32 units up to 6 s of age, and hit position p95 is 0.45-0.49 radius.
+Missile-against-missile contacts: before authority rule 3 counted a contact seen on either device, a receiver removed a remote
+copy at a contact with its own missile while the owner's missile flew on and hit (0.3-0.7% of the hits in MissileSwarm). With the
+rule, 2-13 such hits remain per peer and seed, all within 1-14 ticks of the contact: the owner's hit came before the record.
 
 ### Identity
 
@@ -642,7 +704,7 @@ Phase 2 step 10 (Q5/Q6). A drone is a full `ShipEntity` without a roster slot. I
 
 Stage 14 writes a `BattleSnapshot` of the tick it completed, then increments `Battle.Tick`. `Battle.Snapshot` returns the published one. The constructor publishes tick −1: every slot `Ready`, no ships, no events.
 
-1. Contents: battle ID, tick, timer, result, `Ships` (active roster ships in roster order, then drones by entity ID), `Bullets` (live bullets in storage order; the order has no meaning), `Roster` (every slot in setup order) and `Events` (the tick's presentation batch), plus `OutgoingHits` (resolved contacts for remote ship and drone owners). The lists are `ReadOnlySpan` views over arrays the battle reuses.
+1. Contents: battle ID, tick, timer, result, `Ships` (active roster ships in roster order, then drones by entity ID), `Bullets` (live bullets in storage order; the order has no meaning), `Roster` (every slot in setup order) and `Events` (the tick's presentation batch), plus `OutgoingHits` (resolved contacts for remote ship and drone owners, and contacts on remote bullets for their owners). The lists are `ReadOnlySpan` views over arrays the battle reuses.
 2. `ShipState`: entity, roster ID, side, owner, definition, pose and velocities from the physics body, armor, shield and energy (value and maximum), the controls in force and the retreat completion tick.
 3. `BulletState`: entity, parent entity, side, owner, definition, pose, velocity and expiry tick. Projectiles retain `Definition` (`BulletDefinition`). Beams set `BeamDefinition` and `IsBeam`, with `Definition` null. Their pose is the sampled ray origin and angle; `BeamEndPoint` and `BeamTargetId` describe the accepted hit or full range. Beam velocity is zero and expiry is `long.MaxValue` because the device owns lifetime.
 4. `RosterSlotState`: roster ID, side, owner, status, deployment count and order, revision, active entity (null unless active), the retained B4 deficits and `DamageFraction` (B2).
@@ -661,6 +723,7 @@ Stage 14 writes a `BattleSnapshot` of the tick it completed, then increments `Ba
 | Retreat completion | 12 | `Removal` (`Retreat`), then `RosterTransition` → Ready, `Retreated`, with the retained deficits |
 | Surrender, kill-all | 12 | For an active slot `Removal` (`Death`); for every slot `RosterTransition` → Destroyed, `ForcedDestruction`. A reserve has no entity. |
 | Bullet adoption (network only) | 5 (an overdue record: 1) | `Rename`: a predicted copy of a remote bullet takes its owner's ID; `PreviousId` is the copy's ID (fire confirmations, P2) |
+| Missile target or correction (network only) | 4 or 1 | None: the copy's target and motion change without an event (P3) |
 | Bullet removal | 12 | `Removal` of a bullet (`Death` at a hit, `Expiry`, or `Disposal` after disarm or beam shutdown), after the ship changes, in entity ID order |
 | Result | 13 | `Result` with the `BattleResult` |
 
@@ -896,7 +959,7 @@ Third-party code: [THIRD_PARTY.md](../Assets/ModulesShared/CombatSimulation/Phys
 
 ## Gate harness
 
-`Experimental/CombatSimulationHarness/` is a throwaway .NET console project. It compiles the engine-free Physics, Core, Network, Runtime, Diagnostics, and Utilites sources directly. The default command runs the physics gate scenes and checks their limits. It is outside `Assets/` and is not in Git. Game code never references it.
+`Experimental/CombatSimulationHarness/` is a throwaway .NET console project. It compiles the engine-free Physics, Core, Network, Runtime, Diagnostics, and Utilites sources directly. The default command runs the physics gate scenes and checks their limits. It is outside `Assets/`, in its own private repository, not in the game repository. Game code never references it.
 
 ```
 dotnet run -c Release --project Experimental/CombatSimulationHarness
@@ -970,7 +1033,7 @@ The same script applies to every profile; actual committed ticks still determine
 Validation: 760 engine-free tests, 22 infrastructure checks, and eight metric checks pass.
 The single-player digest remains `518251C30445EA37B539A066AE26D06AB4EBCAC868D8A5AF6B2B09E685231DC9`.
 Physics, Network, Core, Runtime, Core.Tests, and Runtime.Tests compile independently with Unity 6000.0.75f1's compiler and .NET Standard 2.1 references.
-Production warnings are errors. Live Editor import remains unverified.
+Production warnings are errors. Live Editor import verified (owner, 2026-10-27).
 
 Focused validation comprises 20 scene runs and two additional point-defense baselines, at 150 ms and seed 1.
 All seven scenes run on Perfect and At cap. Extra runs cover blackout beam boundaries, above-cap drift, asymmetric clocks, and Good point defense.
@@ -1012,22 +1075,25 @@ dotnet run -c Release --project Experimental/CombatSimulationHarness -- --networ
 9. One missing-record session repeats to verify both state hashes, relay hashes, and injected-delivery hashes.
    Roster reporting therefore contains 34 verdicts: 24 sessions, nine Core probes, and one repeat check.
 
-Harness sources, README, and result files remain excluded from Git. The existing phase-3b task remains in progress.
-Android parity remains step 10. Final gate reporting and phase closure remain step 11.
+The harness is its own private Git repository (`PavelZinchenko/event-horizon-combat-simulation`, since 2026-10-27), with
+`Results/` tracked. The game repository does not include it.
 
-Step-9 results (2026-10-23): all 168 matrix runs finished; 46 passed and 122 failed. All 34 roster verdicts passed.
-No correction interval passes. None of 100, 150, or 200 ms qualifies at At cap.
+Since 9d P3 the matrix also runs the HomingDrones scene on the same 24 profile, seed and interval cells: 192 runs, reported apart
+from the original 168. `--network-gate --tag T` writes `Results/N-<date>-T.md`.
 
-1. There are 24 completion timeouts: dogfight and churn across three seeds at all three At-cap intervals, plus Above cap at 150 ms.
-   Their missing records describe incomplete delivery at the deadline, not established permanent packet loss.
-2. Qualified workload bandwidth medians range from 146.557 to 158.498 KB/s per direction. All 84 qualified direction rows exceed 16 KB/s.
-   Underloaded rows remain separate and cannot qualify the gate.
-3. Additional failures include shooter advantage, homing-copy coverage, final bullet sets, blackout recovery, clock offset, and some drift limits.
-   Four point-defense strength rows fail. Some Above-cap correction-growth rows also fail across the three seeds.
-4. The report retains individual measurements and aggregate row counts by profile and interval, plus nine auxiliary salvo baselines.
+### Network gate result
 
-Validation: matrix/selection checks, 22 infrastructure checks, eight metric checks, and all 34 roster verdicts pass.
-The metric checks include an impaired combat repeat; the roster suite includes an independent deterministic repeat.
-All 760 engine-free tests pass on an isolated rerun. The initial concurrent invocation reported one failure that did not reproduce.
-Its quiet output did not identify the failed case. No production or test sources changed during these runs.
-The harness builds with its five existing warnings. Step 9 introduces no submodule changes or commit.
+Migration phase 3b is done (2026-10-28). Every limit has a verdict; the full table, the changes that made limits pass and the
+accepted defects are in `TODO/battle_simulator_network.md`, "Gate result".
+
+1. Desktop (`Results/N-2026-10-27-9e.md`): 187 of 201 runs pass (192 matrix runs and 9 D=0 baselines). Roster 34/34.
+   Outcome agreement, exactly once, bullet sets, drift, ramming, homing, recovery, point defense, beams and bandwidth pass in
+   every run. Bandwidth median at most 9.6 KB/s, payload plus Relay header (limit 16).
+2. Failing rows: shooter advantage at cap in 3, 5 and 7 of 42 rows at 100, 150 and 200 ms (accepted, owner); one Above-cap
+   position row; one Above-cap tick offset row. The asymmetric tick offset is an expected failure.
+3. Correction interval: none passes every row. The owner chose 150 ms (2026-10-27); the session default stays 100 ms.
+4. R1 (`Results/R1-2026-10-27-spin.md`): `--r1-host` on the desktop, `--r1-peer` on the phone over TCP and `adb reverse`, At cap,
+   150 ms, Dogfight and Churn. 4 of 8 runs pass; only shooter advantage differs from the desktop verdict. The phone's session
+   is replayed on the desktop: 0 differing tick hashes in 19 phone runs, so the full core is bit-identical on IL2CPP ARM64.
+5. A coarse session loop raises shooter advantage and tick offset (R1 D1). A session driven by Unity frames needs its own thread
+   with short loop gaps (phase 7).
