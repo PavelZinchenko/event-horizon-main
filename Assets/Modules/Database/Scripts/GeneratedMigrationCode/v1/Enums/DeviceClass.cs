@@ -33,5 +33,6 @@ namespace DatabaseMigration.v1.Enums
 		MissileCamouflage,
 		TeleporterV2,
 		WormTailV2,
+		Retribution,
 	}
 }

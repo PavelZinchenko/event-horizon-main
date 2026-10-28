@@ -16,5 +16,6 @@ namespace DatabaseMigration.v1.Enums
 		Parametric,
 		Harpoon,
 		AuraEmitter,
+		StickyMine,
 	}
 }

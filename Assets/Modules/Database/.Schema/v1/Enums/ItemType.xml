@@ -51,4 +51,6 @@
     <item name="FrontierLevelSettings" value="116" />
     <item name="LocalizationSettings" value="117" />
     <item name="WeaponSlots" value="118" />
+    <item name="BlackMarketSettings" value="119" />
+    <item name="RuinsSettings" value="120" />
 </data>

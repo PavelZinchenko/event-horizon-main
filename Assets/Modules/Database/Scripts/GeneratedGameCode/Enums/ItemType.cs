@@ -60,5 +60,7 @@ namespace GameDatabase.Enums
 		FrontierLevelSettings = 116,
 		LocalizationSettings = 117,
 		WeaponSlots = 118,
+		BlackMarketSettings = 119,
+		RuinsSettings = 120,
 	}
 }

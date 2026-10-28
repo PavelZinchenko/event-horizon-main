@@ -56,10 +56,10 @@ Related documents:
 
 | Path | Purpose | Edit policy |
 | --- | --- | --- |
-| [`.Schema/versions.xml`](../Assets/Modules/Database/.Schema/versions.xml) | Current schema version (`1.7`). | Edit when the data version changes. |
+| [`.Schema/versions.xml`](../Assets/Modules/Database/.Schema/versions.xml) | Current schema version (`1.8`). | Edit when the data version changes. |
 | [`.Schema/v1/Enums/`](../Assets/Modules/Database/.Schema/v1/Enums/) | 47 enum definitions. | Edit for new enum values. Never renumber values. |
 | [`.Schema/v1/Expressions/`](../Assets/Modules/Database/.Schema/v1/Expressions/) | 4 expression signatures (`IntToInt`, `IntToFloat`, `FloatToFloat`, `SizeClassToInt`). | Rarely changed. |
-| [`.Schema/v1/Objects/`](../Assets/Modules/Database/.Schema/v1/Objects/) | 68 record, settings, and structure definitions. | Edit for data-shape changes. |
+| [`.Schema/v1/Objects/`](../Assets/Modules/Database/.Schema/v1/Objects/) | 70 record, settings, and structure definitions. | Edit for data-shape changes. |
 | `.CodeGenerator/` | Git submodule. .NET Framework 4.8 generator with T4 templates. | Change in its own repository. Unity ignores folders that start with `.`. |
 | `.Editor/` | Git submodule. Windows Database Editor and Analyzer (.NET 10). | Change in its own repository. |
 | [`Resources/Database/`](../Assets/Modules/Database/Resources/Database/) | Built-in catalog: 1,857 JSON records. Unity loads it through `Resources`. | Edit for content and balance. Put only database JSON here. |
@@ -94,7 +94,7 @@ The built-in catalog has these record counts (2026-10-11):
 | Progression | [Technology](database/schema/Technology.md) (361), [Faction](database/schema/Faction.md) (20) | `Technology/`, `Faction/` |
 | Quests | [Quest](database/schema/Quest.md) (20), [Loot](database/schema/Loot.md) (19), [Fleet](database/schema/Fleet.md) (7), [Character](database/schema/Character.md) (7), [QuestItem](database/schema/QuestItem.md) (10), [CombatRules](database/schema/CombatRules.md) (8) | `Quests/` and subfolders |
 | AI | [BehaviorTree](database/schema/BehaviorTree.md) (74) | `Ai/` |
-| Settings | 13 singleton records (plus the starting-inventory `Loot`) | `Settings/` |
+| Settings | 15 singleton records (plus the starting-inventory `Loot`) | `Settings/` |
 | Unused | [ComponentStatUpgrade](database/schema/ComponentStatUpgrade.md) (0), [StatUpgradeTemplate](database/schema/StatUpgradeTemplate.md) (0) | – |
 
 Folder names only help authors. The loader reads every JSON file under the root and uses `ItemType`, not the folder, to choose the table.
@@ -391,17 +391,17 @@ The decompressed payload starts with a header (format ID, name, ID, major and mi
 
 | Source | Value today |
 | --- | --- |
-| [`.Schema/versions.xml`](../Assets/Modules/Database/.Schema/versions.xml) | `v1`, major 1, minor 7 |
-| Generated constants `Database.VersionMajor`/`VersionMinor` | 1, 7 |
-| [`Resources/Database/Settings/Database.json`](../Assets/Modules/Database/Resources/Database/Settings/Database.json) | `DatabaseVersion` 1, `DatabaseVersionMinor` 7 |
+| [`.Schema/versions.xml`](../Assets/Modules/Database/.Schema/versions.xml) | `v1`, major 1, minor 8 |
+| Generated constants `Database.VersionMajor`/`VersionMinor` | 1, 8 |
+| [`Resources/Database/Settings/Database.json`](../Assets/Modules/Database/Resources/Database/Settings/Database.json) | `DatabaseVersion` 1, `DatabaseVersionMinor` 8 |
 | Packed mod header | Version of the editor that packed it |
 
 A storage whose version equals the compiled version loads directly. Any other version goes through [`DatabaseUpgrader`](../Assets/Modules/Database/Scripts/GeneratedMigrationCode/DatabaseUpgrader.cs#L21):
 
 1. Major version 0 is treated as 1.0.
-2. Versions outside 1.0–1.7 throw `invalid database version`. A mod from a newer game version does not load.
+2. Versions outside 1.0–1.8 throw `invalid database version`. A mod from a newer game version does not load.
 3. The upgrader reads the storage into the generated v1 migration DTOs.
-4. It runs each minor step in order from the storage version to 1.7.
+4. It runs each minor step in order from the storage version to 1.8.
 5. It serializes every DTO back to JSON and feeds it to the normal `DatabaseContent`.
 
 ### Migration steps
@@ -415,6 +415,7 @@ A storage whose version equals the compiled version loads directly. Any other ve
 | 1.4 → 1.5 | [DatabaseUpgrader_4_5.cs](../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_4_5.cs) | Adds `CombatRules` 1 with defaults and sets `CombatSettings.DefaultCombatRules` to 1. |
 | 1.5 → 1.6 | [DatabaseUpgrader_5_6.cs](../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_5_6.cs) | Converts the obsolete `BulletBody.Type` to `AiBulletBehavior`, `ParentVelocityEffect`, `AttachedToParent`, and a controller (`Homing`, `Beam`). Throws when new and obsolete fields are mixed. |
 | 1.6 → 1.7 | [DatabaseUpgrader_6_7.cs](../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_6_7.cs) | Replaces `ComponentRestrictions.UniqueComponentTag` strings with `ComponentGroupTag` records. Adds implicit group tags for unique device classes (one teleporter, one stealth, one shield, and so on), numbered from 1. |
+| 1.7 → 1.8 | [DatabaseUpgrader_7_8.cs](../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_7_8.cs) | Replaces the satellite availability rules with settings records. Writes `BlackMarketSettings.ExcludedSatellites` and `RuinsSettings.ExcludedSatellites` with the satellites the old rules excluded (class `Titan`, or the obsolete `NotAvailableInBlackMarket` flag), including inherited built-in satellites for a partial mod, unless it sets `UnloadOriginalDatabase`. The editor performs the same conversion ([DatabaseUpgrader_7_8.cs](../Assets/Modules/Database/.Editor/DatabaseModel/DatabaseModel/Migration/v1/DatabaseUpgrader_7_8.cs)). |
 
 The migration steps assume a complete database. Partial mods can lose data or override built-in records. See [issue DB2](issues/database.md#db2-migrations-assume-a-complete-database).
 

@@ -1,0 +1,9 @@
+{
+  "ItemType": 119,
+  "ExcludedSatellites": [
+    22,
+    23,
+    24,
+    25
+  ]
+}

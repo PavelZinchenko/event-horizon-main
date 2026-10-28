@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="BlackMarketSettings" type="settings" typeid="BlackMarketSettings" >
+    <member name="ExcludedSatellites" type="object_list" typeid="Satellite" />
+</data>
