@@ -30,8 +30,9 @@ namespace Combat.Integration.Core
         public ResourceValue Shield => ToValue(_state.Shield);
         public ResourceValue Energy => ToValue(_state.Energy);
 
-        // The core has no resistances; legacy values would describe damage the core does not apply.
-        public ShipResistance Resistance => default;
+        // The values the mapper passes to the core (phase 4, step 3a).
+        public ShipResistance Resistance => new ShipResistance(_specification.Stats.ThermalResistancePercentage,
+            _specification.Stats.EnergyResistancePercentage, _specification.Stats.KineticResistancePercentage);
 
         public SpriteId IconImage => _specification.Stats.ShipModel.IconImage;
         public SpriteId ModelImage => _specification.Stats.ShipModel.ModelImage;

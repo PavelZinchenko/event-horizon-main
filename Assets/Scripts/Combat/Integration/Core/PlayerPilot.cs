@@ -8,11 +8,13 @@ namespace Combat.Integration.Core
     // each tick the pilot submits the stored values. A new deployment gets a new pilot, so it starts with empty controls.
     public sealed class PlayerPilot : IPilot, IShipCommandSink
     {
+        public PlayerPilot(CoreAutoActivation autoActivation) => _autoActivation = autoActivation;
+
         public static PilotSchedule Schedule => PilotSchedule.PlayerShip;
 
         public bool Think(BattleSnapshot snapshot, in ShipState self, out PilotControls controls)
         {
-            controls = PilotControls.Create(_course * DegreesToRadians, _throttle, _systems);
+            controls = PilotControls.Create(_course * DegreesToRadians, _throttle, _autoActivation.Apply(self, _systems));
             return true;
         }
 
@@ -45,6 +47,8 @@ namespace Combat.Integration.Core
 
         private const int MaxSystems = 64;
         private const float DegreesToRadians = (float)(Math.PI / 180.0);
+
+        private readonly CoreAutoActivation _autoActivation;
 
         private float _throttle;
         private float? _course;

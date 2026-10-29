@@ -9,12 +9,14 @@ namespace Combat.Integration.Core
 {
     // Temporary AI for the core combat scene (migration phase 3c, owner decision S3); behavior trees replace it in phase 4.
     // A copy of the core tests' ScriptedBattle.ChasePilot: flies at the nearest enemy by the shortest torus vector and
-    // holds a weapon bit while the enemy is in range and inside the weapon's aim cone.
+    // holds a weapon bit while the enemy is in range and inside the weapon's aim cone. Other devices with a key are
+    // always held; inert devices are never held (D6); devices without a key follow CoreAutoActivation.
     public sealed class ChasePilot : IPilot
     {
-        public ChasePilot(ShipDefinition definition, Torus arena)
+        public ChasePilot(ShipDefinition definition, CoreAutoActivation autoActivation, Torus arena)
         {
             _arena = arena;
+            _autoActivation = autoActivation;
 
             var devices = definition.Devices;
             _range = new float[devices.Count];
@@ -24,6 +26,8 @@ namespace Combat.Integration.Core
             {
                 switch (devices[i])
                 {
+                    case InertDeviceDefinition _:
+                        break;
                     case CannonDefinition cannon:
                         _range[i] = cannon.Bullet.Range;
                         _aim[i] = (cannon.Bullet.IsHoming ? 60f : 20f) * DegreesToRadians;
@@ -33,7 +37,7 @@ namespace Combat.Integration.Core
                         _aim[i] = 10f * DegreesToRadians;
                         break;
                     default:
-                        _alwaysOn |= 1UL << i;
+                        if ((autoActivation.Mask & (1UL << i)) == 0) _alwaysOn |= 1UL << i;
                         break;
                 }
 
@@ -62,7 +66,7 @@ namespace Combat.Integration.Core
 
             if (!found)
             {
-                controls = PilotControls.Create(null, 0f, _alwaysOn);
+                controls = PilotControls.Create(null, 0f, _autoActivation.Apply(self, _alwaysOn));
                 return true;
             }
 
@@ -72,7 +76,7 @@ namespace Combat.Integration.Core
             for (var i = 0; i < _range.Length; ++i)
                 if (_range[i] > 0f && nearestDistance <= _range[i] && error <= _aim[i]) systems |= 1UL << i;
 
-            controls = PilotControls.Create(course, nearestDistance > _standOff ? 1f : 0f, systems);
+            controls = PilotControls.Create(course, nearestDistance > _standOff ? 1f : 0f, _autoActivation.Apply(self, systems));
             return true;
         }
 
@@ -88,6 +92,7 @@ namespace Combat.Integration.Core
         private const float DegreesToRadians = (float)(Math.PI / 180.0);
 
         private readonly Torus _arena;
+        private readonly CoreAutoActivation _autoActivation;
         private readonly float[] _range;
         private readonly float[] _aim;
         private readonly ulong _alwaysOn;
@@ -98,24 +103,28 @@ namespace Combat.Integration.Core
     // at the spawn event, so it exists before the adapter handles that event.
     public sealed class CorePilotProvider : IPilotProvider
     {
-        public CorePilotProvider(Torus arena, int playerSide)
+        public CorePilotProvider(Torus arena, int playerSide, IReadOnlyDictionary<ShipDefinition, CoreShipMapping> mappings)
         {
             _arena = arena;
             _playerSide = playerSide;
+            _mappings = mappings;
         }
 
         public IPilot CreatePilot(BattleSnapshot snapshot, in ShipState ship, out PilotSchedule schedule)
         {
+            _mappings.TryGetValue(ship.Definition, out var mapping);
+            var autoActivation = CoreAutoActivation.Create(mapping);
+
             if (ship.Side == _playerSide && !ship.IsDrone)
             {
-                var pilot = new PlayerPilot();
+                var pilot = new PlayerPilot(autoActivation);
                 _playerPilots[ship.Id] = pilot;
                 schedule = PlayerPilot.Schedule;
                 return pilot;
             }
 
             schedule = ship.IsDrone ? PilotSchedule.Drone : PilotSchedule.Ship;
-            return new ChasePilot(ship.Definition, _arena);
+            return new ChasePilot(ship.Definition, autoActivation, _arena);
         }
 
         public bool TryGetPlayerPilot(CoreEntityId ship, out PlayerPilot pilot) => _playerPilots.TryGetValue(ship, out pilot);
@@ -126,6 +135,7 @@ namespace Combat.Integration.Core
 
         private readonly Torus _arena;
         private readonly int _playerSide;
+        private readonly IReadOnlyDictionary<ShipDefinition, CoreShipMapping> _mappings;
         private readonly Dictionary<CoreEntityId, PlayerPilot> _playerPilots = new Dictionary<CoreEntityId, PlayerPilot>();
     }
 }

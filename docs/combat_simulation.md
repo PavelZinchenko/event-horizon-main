@@ -803,11 +803,13 @@ Migration phase 3c. Quick combat runs on the core in a separate scene; the old s
 
 ### Ships and pilots
 
-`CoreShipMapper` maps each quick-combat ship to a `ShipDefinition` (decision S1). Armor, shield, energy, weight and ramming come from the ship stats. The engine uses the legacy `EngineStats` formula, with degrees converted to radians. `CoreHullBuilder` builds the hull from `Ship.Collider` times `ModelScale`. It skips an invalid shape with one warning per ship. A ship with no valid shape gets the legacy sprite collider: a circle around the sprite for `SizeClass.Undefined`, otherwise the sprite physics shape reduced with `ColliderTolerance`. It runs on the main thread; the core receives shapes only. The fixture muzzle sits at `HullRadius`. The Editor menu *Tools/Combat/Check Ship Hulls* builds the hull of every built-in ship from the data and from the sprite and reports parts, inertia and radius.
-Every ship gets the same fixture loadout: one cannon on device 0 (cooldown 0.2 s, 20 damage, range 15). Real devices come in phases 4-5.
+`CoreShipMapper` maps each ship build (`IShipSpecification`) to a `ShipDefinition` (phase 4, step 3a). The rules and examples are in [the phase 4 plan](../TODO/battle_simulator_phase4.md#ship-mapping-3a). Armor, shield, energy, weight, ramming and resistances come from the ship stats. The engine uses the legacy `EngineStats` formula, with degrees converted to radians. The device index is the legacy system index: weapons by platform, then devices, then clonning centers, the replicator and the drone bays. Hull barrels become `BarrelDefinition`s; satellite weapons have no barrel (D9). `CoreWeaponMapper` maps a weapon with new-format ammunition to a cannon or a beam. Point defense and drone bays map to their core devices; a drone is mapped from its build with the bay multipliers. Every other part becomes an `InertDeviceDefinition`: it keeps its index and does nothing (D1). Weapons with obsolete ammunition stay inert until the conversion (step 4).
+The mapper also returns a `CoreShipMapping` per ship and drone: key binding, button icon, activation cost and inert reason per device. The adapter logs the inert devices once per battle.
+`CoreHullBuilder` builds the hull from `Ship.Collider` times `ModelScale`. It skips an invalid shape with one warning per ship. A ship with no valid shape gets the legacy sprite collider: a circle around the sprite for `SizeClass.Undefined`, otherwise the sprite physics shape reduced with `ColliderTolerance`. It runs on the main thread; the core receives shapes only.
+Editor menus: *Tools/Combat/Check Ship Hulls* builds the hull of every built-in ship from the data and from the sprite and reports parts, inertia and radius. *Tools/Combat/Check Ship Builds* maps every built-in build and reports the armed builds, the behaviour trees they use and the inert reasons with counts.
 
-`CorePilotProvider` gives each player ship a new `PlayerPilot` (`PilotSchedule.PlayerShip`) and every other ship a `ChasePilot` (decision S3). `ChasePilot` is a copy of the scripted battle's pilot; its stand-off distance comes from the cannon range. Behavior trees replace it in phase 4.
-`PlayerPilot` implements `IShipCommandSink` and submits the stored throttle, course and system bits each tick. A new deployment gets a new pilot, so it starts with empty controls.
+`CorePilotProvider` gives each player ship a new `PlayerPilot` (`PilotSchedule.PlayerShip`) and every other ship a `ChasePilot` (decision S3). `ChasePilot` is a copy of the scripted battle's pilot; its stand-off distance comes from the weapon range. It never holds an inert device and always holds other devices with a key. Behavior trees replace it in phase 4.
+`PlayerPilot` implements `IShipCommandSink` and submits the stored throttle, course and system bits each tick. `CoreAutoActivation` gives every pilot the legacy rule for devices with a key below 0: the pilot holds the device while energy fraction + 0.1 × (key + 1) ≥ 0. `CoreShipControls` groups the other devices by key, as legacy `GetKeyBindings`. A new deployment gets a new pilot, so it starts with empty controls.
 `CoreKeyboardDriver` applies the legacy `KeyboardController` rules over `IKeyboard` and `IMouse`. It writes a value to the sink only when its own value changes, so HUD buttons keep theirs. A key held across a ship change acts on the new ship, as in legacy.
 
 ### Views
@@ -822,7 +824,7 @@ Every ship gets the same fixture loadout: one cannon on device 0 (cooldown 0.2 s
 
 ### Known limits
 
-1. The fixture cannon is untuned and ships die within seconds. The S1 stat mapping is unvalidated.
+1. Most weapons and devices are inert until the ammunition conversion (step 4) and phase 5; most built-in builds cannot fire yet. Auto-aiming barrels fire straight; satellites are not attached.
 2. The snapshot has no device cooldowns; the HUD shows none.
 3. No time limit, reinforcement, `OnlyOneShip` rule or reward. Campaign battles still use the old scene.
 4. A new player ship spawns at a random map point, so the camera whips toward it (legacy spawns the same way).

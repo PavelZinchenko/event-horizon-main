@@ -43,13 +43,14 @@ namespace Combat.Integration.Core
             _shipSelectionPanel = shipSelectionPanel;
             _exitTrigger = exitTrigger;
 
-            var mapper = new CoreShipMapper(database, resourceLocator);
+            _mapper = new CoreShipMapper(database, resourceLocator);
             var roster = new List<RosterSlotSetup>();
             var nextId = 1;
             foreach (var info in combatModel.PlayerFleet.Ships)
-                AddSlot(new RosterId(nextId++), CombatSide.Player, info, mapper, roster);
+                AddSlot(new RosterId(nextId++), CombatSide.Player, info, roster);
             foreach (var info in combatModel.EnemyFleet.Ships)
-                AddSlot(new RosterId(nextId++), CombatSide.Enemy, info, mapper, roster);
+                AddSlot(new RosterId(nextId++), CombatSide.Enemy, info, roster);
+            LogInertDevices();
 
             var size = combatModel.Rules.BattleMapSize;
 
@@ -61,7 +62,7 @@ namespace Combat.Integration.Core
             var seed = (ulong)(uint)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
             var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, timeLimitTicks);
             var torus = new Torus(setup.Width, setup.Height);
-            _pilots = new CorePilotProvider(torus, PlayerSide);
+            _pilots = new CorePilotProvider(torus, PlayerSide, _mapper.Mappings);
             _runner = new BattleRunner(setup, _pilots);
 
             var bulletSprite = resourceLocator.GetSprite(new SpriteId(BulletSpriteName, SpriteId.Type.Ammunition));
@@ -267,14 +268,34 @@ namespace Combat.Integration.Core
         // False after the result (the core then throws on every step and command) and after disposal.
         private bool IsRunning => _runner != null && !_runner.IsCompleted;
 
-        private void AddSlot(RosterId id, CombatSide side, IShipInfo info, CoreShipMapper mapper, List<RosterSlotSetup> roster)
+        private void AddSlot(RosterId id, CombatSide side, IShipInfo info, List<RosterSlotSetup> roster)
         {
-            var definition = mapper.Map(info);
+            var definition = _mapper.Map(info).Definition;
             var slot = new Slot(id, side, info, definition.Armor, this);
             (side == CombatSide.Player ? _playerSlots : _enemySlots).Add(slot);
             _slotsById.Add(id, slot);
             _slotsByCore.Add(ToCore(id), slot);
             roster.Add(new RosterSlotSetup(ToCore(id), ToCoreSide(side), definition));
+        }
+
+        // M1 check: the console lists the inert devices (D1) once per battle, by mapped ship or drone.
+        private void LogInertDevices()
+        {
+            var report = new System.Text.StringBuilder();
+            var count = 0;
+            foreach (var mapping in _mapper.Mappings.Values)
+            {
+                for (var i = 0; i < mapping.Devices.Count; ++i)
+                {
+                    var device = mapping.Devices[i];
+                    if (!device.IsInert) continue;
+                    report.AppendLine($"  {mapping.Name}, device {i}: {device.Name}: {device.InertReason}");
+                    ++count;
+                }
+            }
+
+            if (count > 0)
+                Debug.Log($"CoreCombatAdapter: {count} inert devices (phase 5 or step 4).\n{report}");
         }
 
         // One tick: deploy by the commander rules, step, then handle the tick's events before the next step.
@@ -337,7 +358,7 @@ namespace Combat.Integration.Core
 
             var id = _ids.Assign(item.EntityId);
             var specification = slot.Info.Specification;
-            var view = new CoreShipView(id, slot.Side, specification, state, new CoreShipControls(state.Definition));
+            var view = new CoreShipView(id, slot.Side, specification, state, new CoreShipControls(_mapper.Mappings[state.Definition]));
             _views.Add(id, view);
             _viewsByCore.Add(item.EntityId, view);
 
@@ -613,6 +634,7 @@ namespace Combat.Integration.Core
 
         private BattleRunner _runner;
         private readonly CorePilotProvider _pilots;
+        private readonly CoreShipMapper _mapper;
         // The drawn controlled ship, or its last position: every other entity is drawn at its image nearest to it.
         private Vector2 _anchor;
         private float _accumulator;
