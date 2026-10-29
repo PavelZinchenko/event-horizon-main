@@ -9,7 +9,7 @@ namespace Services.InternetTime
 {
     public class InternetTimeService : IInitializable, IDisposable
     {
-        private const string Url = "https://worldtimeapi.org/api/timezone/Etc/UTC";
+        private const string Url = "https://zipagames.com/time.php";
 
         private readonly ServerTimeReceivedSignal.Trigger _timeReceivedTrigger;
         private IDisposable _timeSubscription;
@@ -32,7 +32,7 @@ namespace Services.InternetTime
                 .SelectMany(_ => GetNetworkTime())
                 .Subscribe(
                     OnTimeReceived,
-                    error => GameDiagnostics.Trace.LogError($"Error fetching time: {error}")
+                    error => GameDiagnostics.Trace.Log($"Error fetching time: {error}")
                 );
         }
 
