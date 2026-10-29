@@ -31,6 +31,17 @@ namespace Combat.Component.Systems.Weapons
         protected Factory.IBulletFactory BulletFactory { get; }
         protected IBullet CreateBullet() => BulletFactory.Create(Platform, _weaponStats.Spread, 0, Vector2.zero);
 
+        /// <summary>
+        /// Converts a fire rate into a platform cooldown.
+        /// A rate of 0 means "no cooldown", which the built-in beam weapons use.
+        /// A negative rate marks a weapon that modifiers have blocked.
+        /// </summary>
+        protected static float CooldownFromFireRate(float fireRate)
+        {
+            if (fireRate > 0) return 1f / fireRate;
+            return fireRate < 0 ? float.PositiveInfinity : 0f;
+        }
+
         protected bool TryConsumeEnergy(float value)
         {
             if (value <= 0) return true;

@@ -21,6 +21,7 @@ namespace DatabaseMigration.v1.Serializable
 			FileName = "Device.json";
 		}
 
+		public string Name;
 		public DeviceClass DeviceClass;
 		public float EnergyConsumption;
 		public float PassiveEnergyConsumption;
@@ -38,6 +39,7 @@ namespace DatabaseMigration.v1.Serializable
 		public int VisualEffect;
 		public string ObjectPrefab;
 		public int Prefab;
+		public int AmmunitionId;
 		public string ControlButtonIcon;
 	}
 }

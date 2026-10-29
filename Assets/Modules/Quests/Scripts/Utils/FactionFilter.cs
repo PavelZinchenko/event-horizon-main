@@ -28,7 +28,10 @@ namespace Domain.Quests
         public bool IsSuitableForFleet(Faction faction)
         {
             if (_type == FactionFilterType.AllAvailable)
+            {
+                if (IsInList(faction)) return false;
                 return !faction.NoWanderingShips && faction.WanderingShipsRange.Contains(_starLevel);
+            }
 
             return IsSuitable(faction, _starFaction);
         }
@@ -36,7 +39,11 @@ namespace Domain.Quests
         public bool IsSuitableForLoot(Faction faction)
         {
             if (_type == FactionFilterType.AllAvailable)
-                return !faction.HideFromMerchants && faction.HomeStarDistance <= _starLevel;
+            {
+                if (IsInList(faction)) return false;
+                return !faction.HideFromMerchants &&
+                    (faction == Faction.Empty || faction.HomeStarRange.Contains(_starLevel));
+            }
 
             return IsSuitable(faction, _starFaction);
         }
@@ -44,7 +51,11 @@ namespace Domain.Quests
         public bool IsSuitableForResearch(Faction faction)
         {
             if (_type == FactionFilterType.AllAvailable)
-                return !faction.HideResearchTree && faction.HomeStarDistance <= _starLevel;
+            {
+                if (IsInList(faction)) return false;
+                return !faction.HideResearchTree &&
+                    (faction == Faction.Empty || faction.HomeStarRange.Contains(_starLevel));
+            }
 
             return IsSuitable(faction, _starFaction);
         }
@@ -52,10 +63,15 @@ namespace Domain.Quests
         public bool IsSuitableForBase(Faction faction)
         {
             if (_type == FactionFilterType.AllAvailable)
+            {
+                if (IsInList(faction)) return false;
                 return !faction.NoTerritories && faction.HomeStarRange.Contains(_starLevel);
+            }
 
             return IsSuitable(faction, _starFaction);
         }
+
+        private bool IsInList(Faction faction) => (_faction != null && faction == _faction) || (_factions != null && _factions.Contains(faction));
 
         private bool IsSuitable(Faction faction, Faction starFaction)
         {

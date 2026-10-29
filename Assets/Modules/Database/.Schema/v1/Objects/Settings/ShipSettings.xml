@@ -16,6 +16,8 @@
     <member name="MaxAngularVelocity" type="float" minvalue="5" maxvalue="100" default="30" />
     <member name="MaxAcceleration" type="float" minvalue="5" maxvalue="1000" default="300" />
     <member name="MaxAngularAcceleration" type="float" minvalue="5" maxvalue="1000" default="300" />
+    <member name="SatelliteModelScaleMultiplier" type="float" minvalue="1" maxvalue="100" default="2" />
+    <member name="SatelliteRequireModelScaleWithSizeClass" type="bool" default="true" />
     <member name="DisableCellsExpansions" type="bool" />
     <member name="ShipExplosionEffect" type="object" typeid="VisualEffect" />
     <member name="ShipExplosionSound" type="audioclip" />

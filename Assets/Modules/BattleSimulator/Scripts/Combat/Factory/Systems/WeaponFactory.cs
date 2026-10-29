@@ -26,7 +26,10 @@ namespace Combat.Factory
             var bulletFactory = new BulletFactory(weaponData.Ammunition, weaponData.Stats, _scene, _services, _spaceObjectFactory, _effectFactory, owner);
             bulletFactory.Stats.HitPointsMultiplier = hitPointsMultiplier;
             var stats = weaponData.Weapon.Stats;
-            stats.FireRate *= weaponData.Stats.FireRateMultiplier.Value;
+            var multiplier = weaponData.Stats.FireRateMultiplier.Value;
+            // A base fire rate of 0 means "no cooldown" and stays 0.
+            // A positive base rate driven to 0 or below by modifiers blocks the weapon (-1).
+            stats.FireRate = stats.FireRate > 0 && multiplier <= 0 ? -1f : stats.FireRate * multiplier;
             return Create(stats, weaponData.KeyBinding, bulletFactory, platform);
         }
 

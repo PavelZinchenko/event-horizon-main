@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="RuinsSettings" type="settings" typeid="RuinsSettings" >
+    <member name="ExcludedSatellites" type="object_list" typeid="Satellite" />
+    <member name="MaxSatelliteCells" type="expression" typeid="IntToInt" arguments="level" minvalue="0" maxvalue="1000"
+        default="MAX(6, FLOOR(level/2))" />
+</data>

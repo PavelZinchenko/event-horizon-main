@@ -43,12 +43,16 @@ namespace Game.Exploration
             var satelliteClass = Maths.Distance.MaxShipClass(_level);
             if (_allowSatellites && ship.Model.ShipType == ShipType.Common && satelliteClass != DifficultyClass.Default)
             {
-                var satellites = _database.SatelliteBuildList.LimitClass(satelliteClass).SuitableFor(build.Ship);
-                if (satellites.Any())
+                if (ship.FirstSatellite == null && random.Next(3) != 0)
                 {
-                    if (random.Next(3) != 0)
+                    var satellites = _database.SatelliteBuildList.LimitClass(satelliteClass).SuitableFor(ship, _database.ShipSettings);
+                    if (satellites.Any())
                         ship.FirstSatellite = new CommonSatellite(satellites.RandomElement(random));
-                    if (random.Next(3) != 0)
+                }
+                if (ship.SecondSatellite == null && random.Next(3) != 0)
+                {
+                    var satellites = _database.SatelliteBuildList.LimitClass(satelliteClass).SuitableFor(ship, _database.ShipSettings);
+                    if (satellites.Any())
                         ship.SecondSatellite = new CommonSatellite(satellites.RandomElement(random));
                 }
             }
