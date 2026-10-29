@@ -63,7 +63,9 @@ The **Generate ship prefabs** button creates a combat prefab under `Assets/Modul
 
 ### Post-build hook
 
-`ApplicationManager.OnPostBuild` has the `[PostProcessBuild]` attribute. After every player build it calls `GenerateAppConfigFile` with `increaseBuildNumber = true`. The build that just finished therefore contains the old number. The repository gets a modified `AppConfig.cs` after each build.
+`ApplicationManager.OnPostBuild` has the `[PostProcessBuild]` attribute. After a manual player build it calls `GenerateAppConfigFile` with `increaseBuildNumber = true`. The build that just finished therefore contains the old number. The repository gets a modified `AppConfig.cs` after each manual build.
+
+The [automated platform builds](build.md#automated-platform-builds) generate configuration before compilation and increase the number once per run. `CommandLineBuild.IsBuilding` suppresses the post-build increment only while the automated player build runs.
 
 ## Scripting define symbols
 

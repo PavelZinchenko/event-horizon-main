@@ -1,15 +1,15 @@
 # Build Pipeline
 
-The project has no build script and no CI. A developer makes every player build by hand in the Unity Editor. A few editor scripts take part: one window sets the define symbols and the version, and three build hooks change the version file and the generated native projects. This page describes the settings, hooks, signing, packages, and editor tools that a build depends on.
+Android, Windows, Linux, macOS, and iOS have command-line build scripts under `Builds/`. WebGL still uses the Unity Editor. There is no CI. This page describes the automated builds, settings, hooks, signing, packages, and editor tools.
 
 | | |
 | --- | --- |
 | Unity version | 6000.0.75f1 ([ProjectVersion.txt](../ProjectSettings/ProjectVersion.txt)) |
 | Settings | [ProjectSettings.asset](../ProjectSettings/ProjectSettings.asset), [EditorBuildSettings.asset](../ProjectSettings/EditorBuildSettings.asset) |
 | Packages | [Packages/manifest.json](../Packages/manifest.json), [packages-lock.json](../Packages/packages-lock.json) |
-| Editor scripts | [`Assets/Editor/`](../Assets/Editor/) (9 C# files, compiled into `Assembly-CSharp-Editor`) |
+| Editor scripts | [`Assets/Editor/`](../Assets/Editor/) (compiled into `Assembly-CSharp-Editor`) |
 | Platforms | Android (Google Play), iOS (App Store), Windows/Linux/macOS (Steam), WebGL |
-| Outputs | `Builds/` (git-ignored, local) |
+| Outputs | `Builds/` (outputs and local configuration are ignored; build scripts are tracked) |
 | Known issues | [Build issues](issues/build.md) |
 
 ## Contents
@@ -37,6 +37,8 @@ The project has no build script and no CI. A developer makes every player build 
 Values on this page come from the working copy on 2026-10-12. `ProjectSettings.asset` has uncommitted changes from the Unity 6 upgrade, and the committed file still has the older values (version 1.12.1, Android SDK 22/33). See [BL3](issues/build.md#bl3-the-committed-project-settings-are-older-than-the-working-copy).
 
 ## Build flow
+
+The following flow describes manual Editor builds. See [Automated platform builds](#automated-platform-builds) for the batch scripts.
 
 1. The developer selects the platform. Each platform has its own define symbols in `ProjectSettings.asset`.
 2. The developer opens **Window > Application Manager** and checks the store, IAP, ads, and license symbols. The window rewrites the symbols for the selected platform. See [AppConfiguration: Application Manager window](app_configuration.md#application-manager-window).
@@ -97,6 +99,8 @@ The same file sets the Input System settings asset (`com.unity.input.settings`).
 
 `sensorLandscape` uses the sensor to choose between the two landscape directions, and ignores the device rotation lock. The hook changes every manifest in the Gradle project, including library manifests ([BL4](issues/build.md#bl4-the-android-orientation-hook-edits-every-manifest)).
 
+The `CommandLineBuild` runner suppresses `ApplicationManager.OnPostBuild` during its player builds. It prepares configuration and numbering before compilation instead.
+
 [`TexturePostProcessor.cs`](../Assets/Editor/TexturePostProcessor.cs) is an import hook, not a build hook. It dithers textures to RGBA4444 when their sprite packing tag ends with `.dither`. No texture has such a tag ([BL6](issues/build.md#bl6-dead-editor-files)).
 
 ## Signing and platform IDs
@@ -150,7 +154,7 @@ Most game plugins (Zenject, UniRx, Google Play Games, Steamworks.NET, BouncyCast
 
 ## Build outputs
 
-`Builds/` is git-ignored. The local convention is one folder per target:
+Build outputs under `Builds/` are git-ignored. The build runner scripts are tracked. The local convention is one folder per target:
 
 | Folder | Content |
 | --- | --- |
@@ -163,6 +167,62 @@ Most game plugins (Zenject, UniRx, Google Play Games, Steamworks.NET, BouncyCast
 IL2CPP writes a `*_BackUpThisFolder_ButDontShipItWithYourGame` folder next to each output. It holds debug symbols for crash reports. Keep it, but do not upload it to a store.
 
 ## How to make a build
+
+### Automated platform builds
+
+The scripts use Unity's existing batch mode. The separate Unity CLI tool is not required.
+
+| Command | Output | Backend |
+| --- | --- | --- |
+| `Builds\build-android.cmd` | `Builds/Android/eventhorizon.apk` | IL2CPP |
+| `Builds\build-android.cmd -Aab` | `Builds/Android/eventhorizon.aab` | IL2CPP |
+| `Builds\build-windows.cmd` | `Builds/Windows/eventhorizon.exe` (64-bit) and `Builds/eventhorizon_win_<version>.zip` | IL2CPP |
+| `Builds\build-linux.cmd` | `Builds/Linux/eventhorizon.x86_64` | IL2CPP |
+| `Builds\build-mac.cmd` | `Builds/Mac/eventhorizon.app` | Mono |
+| `Builds\build-ios.cmd` | `Builds/iOS/` Xcode project | IL2CPP |
+| `Builds\build.cmd android windows linux mac ios` | All five outputs, with one build number | Per platform |
+
+1. Install Unity's build support modules and native toolchains for the requested targets. Linux builds from Windows also require the Linux IL2CPP cross-compilation toolchain package. Commercial plugins and private submodules must already be present.
+2. Close this project in the Unity Editor. The runner refuses a locked project and serializes automated runs.
+3. For a nonstandard Unity installation, set `UNITY_EDITOR` to `Editor/Unity.exe`. Otherwise, the runner checks the standard Hub path and Hub's custom installation root.
+4. Configure Android signing through the environment or `Builds/build.local.ps1`. This optional file is ignored by Git and loaded for each run.
+5. Run the required command from any directory. Existing output files for that platform are replaced.
+
+Example `Builds/build.local.ps1` for this machine:
+
+```powershell
+$env:UNITY_EDITOR = 'D:\Programs\Unity\6000.0.75f1\Editor\Unity.exe'
+$env:EH_ANDROID_KEYSTORE_PASSWORD = 'your keystore password'
+$env:EH_ANDROID_KEY_PASSWORD = 'your key password'
+# Optional: defaults are license.keystore in the project root and the configured key alias.
+# $env:EH_ANDROID_KEYSTORE = 'D:\Keys\license.keystore'
+# $env:EH_ANDROID_KEY_ALIAS = 'event_horizon'
+```
+
+The example stores passwords as local plaintext. Alternatively, load them from your credential store into these environment variables. The runner never places passwords in command arguments or logs. Windows builds do not require Android credentials. Missing credentials fail before Unity starts; an incorrect password fails during signing.
+
+The presets select Google Play, Unity Ads, and Unity IAP for Android. iOS selects Apple, Unity Ads, and Unity IAP, with Google Play Games disabled. Windows, Linux, and macOS select Steam with ads, IAP, and Google Play Games disabled. All select the commercial license and enable internet access. Unrelated scripting symbols remain intact. Existing Player Settings supply application IDs, version, Android version code, architectures, and SDK versions. Existing `AppConfig` supplies localization, fake-purchase, cheat, and alternate-title flags; these scripts do not turn cheats off automatically.
+
+These `.cmd` files run on Windows and target the requested platform. The iOS output is an Xcode project, not a signed IPA; complete compilation and signing on macOS using the project's existing Apple signing settings. The macOS output uses Mono and retains the configured macOS architecture. When transferring it from Windows, ensure the executable under `eventhorizon.app/Contents/MacOS/` has execute permission on macOS. Native signing and notarization are separate distribution steps.
+
+Each target uses two Editor launches. `CommandLineBuild.Prepare` applies settings and generates `AppConfig.cs`. The next launch compiles these changes before `CommandLineBuild.Build` builds the player. Every launch selects its target on the command line. Preparation checks Unity's version, installed target support, scene paths, signing inputs, and music asset assignments.
+
+The first preparation increases `AppConfig.buildNumber` once. Each subsequent target uses that number. Automated builds suppress Application Manager's post-build increment. Manual Editor builds retain the existing post-build behavior. Two separate script calls are two runs; pass any combination of targets to `build.cmd` to share a number. A failed run retains its reserved number. A failure before reservation stops the run; after reservation, the runner attempts the remaining targets and returns a nonzero exit code if any target fails.
+
+Logs and the reserved number are stored under `Builds/Logs/<timestamp>/`. Settings remain on the last prepared target. `ProjectSettings.asset` and generated `AppConfig.cs` can change during a build. The runner neither stages nor commits these changes.
+
+After a successful Windows build, the runner creates `Builds/eventhorizon_win_<version>.zip`, using the game version compiled into that player. The ZIP contains the files inside `Builds/Windows/` at its root, including game data and the music bundle. Folders ending in `_BackUpThisFolder_ButDontShipItWithYourGame` are excluded; the originals remain on disk. A successful package replaces an existing ZIP for that version. Failed builds or failed compression leave the previous ZIP intact and return a nonzero exit code. This also applies when Windows is part of a multi-platform run.
+
+For Android and iOS, the runner temporarily removes the music bundle and its generated manifests from `StreamingAssets`. For each standalone target, it builds `musicbundle` for that exact platform in a separate cache, stages it in `StreamingAssets`, and supplies the bundle manifest to Unity to preserve bundled types during code stripping. Original files and their metadata are restored after success or failure. Other StreamingAssets files remain intact.
+
+If Unity is forcibly terminated, the backup can remain in `Library/CommandLineBuild/StreamingAssetsBackup`. The next preparation stops rather than overwriting it. To recover:
+
+1. Close the project in Unity and ensure no batch build is running.
+2. If `created.txt` exists in the backup, remove the listed temporary files and their `.meta` files from `Assets/StreamingAssets`.
+3. Move the backed-up files into `Assets/StreamingAssets`, preserving their names. Do not copy `created.txt`.
+4. Remove `created.txt` and the now-empty backup directory, then retry.
+
+### Manual Editor builds
 
 1. Initialize the submodules, including `Assets/ModulesPrivate`. For a public clone, switch the license to `LICENSE_OPENSOURCE` in **Window > Application Manager** ([AC3](issues/app_configuration.md#ac3-checked-in-defines-need-the-private-submodule)).
 2. Put the git-ignored plugins in place for a commercial build ([PL1](issues/plugins.md#pl1-the-commercial-build-needs-git-ignored-plugins)).

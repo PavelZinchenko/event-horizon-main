@@ -175,7 +175,7 @@ The combat simulation is in the [BattleSimulator module](battle_simulator.md). T
 
 ## Services (`Services/`)
 
-- `InternetTime/InternetTimeService`: requests UTC time from `worldtimeapi.org` every 30 minutes. Daily rewards and holidays use it.
+- `InternetTime/InternetTimeService`: requests UTC time from `https://zipagames.com/time.php` at startup and every 30 minutes until a request fails. Daily rewards and holidays use it.
 - `InternetTime/GameTime`: counts play time from `DateTime.Now` while a gameplay state is active.
 - `Messenger/`: `SignalsTranslator` and `AotProblemsWorkaround`.
 - `RateGame/`: store links for rating the game.

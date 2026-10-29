@@ -175,13 +175,13 @@ Each issue has four parts: the problem, the evidence, the effect, and a recommen
 **Problem.** Time-based rules use different clocks.
 
 **Evidence.**
-- `InternetTimeService` gets UTC from the free public service `worldtimeapi.org`. Daily rewards and holiday events use it, and `HolidayManager` falls back to local time when it is not available.
+- `InternetTimeService` gets UTC from the game's own endpoint, `https://zipagames.com/time.php`. Daily rewards and holiday events use it, and `HolidayManager` falls back to local time when it is not available.
 - `LocalEvent`, `StartingNewGameState`, `DailyReward`, and `ArenaTimeManager` use `DateTime.UtcNow`.
 - `GameTime` counts play time from `DateTime.Now` (local time). `SessionData` counts it from `Time.deltaTime`.
 
-**Effect.** Changing the device clock affects some rules but not others. If the free service fails or changes, daily rewards and events stop, and nothing reports it.
+**Effect.** Changing the device clock affects some rules but not others. A failed time request logs an error and stops further updates for the session. If the first request fails, daily rewards remain unavailable and holidays use local time. After a successful request, the service returns the last received time without advancing it between updates.
 
-**Direction.** Add one `IClock` service with "trusted UTC" and "local" values. Get trusted time from the game's own server, which the arena already uses, or from the store platform. Use the clock in all time-based rules.
+**Direction.** Add one `IClock` service with "trusted UTC" and "local" values. Keep using the game's own server for synchronization, recover from failed requests, and advance time between updates. Use the clock in all time-based rules.
 
 ## 13. Startup and mod loading are duplicated procedural code
 

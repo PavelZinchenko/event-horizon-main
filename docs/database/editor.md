@@ -59,6 +59,16 @@ The launchers start `bin\Release\net10.0-windows7.0\DatabaseEditor.exe` and `Ana
 
 To build a distributable package, run `Release\UpdateFiles.cmd`. It copies the built binaries into `Release\bin\` and mirrors `Resources\Database\*.json` into `Release\Database\`. `Release\editor.cmd` is the end-user launcher inside that package.
 
+### Build a versioned ZIP
+
+Run `Builds\build-database-editor.cmd` from the project root, or use its full path from any directory. It creates `Builds/database_editor_<version>.zip`. By default, the version comes from `bundleVersion` in `ProjectSettings/ProjectSettings.asset`. Supply an explicit label with `Builds\build-database-editor.cmd 1.13.3`.
+
+The script runs the same code generator as `rebuild_editor.cmd`, then builds `GameDatabase.sln` in Release using the .NET SDK on `PATH`. It requires the .NET 10 SDK and the prebuilt database code generator. It does not require Unity or the hard-coded Visual Studio path in the older script.
+
+The archive contains `bin/`, `Database/`, and `editor.cmd` at its root, matching the existing release package. The binary list matches `UpdateFiles.cmd`; the database includes only JSON files with their directory structure. A fresh temporary folder prevents stale files and previous ZIPs from entering the archive. The existing `.Editor/Release` folder remains untouched. A successful run replaces any ZIP with the same version; a failed build keeps the previous archive.
+
+Logs are saved under `Builds/Logs/database-editor-<timestamp>/`. The generator currently returns success even after exceptions, so the runner rejects output other than its known progress messages. It returns a nonzero exit code if generation, compilation, copying, or compression fails. The packaged editor requires the .NET 10 Windows Desktop Runtime on the recipient's machine. Packaging does not change the game's version or build number.
+
 ## Opening a Database
 
 `DatabaseEditor.exe [path]` opens the folder given as the first argument, or the current directory if there is none. **File → Load** opens another folder.

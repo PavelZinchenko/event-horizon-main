@@ -94,15 +94,15 @@ Google Play rejects new uploads with target SDK 33. With the custom ProGuard fil
 
 ### BL7. No reproducible build
 
-**Severity:** Medium. **Status:** Confirmed.
+**Severity:** Medium. **Status:** Partly addressed for Android, Windows, Linux, macOS, and iOS export; WebGL, Apple signing, and CI remain manual.
 
 **Evidence.**
-1. No build script, no CI configuration, and no `BuildPipeline.BuildPlayer` call exist in the repository. The Unity Cloud Build webhook on the server is probably broken ([SV9](server.md#sv9-the-cloud-build-webhook-is-unauthenticated-and-probably-broken)).
+1. Android, Windows, Linux, macOS, and iOS export have [batch build scripts](../build.md#automated-platform-builds) and a shared `CommandLineBuild` implementation. No CI configuration exists. The Unity Cloud Build webhook on the server is probably broken ([SV9](server.md#sv9-the-cloud-build-webhook-is-unauthenticated-and-probably-broken)).
 2. A build depends on git-ignored files: the keystore, `steam_appid.txt`, the commercial plugins ([PL1](plugins.md#pl1-the-commercial-build-needs-git-ignored-plugins)), and the music bundle ([S4](services.md#s4-open-source-builds-have-no-music-until-the-bundle-is-built)).
-3. The version changes after the build, not before ([AC1](app_configuration.md#ac1-the-build-number-is-incremented-after-the-build)), and depends on the last built platform ([BL1](#bl1-appconfigbundleidentifier-comes-from-the-last-built-platform)).
-4. Define symbols change through a window, not per build profile.
+3. Manual builds still change the version after the build ([AC1](app_configuration.md#ac1-the-build-number-is-incremented-after-the-build)). Automated builds generate configuration before compilation and reserve one build number per run.
+4. Automated builds apply explicit define presets. WebGL still uses the window.
 
-**Direction.** Add one editor build method per platform that sets the define symbols, generates `AppConfig.cs` before compilation, and calls `BuildPipeline.BuildPlayer`. Unity 6 build profiles can hold the define symbols per profile. Run the methods from the command line (`-executeMethod`) on CI.
+**Direction.** Extend the runner to the remaining platforms and configure CI. Provision the required private dependencies and signing credentials separately.
 
 ### BL8. Unused packages and modules
 
