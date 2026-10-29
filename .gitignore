@@ -2,7 +2,16 @@
 /[Tt]emp/
 /[Oo]bj/
 /[Bb]uild/
-/[Bb]uilds/
+/[Bb]uilds/*
+!/Builds/build.cmd
+!/Builds/build-android.cmd
+!/Builds/build-windows.cmd
+!/Builds/build-linux.cmd
+!/Builds/build-mac.cmd
+!/Builds/build-ios.cmd
+!/Builds/build.ps1
+!/Builds/build-database-editor.cmd
+!/Builds/build-database-editor.ps1
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 /UserSettings/

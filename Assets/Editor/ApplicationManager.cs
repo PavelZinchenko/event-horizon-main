@@ -330,7 +330,15 @@ namespace EditorWindows
         [PostProcessBuild]
         private static void OnPostBuild(BuildTarget buildTarget, string pathToBuildProject)
         {
+            if (CommandLineBuild.IsBuilding) return;
+
             GenerateAppConfigFile(AppConfig.localizationFile, true, AppConfig.testMode, AppConfig.enableCheats, AppConfig.alternativeTitle);
+        }
+
+        public static void PrepareCommandLineBuild(bool increaseBuildNumber)
+        {
+            GenerateAppConfigFile(AppConfig.localizationFile, increaseBuildNumber,
+                AppConfig.testMode, AppConfig.enableCheats, AppConfig.alternativeTitle);
         }
 
         private static void GenerateAppConfigFile(
@@ -381,6 +389,7 @@ namespace EditorWindows
                 }
                 catch (Exception ex)
                 {
+                    if (Application.isBatchMode) throw;
                     string msg = " \n" + ex;
                     Debug.LogError(msg);
                     EditorUtility.DisplayDialog("Error when trying to generate file " + fileName, msg, "OK");
