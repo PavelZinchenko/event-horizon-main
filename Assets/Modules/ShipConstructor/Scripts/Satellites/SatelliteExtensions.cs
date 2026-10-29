@@ -104,7 +104,7 @@ namespace Constructor.Satellites
 
                     if (contribution < 0)
                     {
-                        GameDiagnostics.Trace.LogError($"invalid satellite build: {build.Id} energy regen {contribution:F3} on {hull.Name}");
+                        GameDiagnostics.Trace.LogWarning($"invalid satellite build: {build.Id} energy regen {contribution:F3} on {hull.Name}");
                         break;
                     }
                 }

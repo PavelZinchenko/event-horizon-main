@@ -96,8 +96,6 @@ namespace GameStateMachine.States
 
             _localization.Initialize(_settings.Language, _database);
 
-            _database.SatelliteBuildList.ReportNegativeEnergyBuilds(Hulls(), _database.ShipSettings);
-
 		    if (_database.IsEditable)
 		    {
                 GameDiagnostics.Trace.Log("Checking ship builds...");
@@ -122,6 +120,8 @@ namespace GameStateMachine.States
                     if (layout.Components.Count() != components.Length)
 		                GameDiagnostics.Trace.LogError("invalid satellite layout: " + item.Id);
 		        }
+
+                _database.SatelliteBuildList.ReportNegativeEnergyBuilds(Hulls(), _database.ShipSettings);
 
                 GameDiagnostics.Trace.Log("Checking techs...");
 
