@@ -116,7 +116,10 @@ namespace GameDatabase.Storage
 			get
 			{
 				if (_sprite == null)
+				{
 					_sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), _texture.width);
+					_sprite.hideFlags = HideFlags.HideAndDontSave;
+				}
 
 				return _sprite;
 			}

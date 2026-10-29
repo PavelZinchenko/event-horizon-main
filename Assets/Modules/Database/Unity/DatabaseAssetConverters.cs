@@ -7,7 +7,7 @@ using UnityEngine;
 // Converts engine-free database images and audio to Unity assets. Global namespace, so call sites need no using.
 public static class DatabaseAssetConverters
 {
-    private sealed class Cached<T> { public T Value; }
+    private sealed class Cached<T> { public T Value; public byte[] Data; }
 
     private static readonly ConditionalWeakTable<IImageData, Cached<Sprite>> _sprites = new();
     private static readonly ConditionalWeakTable<IAudioClipData, Cached<AudioClip>> _audioClips = new();
@@ -17,7 +17,26 @@ public static class DatabaseAssetConverters
     {
         if (image == null) return null;
         if (image is TextureAdapter texture) return texture.Sprite;
-        return _sprites.GetValue(image, data => new Cached<Sprite> { Value = CreateSprite(data.LoadData()) }).Value;
+
+        var cached = _sprites.GetValue(image, data =>
+        {
+            var bytes = data.LoadData();
+            return new Cached<Sprite> { Value = CreateSprite(bytes), Data = bytes };
+        });
+
+        if (cached.Value != null && cached.Value)
+            return cached.Value;
+
+        var sourceBytes = cached.Data;
+        if (sourceBytes == null)
+            sourceBytes = image.LoadData();
+        if (sourceBytes == null)
+            return cached.Value;
+
+        var sprite = CreateSprite(sourceBytes);
+        cached.Value = sprite;
+        cached.Data = sourceBytes;
+        return sprite;
     }
 
     // Creates the audio clip on first use and caches it per clip.
@@ -43,7 +62,10 @@ public static class DatabaseAssetConverters
         else
             GameDiagnostics.Trace.LogError($"Texture dimensions({texture.width},{texture.height}) are not powers of two. Compression will be disabled. Consider resizing it for improved performance and reduced memory usage.");
 
-        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), texture.width);
+        texture.hideFlags = HideFlags.HideAndDontSave;
+        var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), texture.width);
+        sprite.hideFlags = HideFlags.HideAndDontSave;
+        return sprite;
     }
 
     private static AudioClip CreateAudioClip(AudioFormat format, byte[] data)
