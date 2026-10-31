@@ -1,3 +1,4 @@
+using System;
 using CombatSimulation.Core;
 using GameDatabase.Enums;
 using GameDatabase.Model;
@@ -52,7 +53,11 @@ namespace Combat.Integration.Core
         // The control description of this deployment; the adapter hands it out only for player ships.
         public CoreShipControls Controls { get; }
 
-        public void Update(in ShipState state) => _state = state;
+        public void Update(in ShipState state, ReadOnlySpan<DeviceState> devices)
+        {
+            _state = state;
+            Controls.Update(devices);
+        }
 
         public void SetVisualPose(Vector2 position, float degrees)
         {

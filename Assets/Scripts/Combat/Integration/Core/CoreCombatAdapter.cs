@@ -418,7 +418,7 @@ namespace Combat.Integration.Core
         {
             foreach (var ship in snapshot.Ships)
                 if (_viewsByCore.TryGetValue(ship.Id, out var view))
-                    view.Update(ship);
+                    view.Update(ship, snapshot.GetDevices(ship));
 
             foreach (var state in snapshot.Roster)
             {

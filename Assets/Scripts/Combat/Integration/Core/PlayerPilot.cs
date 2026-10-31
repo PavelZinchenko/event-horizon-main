@@ -14,7 +14,7 @@ namespace Combat.Integration.Core
 
         public bool Think(BattleSnapshot snapshot, in ShipState self, out PilotControls controls)
         {
-            controls = PilotControls.Create(_course * DegreesToRadians, _throttle, _autoActivation.Apply(self, _systems));
+            controls = PilotControls.Create(_course * DegreesToRadians, _throttle, _autoActivation.Apply(snapshot, self, _systems));
             return true;
         }
 

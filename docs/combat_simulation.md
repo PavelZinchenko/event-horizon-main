@@ -722,8 +722,9 @@ Stage 14 writes a `BattleSnapshot` of the tick it completed, then increments `Ba
 2. `ShipState`: entity, roster ID, side, owner, definition, pose and velocities from the physics body, armor, shield and energy (value and maximum), the controls in force and the retreat completion tick.
 3. `BulletState`: entity, parent entity, side, owner, definition, pose, velocity and expiry tick. Projectiles retain `Definition` (`BulletDefinition`). Beams set `BeamDefinition` and `IsBeam`, with `Definition` null. Their pose is the sampled ray origin and angle; `BeamEndPoint` and `BeamTargetId` describe the accepted hit or full range. Beam velocity is zero and expiry is `long.MaxValue` because the device owns lifetime.
 4. `RosterSlotState`: roster ID, side, owner, status, deployment count and order, revision, active entity (null unless active), the retained B4 deficits and `DamageFraction` (B2).
-5. Two buffers: the battle writes one while readers use the other. A reader finishes with a snapshot before the next `Step()` returns; the snapshot of tick `t` stays intact while tick `t + 1` runs. A worker-thread reader needs a third buffer.
-6. Publishing allocates nothing once the arrays fit the battle (unit tests: ships, cannon hits, missile salvos, sustained beam hits and repeated beam activations, and the full fleet of the scripted battle). The copy size is measured in [Scripted battle](#scripted-battle).
+5. `DeviceState` (phase 4, step 3b): `GetDevices(ship)` returns one entry per device of a `ShipState` from the same snapshot, in control-bit order. `Ready` is legacy `CanBeActivated` for the next tick with the end-of-tick resources; the bit does not count. `Active` is legacy `SystemBase.Active`: the bit was held and the device's checks passed before it spent energy. `Cooldown` is the HUD fraction (0 ready, 1 blocked). Drone bays add `InHangar` and `ActiveDrones`; beams add the attached `Beam`. Inert devices are never ready or active and show cooldown 1. No peer sends it: each derives it from its own simulation. The rules per device are in [the phase 4 plan](../TODO/battle_simulator_phase4.md#device-state-3b).
+6. Two buffers: the battle writes one while readers use the other. A reader finishes with a snapshot before the next `Step()` returns; the snapshot of tick `t` stays intact while tick `t + 1` runs. A worker-thread reader needs a third buffer.
+7. Publishing allocates nothing once the arrays fit the battle (unit tests: ships, cannon hits, missile salvos, sustained beam hits and repeated beam activations, and the full fleet of the scripted battle). The copy size is measured in [Scripted battle](#scripted-battle).
 
 `BattleEvent` is one flat struct per event, tagged by `Kind`. Its identity is battle ID, tick and `Sequence` (the position in the batch). Beam spawn/removal events carry `BeamDefinition`, `ParentId`, `IsBeam` and `IsBullet`; `BulletDefinition` is null. A beam emits one spawn and removal per activation and a `Hit` for each accepted tick. Events follow stage order. Roster transitions follow roster order; drone removals follow entity ID order; hits follow contact order. An entity event comes before the roster transition of the same operation:
 
@@ -769,7 +770,7 @@ Phase 2 step 11. `Core/Tests/ScriptedBattle.cs` is test code: the core knows not
 4. **Result (seed 7).** Side 0 wins by elimination at tick 3506 (70 s). The battle has 4 roster deaths, 3 drone deaths, 2 retreats and 2 redeployments. It spawns 8 ships, 8 drones, 1119 bolts, 34 missiles and 46 beams. It has 2053 hits (1222 beam, 8 ramming) and 54 disarms.
 5. **Determinism.** The log holds every event and a per-tick digest of ship and bullet poses, velocities and resources as raw float bits. One run alone and two runs stepped interleaved in one process give the same log.
 6. **Allocation.** The same fleet with huge armor and energy, all three slots active, steps 3000 ticks after a 1500-tick warm-up with zero bytes allocated, pilots included. The window has bolts, missiles, beam hits, point-defense zaps and eight live drones. Buffers grow until about tick 510, at the first salvo peak; afterwards nothing allocates.
-7. **Snapshot size.** Element sizes on .NET 8 x64, measured as the allocation of a 1024-element array: `ShipState` 128 B, `BulletState` 88 B, `RosterSlotState` 64 B, `BattleEvent` 152 B. The scripted battle copies 1.8 KB per tick on average and 3.6 KB at most (peak 12 ships, 16 bullets). At R2 (2,000 bullets, 130 ships) the ship and bullet copy is 192,640 B per tick, about 9.6 MB/s at 50 Hz. That is 3.2 times the design estimate of 60 KB, which assumed 24-byte bullets. Timed on R1 (2026-10-28), `BattleSnapshot.Write` takes 0.24 ms per tick at R2; the byte copy is about a tenth of it ([core design](../TODO/battle_simulator_core.md), risk 3).
+7. **Snapshot size.** Element sizes on .NET 8 x64, measured as the allocation of a 1024-element array: `ShipState` 128 B, `BulletState` 88 B, `RosterSlotState` 64 B, `BattleEvent` 160 B, `DeviceState` 24 B (2026-10-29; `ShipState` kept its size with the device offset). The scripted battle copies 1.8 KB per tick on average and 3.6 KB at most (peak 12 ships, 16 bullets). At R2 (2,000 bullets, 130 ships) the ship and bullet copy is 192,640 B per tick, about 9.6 MB/s at 50 Hz. That is 3.2 times the design estimate of 60 KB, which assumed 24-byte bullets. Timed on R1 (2026-10-28), `BattleSnapshot.Write` takes 0.24 ms per tick at R2 (0.27 ms with `DeviceState`, 2026-10-31); the byte copy is about a tenth of it ([core design](../TODO/battle_simulator_core.md), risk 3).
 
 ## Unity integration
 
@@ -797,7 +798,7 @@ Migration phase 3c. Quick combat runs on the core in a separate scene; the old s
 3. **Projection.** Slots and ship views copy what they need from the snapshot. They keep no spans. `EntityIdMap` gives each core entity a sequential application `EntityId` at its spawn event and releases it after the removal. The 64-bit core ID is never truncated.
 4. **Commands.** Deploy, retreat, surrender and kill-all go to the runner. One retreat request per ship. Surrender steps once at once, because the menu pauses the game.
 5. **Battle flow (legacy quick combat).** The enemy deploys its first ready ship at the start and 3 s after its active ship leaves. When an enemy is active and the player has none, the selection panel opens: at once at the start, 3 s after a player ship leaves. `ShipSelection` modes that cannot choose deploy the first ready ship. The open panel pauses the game, so a deployment applies when it closes.
-6. **HUD values.** The timer panel shows while both sides have an active ship, without digits. `CanChangeShip` follows the legacy rule. `CanCallReinforcement` is false. Device cooldowns are 0: the snapshot has none.
+6. **HUD values.** The timer panel shows while both sides have an active ship, without digits. `CanChangeShip` follows the legacy rule. `CanCallReinforcement` is false. `CoreShipControls.GetCooldown` returns the device `Cooldown`; the adapter copies the device states after each step.
 7. **Completion.** At the result, stepping stops and the last frame stays on screen. After 3 s of real time the adapter fires `ExitSignal` once. Real time, because surrender comes from the open menu, which pauses the game. `QuickCombatState` returns to the main menu. Quick combat has no rewards.
 8. **Unload.** `Dispose` drops the runner and the views without roster events.
 
@@ -809,7 +810,7 @@ The mapper also returns a `CoreShipMapping` per ship and drone: key binding, but
 Editor menus: *Tools/Combat/Check Ship Hulls* builds the hull of every built-in ship from the data and from the sprite and reports parts, inertia and radius. *Tools/Combat/Check Ship Builds* maps every built-in build and reports the armed builds, the behaviour trees they use and the inert reasons with counts.
 
 `CorePilotProvider` gives each player ship a new `PlayerPilot` (`PilotSchedule.PlayerShip`) and every other ship a `ChasePilot` (decision S3). `ChasePilot` is a copy of the scripted battle's pilot; its stand-off distance comes from the weapon range. It never holds an inert device and always holds other devices with a key. Behavior trees replace it in phase 4.
-`PlayerPilot` implements `IShipCommandSink` and submits the stored throttle, course and system bits each tick. `CoreAutoActivation` gives every pilot the legacy rule for devices with a key below 0: the pilot holds the device while energy fraction + 0.1 × (key + 1) ≥ 0. `CoreShipControls` groups the other devices by key, as legacy `GetKeyBindings`. A new deployment gets a new pilot, so it starts with empty controls.
+`PlayerPilot` implements `IShipCommandSink` and submits the stored throttle, course and system bits each tick. `CoreAutoActivation` gives every pilot the legacy rule for devices with a key below 0: the pilot holds the device while energy fraction + 0.1 × (key + 1) ≥ 0, plus activation cost ÷ maximum energy while the device is `Active`. `CoreShipControls` groups the other devices by key, as legacy `GetKeyBindings`. A new deployment gets a new pilot, so it starts with empty controls.
 `CoreKeyboardDriver` applies the legacy `KeyboardController` rules over `IKeyboard` and `IMouse`. It writes a value to the sink only when its own value changes, so HUD buttons keep theirs. A key held across a ship change acts on the new ship, as in legacy.
 
 ### Views
@@ -825,10 +826,9 @@ Editor menus: *Tools/Combat/Check Ship Hulls* builds the hull of every built-in 
 ### Known limits
 
 1. Most weapons and devices are inert until the ammunition conversion (step 4) and phase 5; most built-in builds cannot fire yet. Auto-aiming barrels fire straight; satellites are not attached.
-2. The snapshot has no device cooldowns; the HUD shows none.
-3. No time limit, reinforcement, `OnlyOneShip` rule or reward. Campaign battles still use the old scene.
-4. A new player ship spawns at a random map point, so the camera whips toward it (legacy spawns the same way).
-5. The Editor pauses the game when it loses focus with an Android build target (`MobileApplication`). Play-mode checks from the CLI must force focus.
+2. No time limit, reinforcement, `OnlyOneShip` rule or reward. Campaign battles still use the old scene.
+3. A new player ship spawns at a random map point, so the camera whips toward it (legacy spawns the same way).
+4. The Editor pauses the game when it loses focus with an Android build target (`MobileApplication`). Play-mode checks from the CLI must force focus.
 
 ## Physics library
 

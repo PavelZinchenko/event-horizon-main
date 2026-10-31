@@ -66,7 +66,7 @@ namespace Combat.Integration.Core
 
             if (!found)
             {
-                controls = PilotControls.Create(null, 0f, _autoActivation.Apply(self, _alwaysOn));
+                controls = PilotControls.Create(null, 0f, _autoActivation.Apply(snapshot, self, _alwaysOn));
                 return true;
             }
 
@@ -76,7 +76,7 @@ namespace Combat.Integration.Core
             for (var i = 0; i < _range.Length; ++i)
                 if (_range[i] > 0f && nearestDistance <= _range[i] && error <= _aim[i]) systems |= 1UL << i;
 
-            controls = PilotControls.Create(course, nearestDistance > _standOff ? 1f : 0f, _autoActivation.Apply(self, systems));
+            controls = PilotControls.Create(course, nearestDistance > _standOff ? 1f : 0f, _autoActivation.Apply(snapshot, self, systems));
             return true;
         }
 

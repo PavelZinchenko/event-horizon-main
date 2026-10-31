@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CombatSimulation.Core;
@@ -32,6 +33,7 @@ namespace Combat.Integration.Core
 
             KeyBindings = keys.Values.Select(group => (IReadOnlyList<int>)group).ToList();
             DroneBays = droneBays;
+            _devices = new DeviceState[devices.Count];
         }
 
         public IReadOnlyList<IReadOnlyList<int>> KeyBindings { get; }
@@ -40,9 +42,12 @@ namespace Combat.Integration.Core
         public SpriteId GetButtonIcon(int system) => _mapping.Devices[system].Icon;
         public bool ReleaseImmediately(int keyGroup) => false;
 
-        // The snapshot has no device cooldowns yet (step 3b).
-        public float GetCooldown(int system) => 0f;
+        public float GetCooldown(int system) => _devices[system].Cooldown;
+
+        // The adapter copies the device states after every step; snapshot spans are valid only until the next step.
+        public void Update(ReadOnlySpan<DeviceState> devices) => devices.CopyTo(_devices);
 
         private readonly CoreShipMapping _mapping;
+        private readonly DeviceState[] _devices;
     }
 }

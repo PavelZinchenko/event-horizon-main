@@ -4,8 +4,8 @@ namespace Combat.Integration.Core
 {
     // Legacy ShipSystems.ShouldActivateSystem for devices with a key below 0 ("Ship mapping (3a)", row 10). Every pilot
     // holds such a device while energy fraction + 0.1 × (key + 1) ≥ 0; the pilot's own bit for it does not count.
-    // Legacy adds activation cost ÷ maximum energy while the device is active; until the snapshot has device state
-    // (step 3b), "bit held last tick" stands for "active" (owner, 2026-10-29). Inert devices are skipped (D6).
+    // Legacy adds activation cost ÷ maximum energy while the device is active (DeviceState.Active, step 3b). The
+    // CanBeActivated check stays in the core device, at the tick the frame applies. Inert devices are skipped (D6).
     public sealed class CoreAutoActivation
     {
         public static readonly CoreAutoActivation None = new CoreAutoActivation(new int[0], new float[0], new float[0], 0UL);
@@ -43,22 +43,23 @@ namespace Combat.Integration.Core
         }
 
         // Replaces the automatic bits of the pilot's systems.
-        public ulong Apply(in ShipState self, ulong systems)
+        public ulong Apply(BattleSnapshot snapshot, in ShipState self, ulong systems)
         {
             if (_mask == 0UL)
                 return systems;
 
             systems &= ~_mask;
+            var devices = snapshot.GetDevices(self);
             var max = self.Energy.Max;
             var fraction = max > 0f ? self.Energy.Value / max : 0f;
             for (var i = 0; i < _indices.Length; ++i)
             {
-                var bit = 1UL << _indices[i];
+                var index = _indices[i];
                 var left = fraction + _thresholds[i];
-                if ((self.Systems & bit) != 0 && max > 0f)
+                if (devices[index].Active && max > 0f)
                     left += _costs[i] / max;
                 if (left >= 0f)
-                    systems |= bit;
+                    systems |= 1UL << index;
             }
 
             return systems;
