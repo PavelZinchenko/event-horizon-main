@@ -74,19 +74,18 @@ Base prefabs: [PrefabCache.cs:151](../../../Assets/Modules/BattleSimulator/Scrip
 | --- | --- | --- |
 | `Flash`, `FlashAdditive` | `Flash`, `FlashAdditive` | Sprite flash. The additive version brightens. |
 | `Shockwave` | `Wave` | Ring that expands from 0 to full size over its life, drawn with the image texture. |
-| `Smoke`, `SmokeAdditive` | `SmokeSimple`, `SmokeSimpleAdditive` | Random offset, size, tint, and spin by `ParticleSize` ([SmokeEffect.cs:28](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/SmokeEffect.cs#L28)). |
+| `Smoke`, `SmokeAdditive` | `SmokeSimple`, `SmokeSimpleAdditive` | Random offset, size, tint, and spin by `ParticleSize` ([SmokeEffect.cs:31](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/SmokeEffect.cs#L31)). |
 | `Shake` | none | Shakes the camera each time the element becomes visible. Strength: `min(2 × effect size × Size / √(distance + 20), 5)` ([ShakeEffect.cs:24](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/ShakeEffect.cs#L24)). The effect size is the effect's world size: for a `PlaySfx` effect on a bullet, the trigger `Size` × the bullet scale (since phase 4, step 4c; [mapping table, S1](../../../TODO/battle_simulator_ammo_mapping.md#visual-effects)). |
-| `Spark` | `Spark` | Sparks fly in random directions at speed `Size`, spin, and swirl by `TurnRate` ([SparkEffect.cs:24](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/SparkEffect.cs#L24)). |
+| `Spark` | `Spark` | Sparks fly in random directions at speed `Size`, spin, and swirl by `TurnRate` ([SparkEffect.cs:26](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/SparkEffect.cs#L26)). |
 | `Lightning` | `LightningStrike` | Animated lightning that changes direction every frame. |
-| `LightningStrike` | `LightningStrike` | One lightning bolt that fades ([LightningEffect.cs:41](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/LightningEffect.cs#L41)). |
+| `LightningStrike` | `LightningStrike` | One lightning bolt that fades ([LightningEffect.cs:42](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/LightningEffect.cs#L42)). |
 | `Sprite` | `Sprite` | Plain sprite. |
 
-The cache keeps one element prefab per `Type` and `Image`. `Spark`, `Smoke`, and `Lightning` prefabs store more values at creation, so elements that share a type and an image also share these values. See [DB15.19](../../issues/database.md#db15-smaller-defects).
+The cache keeps one element prefab per `Type` and `Image`. The prefab holds only the image. `Spark`, `Smoke`, and `Lightning` get `Size`, `TurnRate`, `ParticleSize`, `Color`, and `ColorMode` on each instance (`IEffectInstanceInitializer`), so elements that share a type and an image can use different values.
 
 ### Data rules
 
 1. Give every element a `Lifetime` above 0. A non-looping element with 0 is visible only at the exact start time, so it almost never shows. Built-in effect 9 (`ShockWave`) has a `Shake` element with 0, so its shake never plays. A looping element with 0 gets an invalid life. See [DB15.5](../../issues/database.md#db15-smaller-defects).
-2. Elements with the same `Type` and `Image` must use the same `Size`, `TurnRate`, `ParticleSize`, `Color`, and `ColorMode`, or use different images ([DB15.19](../../issues/database.md#db15-smaller-defects)). Built-in data breaks it three times: effect 15 against eight other effects (`Smoke` with `CloudWhite`), 12 against 19 (`Lightning` with `beam`), and 9, 13, and 14 (`LightningStrike` with `beam`).
-3. Use `UseRealTime` for elements that must keep their speed when a caller stretches the effect, for example a looping glow.
-4. `Quantity` copies only differ for random types. Use several elements with different `Offset` or `Rotation` for fixed patterns.
-5. Each play creates new objects (not pooled). Avoid many elements on effects that play every frame.
+2. Use `UseRealTime` for elements that must keep their speed when a caller stretches the effect, for example a looping glow.
+3. `Quantity` copies only differ for random types. Use several elements with different `Offset` or `Rotation` for fixed patterns.
+4. Each play creates new objects (not pooled). Avoid many elements on effects that play every frame.
