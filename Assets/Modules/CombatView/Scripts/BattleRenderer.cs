@@ -8,37 +8,38 @@ using Object = UnityEngine.Object;
 
 namespace CombatView
 {
-    // Draws one core battle: ship and bullet sprites at interpolated poses (migration phase 3c, step 4).
-    // Events decide when a view exists; snapshots give its poses. Nothing is written back to the simulation.
-    // Beams, homing bullets and drones have no own views yet (phases 4-5); they get the generic sprite.
+    // Draws one core battle: ships, bullets, beams and hit flashes at interpolated poses (migration phase 3c, step 4;
+    // phase 4, step 5). Events decide when a view exists; snapshots give its poses. Nothing is written back to the
+    // simulation. Bullet looks come from the adapter as BulletVisual values.
     public sealed class BattleRenderer : IDisposable
     {
         // The root goes into the given scene: the game loads scenes additively and never changes the active
         // scene, so a plain new GameObject would outlive the combat scene.
-        public BattleRenderer(Torus torus, int playerSide, Sprite genericSprite, Scene scene)
+        // The flash sprite is legacy Flash's glow; without it flashes use the generic sprite.
+        public BattleRenderer(Torus torus, Sprite genericSprite, Sprite flashSprite, Scene scene)
         {
             _torus = torus;
-            _playerSide = playerSide;
             _genericSprite = genericSprite;
+            _flashSprite = flashSprite ? flashSprite : genericSprite;
             _root = new GameObject("CoreBattleViews");
             SceneManager.MoveGameObjectToScene(_root, scene);
+
+            // A new sprite renderer carries the built-in sprite material; lines and trails share it.
+            var probe = _root.AddComponent<SpriteRenderer>();
+            _spriteMaterial = probe.sharedMaterial;
+            Object.Destroy(probe);
         }
 
-        // Legacy rule: the ship's transform scale is its model scale.
+        // Ships and drones. Legacy rule: the ship's transform scale is its model scale.
         public void AddShip(EntityId id, Sprite sprite, float scale)
         {
             if (_ships.ContainsKey(id))
                 return;
 
-            var renderer = CreateRenderer("Ship", sprite ? sprite : _genericSprite, ShipSortingOrder);
+            var renderer = CreateRenderer("Ship", _root.transform, sprite ? sprite : _genericSprite, ShipSortingOrder);
+            renderer.gameObject.SetActive(false);
             renderer.transform.localScale = Vector3.one * scale;
-            _ships.Add(id, new EntityView(renderer));
-        }
-
-        public void AddDrone(EntityId id, ShipDefinition definition)
-        {
-            WarnOnce(ref _droneWarned, "drone");
-            AddShip(id, _genericSprite, ScaleToDiameter(_genericSprite, 2f * definition.HullRadius));
+            _ships.Add(id, new EntityView(renderer.gameObject, renderer));
         }
 
         public void RemoveShip(EntityId id, RemovalReason reason)
@@ -50,30 +51,27 @@ namespace CombatView
             if (reason == RemovalReason.Death && view.HasPose)
                 _fades.Add(new Fade(view.Renderer));
             else
-                Object.Destroy(view.Renderer.gameObject);
+                Object.Destroy(view.Root);
         }
 
-        public void AddBullet(in BattleEvent spawn)
+        // A null visual draws the generic sprite or a plain line; it should not happen for a mapped weapon.
+        public void AddBullet(in BattleEvent spawn, BulletVisual visual)
         {
             if (_bullets.ContainsKey(spawn.EntityId))
                 return;
 
-            float diameter;
-            if (spawn.IsBeam)
+            if (visual == null)
             {
-                WarnOnce(ref _beamWarned, "beam");
-                diameter = GenericBulletDiameter;
-            }
-            else
-            {
-                if (spawn.BulletDefinition.IsHoming)
-                    WarnOnce(ref _homingWarned, "homing bullet");
-                diameter = 2f * spawn.BulletDefinition.Radius;
+                WarnOnce(ref _visualWarned, "bullet without view data");
+                var flash = new HitFlash(GenericFlashDiameter, Color.white, GenericFlashDuration);
+                visual = spawn.IsBeam
+                    ? BulletVisual.ForLine(null, GenericBeamWidth, 0f, Color.white, flash)
+                    : BulletVisual.ForSprite(null, ScaleToDiameter(_genericSprite, 2f * spawn.BulletDefinition.Radius), Color.white, flash);
             }
 
-            var view = _bulletPool.Count > 0 ? _bulletPool.Pop() : new EntityView(CreateRenderer("Bullet", _genericSprite, BulletSortingOrder));
-            view.Renderer.color = spawn.Side == _playerSide ? PlayerBulletColor : EnemyBulletColor;
-            view.Renderer.transform.localScale = Vector3.one * ScaleToDiameter(_genericSprite, diameter);
+            var pool = _bulletPools[(int)visual.Kind];
+            var view = pool.Count > 0 ? pool.Pop() : CreateBulletView(visual.Kind);
+            Configure(view, visual);
             _bullets.Add(spawn.EntityId, view);
         }
 
@@ -84,7 +82,7 @@ namespace CombatView
 
             _bullets.Remove(id);
             view.Clear();
-            _bulletPool.Push(view);
+            _bulletPools[(int)view.Visual.Kind].Push(view);
         }
 
         // A predicted copy took its owner's ID (network plan, P2): the view stays.
@@ -97,6 +95,21 @@ namespace CombatView
             _bullets.Add(id, view);
         }
 
+        // One accepted hit by a drawn bullet; rams and point defense have no bullet and no flash. A beam hits every
+        // tick, so one attacker flashes at most every FlashInterval seconds.
+        public void AddHit(in BattleEvent hit)
+        {
+            if (!_bullets.TryGetValue(hit.AttackerId, out var bullet) || _time - bullet.LastFlashTime < FlashInterval)
+                return;
+
+            bullet.LastFlashTime = _time;
+            var look = bullet.Visual.Flash;
+            var renderer = _flashPool.Count > 0 ? _flashPool.Pop() : CreateRenderer("Flash", _root.transform, _flashSprite, FlashSortingOrder);
+            renderer.gameObject.SetActive(true);
+            renderer.transform.localScale = Vector3.one * ScaleToDiameter(_flashSprite, Mathf.Max(MinFlashDiameter, look.Diameter));
+            _flashes.Add(new Flash(renderer, hit.Point, look.Color, Mathf.Max(MinFlashDuration, look.Duration)));
+        }
+
         // After every step. Copies the poses; the snapshot spans are valid only until the next step.
         public void Capture(BattleSnapshot snapshot)
         {
@@ -105,8 +118,14 @@ namespace CombatView
                     view.Push(ship.Position, ship.Angle);
 
             foreach (var bullet in snapshot.Bullets)
-                if (_bullets.TryGetValue(bullet.Id, out var view))
-                    view.Push(bullet.Position, bullet.Angle);
+            {
+                if (!_bullets.TryGetValue(bullet.Id, out var view))
+                    continue;
+
+                if (bullet.IsBeam)
+                    view.PushEnd(bullet.BeamEndPoint);
+                view.Push(bullet.Position, bullet.Angle);
+            }
         }
 
         // Once per frame. The controlled ship goes to its image nearest to the anchor, and the anchor follows it,
@@ -114,6 +133,8 @@ namespace CombatView
         // Without a controlled ship the anchor stays. Alpha is the share of the next tick that has passed.
         public void Render(float alpha, EntityId controlled, ref Vector2 anchor, float deltaTime)
         {
+            _time += deltaTime;
+
             if (!controlled.IsNull && _ships.TryGetValue(controlled, out var controlledView) && controlledView.HasPose)
                 anchor = Place(controlledView, alpha, anchor);
 
@@ -122,9 +143,10 @@ namespace CombatView
                     Place(pair.Value, alpha, anchor);
 
             foreach (var pair in _bullets)
-                Place(pair.Value, alpha, anchor);
+                PlaceBullet(pair.Value, alpha, anchor);
 
             UpdateFades(deltaTime);
+            UpdateFlashes(deltaTime, anchor);
         }
 
         // The pose of the last Render, in Unity units and degrees.
@@ -148,10 +170,17 @@ namespace CombatView
             if (_root)
                 Object.Destroy(_root);
 
+            foreach (var material in _lineMaterials.Values)
+                Object.Destroy(material);
+
             _ships.Clear();
             _bullets.Clear();
-            _bulletPool.Clear();
+            foreach (var pool in _bulletPools)
+                pool.Clear();
             _fades.Clear();
+            _flashes.Clear();
+            _flashPool.Clear();
+            _lineMaterials.Clear();
         }
 
         private Vector2 Place(EntityView view, float alpha, Vector2 reference)
@@ -161,8 +190,128 @@ namespace CombatView
 
             view.Position = Placement.NearestImage(_torus, reference, view.Pose.SamplePosition(alpha, _torus));
             view.Degrees = view.Pose.SampleAngle(alpha) * Mathf.Rad2Deg;
-            view.Renderer.transform.SetPositionAndRotation(view.Position, Quaternion.Euler(0f, 0f, view.Degrees));
+            view.Root.transform.SetPositionAndRotation(view.Position, Quaternion.Euler(0f, 0f, view.Degrees));
             return view.Position;
+        }
+
+        private void PlaceBullet(BulletView view, float alpha, Vector2 anchor)
+        {
+            if (!view.HasPose)
+                return;
+
+            var previous = view.Position;
+            Place(view, alpha, anchor);
+
+            // Legacy TrailView: a fresh view, or a jump over 1 unit (a new image at the wrap), starts a new trail.
+            if (view.Trail && (!view.WasPlaced || (view.Position - previous).sqrMagnitude > 1f))
+                view.Trail.Clear();
+            view.WasPlaced = true;
+
+            if (view.Line)
+                PlaceLine(view, Placement.NearestImage(_torus, view.Position, view.End.SamplePosition(alpha, _torus)));
+        }
+
+        // Legacy LaserView.UpdateLine: four points, so the texture's end thirds keep their length (the border) and the
+        // middle third stretches. A line shorter than two borders is hidden.
+        private static void PlaceLine(BulletView view, Vector2 end)
+        {
+            var start = view.Position;
+            var length = Vector2.Distance(start, end);
+            var border = view.Visual.LineBorder;
+            view.Line.enabled = length >= 2f * border;
+            if (!view.Line.enabled)
+                return;
+
+            var direction = length > 0f ? (end - start) / length : Vector2.zero;
+            view.Line.SetPosition(0, start);
+            view.Line.SetPosition(1, start + direction * border);
+            view.Line.SetPosition(2, end - direction * border);
+            view.Line.SetPosition(3, end);
+        }
+
+        private BulletView CreateBulletView(BulletViewKind kind)
+        {
+            var root = new GameObject(kind.ToString());
+            root.SetActive(false);
+            root.transform.SetParent(_root.transform, false);
+
+            SpriteRenderer sprite = null;
+            TrailRenderer trail = null;
+            LineRenderer line = null;
+            switch (kind)
+            {
+                case BulletViewKind.Rocket:
+                    var trailObject = new GameObject("Trail");
+                    trailObject.transform.SetParent(root.transform, false);
+                    trail = trailObject.AddComponent<TrailRenderer>();
+                    trail.sharedMaterial = _spriteMaterial;
+                    trail.sortingOrder = TrailSortingOrder;
+                    trail.time = TrailDuration;
+                    trail.minVertexDistance = 0.1f;
+                    trail.numCapVertices = 0;
+                    sprite = CreateRenderer("Sprite", root.transform, _genericSprite, BulletSortingOrder);
+                    break;
+                case BulletViewKind.Line:
+                    line = root.AddComponent<LineRenderer>();
+                    line.useWorldSpace = true;
+                    line.positionCount = 4;
+                    line.sortingOrder = BulletSortingOrder;
+                    line.numCapVertices = 0;
+                    break;
+                default:
+                    sprite = CreateRenderer("Sprite", root.transform, _genericSprite, BulletSortingOrder);
+                    break;
+            }
+
+            return new BulletView(root, sprite, trail, line);
+        }
+
+        private void Configure(BulletView view, BulletVisual visual)
+        {
+            view.Visual = visual;
+            view.LastFlashTime = float.NegativeInfinity;
+
+            if (view.Renderer)
+            {
+                view.Renderer.sprite = visual.Sprite ? visual.Sprite : _genericSprite;
+                view.Renderer.color = visual.Color;
+                view.Renderer.transform.localScale = Vector3.one * visual.SpriteScale;
+            }
+
+            if (view.Trail)
+            {
+                view.Trail.transform.localPosition = new Vector3(-visual.TrailOffset, 0f, 0f);
+                view.Trail.startWidth = visual.TrailWidth;
+                view.Trail.endWidth = 0.5f * visual.TrailWidth;
+                view.Trail.startColor = visual.TrailColor;
+                var end = visual.TrailColor;
+                end.a = 0f;
+                view.Trail.endColor = end;
+            }
+
+            if (view.Line)
+            {
+                view.Line.sharedMaterial = LineMaterial(visual.Sprite);
+                view.Line.startWidth = view.Line.endWidth = visual.LineWidth;
+                view.Line.textureMode = visual.LineBorder > 0f ? LineTextureMode.DistributePerSegment : LineTextureMode.Stretch;
+                view.Line.startColor = view.Line.endColor = visual.Color;
+            }
+        }
+
+        // Legacy BeamInitializer: the record image's texture along the line. One material per texture.
+        private Material LineMaterial(Sprite sprite)
+        {
+            if (!sprite)
+                return _spriteMaterial;
+
+            var texture = sprite.texture;
+            if (!_lineMaterials.TryGetValue(texture, out var material))
+            {
+                material = new Material(_spriteMaterial) { mainTexture = texture };
+                _lineMaterials.Add(texture, material);
+            }
+
+            return material;
         }
 
         private void UpdateFades(float deltaTime)
@@ -188,11 +337,39 @@ namespace CombatView
             }
         }
 
-        private SpriteRenderer CreateRenderer(string name, Sprite sprite, int sortingOrder)
+        // A flash stays at its contact point, placed again each frame because the anchor moves. Legacy Flash prefab:
+        // no growth; opacity 1 - t^2 times an alpha scale of 2.
+        private void UpdateFlashes(float deltaTime, Vector2 anchor)
+        {
+            for (var i = _flashes.Count - 1; i >= 0; --i)
+            {
+                var flash = _flashes[i];
+                flash.Time += deltaTime;
+                var progress = flash.Time / flash.Duration;
+                if (progress >= 1f || !flash.Renderer)
+                {
+                    if (flash.Renderer)
+                    {
+                        flash.Renderer.gameObject.SetActive(false);
+                        _flashPool.Push(flash.Renderer);
+                    }
+
+                    _flashes.RemoveAt(i);
+                    continue;
+                }
+
+                var color = flash.Color;
+                color.a = Mathf.Clamp01(color.a * FlashAlphaScale * (1f - progress * progress));
+                flash.Renderer.color = color;
+                flash.Renderer.transform.position = Placement.NearestImage(_torus, anchor, flash.Point);
+                _flashes[i] = flash;
+            }
+        }
+
+        private static SpriteRenderer CreateRenderer(string name, Transform parent, Sprite sprite, int sortingOrder)
         {
             var gameObject = new GameObject(name);
-            gameObject.SetActive(false);
-            gameObject.transform.SetParent(_root.transform, false);
+            gameObject.transform.SetParent(parent, false);
             var renderer = gameObject.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
             renderer.sortingOrder = sortingOrder;
@@ -215,16 +392,20 @@ namespace CombatView
                 return;
 
             warned = true;
-            Debug.LogWarning($"BattleRenderer: no view for {kind} yet; the generic sprite is used");
+            Debug.LogWarning($"BattleRenderer: {kind}; the generic view is used");
         }
 
-        private sealed class EntityView
+        private class EntityView
         {
-            public EntityView(SpriteRenderer renderer)
+            public EntityView(GameObject root, SpriteRenderer renderer)
             {
+                Root = root;
                 Renderer = renderer;
             }
 
+            public GameObject Root { get; }
+
+            // Null for a line.
             public SpriteRenderer Renderer { get; }
             public PoseTrack Pose;
             public bool HasPose { get; private set; }
@@ -242,13 +423,47 @@ namespace CombatView
 
                 Pose.Reset(position, angle);
                 HasPose = true;
-                Renderer.gameObject.SetActive(true);
+                Root.SetActive(true);
             }
 
-            public void Clear()
+            public virtual void Clear()
             {
                 HasPose = false;
-                Renderer.gameObject.SetActive(false);
+                Root.SetActive(false);
+            }
+        }
+
+        private sealed class BulletView : EntityView
+        {
+            public BulletView(GameObject root, SpriteRenderer renderer, TrailRenderer trail, LineRenderer line)
+                : base(root, renderer)
+            {
+                Trail = trail;
+                Line = line;
+            }
+
+            public TrailRenderer Trail { get; }
+            public LineRenderer Line { get; }
+            public BulletVisual Visual { get; set; }
+            public float LastFlashTime { get; set; }
+            public bool WasPlaced { get; set; }
+
+            // Beams: the ray end point, interpolated like the pose. Called before Push, so the first end point
+            // starts the track together with the first pose.
+            public PoseTrack End;
+
+            public void PushEnd(Vec2 point)
+            {
+                if (HasPose)
+                    End.Push(point, 0f);
+                else
+                    End.Reset(point, 0f);
+            }
+
+            public override void Clear()
+            {
+                base.Clear();
+                WasPlaced = false;
             }
         }
 
@@ -266,26 +481,57 @@ namespace CombatView
             public float Time;
         }
 
+        private struct Flash
+        {
+            public Flash(SpriteRenderer renderer, Vec2 point, Color color, float duration)
+            {
+                Renderer = renderer;
+                Point = point;
+                Color = color;
+                Duration = duration;
+                Time = 0f;
+            }
+
+            public SpriteRenderer Renderer;
+            public Vec2 Point;
+            public Color Color;
+            public float Duration;
+            public float Time;
+        }
+
         private const int ShipSortingOrder = 0;
-        private const int BulletSortingOrder = 1;
+        private const int TrailSortingOrder = 1;
+        private const int BulletSortingOrder = 2;
+        private const int FlashSortingOrder = 3;
         private const float FadeDuration = 0.4f;
         private const float FadeScale = 1.3f;
-        private const float GenericBulletDiameter = 0.3f;
+        private const float GenericBeamWidth = 0.2f;
+        private const float GenericFlashDiameter = 1f;
+        private const float GenericFlashDuration = 0.2f;
 
-        private static readonly Color PlayerBulletColor = new Color(0.5f, 0.9f, 1f);
-        private static readonly Color EnemyBulletColor = new Color(1f, 0.5f, 0.4f);
+        // Legacy TrailView on CommonRocket (_duration).
+        private const float TrailDuration = 0.5f;
 
-        private bool _droneWarned;
-        private bool _beamWarned;
-        private bool _homingWarned;
+        // "Views (5)", item 6.
+        private const float FlashInterval = 0.1f;
+        private const float FlashAlphaScale = 2f;
+        private const float MinFlashDiameter = 0.3f;
+        private const float MinFlashDuration = 0.05f;
+
+        private bool _visualWarned;
+        private float _time;
 
         private readonly Torus _torus;
-        private readonly int _playerSide;
         private readonly Sprite _genericSprite;
+        private readonly Sprite _flashSprite;
+        private readonly Material _spriteMaterial;
         private readonly GameObject _root;
         private readonly Dictionary<EntityId, EntityView> _ships = new Dictionary<EntityId, EntityView>();
-        private readonly Dictionary<EntityId, EntityView> _bullets = new Dictionary<EntityId, EntityView>();
-        private readonly Stack<EntityView> _bulletPool = new Stack<EntityView>();
+        private readonly Dictionary<EntityId, BulletView> _bullets = new Dictionary<EntityId, BulletView>();
+        private readonly Stack<BulletView>[] _bulletPools = { new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>() };
         private readonly List<Fade> _fades = new List<Fade>();
+        private readonly List<Flash> _flashes = new List<Flash>();
+        private readonly Stack<SpriteRenderer> _flashPool = new Stack<SpriteRenderer>();
+        private readonly Dictionary<Texture, Material> _lineMaterials = new Dictionary<Texture, Material>();
     }
 }

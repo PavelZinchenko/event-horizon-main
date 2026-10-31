@@ -27,6 +27,9 @@ namespace Combat.Integration.Core
         // Every ship and drone mapped so far; pilots and views look up the facts the core does not keep.
         public IReadOnlyDictionary<ShipDefinition, CoreShipMapping> Mappings => _mappings;
 
+        // The view data of every mapped weapon, keyed by its BulletDefinition (cannon) or BeamDefinition (step 5).
+        public IReadOnlyDictionary<object, CoreBulletSource> BulletSources => _bulletSources;
+
         public CoreShipMapping Map(IShipInfo info) => Map(info.Specification, isDrone: false);
 
         public CoreShipMapping Map(IShipSpecification specification, bool isDrone)
@@ -54,6 +57,7 @@ namespace Combat.Integration.Core
                     var device = barrelIndex < 0
                         ? Inert("satellite weapon", out reason)
                         : CoreWeaponMapper.Map(weapon, barrelIndex, stats.ArmorMultiplier.Value, out reason);
+                    AddBulletSource(device, weapon);
                     var cost = device is BeamDefinition beam ? beam.ActivationCost : (device as CannonDefinition)?.EnergyCost ?? 0f;
                     Add(devices, infos, device, new CoreDeviceInfo(name, weapon.KeyBinding, weapon.Weapon.Stats.ControlButtonIcon, cost, reason));
                 }
@@ -110,7 +114,8 @@ namespace Combat.Integration.Core
                     NonNegative(stats.EnergyAbsorptionPercentage),
                     Positive(stats.ArmorMultiplier.Value)));
 
-            var mapping = new CoreShipMapping($"{(isDrone ? "drone" : "ship")} {specification.Info.Id.Value}", definition, infos);
+            var mapping = new CoreShipMapping($"{(isDrone ? "drone" : "ship")} {specification.Info.Id.Value}", definition, infos,
+                stats.ShipModel.ModelImage, modelScale);
             _mappings[definition] = mapping;
             return mapping;
         }
@@ -135,6 +140,27 @@ namespace Combat.Integration.Core
                 Add(devices, infos, new DroneBayDefinition(System.Math.Max(1, bay.Capacity), NonNegative(bay.EnergyConsumption), drone.Definition),
                     new CoreDeviceInfo($"drone bay, drone {item.Drone.Id.Value}", item.KeyBinding, bay.ControlButtonIcon, 0f, null));
             }
+        }
+
+        // Legacy BulletStats: BodySize is Body.Size at power level 1; the colour is the weapon's, else the body's.
+        private void AddBulletSource(DeviceDefinition device, IWeaponData weapon)
+        {
+            object key = device is CannonDefinition cannon ? cannon.Bullet : device as BeamDefinition;
+            if (key == null)
+                return;
+
+            var body = weapon.Ammunition.Body;
+            _bulletSources[key] = new CoreBulletSource(body.BulletPrefab, body.Size, weapon.Stats.Color ?? body.Color,
+                HitEffect(weapon.Ammunition));
+        }
+
+        private static BulletTrigger_PlaySfx HitEffect(Ammunition ammunition)
+        {
+            foreach (var trigger in ammunition.Triggers)
+                if (trigger.Condition == BulletTriggerCondition.Hit && trigger is BulletTrigger_PlaySfx sfx && sfx.VisualEffect != null)
+                    return sfx;
+
+            return null;
         }
 
         // Legacy DroneBay constructor without the random speed spread (owner, 2026-10-29).
@@ -219,5 +245,6 @@ namespace Combat.Integration.Core
         private readonly IDatabase _database;
         private readonly CoreHullBuilder _hullBuilder;
         private readonly Dictionary<ShipDefinition, CoreShipMapping> _mappings = new Dictionary<ShipDefinition, CoreShipMapping>();
+        private readonly Dictionary<object, CoreBulletSource> _bulletSources = new Dictionary<object, CoreBulletSource>();
     }
 }

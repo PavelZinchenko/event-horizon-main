@@ -1,18 +1,22 @@
 using System.Collections.Generic;
 using CombatSimulation.Core;
+using GameDatabase.DataModel;
 using GameDatabase.Model;
 
 namespace Combat.Integration.Core
 {
     // The facts about one mapped ship that stay outside the core: legacy key bindings, button icons, activation costs
-    // and the inert devices (phase 4, step 3a). Every list is in device order.
+    // and the inert devices (phase 4, step 3a), and the model the views draw (step 5). Every list is in device order.
     public sealed class CoreShipMapping
     {
-        public CoreShipMapping(string name, ShipDefinition definition, IReadOnlyList<CoreDeviceInfo> devices)
+        public CoreShipMapping(string name, ShipDefinition definition, IReadOnlyList<CoreDeviceInfo> devices,
+            SpriteId modelImage, float modelScale)
         {
             Name = name;
             Definition = definition;
             Devices = devices;
+            ModelImage = modelImage;
+            ModelScale = modelScale;
         }
 
         // For logs and reports: "ship" or "drone" and the legacy ship ID.
@@ -20,6 +24,28 @@ namespace Combat.Integration.Core
 
         public ShipDefinition Definition { get; }
         public IReadOnlyList<CoreDeviceInfo> Devices { get; }
+
+        public SpriteId ModelImage { get; }
+        public float ModelScale { get; }
+    }
+
+    // What a bullet or beam view needs from the database (phase 4, step 5, "Views (5)"). Prefab is null when the
+    // ammunition has no BulletPrefab record. ParentColor is legacy BulletStats.Color: the weapon's colour, else the body's.
+    // HitEffect is the first PlaySfx trigger on Hit with a visual effect, or null.
+    public readonly struct CoreBulletSource
+    {
+        public CoreBulletSource(BulletPrefab prefab, float bodySize, ColorData parentColor, BulletTrigger_PlaySfx hitEffect)
+        {
+            Prefab = prefab;
+            BodySize = bodySize;
+            ParentColor = parentColor;
+            HitEffect = hitEffect;
+        }
+
+        public readonly BulletPrefab Prefab;
+        public readonly float BodySize;
+        public readonly ColorData ParentColor;
+        public readonly BulletTrigger_PlaySfx HitEffect;
     }
 
     public readonly struct CoreDeviceInfo

@@ -66,7 +66,8 @@ namespace Combat.Integration.Core
             _runner = new BattleRunner(setup, _pilots);
 
             var bulletSprite = resourceLocator.GetSprite(new SpriteId(BulletSpriteName, SpriteId.Type.Ammunition));
-            _renderer = new BattleRenderer(torus, PlayerSide, bulletSprite, scene);
+            _renderer = new BattleRenderer(torus, bulletSprite, resourceLocator.GetSprite(FlashSpriteName), scene);
+            _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, resourceLocator);
             _anchor = new Vector2(0.5f * setup.Width, 0.5f * setup.Height);
 
             messenger.AddListener(EventType.EscapeKeyPressed, OnEscapeKeyPressed);
@@ -327,9 +328,9 @@ namespace Combat.Integration.Core
                 {
                     case BattleEventKind.Spawn:
                         if (item.IsBullet)
-                            _renderer.AddBullet(item);
+                            _renderer.AddBullet(item, _bulletVisuals.Get(item));
                         else if (item.IsDrone)
-                            _renderer.AddDrone(item.EntityId, item.Definition);
+                            OnDroneSpawned(item);
                         else
                             OnShipSpawned(snapshot, item);
                         break;
@@ -346,6 +347,9 @@ namespace Combat.Integration.Core
                         break;
                     case BattleEventKind.Rename:
                         _renderer.RenameBullet(item.PreviousId, item.EntityId);
+                        break;
+                    case BattleEventKind.Hit:
+                        _renderer.AddHit(item);
                         break;
                 }
             }
@@ -364,6 +368,12 @@ namespace Combat.Integration.Core
 
             var model = specification.Stats.ShipModel;
             _renderer.AddShip(item.EntityId, _resourceLocator.GetSprite(model.ModelImage), model.ModelScale);
+        }
+
+        private void OnDroneSpawned(in BattleEvent item)
+        {
+            var mapping = _mapper.Mappings[item.Definition];
+            _renderer.AddShip(item.EntityId, _resourceLocator.GetSprite(mapping.ModelImage), mapping.ModelScale);
         }
 
         // The roster transition of the same removal comes later in the batch, so the ID stays mapped until the tick ends.
@@ -631,6 +641,8 @@ namespace Combat.Integration.Core
         private const long NoPendingDeploy = -1;
         private const float ExitDelaySeconds = 3f;
         private const string BulletSpriteName = "ball";
+        // Legacy Flash effect prefab image.
+        private const string FlashSpriteName = "Textures/star";
 
         private BattleRunner _runner;
         private readonly CorePilotProvider _pilots;
@@ -654,6 +666,7 @@ namespace Combat.Integration.Core
         private readonly List<CoreEntityId> _removed = new List<CoreEntityId>();
         private readonly EntityIdMap _ids = new EntityIdMap();
         private readonly BattleRenderer _renderer;
+        private readonly CoreBulletVisuals _bulletVisuals;
         private readonly LegacyViewRect _framing = new LegacyViewRect();
 
         private readonly ICombatModel _combatModel;
