@@ -37,11 +37,12 @@ The record also has the [common fields](index.md#common-fields).
 | `Size` | float | 0…1000 | Body scale. For an area bullet (`HitAllTargets` or `DamageOverTime` with effects) the weapon's area multiplier also scales it ([BulletStats.cs:124](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletStats.cs#L124)). It is also the muzzle flash size. |
 | `Length` | float | 0…1000 | Length of a moving beam: a beam shape with a non-beam controller and a speed above 0. `0` uses `Size` ([BulletFactory.cs:298](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletFactory.cs#L298)). Other bullets ignore it. |
 | `Velocity` | float | 0…1000 | Start speed in units per second. The `Beam` controller ignores it. The modification `WeaponBulletSpeed` multiplies it. |
-| `ParentVelocityEffect` | float | 1, −1000…1000 | Part of the launcher's velocity that the bullet inherits at launch. `0` makes the bullet ignore the ship's motion. It also scales the recoil value that the AI reads. |
+| `ParentVelocityEffect` | float | 1, −1000…1000 | Part of the launcher's velocity that the bullet inherits at launch. `0` makes the bullet ignore the ship's motion. |
 | `AttachedToParent` | bool | | The bullet moves in the launcher's coordinate space: beams, auras, and charge effects. A spawned bullet attaches to its parent bullet. Attached bullets vanish when the weapon is removed. |
 | `Range` | float | 0…999999999 | Maximum distance. Beams use it as the ray length. Homing and harpoon controllers use it as their search and leash range. When `Lifetime` is 0, the lifetime is `Range / Velocity`. |
 | `Lifetime` | float | 0…999999999 | Seconds until the bullet expires. `0` derives it from `Range / Velocity`, and gives 0 when either is 0. A `Beam` restores its lifetime every step while the weapon is held, and stays for `Lifetime` after release. |
 | `Weight` | float | 0…999999999 | Bullet mass. It sets the physics mass. Homing bullets scale their turn rate and acceleration by `1 / (0.2 + 2 × Weight)` ([BulletFactory.cs:248](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletFactory.cs#L248)). The modification `WeaponBulletMass` multiplies it. |
+| `Recoil` | float | 0…999999999 | Push on the launcher per shot: `−Recoil × (0.5 + 0.5p) ×` weight multiplier `×` the bullet's speed relative to the launcher, as obsolete ammunition. `0` (default) gives no recoil. Attached bullets have none ([BulletFactory.cs](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletFactory.cs), `ApplyRecoil`). The AI reads the same value (see [Stat scaling](#stat-scaling)). |
 | `HitPoints` | int | 0…999999999 | Above 0, the bullet is a missile that other bullets can shoot down. Its hit points are `HitPoints ×` the ship's armor multiplier ([WeaponFactory.cs:27](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Systems/WeaponFactory.cs#L27), [ShipFactory.cs:120](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/ShipFactory.cs#L120)). With `HitFirstTarget`, a missile detonates at the target instead of vanishing. |
 | `Color` | color | white | Bullet color. A spawned bullet ignores it and takes the color of its trigger (see [Spawned bullets](#spawned-bullets)). |
 | `BulletPrefab` | ref [BulletPrefab](BulletPrefab.md) | | The look. `0` makes an invisible area bullet: the base prefab `AreaOfEffect`, treated as a `Mine` shape (no direction, not a beam) ([BulletFactory.cs:318](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletFactory.cs#L318), [PrefabCache.cs:123](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Services/PrefabCache.cs#L123)). 15 built-in records: explosions, clouds, a rift, and the invisible carriers of the `Retribution` devices. |
@@ -59,10 +60,11 @@ The record also has the [common fields](index.md#common-fields).
 | Field | Type | Case | Default / range | Meaning |
 | --- | --- | --- | --- | --- |
 | `Type` | enum [BulletControllerType](enums.md#bulletcontrollertype) | | `Projectile` | See the controller table below. |
-| `StartingVelocityModifier` | float | `Homing` | 1, 0…1000 | Multiplies the launch speed. Missiles use 0.1 to start slowly and accelerate ([BulletFactory.cs:202](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletFactory.cs#L202)). |
+| `StartingVelocityModifier` | float | `Homing`, `Rocket` | 1, 0…1000 | Multiplies the launch speed. Missiles use 0.1 to start slowly and accelerate ([BulletFactory.cs:202](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletFactory.cs#L202)). |
 | `IgnoreRotation` | bool | `Homing` | | Uses `MagneticController`: the bullet drifts toward the target without turning its nose. Otherwise `HomingController`. |
 | `SmartAim` | bool | `Homing` | | Leads the target instead of flying at its current position. |
 | `Lifetime` | float | `StickyMine` | 0… | Seconds the mine stays on the target before it detonates. |
+| `TrackingAngle` | float | `Beam` | 0…180 | Above 0, the beam turns toward the target it touches, at most this many degrees from the weapon direction (`LookAtTargetController`, as obsolete energy beams with 60). `0` (default) keeps the fixed beam. |
 | `X`, `Y` | expression `FloatToFloat(t)` | `Parametric` | `0` | Offset from the launch point at `t` seconds, in the launch frame. |
 | `Rotation` | expression `FloatToFloat(t)` | `Parametric` | `0` | Rotation in degrees, added to the launch rotation. |
 | `Size` | expression `FloatToFloat(t)` | `Parametric` | `1` | Scale factor of the launch scale. |
@@ -77,6 +79,7 @@ The record also has the [common fields](index.md#common-fields).
 | `Harpoon` | Ropes the bullet to the owner, sticks to the first target, and breaks past 1.5 × `Range`. | [HarpoonController](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Controller/HarpoonController.cs) |
 | `AuraEmitter` | Grows to full size, then shrinks over `Body.Lifetime`. It uses the raw `Lifetime`, not the scaled one ([BulletFactory.cs:283](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletFactory.cs#L283)). | [AuraController](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Controller/AuraController.cs) |
 | `StickyMine` | Sticks to the first target and detonates after `Lifetime`. | [StickyController](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Controller/StickyController.cs) |
+| `Rocket` | Unguided. Accelerates along its nose to the bullet speed with `speed / (0.1 + weight)`, as the obsolete unguided rocket. | [RocketController](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Controller/RocketController.cs) |
 
 A beam shape with a non-continuous controller and a speed above 0 becomes a moving beam: it grows to its length, then flies ([BulletFactory.cs:296](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletFactory.cs#L296)).
 
@@ -149,7 +152,7 @@ A bullet with `HitPoints` above 0 is always a `Missile` unit ([BulletFactory.cs:
 | `PushFromCenter`, `PullToCenter` | Radial impulse | | *Eff* |
 | `DrainEnergy` | Energy removed | | *Eff* |
 | `SiphonHitPoints` | Damage of `DamageType` | Part of the damage after resistance that repairs the owner | *Dmg* |
-| `SlowDown` | Part of the velocity removed: `Power / √(target weight)`, at most 1 | | *Eff* |
+| `SlowDown` | Part of the velocity and spin removed (ships only): `Power / √(target weight)`, at most 1 | | *Eff* |
 | `CaptureDrones`, `DriveDronesCrazy` | | | |
 | `Repair` | Repair of allies | Damage multiplier against enemies | *Dmg* |
 | `RechargeShield` | Shield restored on allies | Shield damage multiplier against enemies | *Dmg* |
@@ -159,6 +162,11 @@ A bullet with `HitPoints` above 0 is always a `Missile` unit ([BulletFactory.cs:
 | `Devour` | Damage of `DamageType` to ships, shields, limbs, and space objects. Asteroids and other bullets are destroyed. A hit on a starbase destroys the bullet. | | *Dmg* |
 | `IgnoreShield` | | | |
 | `RestoreLifetime` | Seconds of lifetime regained per hit on a ship or drone | Part of the lifetime removed at launch | none |
+| `DamageWithFalloff` | Damage of `DamageType` × falloff | | *Dmg* |
+| `PushFromCenterWithFalloff` | Radial impulse × falloff | | *Eff* |
+| `Roll` | Spin on a new contact: angular acceleration `Power × 180 / √(target weight)` in the target's spin direction | | *Eff* |
+
+Falloff (legacy explosions): `clamp01((R + target scale − distance) / R)`, where `R` is half the bullet scale and the distance runs between the centres. It is 1 at the centre and 0 once the target's edge leaves the radius ([ApplyExplosionDamageAction.cs](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Collision/Behaviour/Action/ApplyExplosionDamageAction.cs), `GetFalloff`). Meant for area bullets.
 
 `Repair`, `RechargeShield`, and `RechargeEnergy` decide ally or enemy by the owner's side. Only `FriendlyFire` bullets reach allies.
 
@@ -176,7 +184,7 @@ A bullet with `HitPoints` above 0 is always a `Missile` unit ([BulletFactory.cs:
 | Energy cost | `EnergyCost ×` energy cost multiplier | [line 106](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletStats.cs#L106) |
 | Hit points | `HitPoints ×` ship armor multiplier | [line 137](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletStats.cs#L137) |
 | Flash | size `Size × (0.5 + 0.5p)`, color = bullet color, duration 0.2 s or the beam lifetime | [line 100](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletStats.cs#L100) |
-| AI recoil | `weight × speed × StartingVelocityModifier × ParentVelocityEffect` | [line 110](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletStats.cs#L110) |
+| Recoil (push and AI) | `Recoil × (0.5 + 0.5p) ×` weight multiplier. The AI divides it by the ship weight. | [line 110](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletStats.cs#L110) |
 
 `MashineGun` and `MultiShot` weapons set a random factor of 0.2 and 0.3 ([Weapon: Weapon classes](Weapon.md#weapon-classes)). Spawned bullets also scale range, length, and speed by the area multiplier.
 

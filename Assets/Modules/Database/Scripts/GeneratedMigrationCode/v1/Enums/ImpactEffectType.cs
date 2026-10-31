@@ -29,5 +29,8 @@ namespace DatabaseMigration.v1.Enums
 		ProgressiveDamage,
 		PushFromCenter,
 		PullToCenter,
+		Roll,
+		DamageWithFalloff,
+		PushFromCenterWithFalloff,
 	}
 }

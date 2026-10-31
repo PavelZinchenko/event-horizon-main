@@ -228,12 +228,15 @@ What an `ImpactEffect` does on contact. `Power` is the strength. `Factor` is a s
 | 16 | `ProgressiveDamage` | Damage over time that ramps up over `Factor` seconds. |
 | 17 | `PushFromCenter` | Pushes the target away from the bullet center. |
 | 18 | `PullToCenter` | Pulls the target toward the bullet center. |
+| 19 | `Roll` | Spins the target. |
+| 20 | `DamageWithFalloff` | `Damage` that falls off linearly from the bullet centre. |
+| 21 | `PushFromCenterWithFalloff` | `PushFromCenter` that falls off linearly from the bullet centre. |
 
 ### BulletControllerType
 
 How a bullet moves. See [Ammunition](Ammunition.md#bulletcontroller-switch).
 
-`Projectile` (0), `Homing` (1), `Beam` (2), `Parametric` (3), `Harpoon` (4), `AuraEmitter` (5), `StickyMine` (6).
+`Projectile` (0), `Homing` (1), `Beam` (2), `Parametric` (3), `Harpoon` (4), `AuraEmitter` (5), `StickyMine` (6), `Rocket` (7, unguided, accelerates).
 
 ### BulletTriggerCondition
 

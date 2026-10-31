@@ -13,7 +13,12 @@ namespace GameDatabase.DataModel
     {
         public override float StartingVelocityMultiplier => StartingVelocityModifier;
     }
-    
+
+    public partial class BulletController_Rocket
+    {
+        public override float StartingVelocityMultiplier => StartingVelocityModifier;
+    }
+
     public partial class BulletController_Beam
     {
         public override bool Continuous => true;

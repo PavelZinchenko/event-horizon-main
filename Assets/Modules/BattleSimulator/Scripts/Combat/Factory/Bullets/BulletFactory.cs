@@ -77,6 +77,7 @@ namespace Combat.Factory
             bullet.DamageHandler = CreateDamageHandler(bullet);
             _triggerBuilder.Build(bullet, collisionBehaviour);
             _scene.AddUnit(bullet);
+            ApplyRecoil(parent, bullet);
             bullet.UpdateView(0);
             bullet.AddResource(bulletGameObject);
             if (bullet.Body.Parent != null)
@@ -84,6 +85,14 @@ namespace Combat.Factory
 
             bullet.UpdatePhysics(0);
             return bullet;
+        }
+
+        private void ApplyRecoil(IWeaponPlatform parent, IBullet bullet)
+        {
+            var recoil = _stats.Recoil;
+            if (recoil <= 0 || _ammunition.Body.AttachedToParent) return;
+
+            parent.Body.ApplyForce(bullet.Body.WorldPosition(), -recoil * (bullet.Body.WorldVelocity() - parent.Body.WorldVelocity()));
         }
 
         private bool CanSiphonHitpoints()
@@ -138,6 +147,12 @@ namespace Combat.Factory
                     collisionBehaviour.AddAction(new DevourAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.IgnoreShield)
                     collisionBehaviour.AddAction(new IgnoreShieldAction());
+                else if (effect.Type == ImpactEffectType.Roll)
+                    collisionBehaviour.AddAction(new RollAction(effect.Power * _stats.EffectPowerMultiplier));
+                else if (effect.Type == ImpactEffectType.DamageWithFalloff)
+                    collisionBehaviour.AddAction(new DealDamageAction(effect.DamageType, effect.Power * _stats.DamageMultiplier, impactType, falloff: true));
+                else if (effect.Type == ImpactEffectType.PushFromCenterWithFalloff)
+                    collisionBehaviour.AddAction(new RadialPushAction(effect.Power * _stats.EffectPowerMultiplier, impactType, falloff: true));
                 else if (effect.Type == ImpactEffectType.RestoreLifetime)
                 {
                     bullet.Lifetime.Take(bullet.Lifetime.Max * effect.Factor);
@@ -276,8 +291,13 @@ namespace Combat.Factory
                             0.5f * bulletSpeed / (0.2f + weight * 2), range, homing.SmartAim, _scene);
                     }
                     break;
-                case BulletController_Beam:
-                    controller = new BeamController(bullet, spread, rotationOffset + bullet.Body.Rotation);
+                case BulletController_Beam beam:
+                    controller = beam.TrackingAngle > 0
+                        ? new LookAtTargetController(bullet, beam.TrackingAngle, spread)
+                        : new BeamController(bullet, spread, rotationOffset + bullet.Body.Rotation);
+                    break;
+                case BulletController_Rocket:
+                    controller = new RocketController(bullet, bulletSpeed, bulletSpeed / (0.1f + weight));
                     break;
                 case BulletController_AuraEmitter:
                     controller = new AuraController(bullet, _stats.BodySize, _ammunition.Body.Lifetime);

@@ -7,10 +7,11 @@ namespace Combat.Collision.Behaviour.Action
 {
     public class RadialPushAction : ICollisionAction
     {
-        public RadialPushAction(float impulse, BulletImpactType impactType)
+        public RadialPushAction(float impulse, BulletImpactType impactType, bool falloff = false)
         {
             _impactType = impactType;
             _impulse = impulse;
+            _falloff = falloff;
         }
 
         public void Invoke(IUnit self, IUnit target, CollisionData collisionData, ref Impact selfImpact, ref Impact targetImpact)
@@ -31,6 +32,7 @@ namespace Combat.Collision.Behaviour.Action
         {
             var center = self.Body.WorldPosition();
             var position = target.Body.WorldPosition();
+            if (_falloff) power *= ApplyExplosionDamageAction.GetFalloff(self, target);
             var impulse = (position - center).normalized * power;
             targetImpact.AddImpulse(center, impulse);
         }
@@ -40,5 +42,6 @@ namespace Combat.Collision.Behaviour.Action
         private bool _isAlive = true;
         private readonly float _impulse;
         private readonly BulletImpactType _impactType;
+        private readonly bool _falloff;
     }
 }

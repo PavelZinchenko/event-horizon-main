@@ -267,6 +267,7 @@ namespace Constructor.Component
                 switch (effect.Type)
                 {
                     case ImpactEffectType.Damage:
+                    case ImpactEffectType.DamageWithFalloff:
                     case ImpactEffectType.SiphonHitPoints:
                     case ImpactEffectType.Devour:
                         impactDamage.Add(effect.Power * powerMultiplier, effect.DamageType);
@@ -336,6 +337,7 @@ namespace Constructor.Component
                 switch (effect.Type)
                 {
                     case ImpactEffectType.Damage:
+                    case ImpactEffectType.DamageWithFalloff:
                     case ImpactEffectType.SiphonHitPoints:
                     case ImpactEffectType.Devour:
                         impactDamage.Add(effect.Power * powerMultiplier, effect.DamageType);
