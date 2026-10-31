@@ -1,0 +1,26 @@
+{
+  "ItemType": 25,
+  "Id": 52,
+  "Body": {
+    "Size": 0.8,
+    "Velocity": 5.0,
+    "Range": 30.0,
+    "Color": "#FFFF80",
+    "BulletPrefab": 30,
+    "EnergyCost": 5.0
+  },
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "AudioClip": "shot_01"
+    }
+  ],
+  "ImpactType": 2,
+  "Effects": [
+    {
+      "DamageType": 2,
+      "Power": 90.0
+    }
+  ]
+}

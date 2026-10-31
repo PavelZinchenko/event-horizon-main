@@ -24,7 +24,8 @@ namespace Combat.Effects
                 if (value)
                 {
                     var distance = Vector2.Distance(_parent.position, _scene.ViewPoint) + 20;
-                    var power = _parent.localScale.z * Size;
+                    // World size: a composite on a bullet scales with the bullet (mapping table, S1).
+                    var power = _parent.lossyScale.z * Size;
                     _scene.Shake(Mathf.Min(2.0f * power / Mathf.Sqrt(distance), 5f));
                 }
 

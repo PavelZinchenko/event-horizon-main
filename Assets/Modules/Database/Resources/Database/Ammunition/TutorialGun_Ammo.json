@@ -1,0 +1,36 @@
+{
+  "ItemType": 25,
+  "Id": 84,
+  "Body": {
+    "Size": 0.5,
+    "Velocity": 15.0,
+    "Range": 15.0,
+    "BulletPrefab": 34,
+    "EnergyCost": 1.0,
+    "CanBeDisarmed": true
+  },
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "AudioClip": "shot_03"
+    },
+    {
+      "Condition": 3,
+      "EffectType": 1,
+      "VisualEffect": 1,
+      "Size": 3.0,
+      "Lifetime": 0.2
+    },
+    {
+      "Condition": 6,
+      "EffectType": 1,
+      "AudioClip": "hit_01"
+    }
+  ],
+  "Effects": [
+    {
+      "Power": 5.0
+    }
+  ]
+}

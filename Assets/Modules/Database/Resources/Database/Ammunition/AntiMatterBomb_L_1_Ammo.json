@@ -1,0 +1,24 @@
+{
+  "ItemType": 25,
+  "Id": 3,
+  "Body": {
+    "Size": 3.0,
+    "AttachedToParent": true,
+    "Lifetime": 0.5,
+    "Color": "#401080",
+    "EnergyCost": 20.0,
+    "AiBulletBehavior": 3
+  },
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "AudioClip": "explosion_03"
+    },
+    {
+      "Condition": 1,
+      "EffectType": 2,
+      "Ammunition": 158
+    }
+  ]
+}

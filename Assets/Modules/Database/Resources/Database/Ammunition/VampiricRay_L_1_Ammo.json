@@ -1,0 +1,41 @@
+{
+  "ItemType": 25,
+  "Id": 87,
+  "Body": {
+    "Size": 2.0,
+    "AttachedToParent": true,
+    "Range": 20.0,
+    "Lifetime": 0.05,
+    "Color": "#80FF4020",
+    "BulletPrefab": 6,
+    "EnergyCost": 20.0,
+    "AiBulletBehavior": 2
+  },
+  "Controller": {
+    "Type": 2,
+    "TrackingAngle": 60.0
+  },
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "AudioClip": "*flux_04"
+    },
+    {
+      "Condition": 3,
+      "EffectType": 1,
+      "VisualEffect": 1,
+      "Size": 3.0,
+      "Lifetime": 0.2
+    }
+  ],
+  "ImpactType": 2,
+  "Effects": [
+    {
+      "Type": 4,
+      "DamageType": 3,
+      "Power": 55.0,
+      "Factor": 1.0
+    }
+  ]
+}

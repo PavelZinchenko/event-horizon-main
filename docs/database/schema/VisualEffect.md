@@ -11,7 +11,7 @@ Back to the [schema index](index.md).
 | Item type | `26` |
 | Kind | collection |
 | Folder | [`Resources/Database/Ammunition/Effects/`](../../../Assets/Modules/Database/Resources/Database/Ammunition/Effects/) |
-| Records in the built-in catalog | 24, with 62 elements. Record 4 is unused. No element uses `Sprite`, `Offset`, or `Rotation`. |
+| Records in the built-in catalog | 35, with 84 elements. Records 25-35 come from the legacy area and bullet effects ([AmmunitionObsolete: Conversion](AmmunitionObsolete.md#conversion)). Record 4 is unused. 3 elements use `Sprite`; none uses `Offset` or `Rotation`. |
 | Schema | [VisualEffect.xml](../../../Assets/Modules/Database/.Schema/v1/Objects/Weapon/VisualEffect.xml), [VisualEffectElement.xml](../../../Assets/Modules/Database/.Schema/v1/Objects/Weapon/VisualEffectElement.xml) |
 | Generated class | `GameDatabase.DataModel.VisualEffect` ([generated](../../../Assets/Modules/Database/Scripts/GeneratedGameCode/DataModel/VisualEffect.cs)) |
 | Runtime | [`CompositeEffect`](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/CompositeEffect.cs) with element prefabs from [`PrefabCache.GetEffectPrefab`](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Services/PrefabCache.cs#L151) |
@@ -75,7 +75,7 @@ Base prefabs: [PrefabCache.cs:151](../../../Assets/Modules/BattleSimulator/Scrip
 | `Flash`, `FlashAdditive` | `Flash`, `FlashAdditive` | Sprite flash. The additive version brightens. |
 | `Shockwave` | `Wave` | Ring that expands from 0 to full size over its life, drawn with the image texture. |
 | `Smoke`, `SmokeAdditive` | `SmokeSimple`, `SmokeSimpleAdditive` | Random offset, size, tint, and spin by `ParticleSize` ([SmokeEffect.cs:28](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/SmokeEffect.cs#L28)). |
-| `Shake` | none | Shakes the camera each time the element becomes visible. Strength: `min(2 × effect size × Size / √(distance + 20), 5)` ([ShakeEffect.cs:24](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/ShakeEffect.cs#L24)). |
+| `Shake` | none | Shakes the camera each time the element becomes visible. Strength: `min(2 × effect size × Size / √(distance + 20), 5)` ([ShakeEffect.cs:24](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/ShakeEffect.cs#L24)). The effect size is the effect's world size: for a `PlaySfx` effect on a bullet, the trigger `Size` × the bullet scale (since phase 4, step 4c; [mapping table, S1](../../../TODO/battle_simulator_ammo_mapping.md#visual-effects)). |
 | `Spark` | `Spark` | Sparks fly in random directions at speed `Size`, spin, and swirl by `TurnRate` ([SparkEffect.cs:24](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/SparkEffect.cs#L24)). |
 | `Lightning` | `LightningStrike` | Animated lightning that changes direction every frame. |
 | `LightningStrike` | `LightningStrike` | One lightning bolt that fades ([LightningEffect.cs:41](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/LightningEffect.cs#L41)). |

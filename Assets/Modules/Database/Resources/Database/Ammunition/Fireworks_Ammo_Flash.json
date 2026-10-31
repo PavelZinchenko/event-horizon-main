@@ -1,0 +1,27 @@
+{
+  "ItemType": 25,
+  "Id": 162,
+  "Body": {
+    "Size": 3.0,
+    "ParentVelocityEffect": 0.0,
+    "Lifetime": 0.3,
+    "AiBulletBehavior": 3
+  },
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "VisualEffect": 30,
+      "Size": 0.5,
+      "Lifetime": 0.3
+    }
+  ],
+  "ImpactType": 1,
+  "Effects": [
+    {
+      "Type": 20,
+      "DamageType": 2,
+      "Power": 1.0
+    }
+  ]
+}

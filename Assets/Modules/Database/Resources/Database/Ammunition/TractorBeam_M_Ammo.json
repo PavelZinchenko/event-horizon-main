@@ -1,0 +1,25 @@
+{
+  "ItemType": 25,
+  "Id": 83,
+  "Body": {
+    "Size": 1.0,
+    "AttachedToParent": true,
+    "Range": 12.0,
+    "Lifetime": 0.05,
+    "Color": "#208020",
+    "BulletPrefab": 33,
+    "EnergyCost": 1.0,
+    "AiBulletBehavior": 2
+  },
+  "Controller": {
+    "Type": 2
+  },
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "AudioClip": "*flux_06"
+    }
+  ],
+  "ImpactType": 2
+}

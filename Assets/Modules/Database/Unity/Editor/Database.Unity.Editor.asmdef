@@ -2,7 +2,8 @@
     "name": "Database.Unity.Editor",
     "rootNamespace": "GameDatabase",
     "references": [
-        "CombatSimulation.Physics"
+        "CombatSimulation.Physics",
+        "Database"
     ],
     "includePlatforms": [
         "Editor"

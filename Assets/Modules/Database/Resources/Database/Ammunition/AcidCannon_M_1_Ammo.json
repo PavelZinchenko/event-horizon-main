@@ -1,0 +1,36 @@
+{
+  "ItemType": 25,
+  "Id": 1,
+  "Body": {
+    "Size": 0.9,
+    "Velocity": 5.0,
+    "Range": 15.0,
+    "Color": "#C0DBFF00",
+    "EnergyCost": 5.0
+  },
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "AudioClip": "shot_07"
+    },
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "VisualEffect": 25,
+      "SyncLifetimeWithBullet": true
+    },
+    {
+      "Condition": 6,
+      "EffectType": 1,
+      "AudioClip": "shot_01"
+    }
+  ],
+  "ImpactType": 2,
+  "Effects": [
+    {
+      "DamageType": 3,
+      "Power": 30.0
+    }
+  ]
+}
