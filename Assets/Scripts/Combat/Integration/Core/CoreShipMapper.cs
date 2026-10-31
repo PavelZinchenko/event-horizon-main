@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Combat.Domain;
+using Combat.Factory;
+using CombatSimulation.Ai;
 using CombatSimulation.Core;
 using CombatSimulation.Physics;
 using Constructor;
@@ -39,6 +41,8 @@ namespace Combat.Integration.Core
             var barrels = new List<BarrelDefinition>();
             var devices = new List<DeviceDefinition>();
             var infos = new List<CoreDeviceInfo>();
+            var aiWeapons = new List<AiWeapon>();
+            var aiDevices = new List<DeviceClass>();
 
             foreach (var platform in specification.Platforms)
             {
@@ -58,6 +62,8 @@ namespace Combat.Integration.Core
                         ? Inert("satellite weapon", out reason)
                         : CoreWeaponMapper.Map(weapon, barrelIndex, stats.ArmorMultiplier.Value, out reason);
                     AddBulletSource(device, weapon);
+                    if (device != null)
+                        aiWeapons.Add(ToAiWeapon(weapon, devices.Count, Positive(stats.Weight)));
                     var cost = device is BeamDefinition beam ? beam.ActivationCost : (device as CannonDefinition)?.EnergyCost ?? 0f;
                     Add(devices, infos, device, new CoreDeviceInfo(name, weapon.KeyBinding, weapon.Weapon.Stats.ControlButtonIcon, cost, reason));
                 }
@@ -82,6 +88,7 @@ namespace Combat.Integration.Core
                         NonNegative(device.Cooldown),
                         NonNegative(device.EnergyConsumption),
                         NonNegative(device.Power * stats.DamageMultiplier.Value));
+                    aiDevices.Add(device.DeviceClass);
                     Add(devices, infos, pointDefense,
                         new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, device.EnergyConsumption, null));
                 }
@@ -95,10 +102,11 @@ namespace Combat.Integration.Core
             if (!isDrone)
                 AddDroneBays(specification, devices, infos);
 
+            var engine = new EngineStats(stats.EnginePower, stats.TurnRate, stats.Weight, stats.Layout.CellCount, _database.ShipSettings);
             var definition = new ShipDefinition(
                 _hullBuilder.Build(stats.ShipModel),
                 Positive(stats.Weight),
-                ToEngine(new EngineStats(stats.EnginePower, stats.TurnRate, stats.Weight, stats.Layout.CellCount, _database.ShipSettings)),
+                ToEngine(engine),
                 Positive(stats.ArmorPoints),
                 new ResourceDefinition(NonNegative(stats.ShieldPoints), stats.ShieldRechargeRate, NonNegative(stats.ShieldRechargeCooldown)),
                 new ResourceDefinition(NonNegative(stats.EnergyPoints), stats.EnergyRechargeRate, NonNegative(stats.EnergyRechargeCooldown)),
@@ -114,8 +122,20 @@ namespace Combat.Integration.Core
                     NonNegative(stats.EnergyAbsorptionPercentage),
                     Positive(stats.ArmorMultiplier.Value)));
 
+            // AI side table (phase 4, step 6, T2): the legacy RequirementChecker facts without inert devices (D6).
+            var ai = new AiShipProfile(aiWeapons, aiDevices,
+                hasDroneBays: !isDrone && specification.DroneBays.Any(),
+                isDrone: isDrone,
+                isStarbase: stats.ShipModel.ShipType == ShipType.Starbase,
+                sizeClass: stats.ShipModel.SizeClass,
+                enginePower: stats.EnginePower,
+                turnRate: stats.TurnRate,
+                propulsion: engine.Propulsion,
+                kineticResistance: stats.KineticResistancePercentage,
+                rammingDamageMultiplier: stats.RammingDamageMultiplier);
+
             var mapping = new CoreShipMapping($"{(isDrone ? "drone" : "ship")} {specification.Info.Id.Value}", definition, infos,
-                stats.ShipModel.ModelImage, modelScale);
+                stats.ShipModel.ModelImage, modelScale, ai);
             _mappings[definition] = mapping;
             return mapping;
         }
@@ -152,6 +172,32 @@ namespace Combat.Integration.Core
             var body = weapon.Ammunition.Body;
             _bulletSources[key] = new CoreBulletSource(body.BulletPrefab, body.Size, weapon.Stats.Color ?? body.Color,
                 HitEffect(weapon.Ammunition));
+        }
+
+        // Legacy WeaponInfo from BulletStats at power level 1. Recoil counts for common weapons only, per unit of ship weight.
+        private static AiWeapon ToAiWeapon(IWeaponData weapon, int deviceIndex, float shipWeight)
+        {
+            var bullet = new BulletStats(weapon.Ammunition, weapon.Stats, false);
+            var weaponClass = ToAiWeaponClass(weapon.Weapon.Stats.WeaponClass);
+            var recoil = weaponClass == AiWeaponClass.Common ? bullet.Recoil / shipWeight : 0f;
+            return new AiWeapon(deviceIndex, weaponClass, bullet.BehaviorType, (AiWeaponCapability)bullet.Capability,
+                bullet.BulletHitRange, recoil);
+        }
+
+        // Legacy WeaponBase.GetWeaponType.
+        private static AiWeaponClass ToAiWeaponClass(WeaponClass weaponClass)
+        {
+            switch (weaponClass)
+            {
+                case WeaponClass.Manageable:
+                    return AiWeaponClass.Manageable;
+                case WeaponClass.Continuous:
+                    return AiWeaponClass.Continuous;
+                case WeaponClass.RequiredCharging:
+                    return AiWeaponClass.RequiredCharging;
+                default:
+                    return AiWeaponClass.Common;
+            }
         }
 
         private static BulletTrigger_PlaySfx HitEffect(Ammunition ammunition)

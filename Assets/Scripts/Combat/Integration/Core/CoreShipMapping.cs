@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CombatSimulation.Ai;
 using CombatSimulation.Core;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
@@ -6,17 +7,19 @@ using GameDatabase.Model;
 namespace Combat.Integration.Core
 {
     // The facts about one mapped ship that stay outside the core: legacy key bindings, button icons, activation costs
-    // and the inert devices (phase 4, step 3a), and the model the views draw (step 5). Every list is in device order.
+    // and the inert devices (phase 4, step 3a), the model the views draw (step 5) and the AI side table (step 6). Every
+    // list is in device order.
     public sealed class CoreShipMapping
     {
         public CoreShipMapping(string name, ShipDefinition definition, IReadOnlyList<CoreDeviceInfo> devices,
-            SpriteId modelImage, float modelScale)
+            SpriteId modelImage, float modelScale, AiShipProfile ai)
         {
             Name = name;
             Definition = definition;
             Devices = devices;
             ModelImage = modelImage;
             ModelScale = modelScale;
+            Ai = ai;
         }
 
         // For logs and reports: "ship" or "drone" and the legacy ship ID.
@@ -27,6 +30,8 @@ namespace Combat.Integration.Core
 
         public SpriteId ModelImage { get; }
         public float ModelScale { get; }
+
+        public AiShipProfile Ai { get; }
     }
 
     // What a bullet or beam view needs from the database (phase 4, step 5, "Views (5)"). Prefab is null when the

@@ -41,6 +41,7 @@
     <Compile Include="$(Assets)ModulesShared\CombatSimulation\Core\Scripts\**\*.cs" />
     <Compile Include="$(Assets)ModulesShared\CombatSimulation\Runtime\Scripts\**\*.cs" />
     <Compile Include="$(Assets)ModulesShared\CombatSimulation\Network\Scripts\**\*.cs" />
+    <Compile Include="$(Assets)ModulesShared\CombatSimulation\Ai\Scripts\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup Label="Tests">
@@ -53,6 +54,7 @@
     <Compile Include="$(Assets)ModulesShared\CombatSimulation\Core\Tests\**\*.cs" />
     <Compile Include="$(Assets)ModulesShared\CombatSimulation\Network\Tests\**\*.cs" />
     <Compile Include="$(Assets)ModulesShared\CombatSimulation\Runtime\Tests\**\*.cs" />
+    <Compile Include="$(Assets)ModulesShared\CombatSimulation\Ai\Tests\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup>
