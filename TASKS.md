@@ -21,7 +21,6 @@
 - [ ] Core combat scene: decide the camera whip toward a new player ship (`TODO/battle_simulator_scene.md`, step 4)
 - [In Progress] Migration phase 4: original ships/content and campaign result integration (`TODO/battle_simulator_phase4.md`; decisions D7-D11 open)
 - [ ] Database editor: collider editor for `Ship.Collider`, after migration phase 4 (`TODO/battle_simulator_phase4.md`, D5)
-- [ ] Phase 4 AI coverage gate: 70 of 74 trees unarmed; move damage over time, spawned bullets, area damage into M1 and recount (`TODO/battle_simulator_phase4.md`, M1)
 - [ ] Charged beam lifetime × (0.5 + 0.5 × charge) in `BulletStats` (deferred E2, `TODO/battle_simulator_ammo_mapping.md`, G9)
 - [ ] Capsule hit shape for long bullets (deferred E3, `TODO/battle_simulator_ammo_mapping.md`, G10)
 - [ ] Migration phase 5: built-in device coverage, data-model gate and explicit deferrals (`TODO/battle_simulator_migration.md`)
