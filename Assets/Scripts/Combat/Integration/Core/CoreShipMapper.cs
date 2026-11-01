@@ -42,7 +42,8 @@ namespace Combat.Integration.Core
             var devices = new List<DeviceDefinition>();
             var infos = new List<CoreDeviceInfo>();
             var aiWeapons = new List<AiWeapon>();
-            var aiDevices = new List<DeviceClass>();
+            var aiDevices = new List<AiDevice>();
+            var aiDroneBays = new List<AiDroneBay>();
 
             foreach (var platform in specification.Platforms)
             {
@@ -88,7 +89,7 @@ namespace Combat.Integration.Core
                         NonNegative(device.Cooldown),
                         NonNegative(device.EnergyConsumption),
                         NonNegative(device.Power * stats.DamageMultiplier.Value));
-                    aiDevices.Add(device.DeviceClass);
+                    aiDevices.Add(new AiDevice(devices.Count, device.DeviceClass, key < 0));
                     Add(devices, infos, pointDefense,
                         new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, device.EnergyConsumption, null));
                 }
@@ -100,7 +101,7 @@ namespace Combat.Integration.Core
             }
 
             if (!isDrone)
-                AddDroneBays(specification, devices, infos);
+                AddDroneBays(specification, devices, infos, aiDroneBays);
 
             var engine = new EngineStats(stats.EnginePower, stats.TurnRate, stats.Weight, stats.Layout.CellCount, _database.ShipSettings);
             var definition = new ShipDefinition(
@@ -125,8 +126,7 @@ namespace Combat.Integration.Core
             // AI side table (phase 4, steps 6 and 7b): the legacy RequirementChecker facts and the target facts, without
             // inert devices (D6). Legacy Ship gives a drone Low priority; the jammer, stealth and camouflage devices
             // that change it are inert.
-            var ai = new AiShipProfile(aiWeapons, aiDevices,
-                hasDroneBays: !isDrone && specification.DroneBays.Any(),
+            var ai = new AiShipProfile(aiWeapons, aiDevices, aiDroneBays,
                 isDrone: isDrone,
                 isStarbase: stats.ShipModel.ShipType == ShipType.Starbase,
                 sizeClass: stats.ShipModel.SizeClass,
@@ -146,7 +146,8 @@ namespace Combat.Integration.Core
         }
 
         // Legacy CreateDroneBays: clonning centers, then the replicator if the ship builds drones, then the bays.
-        private void AddDroneBays(IShipSpecification specification, List<DeviceDefinition> devices, List<CoreDeviceInfo> infos)
+        private void AddDroneBays(IShipSpecification specification, List<DeviceDefinition> devices, List<CoreDeviceInfo> infos,
+            List<AiDroneBay> aiDroneBays)
         {
             foreach (var item in specification.ClonningCenters)
                 Add(devices, infos, null, new CoreDeviceInfo(DeviceName(item.Device), item.KeyBinding, item.Device.ControlButtonIcon, 0f,
@@ -162,6 +163,7 @@ namespace Combat.Integration.Core
             {
                 var bay = item.DroneBay;
                 var drone = Map(BuildDrone(item), isDrone: true);
+                aiDroneBays.Add(new AiDroneBay(devices.Count, item.KeyBinding < 0));
                 Add(devices, infos, new DroneBayDefinition(System.Math.Max(1, bay.Capacity), NonNegative(bay.EnergyConsumption), drone.Definition),
                     new CoreDeviceInfo($"drone bay, drone {item.Drone.Id.Value}", item.KeyBinding, bay.ControlButtonIcon, 0f, null));
             }
@@ -180,13 +182,14 @@ namespace Combat.Integration.Core
         }
 
         // Legacy WeaponInfo from BulletStats at power level 1. Recoil counts for common weapons only, per unit of ship weight.
+        // The spread is the weapon's, in radians.
         private static AiWeapon ToAiWeapon(IWeaponData weapon, int deviceIndex, float shipWeight)
         {
             var bullet = new BulletStats(weapon.Ammunition, weapon.Stats, false);
             var weaponClass = ToAiWeaponClass(weapon.Weapon.Stats.WeaponClass);
             var recoil = weaponClass == AiWeaponClass.Common ? bullet.Recoil / shipWeight : 0f;
             return new AiWeapon(deviceIndex, weaponClass, bullet.BehaviorType, (AiWeaponCapability)bullet.Capability,
-                bullet.BulletHitRange, recoil);
+                bullet.BulletHitRange, recoil, weapon.Weapon.Stats.Spread * DegreesToRadians);
         }
 
         // Legacy WeaponBase.GetWeaponType.
