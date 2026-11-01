@@ -10,6 +10,9 @@
 - [ ] Emit enum `default` values as `Enum.Value`, not a quoted string, in game serializable DTOs
 - [ ] Parse expression `minvalue`/`maxvalue` as floats for `float` results
 
+## Open (quests — `docs/quests.md`)
+- [ ] Investigate: a quest beacon stays after its quest completes and lets the player start the quest again
+
 ## Planned (battle simulator — `docs/issues/battle_simulator.md`)
 - [ ] Performance gate: set a snapshot budget or close the risk; R1 measured 0.24 ms per tick at R2 (`TODO/battle_simulator_core.md`, risk 3)
 - [ ] Phase 7: run the network session on its own thread with short loop gaps (`TODO/battle_simulator_network.md`, "Open after the gate")
@@ -19,9 +22,7 @@
 - [ ] Phase 5 homing rework: homing copies that orbit a drone explode about 1 s early (`TODO/battle_simulator_network.md`, accepted defects)
 - [ ] Core combat scene: device cooldowns in the snapshot, sounds, legacy-quality effects, beacons (`TODO/battle_simulator_scene.md`, out of scope)
 - [ ] Core combat scene: decide the camera whip toward a new player ship (`TODO/battle_simulator_scene.md`, step 4)
-- [In Progress] Migration phase 4: original ships/content and campaign result integration (`TODO/battle_simulator_phase4.md`)
 - [ ] Cost test of the AI threat cut-off (more than 30 pilots) on the new simulator; remove it if not needed (`TODO/battle_simulator_phase4.md`, Targets (7c))
-- [ ] Owner playtest of the phase 4 M1 visual check, deferred to the end of phase 4 (`TODO/battle_simulator_phase4.md`, M1 check)
 - [ ] Database editor: collider editor for `Ship.Collider`, after migration phase 4 (`TODO/battle_simulator_phase4.md`, D5)
 - [ ] Charged beam lifetime × (0.5 + 0.5 × charge) in `BulletStats` (deferred E2, `TODO/battle_simulator_ammo_mapping.md`, G9)
 - [ ] Capsule hit shape for long bullets (deferred E3, `TODO/battle_simulator_ammo_mapping.md`, G10)
