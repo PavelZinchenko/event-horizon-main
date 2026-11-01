@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Combat.Integration.Core;
+using CombatSimulation.Ai;
 using CombatSimulation.Core;
 using Constructor;
 using GameDatabase;
@@ -17,7 +18,10 @@ using UnityEngine;
 // 2. behaviour trees that an armed ship or drone reaches from its root tree, SubTree nodes included (AI coverage gate,
 //    owner, 2026-10-31). Only 8 trees are roots, so the direct-name rule of 2026-10-29 could never pass. Live trees are
 //    the ones any build, drone bay or combat setting reaches; the rest are dead and stay out of the count;
-// 3. the inert reasons (D1) with counts, to order the work of steps 4 and 5.
+// 3. the inert reasons (D1) with counts, to order the work of steps 4 and 5;
+// 4. the stubbed node types each armed ship or drone reaches, by the tree that holds them, and the types ranked by tree
+//    count (step 7a). Stubs do not fold here; a ship counts at every AI level, a drone with its bay range. Each tree
+//    names up to three sample builds for the playtest, in build ID order.
 // A build uses its CustomAI, else the legacy default: StarbaseAI for starbases, EnemyAI for other ships. A drone uses its
 // bay's tree for its behaviour, else the drone build's CustomAI, else the default drone tree (ControllerFactory).
 public static class CoreShipBuildCheck
@@ -33,6 +37,7 @@ public static class CoreShipBuildCheck
         var failures = new StringBuilder();
         var reasons = new Dictionary<string, int>();
         var armedTrees = new HashSet<BehaviorTreeModel>();
+        var stubs = new StubReport();
         int builds = 0, mapped = 0, armed = 0;
 
         foreach (var build in database.ShipBuildList.OrderBy(item => item.Id.Value))
@@ -59,8 +64,11 @@ public static class CoreShipBuildCheck
             if (IsArmed(mapping.Definition))
             {
                 ++armed;
-                var tree = build.CustomAI ?? (build.Ship.ShipType == ShipType.Starbase ? settings.StarbaseAI : settings.EnemyAI);
+                var isStarbase = build.Ship.ShipType == ShipType.Starbase;
+                var tree = build.CustomAI ?? (isStarbase ? settings.StarbaseAI : settings.EnemyAI);
                 if (tree != null) armedTrees.Add(tree);
+                foreach (var aiSettings in isStarbase ? new[] { AiSettings.Default } : AiLevels)
+                    stubs.Add(tree, mapping.Ai, aiSettings, $"build {build.Id.Value}");
             }
 
             // Bay devices follow the platforms, devices, clonning centers and replicator in device order.
@@ -78,6 +86,7 @@ public static class CoreShipBuildCheck
                 if (tree == null && !item.DroneBay.ImprovedAi)
                     tree = item.Behaviour == DroneBehaviour.Aggressive ? settings.OffensiveDroneAI : settings.DefensiveDroneAI;
                 if (tree != null) armedTrees.Add(tree);
+                stubs.Add(tree, mapper.Mappings[drone].Ai, AiSettings.ForDrone(item.DroneBay.Range), $"drone of build {build.Id.Value}");
             }
         }
 
@@ -104,11 +113,66 @@ public static class CoreShipBuildCheck
         report.AppendLine("Inert devices by reason (ships and drones, counted per build):");
         foreach (var item in reasons.OrderByDescending(item => item.Value).ThenBy(item => item.Key))
             report.AppendLine($"  {item.Value,5}  {item.Key}");
+        stubs.Write(report);
         if (failures.Length > 0)
             report.Append("Failures:\n").Append(failures);
 
         if (failures.Length > 0) Debug.LogError(report.ToString());
         else Debug.Log(report.ToString());
+    }
+
+    private static readonly AiSettings[] AiLevels =
+    {
+        AiSettings.FromAiLevel(AiDifficultyLevel.Easy),
+        AiSettings.FromAiLevel(AiDifficultyLevel.Medium),
+        AiSettings.FromAiLevel(AiDifficultyLevel.Hard),
+    };
+
+    // Step 7a: tree ID → stub types and sample ships, and stub type → the ships that reach it.
+    private sealed class StubReport
+    {
+        public void Add(BehaviorTreeModel tree, AiShipProfile profile, AiSettings settings, string ship)
+        {
+            if (tree == null) return;
+
+            foreach (var item in BehaviorTreeFactory.CountStubs(tree, profile, settings))
+            {
+                if (!_byTree.TryGetValue(item.Key, out var types))
+                    _byTree.Add(item.Key, types = new SortedSet<string>());
+                if (!_samples.TryGetValue(item.Key, out var samples))
+                    _samples.Add(item.Key, samples = new List<string>());
+                if (samples.Count < SampleCount && !samples.Contains(ship))
+                    samples.Add(ship);
+
+                foreach (var type in item.Value)
+                {
+                    types.Add(type.ToString());
+                    if (!_ships.TryGetValue(type.ToString(), out var ships))
+                        _ships.Add(type.ToString(), ships = new HashSet<string>());
+                    ships.Add(ship);
+                }
+            }
+        }
+
+        public void Write(StringBuilder report)
+        {
+            report.AppendLine($"Trees that hold a stub an armed ship or drone reaches: {_byTree.Count}");
+            foreach (var item in _byTree)
+                report.AppendLine($"  tree {item.Key}: {string.Join(", ", item.Value)} (e.g. {string.Join("; ", _samples[item.Key])})");
+
+            report.AppendLine("Stub types by tree count (trees, armed ships and drones):");
+            var ranking = _byTree.SelectMany(item => item.Value.Select(type => (type, tree: item.Key)))
+                .GroupBy(item => item.type)
+                .OrderByDescending(group => group.Count()).ThenByDescending(group => _ships[group.Key].Count).ThenBy(group => group.Key);
+            foreach (var group in ranking)
+                report.AppendLine($"  {group.Count(),3} {_ships[group.Key].Count,4}  {group.Key}: trees {string.Join(", ", group.Select(item => item.tree))}");
+        }
+
+        private const int SampleCount = 3;
+
+        private readonly Dictionary<int, List<string>> _samples = new Dictionary<int, List<string>>();
+        private readonly SortedDictionary<int, SortedSet<string>> _byTree = new SortedDictionary<int, SortedSet<string>>();
+        private readonly Dictionary<string, HashSet<string>> _ships = new Dictionary<string, HashSet<string>>();
     }
 
     // Trees reachable from the roots through SubTree nodes, roots included.
