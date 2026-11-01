@@ -122,7 +122,9 @@ namespace Combat.Integration.Core
                     NonNegative(stats.EnergyAbsorptionPercentage),
                     Positive(stats.ArmorMultiplier.Value)));
 
-            // AI side table (phase 4, step 6, T2): the legacy RequirementChecker facts without inert devices (D6).
+            // AI side table (phase 4, steps 6 and 7b): the legacy RequirementChecker facts and the target facts, without
+            // inert devices (D6). Legacy Ship gives a drone Low priority; the jammer, stealth and camouflage devices
+            // that change it are inert.
             var ai = new AiShipProfile(aiWeapons, aiDevices,
                 hasDroneBays: !isDrone && specification.DroneBays.Any(),
                 isDrone: isDrone,
@@ -132,7 +134,10 @@ namespace Combat.Integration.Core
                 turnRate: stats.TurnRate,
                 propulsion: engine.Propulsion,
                 kineticResistance: stats.KineticResistancePercentage,
-                rammingDamageMultiplier: stats.RammingDamageMultiplier);
+                rammingDamageMultiplier: stats.RammingDamageMultiplier,
+                modelScale: modelScale,
+                targetPriority: isDrone ? AiTargetPriority.Low : AiTargetPriority.Normal,
+                chanceToAvoidDrone: 0f);
 
             var mapping = new CoreShipMapping($"{(isDrone ? "drone" : "ship")} {specification.Info.Id.Value}", definition, infos,
                 stats.ShipModel.ModelImage, modelScale, ai);
