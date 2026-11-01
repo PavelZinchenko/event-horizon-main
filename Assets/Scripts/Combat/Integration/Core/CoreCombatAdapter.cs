@@ -88,6 +88,9 @@ namespace Combat.Integration.Core
             _renderer = new BattleRenderer(torus, bulletSprite, resourceLocator.GetSprite(FlashSpriteName), textFont, scene);
             _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, resourceLocator);
             _anchor = new Vector2(0.5f * setup.Width, 0.5f * setup.Height);
+            // Step 10: the legacy planet, presentation only (D8).
+            if (!rules.DisablePlanet)
+                _planet = CorePlanet.Create(seed, torus, scene);
 
             messenger.AddListener(EventType.EscapeKeyPressed, OnEscapeKeyPressed);
             _playerInputSignal.Event += OnPlayerInput;
@@ -276,6 +279,7 @@ namespace Combat.Integration.Core
             _playerInputSignal.Event -= OnPlayerInput;
             _runner = null;
             _renderer.Dispose();
+            _planet?.Dispose();
             _views.Clear();
             _viewsByCore.Clear();
             _ids.Clear();
@@ -315,6 +319,7 @@ namespace Combat.Integration.Core
 
             var alpha = IsRunning ? Mathf.Clamp01(_accumulator / Battle.TickDuration) : 1f;
             _renderer.Render(alpha, controlled, ref _anchor, Time.deltaTime);
+            _planet?.Render(_anchor, Time.deltaTime);
 
             foreach (var pair in _viewsByCore)
                 if (_renderer.TryGetShipPose(pair.Key, out var position, out var degrees))
@@ -855,6 +860,7 @@ namespace Combat.Integration.Core
         private readonly EntityIdMap _ids = new EntityIdMap();
         private readonly BattleRenderer _renderer;
         private readonly CoreBulletVisuals _bulletVisuals;
+        private readonly CorePlanet _planet;
         private readonly LegacyViewRect _framing = new LegacyViewRect();
 
         private readonly ICombatModel _combatModel;
