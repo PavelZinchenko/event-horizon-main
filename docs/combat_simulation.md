@@ -131,7 +131,7 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
 
 1. Construct `NetworkSession(setup, pilots, transport, options)`. `NetworkSessionOptions` binds local and remote owners and selects the reference clock.
    Each roster owner must match that binding. The local owner must be local in `BattleSetup`; the remote owner must be remote.
-2. The session exposes `BattleId`, `Tick`, `Snapshot`, `IsCompleted`, `Clock`, and the existing roster and self-destruct command methods.
+2. The session exposes `BattleId`, `Tick`, `Snapshot`, `IsCompleted`, `Clock`, and the existing roster, self-destruct, vanish and allegiance command methods.
    Those commands retain their explicit target ticks. `SubmitControls(entity, originalTick, controls)` accepts player controls without an `IPilot`.
 3. `Pump(now)` exchanges network data without executing simulation ticks. It works before clock start and after completion.
    Wait for the follower's `Clock.HasEstimate`, then call `StartClock(now, referenceStartTime)` on both endpoints with the same reference epoch.
@@ -178,9 +178,9 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
 2. Input uses its own bit-packed section (`InputCodec`, version 1), not this header: version (8 bits), battle ID low 32 bits, base tick,
    then records until zero padding. A record holds control index, base tick − original tick, course (9 bits; 511: none), throttle (7 bits)
    and systems. Index, tick offset and systems are `VarUInt`. The sender is the owner of every record.
-   **Tick batch (reliable, G2, `SessionCodec` version 7).** One reliable message per tick holds the tick's operations in sequence
+   **Tick batch (reliable, G2, `SessionCodec` version 8).** One reliable message per tick holds the tick's operations in sequence
    order, then its hits. Header: version (8 bits), tick and last operation sequence (`VarUInt`). No battle ID: the connection is
-   bound to one battle. Then records until zero padding: kind (3 bits, from 1), record tick − batch tick (zigzag `VarUInt`; a beam
+   bound to one battle. Then records until zero padding: kind (4 bits from version 8, from 1), record tick − batch tick (zigzag `VarUInt`; a beam
    end record is one tick ahead), then the record fields. The sender is the owner of every record.
    - **Names by stream count.** The stream is ordered and exactly-once, so both peers count its records the same way (`StreamNames`).
      A ship or drone is named by its control index (spawn-record order). A bullet is named by its age: the latest bullet index minus
@@ -191,7 +191,7 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
      (1 bit). With the flag (plain projectiles, 9d P1): muzzle position per axis on the correction grid (1/1024 unit, bit count
      from the arena) and launch angle (14 bits); 51 bits in a 200-unit arena. The receiver derives the entity ID with
      `SpawnIdentity.CreateChild`; Core checks it.
-   - Removal: 1 kind bit, reason (3 bits), control index or bullet age. A drone's bay comes from its launch record.
+   - Removal: 1 kind bit, reason (3 bits; `Vanish` from version 8), control index or bullet age. A drone's bay comes from its launch record.
    - Hit: attacker (1 kind bit plus index or age), target (1 kind bit, then a control index in the receiver's stream or, for a
      bullet, its 64-bit entity ID: the sender may know only a predicted copy, which no stream names), shape and device + 1
      (`VarUInt`), contact (2 bits), impact (3 bits), amount (32-bit float: the target owner commits damage from it), damage
@@ -201,6 +201,7 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
    - Retreat: ship control index. Roster changes and drone launches are rare and keep full-width IDs, records and poses.
    - Missile target (kind 7, 9d P3): missile bullet age, then target control index + 1 in the receiver's stream (`VarUInt`;
      0: no target). About 1.5 bytes in a real batch.
+   - Allegiance (kind 8, version 8, phase 4 D13): ship control index, then the allegiance (3 bits). About 1 byte.
    - The sender throws on a record its streams cannot name or on a sequence gap: that is a session bug.
    - The receiver decodes the whole batch before it submits any record, so a malformed batch submits nothing. Its records named
      entities by count, so the stream stops there: every later batch is dropped too. Its operation sequences stay missing, so the
@@ -212,7 +213,7 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
    or final result exists. Cost: a remote bullet the owner never fired leaves up to 4 ticks later in quiet periods.
    Measured reason (step 9a): a separate watermark every tick was 49 messages/s, and each message used its own datagram.
 3. Owner-operation payloads preserve roster records, spawn poses and velocities, drone bay identities, removal reasons, fire identity inputs,
-   retreat starts (entity and tick only) and missile targets (missile, target, tick). Hit payloads preserve contact boundaries, authority fields, and resolved damage.
+   retreat starts (entity and tick only), missile targets (missile, target, tick) and allegiance changes (ship, allegiance, tick). Hit payloads preserve contact boundaries, authority fields, and resolved damage.
 4. **Corrections (G1 and 9d P3, `CorrectionCodec`, version 2).** One unreliable section per batch: version (8 bits), battle ID low
    32 bits, batch tick, applied hit sequence and missile count (`VarUInt`), the missiles, then bodies in increasing control index
    order until zero padding.
@@ -270,7 +271,7 @@ Migration phase 3b, step 2 is implemented. Core remains transport-free.
 
 1. `BattleSetup` accepts an optional `IReadOnlyCollection<int> localOwners`. It copies and deduplicates nonnegative player indices.
    Omission makes every roster owner local. An empty collection makes none local. `IsLocalOwner(int)` queries the frozen set.
-   Owner and side remain separate; local status never changes during a battle.
+   Owner and side remain separate; local status never changes during a battle. Allegiance (D13) is a third, separate property: see "Allegiance and ship commands".
 2. For ships and drones, the attacker's owner decides the contact. A local attacker damages a local target, shield first.
    Against a remote target, it emits a resolved outgoing hit. Since step 5 the copy also takes the damage as a prediction (see "Corrections and predicted damage").
    Remote attackers produce presentation predictions without damaging ships or drones from local contacts.
@@ -657,7 +658,7 @@ Phase 2 steps 6–7. Devices are explicit code per device (`ShipDevice`); the da
 5. **Spawn (stage 5).** A device writes a `SpawnRequest` at stage 2; stage 5 creates the bullet. The ID is `CreateChild(ship, tick, device index, barrel index, sequence)`. The angle is the ship angle + the barrel angle + (r − 0.5) × spread, with r from `CounterRandom` (`WeaponSpread`, the bullet ID). The velocity is speed × `StartingVelocityMultiplier` along the angle + the ship velocity × `ParentVelocityEffect`; the ship velocity is the one after stage 4.
 6. **Recoil.** An impulse of −`Recoil` × the bullet velocity relative to the ship (legacy `BulletFactory.ApplyRecoil`), at the muzzle point; an off-centre barrel also spins the ship. `Recoil` comes from `Body.Recoil` only, never from the weight (phase 4 E1, owner 2026-10-31); the mapper sets it to 0 for a bullet attached to its parent. `PreStepVelocity` keeps the stage 4 value.
 7. **Store.** `BulletStore` is a struct array with a LIFO free list and generations. The free list grows with the array, so a tick that frees many bullets late in a battle allocates nothing; `EntityRegistry` maps bullet IDs too. A physics bullet maps back to its entry by physics index and `BulletId`. Physics bullets are pass-through, so physics reports every target; the core keeps the first valid hit (contact ordering). The bullet's `Owner` body is its ship, so it never hits that ship.
-8. **Filters.** `CollisionFilters` gives one category bit per side and class, following the legacy layer matrix. Ship hulls are `Ship(side)` and ignore nothing. An energy bolt is `Energy(side)` and ignores its own side's ships and all energy bolts. It hits enemy ships and missiles and passes allies and other bolts. A missile is `Missile(side)` and ignores its own side's ships, bolts and missiles. It meets enemy ships, missiles and bolts.
+8. **Filters.** `CollisionFilters` gives one category bit per allegiance group and class, following the legacy layer matrix (phase 4, D13: four groups, Player and Ally share one). Ship hulls are `Ship(allegiance)` and ignore nothing. An energy bolt is `Energy(allegiance)` and ignores friendly ships and drones and all energy bolts. It hits hostile ships, drones and missiles. A missile is `Missile(allegiance)` and ignores friendly ships, drones, bolts and missiles. It meets hostile ships, drones, missiles and bolts. A test checks every pair against the legacy matrix.
 9. **Hits.** At stage 8 each physics hit on a live ship becomes a candidate at its sweep fraction (`BulletSweep`). Q1: a cannon bullet stops at its first valid hit, so stage 9 marks it for removal with reason `Death`. The damage then follows the ship pipeline: shield first, then armor. A ship takes each damage effect (`Damage` and `ExtraDamage`) with its own type; a missile and the hit event take the total. A remote ship gets one hit record per damage effect. A hit on a bullet becomes a candidate only when the target is a missile, with the missile's hit points as `TargetHitPoints` (see Missiles and target grid).
 10. **Lifetime.** Range / speed, with a `>` check: `LifetimeTicks`. A bullet spawned at tick s flies in the physics of ticks s to s + `LifetimeTicks` − 1. Stage 11 of the last tick marks it `Expiry`.
 11. **Removal (stage 12).** Bullets leave after the ship changes, in entity ID order, so the events do not depend on storage. A bullet outlives the ship that fired it; physics ignores its stale owner body.
@@ -670,7 +671,7 @@ Phase 2 step 7 (Q2a, Q2b). The rules port legacy `HomingController` on new ammun
 1. **Missile.** A bullet with hit points above 0 is a missile (legacy `UnitClass.Missile`). It stops at its first valid hit on a ship or a missile (legacy `DetonateAtTargetAction`): impact damage only. Area explosions come with triggers in phase 5 (owner, 2026-10-20).
 2. **Bullet contacts.** A bolt that hits a missile deals its damage and stops. Two missiles that meet both detonate, whatever their hit points: the candidate of each one stops it. A missile that meets a bolt deals nothing and does not stop (legacy `BulletDamageHandler`); only the hit of the bolt counts.
 3. **Lifetime.** Range / speed, as for every bullet (Q2a; the legacy 1.2 factor is not kept).
-4. **Target grid (R9).** At the start of stage 4, `TargetGrid` takes every active ship: entity ID, side, position and hull radius, at the poses at the start of the step. It is a uniform torus grid with 32 u cells, rebuilt once per tick. It allocates nothing once its arrays fit the battle. Drones join it on the tick after launch: stage 4 precedes the stage 5 spawn.
+4. **Target grid (R9).** At the start of stage 4, `TargetGrid` takes every active ship: entity ID, allegiance, position and hull radius, at the poses at the start of the step. It is a uniform torus grid with 32 u cells, rebuilt once per tick. It allocates nothing once its arrays fit the battle. Drones join it on the tick after launch: stage 4 precedes the stage 5 spawn.
 5. **Target rule.** Range is the centre distance at the nearest torus image minus both radii. The search covers 1.3 × the range of the missile. Inside it, the nearest enemy within 30° of the heading wins. Without one, the enemy with the smallest deviation wins. Equal keys go to the lower `EntityId`, so the result does not depend on grid order. Beyond the radius there is no target (owner, 2026-10-20). Legacy chases an enemy at any distance, and its choice depends on list order. Target priority, decoys and `ChanceToAvoidMissile` come later.
 6. **Search timing.** Legacy runs no search at creation, so the first search is in the tick after the launch. The next one comes 101 ticks later (`TickTime.After(2 s)`). A removed target starts a search at once, at stage 4 of the next tick (redesign, owner, 2026-10-20). Every search restarts the period.
 7. **Steering (stage 4, `HomingSteering`).** Below full speed along the heading, the velocity changes by `normalize(speed × heading − v) × 0.5 × speed × W × dt`. This also removes sideways velocity. The turn rate is `120 × W` deg/s toward the target, and 0 inside ±5° or without a target. The rate is set, not accelerated. Physics never turns a bullet, so the core sets the heading after the turn before the physics step. The legacy body has the same heading after its step. Smart aim and `IgnoreRotation` come later.
@@ -717,12 +718,23 @@ Phase 2 step 10 (Q5/Q6). A drone is a full `ShipEntity` without a roster slot. I
 8. **Pilot command.** `SelfDestructCommand` carries battle ID, command ID, target tick and entity ID. `Submit` rejects wrong battles, past ticks, null IDs and duplicate pending command IDs. Stage 1 processes it after roster commands and before frames, rejecting targets that are not live drones. Stage 11 marks death; stage 12 removes the drone normally. Runtime exposes `SelfDestruct` and forwards `PilotControls.SelfDestruct` at the locked delay. Providers select `PilotSchedule.Drone` (delay 2, period 2). Pilots decide whether an absent mothership warrants self-destruction.
 9. **Allocation.** Pooled ships cache device instances per definition and reset their transient state on reuse. The ship free list reserves capacity as the pool grows. Repeated launches, drone deaths and weapon fire allocate zero bytes after warm-up. Sustained drone zaps also allocate zero bytes.
 
+### Allegiance and ship commands
+
+Phase 4, step 7e (D12, D13). The side stays the team: result, timer, surrender, kill-all and spawn placement read it.
+
+1. **Allegiance.** `Allegiance` copies legacy `UnitSide`: `Undefined`, `Player`, `Ally`, `Enemy`, `Neutral`. `Allegiances.IsHostile` copies `IsEnemy`: equal allegiances and the `Player`-`Ally` pair are friends. A ship and its drones start with `Allegiances.OfSide` (side 0 `Player`, side 1 `Enemy`); a bullet or beam takes its ship's allegiance at spawn. Collision filters, the missile target search, point defense and ramming damage use hostility, not the side. Ship and bullet snapshots carry it.
+2. **Ship commands.** `ShipCommand` carries battle ID, command ID, target tick, entity ID and kind: `Vanish` or `ChangeAllegiance(allegiance)`. `Submit` rejects wrong battles, past ticks, null IDs, unknown kinds, invalid allegiances and duplicate pending command IDs. Stage 1 runs them after self-destruct requests and before frames, in command ID order; it rejects unknown and remote entities.
+3. **Vanish (D12).** Stage 1 marks the ship; stage 12 removes it with `RemovalReason.Vanish`: no death, no explosion. A death of the same tick wins. A roster ship gets the `Retreated` transition at once and keeps its deficits for a redeployment. A drone is lost to its bay.
+4. **Allegiance change (D13).** Stage 1 sets the ship's allegiance, its hull filters, and the allegiance and filters of its live bullets and beams: legacy bullets read their owner's side. A drone that turns hostile gives no kill credit and earns none (the core keeps no kill credit).
+5. **Network.** The owner sends an `Allegiance` operation (stage 1). The receiver applies it to the copy and the copy's bullets, predicted copies included. A vanished drone travels as a removal with reason `Vanish`; a vanished roster ship travels as its `Retreated` roster record, so the copy shows a retreat removal.
+6. **Runtime.** `PilotControls` carries `Vanish` and an optional `Allegiance`. The runner submits them as ship commands for the pilot's own ship at the frame's target tick, in locked and network mode; they never enter the input stream.
+
 ### Snapshots and events
 
 Stage 14 writes a `BattleSnapshot` of the tick it completed, then increments `Battle.Tick`. `Battle.Snapshot` returns the published one. The constructor publishes tick −1: every slot `Ready`, no ships, no events.
 
 1. Contents: battle ID, tick, timer, result, `Ships` (active roster ships in roster order, then drones by entity ID), `Bullets` (live bullets in storage order; the order has no meaning), `Roster` (every slot in setup order) and `Events` (the tick's presentation batch), plus `OutgoingHits` (resolved contacts for remote ship and drone owners, and contacts on remote bullets for their owners). The lists are `ReadOnlySpan` views over arrays the battle reuses.
-2. `ShipState`: entity, roster ID, side, owner, definition, pose and velocities from the physics body, armor, shield and energy (value and maximum), the controls in force and the retreat completion tick.
+2. `ShipState`: entity, roster ID, side, allegiance, owner, definition, pose and velocities from the physics body, armor, shield and energy (value and maximum), the controls in force and the retreat completion tick.
 3. `BulletState`: entity, parent entity, side, owner, definition, pose, velocity and expiry tick. Projectiles retain `Definition` (`BulletDefinition`). Beams set `BeamDefinition` and `IsBeam`, with `Definition` null. Their pose is the sampled ray origin and angle; `BeamEndPoint` and `BeamTargetId` describe the accepted hit or full range. Beam velocity is zero and expiry is `long.MaxValue` because the device owns lifetime.
 4. `RosterSlotState`: roster ID, side, owner, status, deployment count and order, revision, active entity (null unless active), the retained B4 deficits and `DamageFraction` (B2).
 5. `DeviceState` (phase 4, step 3b): `GetDevices(ship)` returns one entry per device of a `ShipState` from the same snapshot, in control-bit order. `Ready` is legacy `CanBeActivated` for the next tick with the end-of-tick resources; the bit does not count. `Active` is legacy `SystemBase.Active`: the bit was held and the device's checks passed before it spent energy. `Cooldown` is the HUD fraction (0 ready, 1 blocked). Drone bays add `InHangar` and `ActiveDrones`; beams add the attached `Beam`. Inert devices are never ready or active and show cooldown 1. No peer sends it: each derives it from its own simulation. The rules per device are in [the phase 4 plan](../TODO/battle_simulator_phase4.md#device-state-3b).
