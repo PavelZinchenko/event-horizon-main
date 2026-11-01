@@ -7,12 +7,12 @@ using GameDatabase.Model;
 namespace Combat.Integration.Core
 {
     // The facts about one mapped ship that stay outside the core: legacy key bindings, button icons, activation costs
-    // and the inert devices (phase 4, step 3a), the model the views draw (step 5) and the AI side table (step 6). Every
-    // list is in device order.
+    // and the inert devices (phase 4, step 3a), the model the views draw (step 5), the AI side table (step 6) and the
+    // pilot choice (step 7f). Every list is in device order.
     public sealed class CoreShipMapping
     {
         public CoreShipMapping(string name, ShipDefinition definition, IReadOnlyList<CoreDeviceInfo> devices,
-            SpriteId modelImage, float modelScale, AiShipProfile ai)
+            SpriteId modelImage, float modelScale, AiShipProfile ai, BehaviorTreeModel aiTree, float droneRange, bool hasAutopilot)
         {
             Name = name;
             Definition = definition;
@@ -20,6 +20,9 @@ namespace Combat.Integration.Core
             ModelImage = modelImage;
             ModelScale = modelScale;
             Ai = ai;
+            AiTree = aiTree;
+            DroneRange = droneRange;
+            HasAutopilot = hasAutopilot;
         }
 
         // For logs and reports: "ship" or "drone" and the legacy ship ID.
@@ -32,6 +35,16 @@ namespace Combat.Integration.Core
         public float ModelScale { get; }
 
         public AiShipProfile Ai { get; }
+
+        // A ship: its own tree (CustomAi), null for the default of its kind. A drone: the tree its bay selects (T6), null
+        // for none.
+        public BehaviorTreeModel AiTree { get; }
+
+        // A drone: its bay range (legacy AiSettings.ForDrone). 0 for a ship.
+        public float DroneRange { get; }
+
+        // Legacy Stats.Autopilot: a player ship also runs the autopilot tree.
+        public bool HasAutopilot { get; }
     }
 
     // What a bullet or beam view needs from the database (phase 4, step 5, "Views (5)"). Prefab is null when the

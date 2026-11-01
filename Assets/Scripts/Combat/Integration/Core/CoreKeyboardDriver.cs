@@ -8,12 +8,15 @@ namespace Combat.Integration.Core
     // Keyboard and mouse input for the controlled core ship (migration phase 3c, step 5). The legacy
     // KeyboardController rules, written to the ship's command sink. The sink gets a value only when the driver's
     // own value changes, so the HUD buttons keep theirs. A key held across a ship change acts on the new ship
-    // (owner decision, legacy behavior); the new pilot itself starts with empty controls.
+    // (owner decision, legacy behavior); the new pilot itself starts with empty controls. Any input fires the legacy
+    // PlayerInputSignal, which holds the autopilot tree back (step 7f).
     public sealed class CoreKeyboardDriver : ITickable
     {
         [Inject]
-        public CoreKeyboardDriver(IKeyboard keyboard, IMouse mouse, IBattleView battle, IShipViews ships, IShipControlSource controls)
+        public CoreKeyboardDriver(IKeyboard keyboard, IMouse mouse, IBattleView battle, IShipViews ships, IShipControlSource controls,
+            PlayerInputSignal.Trigger playerInputTrigger)
         {
+            _playerInputTrigger = playerInputTrigger;
             _keyboard = keyboard;
             _mouse = mouse;
             _battle = battle;
@@ -35,6 +38,10 @@ namespace Combat.Integration.Core
             UpdateTurn();
             UpdateMouse();
             UpdateActions();
+
+            // Legacy KeyboardController.
+            if (_fire || _left || _right || _joystick || _throttle || _mouse.IsActive)
+                _playerInputTrigger.Fire();
         }
 
         // The previous ship is gone or no longer controlled, so its sink gets no releases.
@@ -128,9 +135,11 @@ namespace Combat.Integration.Core
         // Per key group, so releasing one key does not touch another held key (legacy released all groups at once).
         private void UpdateActions()
         {
+            _fire = false;
             for (var i = 0; i < _keyBindings.Count; ++i)
             {
                 var pressed = _keyboard.Action(i) || _mouse.FireButton(i);
+                _fire |= pressed;
                 if (pressed == _actions[i])
                     continue;
 
@@ -151,6 +160,7 @@ namespace Combat.Integration.Core
         private bool _joystick;
         private bool _left;
         private bool _right;
+        private bool _fire;
         private readonly List<bool> _actions = new List<bool>();
 
         private readonly IKeyboard _keyboard;
@@ -158,5 +168,6 @@ namespace Combat.Integration.Core
         private readonly IBattleView _battle;
         private readonly IShipViews _ships;
         private readonly IShipControlSource _controls;
+        private readonly PlayerInputSignal.Trigger _playerInputTrigger;
     }
 }

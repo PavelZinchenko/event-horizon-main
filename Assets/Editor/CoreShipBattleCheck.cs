@@ -4,11 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Combat.Integration.Core;
+using CombatSimulation.Ai;
 using CombatSimulation.Core;
 using CombatSimulation.Physics;
 using CombatSimulation.Runtime;
 using Constructor;
 using GameDatabase;
+using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using Services.Resources;
 using UnityEditor;
@@ -19,7 +21,7 @@ using Debug = UnityEngine.Debug;
 // The build flies to a fixed fixture target, brakes at half its shortest weapon range (core ships drift at throttle 0,
 // as in legacy), turns its first weapon's barrel to the target, and holds each weapon while the target is in its range
 // and its barrel points at it. Ships that cannot turn hold their weapons all the time. Drone bays are always held;
-// drones use the chase pilot of the core scene. After the fight, kill-all from the target side destroys
+// drones run their behaviour trees, as in the core scene (step 7f). After the fight, kill-all from the target side destroys
 // the build; the removal reason is Death, as for armor 0.
 // Failures: exceptions, armed builds that never fired, drone bays that never launched, ships with an engine that never
 // moved, and ships that did not die. Builds that fired but never hit are listed for information only: M1 does not ask
@@ -49,7 +51,7 @@ public static class CoreShipBattleCheck
                 try
                 {
                     var mapping = mapper.Map(new ShipBuilder(builds[i]).Build(database.ShipSettings), isDrone: false);
-                    Fight(mapping, mapper, result);
+                    Fight(mapping, mapper, database.CombatSettings, result);
                 }
                 catch (Exception e)
                 {
@@ -67,7 +69,7 @@ public static class CoreShipBattleCheck
         Debug.Log(Report(results, clock.Elapsed));
     }
 
-    private static void Fight(CoreShipMapping mapping, CoreShipMapper mapper, Result result)
+    private static void Fight(CoreShipMapping mapping, CoreShipMapper mapper, CombatSettings settings, Result result)
     {
         var definition = mapping.Definition;
         result.Armed = definition.Devices.Any(device => device is CannonDefinition || device is BeamDefinition);
@@ -83,7 +85,13 @@ public static class CoreShipBattleCheck
         };
         var setup = new BattleSetup(new BattleId(1), (ulong)result.BuildId, roster, ArenaSize, ArenaSize);
         var torus = new Torus(setup.Width, setup.Height);
-        var runner = new BattleRunner(setup, new Pilots(torus, mapper.Mappings));
+        // The fixture target has no mapping, so the trees get its profile here.
+        var mappings = mapper.Mappings;
+        var trees = new BehaviorTreeFactory(setup.MatchSeed, torus,
+            ship => ship == Target ? TargetProfile : mappings.TryGetValue(ship, out var item) ? item.Ai : null,
+            bullet => mapper.BulletSources.TryGetValue(bullet, out var source) ? source.BodySize : 1f);
+        var drones = new CorePilotProvider(settings, trees, mappings, playerSide: -1, enemyAiLevel: HardAiLevel);
+        var runner = new BattleRunner(setup, new Pilots(torus, mapper.Mappings, drones));
         runner.Deploy(BuildSlot, runner.Tick);
         runner.Deploy(TargetSlot, runner.Tick);
 
@@ -199,10 +207,11 @@ public static class CoreShipBattleCheck
 
     private sealed class Pilots : IPilotProvider
     {
-        public Pilots(Torus arena, IReadOnlyDictionary<ShipDefinition, CoreShipMapping> mappings)
+        public Pilots(Torus arena, IReadOnlyDictionary<ShipDefinition, CoreShipMapping> mappings, CorePilotProvider drones)
         {
             _arena = arena;
             _mappings = mappings;
+            _drones = drones;
         }
 
         public IPilot CreatePilot(BattleSnapshot snapshot, in ShipState ship, out PilotSchedule schedule)
@@ -211,10 +220,11 @@ public static class CoreShipBattleCheck
             if (ship.Side != 0)
                 return null;
 
+            if (ship.IsDrone)
+                return _drones.CreatePilot(snapshot, ship, out schedule);
+
             _mappings.TryGetValue(ship.Definition, out var mapping);
             var autoActivation = CoreAutoActivation.Create(mapping);
-            if (ship.IsDrone)
-                return new ChasePilot(ship.Definition, autoActivation, _arena);
 
             // Inert devices stay off (D6); devices without a weapon or bay follow the scene's rules.
             var definition = ship.Definition;
@@ -252,6 +262,7 @@ public static class CoreShipBattleCheck
 
         private readonly Torus _arena;
         private readonly IReadOnlyDictionary<ShipDefinition, CoreShipMapping> _mappings;
+        private readonly CorePilotProvider _drones;
     }
 
     private readonly struct Weapon
@@ -377,6 +388,13 @@ public static class CoreShipBattleCheck
     // A fixed, unkillable and unarmed circle. Its mass keeps pushes and rams from moving it; it deals no ramming damage.
     private static readonly ShipDefinition Target = new ShipDefinition(3f, 1e6f, new EngineDefinition(0f, 0f, 0f, 0f), 1e9f,
         new ResourceDefinition(0f), new ResourceDefinition(0f), rammingDamageMultiplier: 0f);
+
+    // Unarmed, no engine; legacy body scale 6 for the hull radius 3.
+    private static readonly AiShipProfile TargetProfile = new AiShipProfile(null, null, null, isDrone: false, isStarbase: false,
+        SizeClass.Undefined, enginePower: 0f, turnRate: 0f, propulsion: 0f, kineticResistance: 0f, rammingDamageMultiplier: 0f,
+        modelScale: 6f, AiTargetPriority.Normal, chanceToAvoidDrone: 0f);
+
+    private const int HardAiLevel = 100;
 
     private static readonly RosterId BuildSlot = new RosterId(1);
     private static readonly RosterId TargetSlot = new RosterId(2);

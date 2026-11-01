@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Combat.Domain;
+using CombatSimulation.Ai;
 using CombatSimulation.Core;
 using CombatSimulation.Physics;
 using CombatSimulation.Runtime;
@@ -11,6 +12,7 @@ using GameDatabase.Extensions;
 using GameDatabase.Model;
 using GameStateMachine.States;
 using Gui.Combat;
+using Services.Localization;
 using Services.Messenger;
 using Services.Resources;
 using UnityEngine;
@@ -18,6 +20,7 @@ using Zenject;
 using CoreEntityId = CombatSimulation.Core.EntityId;
 using CoreRosterId = CombatSimulation.Core.RosterId;
 using LegacyViewRect = Combat.Scene.ViewRect;
+using PlayerInputSignal = Combat.Ai.PlayerInputSignal;
 
 namespace Combat.Integration.Core
 {
@@ -35,9 +38,13 @@ namespace Combat.Integration.Core
             LazyInject<CombatMenu> combatMenu,
             LazyInject<ShipSelectionPanel> shipSelectionPanel,
             ExitSignal.Trigger exitTrigger,
+            ILocalization localization,
+            PlayerInputSignal playerInputSignal,
             UnityEngine.SceneManagement.Scene scene)
         {
             _combatModel = combatModel;
+            _localization = localization;
+            _playerInputSignal = playerInputSignal;
             _resourceLocator = resourceLocator;
             _combatMenu = combatMenu;
             _shipSelectionPanel = shipSelectionPanel;
@@ -62,15 +69,19 @@ namespace Combat.Integration.Core
             var seed = (ulong)(uint)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
             var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, timeLimitTicks);
             var torus = new Torus(setup.Width, setup.Height);
-            _pilots = new CorePilotProvider(torus, PlayerSide, _mapper.Mappings);
+            _trees = CorePilotProvider.CreateTrees(seed, torus, _mapper, OnBroadcast);
+            _pilots = new CorePilotProvider(database.CombatSettings, _trees, _mapper.Mappings, PlayerSide, combatModel.EnemyFleet.AiLevel);
             _runner = new BattleRunner(setup, _pilots);
 
             var bulletSprite = resourceLocator.GetSprite(new SpriteId(BulletSpriteName, SpriteId.Type.Ammunition));
-            _renderer = new BattleRenderer(torus, bulletSprite, resourceLocator.GetSprite(FlashSpriteName), scene);
+            // Only the font of the legacy text effect prefab is used; the text view is built in code (step 7f).
+            var textFont = Resources.Load<TextMesh>(TextEffectPrefab)?.font;
+            _renderer = new BattleRenderer(torus, bulletSprite, resourceLocator.GetSprite(FlashSpriteName), textFont, scene);
             _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, resourceLocator);
             _anchor = new Vector2(0.5f * setup.Width, 0.5f * setup.Height);
 
             messenger.AddListener(EventType.EscapeKeyPressed, OnEscapeKeyPressed);
+            _playerInputSignal.Event += OnPlayerInput;
         }
 
         #region IRosterView
@@ -207,6 +218,7 @@ namespace Combat.Integration.Core
                 return;
 
             RunSteps();
+            _playerInput = false;
             Render();
             UpdateExit();
         }
@@ -214,12 +226,14 @@ namespace Combat.Integration.Core
         // Scene unload. Clears the battle without events: the roster outcome is already final or abandoned.
         public void Dispose()
         {
+            _playerInputSignal.Event -= OnPlayerInput;
             _runner = null;
             _renderer.Dispose();
             _views.Clear();
             _viewsByCore.Clear();
             _ids.Clear();
             _pilots.Clear();
+            _broadcasts.Clear();
         }
 
         private void RunSteps()
@@ -308,10 +322,15 @@ namespace Combat.Integration.Core
             RunEnemyCommander();
             RunPlayerCommander();
 
+            // The pilots of this step think on the snapshot of the current tick.
+            if (_playerInput)
+                _trees.OnPlayerInput(_runner.Tick);
+
             _runner.Step();
             var snapshot = _runner.Snapshot;
             HandleEvents(snapshot);
             _renderer.Capture(snapshot);
+            ShowBroadcasts(snapshot);
             UpdateProjection(snapshot);
 
             if (snapshot.IsCompleted)
@@ -550,6 +569,25 @@ namespace Combat.Integration.Core
             _exitTrigger.Fire();
         }
 
+        // Legacy PlayerInputSignal: the keyboard driver and the HUD fire it in every frame with player input (step 7f).
+        // The flag holds until the end of the frame's steps.
+        private void OnPlayerInput() => _playerInput = true;
+
+        // ShowMessage (step 7e): called inside the step, while the pilots think. Local only (D6).
+        private void OnBroadcast(CoreEntityId ship, string text, ColorData color) =>
+            _broadcasts.Add(new Broadcast(ship, text, color));
+
+        // Legacy RadioTransmitter: the localized text at the ship, drifting with it. Legacy NodeBuilder localizes at
+        // build time; the text is the same.
+        private void ShowBroadcasts(BattleSnapshot snapshot)
+        {
+            foreach (var item in _broadcasts)
+                if (snapshot.TryGetShip(item.Ship, out var state))
+                    _renderer.AddText(_localization.Localize(item.Text), item.Color.ToUnity(), state.Position, state.LinearVelocity);
+
+            _broadcasts.Clear();
+        }
+
         private void OnEscapeKeyPressed()
         {
             // Lazy: the menu injects this adapter.
@@ -589,6 +627,20 @@ namespace Combat.Integration.Core
                 case RosterTransitionReason.Killed: return RosterChangeReason.Killed;
                 default: return RosterChangeReason.ForcedDestruction;
             }
+        }
+
+        private readonly struct Broadcast
+        {
+            public Broadcast(CoreEntityId ship, string text, ColorData color)
+            {
+                Ship = ship;
+                Text = text;
+                Color = color;
+            }
+
+            public readonly CoreEntityId Ship;
+            public readonly string Text;
+            public readonly ColorData Color;
         }
 
         private sealed class Slot : IRosterSlotView
@@ -643,9 +695,14 @@ namespace Combat.Integration.Core
         private const string BulletSpriteName = "ball";
         // Legacy Flash effect prefab image.
         private const string FlashSpriteName = "Textures/star";
+        // Legacy ShowMessage effect (RadioTransmitter).
+        private const string TextEffectPrefab = "Combat/Effects/MessageText";
 
         private BattleRunner _runner;
+        private readonly BehaviorTreeFactory _trees;
         private readonly CorePilotProvider _pilots;
+        private readonly List<Broadcast> _broadcasts = new List<Broadcast>();
+        private bool _playerInput;
         private readonly CoreShipMapper _mapper;
         // The drawn controlled ship, or its last position: every other entity is drawn at its image nearest to it.
         private Vector2 _anchor;
@@ -674,5 +731,7 @@ namespace Combat.Integration.Core
         private readonly LazyInject<CombatMenu> _combatMenu;
         private readonly LazyInject<ShipSelectionPanel> _shipSelectionPanel;
         private readonly ExitSignal.Trigger _exitTrigger;
+        private readonly ILocalization _localization;
+        private readonly PlayerInputSignal _playerInputSignal;
     }
 }

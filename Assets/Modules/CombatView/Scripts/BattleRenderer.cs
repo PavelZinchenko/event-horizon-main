@@ -8,19 +8,21 @@ using Object = UnityEngine.Object;
 
 namespace CombatView
 {
-    // Draws one core battle: ships, bullets, beams and hit flashes at interpolated poses (migration phase 3c, step 4;
-    // phase 4, step 5). Events decide when a view exists; snapshots give its poses. Nothing is written back to the
+    // Draws one core battle: ships, bullets, beams, hit flashes and ship texts at interpolated poses (migration phase 3c,
+    // step 4; phase 4, steps 5 and 7f). Events decide when a view exists; snapshots give its poses. Nothing is written back to the
     // simulation. Bullet looks come from the adapter as BulletVisual values.
     public sealed class BattleRenderer : IDisposable
     {
         // The root goes into the given scene: the game loads scenes additively and never changes the active
         // scene, so a plain new GameObject would outlive the combat scene.
-        // The flash sprite is legacy Flash's glow; without it flashes use the generic sprite.
-        public BattleRenderer(Torus torus, Sprite genericSprite, Sprite flashSprite, Scene scene)
+        // The flash sprite is legacy Flash's glow; without it flashes use the generic sprite. The text font is legacy
+        // MessageText's; without it ship texts are not drawn.
+        public BattleRenderer(Torus torus, Sprite genericSprite, Sprite flashSprite, Font textFont, Scene scene)
         {
             _torus = torus;
             _genericSprite = genericSprite;
             _flashSprite = flashSprite ? flashSprite : genericSprite;
+            _textFont = textFont;
             _root = new GameObject("CoreBattleViews");
             SceneManager.MoveGameObjectToScene(_root, scene);
 
@@ -110,6 +112,23 @@ namespace CombatView
             _flashes.Add(new Flash(renderer, hit.Point, look.Color, Mathf.Max(MinFlashDuration, look.Duration)));
         }
 
+        // Legacy RadioTransmitter and the MessageText effect (ShowMessage, step 7f): the text starts at the ship and
+        // drifts for 2 s with the ship's velocity plus 1 unit per second in a random direction. The random direction is
+        // presentation only, so it does not use the battle seed.
+        public void AddText(string text, Color color, Vec2 position, Vec2 velocity)
+        {
+            if (!_textFont || string.IsNullOrEmpty(text))
+                return;
+
+            var mesh = _textPool.Count > 0 ? _textPool.Pop() : CreateText();
+            mesh.gameObject.SetActive(true);
+            mesh.text = text;
+            mesh.color = color;
+            var angle = (float)(_textRandom.NextDouble() * 2.0 * Math.PI);
+            var drift = new Vec2(velocity.X + TextDriftSpeed * Mathf.Cos(angle), velocity.Y + TextDriftSpeed * Mathf.Sin(angle));
+            _texts.Add(new Text(mesh, position, drift, color));
+        }
+
         // After every step. Copies the poses; the snapshot spans are valid only until the next step.
         public void Capture(BattleSnapshot snapshot)
         {
@@ -147,6 +166,7 @@ namespace CombatView
 
             UpdateFades(deltaTime);
             UpdateFlashes(deltaTime, anchor);
+            UpdateTexts(deltaTime, anchor);
         }
 
         // The pose of the last Render, in Unity units and degrees.
@@ -180,6 +200,8 @@ namespace CombatView
             _fades.Clear();
             _flashes.Clear();
             _flashPool.Clear();
+            _texts.Clear();
+            _textPool.Clear();
             _lineMaterials.Clear();
         }
 
@@ -366,6 +388,58 @@ namespace CombatView
             }
         }
 
+        // Legacy TextEffect with fading: opacity 1 - t^2 and scale 1 - t^3 of the camera's orthographic size, where t
+        // is the share of the lifetime that has passed, so the text keeps its screen size while the camera zooms.
+        private void UpdateTexts(float deltaTime, Vector2 anchor)
+        {
+            var camera = Camera.main;
+            var cameraScale = camera ? camera.orthographicSize : 1f;
+            for (var i = _texts.Count - 1; i >= 0; --i)
+            {
+                var text = _texts[i];
+                text.Time += deltaTime;
+                var progress = text.Time / TextDuration;
+                if (progress >= 1f || !text.Mesh)
+                {
+                    if (text.Mesh)
+                    {
+                        text.Mesh.gameObject.SetActive(false);
+                        _textPool.Push(text.Mesh);
+                    }
+
+                    _texts.RemoveAt(i);
+                    continue;
+                }
+
+                text.Point = new Vec2(text.Point.X + text.Velocity.X * deltaTime, text.Point.Y + text.Velocity.Y * deltaTime);
+                var color = text.Color;
+                color.a *= 1f - progress * progress;
+                text.Mesh.color = color;
+                var transform = text.Mesh.transform;
+                transform.localScale = Vector3.one * (cameraScale * (1f - progress * progress * progress));
+                var position = Placement.NearestImage(_torus, anchor, text.Point);
+                transform.position = new Vector3(position.x, position.y, TextOffsetZ);
+                _texts[i] = text;
+            }
+        }
+
+        // Legacy MessageText prefab: TextMesh, character size 0.04, font size 20, centred.
+        private TextMesh CreateText()
+        {
+            var gameObject = new GameObject("Text");
+            gameObject.transform.SetParent(_root.transform, false);
+            var mesh = gameObject.AddComponent<TextMesh>();
+            mesh.font = _textFont;
+            mesh.characterSize = TextCharacterSize;
+            mesh.fontSize = TextFontSize;
+            mesh.anchor = TextAnchor.MiddleCenter;
+            mesh.alignment = TextAlignment.Center;
+            var renderer = gameObject.GetComponent<MeshRenderer>();
+            renderer.sharedMaterial = _textFont.material;
+            renderer.sortingOrder = TextSortingOrder;
+            return mesh;
+        }
+
         private static SpriteRenderer CreateRenderer(string name, Transform parent, Sprite sprite, int sortingOrder)
         {
             var gameObject = new GameObject(name);
@@ -499,10 +573,29 @@ namespace CombatView
             public float Time;
         }
 
+        private struct Text
+        {
+            public Text(TextMesh mesh, Vec2 point, Vec2 velocity, Color color)
+            {
+                Mesh = mesh;
+                Point = point;
+                Velocity = velocity;
+                Color = color;
+                Time = 0f;
+            }
+
+            public TextMesh Mesh;
+            public Vec2 Point;
+            public Vec2 Velocity;
+            public Color Color;
+            public float Time;
+        }
+
         private const int ShipSortingOrder = 0;
         private const int TrailSortingOrder = 1;
         private const int BulletSortingOrder = 2;
         private const int FlashSortingOrder = 3;
+        private const int TextSortingOrder = 4;
         private const float FadeDuration = 0.4f;
         private const float FadeScale = 1.3f;
         private const float GenericBeamWidth = 0.2f;
@@ -518,12 +611,20 @@ namespace CombatView
         private const float MinFlashDiameter = 0.3f;
         private const float MinFlashDuration = 0.05f;
 
+        // Legacy RadioTransmitter (_speed, time) and MessageText (TextMesh).
+        private const float TextDriftSpeed = 1f;
+        private const float TextDuration = 2f;
+        private const float TextCharacterSize = 0.04f;
+        private const int TextFontSize = 20;
+        private const float TextOffsetZ = -0.1f;
+
         private bool _visualWarned;
         private float _time;
 
         private readonly Torus _torus;
         private readonly Sprite _genericSprite;
         private readonly Sprite _flashSprite;
+        private readonly Font _textFont;
         private readonly Material _spriteMaterial;
         private readonly GameObject _root;
         private readonly Dictionary<EntityId, EntityView> _ships = new Dictionary<EntityId, EntityView>();
@@ -532,6 +633,9 @@ namespace CombatView
         private readonly List<Fade> _fades = new List<Fade>();
         private readonly List<Flash> _flashes = new List<Flash>();
         private readonly Stack<SpriteRenderer> _flashPool = new Stack<SpriteRenderer>();
+        private readonly List<Text> _texts = new List<Text>();
+        private readonly Stack<TextMesh> _textPool = new Stack<TextMesh>();
+        private readonly System.Random _textRandom = new System.Random();
         private readonly Dictionary<Texture, Material> _lineMaterials = new Dictionary<Texture, Material>();
     }
 }

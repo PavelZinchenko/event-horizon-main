@@ -34,7 +34,10 @@ namespace Combat.Integration.Core
 
         public CoreShipMapping Map(IShipInfo info) => Map(info.Specification, isDrone: false);
 
-        public CoreShipMapping Map(IShipSpecification specification, bool isDrone)
+        public CoreShipMapping Map(IShipSpecification specification, bool isDrone) => Map(specification, isDrone, null);
+
+        // bay is the drone bay of a drone, else null; it selects the drone's tree and range (step 7f).
+        private CoreShipMapping Map(IShipSpecification specification, bool isDrone, IDroneBayData bay)
         {
             var stats = specification.Stats;
             var modelScale = stats.ShipModel.ModelScale;
@@ -139,8 +142,12 @@ namespace Combat.Integration.Core
                 targetPriority: isDrone ? AiTargetPriority.Low : AiTargetPriority.Normal,
                 chanceToAvoidDrone: 0f);
 
+            // Legacy DroneBay and ControllerFactory.CreateDroneController (T6).
+            var aiTree = bay == null
+                ? specification.CustomAi
+                : BehaviorTreeSelection.ForDrone(_database.CombatSettings, bay.DroneBay, bay.Drone.CustomAI, bay.Behaviour == DroneBehaviour.Defensive);
             var mapping = new CoreShipMapping($"{(isDrone ? "drone" : "ship")} {specification.Info.Id.Value}", definition, infos,
-                stats.ShipModel.ModelImage, modelScale, ai);
+                stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot);
             _mappings[definition] = mapping;
             return mapping;
         }
@@ -162,7 +169,7 @@ namespace Combat.Integration.Core
             foreach (var item in specification.DroneBays)
             {
                 var bay = item.DroneBay;
-                var drone = Map(BuildDrone(item), isDrone: true);
+                var drone = Map(BuildDrone(item), isDrone: true, item);
                 aiDroneBays.Add(new AiDroneBay(devices.Count, item.KeyBinding < 0));
                 Add(devices, infos, new DroneBayDefinition(System.Math.Max(1, bay.Capacity), NonNegative(bay.EnergyConsumption), drone.Definition),
                     new CoreDeviceInfo($"drone bay, drone {item.Drone.Id.Value}", item.KeyBinding, bay.ControlButtonIcon, 0f, null));
