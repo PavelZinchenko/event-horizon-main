@@ -73,8 +73,10 @@ namespace Combat.Integration.Core
 
             // The seed is drawn here, outside the core, which never uses a random source of its own.
             var seed = (ulong)(uint)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+            // Step 9: the core ends an OnlyOneShip battle after the first player death (SS2).
             var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, timeLimitTicks,
-                timerMode: ToTimerMode(rules.TimeOutMode), playerSide: PlayerSide, maxActiveShipsBySide: maxActiveBySide);
+                timerMode: ToTimerMode(rules.TimeOutMode), playerSide: PlayerSide, maxActiveShipsBySide: maxActiveBySide,
+                onlyOneShip: rules.ShipSelection == PlayerShipSelectionMode.OnlyOneShip);
             var torus = new Torus(setup.Width, setup.Height);
             _trees = CorePilotProvider.CreateTrees(seed, torus, _mapper, OnBroadcast);
             _pilots = new CorePilotProvider(database.CombatSettings, _trees, _mapper.Mappings, PlayerSide, combatModel.EnemyFleet.AiLevel);
@@ -585,6 +587,9 @@ namespace Combat.Integration.Core
                 return;
             if (IsDeployPending(_enemySlots) || IsDeployPending(_playerSlots))
                 return;
+            // OnlyOneShip: after the first death the core rejects every player deployment and ends the battle 3 s later.
+            if (_combatModel.Rules.ShipSelection == PlayerShipSelectionMode.OnlyOneShip && Count(CombatSide.Player, ShipStatus.Destroyed) > 0)
+                return;
 
             var slot = FirstReady(_playerSlots);
             if (slot == null)
@@ -669,11 +674,11 @@ namespace Combat.Integration.Core
         }
 
         // The battle freezes at the result: stepping stops, and the last frame and the death fades stay on screen.
-        // Surrender ends the same way.
+        // Surrender ends the same way. A ShipLost result already waited the legacy 3 s in the core, so it exits at once (SS3).
         private void OnCompleted()
         {
             if (_exitDelay < 0f)
-                _exitDelay = ExitDelaySeconds;
+                _exitDelay = _runner.Snapshot.Result.Reason == BattleEndReason.ShipLost ? 0f : ExitDelaySeconds;
         }
 
         // Real time, not game time: surrender comes from the menu, which pauses the game and stays open.
