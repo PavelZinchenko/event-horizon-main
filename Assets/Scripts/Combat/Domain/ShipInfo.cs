@@ -36,6 +36,8 @@ namespace Combat.Domain
         {
             get
             {
+                if (_hasCoreState)
+                    return _coreStatus;
                 if (ShipUnit == null || ShipUnit.State == UnitState.Inactive)
                     return ShipStatus.Ready;
                 if (ShipUnit.State == UnitState.Destroyed)
@@ -56,11 +58,35 @@ namespace Combat.Domain
             {
                 if (Status == ShipStatus.Destroyed)
                     return 0;
+                if (_hasCoreState)
+                    return 1.0f - _coreDamageFraction;
                 if (ShipUnit == null)
                     return 1.0f;
 
                 return ShipUnit.Stats.Armor.Percentage;
             }
+        }
+
+        public float DamageFraction
+        {
+            get
+            {
+                if (_hasCoreState)
+                    return _coreDamageFraction;
+                if (ShipUnit == null)
+                    return 0f;
+
+                return ShipUnit.State != UnitState.Destroyed ? 1.0f - ShipUnit.Stats.Armor.Percentage : 1.0f;
+            }
+        }
+
+        // The deployment order replaces the activation time: LastActivated only compares the values.
+        public void ApplyCoreState(ShipStatus status, float damageFraction, long deploymentOrder)
+        {
+            _hasCoreState = true;
+            _coreStatus = status;
+            _coreDamageFraction = damageFraction;
+            ActivationTime = deploymentOrder;
         }
 
         public UnitSide Side { get { return _unitSide; } }
@@ -102,6 +128,9 @@ namespace Combat.Domain
         private readonly UnitSide _unitSide;
         private readonly Constructor.Ships.IShip _shipData;
         private readonly IShipSpecification _shipSpec;
+        private bool _hasCoreState;
+        private ShipStatus _coreStatus;
+        private float _coreDamageFraction;
 
         private class DeadShip : IShip
         {

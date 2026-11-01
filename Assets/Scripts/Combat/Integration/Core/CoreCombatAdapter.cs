@@ -380,6 +380,7 @@ namespace Combat.Integration.Core
 
             _runner.Step();
             var snapshot = _runner.Snapshot;
+            ApplyResults(snapshot);
             HandleEvents(snapshot);
             _renderer.Capture(snapshot);
             ShowBroadcasts(snapshot);
@@ -492,6 +493,15 @@ namespace Combat.Integration.Core
 
             if (slot.Status != previous)
                 SlotChanged?.Invoke(new RosterSlotChange(slot, previous, ToReason(item.TransitionReason), entity));
+        }
+
+        // Step 12 (RR1, RR2): the campaign model reads the roster from ShipInfo. Written before the events, so an
+        // experience checkpoint in SlotChanged reads the tick's enemy damage (B2). ShipInfo keeps it after the unload.
+        private void ApplyResults(BattleSnapshot snapshot)
+        {
+            foreach (var state in snapshot.Roster)
+                if (_slotsByCore.TryGetValue(state.RosterId, out var slot))
+                    slot.Info.ApplyCoreState(ToStatus(state.Status), state.DamageFraction, state.DeploymentOrder);
         }
 
         // Copies what the views and slots need from the snapshot; spans are valid only until the next step.
@@ -682,8 +692,28 @@ namespace Combat.Integration.Core
         // Surrender ends the same way. A ShipLost result already waited the legacy 3 s in the core, so it exits at once (SS3).
         private void OnCompleted()
         {
-            if (_exitDelay < 0f)
-                _exitDelay = _runner.Snapshot.Result.Reason == BattleEndReason.ShipLost ? 0f : ExitDelaySeconds;
+            if (_exitDelay >= 0f)
+                return;
+
+            var result = _runner.Snapshot.Result;
+            CheckOutcome(result);
+            _exitDelay = result.Reason == BattleEndReason.ShipLost ? 0f : ExitDelaySeconds;
+        }
+
+        // Migration plan, "Completion order" (RR3): the core result and the campaign victory, which reads the roster,
+        // must agree. A mismatch is only logged; neither is rewritten, and the battle exits as usual.
+        private void CheckOutcome(BattleResult result)
+        {
+            var coreVictory = result.Outcome == BattleOutcome.Victory && result.WinningSide == PlayerSide;
+            var victory = _combatModel.IsVictory();
+            if (coreVictory == victory)
+                return;
+
+            var report = new System.Text.StringBuilder();
+            foreach (var slot in _slotsById.Values)
+                report.AppendLine($"  {slot.Side} slot {slot.Id.Value}: {slot.Info.Status}");
+
+            Debug.LogError($"CoreCombatAdapter: the core result ({result}) does not match the campaign victory ({victory}).\n{report}");
         }
 
         // Real time, not game time: surrender comes from the menu, which pauses the game and stays open.

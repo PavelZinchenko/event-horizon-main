@@ -9,8 +9,8 @@ using Zenject;
 
 namespace Installers
 {
-    // The combat scene on the shared combat core (migration phase 3c). Binds only the new runtime and the
-    // HUD that reads the integration contracts; no legacy combat manager, scene, AI or factories.
+    // The combat scene on the shared combat core (migration phase 3c). Binds only the new runtime, the HUD that
+    // reads the integration contracts and the experience recorder; no legacy combat manager, scene, AI or factories.
     public class CoreCombatSceneInstaller : MonoInstaller<CoreCombatSceneInstaller>
     {
         [SerializeField] private ShipStatsPanel _playerStatsPanel;
@@ -29,6 +29,7 @@ namespace Installers
 
             Container.BindInterfacesAndSelfTo<CoreCombatAdapter>().AsSingle().WithArguments(gameObject.scene).NonLazy();
             Container.BindInterfacesTo<CoreScenePresentation>().AsSingle();
+            Container.BindInterfacesTo<Combat.Integration.CombatExperienceRecorder>().AsSingle().NonLazy();
             Container.BindInterfacesTo<CombatTimerPresenter>().AsSingle().NonLazy();
             Container.BindExecutionOrder<CombatTimerPresenter>(1);
             Container.BindInterfacesTo<CombatHudPresenter>().AsSingle().NonLazy();

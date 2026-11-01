@@ -820,7 +820,8 @@ Migration phase 3c. Quick combat runs on the core in a separate scene; the old s
 5. **Battle flow (legacy quick combat).** The enemy deploys its first ready ship at the start and 3 s after its active ship leaves. When an enemy is active and the player has none, the selection panel opens: at once at the start, 3 s after a player ship leaves. `ShipSelection` modes that cannot choose deploy the first ready ship. The open panel pauses the game, so a deployment applies when it closes.
 6. **HUD values.** The timer panel shows while both sides have an active ship, without digits. `CanChangeShip` follows the legacy rule. `CanCallReinforcement` is false. `CoreShipControls.GetCooldown` returns the device `Cooldown`; the adapter copies the device states after each step.
 7. **Completion.** At the result, stepping stops and the last frame stays on screen. After 3 s of real time the adapter fires `ExitSignal` once. Real time, because surrender comes from the open menu, which pauses the game. `QuickCombatState` returns to the main menu. Quick combat has no rewards.
-8. **Unload.** `Dispose` drops the runner and the views without roster events.
+8. **Results (phase 4, step 12).** After each step, before the events, the adapter writes every roster slot to its `ShipInfo` (`ApplyCoreState`: status, `DamageFraction`, `DeploymentOrder`). `IsVictory()`, loot, `LootCondition`, `ExpCondition` and the B2 experience then work as in legacy; `CombatExperienceRecorder` is bound in this scene too. At the result the adapter compares the core winner with `IsVictory()` and logs an error on a mismatch, without rewriting either.
+9. **Unload.** `Dispose` drops the runner and the views without roster events. The results stay in `ShipInfo`.
 
 ### Ships and pilots
 
@@ -849,7 +850,7 @@ Editor menu *Tools/Combat/Check AI Replay* runs every armed built-in build again
 ### Known limits
 
 1. Most weapons and devices are inert until the ammunition conversion (step 4) and phase 5; most built-in builds cannot fire yet. Auto-aiming barrels fire straight; satellites are not attached.
-2. No time limit, reinforcement, `OnlyOneShip` rule or reward. Campaign battles still use the old scene.
+2. Campaign battles use the new scene only when `CombatSettings.UseNewCombatSimulator` is true (default false). The rest of this section predates phase 4 steps 8-12; step 14 brings it up to date.
 3. A new player ship spawns at a random map point, so the camera whips toward it (legacy spawns the same way).
 4. The Editor pauses the game when it loses focus with an Android build target (`MobileApplication`). Play-mode checks from the CLI must force focus.
 
