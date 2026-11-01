@@ -3,6 +3,7 @@ using GameModel.Quests;
 using GameServices.SceneManager;
 using Gui.Combat;
 using Services.Gui;
+using GameDatabase;
 using Zenject;
 
 namespace GameStateMachine.States
@@ -14,11 +15,15 @@ namespace GameStateMachine.States
             IStateMachine stateMachine,
             GameStateFactory stateFactory,
             IGuiManager guiManager,
+            IDatabase database,
             IReward reward)
             : base(stateMachine, stateFactory)
         {
             _guiManager = guiManager;
             _reward = reward;
+
+            // The window opens over the battle scene that CombatState chose with the same switch.
+            _useCombatCore = database.CombatSettings.UseNewCombatSimulator;
         }
 
         public override StateType Type => StateType.CombatReward;
@@ -33,8 +38,9 @@ namespace GameStateMachine.States
 			LoadState(StateFactory.CreateStarMapState());
 		}
 
-		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.Combat; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return _useCombatCore ? GameScene.CoreCombat : GameScene.Combat; } }
 
+        private readonly bool _useCombatCore;
         private readonly IReward _reward;
         private readonly IGuiManager _guiManager;
 

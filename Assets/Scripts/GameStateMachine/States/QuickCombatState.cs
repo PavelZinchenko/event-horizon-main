@@ -40,12 +40,14 @@ namespace GameStateMachine.States
             _exitSignal = exitSignal;
             _exitSignal.Event += OnCombatCompleted;
 
-            // '@' runs the battle on the new combat core (migration phase 3c), with or without test ship IDs.
+            // The database switch selects the new combat core before the scene loads (migration phase 4, D10).
+            // '@' forces it for tests, with or without test ship IDs.
 #if UNITY_EDITOR
-            _useCombatCore = settings.TestShipId?.Contains('@') == true;
+            var forceCombatCore = settings.TestShipId?.Contains('@') == true;
 #else
-            _useCombatCore = _database.IsEditable && settings.TestShipId?.Contains('@') == true;
+            var forceCombatCore = _database.IsEditable && settings.TestShipId?.Contains('@') == true;
 #endif
+            _useCombatCore = _database.CombatSettings.UseNewCombatSimulator || forceCombatCore;
         }
 
         public override StateType Type => StateType.QuickCombat;
