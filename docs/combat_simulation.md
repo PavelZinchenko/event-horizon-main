@@ -635,8 +635,12 @@ Phase 4 step 1 (D4, owner 2026-10-28): the legacy formula, with every type rule 
 ### Result and timer
 
 Stage 13 evaluates elimination first: a side whose slots are all `Destroyed` loses; both sides in one tick give a draw. A `Ready` reserve keeps its side alive.
-Then the timer: it advances one tick only while both sides have an active slot (B5). At `TimeLimitTicks` (0 means no limit) the battle ends in a draw with reason `Timeout`.
-Any ship deployment or removal on either side resets the timer to zero (owner, 2026-10-20). The tick of the reset counts when both sides then have a ship. This replaces the legacy player/enemy rules until phase 4 adds `TimeOutMode`.
+Then the timer: it advances one tick only while both sides have an active slot (B5). `TimeLimitTicks` 0 means no timer. `BattleSetup.TimerMode` decides the resets and the expiry (phase 4 step 8; `TODO/battle_simulator_phase4.md`, "Timer modes and reinforcements (8)"):
+- `Draw` (default): any ship deployment or removal on either side resets the timer to zero (owner, 2026-10-20). At the limit the battle ends in a draw with reason `Timeout`.
+- The legacy `TimeOutMode` values use `PlayerSide`; the other side is the enemy. An enemy deployment resets. An enemy removal resets, except in `CallNextEnemyOrDraw` with no ready enemy slot. A player removal resets only in `DrainPlayerHp`. A player deployment never resets. A removal is a death, a retreat or a vanish; a reserve destroyed without an entity is not. The rules read the counts after every transition of the tick.
+- `CallNextEnemy` never draws: the timer counts on past the limit, and the adapter deploys the next enemy. `CallNextEnemyOrDraw` does the same while the enemy side has a ready slot (alive minus active); without one, 3 × the limit is a draw. `DrainPlayerHp` never draws: from the limit on, stage 10 drains each active player roster ship of a local owner by k % of its maximum armor and shield per second, k being the whole overtime seconds of the previous tick's timer. The drain ignores resistances and restarts both delays.
+
+The tick of a reset counts when both sides then have a ship. `BattleSetup.MaxActiveShips(side)` is the deployment limit per side (`maxActiveShipsBySide`, else `maxActiveShipsPerSide` for both).
 `BattleResult` holds outcome (`Victory` or `Draw`), winning side, reason (`Elimination` or `Timeout`) and the original commit tick.
 `CommittedBattleFlow` evaluates roster transitions by their original ticks. It stores a confirmed prefix and replays only pending transitions.
 A delayed deployment or removal can replace a pending timeout. All transitions at one tick apply before elimination and timer evaluation.

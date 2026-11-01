@@ -59,15 +59,22 @@ namespace Combat.Integration.Core
                 AddSlot(new RosterId(nextId++), CombatSide.Enemy, info, roster);
             LogInertDevices();
 
-            var size = combatModel.Rules.BattleMapSize;
+            var rules = combatModel.Rules;
+            var size = rules.BattleMapSize;
 
-            // No time limit: the core ends a battle in a draw at timeout, but quick combat (CallNextEnemy) never
-            // ends on time. The TimeOutMode values and reinforcements come in phase 4 (owner, 2026-10-21).
-            const long timeLimitTicks = 0;
+            // Step 8: the core runs the legacy timer rules (TM1). The player side allows one ship; the enemy side
+            // allows MaxEnemyShips, or more when the rules start with more (TM2).
+            var timeLimitTicks = (long)rules.TimeLimit * TicksPerSecond;
+            _maxActive[(int)CombatSide.Player] = 1;
+            _maxActive[(int)CombatSide.Enemy] = Math.Max(rules.MaxEnemyShips, rules.InitialEnemyShips);
+            var maxActiveBySide = new int[BattleSetup.SideCount];
+            maxActiveBySide[PlayerSide] = _maxActive[(int)CombatSide.Player];
+            maxActiveBySide[EnemySide] = _maxActive[(int)CombatSide.Enemy];
 
             // The seed is drawn here, outside the core, which never uses a random source of its own.
             var seed = (ulong)(uint)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-            var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, timeLimitTicks);
+            var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, timeLimitTicks,
+                timerMode: ToTimerMode(rules.TimeOutMode), playerSide: PlayerSide, maxActiveShipsBySide: maxActiveBySide);
             var torus = new Torus(setup.Width, setup.Height);
             _trees = CorePilotProvider.CreateTrees(seed, torus, _mapper, OnBroadcast);
             _pilots = new CorePilotProvider(database.CombatSettings, _trees, _mapper.Mappings, PlayerSide, combatModel.EnemyFleet.AiLevel);
@@ -116,16 +123,50 @@ namespace Combat.Integration.Core
         public EntityId ControlledShip => FindActiveEntity(_playerSlots);
         public EntityId TargetShip => FindActiveEntity(_enemySlots);
 
-        // Shown while both sides have an active ship, so the pause button is there. No digits: legacy hides them
-        // when it cannot call the next enemy, and reinforcements come in phase 4.
-        public CombatTimerState Timer => new CombatTimerState(
-            IsRunning && Count(CombatSide.Player, ShipStatus.Active) > 0 && Count(CombatSide.Enemy, ShipStatus.Active) > 0, 0, false);
+        // Legacy CombatTimer.State: shown while both sides have an active ship. Seconds left rounded up, at least 0;
+        // 0 in CallNextEnemy while no next enemy can come. CallNextEnemyOrDraw without a ready enemy counts down
+        // 3 x the limit, with the alarm in its last 15 s; DrainPlayerHp sounds the alarm from the limit on.
+        public CombatTimerState Timer
+        {
+            get
+            {
+                if (!IsRunning || Count(CombatSide.Player, ShipStatus.Active) == 0 || Count(CombatSide.Enemy, ShipStatus.Active) == 0)
+                    return new CombatTimerState(false, 0, false);
+
+                var rules = _combatModel.Rules;
+                if (rules.TimeLimit <= 0)
+                    return new CombatTimerState(true, 0, false);
+
+                var left = CeilSeconds((long)rules.TimeLimit * TicksPerSecond - _runner.Snapshot.TimerElapsedTicks);
+                var alarm = false;
+                switch (rules.TimeOutMode)
+                {
+                    case TimeOutMode.CallNextEnemy:
+                        if (!CanCallNextEnemy)
+                            left = 0;
+                        break;
+                    case TimeOutMode.CallNextEnemyOrDraw:
+                        if (FirstReady(_enemySlots) == null)
+                        {
+                            left += 2 * rules.TimeLimit;
+                            alarm = left > 0 && left < DrawAlarmSeconds;
+                        }
+                        break;
+                    case TimeOutMode.DrainPlayerHp:
+                        alarm = left <= 0;
+                        break;
+                }
+
+                return new CombatTimerState(true, Math.Max(0, left), alarm);
+            }
+        }
 
         // Legacy CombatManager.CanChangeShip.
         public bool CanChangeShip =>
             IsRunning && _combatModel.Rules.ShipSelection == PlayerShipSelectionMode.Default && Count(CombatSide.Player, ShipStatus.Ready) > 0;
 
-        public bool CanCallReinforcement => false;
+        // Legacy CombatManager.CanCallNextEnemy; the menu shows the button by this rule only (TM5).
+        public bool CanCallReinforcement => IsRunning && CanCallNextEnemy;
         public bool KillAllAllowedByRules => _combatModel.Rules.KillThemAllButton;
 
         #endregion
@@ -185,7 +226,11 @@ namespace Combat.Integration.Core
                 _retreatRequested = ship;
         }
 
-        public void CallReinforcement() { }
+        public void CallReinforcement()
+        {
+            if (CanCallReinforcement)
+                TryDeploy(NextReady(_enemySlots));
+        }
 
         public void Surrender()
         {
@@ -475,15 +520,58 @@ namespace Combat.Integration.Core
             _removed.Clear();
         }
 
-        // Legacy quick combat rule: deploy the first ready enemy at once at the start, and 3 s after the last one left.
+        // Legacy CombatManager: the first InitialEnemyShips ready enemies at once at the start (TM4), and the first
+        // ready one 3 s after the last active enemy left. While an enemy is active, legacy CombatTimer calls the next
+        // enemy when the time runs out; the enemy deployment resets the core timer.
         private void RunEnemyCommander()
         {
+            if (Count(CombatSide.Enemy, ShipStatus.Active) > 0 || IsDeployPending(_enemySlots))
+            {
+                if (IsTimerExpired && CanCallNextEnemy)
+                    TryDeploy(NextReady(_enemySlots));
+                return;
+            }
+
             if (_runner.Tick < _nextDeployTick[(int)CombatSide.Enemy])
                 return;
 
-            var slot = FirstReady(_enemySlots);
-            if (slot != null)
+            var count = _enemiesStarted ? 1 : Math.Max(1, _combatModel.Rules.InitialEnemyShips);
+            _enemiesStarted = true;
+            for (var i = 0; i < count; ++i)
+            {
+                var slot = NextReady(_enemySlots);
+                if (slot == null)
+                    break;
+
                 TryDeploy(slot);
+            }
+        }
+
+        // Legacy CombatManager.CheckIfCanCallNextEnemy. A submitted deployment counts as active, so one call
+        // deploys one ship.
+        private bool CanCallNextEnemy
+        {
+            get
+            {
+                var rules = _combatModel.Rules;
+                if (rules.TimeOutMode != TimeOutMode.CallNextEnemy && rules.TimeOutMode != TimeOutMode.CallNextEnemyOrDraw)
+                    return false;
+                if (rules.TimeLimit <= 0)
+                    return false;
+
+                return CountActiveOrPending(_enemySlots) < rules.MaxEnemyShips && NextReady(_enemySlots) != null;
+            }
+        }
+
+        // Legacy CombatTimer acts only while both sides have an active ship.
+        private bool IsTimerExpired
+        {
+            get
+            {
+                var limit = (long)_combatModel.Rules.TimeLimit * TicksPerSecond;
+                return limit > 0 && _runner.Snapshot.TimerElapsedTicks >= limit &&
+                    Count(CombatSide.Player, ShipStatus.Active) > 0 && Count(CombatSide.Enemy, ShipStatus.Active) > 0;
+            }
         }
 
         // Legacy CombatManager.UpdateLocalGame: the player side waits for an active enemy. Then, at once at the start
@@ -516,13 +604,12 @@ namespace Combat.Integration.Core
 
         private void TryDeploy(Slot slot)
         {
-            if (!IsRunning || slot.Status != ShipStatus.Ready)
+            if (!IsRunning || slot == null || slot.Status != ShipStatus.Ready || slot.PendingDeployTick != NoPendingDeploy)
                 return;
 
             var slots = slot.Side == CombatSide.Player ? _playerSlots : _enemySlots;
-            for (var i = 0; i < slots.Count; ++i)
-                if (slots[i].Status == ShipStatus.Active || slots[i].PendingDeployTick != NoPendingDeploy)
-                    return;
+            if (CountActiveOrPending(slots) >= _maxActive[(int)slot.Side])
+                return;
 
             var tick = _runner.Tick;
             if (_runner.Deploy(ToCore(slot.Id), tick))
@@ -536,6 +623,40 @@ namespace Combat.Integration.Core
                     return slots[i];
 
             return null;
+        }
+
+        // The first ready slot without a submitted deployment.
+        private static Slot NextReady(List<Slot> slots)
+        {
+            for (var i = 0; i < slots.Count; ++i)
+                if (slots[i].Status == ShipStatus.Ready && slots[i].PendingDeployTick == NoPendingDeploy)
+                    return slots[i];
+
+            return null;
+        }
+
+        private static int CountActiveOrPending(List<Slot> slots)
+        {
+            var count = 0;
+            for (var i = 0; i < slots.Count; ++i)
+                if (slots[i].Status == ShipStatus.Active || slots[i].PendingDeployTick != NoPendingDeploy)
+                    count++;
+
+            return count;
+        }
+
+        // Legacy Mathf.CeilToInt of the seconds left.
+        private static int CeilSeconds(long ticks) =>
+            (int)(ticks > 0 ? (ticks + TicksPerSecond - 1) / TicksPerSecond : -(-ticks / TicksPerSecond));
+
+        private static TimerMode ToTimerMode(TimeOutMode mode)
+        {
+            switch (mode)
+            {
+                case TimeOutMode.DrainPlayerHp: return TimerMode.DrainPlayerHp;
+                case TimeOutMode.CallNextEnemyOrDraw: return TimerMode.CallNextEnemyOrDraw;
+                default: return TimerMode.CallNextEnemy;
+            }
         }
 
         private static bool IsDeployPending(List<Slot> slots)
@@ -692,6 +813,8 @@ namespace Combat.Integration.Core
         private const long DeployDelayTicks = 3 * TicksPerSecond;
         private const long NoPendingDeploy = -1;
         private const float ExitDelaySeconds = 3f;
+        // Legacy CombatTimer: the alarm of the draw countdown.
+        private const int DrawAlarmSeconds = 15;
         private const string BulletSpriteName = "ball";
         // Legacy Flash effect prefab image.
         private const string FlashSpriteName = "Textures/star";
@@ -713,6 +836,9 @@ namespace Combat.Integration.Core
         private float _exitDelay = -1f;
         private bool _exited;
         private readonly long[] _nextDeployTick = new long[2];
+        // Active ship limits by CombatSide, as given to the core.
+        private readonly int[] _maxActive = new int[2];
+        private bool _enemiesStarted;
 
         private readonly List<Slot> _playerSlots = new List<Slot>();
         private readonly List<Slot> _enemySlots = new List<Slot>();
