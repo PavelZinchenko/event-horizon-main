@@ -15,6 +15,8 @@ namespace Combat.Integration.Core
     // Phase 4, step 4b: cannons also take recoil (E1), push and several damage effects (E4).
     // Phase 5, step 2: SpawnBullet and Detonate triggers, with child bullets mapped as cannon bullets. A child the core
     // cannot run makes the weapon inert with the child's own reason.
+    // Phase 5, step 3: HitAllTargets and DamageOverTime impacts, falloff and radial push effects, bullets without a
+    // prefab (the legacy area bullet) and bullets attached to their ship.
     public static class CoreWeaponMapper
     {
         // A child bullet the mapper made: the ship mapper records its view source.
@@ -57,8 +59,10 @@ namespace Combat.Integration.Core
                         return Inert($"beam with trigger {FirstGameplayTrigger(ammunition)}", out inertReason);
                     if (effects.Damage.Count > 1)
                         return Inert("beam with several damage effects", out inertReason);
-                    if (effects.Push != 0f)
+                    if (effects.Push != 0f || effects.RadialPush != 0f || effects.RadialPushWithFalloff != 0f)
                         return Inert("beam with push", out inertReason);
+                    if (effects.HasFalloff)
+                        return Inert("beam with falloff", out inertReason);
                     if (ammunition.Controller.Type != BulletControllerType.Beam)
                         return Inert($"continuous weapon with controller {ammunition.Controller.Type}", out inertReason);
                     if (ammunition.ImpactType != BulletImpactType.DamageOverTime)
@@ -101,26 +105,39 @@ namespace Combat.Integration.Core
                     return InertBullet($"cannon with controller {ammunition.Controller.Type}", out inertReason);
             }
 
-            if (ammunition.ImpactType != BulletImpactType.HitFirstTarget)
-                return InertBullet($"cannon with impact {ammunition.ImpactType}", out inertReason);
+            // Phase 5, step 3: area and over-time impacts. A damage-over-time contact is one interval at a fixed rate.
+            var impact = ToImpact(ammunition.ImpactType);
+            if (impact == BulletImpact.OverTime)
+            {
+                if (effects.Push != 0f || effects.RadialPush != 0f || effects.RadialPushWithFalloff != 0f)
+                    return InertBullet("push over time", out inertReason);
+                if (effects.HasFalloff)
+                    return InertBullet("falloff over time", out inertReason);
+                if (effects.Damage.Count > 1)
+                    return InertBullet("several damage types over time", out inertReason);
+            }
 
-            // Without a prefab legacy uses the area-of-effect bullet.
-            if (body.BulletPrefab == null)
-                return InertBullet("no bullet prefab", out inertReason);
-
-            var shape = body.BulletPrefab.Shape;
+            // Without a prefab legacy uses the area-of-effect bullet (BulletFactory.BulletShape: Mine).
+            var shape = body.BulletPrefab != null ? body.BulletPrefab.Shape : BulletShape.Mine;
             if (!TryGetColliderRadius(shape, out var colliderRadius))
                 return InertBullet(IsBeamShape(shape) ? "moving beam bolt" : $"bullet shape {shape}", out inertReason);
 
-            // Step 3 attaches bullets to their parent.
-            if (nested && body.AttachedToParent)
-                return InertBullet("bullet attached to the parent", out inertReason);
+            // Physics attaches bullets to bodies only; legacy attaches a child to its parent bullet.
+            if (body.AttachedToParent && nested)
+                return InertBullet("bullet attached to a bullet", out inertReason);
+            if (body.AttachedToParent && homing)
+                return InertBullet("homing bullet attached to the parent", out inertReason);
 
+            // Legacy BulletStats.BodySize: an area with effects also scales by AoeRadiusMultiplier. A positive
+            // Body.Lifetime replaces range / speed (GetBulletLifetime).
             var aoe = nested ? modifier.AoeRadiusMultiplier.Value : 1f;
-            var radius = colliderRadius * body.Size;
+            var isAoe = ammunition.ImpactType != BulletImpactType.HitFirstTarget && ammunition.Effects.Count > 0;
+            var scale = body.Size * (isAoe ? modifier.AoeRadiusMultiplier.Value : 1f);
+            var radius = colliderRadius * scale;
             var speed = body.Velocity * modifier.VelocityMultiplier.Value * aoe;
             var range = body.Range * modifier.RangeMultiplier.Value * aoe;
-            if (!(radius > 0f) || !(speed > 0f) || !(range > 0f))
+            var lifetime = body.Lifetime > 0f ? body.Lifetime : 0f;
+            if (!(radius > 0f) || !(speed >= 0f) || !(range >= 0f) || !(lifetime > 0f || (speed > 0f && range > 0f)))
                 return InertBullet("bullet without size, speed or range", out inertReason);
 
             var triggers = MapTriggers(ammunition, modifier, level, context, out inertReason);
@@ -135,7 +152,7 @@ namespace Combat.Integration.Core
                 for (var i = 0; i < extraDamage.Length; ++i)
                 {
                     var item = effects.Damage[i + 1];
-                    extraDamage[i] = new DamageAmount(item.DamageType, item.Amount * damageMultiplier);
+                    extraDamage[i] = new DamageAmount(item.DamageType, item.Amount * damageMultiplier, item.Falloff);
                 }
             }
 
@@ -157,7 +174,14 @@ namespace Combat.Integration.Core
                 extraDamage: extraDamage,
                 triggers: triggers,
                 detonateWhenDestroyed: body.DetonateWhenDestroyed,
-                canBeDisarmed: body.CanBeDisarmed);
+                canBeDisarmed: body.CanBeDisarmed,
+                impact: impact,
+                damageFalloff: first.Falloff,
+                radialPush: effects.RadialPush * modifier.EffectPowerMultiplier.Value,
+                radialPushWithFalloff: effects.RadialPushWithFalloff * modifier.EffectPowerMultiplier.Value,
+                lifetime: lifetime,
+                scale: scale,
+                attachedToParent: body.AttachedToParent);
 
             inertReason = null;
             return bullet;
@@ -386,35 +410,65 @@ namespace Combat.Integration.Core
             return BulletEffectType.None;
         }
 
-        // Damage effects summed per damage type in first-seen order, and the summed Push power.
+        // Damage effects summed per damage type and falloff in first-seen order, and the summed push powers.
         private readonly struct Effects
         {
             public readonly List<DamageAmount> Damage;
             public readonly float Push;
+            public readonly float RadialPush;
+            public readonly float RadialPushWithFalloff;
 
-            public Effects(List<DamageAmount> damage, float push)
+            public Effects(List<DamageAmount> damage, float push, float radialPush, float radialPushWithFalloff)
             {
                 Damage = damage;
                 Push = push;
+                RadialPush = radialPush;
+                RadialPushWithFalloff = radialPushWithFalloff;
+            }
+
+            public bool HasFalloff
+            {
+                get
+                {
+                    if (RadialPushWithFalloff != 0f) return true;
+                    foreach (var item in Damage)
+                        if (item.Falloff) return true;
+                    return false;
+                }
             }
         }
 
-        // Damage and Push effects only. At least one Damage effect, unless the bullet has a gameplay trigger.
+        // Damage and push effects only (phase 5, step 3: falloff and radial push, legacy BulletFactory). At least one
+        // Damage effect, unless the bullet has a gameplay trigger.
         private static bool TryGetEffects(Ammunition ammunition, bool hasGameplayTriggers, out Effects effects,
             out string inertReason)
         {
             effects = default;
             var damage = new List<DamageAmount>(1);
             var push = 0f;
+            var radialPush = 0f;
+            var radialPushWithFalloff = 0f;
             foreach (var effect in ammunition.Effects)
             {
                 switch (effect.Type)
                 {
                     case ImpactEffectType.Damage:
-                        AddDamage(damage, (int)effect.DamageType, effect.Power);
+                        AddDamage(damage, (int)effect.DamageType, effect.Power, false);
+                        break;
+                    case ImpactEffectType.DamageWithFalloff:
+                        AddDamage(damage, (int)effect.DamageType, effect.Power, true);
                         break;
                     case ImpactEffectType.Push:
                         push += effect.Power;
+                        break;
+                    case ImpactEffectType.PushFromCenter:
+                        radialPush += effect.Power;
+                        break;
+                    case ImpactEffectType.PullToCenter:
+                        radialPush -= effect.Power;
+                        break;
+                    case ImpactEffectType.PushFromCenterWithFalloff:
+                        radialPushWithFalloff += effect.Power;
                         break;
                     default:
                         inertReason = $"effect {effect.Type}";
@@ -428,20 +482,30 @@ namespace Combat.Integration.Core
                 return false;
             }
 
-            effects = new Effects(damage, push);
+            effects = new Effects(damage, push, radialPush, radialPushWithFalloff);
             inertReason = null;
             return true;
         }
 
-        private static void AddDamage(List<DamageAmount> damage, int damageType, float amount)
+        private static void AddDamage(List<DamageAmount> damage, int damageType, float amount, bool falloff)
         {
             for (var i = 0; i < damage.Count; ++i)
             {
-                if (damage[i].DamageType != damageType) continue;
-                damage[i] = new DamageAmount(damageType, damage[i].Amount + amount);
+                if (damage[i].DamageType != damageType || damage[i].Falloff != falloff) continue;
+                damage[i] = new DamageAmount(damageType, damage[i].Amount + amount, falloff);
                 return;
             }
-            damage.Add(new DamageAmount(damageType, amount));
+            damage.Add(new DamageAmount(damageType, amount, falloff));
+        }
+
+        private static BulletImpact ToImpact(BulletImpactType impact)
+        {
+            switch (impact)
+            {
+                case BulletImpactType.HitAllTargets: return BulletImpact.AllTargets;
+                case BulletImpactType.DamageOverTime: return BulletImpact.OverTime;
+                default: return BulletImpact.FirstTarget;
+            }
         }
 
         // Legacy WeaponFactory: a base rate of 0 means no cooldown; a positive rate driven to 0 or below is blocked.

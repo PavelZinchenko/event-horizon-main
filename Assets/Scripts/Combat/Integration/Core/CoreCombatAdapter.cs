@@ -85,8 +85,9 @@ namespace Combat.Integration.Core
             var bulletSprite = resourceLocator.GetSprite(new SpriteId(BulletSpriteName, SpriteId.Type.Ammunition));
             // Only the font of the legacy text effect prefab is used; the text view is built in code (step 7f).
             var textFont = Resources.Load<TextMesh>(TextEffectPrefab)?.font;
-            _renderer = new BattleRenderer(torus, bulletSprite, resourceLocator.GetSprite(FlashSpriteName), textFont, scene);
-            _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, resourceLocator);
+            var flashSprite = resourceLocator.GetSprite(FlashSpriteName);
+            _renderer = new BattleRenderer(torus, bulletSprite, flashSprite, textFont, scene);
+            _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, resourceLocator, flashSprite);
             _anchor = new Vector2(0.5f * setup.Width, 0.5f * setup.Height);
             // Step 10: the legacy planet, presentation only (D8).
             if (!rules.DisablePlanet)

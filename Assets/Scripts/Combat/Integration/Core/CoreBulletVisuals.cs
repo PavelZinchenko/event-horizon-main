@@ -13,10 +13,12 @@ namespace Combat.Integration.Core
     // spawn. Legacy sources: PrefabCache.GetBulletPrefab, ProjectileInitializer, TrailView and BeamInitializer.
     public sealed class CoreBulletVisuals
     {
-        public CoreBulletVisuals(IReadOnlyDictionary<object, CoreBulletSource> sources, IResourceLocator resourceLocator)
+        public CoreBulletVisuals(IReadOnlyDictionary<object, CoreBulletSource> sources, IResourceLocator resourceLocator,
+            Sprite areaSprite)
         {
             _sources = sources;
             _resourceLocator = resourceLocator;
+            _areaSprite = areaSprite;
         }
 
         // Null when the mapper recorded no source for the spawn's definition.
@@ -28,21 +30,29 @@ namespace Combat.Integration.Core
             if (_visuals.TryGetValue(key, out var visual))
                 return visual;
 
-            visual = _sources.TryGetValue(key, out var source) ? Create(source, spawn.IsBeam) : null;
+            visual = _sources.TryGetValue(key, out var source) ? Create(source, spawn.IsBeam, spawn.BulletDefinition) : null;
             _visuals.Add(key, visual);
             return visual;
         }
 
-        private BulletVisual Create(in CoreBulletSource source, bool isBeam)
+        private BulletVisual Create(in CoreBulletSource source, bool isBeam, BulletDefinition bullet)
         {
             var parent = source.ParentColor.ToUnity();
             var size = source.BodySize;
             var prefab = source.Prefab;
             var flash = Flash(source.HitEffect, parent, size);
 
-            // Legacy BulletFactory: without a record the bullet has no look of its own.
+            // Legacy BulletFactory: without a record the bullet has no look of its own; its trigger effects draw it.
+            // Until H11 decides the area views, the core scene draws the legacy flash glow at the area's diameter in its
+            // colour, half transparent (phase 5, step 3).
             if (prefab == null)
-                return isBeam ? BulletVisual.ForLine(null, PlainBeamWidth, 0f, parent, flash) : null;
+            {
+                if (isBeam)
+                    return BulletVisual.ForLine(null, PlainBeamWidth, 0f, parent, flash);
+                var area = parent;
+                area.a *= AreaAlpha;
+                return BulletVisual.ForSprite(_areaSprite, ScaleToDiameter(_areaSprite, bullet.Scale), area, flash);
+            }
 
             var sprite = _resourceLocator.GetSprite(prefab.Image);
             var color = prefab.MainColorMode.Apply(prefab.MainColor.ToUnity(), parent);
@@ -80,6 +90,16 @@ namespace Combat.Integration.Core
         }
 
         private const float GenericFlashDuration = 0.2f;
+        private const float AreaAlpha = 0.5f;
+
+        private static float ScaleToDiameter(Sprite sprite, float diameter)
+        {
+            if (!sprite)
+                return diameter;
+
+            var extent = Mathf.Max(sprite.bounds.size.x, sprite.bounds.size.y);
+            return extent > 0f ? diameter / extent : diameter;
+        }
 
         // "Views (5)", item 5.
         private const float PlainBeamWidth = 0.2f;
@@ -91,6 +111,7 @@ namespace Combat.Integration.Core
 
         private readonly IReadOnlyDictionary<object, CoreBulletSource> _sources;
         private readonly IResourceLocator _resourceLocator;
+        private readonly Sprite _areaSprite;
         private readonly Dictionary<object, BulletVisual> _visuals = new Dictionary<object, BulletVisual>();
     }
 }
