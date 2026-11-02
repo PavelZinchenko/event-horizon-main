@@ -33,6 +33,9 @@ namespace Combat.Integration.Core
         // The view data of every mapped weapon, keyed by its BulletDefinition (cannon) or BeamDefinition (step 5).
         public IReadOnlyDictionary<object, CoreBulletSource> BulletSources => _bulletSources;
 
+        // The body image of each mapped worm tail's segments (phase 5, step 7d).
+        public IReadOnlyDictionary<WormTailDefinition, SpriteId> SegmentImages => _segmentImages;
+
         // Inert reasons the coverage report also gives (phase 5, step 1).
         public const string SatelliteWeaponReason = "satellite weapon";
         public const string ObsoleteAmmunitionReason = "obsolete ammunition";
@@ -48,6 +51,7 @@ namespace Combat.Integration.Core
                 case DeviceClass.TeleporterV2:
                 case DeviceClass.Detonator:
                 case DeviceClass.ClonningCenter:
+                case DeviceClass.WormTailV2:
                     return null;
                 default:
                     return $"device {deviceClass}";
@@ -132,6 +136,8 @@ namespace Combat.Integration.Core
                             device.Color, null);
                         tint = tint ?? device.Color;
                     }
+                    if (mapped is WormTailDefinition tail)
+                        _segmentImages[tail] = SegmentImage(device);
                     Add(devices, infos, mapped,
                         new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, activationCost, null));
                 }
@@ -227,10 +233,24 @@ namespace Combat.Integration.Core
                         DetonatorDefinition.CreateExplosion(
                             NonNegative(device.Power * stats.Layout.CellCount * stats.DamageMultiplier.Value),
                             (int)DamageType.Heat, Positive(device.Range), NonNegative(modelScale), Positive(stats.Weight)));
+                // Legacy WormTailDeviceV2: Power x the ship's armor per segment, RoundToInt(Size) segments, Cooldown to
+                // regrow, Offset for the hinges; the circle of the segment prefab (phase 5, step 7d).
+                case DeviceClass.WormTailV2:
+                    return new WormTailDefinition(NonNegative(device.Power), System.Math.Max(1, (int)System.Math.Round(device.Size)),
+                        NonNegative(device.Cooldown), device.Offset.x, device.Offset.y,
+                        IsSegment2(device) ? Segment2Radius : SegmentRadius);
                 default:
                     return null;
             }
         }
+
+        // Legacy DeviceFactory: the database prefab record (built on the WormSegment prefab), else ObjectPrefab.
+        private static bool IsSegment2(DeviceStats device) =>
+            device.Prefab == null && device.ObjectPrefab.ToString() == new PrefabId(Segment2Prefab, PrefabId.Type.Object).ToString();
+
+        private static SpriteId SegmentImage(DeviceStats device) =>
+            device.Prefab is GameObjectPrefab_WormTailSegment segment ? segment.BodyImage :
+            new SpriteId(IsSegment2(device) ? Segment2Image : SegmentImageName, SpriteId.Type.Satellite);
 
         // Legacy CreateDroneBays: clonning centers, then the replicator if the ship builds drones, then the bays.
         private void AddDroneBays(IShipSpecification specification, List<DeviceDefinition> devices, List<CoreDeviceInfo> infos,
@@ -398,6 +418,14 @@ namespace Combat.Integration.Core
         // scales armor, shield and their rates; attack scales weapon damage and the ramming damage multiplier.
         private const float CloneMultiplier = 0.9f;
 
+        // The circle colliders of the legacy segment prefabs at body scale 1 (WormSegment, WormSegment2) and their body
+        // sprites. A mod prefab other than WormSegment2 gets the WormSegment circle.
+        private const float SegmentRadius = 0.4419455f;
+        private const float Segment2Radius = 0.35618508f;
+        private const string Segment2Prefab = "WormSegment2";
+        private const string SegmentImageName = "worm_segment";
+        private const string Segment2Image = "worm_segment2";
+
         // The hit flash of a detonator explosion: the generic size 1 (D11), not the 20-unit area.
         private const float ExplosionFlashSize = 1f;
         private const float DegreesToRadians = (float)(System.Math.PI / 180.0);
@@ -435,5 +463,6 @@ namespace Combat.Integration.Core
         private readonly CoreHullBuilder _hullBuilder;
         private readonly Dictionary<ShipDefinition, CoreShipMapping> _mappings = new Dictionary<ShipDefinition, CoreShipMapping>();
         private readonly Dictionary<object, CoreBulletSource> _bulletSources = new Dictionary<object, CoreBulletSource>();
+        private readonly Dictionary<WormTailDefinition, SpriteId> _segmentImages = new Dictionary<WormTailDefinition, SpriteId>();
     }
 }

@@ -621,7 +621,7 @@ Stages 8–11 run one pipeline for every contact source. Physics only reports; t
    - its target is a disarmed bullet, or a bullet that stopped at an earlier time.
 
    A target that stops at the same time stays valid, so two bullets that hit each other both take the hit. A hit on a bullet with `TargetHitPoints` above 0 adds its damage to the target's damage taken. The hit that brings it to the hit points stops the target at that time. Several weak hits in one step therefore stop a missile at the lethal one. A candidate with `OncePerTargetEntity` (damage over time and area bullets, D16) counts once per attacker and target entity per step. Ships never become invalid within a step.
-4. **Ramming (Q8).** Stage 4 stores each active ship's linear velocity before the step (`PreStepVelocity`). Physics reports a touch only after the solve, when the velocities have already changed. `RammingTracker` counts the touching shape pairs per enemy ship pair. At stage 8 it handles begin events first, then end events. When a count goes from 0 to 1, it adds one candidate per direction at time 1. The damage is `0.1 × |vA − vB| × min(mass A, mass B) × the attacker's RammingDamageMultiplier`, and it applies only above 1 (legacy `DefaultCollisionBehaviour`). The candidate's target shape is the smallest (priority, order) among the pair's begin events in that step. A removal forgets every pair of the removed ship. Ally pairs are not tracked.
+4. **Ramming (Q8).** Stage 4 stores each active ship's linear velocity before the step (`PreStepVelocity`). Physics reports a touch only after the solve, when the velocities have already changed. `RammingTracker` counts the touching shape pairs per enemy ship pair. At stage 8 it handles begin events first, then end events. When a count goes from 0 to 1, it adds one candidate per direction at time 1. The damage is `0.1 × |vA − vB| × min(mass A, mass B) × the attacker's RammingDamageMultiplier`, and it applies only above 1 (legacy `DefaultCollisionBehaviour`). The candidate's target shape is the smallest (priority, order) among the pair's begin events in that step. A removal forgets every pair of the removed ship. Ally pairs are not tracked. A hostile worm tail segment pairs with a ship too; only the ship deals damage (Device statuses, worm tail).
 5. **Damage (stage 10).** Stage 9 adds each accepted hit on a ship or a missile to its `PendingDamage` and emits a `Hit` event. A ship keeps one pending amount per damage type. Stage 10 applies the totals in one pass, as legacy `Impact.ApplyShield` and `ShipStats.ApplyDamage` do (see "Damage types"). A missile loses hit points (legacy `MissileDamageHandler`). The resolver and stage 10 add the same values in the same order, so they agree on a missile's death. Stage 10 applies damage only to local targets; the authority rules above decide which contacts supply that damage.
 6. **Deaths (stage 11).** A ship with armor 0 or less is marked; stage 12 removes it with reason `Death` and a `Killed` transition. A missile with hit points 0 or less gets removal reason `Death`; it wins over an expiry in the same tick. `QueueDeath` remains as a test hook.
 
@@ -629,7 +629,7 @@ Stages 8–11 run one pipeline for every contact source. Physics only reports; t
 
 Phase 4 step 1 (D4, owner 2026-10-28): the legacy formula, with every type rule as data. Examples: `TODO/battle_simulator_phase4.md`, "Damage examples (D4)"; tests: `Core/Tests/DamageTypeTests.cs`.
 
-1. **Table.** `BattleSetup.DamageTypes` is a `DamageTypeTable`: one `DamageTypeDefinition` per type and a `RammingDamageType`. A damage type is an index into it. The default is `LegacyDamageModel.Types`: impact, energy, heat, corrosive in database enum order; ramming deals impact.
+1. **Table.** `BattleSetup.DamageTypes` is a `DamageTypeTable`: one `DamageTypeDefinition` per type (its shield order and its resistance ceiling, Device statuses item 9) and a `RammingDamageType`. A damage type is an index into it. The default is `LegacyDamageModel.Types`: impact, energy, heat, corrosive in database enum order; ramming deals impact.
 2. **Sources.** `BulletDefinition`, `BeamDefinition` and `PointDefenseDefinition` carry `DamageType` (point defense defaults to energy, legacy `PointDefenseCollisionAction`). `BattleSetup` rejects a type its table lacks, on roster ships and their drones.
 3. **Resistances.** `ShipDefinition.Resistances` holds one `DamageResistance` per type, or none (every type in full). `Armor` is the fraction removed before armor, `Shield` the fraction removed before the shield, `EnergyGain` the energy per point that passes the shield. `Armor` and `Shield` are at most 1, so no damage heals. `LegacyDamageModel.Resistances` builds them from the legacy percentages: corrosive takes half of the smallest armor resistance and the shield corrosive resistance; energy absorption over the armor multiplier is the energy gain.
 4. **Stage 10.** The shield meets the types group by group in `ShieldOrder` (legacy: corrosive first). A type's load is its damage times `1 − Shield`. A group within the shield left is absorbed; a larger group keeps the same share of each type, and the shield empties. The shield restarts its delay. Armor then takes each remaining amount times `1 − Armor`. Energy gains each remaining amount times `EnergyGain`, up to its maximum, without restarting its delay.
@@ -772,8 +772,9 @@ Phase 4, step 7e (D12, D13). The side stays the team: result, timer, surrender, 
 
 ### Device statuses
 
-Phase 5, steps 7a to 7c (data-model gate, H2). Examples: `TODO/battle_simulator_phase5.md`, "Data-model gate (7)"; tests:
-`Core/Tests/GateDeviceTests.cs`. Each device stays a small `ShipDevice` class that composes these parts:
+Phase 5, steps 7a to 7d (data-model gate, H2). Examples: `TODO/battle_simulator_phase5.md`, "Data-model gate (7)"; tests:
+`Core/Tests/GateDeviceTests.cs` and `Core/Tests/WormTailTests.cs`. Each device stays a small `ShipDevice` class that composes
+these parts:
 
 1. **Activation policy.** `ActivationPolicy` is data in the device definition: energy cost, cooldown, when the cooldown starts
    (`AtStart` or `AtEnd`), duration, and an optional release time after which a released bit ends the use. `DeviceActivation`
@@ -805,6 +806,10 @@ Phase 5, steps 7a to 7c (data-model gate, H2). Examples: `TODO/battle_simulator_
    device its child, on the owner at stage 5 and on a copy from the launch record. `OnShipLost` tells the device of the
    slot's active ship that a child of its index left; the device compares the ID, so a redeployed ship ignores the child of a
    former deployment. `DeviceActivation.Reset(policy, tick, share)` starts a timer partly elapsed.
+9. **Resistance share.** A status may carry `ResistanceShare` from 0 to 1. Stage 10 moves each armor resistance r of the ship
+   to r + share × (ceiling − r), where `DamageTypeDefinition.ResistanceCeiling` is 1, and 0.5 for legacy corrosive damage
+   (half of the smallest resistance). Two shares p and q give 1 − (1 − p)(1 − q), as legacy applies modifications in turn.
+   The correction replay uses the copy's share.
 
 Devices:
 
@@ -841,12 +846,47 @@ Devices:
    legacy `ShipSpecDecorator(0.9, 0.9, 0.9)`: armor, shield and shield recharge × 0.9, and no bays and no clonning
    centers. It also scales the weapon damage multiplier and the ramming damage multiplier by 0.9, which legacy combat never
    reads from the decorator (approved change). Devices keep the ship's damage multiplier.
+5. **Worm tail** (`WormTailV2`, step 7d). A passive device; `Battle.Tails` runs its chain of `TailSegment` entities
+   (`EntityKind.Segment`). Segment 1, the head of the tail, hangs on the ship; each next one on the segment before it.
+   - *Growth* (stage 2, owner only). The head grows at the deployment tick, then each segment grows the next one after
+     0.05 s (3 ticks), up to `Size` (legacy `RoundToInt`). A segment that replaces a lost one, and each segment after it,
+     waits 0.5 s instead (legacy factory counter). Scale × 0.95 per segment from the ship's model scale; mass ship / `Size`
+     for the head, then × 0.95; a circle of the prefab radius. The segment appears where its hinge holds it, straight
+     behind the parent at the parent's angle, without velocity. A growth waits while the place overlaps a body the segment
+     would touch (P4 rule): an `OverlapCircle` with the segment filter, bullets excluded.
+   - *Hinges.* Anchor (−offset × parent scale, 0) on the parent, with the device `Offset.x` plus 0.15 at the ship, and
+     (`Offset.y` × segment scale, 0) on the segment; reference angle 0; limits ±75° at the ship, ±40° between segments.
+   - *Collision.* The missile class of its allegiance (legacy `UnitClass.Limb` on the missile layer): hostile ships,
+     drones, missiles and bolts touch it; its own ship, its own segments and allies never do. Beams and point defense
+     follow from the filter; point defense ignores segments (legacy targets bolts, missiles and drones only).
+   - *Motion* (stage 4, both sides). An attached segment loses 5 × its sideways speed per second. A segment at a squared
+     distance of 5 × its scale or more from its parent, or turned 90° or more from it, goes back where the hinge holds it,
+     with the parent's velocity and no spin, and skips the damping that tick.
+   - *Damage* (stage 9 queues, stage 10 applies, owner only, before the ship pass). A segment takes the total of every
+     damage type, without resistances, and a tenth of the push. Segments 1 and 2 never break while attached: a hit goes to
+     the tip of the tail first, and the damage the whole tail cannot take passes to the ship as impact damage. From segment
+     3 on, recent damage above the hit points tears the segment off (recent damage falls by 5 × the hit points per second);
+     otherwise the hit goes to the tip first, and a segment that cannot take the rest dies and passes it on. A segment that
+     absorbs a hit restarts its 5 s regrowth wait. Hit points: `Power` × the ship's armor.
+   - *Loss.* The segments behind a lost one detach at once: they keep their hinges to each other, take hits on their own
+     hit points and destroy themselves after 5 s. The parent regrows the lost segment `Cooldown` later.
+   - *Status.* Stage 3 gives the ship the resistance share of the attached segments over `Size` (item 9).
+   - *Ship leaves.* Its attached segments leave with it in the same tick; detached ones run out their timers.
+   - *Ramming.* A hostile ship rams a segment with the ship rule (Contacts and damage, item 4); a segment rams nothing.
+   - *Turn cap* (P4). A ship with a tail turns at most 942°/s with 2,447°/s² (the fastest database worm, where the hinge gate
+     passed); `ShipDefinition` caps both engines.
+   - *Network (H8).* Identity `CreateChild(ship, tick, device, segment number, 0)`. The owner sends a `BulletSpawn` record
+     per grown segment (barrel = segment number) and a removal record per segment that leaves, also with its ship; the copy
+     builds each segment behind its own chain and never grows, damages or times out a segment itself. A contact on a segment
+     travels as a contact on a bullet (`TargetIsBullet`, network plan 9d): it counts once, whether the attacker's or the
+     owner's device saw it; a projectile once per segment, a ray, damage over time and a ram (device −1) once per tick. A
+     remote projectile that stops at a local segment stops on its owner too. No codec change.
 
 ### Snapshots and events
 
 Stage 14 writes a `BattleSnapshot` of the tick it completed, then increments `Battle.Tick`. `Battle.Snapshot` returns the published one. The constructor publishes tick −1: every slot `Ready`, no ships, no events.
 
-1. Contents: battle ID, tick, timer, result, `Ships` (active roster ships in roster order, then drones by entity ID), `Bullets` (live bullets in storage order; the order has no meaning), `Roster` (every slot in setup order) and `Events` (the tick's presentation batch), plus `OutgoingHits` (resolved contacts for remote ship and drone owners, and contacts on remote bullets for their owners). The lists are `ReadOnlySpan` views over arrays the battle reuses.
+1. Contents: battle ID, tick, timer, result, `Ships` (active roster ships in roster order, then drones by entity ID), `Bullets` (live bullets in storage order; the order has no meaning), `Segments` (live worm tail segments in storage order: entity, ship, side, owner, definition, number, detached, scale and pose), `Roster` (every slot in setup order) and `Events` (the tick's presentation batch), plus `OutgoingHits` (resolved contacts for remote ship and drone owners, and contacts on remote bullets for their owners). The lists are `ReadOnlySpan` views over arrays the battle reuses.
 2. `ShipState`: entity, roster ID, side, allegiance, owner, definition, pose and velocities from the physics body, armor, shield and energy (value and maximum), the controls in force and the retreat completion tick.
 3. `BulletState`: entity, parent entity, side, owner, definition, pose, velocity and expiry tick. Projectiles retain `Definition` (`BulletDefinition`). Beams set `BeamDefinition` and `IsBeam`, with `Definition` null. Their pose is the sampled ray origin and angle; `BeamEndPoint` and `BeamTargetId` describe the accepted hit or full range. Beam velocity is zero and expiry is `long.MaxValue` because the device owns lifetime.
 4. `RosterSlotState`: roster ID, side, owner, status, deployment count and order, revision, active entity (null unless active), the retained B4 deficits and `DamageFraction` (B2).
@@ -950,7 +990,7 @@ Editor menu *Tools/Combat/Check AI Replay* runs every armed built-in build again
 
 `BattleRenderer` (`CombatView` module) draws ships and bullets as sprites under one root in the combat scene. Scenes load additively and the active scene never changes, so the root is moved into the combat scene.
 
-1. Ships and drones use the model sprite at scale `ModelScale`. Bullets and beams use their `BulletPrefab` image, size and colour (phase 4 step 5; rules in `TODO/battle_simulator_phase4.md`, "Views (5)"); a bullet without view data gets the generic sprite and one warning. Hits by bullets flash.
+1. Ships and drones use the model sprite at scale `ModelScale`. Worm tail segments use the body sprite of their prefab at their body scale, below the ships; a view lives while the snapshot lists its segment. Bullets and beams use their `BulletPrefab` image, size and colour (phase 4 step 5; rules in `TODO/battle_simulator_phase4.md`, "Views (5)"); a bullet without view data gets the generic sprite and one warning. Hits by bullets flash.
 2. A removal by death fades the ship out in 0.4 s. There are no other effects or sounds.
 3. Each view keeps the previous and current pose and interpolates with alpha = accumulator / 0.02 s.
 4. Torus wrap: the controlled ship goes to its image nearest to the anchor, and the anchor follows it. Every other view goes to its image nearest to the new anchor. `IShipView.VisualPosition` is that image, so the radar and the camera agree. Drawn coordinates can leave the base map; simulation positions are never written back.

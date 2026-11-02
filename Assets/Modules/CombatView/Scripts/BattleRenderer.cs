@@ -8,8 +8,8 @@ using Object = UnityEngine.Object;
 
 namespace CombatView
 {
-    // Draws one core battle: ships, bullets, beams, hit flashes and ship texts at interpolated poses (migration phase 3c,
-    // step 4; phase 4, steps 5 and 7f). Events decide when a view exists; snapshots give its poses. Nothing is written back to the
+    // Draws one core battle: ships, worm tail segments, bullets, beams, hit flashes and ship texts at interpolated poses
+    // (migration phase 3c, step 4; phase 4, steps 5 and 7f; phase 5, step 7d). Events decide when a view exists; snapshots give its poses. Nothing is written back to the
     // simulation. Bullet looks come from the adapter as BulletVisual values.
     public sealed class BattleRenderer : IDisposable
     {
@@ -55,6 +55,13 @@ namespace CombatView
                 _fades.Add(new Fade(view.Renderer));
             else
                 Object.Destroy(view.Root);
+        }
+
+        // The body sprite of the segments of one worm tail (phase 5, step 7d); without one they draw the generic sprite.
+        public void AddSegmentLook(WormTailDefinition definition, Sprite sprite)
+        {
+            if (sprite)
+                _segmentLooks[definition] = sprite;
         }
 
         // A null visual draws the generic sprite or a plain line; it should not happen for a mapped weapon.
@@ -155,6 +162,44 @@ namespace CombatView
                     view.PushEnd(bullet.BeamEndPoint);
                 view.Push(bullet.Position, bullet.Angle);
             }
+
+            CaptureSegments(snapshot);
+        }
+
+        // Worm tail segments have no events: a view lives while the snapshot lists its segment. Legacy rule: the segment's
+        // transform scale is its body scale. Legacy wreck sprites and the spawn and explosion effects stay out (H11).
+        private void CaptureSegments(BattleSnapshot snapshot)
+        {
+            ++_segmentStamp;
+            foreach (var segment in snapshot.Segments)
+            {
+                if (!_segments.TryGetValue(segment.Id, out var view))
+                {
+                    if (!_segmentLooks.TryGetValue(segment.Definition, out var sprite))
+                        sprite = _genericSprite;
+                    var renderer = CreateRenderer("Segment", _root.transform, sprite, SegmentSortingOrder);
+                    renderer.gameObject.SetActive(false);
+                    renderer.transform.localScale = Vector3.one * segment.Scale;
+                    view = new SegmentView(renderer.gameObject, renderer);
+                    _segments.Add(segment.Id, view);
+                }
+
+                view.Push(segment.Position, segment.Angle);
+                view.Stamp = _segmentStamp;
+            }
+
+            if (_segments.Count == snapshot.Segments.Length)
+                return;
+
+            foreach (var pair in _segments)
+                if (pair.Value.Stamp != _segmentStamp)
+                    _removedSegments.Add(pair.Key);
+            foreach (var id in _removedSegments)
+            {
+                Object.Destroy(_segments[id].Root);
+                _segments.Remove(id);
+            }
+            _removedSegments.Clear();
         }
 
         // Once per frame. The controlled ship goes to its image nearest to the anchor, and the anchor follows it,
@@ -173,6 +218,9 @@ namespace CombatView
 
             foreach (var pair in _bullets)
                 PlaceBullet(pair.Value, alpha, anchor);
+
+            foreach (var pair in _segments)
+                Place(pair.Value, alpha, anchor);
 
             UpdateFades(deltaTime);
             UpdateFlashes(deltaTime, anchor);
@@ -205,6 +253,8 @@ namespace CombatView
 
             _ships.Clear();
             _bullets.Clear();
+            _segments.Clear();
+            _segmentLooks.Clear();
             foreach (var pool in _bulletPools)
                 pool.Clear();
             _fades.Clear();
@@ -520,6 +570,14 @@ namespace CombatView
             }
         }
 
+        private sealed class SegmentView : EntityView
+        {
+            public SegmentView(GameObject root, SpriteRenderer renderer) : base(root, renderer) { }
+
+            // The last capture that listed the segment.
+            public int Stamp { get; set; }
+        }
+
         private sealed class BulletView : EntityView
         {
             public BulletView(GameObject root, SpriteRenderer renderer, TrailRenderer trail, LineRenderer line)
@@ -604,6 +662,7 @@ namespace CombatView
             public float Time;
         }
 
+        private const int SegmentSortingOrder = -1;
         private const int ShipSortingOrder = 0;
         private const int TrailSortingOrder = 1;
         private const int BulletSortingOrder = 2;
@@ -643,6 +702,10 @@ namespace CombatView
         private readonly GameObject _root;
         private readonly Dictionary<EntityId, EntityView> _ships = new Dictionary<EntityId, EntityView>();
         private readonly Dictionary<EntityId, BulletView> _bullets = new Dictionary<EntityId, BulletView>();
+        private readonly Dictionary<EntityId, SegmentView> _segments = new Dictionary<EntityId, SegmentView>();
+        private readonly Dictionary<WormTailDefinition, Sprite> _segmentLooks = new Dictionary<WormTailDefinition, Sprite>();
+        private readonly List<EntityId> _removedSegments = new List<EntityId>();
+        private int _segmentStamp;
         private readonly Stack<BulletView>[] _bulletPools = { new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>() };
         private readonly List<Fade> _fades = new List<Fade>();
         private readonly List<Flash> _flashes = new List<Flash>();
