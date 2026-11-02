@@ -749,7 +749,7 @@ Core and Core.Tests compile separately with Unity 6000.0.75f1's compiler and ass
 
 Phase 2 step 10 (Q5/Q6). A drone is a full `ShipEntity` without a roster slot. Its bay belongs to `(RosterId, device index)`.
 
-1. **Definition and inventory.** `DroneBayDefinition` supplies positive capacity, nonnegative finite launch energy cost and a drone `ShipDefinition`. Nested bays are rejected, as legacy excludes bays on drones. Each roster slot owns persistent bay inventory. Launches consume hangar stock; deaths never restore it. Surviving drones and unlaunched stock remain through retreat and redeployment. Replication is deferred.
+1. **Definition and inventory.** `DroneBayDefinition` supplies positive capacity, nonnegative finite launch energy cost and a drone `ShipDefinition`. A launched ship launches none: a drone or clone with a bay or a clonning center is rejected, as legacy excludes them on drones (`DeviceDefinition.ChildShip`). A clonning center (phase 5, step 7c; [Device statuses](#device-statuses)) has the same inventory without a capacity, so its clone is a drone of the slot. Each roster slot owns persistent bay inventory. Launches consume hangar stock; deaths never restore it. Surviving drones and unlaunched stock remain through retreat and redeployment. Replication is deferred.
 2. **Launch timing.** Held controls launch while stock, energy and the shared mothership bay timer permit. The timer is separate from weapon barrels. It uses `TickTime.After(0.4f)`: first launch at deployment tick + 20, subsequent launches at least 21 ticks apart. Device index resolves competition between bays. Failed payment spends nothing. Release preserves readiness; retreat blocks launch; redeployment resets the timer.
 3. **Intentional timing correction (owner, 2026-10-21).** Legacy `ShipFactory.CreateDroneBays` registers the same platform twice. `ShipSystems` therefore advances its 0.4-second timer twice per tick. The new core advances it once and uses the declared duration.
 4. **Spawn.** Stage 2 pays and queues; stage 5 creates at the mothership position and heading, with zero velocity and empty controls. The child ID uses the current mothership ID, tick, device index, lifetime launch slot and sequence. The free-position query searches up to 40 units. On failure it still launches at the returned least-overlapping position and retains the payment (owner, 2026-10-21).
@@ -772,7 +772,7 @@ Phase 4, step 7e (D12, D13). The side stays the team: result, timer, surrender, 
 
 ### Device statuses
 
-Phase 5, steps 7a and 7b (data-model gate, H2). Examples: `TODO/battle_simulator_phase5.md`, "Data-model gate (7)"; tests:
+Phase 5, steps 7a to 7c (data-model gate, H2). Examples: `TODO/battle_simulator_phase5.md`, "Data-model gate (7)"; tests:
 `Core/Tests/GateDeviceTests.cs`. Each device stays a small `ShipDevice` class that composes these parts:
 
 1. **Activation policy.** `ActivationPolicy` is data in the device definition: energy cost, cooldown, when the cooldown starts
@@ -800,6 +800,11 @@ Phase 5, steps 7a and 7b (data-model gate, H2). Examples: `TODO/battle_simulator
    spread (legacy `CreateArea`). Its identity has the device index as source and
    spawn slot 0. The owner sends a `BulletSpawn` record with the launch pose; the receiver adds the bullet from it and never
    derives it (H8), so it appears one network delay late, and not at all once it has expired there.
+8. **Child ship.** A device with a `ChildShip` launches through the drone path (`SpawnRequest.Launch`): the slot's inventory,
+   the child identity with the lifetime launch slot, a `DroneSpawn` record and drone collision. `OnShipLaunched` tells the
+   device its child, on the owner at stage 5 and on a copy from the launch record. `OnShipLost` tells the device of the
+   slot's active ship that a child of its index left; the device compares the ID, so a redeployed ship ignores the child of a
+   former deployment. `DeviceActivation.Reset(policy, tick, share)` starts a timer partly elapsed.
 
 Devices:
 
@@ -826,6 +831,16 @@ Devices:
    (item 7), the death from the owner's roster record. The `DetonateShip` node holds the first detonator; with `InRange`
    only when the ship and its target, each moved on by its velocity for the lock time, touch (centre distance up to the sum
    of half their model scales).
+4. **Clonning center** (`ClonningCenter`, step 7c). Energy cost at the start; the use lasts while its clone lives, so the
+   cooldown starts at the clone's loss. Deployment starts the timer 80% elapsed (first clone after 6, 9, 12 s for cooldowns
+   of 30, 45, 60 s). While no clone lives and the timer has passed, a held bit launches one: at the mothership position plus
+   its model scale in a counter-based direction of whole degrees (`RandomPurpose.CloneSpawn`), facing that direction, with
+   the mothership velocity. The clone is a drone (legacy `UnitClass.Drone`): it stays when the mothership dies or retreats
+   and does not keep its side alive. While it lives the center is not ready, its cooldown is 1, and it counts one active
+   drone; without it, one drone in the hangar (the `SpawnDrones` and `HasDrones` AI rules). The mapper builds the clone from
+   legacy `ShipSpecDecorator(0.9, 0.9, 0.9)`: armor, shield and shield recharge × 0.9, and no bays and no clonning
+   centers. It also scales the weapon damage multiplier and the ramming damage multiplier by 0.9, which legacy combat never
+   reads from the decorator (approved change). Devices keep the ship's damage multiplier.
 
 ### Snapshots and events
 
@@ -919,12 +934,12 @@ Migration phases 3c and 4. Quick combat and campaign battles run on the core in 
 
 ### Ships and pilots
 
-`CoreShipMapper` maps each ship build (`IShipSpecification`) to a `ShipDefinition` (phase 4, step 3a). The rules and examples are in [the phase 4 plan](../TODO/battle_simulator_phase4.md#ship-mapping-3a). Armor, shield, energy, weight, ramming and resistances come from the ship stats. The engine uses the legacy `EngineStats` formula, with degrees converted to radians. The device index is the legacy system index: weapons by platform, then devices, then clonning centers, the replicator and the drone bays. Hull barrels become `BarrelDefinition`s; satellite weapons have no barrel (D9). `CoreWeaponMapper` maps a weapon with new-format ammunition to a cannon or a beam. Point defense and drone bays map to their core devices; a drone is mapped from its build with the bay multipliers. Every other part becomes an `InertDeviceDefinition`: it keeps its index and does nothing (D1). Weapons with obsolete ammunition stay inert; the built-in catalog has none since the conversion (step 4c).
+`CoreShipMapper` maps each ship build (`IShipSpecification`) to a `ShipDefinition` (phase 4, step 3a). The rules and examples are in [the phase 4 plan](../TODO/battle_simulator_phase4.md#ship-mapping-3a). Armor, shield, energy, weight, ramming and resistances come from the ship stats. The engine uses the legacy `EngineStats` formula, with degrees converted to radians. The device index is the legacy system index: weapons by platform, then devices, then clonning centers, the replicator and the drone bays. Hull barrels become `BarrelDefinition`s; satellite weapons have no barrel (D9). `CoreWeaponMapper` maps a weapon with new-format ammunition to a cannon or a beam. Point defense and drone bays map to their core devices; a drone is mapped from its build with the bay multipliers. A clonning center maps to its core device with a clone mapped from the ship through legacy `ShipSpecDecorator` (phase 5, step 7c). Every other part becomes an `InertDeviceDefinition`: it keeps its index and does nothing (D1). Weapons with obsolete ammunition stay inert; the built-in catalog has none since the conversion (step 4c).
 The mapper also returns a `CoreShipMapping` per ship and drone: key binding, button icon, activation cost and inert reason per device. The adapter logs the inert devices once per battle.
 `CoreHullBuilder` builds the hull from `Ship.Collider` times `ModelScale`. It skips an invalid shape with one warning per ship. A ship with no valid shape gets the legacy sprite collider: a circle around the sprite for `SizeClass.Undefined`, otherwise the sprite physics shape reduced with `ColliderTolerance`. It runs on the main thread; the core receives shapes only.
 Editor menus: *Tools/Combat/Check Ship Hulls* builds the hull of every built-in ship from the data and from the sprite and reports parts, inertia and radius. *Tools/Combat/Check Ship Builds* maps every built-in build and reports the armed builds, the behaviour trees they use and the inert reasons with counts.
 
-`CorePilotProvider` picks each pilot by the legacy `ShipFactory` and `ControllerFactory` rules (phase 4, step 7f). A player ship gets a new `PlayerPilot` (`PilotSchedule.PlayerShip`); with the autopilot component it also gets the autopilot tree through `AutopilotPilot`. An enemy ship runs its own tree or the `CombatSettings` enemy tree at the fleet's AI level; an AI level below 0 gives no tree (legacy `EmptyController`). A starbase runs its own or the starbase tree; a drone runs the tree its bay selects, with the bay range. The mapping records the tree choice (`AiTree`, `DroneRange`, `HasAutopilot`). A null tree idles the ship and logs once per mapping. `CorePilotProvider.CreateTrees` builds the battle's `BehaviorTreeFactory` from the mapper: profiles by definition, bullet scales from the bullet sources and the broadcast callback.
+`CorePilotProvider` picks each pilot by the legacy `ShipFactory` and `ControllerFactory` rules (phase 4, step 7f). A player ship gets a new `PlayerPilot` (`PilotSchedule.PlayerShip`); with the autopilot component it also gets the autopilot tree through `AutopilotPilot`. An enemy ship runs its own tree or the `CombatSettings` enemy tree at the fleet's AI level; an AI level below 0 gives no tree (legacy `EmptyController`). A starbase runs its own or the starbase tree; a drone runs the tree its bay selects, with the bay range. A clone runs its own or the clone tree at `AiSettings.Default`, with `PilotSchedule.Ship` (`CoreShipMapping.IsClone`). The mapping records the tree choice (`AiTree`, `DroneRange`, `HasAutopilot`). A null tree idles the ship and logs once per mapping. `CorePilotProvider.CreateTrees` builds the battle's `BehaviorTreeFactory` from the mapper: profiles by definition, bullet scales from the bullet sources and the broadcast callback.
 `AutoActivationPilot` wraps every tree pilot and applies `CoreAutoActivation` to its frame. A tree that keeps failing submits nothing (T7), so the wrapper submits the kept frame again when the automatic bits change; one-shot commands are never sent twice.
 `PlayerPilot` implements `IShipCommandSink` and submits the stored throttle, course and system bits each tick. `CoreAutoActivation` gives every pilot the legacy rule for devices with a key below 0: the pilot holds the device while energy fraction + 0.1 × (key + 1) ≥ 0, plus activation cost ÷ maximum energy while the device is `Active`. `CoreShipControls` groups the other devices by key, as legacy `GetKeyBindings`. A new deployment gets a new pilot, so it starts with empty controls.
 `CoreKeyboardDriver` applies the legacy `KeyboardController` rules over `IKeyboard` and `IMouse`. It writes a value to the sink only when its own value changes, so HUD buttons keep theirs. A key held across a ship change acts on the new ship, as in legacy. In every frame with input it fires the legacy `PlayerInputSignal`, as the HUD does; the adapter then calls `BehaviorTreeFactory.OnPlayerInput` with the tick the pilots think on, so the autopilot tree waits.

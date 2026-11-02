@@ -89,6 +89,15 @@ public static class CoreShipBuildCheck
                 if (tree != null) armedTrees.Add(tree);
                 stubs.Add(tree, mapper.Mappings[drone].Ai, AiSettings.ForDrone(item.DroneBay.Range), $"drone of build {build.Id.Value}");
             }
+
+            // Phase 5, step 7c: a clone runs the build's own tree or the clone tree, at the default settings.
+            var center = mapping.Definition.Devices.OfType<ClonningCenterDefinition>().FirstOrDefault();
+            if (center != null && IsArmed(center.Clone))
+            {
+                var tree = build.CustomAI ?? settings.CloneAI;
+                if (tree != null) armedTrees.Add(tree);
+                stubs.Add(tree, mapper.Mappings[center.Clone].Ai, AiSettings.Default, $"clone of build {build.Id.Value}");
+            }
         }
 
         var rootTrees = new List<BehaviorTreeModel>

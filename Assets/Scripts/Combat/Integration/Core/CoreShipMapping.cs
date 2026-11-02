@@ -13,7 +13,7 @@ namespace Combat.Integration.Core
     {
         public CoreShipMapping(string name, ShipDefinition definition, IReadOnlyList<CoreDeviceInfo> devices,
             SpriteId modelImage, float modelScale, AiShipProfile ai, BehaviorTreeModel aiTree, float droneRange, bool hasAutopilot,
-            ColorData? tintColor = null)
+            ColorData? tintColor = null, bool isClone = false)
         {
             Name = name;
             Definition = definition;
@@ -25,9 +25,10 @@ namespace Combat.Integration.Core
             DroneRange = droneRange;
             HasAutopilot = hasAutopilot;
             TintColor = tintColor;
+            IsClone = isClone;
         }
 
-        // For logs and reports: "ship" or "drone" and the legacy ship ID.
+        // For logs and reports: "ship", "drone" or "clone" and the legacy ship ID.
         public string Name { get; }
 
         public ShipDefinition Definition { get; }
@@ -39,7 +40,7 @@ namespace Combat.Integration.Core
         public AiShipProfile Ai { get; }
 
         // A ship: its own tree (CustomAi), null for the default of its kind. A drone: the tree its bay selects (T6), null
-        // for none.
+        // for none. A clone: its own tree, else the CombatSettings clone tree (T6).
         public BehaviorTreeModel AiTree { get; }
 
         // A drone: its bay range (legacy AiSettings.ForDrone). 0 for a ship.
@@ -50,6 +51,9 @@ namespace Combat.Integration.Core
 
         // The colour ShipState.Tint moves the ship to: the first detonator's (phase 5, step 7b); null without one.
         public ColorData? TintColor { get; }
+
+        // The clone a clonning center launches (phase 5, step 7c): a drone in the core that flies with the clone tree.
+        public bool IsClone { get; }
     }
 
     // What a bullet or beam view needs from the database (phase 4, step 5, "Views (5)"). Prefab is null when the

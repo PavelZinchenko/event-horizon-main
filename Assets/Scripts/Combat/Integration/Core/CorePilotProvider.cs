@@ -14,7 +14,8 @@ namespace Combat.Integration.Core
     // Gives every ship its pilot by the legacy ShipFactory and ControllerFactory rules (phase 4, step 7f; T6). A player
     // ship gets a new player pilot, with the autopilot tree when it has the autopilot component. An enemy ship runs its
     // own tree or the enemy tree at the fleet's AI level; a starbase its own or the starbase tree; a drone the tree of
-    // its bay. The runner creates the pilot at the spawn event, so it exists before the adapter handles that event.
+    // its bay; a clone its own or the clone tree. The runner creates the pilot at the spawn event, so it exists before the
+    // adapter handles that event.
     public sealed class CorePilotProvider : IPilotProvider
     {
         // playerSide −1: no player pilots, every ship runs its tree (Editor checks). An AI level below 0 gives enemy
@@ -51,6 +52,14 @@ namespace Combat.Integration.Core
             }
 
             var autoActivation = CoreAutoActivation.Create(mapping);
+
+            // Legacy CreateCloneController: AiSettings.Default. A clone flies as a ship, so it thinks every tick.
+            if (mapping.IsClone)
+            {
+                schedule = PilotSchedule.Ship;
+                if (mapping.AiTree == null) LogNoTree(mapping, "clone");
+                return Tree(mapping.AiTree, mapping, AiSettings.Default, ship.Id, schedule, autoActivation);
+            }
 
             if (ship.IsDrone)
             {

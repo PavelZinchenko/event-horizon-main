@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Combat.Component.Systems.Devices;
 using Combat.Domain;
 using Combat.Factory;
 using CombatSimulation.Ai;
@@ -46,9 +47,8 @@ namespace Combat.Integration.Core
                 case DeviceClass.TimeMachine:
                 case DeviceClass.TeleporterV2:
                 case DeviceClass.Detonator:
-                    return null;
                 case DeviceClass.ClonningCenter:
-                    return "clonning center";
+                    return null;
                 default:
                     return $"device {deviceClass}";
             }
@@ -56,10 +56,11 @@ namespace Combat.Integration.Core
 
         public CoreShipMapping Map(IShipInfo info) => Map(info.Specification, isDrone: false);
 
-        public CoreShipMapping Map(IShipSpecification specification, bool isDrone) => Map(specification, isDrone, null);
+        public CoreShipMapping Map(IShipSpecification specification, bool isDrone) => Map(specification, isDrone, null, false);
 
-        // bay is the drone bay of a drone, else null; it selects the drone's tree and range (step 7f).
-        private CoreShipMapping Map(IShipSpecification specification, bool isDrone, IDroneBayData bay)
+        // bay is the drone bay of a drone, else null; it selects the drone's tree and range (step 7f). A clone (phase 5,
+        // step 7c) is a drone without a bay that runs the clone tree.
+        private CoreShipMapping Map(IShipSpecification specification, bool isDrone, IDroneBayData bay, bool isClone)
         {
             var stats = specification.Stats;
             var modelScale = stats.ShipModel.ModelScale;
@@ -71,6 +72,10 @@ namespace Combat.Integration.Core
             var aiDroneBays = new List<AiDroneBay>();
             var tint = default(ColorData?);
 
+            // Legacy ShipSpecDecorator scales the clone's weapon and ramming damage, but combat never reads the scaled
+            // stats; the core applies them (owner, 2026-11-02: a legacy bug).
+            var attack = isClone ? CloneMultiplier : 1f;
+
             foreach (var platform in specification.Platforms)
             {
                 // D9: satellites are not attached in phase 4, so their weapons have no barrel.
@@ -81,8 +86,9 @@ namespace Combat.Integration.Core
                     barrels.Add(ToBarrel(platform, modelScale));
                 }
 
-                foreach (var weapon in platform.Weapons)
+                foreach (var data in platform.Weapons)
                 {
+                    var weapon = attack == 1f ? data : new ScaledWeapon(data, attack);
                     var name = $"weapon {weapon.Weapon.Id.Value}, ammunition {weapon.Ammunition.Id.Value}";
                     string reason;
                     var device = barrelIndex < 0
@@ -148,7 +154,7 @@ namespace Combat.Integration.Core
                 new ResourceDefinition(NonNegative(stats.ShieldPoints), stats.ShieldRechargeRate, NonNegative(stats.ShieldRechargeCooldown)),
                 new ResourceDefinition(NonNegative(stats.EnergyPoints), stats.EnergyRechargeRate, NonNegative(stats.EnergyRechargeCooldown)),
                 ToEngine(new EngineStats(stats.EnginePowerWihoutEnergy, stats.TurnRateWihoutEnergy, stats.Weight, stats.Layout.CellCount, _database.ShipSettings)),
-                rammingDamageMultiplier: NonNegative(stats.RammingDamageMultiplier),
+                rammingDamageMultiplier: NonNegative(stats.RammingDamageMultiplier) * attack,
                 barrels: barrels,
                 devices: devices,
                 resistances: LegacyDamageModel.Resistances(
@@ -172,17 +178,20 @@ namespace Combat.Integration.Core
                 turnRate: stats.TurnRate,
                 propulsion: engine.Propulsion,
                 kineticResistance: stats.KineticResistancePercentage,
-                rammingDamageMultiplier: stats.RammingDamageMultiplier,
+                rammingDamageMultiplier: stats.RammingDamageMultiplier * attack,
                 modelScale: modelScale,
                 targetPriority: isDrone ? AiTargetPriority.Low : AiTargetPriority.Normal,
                 chanceToAvoidDrone: 0f);
 
-            // Legacy DroneBay and ControllerFactory.CreateDroneController (T6).
-            var aiTree = bay == null
-                ? specification.CustomAi
-                : BehaviorTreeSelection.ForDrone(_database.CombatSettings, bay.DroneBay, bay.Drone.CustomAI, bay.Behaviour == DroneBehaviour.Defensive);
-            var mapping = new CoreShipMapping($"{(isDrone ? "drone" : "ship")} {specification.Info.Id.Value}", definition, infos,
-                stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot, tint);
+            // Legacy DroneBay and ControllerFactory.CreateDroneController and CreateCloneController (T6).
+            var aiTree = isClone
+                ? BehaviorTreeSelection.ForClone(_database.CombatSettings, specification.CustomAi)
+                : bay == null
+                    ? specification.CustomAi
+                    : BehaviorTreeSelection.ForDrone(_database.CombatSettings, bay.DroneBay, bay.Drone.CustomAI, bay.Behaviour == DroneBehaviour.Defensive);
+            var kind = isClone ? "clone" : isDrone ? "drone" : "ship";
+            var mapping = new CoreShipMapping($"{kind} {specification.Info.Id.Value}", definition, infos,
+                stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot, tint, isClone);
             _mappings[definition] = mapping;
             return mapping;
         }
@@ -227,9 +236,18 @@ namespace Combat.Integration.Core
         private void AddDroneBays(IShipSpecification specification, List<DeviceDefinition> devices, List<CoreDeviceInfo> infos,
             List<AiDroneBay> aiDroneBays)
         {
+            // Legacy ClonningDevice: EnergyConsumption once per clone and Cooldown (phase 5, step 7c). The clone is the
+            // ship through ShipSpecDecorator; every center of the ship launches the same clone.
+            CoreShipMapping clone = null;
             foreach (var item in specification.ClonningCenters)
-                Add(devices, infos, null, new CoreDeviceInfo(DeviceName(item.Device), item.KeyBinding, item.Device.ControlButtonIcon, 0f,
-                    DeviceInertReason(DeviceClass.ClonningCenter)));
+            {
+                clone = clone ?? Map(new ClonningDevice.ShipSpecDecorator(specification, CloneMultiplier, CloneMultiplier,
+                    CloneMultiplier), isDrone: true, bay: null, isClone: true);
+                aiDroneBays.Add(new AiDroneBay(devices.Count, item.KeyBinding < 0));
+                var device = item.Device;
+                Add(devices, infos, new ClonningCenterDefinition(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
+                    clone.Definition), new CoreDeviceInfo(DeviceName(device), item.KeyBinding, device.ControlButtonIcon, 0f, null));
+            }
 
             if (!specification.DroneBays.Any())
                 return;
@@ -240,7 +258,7 @@ namespace Combat.Integration.Core
             foreach (var item in specification.DroneBays)
             {
                 var bay = item.DroneBay;
-                var drone = Map(BuildDrone(item), isDrone: true, item);
+                var drone = Map(BuildDrone(item), isDrone: true, item, isClone: false);
                 aiDroneBays.Add(new AiDroneBay(devices.Count, item.KeyBinding < 0));
                 Add(devices, infos, new DroneBayDefinition(System.Math.Max(1, bay.Capacity), NonNegative(bay.EnergyConsumption), drone.Definition),
                     new CoreDeviceInfo($"drone bay, drone {item.Drone.Id.Value}", item.KeyBinding, bay.ControlButtonIcon, 0f, null));
@@ -376,11 +394,42 @@ namespace Combat.Integration.Core
 
         private const float MinValue = 0.01f;
 
+        // Legacy ClonningDevice: size, attack and defence factors of its ShipSpecDecorator (phase 5, step 7c). Defence
+        // scales armor, shield and their rates; attack scales weapon damage and the ramming damage multiplier.
+        private const float CloneMultiplier = 0.9f;
+
         // The hit flash of a detonator explosion: the generic size 1 (D11), not the 20-unit area.
         private const float ExplosionFlashSize = 1f;
         private const float DegreesToRadians = (float)(System.Math.PI / 180.0);
 
         private static readonly DeviceDefinition InertDefinition = new InertDeviceDefinition();
+
+        // A weapon with its damage multiplier scaled: legacy ShipBuilder's platform damage multiplier for a clone.
+        private sealed class ScaledWeapon : IWeaponData
+        {
+            public ScaledWeapon(IWeaponData weapon, float damage)
+            {
+                _weapon = weapon;
+                _damage = damage;
+            }
+
+            public Weapon Weapon => _weapon.Weapon;
+            public Ammunition Ammunition => _weapon.Ammunition;
+            public int KeyBinding => _weapon.KeyBinding;
+
+            public WeaponStatModifier Stats
+            {
+                get
+                {
+                    var stats = _weapon.Stats;
+                    stats.DamageMultiplier *= _damage;
+                    return stats;
+                }
+            }
+
+            private readonly IWeaponData _weapon;
+            private readonly float _damage;
+        }
 
         private readonly IDatabase _database;
         private readonly CoreHullBuilder _hullBuilder;
