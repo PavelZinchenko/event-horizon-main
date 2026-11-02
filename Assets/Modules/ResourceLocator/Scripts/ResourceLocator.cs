@@ -97,14 +97,17 @@ namespace Services.Resources
 
         public Sprite GetSprite(string name)
         {
-            if (!_cache.TryGetValue(name, out var sprite))
-            {
-                sprite = UnityEngine.Resources.Load<Sprite>(name);
-                if (!sprite) return null;
+            if (_cache.TryGetValue(name, out var sprite) && sprite != null)
+                return sprite;
 
-                _cache.Add(name, sprite);
+            sprite = UnityEngine.Resources.Load<Sprite>(name);
+            if (sprite == null)
+            {
+                _cache.Remove(name);
+                return null;
             }
 
+            _cache[name] = sprite;
             return sprite;
         }
 
