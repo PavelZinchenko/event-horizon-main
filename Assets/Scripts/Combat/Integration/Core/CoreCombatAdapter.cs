@@ -440,13 +440,15 @@ namespace Combat.Integration.Core
             _viewsByCore.Add(item.EntityId, view);
 
             var model = specification.Stats.ShipModel;
-            _renderer.AddShip(item.EntityId, _resourceLocator.GetSprite(model.ModelImage), model.ModelScale);
+            _renderer.AddShip(item.EntityId, _resourceLocator.GetSprite(model.ModelImage), model.ModelScale,
+                _mapper.Mappings[state.Definition].TintColor?.ToUnity());
         }
 
         private void OnDroneSpawned(in BattleEvent item)
         {
             var mapping = _mapper.Mappings[item.Definition];
-            _renderer.AddShip(item.EntityId, _resourceLocator.GetSprite(mapping.ModelImage), mapping.ModelScale);
+            _renderer.AddShip(item.EntityId, _resourceLocator.GetSprite(mapping.ModelImage), mapping.ModelScale,
+                mapping.TintColor?.ToUnity());
         }
 
         // The roster transition of the same removal comes later in the batch, so the ID stays mapped until the tick ends.

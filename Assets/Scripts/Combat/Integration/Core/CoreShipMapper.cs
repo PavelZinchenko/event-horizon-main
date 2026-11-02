@@ -45,6 +45,7 @@ namespace Combat.Integration.Core
                 case DeviceClass.PointDefense:
                 case DeviceClass.TimeMachine:
                 case DeviceClass.TeleporterV2:
+                case DeviceClass.Detonator:
                     return null;
                 case DeviceClass.ClonningCenter:
                     return "clonning center";
@@ -68,6 +69,7 @@ namespace Combat.Integration.Core
             var aiWeapons = new List<AiWeapon>();
             var aiDevices = new List<AiDevice>();
             var aiDroneBays = new List<AiDroneBay>();
+            var tint = default(ColorData?);
 
             foreach (var platform in specification.Platforms)
             {
@@ -106,12 +108,24 @@ namespace Combat.Integration.Core
                     continue;
 
                 var key = IsAlwaysAutomatic(device.DeviceClass) ? -1 : item.KeyBinding;
-                var mapped = MapDevice(device, modelScale, stats.DamageMultiplier.Value, out var activationCost);
+                var mapped = MapDevice(device, stats, out var activationCost);
                 if (mapped != null)
                 {
-                    // Legacy WarpDrive.MaxRange for the Chase node; other classes ignore it.
+                    // Legacy WarpDrive.MaxRange for the Chase node and DetonatorDevice.ActivationTime for DetonateShip;
+                    // other classes ignore them.
                     var range = device.DeviceClass == DeviceClass.TeleporterV2 ? NonNegative(device.Range) : 0f;
-                    aiDevices.Add(new AiDevice(devices.Count, device.DeviceClass, key < 0, range));
+                    var detonator = mapped as DetonatorDefinition;
+                    aiDevices.Add(new AiDevice(devices.Count, device.DeviceClass, key < 0, range,
+                        detonator?.Activation.Duration ?? 0f));
+
+                    // Legacy CreateStrongExplosion draws the area in the device colour; the first detonator tints the
+                    // ship during its lock.
+                    if (detonator != null)
+                    {
+                        _bulletSources[detonator.Explosion] = new CoreBulletSource(null, ExplosionFlashSize,
+                            device.Color, null);
+                        tint = tint ?? device.Color;
+                    }
                     Add(devices, infos, mapped,
                         new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, activationCost, null));
                 }
@@ -168,17 +182,17 @@ namespace Combat.Integration.Core
                 ? specification.CustomAi
                 : BehaviorTreeSelection.ForDrone(_database.CombatSettings, bay.DroneBay, bay.Drone.CustomAI, bay.Behaviour == DroneBehaviour.Defensive);
             var mapping = new CoreShipMapping($"{(isDrone ? "drone" : "ship")} {specification.Info.Id.Value}", definition, infos,
-                stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot);
+                stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot, tint);
             _mappings[definition] = mapping;
             return mapping;
         }
 
         // The device classes the core runs (DeviceInertReason null); null for the others. The activation cost is legacy
         // ISystem.ActivationCost, for the automatic use rule.
-        private static DeviceDefinition MapDevice(DeviceStats device, float modelScale, float damageMultiplier,
-            out float activationCost)
+        private static DeviceDefinition MapDevice(DeviceStats device, IShipStats stats, out float activationCost)
         {
             activationCost = 0f;
+            var modelScale = stats.ShipModel.ModelScale;
             switch (device.DeviceClass)
             {
                 case DeviceClass.PointDefense:
@@ -187,7 +201,7 @@ namespace Combat.Integration.Core
                         Positive(device.Size + modelScale / 2f),
                         NonNegative(device.Cooldown),
                         NonNegative(device.EnergyConsumption),
-                        NonNegative(device.Power * damageMultiplier));
+                        NonNegative(device.Power * stats.DamageMultiplier.Value));
                 // Legacy InfinityStone: Cooldown, and Lifetime for the time without contacts (phase 5, step 7a).
                 case DeviceClass.TimeMachine:
                     return new InfinityStoneDefinition(NonNegative(device.Cooldown), NonNegative(device.Lifetime));
@@ -196,6 +210,14 @@ namespace Combat.Integration.Core
                     activationCost = NonNegative(device.EnergyConsumption);
                     return new WarpDriveDefinition(activationCost, NonNegative(device.Cooldown), Positive(device.Power),
                         NonNegative(device.Range));
+                // Legacy DetonatorDevice: EnergyConsumption once per use, Lifetime as the lock, and a heat explosion of
+                // Power x cells x damage multiplier within Range x sqrt(model scale) (phase 5, step 7b).
+                case DeviceClass.Detonator:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new DetonatorDefinition(activationCost, NonNegative(device.Cooldown), NonNegative(device.Lifetime),
+                        DetonatorDefinition.CreateExplosion(
+                            NonNegative(device.Power * stats.Layout.CellCount * stats.DamageMultiplier.Value),
+                            (int)DamageType.Heat, Positive(device.Range), NonNegative(modelScale), Positive(stats.Weight)));
                 default:
                     return null;
             }
@@ -353,6 +375,9 @@ namespace Combat.Integration.Core
         private static float Fraction(float value) => value > 0f ? value < 1f ? value : 1f : 0f;
 
         private const float MinValue = 0.01f;
+
+        // The hit flash of a detonator explosion: the generic size 1 (D11), not the 20-unit area.
+        private const float ExplosionFlashSize = 1f;
         private const float DegreesToRadians = (float)(System.Math.PI / 180.0);
 
         private static readonly DeviceDefinition InertDefinition = new InertDeviceDefinition();

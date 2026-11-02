@@ -12,7 +12,8 @@ namespace Combat.Integration.Core
     public sealed class CoreShipMapping
     {
         public CoreShipMapping(string name, ShipDefinition definition, IReadOnlyList<CoreDeviceInfo> devices,
-            SpriteId modelImage, float modelScale, AiShipProfile ai, BehaviorTreeModel aiTree, float droneRange, bool hasAutopilot)
+            SpriteId modelImage, float modelScale, AiShipProfile ai, BehaviorTreeModel aiTree, float droneRange, bool hasAutopilot,
+            ColorData? tintColor = null)
         {
             Name = name;
             Definition = definition;
@@ -23,6 +24,7 @@ namespace Combat.Integration.Core
             AiTree = aiTree;
             DroneRange = droneRange;
             HasAutopilot = hasAutopilot;
+            TintColor = tintColor;
         }
 
         // For logs and reports: "ship" or "drone" and the legacy ship ID.
@@ -45,6 +47,9 @@ namespace Combat.Integration.Core
 
         // Legacy Stats.Autopilot: a player ship also runs the autopilot tree.
         public bool HasAutopilot { get; }
+
+        // The colour ShipState.Tint moves the ship to: the first detonator's (phase 5, step 7b); null without one.
+        public ColorData? TintColor { get; }
     }
 
     // What a bullet or beam view needs from the database (phase 4, step 5, "Views (5)"). Prefab is null when the

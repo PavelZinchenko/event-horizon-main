@@ -772,7 +772,7 @@ Phase 4, step 7e (D12, D13). The side stays the team: result, timer, surrender, 
 
 ### Device statuses
 
-Phase 5, step 7a (data-model gate, H2). Examples: `TODO/battle_simulator_phase5.md`, "Data-model gate (7)"; tests:
+Phase 5, steps 7a and 7b (data-model gate, H2). Examples: `TODO/battle_simulator_phase5.md`, "Data-model gate (7)"; tests:
 `Core/Tests/GateDeviceTests.cs`. Each device stays a small `ShipDevice` class that composes these parts:
 
 1. **Activation policy.** `ActivationPolicy` is data in the device definition: energy cost, cooldown, when the cooldown starts
@@ -783,7 +783,9 @@ Phase 5, step 7a (data-model gate, H2). Examples: `TODO/battle_simulator_phase5.
    `NoContacts` keeps the hull categories and ignores every other category, so no shape pairs with the ship: no hits, no
    ramming, no solid contact. The point-defense query has no category; it skips a drone without contacts itself. Homing and
    the AI still see the ship. `EngineOff` gives the engine throttle 0 and no course (the spin brake stays); the engine input
-   with it is kept for the correction re-run. `Faded` is for the view (10% opacity). The ship snapshot carries the flags.
+   with it is kept for the correction re-run. `Drift` gives no engine at all: no thrust, no turn and no spin brake, so the
+   ship keeps its velocity and spin. `Faded` is for the view (10% opacity). The ship snapshot carries the flags, and
+   `ShipState.Tint` (0 to 1, the largest of the devices) for the view's colour change.
 3. **Blocked devices.** The mask of stage 3 holds through stage 2 of the next tick: a blocked device sees its bit released, the
    same for every device of the ship (approved change: legacy blocks the devices after the blocking one at once).
 4. **Lethal damage.** At the end of stage 10, after the timer drain, a local ship without armor asks its devices in index
@@ -794,6 +796,10 @@ Phase 5, step 7a (data-model gate, H2). Examples: `TODO/battle_simulator_phase5.
    the use's first status tick; the copy applies it at stage 1 of that tick, or at once when late. A copy never starts a use
    from its own control bits or damage. Hits a remote attacker commits before the record arrives still count (attacker
    authority; one network delay).
+7. **Ship-centre spawn.** A device may request a bullet at the ship centre (`SpawnRequest.ShipCentre`): rotation 0 and no
+   spread (legacy `CreateArea`). Its identity has the device index as source and
+   spawn slot 0. The owner sends a `BulletSpawn` record with the launch pose; the receiver adds the bullet from it and never
+   derives it (H8), so it appears one network delay late, and not at all once it has expired there.
 
 Devices:
 
@@ -809,6 +815,17 @@ Devices:
    The `Chase` node holds the first warp drive at full throttle (legacy `ChaseNode.UseWarpDrive`). Gap: the centre distance
    minus the selected weapons' minimum range. A warp starts within 5° of the course and a gap of 5 up to the warp range; a
    running warp is held while the gap is above 0 and within the range.
+3. **Detonator** (`Detonator`, step 7b). Energy cost at the start; cooldown at the end. The lock runs for `Lifetime`, with or
+   without the key and during a retreat: `Drift`, every other device blocked, and `Tint` from 0 to 1 (the view moves the
+   ship to the device colour). In the first tick after the lock the owner spawns the explosion at the ship centre and takes
+   all armor (legacy `CollisionEffect.Destroy`), so the ship dies unless a ready InfinityStone saves it. A ship that dies
+   during the lock does not explode. The explosion (`DetonatorDefinition.CreateExplosion`) is an `AllTargets` area for
+   0.3 s, radius `Range` × √model scale; heat `Power` × cells × damage multiplier and a push radius × √mass, both with
+   falloff; allies are not hit. The lock restarts at each use (approved change: legacy never resets its timer). The copy
+   runs the lock from the start record and ends it at the full time; the explosion comes from the owner's spawn record
+   (item 7), the death from the owner's roster record. The `DetonateShip` node holds the first detonator; with `InRange`
+   only when the ship and its target, each moved on by its velocity for the lock time, touch (centre distance up to the sum
+   of half their model scales).
 
 ### Snapshots and events
 

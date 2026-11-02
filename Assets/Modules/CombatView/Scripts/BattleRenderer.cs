@@ -32,8 +32,9 @@ namespace CombatView
             Object.Destroy(probe);
         }
 
-        // Ships and drones. Legacy rule: the ship's transform scale is its model scale.
-        public void AddShip(EntityId id, Sprite sprite, float scale)
+        // Ships and drones. Legacy rule: the ship's transform scale is its model scale. ShipState.Tint moves the colour
+        // from white to tint.
+        public void AddShip(EntityId id, Sprite sprite, float scale, Color? tint = null)
         {
             if (_ships.ContainsKey(id))
                 return;
@@ -41,7 +42,7 @@ namespace CombatView
             var renderer = CreateRenderer("Ship", _root.transform, sprite ? sprite : _genericSprite, ShipSortingOrder);
             renderer.gameObject.SetActive(false);
             renderer.transform.localScale = Vector3.one * scale;
-            _ships.Add(id, new EntityView(renderer.gameObject, renderer));
+            _ships.Add(id, new EntityView(renderer.gameObject, renderer) { Tint = tint ?? Color.white });
         }
 
         public void RemoveShip(EntityId id, RemovalReason reason)
@@ -138,8 +139,9 @@ namespace CombatView
                     continue;
 
                 view.Push(ship.Position, ship.Angle);
-                // Legacy WarpDrive: Opacity 0.1 while the warp runs (phase 5, step 7a).
-                var color = view.Renderer.color;
+                // Legacy WarpDrive: Opacity 0.1 while the warp runs (phase 5, step 7a). Legacy Detonator: the colour
+                // moves to the device colour during the lock (step 7b).
+                var color = Color.Lerp(Color.white, view.Tint, ship.Tint);
                 color.a = (ship.Status & ShipStatusFlags.Faded) != 0 ? FadedAlpha : 1f;
                 view.Renderer.color = color;
             }
@@ -489,6 +491,9 @@ namespace CombatView
 
             // Null for a line.
             public SpriteRenderer Renderer { get; }
+
+            // A ship: the colour ShipState.Tint moves it to.
+            public Color Tint { get; set; } = Color.white;
             public PoseTrack Pose;
             public bool HasPose { get; private set; }
             public Vector2 Position { get; set; }
