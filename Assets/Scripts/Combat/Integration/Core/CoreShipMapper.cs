@@ -83,7 +83,7 @@ namespace Combat.Integration.Core
                     string reason;
                     var device = barrelIndex < 0
                         ? Inert(SatelliteWeaponReason, out reason)
-                        : CoreWeaponMapper.Map(weapon, barrelIndex, stats.ArmorMultiplier.Value, out reason);
+                        : CoreWeaponMapper.Map(weapon, barrelIndex, stats.ArmorMultiplier.Value, AddChildSource, out reason);
                     AddBulletSource(device, weapon);
                     if (device != null)
                         aiWeapons.Add(ToAiWeapon(weapon, devices.Count, Positive(stats.Weight)));
@@ -206,6 +206,11 @@ namespace Combat.Integration.Core
             _bulletSources[key] = new CoreBulletSource(body.BulletPrefab, body.Size, weapon.Stats.Color ?? body.Color,
                 HitEffect(weapon.Ammunition));
         }
+
+        // Phase 5, step 2: a child bullet looks like its own ammunition, in the colour of its trigger (legacy CreateFactory).
+        private void AddChildSource(BulletDefinition bullet, Ammunition ammunition, ColorData color) =>
+            _bulletSources[bullet] = new CoreBulletSource(ammunition.Body.BulletPrefab, ammunition.Body.Size, color,
+                HitEffect(ammunition));
 
         // Legacy WeaponInfo from BulletStats at power level 1. Recoil counts for common weapons only, per unit of ship weight.
         // The spread is the weapon's, in radians.

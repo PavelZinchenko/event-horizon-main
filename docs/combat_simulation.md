@@ -190,7 +190,8 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
    - Bullet spawn: parent (1 kind bit: control index or bullet age), device, barrel and spawn sequence (`VarUInt`), launch flag
      (1 bit). With the flag (plain projectiles, 9d P1): muzzle position per axis on the correction grid (1/1024 unit, bit count
      from the arena) and launch angle (14 bits); 51 bits in a 200-unit arena. The receiver derives the entity ID with
-     `SpawnIdentity.CreateChild`; Core checks it.
+     `SpawnIdentity.CreateChild`; Core checks it. A child bullet (phase 5) names its parent by bullet age, has the trigger index
+     as its device and barrel 0, and always has the launch flag. Its tick can be the batch tick + 1 (see Bullet triggers).
    - Removal: 1 kind bit, reason (3 bits; `Vanish` from version 8), control index or bullet age. A drone's bay comes from its launch record.
    - Hit: attacker (1 kind bit plus index or age), target (1 kind bit, then a control index in the receiver's stream or, for a
      bullet, its 64-bit entity ID: the sender may know only a predicted copy, which no stream names), shape and device + 1
@@ -527,7 +528,8 @@ All numeric fields use little-endian byte order. The offset basis is `1469598103
 Arithmetic wraps at 64 bits. A zero result becomes one.
 FNV-1a alone leaves each low output bit a function of the same low input bits. The finalizer is a bijection that mixes every bit, so `Value mod P` is safe for think offsets.
 The source index is the device index on a ship parent and the trigger index on a bullet parent. The slot is the barrel or bay index; a bullet parent uses 0.
-The sequence counts spawns with the same parent, tick, source and slot, in creation order. It covers a `SpawnBullet` trigger with `Quantity` > 1 and a device that fires more than once in a tick. Spawn ticks must be nonnegative; a child requires a nonzero parent ID.
+The sequence counts spawns with the same parent, tick, source and slot, in creation order. It covers a device that fires more than once in a tick.
+On a bullet parent the sequence counts all children of the parent with the same spawn tick, across its triggers (phase 5): unique, and simpler to keep than one count per trigger. Spawn ticks must be nonnegative; a child requires a nonzero parent ID.
 A roster deployment creates one root, so its spawn slot is implicit. The caller changes the deployment number for each redeployment. The spawn tick is redundant with the deployment number; it stays so that roots and children use the same tick rule.
 The hash uses no allocation history, shared random sequence, or runtime hash code. Match seed affects future random behavior, not identity.
 Fixed test vectors pin the byte layout. The network gate must still validate this derivation.
@@ -681,6 +683,24 @@ Phase 2 step 7 (Q2a, Q2b). The rules port legacy `HomingController` on new ammun
 6. **Search timing.** Legacy runs no search at creation, so the first search is in the tick after the launch. The next one comes 101 ticks later (`TickTime.After(2 s)`). A removed target starts a search at once, at stage 4 of the next tick (redesign, owner, 2026-10-20). Every search restarts the period.
 7. **Steering (stage 4, `HomingSteering`).** Below full speed along the heading, the velocity changes by `normalize(speed × heading − v) × 0.5 × speed × W × dt`. This also removes sideways velocity. The turn rate is `120 × W` deg/s toward the target, and 0 inside ±5° or without a target. The rate is set, not accelerated. Physics never turns a bullet, so the core sets the heading after the turn before the physics step. The legacy body has the same heading after its step. Smart aim and `IgnoreRotation` come later.
 
+### Bullet triggers
+
+Phase 5, step 2. `BulletDefinition.Triggers` lists the gameplay triggers in legacy order (`BulletTriggerDefinition`): `Spawn` creates child bullets, `Detonate` makes the bullet detonate. Sound and visual triggers stay in the view (owner, 2026-10-29). A trigger has one or more `BulletTriggerConditions`.
+
+1. **Who runs them (H8).** Only the owner of a bullet runs its triggers. A receiver never derives a child: it adds each child from the owner's spawn record. A remote copy that this device removed by prediction (N2) therefore gets no children of its own.
+2. **Conditions (legacy `Bullet`).** `Created` runs when the bullet is made. Every other condition runs at stage 12, before the bullet's removal:
+   - `Hit` runs once per contact of the tick: the bullet's own stopping hit, a point-defense zap, or a hit that damages it (a missile). A contact that a remote device claimed counts once.
+   - A `Death` removal (a stopping hit, or a missile shot down) runs `Destroyed`, then `Detonated` if `DetonateWhenDestroyed` (legacy default true).
+   - An `Expiry` runs `Expired`, then `Destroyed`. A `Detonate` trigger among the `Expired` ones adds `Detonated`.
+   - A `Disposal` (point defense) runs `Disarmed`.
+   - A `Detonate` trigger on `Hit` stops a bullet that survives the contact (`Death`). On other conditions legacy ignores its result.
+3. **Children.** Child i of a `Spawn` trigger turns from the parent's heading by `Rotation + RotationSpan × r` and starts at its pattern offset in that frame (`BulletSpawnPattern`). Its velocity is speed × `StartingVelocityMultiplier` along its heading + the parent's velocity × the child's `ParentVelocityEffect`. The trigger's `RandomFactor` varies speed and lifetime by (r − 0.5) × factor each. All draws come from `CounterRandom` (`ChildSpawn`, the child's ID) in a fixed order: rotation, offset X, offset Y, speed, lifetime.
+4. **Identity and timing.** The ID is `CreateChild(parent bullet, spawn tick, trigger index, 0, sequence)`. A `Created` child of a stage 5 shot spawns at that tick and moves in it. A stage 12 child has the next tick as its spawn tick: it is created at stage 12, appears in that snapshot, and moves from the next tick, as a shot does. Homing steering starts after the first move. A child's own `Created` triggers run at once, so nesting stays in one tick; the mapper bounds the depth.
+5. **Inherited fields.** A child takes owner, side, allegiance, the ship that fired its first ancestor (`ShipId`, so allegiance changes reach it) and that ship's device index (hits name it). `ParentId` is the parent bullet.
+6. **Records.** The owner captures each child's spawn record before the parent's removal record, so the stream still names the parent. The record carries the launch pose. The receiver takes the parent's definition and velocity from its live copy, or from a store of remote bullets that can spawn children. An entry lives from its spawn record until the tick after its owner removal record applies. A late batch applies the removal (tick T) before the children (tick T + 1). The receiver moves a late child on a line from its spawn tick, as a late shot. The inherited velocity comes from the receiver's copy of the parent, as the shot velocity comes from its copy of the ship (P1).
+7. **Mapper.** `CoreWeaponMapper` maps legacy `BulletTriggerBuilder`: triggers in order, then the `OutOfAmmo` spawn triggers with the conditions of the spawn triggers that reached `MaxNestingLevel` (default 100). A child takes the legacy `CreateFactory` modifiers (power and size multipliers, trigger colour); its speed and range also scale by the area multiplier. Each child definition is built once per weapon. The rotation and offset expressions are sampled per child index: a `RANDOM` call becomes a span. Inert reasons: a child the core cannot run gives its own reason; `SpawnBullet on Cooldown`, `SpawnBullet on Hit with cooldown` (a missile), `spawn expression with RANDOM` (several calls, `RANDOM_INT`, not linear), `bullet attached to the parent` (step 3), `too many child bullets` (over 1000 per weapon), `beam with trigger …`. A bullet with a gameplay trigger needs no damage effect (a carrier).
+8. **Behaviour change (owner, 2026-11-02).** Legacy builds an `OutOfAmmo` `Detonate` with the `OutOfAmmo` condition itself, which runs once at creation, so it does nothing. The core gives it the same conditions as the `OutOfAmmo` spawn triggers. `ClusterMissile` (record 112) now detonates when it expires at its last nesting level. The old simulator keeps the legacy result.
+
 ### Beams
 
 Phase 2 step 8 (Q3). Immediate shutdown replaces the legacy lifetime tail (owner decision, 2026-10-20).
@@ -704,6 +724,7 @@ Phase 2 steps 9 and 10 (Q4). The owner chose payment before each zap and legacy 
 4. **Overlap.** Stage 6 queries a circle at the ship's current position, before physics. It includes enemy missiles and energy bolts spawned at stage 5. Enemy drones are also included. Allies, roster ships, beams and bullets pending removal are excluded. Physics measures distance to the target surface and handles torus wrapping. The reusable buffer starts at 32 entries and grows on overflow until every target fits.
 5. **Payment and ordering.** Projectile overlaps become time-zero `Disarm` candidates. Drone overlaps become time-zero `Hit` candidates, one per device and drone, including compound hulls. Disarms sort before hits, so projectiles receive payment first. Drone damage reduces shield, then armor at stage 10; it never drains energy. Drones remain valid targets throughout the contact walk, even after lethal accumulated damage. The ship ID and device index identify the attacker. Stage 9 checks contact validity before payment. A failed payment spends nothing, leaves the target valid and stops this device's remaining zaps. A target already disarmed by another device costs nothing and does not reset the skipped device's query deadline. Accepted zaps restart the energy recharge delay.
 6. **Removal and events.** An accepted disarm immediately invalidates the bullet within the contact walk, before any time-zero hit. Projectiles and beams can then select valid targets behind it. Stage 9 emits `BattleEventKind.Disarm` with attacker ID, target ID, `DeviceIndex` and the target position sampled at stage 6. Stage 12 removes the bullet with `Disposal`. The device has no separate entity.
+   A bullet with `CanBeDisarmed` false (legacy `Body.CanBeDisarmed`, phase 5) is zapped the same way: payment, delay, `Disarm` event and its `Hit` triggers. It stays a valid attacker and target and flies on, on both devices. Its owner counts each zap once (attacker, bullet, tick), whether its own copy or a remote claim reported it.
 7. **Authority.** Defense energy and cooldown are simulated on both copies. The bullet owner commits destruction; the other copy removes the bullet by prediction.
 8. **Validation.** All 534 engine-free tests pass, including 29 point-defense cases. Coverage includes payment, cooldowns, retreat, redeployment, filtering, wrapping, same-tick spawns, overlapping devices, allocation order, real beam/projectile continuation and 70-target salvos. Repeated interception and activation allocate zero bytes after warm-up. The large-salvo test also fixed a resolver bug: array growth must finish before the disarm array reference is fetched.
 
@@ -759,6 +780,7 @@ Stage 14 writes a `BattleSnapshot` of the tick it completed, then increments `Ba
 | Surrender, kill-all | 12 | For an active slot `Removal` (`Death`); for every slot `RosterTransition` → Destroyed, `ForcedDestruction`. A reserve has no entity. |
 | Bullet adoption (network only) | 5 (an overdue record: 1) | `Rename`: a predicted copy of a remote bullet takes its owner's ID; `PreviousId` is the copy's ID (fire confirmations, P2) |
 | Missile target or correction (network only) | 4 or 1 | None: the copy's target and motion change without an event (P3) |
+| Child bullet | 5 (`Created`) or 12 | `Spawn` of a bullet whose `ParentId` is a bullet; at stage 12 before its parent's `Removal` (bullet triggers) |
 | Bullet removal | 12 | `Removal` of a bullet (`Death` at a hit, `Expiry`, or `Disposal` after disarm or beam shutdown), after the ship changes, in entity ID order |
 | Result | 13 | `Result` with the `BattleResult` |
 
