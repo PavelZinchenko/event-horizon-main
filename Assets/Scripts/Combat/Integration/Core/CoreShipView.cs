@@ -31,9 +31,14 @@ namespace Combat.Integration.Core
         public ResourceValue Shield => ToValue(_state.Shield);
         public ResourceValue Energy => ToValue(_state.Energy);
 
-        // The values the mapper passes to the core (phase 4, step 3a).
-        public ShipResistance Resistance => new ShipResistance(_specification.Stats.ThermalResistancePercentage,
-            _specification.Stats.EnergyResistancePercentage, _specification.Stats.KineticResistancePercentage);
+        // The values the mapper passes to the core (phase 4, step 3a), moved toward 1 by the ship's resistance share, as
+        // legacy Stats.Resistance applies its modifications (worm tail, phase 5, step 7d).
+        public ShipResistance Resistance => new ShipResistance(
+            WithShare(_specification.Stats.ThermalResistancePercentage),
+            WithShare(_specification.Stats.EnergyResistancePercentage),
+            WithShare(_specification.Stats.KineticResistancePercentage));
+
+        private float WithShare(float resistance) => resistance + _state.ResistanceShare * (1f - resistance);
 
         public SpriteId IconImage => _specification.Stats.ShipModel.IconImage;
         public SpriteId ModelImage => _specification.Stats.ShipModel.ModelImage;

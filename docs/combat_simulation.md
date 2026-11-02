@@ -809,7 +809,8 @@ these parts:
 9. **Resistance share.** A status may carry `ResistanceShare` from 0 to 1. Stage 10 moves each armor resistance r of the ship
    to r + share × (ceiling − r), where `DamageTypeDefinition.ResistanceCeiling` is 1, and 0.5 for legacy corrosive damage
    (half of the smallest resistance). Two shares p and q give 1 − (1 − p)(1 − q), as legacy applies modifications in turn.
-   The correction replay uses the copy's share.
+   The correction replay uses the copy's share. `ShipState.ResistanceShare` carries it to the view: the combat HUD shows
+   heat, energy and kinetic resistance with the share, as legacy `Stats.Resistance` does.
 
 Devices:
 
@@ -871,7 +872,10 @@ Devices:
    - *Loss.* The segments behind a lost one detach at once: they keep their hinges to each other, take hits on their own
      hit points and destroy themselves after 5 s. The parent regrows the lost segment `Cooldown` later.
    - *Status.* Stage 3 gives the ship the resistance share of the attached segments over `Size` (item 9).
-   - *Ship leaves.* Its attached segments leave with it in the same tick; detached ones run out their timers.
+   - *Ship leaves.* A ship that dies takes segment 1 with it; the segments behind it detach and destroy themselves after
+     5 s, as after a tear (legacy: the head finds its ship destroyed first). A ship that retreats or vanishes takes every
+     attached segment (legacy `Vanish` detaches nothing). Detached segments run out their own timers; on a copy they leave
+     by the owner's removal records.
    - *Ramming.* A hostile ship rams a segment with the ship rule (Contacts and damage, item 4); a segment rams nothing.
    - *Turn cap* (P4). A ship with a tail turns at most 942°/s with 2,447°/s² (the fastest database worm, where the hinge gate
      passed); `ShipDefinition` caps both engines.
