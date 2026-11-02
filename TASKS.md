@@ -26,7 +26,7 @@
 - [ ] Database editor: collider editor for `Ship.Collider`, after migration phase 4 (`TODO/battle_simulator_phase4.md`, D5)
 - [ ] Charged beam lifetime × (0.5 + 0.5 × charge) in `BulletStats` (deferred E2, `TODO/battle_simulator_ammo_mapping.md`, G9)
 - [ ] Capsule hit shape for long bullets (deferred E3, `TODO/battle_simulator_ammo_mapping.md`, G10)
-- [ ] Migration phase 5: built-in device coverage, data-model gate and explicit deferrals (`TODO/battle_simulator_migration.md`)
+- [In Progress] Migration phase 5: built-in device coverage, data-model gate and explicit deferrals (`TODO/battle_simulator_migration.md`)
 - [ ] Migration phase 5: asteroids as core bodies, with the AI obstacle and asteroid-threat port (`TODO/battle_simulator_phase4.md`, D8)
 - [ ] Migration phase 6: exploration and controls configuration (`TODO/battle_simulator_migration.md`)
 - [ ] Migration phase 7: live duel, release gates and GitHub alpha (`TODO/battle_simulator_migration.md`)

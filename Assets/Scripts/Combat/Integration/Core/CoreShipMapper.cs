@@ -32,6 +32,25 @@ namespace Combat.Integration.Core
         // The view data of every mapped weapon, keyed by its BulletDefinition (cannon) or BeamDefinition (step 5).
         public IReadOnlyDictionary<object, CoreBulletSource> BulletSources => _bulletSources;
 
+        // Inert reasons the coverage report also gives (phase 5, step 1).
+        public const string SatelliteWeaponReason = "satellite weapon";
+        public const string ObsoleteAmmunitionReason = "obsolete ammunition";
+        public const string DroneReplicatorReason = "drone replicator";
+
+        // Null for a device class the core runs, else its inert reason (D1).
+        public static string DeviceInertReason(DeviceClass deviceClass)
+        {
+            switch (deviceClass)
+            {
+                case DeviceClass.PointDefense:
+                    return null;
+                case DeviceClass.ClonningCenter:
+                    return "clonning center";
+                default:
+                    return $"device {deviceClass}";
+            }
+        }
+
         public CoreShipMapping Map(IShipInfo info) => Map(info.Specification, isDrone: false);
 
         public CoreShipMapping Map(IShipSpecification specification, bool isDrone) => Map(specification, isDrone, null);
@@ -63,7 +82,7 @@ namespace Combat.Integration.Core
                     var name = $"weapon {weapon.Weapon.Id.Value}, ammunition {weapon.Ammunition.Id.Value}";
                     string reason;
                     var device = barrelIndex < 0
-                        ? Inert("satellite weapon", out reason)
+                        ? Inert(SatelliteWeaponReason, out reason)
                         : CoreWeaponMapper.Map(weapon, barrelIndex, stats.ArmorMultiplier.Value, out reason);
                     AddBulletSource(device, weapon);
                     if (device != null)
@@ -75,7 +94,7 @@ namespace Combat.Integration.Core
                 // Until step 4 (D2) the core has no obsolete ammunition.
                 foreach (var weapon in platform.WeaponsObsolete)
                     Add(devices, infos, null, new CoreDeviceInfo("weapon with obsolete ammunition", weapon.KeyBinding,
-                        weapon.Weapon.ControlButtonIcon, 0f, "obsolete ammunition"));
+                        weapon.Weapon.ControlButtonIcon, 0f, ObsoleteAmmunitionReason));
             }
 
             foreach (var item in specification.Devices)
@@ -99,7 +118,7 @@ namespace Combat.Integration.Core
                 else
                 {
                     Add(devices, infos, null, new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, 0f,
-                        $"device {device.DeviceClass}"));
+                        DeviceInertReason(device.DeviceClass)));
                 }
             }
 
@@ -158,13 +177,13 @@ namespace Combat.Integration.Core
         {
             foreach (var item in specification.ClonningCenters)
                 Add(devices, infos, null, new CoreDeviceInfo(DeviceName(item.Device), item.KeyBinding, item.Device.ControlButtonIcon, 0f,
-                    "clonning center"));
+                    DeviceInertReason(DeviceClass.ClonningCenter)));
 
             if (!specification.DroneBays.Any())
                 return;
 
             if (specification.Stats.DroneBuildSpeed > 0)
-                Add(devices, infos, null, new CoreDeviceInfo("drone replicator", -1, SpriteId.Empty, 0f, "drone replicator"));
+                Add(devices, infos, null, new CoreDeviceInfo("drone replicator", -1, SpriteId.Empty, 0f, DroneReplicatorReason));
 
             foreach (var item in specification.DroneBays)
             {

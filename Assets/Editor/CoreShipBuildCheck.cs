@@ -21,7 +21,8 @@ using UnityEngine;
 // 3. the inert reasons (D1) with counts, to order the work of steps 4 and 5;
 // 4. the stubbed node types each armed ship or drone reaches, by the tree that holds them, and the types ranked by tree
 //    count (step 7a). Stubs do not fold here; a ship counts at every AI level, a drone with its bay range. Each tree
-//    names up to three sample builds for the playtest, in build ID order.
+//    names up to three sample builds for the playtest, in build ID order;
+// 5. the phase 5 coverage report (CoreCoverageReport), written to its own file.
 // A build uses its CustomAI, else the legacy default: StarbaseAI for starbases, EnemyAI for other ships. A drone uses its
 // bay's tree for its behaviour, else the drone build's CustomAI, else the default drone tree (ControllerFactory).
 public static class CoreShipBuildCheck
@@ -114,10 +115,11 @@ public static class CoreShipBuildCheck
         foreach (var item in reasons.OrderByDescending(item => item.Value).ThenBy(item => item.Key))
             report.AppendLine($"  {item.Value,5}  {item.Key}");
         stubs.Write(report);
+        var coverageWritten = CoreCoverageReport.Write(database, report);
         if (failures.Length > 0)
             report.Append("Failures:\n").Append(failures);
 
-        if (failures.Length > 0) Debug.LogError(report.ToString());
+        if (failures.Length > 0 || !coverageWritten) Debug.LogError(report.ToString());
         else Debug.Log(report.ToString());
     }
 
