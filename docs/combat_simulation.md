@@ -178,7 +178,7 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
 2. Input uses its own bit-packed section (`InputCodec`, version 1), not this header: version (8 bits), battle ID low 32 bits, base tick,
    then records until zero padding. A record holds control index, base tick − original tick, course (9 bits; 511: none), throttle (7 bits)
    and systems. Index, tick offset and systems are `VarUInt`. The sender is the owner of every record.
-   **Tick batch (reliable, G2, `SessionCodec` version 8).** One reliable message per tick holds the tick's operations in sequence
+   **Tick batch (reliable, G2, `SessionCodec` version 9).** One reliable message per tick holds the tick's operations in sequence
    order, then its hits. Header: version (8 bits), tick and last operation sequence (`VarUInt`). No battle ID: the connection is
    bound to one battle. Then records until zero padding: kind (4 bits from version 8, from 1), record tick − batch tick (zigzag `VarUInt`; a beam
    end record is one tick ahead), then the record fields. The sender is the owner of every record.
@@ -203,6 +203,8 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
    - Missile target (kind 7, 9d P3): missile bullet age, then target control index + 1 in the receiver's stream (`VarUInt`;
      0: no target). About 1.5 bytes in a real batch.
    - Allegiance (kind 8, version 8, phase 4 D13): ship control index, then the allegiance (3 bits). About 1 byte.
+   - Device use (kind 9, version 9, phase 5 step 7a): ship control index, device index (`VarUInt`, below 64), started (1 bit).
+     About 2 bytes. Its tick can be the batch tick + 1 (an InfinityStone use that lethal damage started).
    - The sender throws on a record its streams cannot name or on a sequence gap: that is a session bug.
    - The receiver decodes the whole batch before it submits any record, so a malformed batch submits nothing. Its records named
      entities by count, so the stream stops there: every later batch is dropped too. Its operation sequences stay missing, so the
@@ -262,7 +264,7 @@ Each `Battle` owns a separate `PhysicsWorld`. Physics state is internal; the pub
 
 `Tick` identifies the next tick to execute. It starts at zero. The first `Step()` processes tick zero and leaves `Tick` at one.
 The stage order is commands, systems, modifiers, motion, spawn requests, queries, physics, contacts, response, damage, deaths, structure, battle flow, publish.
-Only the modifiers stage is empty. Stage 6 queries beam rays and point-defense overlaps before physics advances by `0.02f` seconds with eight substeps.
+Stage 3 collects the device statuses (see Device statuses). Stage 6 queries beam rays and point-defense overlaps before physics advances by `0.02f` seconds with eight substeps.
 Publish writes the snapshot and event batch of the current tick, then increments it.
 Runtime owns pilot scheduling and network pacing through `TickClock`.
 
@@ -767,6 +769,46 @@ Phase 4, step 7e (D12, D13). The side stays the team: result, timer, surrender, 
 4. **Allegiance change (D13).** Stage 1 sets the ship's allegiance, its hull filters, and the allegiance and filters of its live bullets and beams: legacy bullets read their owner's side. A drone that turns hostile gives no kill credit and earns none (the core keeps no kill credit).
 5. **Network.** The owner sends an `Allegiance` operation (stage 1). The receiver applies it to the copy and the copy's bullets, predicted copies included. A vanished drone travels as a removal with reason `Vanish`; a vanished roster ship travels as its `Retreated` roster record, so the copy shows a retreat removal.
 6. **Runtime.** `PilotControls` carries `Vanish` and an optional `Allegiance`. The runner submits them as ship commands for the pilot's own ship at the frame's target tick, in locked and network mode; they never enter the input stream.
+
+### Device statuses
+
+Phase 5, step 7a (data-model gate, H2). Examples: `TODO/battle_simulator_phase5.md`, "Data-model gate (7)"; tests:
+`Core/Tests/GateDeviceTests.cs`. Each device stays a small `ShipDevice` class that composes these parts:
+
+1. **Activation policy.** `ActivationPolicy` is data in the device definition: energy cost, cooldown, when the cooldown starts
+   (`AtStart` or `AtEnd`), duration, and an optional release time after which a released bit ends the use. `DeviceActivation`
+   runs it: the cooldown timer (ready at once, as legacy `TimeFromLastUse` 3600 s), the start tick and the running flag. A
+   free use needs no energy (legacy `CanBeActivated` has no energy check without a cost).
+2. **Ship status.** Stage 3 asks every device of every ship for its status (`ShipStatusFlags`, a mask of blocked devices).
+   `NoContacts` keeps the hull categories and ignores every other category, so no shape pairs with the ship: no hits, no
+   ramming, no solid contact. The point-defense query has no category; it skips a drone without contacts itself. Homing and
+   the AI still see the ship. `EngineOff` gives the engine throttle 0 and no course (the spin brake stays); the engine input
+   with it is kept for the correction re-run. `Faded` is for the view (10% opacity). The ship snapshot carries the flags.
+3. **Blocked devices.** The mask of stage 3 holds through stage 2 of the next tick: a blocked device sees its bit released, the
+   same for every device of the ship (approved change: legacy blocks the devices after the blocking one at once).
+4. **Lethal damage.** At the end of stage 10, after the timer drain, a local ship without armor asks its devices in index
+   order; the first that saves it ends the round. Every hit of the tick counts first (H3). Stage 11 then finds no death.
+5. **Retreat.** `UpdateRetreating` replaces `Stop` at stage 2 of a retreating ship. Devices stop as before; a running use goes
+   on as with a released bit (legacy `ShipRetreatEffect` blocks activation only).
+6. **Network (H8).** Only the owner starts or ends a use. It sends a `DeviceUse` operation (ship, device, started) that names
+   the use's first status tick; the copy applies it at stage 1 of that tick, or at once when late. A copy never starts a use
+   from its own control bits or damage. Hits a remote attacker commits before the record arrives still count (attacker
+   authority; one network delay).
+
+Devices:
+
+1. **InfinityStone** (`TimeMachine`). Cooldown starts at the use; `NoContacts` for `Lifetime`. A use restores energy, armor
+   and shield to their maximum without a recharge delay. It starts while the bit is held and the device is ready, then
+   `NoContacts` runs from that tick. Lethal damage starts it when ready; then `NoContacts` runs from the next tick, as legacy
+   turns the collider off at the next frame, and the cooldown counts from the damage tick. Lethal damage during `NoContacts`
+   restores again without a new cooldown.
+2. **WarpDrive** (`TeleporterV2`). Energy cost at the start; cooldown at the end. The start sets the velocity to heading ×
+   `Power` and the spin to 0. While it runs: `NoContacts`, `EngineOff`, `Faded`, and cannons blocked (legacy: weapons other
+   than `Continuous` and `RequiredCharging`; energy shields join when they run). It ends after `Range / Power`, or at a released
+   bit once more than 0.1 s has passed; the velocity drops to 0. A copy ends at the full duration when the end record is late.
+   The `Chase` node holds the first warp drive at full throttle (legacy `ChaseNode.UseWarpDrive`). Gap: the centre distance
+   minus the selected weapons' minimum range. A warp starts within 5° of the course and a gap of 5 up to the warp range; a
+   running warp is held while the gap is above 0 and within the range.
 
 ### Snapshots and events
 

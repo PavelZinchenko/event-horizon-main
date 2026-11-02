@@ -43,6 +43,8 @@ namespace Combat.Integration.Core
             switch (deviceClass)
             {
                 case DeviceClass.PointDefense:
+                case DeviceClass.TimeMachine:
+                case DeviceClass.TeleporterV2:
                     return null;
                 case DeviceClass.ClonningCenter:
                     return "clonning center";
@@ -104,16 +106,14 @@ namespace Combat.Integration.Core
                     continue;
 
                 var key = IsAlwaysAutomatic(device.DeviceClass) ? -1 : item.KeyBinding;
-                if (device.DeviceClass == DeviceClass.PointDefense)
+                var mapped = MapDevice(device, modelScale, stats.DamageMultiplier.Value, out var activationCost);
+                if (mapped != null)
                 {
-                    var pointDefense = new PointDefenseDefinition(
-                        Positive(device.Size + modelScale / 2f),
-                        NonNegative(device.Cooldown),
-                        NonNegative(device.EnergyConsumption),
-                        NonNegative(device.Power * stats.DamageMultiplier.Value));
-                    aiDevices.Add(new AiDevice(devices.Count, device.DeviceClass, key < 0));
-                    Add(devices, infos, pointDefense,
-                        new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, device.EnergyConsumption, null));
+                    // Legacy WarpDrive.MaxRange for the Chase node; other classes ignore it.
+                    var range = device.DeviceClass == DeviceClass.TeleporterV2 ? NonNegative(device.Range) : 0f;
+                    aiDevices.Add(new AiDevice(devices.Count, device.DeviceClass, key < 0, range));
+                    Add(devices, infos, mapped,
+                        new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, activationCost, null));
                 }
                 else
                 {
@@ -171,6 +171,34 @@ namespace Combat.Integration.Core
                 stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot);
             _mappings[definition] = mapping;
             return mapping;
+        }
+
+        // The device classes the core runs (DeviceInertReason null); null for the others. The activation cost is legacy
+        // ISystem.ActivationCost, for the automatic use rule.
+        private static DeviceDefinition MapDevice(DeviceStats device, float modelScale, float damageMultiplier,
+            out float activationCost)
+        {
+            activationCost = 0f;
+            switch (device.DeviceClass)
+            {
+                case DeviceClass.PointDefense:
+                    activationCost = device.EnergyConsumption;
+                    return new PointDefenseDefinition(
+                        Positive(device.Size + modelScale / 2f),
+                        NonNegative(device.Cooldown),
+                        NonNegative(device.EnergyConsumption),
+                        NonNegative(device.Power * damageMultiplier));
+                // Legacy InfinityStone: Cooldown, and Lifetime for the time without contacts (phase 5, step 7a).
+                case DeviceClass.TimeMachine:
+                    return new InfinityStoneDefinition(NonNegative(device.Cooldown), NonNegative(device.Lifetime));
+                // Legacy WarpDrive: EnergyConsumption once per use, Power as the speed, Range (phase 5, step 7a).
+                case DeviceClass.TeleporterV2:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new WarpDriveDefinition(activationCost, NonNegative(device.Cooldown), Positive(device.Power),
+                        NonNegative(device.Range));
+                default:
+                    return null;
+            }
         }
 
         // Legacy CreateDroneBays: clonning centers, then the replicator if the ship builds drones, then the bays.

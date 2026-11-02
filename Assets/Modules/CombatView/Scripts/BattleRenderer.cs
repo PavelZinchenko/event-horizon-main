@@ -133,8 +133,16 @@ namespace CombatView
         public void Capture(BattleSnapshot snapshot)
         {
             foreach (var ship in snapshot.Ships)
-                if (_ships.TryGetValue(ship.Id, out var view))
-                    view.Push(ship.Position, ship.Angle);
+            {
+                if (!_ships.TryGetValue(ship.Id, out var view))
+                    continue;
+
+                view.Push(ship.Position, ship.Angle);
+                // Legacy WarpDrive: Opacity 0.1 while the warp runs (phase 5, step 7a).
+                var color = view.Renderer.color;
+                color.a = (ship.Status & ShipStatusFlags.Faded) != 0 ? FadedAlpha : 1f;
+                view.Renderer.color = color;
+            }
 
             foreach (var bullet in snapshot.Bullets)
             {
@@ -598,6 +606,7 @@ namespace CombatView
         private const int TextSortingOrder = 4;
         private const float FadeDuration = 0.4f;
         private const float FadeScale = 1.3f;
+        private const float FadedAlpha = 0.1f;
         private const float GenericBeamWidth = 0.2f;
         private const float GenericFlashDiameter = 1f;
         private const float GenericFlashDuration = 0.2f;
