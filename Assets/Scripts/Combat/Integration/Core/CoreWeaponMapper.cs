@@ -117,6 +117,7 @@ namespace Combat.Integration.Core
             var nested = level > 0;
 
             var homing = false;
+            var magnetic = false;
             var rocket = false;
             var stickyLifetime = 0f;
             var startingVelocity = 1f;
@@ -125,9 +126,11 @@ namespace Combat.Integration.Core
                 case BulletController_Projectile _:
                     break;
                 case BulletController_Homing controller:
-                    if (controller.SmartAim || controller.IgnoreRotation)
-                        return InertBullet("homing with smart aim or ignored rotation", out inertReason);
+                    // SmartAim is deferred (owner, 2026-11-03, H4): no built-in ammunition sets it.
+                    if (controller.SmartAim)
+                        return InertBullet("homing with smart aim", out inertReason);
                     homing = true;
+                    magnetic = controller.IgnoreRotation;
                     startingVelocity = controller.StartingVelocityModifier;
                     break;
                 case BulletController_Rocket controller:
@@ -224,7 +227,9 @@ namespace Combat.Integration.Core
                 scale: scale,
                 attachedToParent: body.AttachedToParent,
                 rocket: rocket,
-                stickyLifetime: stickyLifetime);
+                stickyLifetime: stickyLifetime,
+                magnetic: magnetic,
+                hasDirection: shape.HasDirection());
 
             inertReason = null;
             return bullet;
