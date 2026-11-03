@@ -19,6 +19,7 @@ namespace Combat.Integration.Core
     // prefab (the legacy area bullet) and bullets attached to their ship.
     // Phase 5, step 4a: MultiShot and MashineGun weapons, the Rocket controller. Step 4b: Manageable weapons, the
     // StickyMine controller. Step 4d: shot beams (a beam controller on a Common weapon), beam spread and tracking.
+    // Step 4e: beam bolts (a beam shape with the Projectile controller).
     public static class CoreWeaponMapper
     {
         // A child bullet the mapper made: the ship mapper records its view source.
@@ -188,10 +189,24 @@ namespace Combat.Integration.Core
                     return InertBullet("several damage types over time", out inertReason);
             }
 
-            // Without a prefab legacy uses the area-of-effect bullet (BulletFactory.BulletShape: Mine).
+            // Without a prefab legacy uses the area-of-effect bullet (BulletFactory.BulletShape: Mine). Step 4e: a beam
+            // shape on a cannon is a beam bolt (legacy MovingBeamController). Its body touches nothing, so its circle
+            // carries only the pose.
             var shape = body.BulletPrefab != null ? body.BulletPrefab.Shape : BulletShape.Mine;
-            if (!TryGetColliderRadius(shape, out var colliderRadius))
-                return InertBullet(IsBeamShape(shape) ? "moving beam bolt" : $"bullet shape {shape}", out inertReason);
+            var beamBolt = IsBeamShape(shape);
+            float colliderRadius;
+            if (beamBolt)
+            {
+                if (!(ammunition.Controller is BulletController_Projectile))
+                    return InertBullet($"beam bolt with controller {ammunition.Controller.Type}", out inertReason);
+                if (body.HitPoints > 0f)
+                    return InertBullet("beam bolt with hit points", out inertReason);
+                if (body.AttachedToParent)
+                    return InertBullet("beam bolt attached to the parent", out inertReason);
+                colliderRadius = BeamBoltRadius;
+            }
+            else if (!TryGetColliderRadius(shape, out colliderRadius))
+                return InertBullet($"bullet shape {shape}", out inertReason);
 
             // Physics attaches bullets to bodies only; legacy attaches a child to its parent bullet.
             if (body.AttachedToParent && nested)
@@ -210,6 +225,12 @@ namespace Combat.Integration.Core
             var lifetime = body.Lifetime > 0f ? body.Lifetime : 0f;
             if (!(radius > 0f) || !(speed >= 0f) || !(range >= 0f) || !(lifetime > 0f || (speed > 0f && range > 0f)))
                 return InertBullet("bullet without size, speed or range", out inertReason);
+            // Legacy BulletFactory makes a moving beam only with a speed; without one its ray never gets a length.
+            if (beamBolt && !(speed > 0f))
+                return InertBullet("beam bolt without speed", out inertReason);
+            // Legacy BulletFactory.CreateController: Length, or BodySize when it is 0 (BulletStats.Length: a child also
+            // scales it by AoeRadiusMultiplier).
+            var beamLength = !beamBolt ? 0f : body.Length > 0f ? body.Length * aoe : scale;
 
             var triggers = MapTriggers(ammunition, modifier, level, context, out inertReason);
             if (triggers == null)
@@ -256,7 +277,9 @@ namespace Combat.Integration.Core
                 rocket: rocket,
                 stickyLifetime: stickyLifetime,
                 magnetic: magnetic,
-                hasDirection: shape.HasDirection());
+                hasDirection: shape.HasDirection(),
+                beamLength: beamLength,
+                piercing: shape == BulletShape.PiercingLaser);
 
             inertReason = null;
             return bullet;
@@ -609,6 +632,8 @@ namespace Combat.Integration.Core
                     return false;
             }
         }
+
+        private const float BeamBoltRadius = 0.25f;
 
         private static bool IsBeamShape(BulletShape shape) =>
             shape == BulletShape.LaserBeam || shape == BulletShape.LightningBolt ||

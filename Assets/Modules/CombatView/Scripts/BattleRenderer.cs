@@ -158,7 +158,7 @@ namespace CombatView
                 if (!_bullets.TryGetValue(bullet.Id, out var view))
                     continue;
 
-                if (bullet.IsBeam)
+                if (bullet.HasRay)
                     view.PushEnd(bullet.BeamEndPoint);
                 view.Push(bullet.Position, bullet.Angle);
             }
@@ -593,7 +593,7 @@ namespace CombatView
             public float LastFlashTime { get; set; }
             public bool WasPlaced { get; set; }
 
-            // Beams: the ray end point, interpolated like the pose. Called before Push, so the first end point
+            // Beams and beam bolts: the ray end point, interpolated like the pose. Called before Push, so the first end point
             // starts the track together with the first pose.
             public PoseTrack End;
 

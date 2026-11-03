@@ -30,7 +30,9 @@ namespace Combat.Integration.Core
             if (_visuals.TryGetValue(key, out var visual))
                 return visual;
 
-            visual = _sources.TryGetValue(key, out var source) ? Create(source, spawn.IsBeam, spawn.BulletDefinition) : null;
+            // A beam bolt draws as a beam line (phase 5, step 4e).
+            var isLine = spawn.IsBeam || spawn.BulletDefinition.IsBeamBolt;
+            visual = _sources.TryGetValue(key, out var source) ? Create(source, isLine, spawn.BulletDefinition) : null;
             _visuals.Add(key, visual);
             return visual;
         }
