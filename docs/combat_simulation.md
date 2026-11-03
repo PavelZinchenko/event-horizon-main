@@ -401,19 +401,20 @@ The receiver's bullet and beam set converges on the owner's set. Its copies of r
    **Re-aim (P1).** A live copy with a launch pose moves to the owner's line: launch pose, sample velocity, advanced from the
    spawn tick to the present without hit tests. Contacts the copy already made stay. The re-aim adds no event.
    It advances on a line, one physics step per missed tick, without hit tests or homing steering. A spawn older than the
-   samples uses the oldest one. A missing beam attaches to the remote beam device. Its spawn event is committed.
+   samples uses the oldest one. A missing continuous beam attaches to the remote beam device; a missing shot beam that has
+   expired here is skipped. Its spawn event is committed.
    **Adoption (P2).** Before adding a missing bullet, the receiver looks for an unconfirmed copy of the same shot fired at
    another tick (an overdue fire input fires the copy late, with another derived ID). The copy must have the same parent,
    device, barrel and spawn sequence.
-   - Beam: the device's attached beam, at any start tick. The owner stopped any earlier beam before this one, so the attached
-     beam is a prediction.
-   - Projectile: spawn tick within the cannon's shortest shot spacing − 1 ticks (max of cooldown and barrel cooldown), so the
-     copy can be no other owner shot. The nearest spawn tick wins, then the earlier one. A wider window would shift every
+   - Continuous beam: the device's attached beam, at any start tick. The owner stopped any earlier beam before this one, so
+     the attached beam is a prediction.
+   - Projectile or shot beam (phase 5, step 4d): spawn tick within the weapon's shortest shot spacing − 1 ticks (max of
+     cooldown and barrel cooldown), so the copy can be no other owner shot. The nearest spawn tick wins, then the earlier one. A wider window would shift every
      copy of a held burst.
    The copy takes the owner's ID, spawn tick and expiry and becomes `Confirmed`; a plain projectile is then re-aimed (P1).
    The body, beam attachment and contacts so far stay. The battle emits a committed `Rename` event (`PreviousId` → `EntityId`);
    the scene moves the bullet view to the new ID. Confirmation changes no recoil or energy; corrections own those (step 5).
-   **Timer re-sync (G1).** A confirmed shot at tick T sets the copy's cannon last shot to T, unless the copy's last shot is at or after
+   **Timer re-sync (G1).** A confirmed shot at tick T sets the copy's cannon (or shot beam) last shot to T, unless the copy's last shot is at or after
    T + cooldown (a later predicted shot). The barrel shot tick becomes the later of its value and T.
    Reason: an overdue fire input shifts a held weapon's cooldown phase for the whole burst.
 6. At the end of stage 5, each live remote bullet whose spawn tick is at or below min(W, present) and is not confirmed
@@ -736,7 +737,7 @@ Phase 5, steps 4a and 4b. `CannonDefinition.Mode` copies the legacy weapon class
 
 Phase 2 step 8 (Q3). Immediate shutdown replaces the legacy lifetime tail (owner decision, 2026-10-20).
 
-1. **Definition.** `BeamDefinition` is a device with barrel index, cooldown seconds, activation cost, energy per second, range and damage per second. Values must be finite; range is positive and costs, cooldown and damage are nonnegative. Phase 2 uses a fixed muzzle direction without spread or recoil.
+1. **Definition.** `BeamDefinition` is a device with barrel index, cooldown seconds, activation cost, energy per second, range and damage per second. Values must be finite; range is positive and costs, cooldown and damage are nonnegative. Phase 2 uses a fixed muzzle direction without spread or recoil; phase 5 adds the spread and tracking (items 10 and 11).
 2. **Activation.** Stage 2 checks the held bit, weapon cooldown, shared barrel cooldown and activation payment. The first active tick pays only activation energy. Later ticks pay `EnergyPerSecond × 0.02` after resource recharge. Each successful tick deals `DamagePerSecond × 0.02`. Failed payment spends nothing and gives no partial damage. The existing resource rule requires positive available energy even for a zero cost.
 3. **Shutdown.** Release, failed payment or retreat start stops the ray before stage 6 and starts cooldown on that tick. A held bit can restart after cooldown and energy recovery, but never on the shutdown tick. A beam records one barrel shot on activation; maintaining it does not occupy the barrel.
 4. **Lifetime and identity.** Stage 5 creates one entity in `BulletStore` using the normal child ID. It has no physics body or collider, cannot be hit, and has no projectile expiry. The same ID lasts through the activation. Stage 12 removes stopped beams with `Disposal`. Parent removal marks attached beams before releasing parent state; projectiles still outlive their parent.
@@ -744,6 +745,10 @@ Phase 2 step 8 (Q3). Immediate shutdown replaces the legacy lifetime tail (owner
 6. **Selection.** Stage 8 collects the retained ray candidates; stage 9 selects the nearest valid target after disarms. A hit consumes this tick's ray, not the beam entity. Shield priority breaks equal-distance ties before entity ID and shape order. Damage-over-time deduplication limits each attacker/target pair to one hit per tick.
 7. **Overflow.** If all eight returned targets are invalid and physics reports overflow, that tick has no hit. `BeamQueries.ExhaustedRayCount` increments and a warning identifies the battle, tick and beam. Overflow with an accepted target does not increment it.
 8. **Validation.** `BeamTests` covers legacy LaserBeam_S_1 values, energy boundaries, cooldowns, retreat, identity, query ordering, shields, missiles, wrapping, snapshots and exhausted buffers. `PointDefenseTests` also checks real disarms through complete battle steps, including exhausted ray buffers. Sustained hits and repeated activations allocate zero bytes after warm-up.
+9. **Shot beam** (phase 5, step 4d, legacy `CommonCannon` with a beam controller). `BeamDefinition.Shot` has a lifetime (`IsShot`); `ActivationCost` is the energy per shot and `EnergyPerSecond` is 0. The device fires as a single-mode cannon: the held bit, the weapon cooldown from the last shot, the barrel and the energy, then one barrel shot. It holds no beam (`DeviceState.ActiveBullet` is empty) and is a shot weapon, so a warp blocks it. The beam rides on its barrel and expires after `LifetimeTicks` (`TickTime.After`) at stage 11, as a projectile does; stage 12 removes it with `Expiry`. Ship removal removes a live shot beam with `Disposal`, without triggers (legacy `BulletCompositeDisposable`).
+10. **Spread** (legacy `BeamController`). Each tick stage 6 turns the ray from the barrel by (r − 0.5) × `Spread`, for a continuous or a shot beam. `r` comes from `CounterRandom` (`BeamJitter`, the beam ID and tick), so a remote copy with the owner's ID draws the same angle. A beam without spread draws nothing.
+11. **Tracking** (legacy `LookAtTargetController`, `TrackingAngle` > 0). Stage 6 points the ray at the position of the target the beam touched in the previous tick (a ship, a tail segment or a missile; the nearest torus image), at most `TrackingAngle` from the barrel. Without a target it turns by (2r − 1) × `Spread`: the full spread either way (legacy).
+12. **Mapper.** A `Common` weapon with a beam controller maps to a shot beam with `Body.Lifetime` (inert: `shot beam without lifetime`); other classes that fire projectiles keep the reason `cannon with controller Beam`. Both forms take the weapon `Spread` and the controller `TrackingAngle`, and the same limits: one damage effect over time, no trigger, push or falloff, a positive range, and `AttachedToParent` (inert: `beam not attached to the parent`; legacy leaves such a beam at its spawn pose).
 
 ### Point defense
 

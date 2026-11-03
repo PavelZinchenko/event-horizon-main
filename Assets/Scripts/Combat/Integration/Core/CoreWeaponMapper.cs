@@ -18,7 +18,7 @@ namespace Combat.Integration.Core
     // Phase 5, step 3: HitAllTargets and DamageOverTime impacts, falloff and radial push effects, bullets without a
     // prefab (the legacy area bullet) and bullets attached to their ship.
     // Phase 5, step 4a: MultiShot and MashineGun weapons, the Rocket controller. Step 4b: Manageable weapons, the
-    // StickyMine controller.
+    // StickyMine controller. Step 4d: shot beams (a beam controller on a Common weapon), beam spread and tracking.
     public static class CoreWeaponMapper
     {
         // A child bullet the mapper made: the ship mapper records its view source.
@@ -47,8 +47,18 @@ namespace Combat.Integration.Core
             var energyCost = body.EnergyCost * modifier.EnergyCostMultiplier.Value;
             var range = body.Range * modifier.RangeMultiplier.Value;
 
+            var spread = stats.Spread * DegreesToRadians;
             switch (stats.WeaponClass)
             {
+                case WeaponClass.Common when ammunition.Controller is BulletController_Beam:
+                    if (!TryCheckBeam(ammunition, hasGameplayTriggers, effects, range, out inertReason))
+                        return null;
+                    // Legacy BulletStats.GetBulletLifetime: a beam controller has no speed.
+                    if (!(body.Lifetime > 0f))
+                        return Inert("shot beam without lifetime", out inertReason);
+                    return BeamDefinition.Shot(barrelIndex, cooldown, energyCost, range,
+                        effects.Damage[0].Amount * modifier.DamageMultiplier.Value, body.Lifetime, effects.Damage[0].DamageType,
+                        spread, TrackingAngle(ammunition));
                 case WeaponClass.Common:
                 case WeaponClass.MultiShot:
                 case WeaponClass.MashineGun:
@@ -62,32 +72,49 @@ namespace Combat.Integration.Core
                     if (bullet == null)
                         return null;
                     context.Commit();
-                    return new CannonDefinition(barrelIndex, cooldown, energyCost, weapon.Weapon.Stats.Spread * DegreesToRadians, bullet,
-                        mode, magazine);
+                    return new CannonDefinition(barrelIndex, cooldown, energyCost, spread, bullet, mode, magazine);
                 case WeaponClass.Continuous:
-                    if (hasGameplayTriggers)
-                        return Inert($"beam with trigger {FirstGameplayTrigger(ammunition)}", out inertReason);
-                    if (effects.Damage.Count > 1)
-                        return Inert("beam with several damage effects", out inertReason);
-                    if (effects.Push != 0f || effects.RadialPush != 0f || effects.RadialPushWithFalloff != 0f)
-                        return Inert("beam with push", out inertReason);
-                    if (effects.HasFalloff)
-                        return Inert("beam with falloff", out inertReason);
                     if (ammunition.Controller.Type != BulletControllerType.Beam)
                         return Inert($"continuous weapon with controller {ammunition.Controller.Type}", out inertReason);
-                    if (ammunition.ImpactType != BulletImpactType.DamageOverTime)
-                        return Inert($"beam with impact {ammunition.ImpactType}", out inertReason);
-                    if (!(range > 0f))
-                        return Inert("beam without range", out inertReason);
+                    if (!TryCheckBeam(ammunition, hasGameplayTriggers, effects, range, out inertReason))
+                        return null;
 
                     var damage = effects.Damage[0];
-                    inertReason = null;
                     return new BeamDefinition(barrelIndex, cooldown, energyCost * body.Lifetime, energyCost, range,
-                        damage.Amount * modifier.DamageMultiplier.Value, damage.DamageType);
+                        damage.Amount * modifier.DamageMultiplier.Value, damage.DamageType, spread, TrackingAngle(ammunition));
                 default:
                     return Inert($"weapon class {stats.WeaponClass}", out inertReason);
             }
         }
+
+        // The core beam is an attached ray with one damage effect over time (phase 4, step 3a). Phase 5, step 4d: a
+        // shot beam has the same limits.
+        private static bool TryCheckBeam(Ammunition ammunition, bool hasGameplayTriggers, in Effects effects, float range,
+            out string inertReason)
+        {
+            if (hasGameplayTriggers)
+                inertReason = $"beam with trigger {FirstGameplayTrigger(ammunition)}";
+            else if (effects.Damage.Count > 1)
+                inertReason = "beam with several damage effects";
+            else if (effects.Push != 0f || effects.RadialPush != 0f || effects.RadialPushWithFalloff != 0f)
+                inertReason = "beam with push";
+            else if (effects.HasFalloff)
+                inertReason = "beam with falloff";
+            else if (ammunition.ImpactType != BulletImpactType.DamageOverTime)
+                inertReason = $"beam with impact {ammunition.ImpactType}";
+            else if (!(range > 0f))
+                inertReason = "beam without range";
+            // Legacy BulletFactory leaves a beam without a parent at its spawn pose; the core ray rides on its barrel.
+            else if (!ammunition.Body.AttachedToParent)
+                inertReason = "beam not attached to the parent";
+            else
+                inertReason = null;
+            return inertReason == null;
+        }
+
+        // The database clamps it to [0, 180°].
+        private static float TrackingAngle(Ammunition ammunition) =>
+            Math.Min(((BulletController_Beam)ammunition.Controller).TrackingAngle * DegreesToRadians, (float)Math.PI);
 
         // Legacy WeaponFactory: MultishotCannon, MachineGun and ManageableCannon; every other class with projectiles is a
         // CommonCannon.
