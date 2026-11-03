@@ -17,7 +17,8 @@ namespace Combat.Integration.Core
     // cannot run makes the weapon inert with the child's own reason.
     // Phase 5, step 3: HitAllTargets and DamageOverTime impacts, falloff and radial push effects, bullets without a
     // prefab (the legacy area bullet) and bullets attached to their ship.
-    // Phase 5, step 4a: MultiShot and MashineGun weapons, the Rocket controller.
+    // Phase 5, step 4a: MultiShot and MashineGun weapons, the Rocket controller. Step 4b: Manageable weapons, the
+    // StickyMine controller.
     public static class CoreWeaponMapper
     {
         // A child bullet the mapper made: the ship mapper records its view source.
@@ -51,8 +52,9 @@ namespace Combat.Integration.Core
                 case WeaponClass.Common:
                 case WeaponClass.MultiShot:
                 case WeaponClass.MashineGun:
+                case WeaponClass.Manageable:
                     var mode = ToCannonMode(stats.WeaponClass);
-                    var magazine = mode == CannonMode.Single ? 1 : stats.Magazine;
+                    var magazine = mode == CannonMode.MultiShot || mode == CannonMode.MachineGun ? stats.Magazine : 1;
                     if (magazine < 1)
                         return Inert($"weapon class {stats.WeaponClass} without magazine", out inertReason);
                     var context = new Context(armorMultiplier, children);
@@ -87,7 +89,8 @@ namespace Combat.Integration.Core
             }
         }
 
-        // Legacy WeaponFactory: MultishotCannon and MachineGun; every other class with projectiles is a CommonCannon.
+        // Legacy WeaponFactory: MultishotCannon, MachineGun and ManageableCannon; every other class with projectiles is a
+        // CommonCannon.
         private static CannonMode ToCannonMode(WeaponClass weaponClass)
         {
             switch (weaponClass)
@@ -96,6 +99,8 @@ namespace Combat.Integration.Core
                     return CannonMode.MultiShot;
                 case WeaponClass.MashineGun:
                     return CannonMode.MachineGun;
+                case WeaponClass.Manageable:
+                    return CannonMode.Manageable;
                 default:
                     return CannonMode.Single;
             }
@@ -113,6 +118,7 @@ namespace Combat.Integration.Core
 
             var homing = false;
             var rocket = false;
+            var stickyLifetime = 0f;
             var startingVelocity = 1f;
             switch (ammunition.Controller)
             {
@@ -128,6 +134,13 @@ namespace Combat.Integration.Core
                     // Legacy RocketController does nothing while the bullet rides on its parent.
                     rocket = !body.AttachedToParent;
                     startingVelocity = controller.StartingVelocityModifier;
+                    break;
+                case BulletController_StickyMine controller:
+                    if (body.AttachedToParent)
+                        return InertBullet("sticky bullet attached to the parent", out inertReason);
+                    if (!(controller.Lifetime > 0f))
+                        return InertBullet("sticky bullet without lifetime", out inertReason);
+                    stickyLifetime = controller.Lifetime;
                     break;
                 default:
                     return InertBullet($"cannon with controller {ammunition.Controller.Type}", out inertReason);
@@ -210,7 +223,8 @@ namespace Combat.Integration.Core
                 lifetime: lifetime,
                 scale: scale,
                 attachedToParent: body.AttachedToParent,
-                rocket: rocket);
+                rocket: rocket,
+                stickyLifetime: stickyLifetime);
 
             inertReason = null;
             return bullet;
