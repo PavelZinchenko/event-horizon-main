@@ -17,6 +17,7 @@ namespace Combat.Integration.Core
     // cannot run makes the weapon inert with the child's own reason.
     // Phase 5, step 3: HitAllTargets and DamageOverTime impacts, falloff and radial push effects, bullets without a
     // prefab (the legacy area bullet) and bullets attached to their ship.
+    // Phase 5, step 4a: MultiShot and MashineGun weapons, the Rocket controller.
     public static class CoreWeaponMapper
     {
         // A child bullet the mapper made: the ship mapper records its view source.
@@ -48,12 +49,19 @@ namespace Combat.Integration.Core
             switch (stats.WeaponClass)
             {
                 case WeaponClass.Common:
+                case WeaponClass.MultiShot:
+                case WeaponClass.MashineGun:
+                    var mode = ToCannonMode(stats.WeaponClass);
+                    var magazine = mode == CannonMode.Single ? 1 : stats.Magazine;
+                    if (magazine < 1)
+                        return Inert($"weapon class {stats.WeaponClass} without magazine", out inertReason);
                     var context = new Context(armorMultiplier, children);
                     var bullet = MapBullet(ammunition, modifier, effects, 0, context, out inertReason);
                     if (bullet == null)
                         return null;
                     context.Commit();
-                    return new CannonDefinition(barrelIndex, cooldown, energyCost, weapon.Weapon.Stats.Spread * DegreesToRadians, bullet);
+                    return new CannonDefinition(barrelIndex, cooldown, energyCost, weapon.Weapon.Stats.Spread * DegreesToRadians, bullet,
+                        mode, magazine);
                 case WeaponClass.Continuous:
                     if (hasGameplayTriggers)
                         return Inert($"beam with trigger {FirstGameplayTrigger(ammunition)}", out inertReason);
@@ -79,6 +87,20 @@ namespace Combat.Integration.Core
             }
         }
 
+        // Legacy WeaponFactory: MultishotCannon and MachineGun; every other class with projectiles is a CommonCannon.
+        private static CannonMode ToCannonMode(WeaponClass weaponClass)
+        {
+            switch (weaponClass)
+            {
+                case WeaponClass.MultiShot:
+                    return CannonMode.MultiShot;
+                case WeaponClass.MashineGun:
+                    return CannonMode.MachineGun;
+                default:
+                    return CannonMode.Single;
+            }
+        }
+
         // A projectile of a cannon (level 0) or a child bullet (level > 0, legacy BulletStats with isNested). Legacy
         // BulletFactory: damage x DamageMultiplier, push x EffectPowerMultiplier; recoil x WeightMultiplier
         // (BulletStats.Recoil), none for a bullet attached to its parent (ApplyRecoil). Power level 1: no charge. A child
@@ -90,6 +112,7 @@ namespace Combat.Integration.Core
             var nested = level > 0;
 
             var homing = false;
+            var rocket = false;
             var startingVelocity = 1f;
             switch (ammunition.Controller)
             {
@@ -99,6 +122,11 @@ namespace Combat.Integration.Core
                     if (controller.SmartAim || controller.IgnoreRotation)
                         return InertBullet("homing with smart aim or ignored rotation", out inertReason);
                     homing = true;
+                    startingVelocity = controller.StartingVelocityModifier;
+                    break;
+                case BulletController_Rocket controller:
+                    // Legacy RocketController does nothing while the bullet rides on its parent.
+                    rocket = !body.AttachedToParent;
                     startingVelocity = controller.StartingVelocityModifier;
                     break;
                 default:
@@ -181,7 +209,8 @@ namespace Combat.Integration.Core
                 radialPushWithFalloff: effects.RadialPushWithFalloff * modifier.EffectPowerMultiplier.Value,
                 lifetime: lifetime,
                 scale: scale,
-                attachedToParent: body.AttachedToParent);
+                attachedToParent: body.AttachedToParent,
+                rocket: rocket);
 
             inertReason = null;
             return bullet;
