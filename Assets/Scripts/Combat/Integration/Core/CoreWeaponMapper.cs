@@ -22,7 +22,7 @@ namespace Combat.Integration.Core
     // Step 4e: beam bolts (a beam shape with the Projectile controller). Step 4f: RequiredCharging weapons, as a
     // charging cannon or a charged beam; the cooldown of the fire rate is the time of a full charge. Step 4g: the
     // AuraEmitter controller, and a Continuous weapon with it as a continuous cannon. Step 5a: DrainEnergy, DrainShield
-    // and SiphonHitPoints effects (ImpactEffects); step 5b adds SlowDown and Roll.
+    // and SiphonHitPoints effects (ImpactEffects); step 5b adds SlowDown and Roll; step 5c ProgressiveDamage on a beam.
     public static class CoreWeaponMapper
     {
         // A child bullet the mapper made: the ship mapper records its view source.
@@ -60,7 +60,7 @@ namespace Combat.Integration.Core
                     // Legacy BulletStats.GetBulletLifetime: a beam controller has no speed.
                     if (!(body.Lifetime > 0f))
                         return Inert("shot beam without lifetime", out inertReason);
-                    var shotDamage = effects.FirstDamage;
+                    var shotDamage = effects.BeamDamage;
                     return BeamDefinition.Shot(barrelIndex, cooldown, energyCost, range,
                         shotDamage.Amount * modifier.DamageMultiplier.Value, body.Lifetime, shotDamage.DamageType,
                         spread, TrackingAngle(ammunition), effects.ToCore(modifier));
@@ -86,7 +86,7 @@ namespace Combat.Integration.Core
                         return null;
                     if (!(body.Lifetime > 0f))
                         return Inert("shot beam without lifetime", out inertReason);
-                    var chargedDamage = effects.FirstDamage;
+                    var chargedDamage = effects.BeamDamage;
                     return BeamDefinition.Charged(barrelIndex, cooldown, energyCost, range,
                         chargedDamage.Amount * modifier.DamageMultiplier.Value, body.Lifetime, chargedDamage.DamageType,
                         spread, TrackingAngle(ammunition), effects.ToCore(modifier));
@@ -112,7 +112,7 @@ namespace Combat.Integration.Core
                     if (!TryCheckBeam(ammunition, hasGameplayTriggers, effects, range, out inertReason))
                         return null;
 
-                    var damage = effects.FirstDamage;
+                    var damage = effects.BeamDamage;
                     return new BeamDefinition(barrelIndex, cooldown, energyCost * body.Lifetime, energyCost, range,
                         damage.Amount * modifier.DamageMultiplier.Value, damage.DamageType, spread, TrackingAngle(ammunition),
                         effects.ToCore(modifier));
@@ -130,6 +130,9 @@ namespace Combat.Integration.Core
                 inertReason = $"beam with trigger {FirstGameplayTrigger(ammunition)}";
             else if (effects.Damage.Count > 1)
                 inertReason = "beam with several damage effects";
+            // The ramp (step 5c) adds to the beam's one damage type.
+            else if (effects.Ramp > 0f && effects.Damage.Count > 0 && effects.Damage[0].DamageType != effects.RampType)
+                inertReason = "progressive damage of another type";
             else if (effects.Push != 0f || effects.RadialPush != 0f || effects.RadialPushWithFalloff != 0f)
                 inertReason = "beam with push";
             else if (effects.HasFalloff)
@@ -227,6 +230,10 @@ namespace Combat.Integration.Core
                     return InertBullet("falloff over time", out inertReason);
                 if (effects.Damage.Count > 1)
                     return InertBullet("several damage types over time", out inertReason);
+                // Legacy shares one ramp among every target of the bullet, and any new contact restarts it. No built-in
+                // bullet has it (phase 5, step 5c).
+                if (effects.Ramp > 0f)
+                    return InertBullet("progressive damage on a bullet", out inertReason);
             }
 
             // Without a prefab legacy uses the area-of-effect bullet (BulletFactory.BulletShape: Mine). Step 4e: a beam
@@ -564,9 +571,13 @@ namespace Combat.Integration.Core
             public readonly float Siphon;
             public readonly float SlowDown;
             public readonly float Roll;
+            public readonly float Ramp;
+            public readonly float RampTime;
+            public readonly int RampType;
 
             public Effects(List<DamageAmount> damage, float push, float radialPush, float radialPushWithFalloff,
-                float energyDrain, float shieldDrain, float siphon, float slowDown, float roll)
+                float energyDrain, float shieldDrain, float siphon, float slowDown, float roll, float ramp, float rampTime,
+                int rampType)
             {
                 Damage = damage;
                 Push = push;
@@ -577,15 +588,22 @@ namespace Combat.Integration.Core
                 Siphon = siphon;
                 SlowDown = slowDown;
                 Roll = roll;
+                Ramp = ramp;
+                RampTime = rampTime;
+                RampType = rampType;
             }
 
             public DamageAmount FirstDamage => Damage.Count > 0 ? Damage[0] : default;
 
+            // A beam with the ramp only deals no fixed damage, in the ramp's type.
+            public DamageAmount BeamDamage => Damage.Count > 0 ? Damage[0] : new DamageAmount(RampType, 0f, false);
+
             // Legacy BulletFactory: DrainEnergy x EffectPowerMultiplier, DrainShield x DamageMultiplier; the siphon damage
-            // is a damage effect.
+            // is a damage effect; ProgressiveDamage x DamageMultiplier, its Factor is the ramp time.
             public ImpactEffects ToCore(WeaponStatModifier modifier) => new ImpactEffects(
                 EnergyDrain * modifier.EffectPowerMultiplier.Value, ShieldDrain * modifier.DamageMultiplier.Value, Siphon,
-                SlowDown * modifier.EffectPowerMultiplier.Value, Roll * modifier.EffectPowerMultiplier.Value);
+                SlowDown * modifier.EffectPowerMultiplier.Value, Roll * modifier.EffectPowerMultiplier.Value,
+                Ramp * modifier.DamageMultiplier.Value, RampTime);
 
             public bool HasFalloff
             {
@@ -600,8 +618,9 @@ namespace Combat.Integration.Core
         }
 
         // Damage and push effects (phase 5, step 3: falloff and radial push, legacy BulletFactory), drains and siphon
-        // (step 5a), slow-down and roll (5b). At least one damage or ship effect, unless there is a gameplay trigger. The core heals from
-        // the first damage effect, so a siphon must be the only one.
+        // (step 5a), slow-down and roll (5b), the progressive ramp (5c). At least one damage or ship effect, unless there is a gameplay
+        // trigger. The core heals from the first damage effect, so a siphon must be the only one. Legacy
+        // ProgressiveDamageAction acts over time only; any other impact ignores it.
         private static bool TryGetEffects(Ammunition ammunition, bool hasGameplayTriggers, out Effects effects,
             out string inertReason)
         {
@@ -617,6 +636,9 @@ namespace Combat.Integration.Core
             var slowDown = 0f;
             var roll = 0f;
             var slowDownCount = 0;
+            var ramp = 0f;
+            var rampTime = 0f;
+            var rampType = 0;
             foreach (var effect in ammunition.Effects)
             {
                 switch (effect.Type)
@@ -658,6 +680,19 @@ namespace Combat.Integration.Core
                     case ImpactEffectType.Roll:
                         roll += effect.Power;
                         break;
+                    case ImpactEffectType.ProgressiveDamage:
+                        if (ammunition.ImpactType != BulletImpactType.DamageOverTime || !(effect.Power > 0f))
+                            break;
+                        // Each legacy action keeps its own ramp; one ramp in the core. No built-in ammunition has two.
+                        if (ramp > 0f)
+                        {
+                            inertReason = "several progressive damage effects";
+                            return false;
+                        }
+                        ramp = effect.Power;
+                        rampTime = Math.Max(0f, effect.Factor);
+                        rampType = (int)effect.DamageType;
+                        break;
                     case ImpactEffectType.SiphonHitPoints:
                         AddDamage(damage, (int)effect.DamageType, effect.Power, false);
                         siphon = effect.Factor;
@@ -674,13 +709,15 @@ namespace Combat.Integration.Core
                 inertReason = "siphon with another damage effect";
                 return false;
             }
-            if (damage.Count == 0 && energyDrain == 0f && shieldDrain == 0f && slowDown == 0f && roll == 0f && !hasGameplayTriggers)
+            if (damage.Count == 0 && energyDrain == 0f && shieldDrain == 0f && slowDown == 0f && roll == 0f && ramp == 0f &&
+                !hasGameplayTriggers)
             {
                 inertReason = "no damage effect";
                 return false;
             }
 
-            effects = new Effects(damage, push, radialPush, radialPushWithFalloff, energyDrain, shieldDrain, siphon, slowDown, roll);
+            effects = new Effects(damage, push, radialPush, radialPushWithFalloff, energyDrain, shieldDrain, siphon, slowDown, roll,
+                ramp, rampTime, rampType);
             inertReason = null;
             return true;
         }
@@ -688,7 +725,8 @@ namespace Combat.Integration.Core
         private static bool HasDamageEffect(Ammunition ammunition)
         {
             foreach (var effect in ammunition.Effects)
-                if (effect.Type == ImpactEffectType.Damage || effect.Type == ImpactEffectType.DamageWithFalloff)
+                if (effect.Type == ImpactEffectType.Damage || effect.Type == ImpactEffectType.DamageWithFalloff ||
+                    effect.Type == ImpactEffectType.ProgressiveDamage && ammunition.ImpactType == BulletImpactType.DamageOverTime)
                     return true;
             return false;
         }

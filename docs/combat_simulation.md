@@ -772,6 +772,29 @@ Tests extend `Core/Tests/ImpactEffectTests.cs`, `DrainTests.cs`, and `Runtime/Te
 5. **Unsupported combinations.** The mapper reports `several slow-down effects` or `slow-down after roll` instead of
    merging non-equivalent action sequences into one power. No built-in ammunition uses either combination.
 
+### Progressive damage
+
+Phase 5, step 5c. Examples: `TODO/battle_simulator_phase5.md`, "Progressive damage (5c)".
+Tests: `Core/Tests/ProgressiveDamageTests.cs` and `Runtime/Tests/SessionCodecTests.cs`.
+
+1. **Rule.** Legacy `ProgressiveDamageAction` on a beam: `ImpactEffects.Ramp` (power × `DamageMultiplier`, × charge)
+   and `RampTime` (the effect's `Factor`, unchanged by charge). Contact tick k deals
+   `Ramp × min(1, k × 0.02 / RampTime) × 0.02` more damage of the beam's type; tick 0 deals none (legacy `IsNew`).
+2. **Contact.** The contact is the first body on the ray. `BulletEntity.RampTargetId` and `RampTick` hold it. A tick
+   without an accepted contact, another first body or a new beam starts again at k = 0. Another hull part of the same
+   ship keeps the contact.
+3. **Any target.** Stage 6 adds the ramp to the ray candidate's damage. A ship, a drone, a missile and a tail segment
+   take it, as legacy adds it to the target's impact. The resolver walk counts it, so the ramp can stop a missile.
+4. **Network.** A remote ship target gets a `ProgressiveDamage` interval beside the damage interval: the full ramp per
+   second as amount, the beam's damage type, shape 0 and `ResolvedHit.RampTime`. The target owner counts k from the
+   interval's first local tick, so a late start record catches up the ramp, not a flat rate. The correction replay uses
+   the same closed form (`ImpactEffects.RampDamage`). `SessionCodec` version 11 writes the ramp time (32-bit float) after
+   the effect of this record only. A bullet or segment target gets the ramp inside its contact's damage, as before.
+5. **Mapper.** A non-over-time impact ignores the effect, as legacy. Inert: `progressive damage of another type` (a
+   beam whose ramp type differs from its damage type), `several progressive damage effects`, `progressive damage on a
+   bullet` (legacy shares one ramp among every target of an over-time bullet), and a siphon beside a ramp (`siphon with
+   another damage effect`). No built-in ammunition has any of them. A beam with the ramp only deals no fixed damage.
+
 ### Weapon classes and rockets
 
 Phase 5, steps 4a, 4b, 4f and 4g. `CannonDefinition.Mode` copies the legacy weapon classes that fire projectiles from a held key; `Magazine` is the bullet count (multi-shot) or the burst length (machine gun). Examples: phase 5 plan, "Weapon classes and controllers (4)".
