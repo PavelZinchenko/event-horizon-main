@@ -201,8 +201,8 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
      type (`VarUInt`, below `DamageTypeTable.MaxTypes`; version 6, D4). The target's core rejects a type its table lacks.
      Then an impulse flag (1 bit) and, with the flag, the push impulse (two 32-bit floats; version 7, phase 4 E4). Only a
      projectile's start record on a ship carries one; the target's core rejects it elsewhere and applies it on arrival.
-     Then the effect (3 bits, `HitEffect`; version 11, phase 5 step 5a): `Damage`, or a drain (`EnergyDrain`, `ShieldDrain`)
-     that names a ship target, with damage type 0 and no impulse.
+     Then the effect (4 bits, `HitEffect`; version 11, widened in phase 5 step 5e): damage, drain, motion, progressive
+     damage, repair or recharge. Repair and recharge name a ship target, with damage type 0 and no impulse.
    - Retreat: ship control index. Roster changes and drone launches are rare and keep full-width IDs, records and poses.
    - Missile target (kind 7, 9d P3): missile bullet age, a segment flag (1 bit; version 11, phase 5 step 5a), then the target
      control index + 1 in the receiver's stream (`VarUInt`; 0: no target), or with the flag a sticky bullet's tail segment as
@@ -763,7 +763,7 @@ Tests extend `Core/Tests/ImpactEffectTests.cs`, `DrainTests.cs`, and `Runtime/Te
    Zero spin starts counter-clockwise. Physics receives radians through `SetAngularVelocity`.
    Two reused sets of attacker/target pairs prevent repeated kicks during sustained contact. Leaving and returning
    starts a new contact. Both motion effects ignore missiles and tail segments (the approved minimal Roll port).
-4. **Network.** Version 11's existing three-bit `HitEffect` field holds `SlowDown` and `Roll`.
+4. **Network.** Version 11's `HitEffect` field holds `SlowDown` and `Roll`.
    A slow-down record precedes the damage record carrying push. Its amount is power, or power per second for an interval.
    Roll is a discrete record carrying a positive degrees/s change; the receiver chooses its own spin direction.
    The target owner applies both on arrival. Missed slow-down ticks compound the per-tick multiplier against current
@@ -815,6 +815,35 @@ Tests: `Core/Tests/RestoreLifetimeTests.cs`.
 6. **Mapper.** Inert, mods only: `several restore lifetime effects`, `restore lifetime without power` (legacy
    `Lifetime.Restore` gives back the full lifetime at power 0), `beam with restore lifetime`, `aura with restore
    lifetime` (the aura's size follows its renewed lifetime). The core definitions reject the last two.
+
+### Friendly fire and repair
+
+Phase 5, step 5e. Examples: `TODO/battle_simulator_phase5.md`, "Friendly fire and repair (5e)".
+
+1. **Contacts.** `BulletDefinition.FriendlyFire` and `BeamDefinition.FriendlyFire` select a neutral collision filter.
+   The bullet keeps its firing ship's allegiance for repair and recharge. Rays and projectile contacts exclude
+   the firing ship, its drones, its tail and its bullets. Another ship of the same network owner remains a target.
+   Friendly rays grow their reusable hit buffer on overflow, so excluded units cannot hide the next valid target.
+2. **Repair.** An allied ship or drone receives `ImpactEffects.Repair`, without resistance. Stage 10 nets it against
+   armor damage before the death check and caps armor at its maximum. A hostile target takes `RepairDamage` of
+   `RepairDamageType`, shield first. An allied missile blocks the ray but receives no repair. A hostile missile
+   or tail segment takes the damage branch; neither receives repair or recharge.
+3. **Recharge.** Allied shield and energy gains net against their respective drains. Shield recharge reduces the
+   final shield loss, but does not add shield for this tick's damage absorption, as in legacy `Impact.ApplyShield`.
+   Enemy recharge effects become drains. Repair and shield powers use the damage multiplier; energy powers use
+   the effect-power multiplier and energy-cost multiplier on both branches. A nonpositive `Factor` reads as 1.
+   Charge scales every power. A mod with repairs of several damage types is inert; no built-in ammunition has it.
+4. **Network.** The core accepts several owners on one side, and allegiance can change during battle. A remote ally
+   therefore needs records: `Repair`, `EnergyRecharge` and `ShieldRecharge`, each with its own over-time interval.
+   The target owner applies them; the firing owner's copy predicts them and replays unacknowledged gains after
+   corrections. The interval key includes damage type, so ordinary damage and repair's hostile damage remain separate.
+   `SessionCodec` version 11 uses four effect bits instead of three. No version 11 batch has shipped from this branch.
+5. **AI.** `FindDamagedAlly` selects the nearest allied roster ship at or below 99% armor, excluding itself and drones.
+   This follows the approved example; legacy searched below 75% and retained targets up to 99%. The range is the
+   attack range plus `max(5, LimitedRange)`, centered on the live mothership or the searching ship. Defensive drones
+   use one quarter of `LimitedRange` before the minimum. The search skips the mothership, as legacy does; another
+   node can select it. The existing search/change cooldowns remain. `MainTargetIsAlly` requires a live allied target;
+   `MainTargetLowHp` compares its armor fraction strictly below `MinValue`.
 
 ### Weapon classes and rockets
 

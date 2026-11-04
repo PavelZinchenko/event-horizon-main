@@ -63,7 +63,7 @@ namespace Combat.Integration.Core
                     var shotDamage = effects.BeamDamage;
                     return BeamDefinition.Shot(barrelIndex, cooldown, energyCost, range,
                         shotDamage.Amount * modifier.DamageMultiplier.Value, body.Lifetime, shotDamage.DamageType,
-                        spread, TrackingAngle(ammunition), effects.ToCore(modifier));
+                        spread, TrackingAngle(ammunition), effects.ToCore(modifier), friendlyFire: body.FriendlyFire);
                 case WeaponClass.Common:
                 case WeaponClass.MultiShot:
                 case WeaponClass.MashineGun:
@@ -89,7 +89,7 @@ namespace Combat.Integration.Core
                     var chargedDamage = effects.BeamDamage;
                     return BeamDefinition.Charged(barrelIndex, cooldown, energyCost, range,
                         chargedDamage.Amount * modifier.DamageMultiplier.Value, body.Lifetime, chargedDamage.DamageType,
-                        spread, TrackingAngle(ammunition), effects.ToCore(modifier));
+                        spread, TrackingAngle(ammunition), effects.ToCore(modifier), friendlyFire: body.FriendlyFire);
                 case WeaponClass.RequiredCharging:
                     var chargeContext = new Context(armorMultiplier, children);
                     var charged = MapBullet(ammunition, modifier, effects, 0, chargeContext, out inertReason);
@@ -115,7 +115,7 @@ namespace Combat.Integration.Core
                     var damage = effects.BeamDamage;
                     return new BeamDefinition(barrelIndex, cooldown, energyCost * body.Lifetime, energyCost, range,
                         damage.Amount * modifier.DamageMultiplier.Value, damage.DamageType, spread, TrackingAngle(ammunition),
-                        effects.ToCore(modifier));
+                        effects.ToCore(modifier), friendlyFire: body.FriendlyFire);
                 default:
                     return Inert($"weapon class {stats.WeaponClass}", out inertReason);
             }
@@ -334,7 +334,7 @@ namespace Combat.Integration.Core
                 beamLength: beamLength,
                 piercing: shape == BulletShape.PiercingLaser,
                 aura: aura,
-                effects: effects.ToCore(modifier));
+                effects: effects.ToCore(modifier), friendlyFire: body.FriendlyFire);
 
             inertReason = null;
             return bullet;
@@ -582,10 +582,11 @@ namespace Combat.Integration.Core
             public readonly int RampType;
             public readonly float Restore;
             public readonly float LifetimeLoss;
+            private readonly ImpactEffects _support;
 
             public Effects(List<DamageAmount> damage, float push, float radialPush, float radialPushWithFalloff,
                 float energyDrain, float shieldDrain, float siphon, float slowDown, float roll, float ramp, float rampTime,
-                int rampType, float restore, float lifetimeLoss)
+                int rampType, float restore, float lifetimeLoss, ImpactEffects support)
             {
                 Damage = damage;
                 Push = push;
@@ -601,12 +602,15 @@ namespace Combat.Integration.Core
                 RampType = rampType;
                 Restore = restore;
                 LifetimeLoss = lifetimeLoss;
+                _support = support;
             }
 
-            public DamageAmount FirstDamage => Damage.Count > 0 ? Damage[0] : default;
+            public DamageAmount FirstDamage => Damage.Count > 0 ? Damage[0] :
+                new DamageAmount(_support.RepairDamageType, 0f, false);
 
             // A beam with the ramp only deals no fixed damage, in the ramp's type.
-            public DamageAmount BeamDamage => Damage.Count > 0 ? Damage[0] : new DamageAmount(RampType, 0f, false);
+            public DamageAmount BeamDamage => Damage.Count > 0 ? Damage[0] :
+                new DamageAmount(Ramp > 0f ? RampType : _support.RepairDamageType, 0f, false);
 
             // Legacy BulletFactory: DrainEnergy x EffectPowerMultiplier, DrainShield x DamageMultiplier; the siphon damage
             // is a damage effect; ProgressiveDamage x DamageMultiplier, its Factor is the ramp time; RestoreLifetime raw,
@@ -614,7 +618,13 @@ namespace Combat.Integration.Core
             public ImpactEffects ToCore(WeaponStatModifier modifier) => new ImpactEffects(
                 EnergyDrain * modifier.EffectPowerMultiplier.Value, ShieldDrain * modifier.DamageMultiplier.Value, Siphon,
                 SlowDown * modifier.EffectPowerMultiplier.Value, Roll * modifier.EffectPowerMultiplier.Value,
-                Ramp * modifier.DamageMultiplier.Value, RampTime, Restore, LifetimeLoss);
+                Ramp * modifier.DamageMultiplier.Value, RampTime, Restore, LifetimeLoss,
+                _support.Repair * modifier.DamageMultiplier.Value,
+                _support.RepairDamage * modifier.DamageMultiplier.Value, _support.RepairDamageType,
+                _support.EnergyRecharge * modifier.EffectPowerMultiplier.Value * modifier.EnergyCostMultiplier.Value,
+                _support.ShieldRecharge * modifier.DamageMultiplier.Value,
+                _support.EnemyEnergyDrain * modifier.EffectPowerMultiplier.Value * modifier.EnergyCostMultiplier.Value,
+                _support.EnemyShieldDrain * modifier.DamageMultiplier.Value);
 
             public bool HasFalloff
             {
@@ -653,10 +663,35 @@ namespace Combat.Integration.Core
             var rampType = 0;
             var restore = 0f;
             var lifetimeLoss = 0f;
+            var repair = 0f;
+            var repairDamage = 0f;
+            var repairType = 0;
+            var energyRecharge = 0f;
+            var shieldRecharge = 0f;
+            var enemyEnergyDrain = 0f;
+            var enemyShieldDrain = 0f;
             foreach (var effect in ammunition.Effects)
             {
                 switch (effect.Type)
                 {
+                    case ImpactEffectType.Repair:
+                        if (repair > 0f && repairType != (int)effect.DamageType)
+                        {
+                            inertReason = "repair of several damage types";
+                            return false;
+                        }
+                        repair += effect.Power;
+                        repairDamage += effect.Power * (effect.Factor > 0f ? effect.Factor : 1f);
+                        repairType = (int)effect.DamageType;
+                        break;
+                    case ImpactEffectType.RechargeEnergy:
+                        energyRecharge += effect.Power;
+                        enemyEnergyDrain += effect.Power * (effect.Factor > 0f ? effect.Factor : 1f);
+                        break;
+                    case ImpactEffectType.RechargeShield:
+                        shieldRecharge += effect.Power;
+                        enemyShieldDrain += effect.Power * (effect.Factor > 0f ? effect.Factor : 1f);
+                        break;
                     case ImpactEffectType.Damage:
                         AddDamage(damage, (int)effect.DamageType, effect.Power, false);
                         break;
@@ -729,20 +764,23 @@ namespace Combat.Integration.Core
                 }
             }
 
-            if (siphons > 1 || siphons > 0 && HasDamageEffect(ammunition))
+            if (siphons > 1 || siphons > 0 && (HasDamageEffect(ammunition) || repair > 0f))
             {
                 inertReason = "siphon with another damage effect";
                 return false;
             }
             if (damage.Count == 0 && energyDrain == 0f && shieldDrain == 0f && slowDown == 0f && roll == 0f && ramp == 0f &&
-                restore == 0f && !hasGameplayTriggers)
+                restore == 0f && repair == 0f && energyRecharge == 0f && shieldRecharge == 0f && !hasGameplayTriggers)
             {
                 inertReason = "no damage effect";
                 return false;
             }
 
             effects = new Effects(damage, push, radialPush, radialPushWithFalloff, energyDrain, shieldDrain, siphon, slowDown, roll,
-                ramp, rampTime, rampType, restore, lifetimeLoss);
+                ramp, rampTime, rampType, restore, lifetimeLoss,
+                new ImpactEffects(repair: repair, repairDamage: repairDamage, repairDamageType: repairType,
+                    energyRecharge: energyRecharge, shieldRecharge: shieldRecharge,
+                    enemyEnergyDrain: enemyEnergyDrain, enemyShieldDrain: enemyShieldDrain));
             inertReason = null;
             return true;
         }
