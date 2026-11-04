@@ -795,6 +795,27 @@ Tests: `Core/Tests/ProgressiveDamageTests.cs` and `Runtime/Tests/SessionCodecTes
    bullet` (legacy shares one ramp among every target of an over-time bullet), and a siphon beside a ramp (`siphon with
    another damage effect`). No built-in ammunition has any of them. A beam with the ramp only deals no fixed damage.
 
+### Restore lifetime
+
+Phase 5, step 5d. Examples: `TODO/battle_simulator_phase5.md`, "Restore lifetime (5d)".
+Tests: `Core/Tests/RestoreLifetimeTests.cs`.
+
+1. **Spawn.** Legacy `Lifetime.Take(Max × Factor)`: `ImpactEffects.LifetimeLoss` (the effect's `Factor`) is spent at
+   creation. `BulletDefinition.SpawnLifetimeTicks` flies `After(lifetime × (1 − LifetimeLoss))` ticks, after the random
+   factor. `BulletEntity.LifetimeCapTicks` keeps `After(lifetime)`, the full lifetime.
+2. **Restore.** Legacy `RestoreLifeAction`: an accepted contact with a ship or a drone moves `ExpiryTick` back by
+   `ImpactEffects.Restore` ticks per tick over time, or `Restore` seconds once per hit. The expiry stops at
+   `tick + LifetimeCapTicks − 1`, a full lifetime from the contact tick. A missile or a tail segment restores nothing.
+3. **Fractions.** A restore that is not a whole number of ticks keeps its fraction in `BulletEntity.RestoreCarry` for
+   the next contact. The cap clears it. No built-in power has a fraction.
+4. **Owner only.** Stage 9 restores on the attacker's owner, before stage 11 checks the expiry. A copy has
+   `BulletDefinition.HasOwnerLifetime`, as an aura: it never expires by itself and leaves with the owner's removal
+   record. A late spawn record of such a bullet, or of such a child, is never skipped as expired. No record is new.
+5. **Charge.** Legacy reads the raw power, so a charge scales neither `Restore` nor `LifetimeLoss`.
+6. **Mapper.** Inert, mods only: `several restore lifetime effects`, `restore lifetime without power` (legacy
+   `Lifetime.Restore` gives back the full lifetime at power 0), `beam with restore lifetime`, `aura with restore
+   lifetime` (the aura's size follows its renewed lifetime). The core definitions reject the last two.
+
 ### Weapon classes and rockets
 
 Phase 5, steps 4a, 4b, 4f and 4g. `CannonDefinition.Mode` copies the legacy weapon classes that fire projectiles from a held key; `Magazine` is the bullet count (multi-shot) or the burst length (machine gun). Examples: phase 5 plan, "Weapon classes and controllers (4)".

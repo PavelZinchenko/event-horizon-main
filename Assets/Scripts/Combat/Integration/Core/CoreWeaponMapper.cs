@@ -135,6 +135,8 @@ namespace Combat.Integration.Core
                 inertReason = "progressive damage of another type";
             else if (effects.Push != 0f || effects.RadialPush != 0f || effects.RadialPushWithFalloff != 0f)
                 inertReason = "beam with push";
+            else if (effects.Restore > 0f)
+                inertReason = "beam with restore lifetime";
             else if (effects.HasFalloff)
                 inertReason = "beam with falloff";
             else if (ammunition.ImpactType != BulletImpactType.DamageOverTime)
@@ -219,6 +221,9 @@ namespace Combat.Integration.Core
                 default:
                     return InertBullet($"cannon with controller {ammunition.Controller.Type}", out inertReason);
             }
+            // Legacy AuraController sizes the aura by its lifetime, which its weapon renews. No built-in aura restores it.
+            if (aura && effects.Restore > 0f)
+                return InertBullet("aura with restore lifetime", out inertReason);
 
             // Phase 5, step 3: area and over-time impacts. A damage-over-time contact is one interval at a fixed rate.
             var impact = ToImpact(ammunition.ImpactType);
@@ -559,7 +564,8 @@ namespace Combat.Integration.Core
         }
 
         // Damage effects summed per damage type and falloff in first-seen order, the summed push and drain powers, and
-        // the siphon factor of the only damage effect (step 5a). Powers are raw; ToCore applies the modifiers.
+        // the siphon factor of the only damage effect (step 5a), the restore (5d). Powers are raw; ToCore applies the
+        // modifiers.
         private readonly struct Effects
         {
             public readonly List<DamageAmount> Damage;
@@ -574,10 +580,12 @@ namespace Combat.Integration.Core
             public readonly float Ramp;
             public readonly float RampTime;
             public readonly int RampType;
+            public readonly float Restore;
+            public readonly float LifetimeLoss;
 
             public Effects(List<DamageAmount> damage, float push, float radialPush, float radialPushWithFalloff,
                 float energyDrain, float shieldDrain, float siphon, float slowDown, float roll, float ramp, float rampTime,
-                int rampType)
+                int rampType, float restore, float lifetimeLoss)
             {
                 Damage = damage;
                 Push = push;
@@ -591,6 +599,8 @@ namespace Combat.Integration.Core
                 Ramp = ramp;
                 RampTime = rampTime;
                 RampType = rampType;
+                Restore = restore;
+                LifetimeLoss = lifetimeLoss;
             }
 
             public DamageAmount FirstDamage => Damage.Count > 0 ? Damage[0] : default;
@@ -599,11 +609,12 @@ namespace Combat.Integration.Core
             public DamageAmount BeamDamage => Damage.Count > 0 ? Damage[0] : new DamageAmount(RampType, 0f, false);
 
             // Legacy BulletFactory: DrainEnergy x EffectPowerMultiplier, DrainShield x DamageMultiplier; the siphon damage
-            // is a damage effect; ProgressiveDamage x DamageMultiplier, its Factor is the ramp time.
+            // is a damage effect; ProgressiveDamage x DamageMultiplier, its Factor is the ramp time; RestoreLifetime raw,
+            // its Factor is the lifetime loss.
             public ImpactEffects ToCore(WeaponStatModifier modifier) => new ImpactEffects(
                 EnergyDrain * modifier.EffectPowerMultiplier.Value, ShieldDrain * modifier.DamageMultiplier.Value, Siphon,
                 SlowDown * modifier.EffectPowerMultiplier.Value, Roll * modifier.EffectPowerMultiplier.Value,
-                Ramp * modifier.DamageMultiplier.Value, RampTime);
+                Ramp * modifier.DamageMultiplier.Value, RampTime, Restore, LifetimeLoss);
 
             public bool HasFalloff
             {
@@ -618,7 +629,8 @@ namespace Combat.Integration.Core
         }
 
         // Damage and push effects (phase 5, step 3: falloff and radial push, legacy BulletFactory), drains and siphon
-        // (step 5a), slow-down and roll (5b), the progressive ramp (5c). At least one damage or ship effect, unless there is a gameplay
+        // (step 5a), slow-down and roll (5b), the progressive ramp (5c), the restore (5d). At least one damage, ship or
+        // restore effect, unless there is a gameplay
         // trigger. The core heals from the first damage effect, so a siphon must be the only one. Legacy
         // ProgressiveDamageAction acts over time only; any other impact ignores it.
         private static bool TryGetEffects(Ammunition ammunition, bool hasGameplayTriggers, out Effects effects,
@@ -639,6 +651,8 @@ namespace Combat.Integration.Core
             var ramp = 0f;
             var rampTime = 0f;
             var rampType = 0;
+            var restore = 0f;
+            var lifetimeLoss = 0f;
             foreach (var effect in ammunition.Effects)
             {
                 switch (effect.Type)
@@ -693,6 +707,17 @@ namespace Combat.Integration.Core
                         rampTime = Math.Max(0f, effect.Factor);
                         rampType = (int)effect.DamageType;
                         break;
+                    case ImpactEffectType.RestoreLifetime:
+                        // Each legacy entry takes its own loss at creation; one restore in the core. Legacy
+                        // Lifetime.Restore gives back the full lifetime at power 0. No built-in ammunition has either.
+                        if (restore > 0f || !(effect.Power > 0f))
+                        {
+                            inertReason = restore > 0f ? "several restore lifetime effects" : "restore lifetime without power";
+                            return false;
+                        }
+                        restore = effect.Power;
+                        lifetimeLoss = effect.Factor;
+                        break;
                     case ImpactEffectType.SiphonHitPoints:
                         AddDamage(damage, (int)effect.DamageType, effect.Power, false);
                         siphon = effect.Factor;
@@ -710,14 +735,14 @@ namespace Combat.Integration.Core
                 return false;
             }
             if (damage.Count == 0 && energyDrain == 0f && shieldDrain == 0f && slowDown == 0f && roll == 0f && ramp == 0f &&
-                !hasGameplayTriggers)
+                restore == 0f && !hasGameplayTriggers)
             {
                 inertReason = "no damage effect";
                 return false;
             }
 
             effects = new Effects(damage, push, radialPush, radialPushWithFalloff, energyDrain, shieldDrain, siphon, slowDown, roll,
-                ramp, rampTime, rampType);
+                ramp, rampTime, rampType, restore, lifetimeLoss);
             inertReason = null;
             return true;
         }
