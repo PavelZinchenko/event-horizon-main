@@ -20,7 +20,10 @@ using Debug = UnityEngine.Debug;
 // The M1 batch check (phase 4, owner 2026-10-31): every built-in build fights a short core battle without rendering.
 // The build flies to a fixed fixture target, brakes at half its shortest weapon range (core ships drift at throttle 0,
 // as in legacy), turns its first weapon's barrel to the target, and holds each weapon while the target is in its range
-// and its barrel points at it. Ships that cannot turn hold their weapons all the time. Drone bays are always held;
+// and its barrel points at it. Ships that cannot turn hold their weapons all the time. A bullet without a range (an area
+// bullet at the muzzle, as the AntiMatterBomb carrier) reaches as far as its radius. A charging weapon fires at the release
+// (phase 5, step 4f): the pilot holds its key until the charge is full and releases it on target, as the AI's ChargeWeapons
+// and IsReadyToFire. Ships that cannot turn release it at each full charge. Drone bays are always held;
 // drones run their behaviour trees, as in the core scene (step 7f). After the fight, kill-all from the target side destroys
 // the build; the removal reason is Death, as for armor 0.
 // Failures: exceptions, armed builds that never fired, drone bays that never launched, ships with an engine that never
@@ -166,9 +169,10 @@ public static class CoreShipBattleCheck
         switch (device)
         {
             case CannonDefinition cannon:
-                return $"{index}: cannon range {cannon.Bullet.Range:F0} barrel {BarrelAngle(definition, cannon.BarrelIndex):F0} deg{(cannon.Bullet.IsHoming ? " homing" : "")}";
+                return $"{index}: cannon range {cannon.Bullet.Range:F0} barrel {BarrelAngle(definition, cannon.BarrelIndex):F0} deg" +
+                       $"{(cannon.Bullet.IsHoming ? " homing" : "")}{(cannon.Mode == CannonMode.Charging ? " charging" : "")}";
             case BeamDefinition beam:
-                return $"{index}: beam range {beam.Range:F0} barrel {BarrelAngle(definition, beam.BarrelIndex):F0} deg";
+                return $"{index}: beam range {beam.Range:F0} barrel {BarrelAngle(definition, beam.BarrelIndex):F0} deg{(beam.IsCharged ? " charging" : "")}";
             default:
                 return null;
         }
@@ -238,11 +242,12 @@ public static class CoreShipBattleCheck
                 switch (devices[i])
                 {
                     case CannonDefinition cannon:
-                        weapons[i] = new Weapon(cannon.Bullet.Range, definition.Barrels[cannon.BarrelIndex].Angle,
-                            (cannon.Bullet.IsHoming ? HomingAimTolerance : AimTolerance) * Mathf.Deg2Rad);
+                        var bullet = cannon.Bullet;
+                        weapons[i] = new Weapon(bullet.Range > 0f ? bullet.Range : bullet.Radius, definition.Barrels[cannon.BarrelIndex].Angle,
+                            (bullet.IsHoming ? HomingAimTolerance : AimTolerance) * Mathf.Deg2Rad, cannon.Mode == CannonMode.Charging);
                         break;
                     case BeamDefinition beam:
-                        weapons[i] = new Weapon(beam.Range, definition.Barrels[beam.BarrelIndex].Angle, AimTolerance * Mathf.Deg2Rad);
+                        weapons[i] = new Weapon(beam.Range, definition.Barrels[beam.BarrelIndex].Angle, AimTolerance * Mathf.Deg2Rad, beam.IsCharged);
                         break;
                     case DroneBayDefinition _:
                         bays |= 1UL << i;
@@ -267,11 +272,12 @@ public static class CoreShipBattleCheck
 
     private readonly struct Weapon
     {
-        public Weapon(float range, float angle, float tolerance)
+        public Weapon(float range, float angle, float tolerance, bool charging)
         {
             Range = range;
             Angle = angle;
             Tolerance = tolerance;
+            Charging = charging;
         }
 
         // Zero for a device that is not a weapon.
@@ -280,6 +286,9 @@ public static class CoreShipBattleCheck
         // The barrel angle relative to the ship, and the largest aim error the weapon fires at; radians.
         public readonly float Angle;
         public readonly float Tolerance;
+
+        // The weapon fires when its key is released, with the charge it reached.
+        public readonly bool Charging;
     }
 
     // Flies to the nearest enemy at a speed that falls with the distance and brakes against its own velocity when it is
@@ -336,15 +345,17 @@ public static class CoreShipBattleCheck
         }
 
         // A turning ship fires each weapon while the target is in its range and its barrel points at it; a ship that
-        // cannot turn fires all the time.
+        // cannot turn fires all the time. A charging weapon is held until its charge is full and released on target.
         private ulong Systems(BattleSnapshot snapshot, in ShipState self, float gap, float toEnemy)
         {
             var held = _alwaysHeld;
+            var devices = snapshot.GetDevices(self);
             for (var i = 0; i < _weapons.Length; ++i)
             {
                 var weapon = _weapons[i];
                 if (weapon.Range <= 0f) continue;
-                if (!_canTurn || gap <= weapon.Range && AimError(self.Angle + weapon.Angle, toEnemy) <= weapon.Tolerance)
+                var onTarget = !_canTurn || gap <= weapon.Range && AimError(self.Angle + weapon.Angle, toEnemy) <= weapon.Tolerance;
+                if (weapon.Charging ? !onTarget || devices[i].Charge < 1f : onTarget)
                     held |= 1UL << i;
             }
 
