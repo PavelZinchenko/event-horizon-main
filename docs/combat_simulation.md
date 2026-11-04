@@ -178,7 +178,7 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
 2. Input uses its own bit-packed section (`InputCodec`, version 1), not this header: version (8 bits), battle ID low 32 bits, base tick,
    then records until zero padding. A record holds control index, base tick − original tick, course (9 bits; 511: none), throttle (7 bits)
    and systems. Index, tick offset and systems are `VarUInt`. The sender is the owner of every record.
-   **Tick batch (reliable, G2, `SessionCodec` version 10).** One reliable message per tick holds the tick's operations in sequence
+   **Tick batch (reliable, G2, `SessionCodec` version 11).** One reliable message per tick holds the tick's operations in sequence
    order, then its hits. Header: version (8 bits), tick and last operation sequence (`VarUInt`). No battle ID: the connection is
    bound to one battle. Then records until zero padding: kind (4 bits from version 8, from 1), record tick − batch tick (zigzag `VarUInt`; a beam
    end record is one tick ahead), then the record fields. The sender is the owner of every record.
@@ -201,9 +201,12 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
      type (`VarUInt`, below `DamageTypeTable.MaxTypes`; version 6, D4). The target's core rejects a type its table lacks.
      Then an impulse flag (1 bit) and, with the flag, the push impulse (two 32-bit floats; version 7, phase 4 E4). Only a
      projectile's start record on a ship carries one; the target's core rejects it elsewhere and applies it on arrival.
+     Then the effect (3 bits, `HitEffect`; version 11, phase 5 step 5a): `Damage`, or a drain (`EnergyDrain`, `ShieldDrain`)
+     that names a ship target, with damage type 0 and no impulse.
    - Retreat: ship control index. Roster changes and drone launches are rare and keep full-width IDs, records and poses.
-   - Missile target (kind 7, 9d P3): missile bullet age, then target control index + 1 in the receiver's stream (`VarUInt`;
-     0: no target). About 1.5 bytes in a real batch.
+   - Missile target (kind 7, 9d P3): missile bullet age, a segment flag (1 bit; version 11, phase 5 step 5a), then the target
+     control index + 1 in the receiver's stream (`VarUInt`; 0: no target), or with the flag a sticky bullet's tail segment as
+     its 64-bit entity ID. About 1.5 bytes in a real batch.
    - Allegiance (kind 8, version 8, phase 4 D13): ship control index, then the allegiance (3 bits). About 1 byte.
    - Device use (kind 9, version 9, phase 5 step 7a): ship control index, device index (`VarUInt`, below 64), started (1 bit).
      About 2 bytes. Its tick can be the batch tick + 1 (an InfinityStone use that lethal damage started).
@@ -469,7 +472,7 @@ Migration phase 3b, step 5 is implemented. Core still has no wire format and no 
    A predicted armor of 0 never kills; the owner's records decide deaths and roster facts. Remote shield and armor still do not regenerate locally.
 7. `ResolvedHit.Sequence` numbers outgoing records per attacker owner from 1; `InboundHit` uses it and has no own sequence.
    The predicted-damage ledger keeps each sent discrete hit and each beam interval until the target owner acknowledges it.
-8. After a correction with acknowledgement A at tick t, the copy replays the damage the owner has not applied:
+8. After a correction with acknowledgement A at tick t, the copy replays the damage and drains the owner has not applied:
    - A discrete hit replays while its sequence is above A.
    - A beam interval [s, e) shows rate × (min(e, present) − s) locally. The owner applies [s + D, e + D) with the shooter's delay D.
      The replay is the shown ticks minus the owner's ticks through t; the owner counts only the boundaries it has acknowledged.
@@ -720,6 +723,31 @@ Phase 5, step 3. `BulletDefinition.Impact` copies legacy `BulletImpactType`. A b
 7. **Mapper.** `CoreWeaponMapper` maps `HitAllTargets` and `DamageOverTime`, `DamageWithFalloff`, the three radial push effects, `Body.Lifetime` and `AttachedToParent`. A bullet without a prefab is the legacy area bullet: a circle of radius 0.5 × size. An area with effects scales its size by `AoeRadiusMultiplier` (legacy `BulletStats.BodySize`); `Scale` is that size. Inert reasons: `push over time`, `falloff over time`, `several damage types over time`, `bullet attached to a bullet`, `homing bullet attached to the parent`, `beam with falloff`. No built-in ammunition uses them.
 8. **Views.** A bullet without a prefab has no look of its own in legacy (its trigger effects draw it), so `CoreBulletVisuals` draws the legacy flash glow at the bullet's `Scale`, in its colour at half alpha, until H11 decides the area views.
 
+### Drains and siphon
+
+Phase 5, step 5a. Examples: `TODO/battle_simulator_phase5.md`, "Drains and siphon (5a)"; tests: `Core/Tests/DrainTests.cs`.
+
+1. **Model.** `BulletDefinition.Effects` and `BeamDefinition.Effects` hold one `ImpactEffects`: `EnergyDrain`, `ShieldDrain` and the
+   `Siphon` factor. A hit applies each drain once at full power, without falloff (legacy actions); an `OverTime` bullet and a
+   beam apply it per second, × 0.02 per tick. A charge scales the drains, not the siphon factor. Only ship and drone targets take
+   them; a missile or a tail segment takes the damage only.
+2. **Stage 9 and 10.** Stage 9 adds the drains to the target's `PendingEffects` beside its pending damage. Stage 10 (legacy
+   `Impact.ApplyShield`, `ShipStats.ApplyDamage`) takes the shield drain from the shield first; the shield left absorbs damage,
+   so a drain at least as large as the shield lets all damage reach the armor. The shield loses drain plus absorbed. The armor
+   takes what passed less the repair. Energy gains its share first, then loses the drain, clamped at 0; the drain restarts its
+   recharge delay. Several hits in one tick sum, so the order holds for the sum.
+3. **Siphon** (legacy `SiphonHitPointsAction`). The siphon heals from the first damage effect: the attacker's ship (`ShipId`, also
+   for a child bullet) regains that damage × (1 − the target's armor resistance of its type, with its resistance share) ×
+   `Siphon`, as a repair at stage 10, capped at its maximum. The target's shield does not reduce it (finding 7a, kept). Only the
+   attacker's owner heals its own ship; a copy follows corrections.
+4. **Network.** A drain on a remote target is its own hit record beside the damage records of the contact (`HitEffect`), with
+   the drain as amount; over time, its own interval with the rate as amount, because the interval key includes the effect. The
+   target owner applies it like damage; the attacker's copy takes it at once as a prediction, and the correction replay
+   includes it. A drain makes no `Hit` event on the receiver.
+5. **Mapper.** `DrainEnergy` (× `EffectPowerMultiplier`), `DrainShield` (× `DamageMultiplier`) and `SiphonHitPoints` (a damage
+   effect × `DamageMultiplier`, with its `Factor`). A bullet or beam with only drains maps with damage 0. Inert reason: `siphon
+   with another damage effect` (the core heals from one damage effect; no built-in ammunition has it).
+
 ### Weapon classes and rockets
 
 Phase 5, steps 4a, 4b, 4f and 4g. `CannonDefinition.Mode` copies the legacy weapon classes that fire projectiles from a held key; `Magazine` is the bullet count (multi-shot) or the burst length (machine gun). Examples: phase 5 plan, "Weapon classes and controllers (4)".
@@ -733,7 +761,7 @@ Phase 5, steps 4a, 4b, 4f and 4g. `CannonDefinition.Mode` copies the legacy weap
 7. **Manageable** (step 4b, legacy `ManageableCannon`). A shot needs the key, the cooldown, the barrel and the energy, as a cannon; it records no barrel shot. Stage 5 hands the bullet to the device (`CannonDevice.Hold`), and the device state names it (`DeviceState.ActiveBullet`). While the bullet flies, the device is active and ready while the key is held, whatever the barrel and the energy; a released key makes the owner mark the bullet's detonation at stage 2 (`BulletStore.MarkDetonation`). Legacy also needs a ready barrel, so another weapon's shot on that barrel detonated the bullet; the core fixes this defect (owner, 2026-11-03). A retreat counts as a released key. The update that finds the bullet gone records the barrel shot and starts the weapon cooldown; it fires nothing. A dead ship's bullet flies on, and nobody detonates it.
 8. **Detonation** (legacy `Bullet.Detonate`). A bullet marked before the physics step takes no contacts in that tick and is no target. Stage 12 removes it with `Death` and runs `Destroyed`, then `Detonated` whatever `DetonateWhenDestroyed` (`BulletEntity.Detonates`). The children start at the bullet's pose after that tick's move: one tick of flight later than legacy.
 9. **Sticky mine** (step 4b, legacy `StickyController`, `StickyMine`). Stage 8 records the first ship, drone or tail segment a sticky bullet touches. At the next stage 4 the bullet rides on that body (physics `AttachBullet`) at its pose in the body frame, with the offset × 0.9. Its expiry moves by `StickyTicks`, and the owner detonates it at stage 4 of the tick `StickyTicks − 1` after the stick tick. When the target leaves, the bullet leaves at the next stage 12 with `Disposal` and no triggers. Physics never hits an attached bullet's parent, but legacy keeps the stuck bullet inside its target's collider: each step, `BulletStore.CollectStuckHits` adds one time-0 overlap contact of a stuck `OverTime` bullet on its target's first shape, so its damage over time goes on.
-10. **Network** (H8). Only the owner detonates and sticks. A copy takes the weapon cooldown from the owner's removal record: the tick after the record's tick, however late it arrives (`CannonDevice.OnRemoteRemoval`); a confirmed shot of a manageable cannon re-syncs neither cooldown nor barrel. The owner sends a stick as a `MissileTarget` record; the copy sticks to that target at its own pose when the record applies. A stick to a tail segment sends no record, because the session stream names no segment as a body; that copy flies on until the owner's removal record.
+10. **Network** (H8). Only the owner detonates and sticks. A copy takes the weapon cooldown from the owner's removal record: the tick after the record's tick, however late it arrives (`CannonDevice.OnRemoteRemoval`); a confirmed shot of a manageable cannon re-syncs neither cooldown nor barrel. The owner sends a stick as a `MissileTarget` record; the copy sticks to that target at its own pose when the record applies. A stick to a tail segment sets the record's segment flag (step 5a, `SessionCodec` version 11): the segment travels as its entity ID.
 11. **Charging** (step 4f, H7, legacy `ChargeableCannon`; `CannonDefinition.Charged`, mode `Charging`, and `BeamDefinition.Charged`). `WeaponCharge` holds the rule for both devices. A held key starts the charge when the barrel is ready and the energy is at least half the full cost; the start spends nothing and counts charge tick 1. Each later tick with the key held spends `EnergyCost × 0.02 / ChargeTime` and adds a tick; from `TickTime.After(ChargeTime)` ticks on, the key holds the charge for free. The charge c is the ticks over `ChargeTime × 50`, 1 from `TickTime.AtLeast(ChargeTime)` ticks. A released key, a blocked bit, a retreat or energy that runs out fires the charge at that tick when it has at least 6 ticks (more than 0.1 s), else drops it with its energy. The shot records a barrel shot; there is no weapon cooldown. `DeviceState.Charge` shows c, `Ready` is legacy `CanBeActivated` (a running charge, or the barrel and half the cost), `Cooldown` is the barrel only, and `ActiveBullet` is the last shot's bullet while it lives. A charging weapon is not a shot weapon: a warp lets it charge and fire.
 12. **Charged definitions.** The shot uses `BulletDefinition.WithCharge(c)` or `BeamDefinition.WithCharge(c)`, cached per device and charge tick count (`CannonDevice.BulletFor`, `BeamDevice.BeamFor`); a full charge is the device's own definition. Legacy `BulletStats` with `PowerLevel` c: damage, push and radial push × c; range × c, or 0 at c ≤ 0.1 (a beam then hits nothing; a bullet without a body lifetime expires after its first step); body size, collider radius, weight, recoil and beam-bolt length × (0.5 + 0.5c). A body lifetime stays, except a charged beam's (G9, owner 2026-11-03: × (0.5 + 0.5c)). Each child bullet takes its parent's charge, recursively (behaviour change "Charged child bullets"; legacy keeps the charge of the weapon's first shot). `Uncharged` and `Charge` name the source; the scene looks up the view by `Uncharged` and scales its size.
 13. **Charge network.** The owner's spawn record carries the shot's charge ticks (`OwnerOperation.ChargeTicks`). The receiver builds the bullet or beam of that charge; a copy that its own control frames fired takes the owner's definition and expiry (`TakeCharge`), but its body keeps the radius of its predicted charge. A confirmed shot ends the copy's own charge that started at or before the shot (`WeaponCharge.EndAt`), so a missed release frame fires no second shot. The copy window of a charging weapon is the barrel cooldown plus 6 ticks, minus 1. Corrections carry no charge.

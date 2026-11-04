@@ -21,7 +21,8 @@ namespace Combat.Integration.Core
     // StickyMine controller. Step 4d: shot beams (a beam controller on a Common weapon), beam spread and tracking.
     // Step 4e: beam bolts (a beam shape with the Projectile controller). Step 4f: RequiredCharging weapons, as a
     // charging cannon or a charged beam; the cooldown of the fire rate is the time of a full charge. Step 4g: the
-    // AuraEmitter controller, and a Continuous weapon with it as a continuous cannon.
+    // AuraEmitter controller, and a Continuous weapon with it as a continuous cannon. Step 5a: DrainEnergy, DrainShield
+    // and SiphonHitPoints effects (ImpactEffects).
     public static class CoreWeaponMapper
     {
         // A child bullet the mapper made: the ship mapper records its view source.
@@ -59,9 +60,10 @@ namespace Combat.Integration.Core
                     // Legacy BulletStats.GetBulletLifetime: a beam controller has no speed.
                     if (!(body.Lifetime > 0f))
                         return Inert("shot beam without lifetime", out inertReason);
+                    var shotDamage = effects.FirstDamage;
                     return BeamDefinition.Shot(barrelIndex, cooldown, energyCost, range,
-                        effects.Damage[0].Amount * modifier.DamageMultiplier.Value, body.Lifetime, effects.Damage[0].DamageType,
-                        spread, TrackingAngle(ammunition));
+                        shotDamage.Amount * modifier.DamageMultiplier.Value, body.Lifetime, shotDamage.DamageType,
+                        spread, TrackingAngle(ammunition), effects.ToCore(modifier));
                 case WeaponClass.Common:
                 case WeaponClass.MultiShot:
                 case WeaponClass.MashineGun:
@@ -84,9 +86,10 @@ namespace Combat.Integration.Core
                         return null;
                     if (!(body.Lifetime > 0f))
                         return Inert("shot beam without lifetime", out inertReason);
+                    var chargedDamage = effects.FirstDamage;
                     return BeamDefinition.Charged(barrelIndex, cooldown, energyCost, range,
-                        effects.Damage[0].Amount * modifier.DamageMultiplier.Value, body.Lifetime, effects.Damage[0].DamageType,
-                        spread, TrackingAngle(ammunition));
+                        chargedDamage.Amount * modifier.DamageMultiplier.Value, body.Lifetime, chargedDamage.DamageType,
+                        spread, TrackingAngle(ammunition), effects.ToCore(modifier));
                 case WeaponClass.RequiredCharging:
                     var chargeContext = new Context(armorMultiplier, children);
                     var charged = MapBullet(ammunition, modifier, effects, 0, chargeContext, out inertReason);
@@ -109,9 +112,10 @@ namespace Combat.Integration.Core
                     if (!TryCheckBeam(ammunition, hasGameplayTriggers, effects, range, out inertReason))
                         return null;
 
-                    var damage = effects.Damage[0];
+                    var damage = effects.FirstDamage;
                     return new BeamDefinition(barrelIndex, cooldown, energyCost * body.Lifetime, energyCost, range,
-                        damage.Amount * modifier.DamageMultiplier.Value, damage.DamageType, spread, TrackingAngle(ammunition));
+                        damage.Amount * modifier.DamageMultiplier.Value, damage.DamageType, spread, TrackingAngle(ammunition),
+                        effects.ToCore(modifier));
                 default:
                     return Inert($"weapon class {stats.WeaponClass}", out inertReason);
             }
@@ -285,8 +289,8 @@ namespace Combat.Integration.Core
                 }
             }
 
-            // A bullet with triggers may have no damage effect (a carrier).
-            var first = effects.Damage.Count > 0 ? effects.Damage[0] : default;
+            // A bullet with triggers or drains may have no damage effect (a carrier).
+            var first = effects.FirstDamage;
             var bullet = new BulletDefinition(
                 radius,
                 speed,
@@ -317,7 +321,8 @@ namespace Combat.Integration.Core
                 hasDirection: shape.HasDirection(),
                 beamLength: beamLength,
                 piercing: shape == BulletShape.PiercingLaser,
-                aura: aura);
+                aura: aura,
+                effects: effects.ToCore(modifier));
 
             inertReason = null;
             return bullet;
@@ -546,21 +551,36 @@ namespace Combat.Integration.Core
             return BulletEffectType.None;
         }
 
-        // Damage effects summed per damage type and falloff in first-seen order, and the summed push powers.
+        // Damage effects summed per damage type and falloff in first-seen order, the summed push and drain powers, and
+        // the siphon factor of the only damage effect (step 5a). Powers are raw; ToCore applies the modifiers.
         private readonly struct Effects
         {
             public readonly List<DamageAmount> Damage;
             public readonly float Push;
             public readonly float RadialPush;
             public readonly float RadialPushWithFalloff;
+            public readonly float EnergyDrain;
+            public readonly float ShieldDrain;
+            public readonly float Siphon;
 
-            public Effects(List<DamageAmount> damage, float push, float radialPush, float radialPushWithFalloff)
+            public Effects(List<DamageAmount> damage, float push, float radialPush, float radialPushWithFalloff,
+                float energyDrain, float shieldDrain, float siphon)
             {
                 Damage = damage;
                 Push = push;
                 RadialPush = radialPush;
                 RadialPushWithFalloff = radialPushWithFalloff;
+                EnergyDrain = energyDrain;
+                ShieldDrain = shieldDrain;
+                Siphon = siphon;
             }
+
+            public DamageAmount FirstDamage => Damage.Count > 0 ? Damage[0] : default;
+
+            // Legacy BulletFactory: DrainEnergy x EffectPowerMultiplier, DrainShield x DamageMultiplier; the siphon damage
+            // is a damage effect.
+            public ImpactEffects ToCore(WeaponStatModifier modifier) => new ImpactEffects(
+                EnergyDrain * modifier.EffectPowerMultiplier.Value, ShieldDrain * modifier.DamageMultiplier.Value, Siphon);
 
             public bool HasFalloff
             {
@@ -574,8 +594,9 @@ namespace Combat.Integration.Core
             }
         }
 
-        // Damage and push effects only (phase 5, step 3: falloff and radial push, legacy BulletFactory). At least one
-        // Damage effect, unless the bullet has a gameplay trigger.
+        // Damage and push effects (phase 5, step 3: falloff and radial push, legacy BulletFactory), drains and siphon
+        // (step 5a). At least one damage effect or drain, unless the bullet has a gameplay trigger. The core heals from
+        // the first damage effect, so a siphon must be the only one.
         private static bool TryGetEffects(Ammunition ammunition, bool hasGameplayTriggers, out Effects effects,
             out string inertReason)
         {
@@ -584,6 +605,10 @@ namespace Combat.Integration.Core
             var push = 0f;
             var radialPush = 0f;
             var radialPushWithFalloff = 0f;
+            var energyDrain = 0f;
+            var shieldDrain = 0f;
+            var siphon = 0f;
+            var siphons = 0;
             foreach (var effect in ammunition.Effects)
             {
                 switch (effect.Type)
@@ -606,21 +631,45 @@ namespace Combat.Integration.Core
                     case ImpactEffectType.PushFromCenterWithFalloff:
                         radialPushWithFalloff += effect.Power;
                         break;
+                    case ImpactEffectType.DrainEnergy:
+                        energyDrain += effect.Power;
+                        break;
+                    case ImpactEffectType.DrainShield:
+                        shieldDrain += effect.Power;
+                        break;
+                    case ImpactEffectType.SiphonHitPoints:
+                        AddDamage(damage, (int)effect.DamageType, effect.Power, false);
+                        siphon = effect.Factor;
+                        ++siphons;
+                        break;
                     default:
                         inertReason = $"effect {effect.Type}";
                         return false;
                 }
             }
 
-            if (damage.Count == 0 && !hasGameplayTriggers)
+            if (siphons > 1 || siphons > 0 && HasDamageEffect(ammunition))
+            {
+                inertReason = "siphon with another damage effect";
+                return false;
+            }
+            if (damage.Count == 0 && energyDrain == 0f && shieldDrain == 0f && !hasGameplayTriggers)
             {
                 inertReason = "no damage effect";
                 return false;
             }
 
-            effects = new Effects(damage, push, radialPush, radialPushWithFalloff);
+            effects = new Effects(damage, push, radialPush, radialPushWithFalloff, energyDrain, shieldDrain, siphon);
             inertReason = null;
             return true;
+        }
+
+        private static bool HasDamageEffect(Ammunition ammunition)
+        {
+            foreach (var effect in ammunition.Effects)
+                if (effect.Type == ImpactEffectType.Damage || effect.Type == ImpactEffectType.DamageWithFalloff)
+                    return true;
+            return false;
         }
 
         private static void AddDamage(List<DamageAmount> damage, int damageType, float amount, bool falloff)
