@@ -30,6 +30,8 @@ using Debug = UnityEngine.Debug;
 // moved, and ships that did not die. Builds that fired but never hit are listed for information only: M1 does not ask
 // for hits, and this simple pilot misses with some ships (it fires while sliding, so bullets inherit the drift). The
 // visual part of the M1 check stays with the owner's playtest.
+// A build that spawns within its stopping distance first demonstrates movement, then holds range. Otherwise a
+// long-range weapon can keep the pilot at throttle 0 for the entire check and falsely fail the engine check.
 public static class CoreShipBattleCheck
 {
     [MenuItem("Tools/Combat/Check Ship Battles")]
@@ -309,6 +311,12 @@ public static class CoreShipBattleCheck
 
         public bool Think(BattleSnapshot snapshot, in ShipState self, out PilotControls controls)
         {
+            if (!_started)
+            {
+                _start = self.Position;
+                _started = true;
+            }
+            if (_arena.Delta(_start, self.Position).Length > MinDistance) _hasMoved = true;
             var found = false;
             var delta = default(Vec2);
             var gap = float.MaxValue;
@@ -333,11 +341,13 @@ public static class CoreShipBattleCheck
             var velocity = self.LinearVelocity;
             var length = delta.Length;
             var closing = length > 0f ? (velocity.X * delta.X + velocity.Y * delta.Y) / length : 0f;
-            var desired = gap > _standOff ? Math.Min(MaxApproachSpeed, 0.5f * (gap - _standOff) + 1f) : 0f;
+            var demonstrateMovement = !_hasMoved && self.Definition.Engine.Propulsion > 0f;
+            var approach = gap > _standOff || demonstrateMovement;
+            var desired = approach ? Math.Min(MaxApproachSpeed, 0.5f * Math.Max(0f, gap - _standOff) + 1f) : 0f;
 
-            if (closing > desired + 1f || gap <= _standOff && velocity.Length > 1f)
+            if (closing > desired + 1f || !approach && velocity.Length > 1f)
                 controls = PilotControls.Create((float)Math.Atan2(-velocity.Y, -velocity.X), 1f, Systems(snapshot, self, gap, toEnemy));
-            else if (gap > _standOff && closing < desired)
+            else if (approach && closing < desired)
                 controls = PilotControls.Create(toEnemy, 1f, Systems(snapshot, self, gap, toEnemy));
             else
                 controls = PilotControls.Create(toEnemy - _aimOffset, 0f, Systems(snapshot, self, gap, toEnemy));
@@ -374,6 +384,9 @@ public static class CoreShipBattleCheck
         private readonly ulong _alwaysHeld;
         private readonly bool _canTurn;
         private readonly CoreAutoActivation _autoActivation;
+        private Vec2 _start;
+        private bool _started;
+        private bool _hasMoved;
     }
 
     private sealed class Result

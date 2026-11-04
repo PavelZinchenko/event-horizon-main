@@ -22,7 +22,7 @@ namespace Combat.Integration.Core
     // Step 4e: beam bolts (a beam shape with the Projectile controller). Step 4f: RequiredCharging weapons, as a
     // charging cannon or a charged beam; the cooldown of the fire rate is the time of a full charge. Step 4g: the
     // AuraEmitter controller, and a Continuous weapon with it as a continuous cannon. Step 5a: DrainEnergy, DrainShield
-    // and SiphonHitPoints effects (ImpactEffects).
+    // and SiphonHitPoints effects (ImpactEffects); step 5b adds SlowDown and Roll.
     public static class CoreWeaponMapper
     {
         // A child bullet the mapper made: the ship mapper records its view source.
@@ -562,9 +562,11 @@ namespace Combat.Integration.Core
             public readonly float EnergyDrain;
             public readonly float ShieldDrain;
             public readonly float Siphon;
+            public readonly float SlowDown;
+            public readonly float Roll;
 
             public Effects(List<DamageAmount> damage, float push, float radialPush, float radialPushWithFalloff,
-                float energyDrain, float shieldDrain, float siphon)
+                float energyDrain, float shieldDrain, float siphon, float slowDown, float roll)
             {
                 Damage = damage;
                 Push = push;
@@ -573,6 +575,8 @@ namespace Combat.Integration.Core
                 EnergyDrain = energyDrain;
                 ShieldDrain = shieldDrain;
                 Siphon = siphon;
+                SlowDown = slowDown;
+                Roll = roll;
             }
 
             public DamageAmount FirstDamage => Damage.Count > 0 ? Damage[0] : default;
@@ -580,7 +584,8 @@ namespace Combat.Integration.Core
             // Legacy BulletFactory: DrainEnergy x EffectPowerMultiplier, DrainShield x DamageMultiplier; the siphon damage
             // is a damage effect.
             public ImpactEffects ToCore(WeaponStatModifier modifier) => new ImpactEffects(
-                EnergyDrain * modifier.EffectPowerMultiplier.Value, ShieldDrain * modifier.DamageMultiplier.Value, Siphon);
+                EnergyDrain * modifier.EffectPowerMultiplier.Value, ShieldDrain * modifier.DamageMultiplier.Value, Siphon,
+                SlowDown * modifier.EffectPowerMultiplier.Value, Roll * modifier.EffectPowerMultiplier.Value);
 
             public bool HasFalloff
             {
@@ -595,7 +600,7 @@ namespace Combat.Integration.Core
         }
 
         // Damage and push effects (phase 5, step 3: falloff and radial push, legacy BulletFactory), drains and siphon
-        // (step 5a). At least one damage effect or drain, unless the bullet has a gameplay trigger. The core heals from
+        // (step 5a), slow-down and roll (5b). At least one damage or ship effect, unless there is a gameplay trigger. The core heals from
         // the first damage effect, so a siphon must be the only one.
         private static bool TryGetEffects(Ammunition ammunition, bool hasGameplayTriggers, out Effects effects,
             out string inertReason)
@@ -609,6 +614,9 @@ namespace Combat.Integration.Core
             var shieldDrain = 0f;
             var siphon = 0f;
             var siphons = 0;
+            var slowDown = 0f;
+            var roll = 0f;
+            var slowDownCount = 0;
             foreach (var effect in ammunition.Effects)
             {
                 switch (effect.Type)
@@ -637,6 +645,19 @@ namespace Combat.Integration.Core
                     case ImpactEffectType.DrainShield:
                         shieldDrain += effect.Power;
                         break;
+                    case ImpactEffectType.SlowDown:
+                        // Legacy multiplies each slow-down separately, in action order. A single power cannot
+                        // represent several entries or a slow-down after Roll. No built-in ammunition has either.
+                        if (++slowDownCount > 1 || roll > 0f)
+                        {
+                            inertReason = slowDownCount > 1 ? "several slow-down effects" : "slow-down after roll";
+                            return false;
+                        }
+                        slowDown = effect.Power;
+                        break;
+                    case ImpactEffectType.Roll:
+                        roll += effect.Power;
+                        break;
                     case ImpactEffectType.SiphonHitPoints:
                         AddDamage(damage, (int)effect.DamageType, effect.Power, false);
                         siphon = effect.Factor;
@@ -653,13 +674,13 @@ namespace Combat.Integration.Core
                 inertReason = "siphon with another damage effect";
                 return false;
             }
-            if (damage.Count == 0 && energyDrain == 0f && shieldDrain == 0f && !hasGameplayTriggers)
+            if (damage.Count == 0 && energyDrain == 0f && shieldDrain == 0f && slowDown == 0f && roll == 0f && !hasGameplayTriggers)
             {
                 inertReason = "no damage effect";
                 return false;
             }
 
-            effects = new Effects(damage, push, radialPush, radialPushWithFalloff, energyDrain, shieldDrain, siphon);
+            effects = new Effects(damage, push, radialPush, radialPushWithFalloff, energyDrain, shieldDrain, siphon, slowDown, roll);
             inertReason = null;
             return true;
         }

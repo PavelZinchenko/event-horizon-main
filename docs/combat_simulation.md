@@ -748,6 +748,30 @@ Phase 5, step 5a. Examples: `TODO/battle_simulator_phase5.md`, "Drains and sipho
    effect × `DamageMultiplier`, with its `Factor`). A bullet or beam with only drains maps with damage 0. Inert reason: `siphon
    with another damage effect` (the core heals from one damage effect; no built-in ammunition has it).
 
+### Slow-down and roll
+
+Phase 5, step 5b. Examples: `TODO/battle_simulator_phase5.md`, "Slow-down and roll (5b)".
+Tests extend `Core/Tests/ImpactEffectTests.cs`, `DrainTests.cs`, and `Runtime/Tests/SessionCodecTests.cs`.
+
+1. **Mapping and weight.** `ImpactEffects.SlowDown` and `Roll` use `EffectPowerMultiplier` and scale with charge.
+   Neither uses damage falloff. Effects without damage map with damage 0. `ShipDefinition.Mass` comes from the same
+   `stats.Weight` as legacy bodies, for ships and drones. Its 0.01 minimum is below the built-in weight floor of 0.05.
+2. **Slow-down.** Stage 9 scales velocity and angular velocity by `1 - min(1, power / sqrt(mass))`, before push.
+   Over-time bullets and beams use `power * 0.02` each tick. Separate contacts multiply separately.
+   A web of power 4 on mass 16 applies 0.98 each tick: about 36.4% remains after 50 ticks without engine input.
+3. **Roll.** On contact entry, add `power / sqrt(mass) * 180` degrees/s in the current spin direction.
+   Zero spin starts counter-clockwise. Physics receives radians through `SetAngularVelocity`.
+   Two reused sets of attacker/target pairs prevent repeated kicks during sustained contact. Leaving and returning
+   starts a new contact. Both motion effects ignore missiles and tail segments (the approved minimal Roll port).
+4. **Network.** Version 11's existing three-bit `HitEffect` field holds `SlowDown` and `Roll`.
+   A slow-down record precedes the damage record carrying push. Its amount is power, or power per second for an interval.
+   Roll is a discrete record carrying a positive degrees/s change; the receiver chooses its own spin direction.
+   The target owner applies both on arrival. Missed slow-down ticks compound the per-tick multiplier against current
+   velocity; they do not replay intervening engine inputs. Motion effects make no remote damage event and stay outside
+   resource correction replay. Existing velocity corrections handle motion; they do not reconstruct contact history.
+5. **Unsupported combinations.** The mapper reports `several slow-down effects` or `slow-down after roll` instead of
+   merging non-equivalent action sequences into one power. No built-in ammunition uses either combination.
+
 ### Weapon classes and rockets
 
 Phase 5, steps 4a, 4b, 4f and 4g. `CannonDefinition.Mode` copies the legacy weapon classes that fire projectiles from a held key; `Magazine` is the bullet count (multi-shot) or the burst length (machine gun). Examples: phase 5 plan, "Weapon classes and controllers (4)".
