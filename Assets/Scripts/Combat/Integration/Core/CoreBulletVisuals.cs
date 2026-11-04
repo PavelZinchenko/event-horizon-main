@@ -30,17 +30,22 @@ namespace Combat.Integration.Core
             if (_visuals.TryGetValue(key, out var visual))
                 return visual;
 
-            // A beam bolt draws as a beam line (phase 5, step 4e).
+            // A beam bolt draws as a beam line (phase 5, step 4e). A charged copy (step 4f) has the source of its
+            // uncharged definition, at legacy SizeMultiplier 0.5 + 0.5 x charge.
             var isLine = spawn.IsBeam || spawn.BulletDefinition.IsBeamBolt;
-            visual = _sources.TryGetValue(key, out var source) ? Create(source, isLine, spawn.BulletDefinition) : null;
+            object sourceKey = spawn.IsBeam ? spawn.BeamDefinition.Uncharged : (object)spawn.BulletDefinition.Uncharged;
+            var charge = spawn.IsBeam ? spawn.BeamDefinition.Charge : spawn.BulletDefinition.Charge;
+            visual = _sources.TryGetValue(sourceKey, out var source)
+                ? Create(source, isLine, spawn.BulletDefinition, 0.5f + 0.5f * charge)
+                : null;
             _visuals.Add(key, visual);
             return visual;
         }
 
-        private BulletVisual Create(in CoreBulletSource source, bool isBeam, BulletDefinition bullet)
+        private BulletVisual Create(in CoreBulletSource source, bool isBeam, BulletDefinition bullet, float sizeScale)
         {
             var parent = source.ParentColor.ToUnity();
-            var size = source.BodySize;
+            var size = source.BodySize * sizeScale;
             var prefab = source.Prefab;
             var flash = Flash(source.HitEffect, parent, size);
 

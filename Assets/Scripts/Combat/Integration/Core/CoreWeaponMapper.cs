@@ -19,7 +19,8 @@ namespace Combat.Integration.Core
     // prefab (the legacy area bullet) and bullets attached to their ship.
     // Phase 5, step 4a: MultiShot and MashineGun weapons, the Rocket controller. Step 4b: Manageable weapons, the
     // StickyMine controller. Step 4d: shot beams (a beam controller on a Common weapon), beam spread and tracking.
-    // Step 4e: beam bolts (a beam shape with the Projectile controller).
+    // Step 4e: beam bolts (a beam shape with the Projectile controller). Step 4f: RequiredCharging weapons, as a
+    // charging cannon or a charged beam; the cooldown of the fire rate is the time of a full charge.
     public static class CoreWeaponMapper
     {
         // A child bullet the mapper made: the ship mapper records its view source.
@@ -74,6 +75,24 @@ namespace Combat.Integration.Core
                         return null;
                     context.Commit();
                     return new CannonDefinition(barrelIndex, cooldown, energyCost, spread, bullet, mode, magazine);
+                // Legacy ChargeableCannon: a fire rate of 0 or below never charges.
+                case WeaponClass.RequiredCharging when !(cooldown > 0f):
+                    return Inert("charging weapon without fire rate", out inertReason);
+                case WeaponClass.RequiredCharging when ammunition.Controller is BulletController_Beam:
+                    if (!TryCheckBeam(ammunition, hasGameplayTriggers, effects, range, out inertReason))
+                        return null;
+                    if (!(body.Lifetime > 0f))
+                        return Inert("shot beam without lifetime", out inertReason);
+                    return BeamDefinition.Charged(barrelIndex, cooldown, energyCost, range,
+                        effects.Damage[0].Amount * modifier.DamageMultiplier.Value, body.Lifetime, effects.Damage[0].DamageType,
+                        spread, TrackingAngle(ammunition));
+                case WeaponClass.RequiredCharging:
+                    var chargeContext = new Context(armorMultiplier, children);
+                    var charged = MapBullet(ammunition, modifier, effects, 0, chargeContext, out inertReason);
+                    if (charged == null)
+                        return null;
+                    chargeContext.Commit();
+                    return CannonDefinition.Charged(barrelIndex, cooldown, energyCost, spread, charged);
                 case WeaponClass.Continuous:
                     if (ammunition.Controller.Type != BulletControllerType.Beam)
                         return Inert($"continuous weapon with controller {ammunition.Controller.Type}", out inertReason);

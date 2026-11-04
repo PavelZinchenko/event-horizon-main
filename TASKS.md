@@ -24,7 +24,7 @@
 - [ ] Core combat scene: decide the camera whip toward a new player ship (`TODO/battle_simulator_scene.md`, step 4)
 - [ ] Cost test of the AI threat cut-off (more than 30 pilots) on the new simulator; remove it if not needed (`TODO/battle_simulator_phase4.md`, Targets (7c))
 - [ ] Database editor: collider editor for `Ship.Collider`, after migration phase 4 (`TODO/battle_simulator_phase4.md`, D5)
-- [ ] Charged beam lifetime × (0.5 + 0.5 × charge) in legacy `BulletStats` (deferred E2, `TODO/battle_simulator_ammo_mapping.md`, G9; the core does it in phase 5, step 4f)
+- [ ] Charged beam lifetime × (0.5 + 0.5 × charge) in legacy `BulletStats` (deferred E2, `TODO/battle_simulator_ammo_mapping.md`, G9; the core does it since phase 5, step 4f)
 - [ ] Capsule hit shape for long bullets (deferred E3, `TODO/battle_simulator_ammo_mapping.md`, G10)
 - [In Progress] Migration phase 5: built-in device coverage, data-model gate and explicit deferrals (`TODO/battle_simulator_migration.md`)
 - [ ] Migration phase 5: asteroids as core bodies, with the AI obstacle and asteroid-threat port (`TODO/battle_simulator_phase4.md`, D8)
