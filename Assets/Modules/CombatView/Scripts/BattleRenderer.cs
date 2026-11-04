@@ -161,6 +161,10 @@ namespace CombatView
                 if (bullet.HasRay)
                     view.PushEnd(bullet.BeamEndPoint);
                 view.Push(bullet.Position, bullet.Angle);
+
+                // An aura grows and shrinks with its power (phase 5, step 4g); the sprite takes the latest tick's size.
+                if (view.Renderer && !bullet.IsBeam && bullet.Definition.IsAura)
+                    view.Renderer.transform.localScale = Vector3.one * (view.Visual.SpriteScale * bullet.AuraPower);
             }
 
             CaptureSegments(snapshot);

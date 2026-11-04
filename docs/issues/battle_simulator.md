@@ -323,3 +323,11 @@ Do this after PR #599 merges.
 **Failure.** If the player position becomes `NaN` or infinite, for example after a physics blow-up, `dx` and `dy` are `NaN`. The in-range check is false, so `Body.Move` puts every root unit at `NaN`. The code before #598 moved nothing in this case. A `NaN` player already breaks the camera, so the change only spreads the damage.
 
 **Fix.** Return early from `CheckBounds` when `center.x` or `center.y` is not finite.
+
+### D22. The AI cannot use an aura weapon — Low, Confirmed
+
+**Where.** [WeaponWrapper.cs:93](../../Assets/Modules/BattleSimulator/Scripts/Combat/AI/BehaviorTree/Capabilities/WeaponWrapper.cs#L93) gives an `AreaOfEffect` bullet the `WhenInRange` strategy. [WeaponWrapperExtensions.cs:118](../../Assets/Modules/BattleSimulator/Scripts/Combat/AI/BehaviorTree/Capabilities/WeaponWrapperExtensions.cs#L118) `IsInAttackRange` compares the centre distance − 0.5 × own scale + 0.5 × target scale with `WeaponInfo.Range`. For an area bullet that is `BulletStats.BulletHitRange` = `Range`, without the body size. The core copies both rules (`Aiming.ActivationOf`, `Aiming.IsInAttackRange`).
+
+**Failure.** `Pulsar_M_1` and `Pulsar_M_2` (`AuraEmitter`, `AiBulletBehavior` area of effect) have no range, so their range is 0. The AI presses the key only when the target's centre is within half the scale difference of its own centre: almost never, and never against a larger target. The aura reaches radius 5 or 7 around the barrel, so a target well inside it never triggers the weapon. The target scale also counts against the range, where it should help.
+
+**Fix.** Give an aura weapon a range of its full radius (2 × `BodySize` × 0.5 collider), or the body size for every area bullet without range. Subtract the target scale instead of adding it. Both change AI behaviour in legacy and in the core, so they need owner approval.

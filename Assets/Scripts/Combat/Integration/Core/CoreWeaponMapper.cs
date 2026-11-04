@@ -20,7 +20,8 @@ namespace Combat.Integration.Core
     // Phase 5, step 4a: MultiShot and MashineGun weapons, the Rocket controller. Step 4b: Manageable weapons, the
     // StickyMine controller. Step 4d: shot beams (a beam controller on a Common weapon), beam spread and tracking.
     // Step 4e: beam bolts (a beam shape with the Projectile controller). Step 4f: RequiredCharging weapons, as a
-    // charging cannon or a charged beam; the cooldown of the fire rate is the time of a full charge.
+    // charging cannon or a charged beam; the cooldown of the fire rate is the time of a full charge. Step 4g: the
+    // AuraEmitter controller, and a Continuous weapon with it as a continuous cannon.
     public static class CoreWeaponMapper
     {
         // A child bullet the mapper made: the ship mapper records its view source.
@@ -93,6 +94,15 @@ namespace Combat.Integration.Core
                         return null;
                     chargeContext.Commit();
                     return CannonDefinition.Charged(barrelIndex, cooldown, energyCost, spread, charged);
+                // Legacy ContinuousCannon with a bullet that is not a beam: AuraEmitter is no continuous controller, so
+                // the shot costs EnergyCost (BulletStats.ActivationCost), and holding it EnergyCost per second.
+                case WeaponClass.Continuous when ammunition.Controller is BulletController_AuraEmitter:
+                    var auraContext = new Context(armorMultiplier, children);
+                    var aura = MapBullet(ammunition, modifier, effects, 0, auraContext, out inertReason);
+                    if (aura == null)
+                        return null;
+                    auraContext.Commit();
+                    return new CannonDefinition(barrelIndex, cooldown, energyCost, spread, aura, CannonMode.Continuous);
                 case WeaponClass.Continuous:
                     if (ammunition.Controller.Type != BulletControllerType.Beam)
                         return Inert($"continuous weapon with controller {ammunition.Controller.Type}", out inertReason);
@@ -167,6 +177,7 @@ namespace Combat.Integration.Core
             var magnetic = false;
             var rocket = false;
             var stickyLifetime = 0f;
+            var aura = false;
             var startingVelocity = 1f;
             switch (ammunition.Controller)
             {
@@ -191,6 +202,12 @@ namespace Combat.Integration.Core
                     if (!(controller.Lifetime > 0f))
                         return InertBullet("sticky bullet without lifetime", out inertReason);
                     stickyLifetime = controller.Lifetime;
+                    break;
+                // Legacy AuraController grows over Body.Lifetime; without one it divides by zero.
+                case BulletController_AuraEmitter _:
+                    if (!(body.Lifetime > 0f))
+                        return InertBullet("aura without lifetime", out inertReason);
+                    aura = true;
                     break;
                 default:
                     return InertBullet($"cannon with controller {ammunition.Controller.Type}", out inertReason);
@@ -234,10 +251,11 @@ namespace Combat.Integration.Core
                 return InertBullet("homing bullet attached to the parent", out inertReason);
 
             // Legacy BulletStats.BodySize: an area with effects also scales by AoeRadiusMultiplier. A positive
-            // Body.Lifetime replaces range / speed (GetBulletLifetime).
+            // Body.Lifetime replaces range / speed (GetBulletLifetime). Legacy AuraController grows the body to
+            // 2 x BodySize, its full size.
             var aoe = nested ? modifier.AoeRadiusMultiplier.Value : 1f;
             var isAoe = ammunition.ImpactType != BulletImpactType.HitFirstTarget && ammunition.Effects.Count > 0;
-            var scale = body.Size * (isAoe ? modifier.AoeRadiusMultiplier.Value : 1f);
+            var scale = body.Size * (isAoe ? modifier.AoeRadiusMultiplier.Value : 1f) * (aura ? 2f : 1f);
             var radius = colliderRadius * scale;
             var speed = body.Velocity * modifier.VelocityMultiplier.Value * aoe;
             var range = body.Range * modifier.RangeMultiplier.Value * aoe;
@@ -298,7 +316,8 @@ namespace Combat.Integration.Core
                 magnetic: magnetic,
                 hasDirection: shape.HasDirection(),
                 beamLength: beamLength,
-                piercing: shape == BulletShape.PiercingLaser);
+                piercing: shape == BulletShape.PiercingLaser,
+                aura: aura);
 
             inertReason = null;
             return bullet;
