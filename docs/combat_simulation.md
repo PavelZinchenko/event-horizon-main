@@ -873,6 +873,26 @@ Phase 5, step 6a. `ImpactEffects.IgnoreShield` skips shield absorption for that 
 4. **Checks.** `ShieldBypassTests` covers growth, release, mixed hits, resistance, energy absorption, charge, missile damage and network replay.
    Physics tests cover rotation, wrapping and query bounds. Tail, progressive-ramp and codec tests also cover bypass.
 
+### Growing waves
+
+Phase 5, step 6b. `WaveDefinition` describes the legacy arc from `BulletPrefab.Margins` and `Deformation`.
+
+1. **Geometry.** Eight points sample `(cos a − 1, sin a)` for angles between `−A` and `A`.
+   `A = π/2 × (1 − Margins)`. The wings trail behind the bullet origin.
+   The polygon has a short leading chord; the approved approximation differs by less than 0.14 units for built-in waves.
+   `PhysicsWorld.SetBulletPolygonScale` scales a private copy about the origin and refreshes its collision and query bounds.
+   It preserves shared geometry and normals, and allocates nothing after the first scale call.
+2. **Timing.** Stage 5 scales the arc by `BodySize × (1 + Deformation × clamp01(elapsed / lifetime))`.
+   The spawn tick has zero elapsed time. `FlightLifetime` stores exact seconds, including charge and random variation.
+   Confirmation and identity adoption update this lifetime. Late records use their original spawn tick.
+3. **Contacts.** The existing `AllTargets` path hits each target once per contact entry.
+   Growth can reach additional targets. Separation permits another hit on re-entry.
+4. **View and network.** Snapshot `WaveScale` drives a local arc line at the projectile pose.
+   Ship shots and children derive the same growth on each owner; the wire format stays unchanged.
+   `EnergyWave` and `EnergyWaveL` map. Satellite `IronBall` still waits for satellite and turret support.
+5. **Checks.** `WaveTests` covers dimensions, two targets, re-entry, charge, and late ship and child records.
+   Physics tests cover scaled query bounds, rotation, torus wrapping, shared templates and reused bullet slots.
+
 ### Weapon classes and rockets
 
 Phase 5, steps 4a, 4b, 4f and 4g. `CannonDefinition.Mode` copies the legacy weapon classes that fire projectiles from a held key; `Magazine` is the bullet count (multi-shot) or the burst length (machine gun). Examples: phase 5 plan, "Weapon classes and controllers (4)".

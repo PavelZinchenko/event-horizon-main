@@ -63,6 +63,8 @@ namespace Combat.Integration.Core
 
             var sprite = _resourceLocator.GetSprite(prefab.Image);
             var color = prefab.MainColorMode.Apply(prefab.MainColor.ToUnity(), parent);
+            if (!isBeam && bullet.Wave != null)
+                return BulletVisual.ForArc(sprite, prefab.Size * size, color, flash);
             // Legacy BeamInitializer: thickness Size x BodySize. Only LaserView (laser and piercing laser) has a border,
             // Margins x BodySize; LightningView (energy beam, lightning) stretches the whole image.
             if (isBeam)

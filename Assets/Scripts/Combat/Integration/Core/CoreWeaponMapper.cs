@@ -260,6 +260,14 @@ namespace Combat.Integration.Core
             // carries only the pose.
             var shape = body.BulletPrefab != null ? body.BulletPrefab.Shape : BulletShape.Mine;
             var beamBolt = IsBeamShape(shape);
+            WaveDefinition wave = null;
+            if (shape == BulletShape.Wave)
+            {
+                var prefab = body.BulletPrefab;
+                if (aura || prefab.Margins >= 1f || prefab.Deformation <= -1f)
+                    return InertBullet("wave with degenerate shape or aura", out inertReason);
+                wave = new WaveDefinition(prefab.Margins, prefab.Deformation);
+            }
             float colliderRadius;
             if (beamBolt)
             {
@@ -349,7 +357,7 @@ namespace Combat.Integration.Core
                 piercing: shape == BulletShape.PiercingLaser,
                 aura: aura,
                 effects: effects.ToCore(modifier), friendlyFire: body.FriendlyFire,
-                circleCenter: shape == BulletShape.CircularSaw ? new Vec2(0.4f * scale, 0f) : Vec2.Zero);
+                circleCenter: shape == BulletShape.CircularSaw ? new Vec2(0.4f * scale, 0f) : Vec2.Zero, wave: wave);
 
             inertReason = null;
             return bullet;
@@ -847,6 +855,9 @@ namespace Combat.Integration.Core
         {
             switch (shape)
             {
+                case BulletShape.Wave:
+                    radius = 1f; // Actual contacts use WaveDefinition.Shape, scaled by body size and age.
+                    return true;
                 case BulletShape.Projectile:
                 case BulletShape.Rocket:
                 case BulletShape.Spark:

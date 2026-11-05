@@ -7,6 +7,7 @@ namespace CombatView
         Sprite,
         Rocket,
         Line,
+        Arc,
     }
 
     // The flash at each hit of a bullet: diameter in world units, duration in seconds.
@@ -55,6 +56,9 @@ namespace CombatView
         // end, and its middle third stretches between them (legacy LaserView).
         public static BulletVisual ForLine(Sprite sprite, float lineWidth, float lineBorder, Color color, HitFlash flash) =>
             new BulletVisual(BulletViewKind.Line, sprite, 0f, lineWidth, lineBorder, color, default, 0f, 0f, flash);
+
+        public static BulletVisual ForArc(Sprite sprite, float lineWidth, Color color, HitFlash flash) =>
+            new BulletVisual(BulletViewKind.Arc, sprite, 0f, lineWidth, 0f, color, default, 0f, 0f, flash);
 
         public BulletViewKind Kind { get; }
 

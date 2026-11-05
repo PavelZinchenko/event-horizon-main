@@ -167,6 +167,16 @@ namespace CombatView
                         bullet.Definition.CircleCenter * bullet.AuraPower));
                 view.Push(position, bullet.Angle);
 
+                if (view.Visual.Kind == BulletViewKind.Arc)
+                {
+                    var wave = bullet.Definition.Wave;
+                    for (var i = 0; i < view.Line.positionCount; ++i)
+                    {
+                        var point = wave.ArcPoint((float)i / (view.Line.positionCount - 1)) * bullet.WaveScale;
+                        view.Line.SetPosition(i, new Vector3(point.X, point.Y, 0f));
+                    }
+                }
+
                 // An aura grows and shrinks with its power (phase 5, step 4g); the sprite takes the latest tick's size.
                 if (view.Renderer && !bullet.IsBeam && bullet.Definition.IsAura)
                     view.Renderer.transform.localScale = Vector3.one * (view.Visual.SpriteScale * bullet.AuraPower);
@@ -298,7 +308,7 @@ namespace CombatView
                 view.Trail.Clear();
             view.WasPlaced = true;
 
-            if (view.Line)
+            if (view.Line && view.Visual.Kind == BulletViewKind.Line)
                 PlaceLine(view, Placement.NearestImage(_torus, view.Position, view.End.SamplePosition(alpha, _torus)));
         }
 
@@ -343,9 +353,10 @@ namespace CombatView
                     sprite = CreateRenderer("Sprite", root.transform, _genericSprite, BulletSortingOrder);
                     break;
                 case BulletViewKind.Line:
+                case BulletViewKind.Arc:
                     line = root.AddComponent<LineRenderer>();
-                    line.useWorldSpace = true;
-                    line.positionCount = 4;
+                    line.useWorldSpace = kind == BulletViewKind.Line;
+                    line.positionCount = kind == BulletViewKind.Line ? 4 : 17;
                     line.sortingOrder = BulletSortingOrder;
                     line.numCapVertices = 0;
                     break;
@@ -382,6 +393,7 @@ namespace CombatView
 
             if (view.Line)
             {
+                view.Line.enabled = true;
                 view.Line.sharedMaterial = LineMaterial(visual.Sprite);
                 view.Line.startWidth = view.Line.endWidth = visual.LineWidth;
                 view.Line.textureMode = visual.LineBorder > 0f ? LineTextureMode.DistributePerSegment : LineTextureMode.Stretch;
@@ -715,7 +727,7 @@ namespace CombatView
         private readonly Dictionary<WormTailDefinition, Sprite> _segmentLooks = new Dictionary<WormTailDefinition, Sprite>();
         private readonly List<EntityId> _removedSegments = new List<EntityId>();
         private int _segmentStamp;
-        private readonly Stack<BulletView>[] _bulletPools = { new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>() };
+        private readonly Stack<BulletView>[] _bulletPools = { new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>() };
         private readonly List<Fade> _fades = new List<Fade>();
         private readonly List<Flash> _flashes = new List<Flash>();
         private readonly Stack<SpriteRenderer> _flashPool = new Stack<SpriteRenderer>();
