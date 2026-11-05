@@ -178,7 +178,7 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
 2. Input uses its own bit-packed section (`InputCodec`, version 1), not this header: version (8 bits), battle ID low 32 bits, base tick,
    then records until zero padding. A record holds control index, base tick − original tick, course (9 bits; 511: none), throttle (7 bits)
    and systems. Index, tick offset and systems are `VarUInt`. The sender is the owner of every record.
-   **Tick batch (reliable, G2, `SessionCodec` version 12).** One reliable message per tick holds the tick's operations in sequence
+   **Tick batch (reliable, G2, `SessionCodec` version 13).** One reliable message per tick holds the tick's operations in sequence
    order, then its hits. Header: version (8 bits), tick and last operation sequence (`VarUInt`). No battle ID: the connection is
    bound to one battle. Then records until zero padding: kind (4 bits from version 8, from 1), record tick − batch tick (zigzag `VarUInt`; a beam
    end record is one tick ahead), then the record fields. The sender is the owner of every record.
@@ -205,6 +205,7 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
      damage, repair or recharge. Repair and recharge name a ship target, with damage type 0 and no impulse.
      Version 12 adds shield bypass: `DamageIgnoringShield` keeps the damage type and optional projectile push.
      `ProgressiveDamageIgnoringShield` keeps the ramp time. Both name ship targets; bullets and segments use ordinary damage.
+     Version 13 adds `Teleport`: distance on entry for a ship, destruction for a tail segment. It has no damage type or impulse.
    - Retreat: ship control index. Roster changes and drone launches are rare and keep full-width IDs, records and poses.
    - Missile target (kind 7, 9d P3): missile bullet age, a segment flag (1 bit; version 11, phase 5 step 5a), then the target
      control index + 1 in the receiver's stream (`VarUInt`; 0: no target), or with the flag a sticky bullet's tail segment as
@@ -892,6 +893,28 @@ Phase 5, step 6b. `WaveDefinition` describes the legacy arc from `BulletPrefab.M
    `EnergyWave` and `EnergyWaveL` map. Satellite `IronBall` still waits for satellite and turret support.
 5. **Checks.** `WaveTests` covers dimensions, two targets, re-entry, charge, and late ship and child records.
    Physics tests cover scaled query bounds, rotation, torus wrapping, shared templates and reused bullet slots.
+
+### Teleport impacts
+
+Phase 5, step 6c. `ImpactEffects.Teleport` carries the raw distance; weapon modifiers and charge do not scale it.
+`QuantumRiftTorpedo` maps its carrier and the `QuantumRift` child: 50 impact damage and a 100-unit teleport.
+
+1. **Targets.** Ships and drones move along their current heading, with torus wrapping. Their linear velocity clears; spin stays.
+   `ShipDefinition.TeleportImmune` excludes the database's `Starbase` and `Special` types. They still take damage, as do missiles.
+2. **Contact.** Teleport runs once on entry, including over-time contacts; separation allows another teleport.
+   The landing is exact, without a free-space search. `PhysicsWorld.TeleportGroup` moves all attached hinge bodies with their offsets intact.
+   Tail segments retain their velocities. Bullets attached to a moved body follow it through the physics attachment path.
+3. **Tail hits.** A direct hit destroys the contacted segment and detaches those behind it, which expire after five seconds.
+   This includes fixed segments, following approved 6c row 5; legacy `FixedWormSegment.Affect` ignores the destruction flag.
+   Losing the head now reaches the legacy rebuild path: wait `1.5 × Cooldown`, then grow subsequent segments every 0.5 seconds.
+4. **Network.** `HitEffect.Teleport` carries distance in a discrete hit record. Only the target owner moves the ship; copies follow corrections.
+   Predicting the jump would let an older correction return the target to the rift and cause another entry hit.
+   Teleport never enters resource correction replay. Segment contacts carry the same effect with `TargetIsBullet`; the owner destroys the segment.
+   Either device can report a segment contact; the existing contact ledger prevents duplicate application.
+   `SessionCodec` version 13 retains four effect bits and rejects earlier versions. No new correction fields are needed.
+5. **Checks.** `TeleportTests` covers the six target cases, heading, wrapping, spin, contact re-entry, charge, head rebuild, and remote delivery.
+   `SessionCodecTests` covers ship and segment records and rejects teleport intervals or typed damage records.
+   Visual flashes remain outside this phase's scope.
 
 ### Weapon classes and rockets
 

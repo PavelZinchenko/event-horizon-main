@@ -637,7 +637,7 @@ namespace Combat.Integration.Core
 
             // Legacy BulletFactory: DrainEnergy x EffectPowerMultiplier, DrainShield x DamageMultiplier; the siphon damage
             // is a damage effect; ProgressiveDamage x DamageMultiplier, its Factor is the ramp time; RestoreLifetime raw,
-            // its Factor is the lifetime loss.
+            // its Factor is the lifetime loss. Teleport reads raw power, without modifiers.
             public ImpactEffects ToCore(WeaponStatModifier modifier) => new ImpactEffects(
                 EnergyDrain * modifier.EffectPowerMultiplier.Value, ShieldDrain * modifier.DamageMultiplier.Value, Siphon,
                 SlowDown * modifier.EffectPowerMultiplier.Value, Roll * modifier.EffectPowerMultiplier.Value,
@@ -647,7 +647,7 @@ namespace Combat.Integration.Core
                 _support.EnergyRecharge * modifier.EffectPowerMultiplier.Value * modifier.EnergyCostMultiplier.Value,
                 _support.ShieldRecharge * modifier.DamageMultiplier.Value,
                 _support.EnemyEnergyDrain * modifier.EffectPowerMultiplier.Value * modifier.EnergyCostMultiplier.Value,
-                _support.EnemyShieldDrain * modifier.DamageMultiplier.Value, _support.IgnoreShield);
+                _support.EnemyShieldDrain * modifier.DamageMultiplier.Value, _support.IgnoreShield, _support.Teleport);
 
             public bool HasFalloff
             {
@@ -694,10 +694,14 @@ namespace Combat.Integration.Core
             var enemyEnergyDrain = 0f;
             var enemyShieldDrain = 0f;
             var ignoreShield = false;
+            var teleport = 0f;
             foreach (var effect in ammunition.Effects)
             {
                 switch (effect.Type)
                 {
+                    case ImpactEffectType.Teleport:
+                        teleport += effect.Power;
+                        break;
                     case ImpactEffectType.IgnoreShield:
                         ignoreShield = true;
                         break;
@@ -797,7 +801,7 @@ namespace Combat.Integration.Core
                 return false;
             }
             if (damage.Count == 0 && energyDrain == 0f && shieldDrain == 0f && slowDown == 0f && roll == 0f && ramp == 0f &&
-                restore == 0f && repair == 0f && energyRecharge == 0f && shieldRecharge == 0f && !hasGameplayTriggers)
+                restore == 0f && repair == 0f && energyRecharge == 0f && shieldRecharge == 0f && teleport == 0f && !hasGameplayTriggers)
             {
                 inertReason = "no damage effect";
                 return false;
@@ -807,7 +811,8 @@ namespace Combat.Integration.Core
                 ramp, rampTime, rampType, restore, lifetimeLoss,
                 new ImpactEffects(repair: repair, repairDamage: repairDamage, repairDamageType: repairType,
                     energyRecharge: energyRecharge, shieldRecharge: shieldRecharge,
-                    enemyEnergyDrain: enemyEnergyDrain, enemyShieldDrain: enemyShieldDrain, ignoreShield: ignoreShield));
+                    enemyEnergyDrain: enemyEnergyDrain, enemyShieldDrain: enemyShieldDrain, ignoreShield: ignoreShield,
+                    teleport: teleport));
             inertReason = null;
             return true;
         }

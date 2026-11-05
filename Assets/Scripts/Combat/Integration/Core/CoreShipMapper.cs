@@ -171,7 +171,8 @@ namespace Combat.Integration.Core
                     NonNegative(stats.EnergyAbsorptionPercentage),
                     Positive(stats.ArmorMultiplier.Value)),
                 // Legacy Body.WorldScale: the target size in the area falloff (phase 5, step 3).
-                scale: NonNegative(modelScale));
+                scale: NonNegative(modelScale),
+                teleportImmune: stats.ShipModel.ShipType == ShipType.Starbase || stats.ShipModel.ShipType == ShipType.Special);
 
             // AI side table (phase 4, steps 6 and 7b): the legacy RequirementChecker facts and the target facts, without
             // inert devices (D6). Legacy Ship gives a drone Low priority; the jammer, stealth and camouflage devices
