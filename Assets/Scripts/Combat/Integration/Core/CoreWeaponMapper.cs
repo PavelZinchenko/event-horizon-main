@@ -348,7 +348,8 @@ namespace Combat.Integration.Core
                 beamLength: beamLength,
                 piercing: shape == BulletShape.PiercingLaser,
                 aura: aura,
-                effects: effects.ToCore(modifier), friendlyFire: body.FriendlyFire);
+                effects: effects.ToCore(modifier), friendlyFire: body.FriendlyFire,
+                circleCenter: shape == BulletShape.CircularSaw ? new Vec2(0.4f * scale, 0f) : Vec2.Zero);
 
             inertReason = null;
             return bullet;
@@ -638,7 +639,7 @@ namespace Combat.Integration.Core
                 _support.EnergyRecharge * modifier.EffectPowerMultiplier.Value * modifier.EnergyCostMultiplier.Value,
                 _support.ShieldRecharge * modifier.DamageMultiplier.Value,
                 _support.EnemyEnergyDrain * modifier.EffectPowerMultiplier.Value * modifier.EnergyCostMultiplier.Value,
-                _support.EnemyShieldDrain * modifier.DamageMultiplier.Value);
+                _support.EnemyShieldDrain * modifier.DamageMultiplier.Value, _support.IgnoreShield);
 
             public bool HasFalloff
             {
@@ -684,10 +685,14 @@ namespace Combat.Integration.Core
             var shieldRecharge = 0f;
             var enemyEnergyDrain = 0f;
             var enemyShieldDrain = 0f;
+            var ignoreShield = false;
             foreach (var effect in ammunition.Effects)
             {
                 switch (effect.Type)
                 {
+                    case ImpactEffectType.IgnoreShield:
+                        ignoreShield = true;
+                        break;
                     case ImpactEffectType.Repair:
                         if (repair > 0f && repairType != (int)effect.DamageType)
                         {
@@ -794,7 +799,7 @@ namespace Combat.Integration.Core
                 ramp, rampTime, rampType, restore, lifetimeLoss,
                 new ImpactEffects(repair: repair, repairDamage: repairDamage, repairDamageType: repairType,
                     energyRecharge: energyRecharge, shieldRecharge: shieldRecharge,
-                    enemyEnergyDrain: enemyEnergyDrain, enemyShieldDrain: enemyShieldDrain));
+                    enemyEnergyDrain: enemyEnergyDrain, enemyShieldDrain: enemyShieldDrain, ignoreShield: ignoreShield));
             inertReason = null;
             return true;
         }
@@ -848,6 +853,7 @@ namespace Combat.Integration.Core
                     radius = 0.25f;
                     return true;
                 case BulletShape.Mine:
+                case BulletShape.CircularSaw:
                     radius = 0.5f;
                     return true;
                 default:

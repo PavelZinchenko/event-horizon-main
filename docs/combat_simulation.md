@@ -178,7 +178,7 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
 2. Input uses its own bit-packed section (`InputCodec`, version 1), not this header: version (8 bits), battle ID low 32 bits, base tick,
    then records until zero padding. A record holds control index, base tick − original tick, course (9 bits; 511: none), throttle (7 bits)
    and systems. Index, tick offset and systems are `VarUInt`. The sender is the owner of every record.
-   **Tick batch (reliable, G2, `SessionCodec` version 11).** One reliable message per tick holds the tick's operations in sequence
+   **Tick batch (reliable, G2, `SessionCodec` version 12).** One reliable message per tick holds the tick's operations in sequence
    order, then its hits. Header: version (8 bits), tick and last operation sequence (`VarUInt`). No battle ID: the connection is
    bound to one battle. Then records until zero padding: kind (4 bits from version 8, from 1), record tick − batch tick (zigzag `VarUInt`; a beam
    end record is one tick ahead), then the record fields. The sender is the owner of every record.
@@ -203,6 +203,8 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
      projectile's start record on a ship carries one; the target's core rejects it elsewhere and applies it on arrival.
      Then the effect (4 bits, `HitEffect`; version 11, widened in phase 5 step 5e): damage, drain, motion, progressive
      damage, repair or recharge. Repair and recharge name a ship target, with damage type 0 and no impulse.
+     Version 12 adds shield bypass: `DamageIgnoringShield` keeps the damage type and optional projectile push.
+     `ProgressiveDamageIgnoringShield` keeps the ramp time. Both name ship targets; bullets and segments use ordinary damage.
    - Retreat: ship control index. Roster changes and drone launches are rare and keep full-width IDs, records and poses.
    - Missile target (kind 7, 9d P3): missile bullet age, a segment flag (1 bit; version 11, phase 5 step 5a), then the target
      control index + 1 in the receiver's stream (`VarUInt`; 0: no target), or with the flag a sticky bullet's tail segment as
@@ -845,13 +847,31 @@ Phase 5, step 5e. Examples: `TODO/battle_simulator_phase5.md`, "Friendly fire an
    therefore needs records: `Repair`, `EnergyRecharge` and `ShieldRecharge`, each with its own over-time interval.
    The target owner applies them; the firing owner's copy predicts them and replays unacknowledged gains after
    corrections. The interval key includes damage type, so ordinary damage and repair's hostile damage remain separate.
-   `SessionCodec` version 11 uses four effect bits instead of three. No version 11 batch has shipped from this branch.
+   Step 5e widened the effect field to four bits in version 11, before any version 11 batch had shipped at that check.
 5. **AI.** `FindDamagedAlly` selects the nearest allied roster ship at or below 99% armor, excluding itself and drones.
    This follows the approved example; legacy searched below 75% and retained targets up to 99%. The range is the
    attack range plus `max(5, LimitedRange)`, centered on the live mothership or the searching ship. Defensive drones
    use one quarter of `LimitedRange` before the minimum. The search skips the mothership, as legacy does; another
    node can select it. The existing search/change cooldowns remain. `MainTargetIsAlly` requires a live allied target;
    `MainTargetLowHp` compares its armor fraction strictly below `MinValue`.
+
+### Shield bypass and CircularSaw
+
+Phase 5, step 6a. `ImpactEffects.IgnoreShield` skips shield absorption for that impact's damage only.
+
+1. **Damage.** Each ship accumulates bypass damage separately by damage type. Stage 10 applies ordinary damage to the shield first.
+   Bypass damage then joins the remainder before armor resistance, energy absorption, repair and energy drain.
+   An ordinary bolt and a saw in one tick therefore keep separate shield behavior. Missile and tail damage stay unchanged.
+2. **Shape.** `BulletDefinition.CircleCenter` gives the collision circle's local center at full size.
+   The mapper gives CircularSaw radius `0.5 × size` and center `(0.4 × size, 0)`.
+   An aura scales both through `PhysicsWorld.SetBulletCircle`, including collision bounds and queries.
+   A charged copy scales both too. The sprite uses the same center and aura growth.
+3. **Network.** `DamageIgnoringShield` preserves each damage type and any projectile push.
+   `ProgressiveDamageIgnoringShield` preserves bypass when a beam also has a progressive ramp.
+   Both receiver damage and correction replay keep bypass separate from ordinary damage.
+   `SessionCodec` version 12 retains four effect bits; version 11 batches are rejected.
+4. **Checks.** `ShieldBypassTests` covers growth, release, mixed hits, resistance, energy absorption, charge, missile damage and network replay.
+   Physics tests cover rotation, wrapping and query bounds. Tail, progressive-ramp and codec tests also cover bypass.
 
 ### Weapon classes and rockets
 
@@ -872,7 +892,7 @@ Phase 5, steps 4a, 4b, 4f and 4g. `CannonDefinition.Mode` copies the legacy weap
 13. **Charge network.** The owner's spawn record carries the shot's charge ticks (`OwnerOperation.ChargeTicks`). The receiver builds the bullet or beam of that charge; a copy that its own control frames fired takes the owner's definition and expiry (`TakeCharge`), but its body keeps the radius of its predicted charge. A confirmed shot ends the copy's own charge that started at or before the shot (`WeaponCharge.EndAt`), so a missed release frame fires no second shot. The copy window of a charging weapon is the barrel cooldown plus 6 ticks, minus 1. Corrections carry no charge.
 14. **Charging mapper and AI.** `RequiredCharging` with a beam controller maps to a charged beam (the shot-beam limits of [Beams](#beams), item 12), any other controller to a charging cannon; the fire-rate cooldown is the charge time. A fire rate of 0 or below is inert (`charging weapon without fire rate`). AI: `IsReadyToFire` needs c = 1; `Activate` releases the key; `SustainAim` tracks a charging weapon while its `ActiveBullet` lives; `ChargeWeaponsNode` (legacy `ChargeWeaponsNode`) holds the key of each charging weapon whose remaining cost `EnergyCost × (1 − c)` the free energy covers, or while the energy is at least 99%, and reserves that cost; Running while one charges, Success when all held ones are charged. `ChargeTests` covers the plan's rows 1-9 and 11, the definitions and three network cases.
 15. **Continuous cannon** (step 4g, legacy `ContinuousCannon` with a bullet that is not a beam; mode `Continuous`). The device holds one bullet, as a manageable cannon does. A shot needs the key, the weapon cooldown and a ready barrel, and costs `EnergyCost` (legacy `ActivationCost`: `AuraEmitter` is no continuous controller, so no × lifetime). While the bullet lives, each tick with the key and the cooldown over pays `EnergyCost × 0.02` and renews its lifetime from that tick (`Auras.Renew`, legacy `Lifetime.Restore`); any other tick, also one without the energy, restarts the cooldown (legacy `TimeFromLastUse = 0`). The update that finds the bullet gone may fire the next one. `Ready` needs the cooldown, and the barrel only without a bullet; no energy check. A retreat counts as a released key; a warp does not block it.
-16. **Aura** (step 4g, legacy `AuraController`, `BulletDefinition.IsAura`). `Radius` is the full radius. At the end of stage 5 the aura grows one tick, to at most `AuraGrowthTicks` (the body lifetime in ticks), and never above the ticks of lifetime left before this tick's step: g = min(g + 1, G, G − (tick − renewal tick)). Physics takes the radius R × g / G (`PhysicsWorld.SetBulletRadius`). At g = 0, the last tick of its lifetime, it takes no contacts. So a held aura grows in G ticks and stays; a released one shrinks to 0 over its lifetime; one released during growth grows until it meets the falling share. The snapshot shows g / G (`BulletState.AuraPower`); the scene scales the area sprite by it. The mapper maps `AuraEmitter` on any weapon (inert: `aura without lifetime`) at legacy full size 2 × `BodySize`, and a `Continuous` weapon with it to a continuous cannon.
+16. **Aura** (step 4g, legacy `AuraController`, `BulletDefinition.IsAura`). `Radius` is the full radius. At the end of stage 5 the aura grows one tick, to at most `AuraGrowthTicks` (the body lifetime in ticks), and never above the ticks of lifetime left before this tick's step: g = min(g + 1, G, G − (tick − renewal tick)). Physics takes the radius R × g / G (`PhysicsWorld.SetBulletCircle`; the local center scales with the radius). At g = 0, the last tick of its lifetime, it takes no contacts. So a held aura grows in G ticks and stays; a released one shrinks to 0 over its lifetime; one released during growth grows until it meets the falling share. The snapshot shows g / G (`BulletState.AuraPower`); the scene scales the area sprite by it. The mapper maps `AuraEmitter` on any weapon (inert: `aura without lifetime`) at legacy full size 2 × `BodySize`, and a `Continuous` weapon with it to a continuous cannon.
 17. **Aura network.** Only the owner expires an aura: its weapon's renewals follow the owner's keys. A copy grows and shrinks its aura by the control frames it has and leaves it with the owner's removal record (`BulletStore.MarkDeaths`); a late record adds the aura whatever its spawn tick. A copy adopts its device's held aura at any spawn tick, as a continuous beam; a record of another aura removes the held one, a prediction. No codec change. `AuraTests` covers the plan's rows 1-4, a renewal while the aura shrinks, damage while it grows and shrinks, and the network rule.
 
 ### Beams

@@ -160,7 +160,12 @@ namespace CombatView
 
                 if (bullet.HasRay)
                     view.PushEnd(bullet.BeamEndPoint);
-                view.Push(bullet.Position, bullet.Angle);
+                // The saw's sprite shares its collider's forward offset, scaled with the aura (phase 5, step 6a).
+                var position = bullet.Position;
+                if (!bullet.HasRay)
+                    position = _torus.Wrap(position + Rot.FromAngle(bullet.Angle).Rotate(
+                        bullet.Definition.CircleCenter * bullet.AuraPower));
+                view.Push(position, bullet.Angle);
 
                 // An aura grows and shrinks with its power (phase 5, step 4g); the sprite takes the latest tick's size.
                 if (view.Renderer && !bullet.IsBeam && bullet.Definition.IsAura)
