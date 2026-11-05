@@ -55,15 +55,21 @@ namespace Combat.Integration.Core
             switch (stats.WeaponClass)
             {
                 case WeaponClass.Common when ammunition.Controller is BulletController_Beam:
-                    if (!TryCheckBeam(ammunition, hasGameplayTriggers, effects, range, out inertReason))
+                    if (!TryCheckBeam(ammunition, hasGameplayTriggers, effects, range, out inertReason, shot: true))
                         return null;
                     // Legacy BulletStats.GetBulletLifetime: a beam controller has no speed.
                     if (!(body.Lifetime > 0f))
                         return Inert("shot beam without lifetime", out inertReason);
+                    var beamContext = new Context(armorMultiplier, children);
+                    var beamTriggers = MapTriggers(ammunition, modifier, 0, beamContext, out inertReason);
+                    if (beamTriggers == null) return null;
+                    beamContext.Commit();
                     var shotDamage = effects.BeamDamage;
                     return BeamDefinition.Shot(barrelIndex, cooldown, energyCost, range,
                         shotDamage.Amount * modifier.DamageMultiplier.Value, body.Lifetime, shotDamage.DamageType,
-                        spread, TrackingAngle(ammunition), effects.ToCore(modifier), friendlyFire: body.FriendlyFire);
+                        spread, TrackingAngle(ammunition), effects.ToCore(modifier), friendlyFire: body.FriendlyFire,
+                        triggers: beamTriggers, impact: ammunition.ImpactType == BulletImpactType.HitAllTargets ?
+                            BulletImpact.AllTargets : BulletImpact.OverTime);
                 case WeaponClass.Common:
                 case WeaponClass.MultiShot:
                 case WeaponClass.MashineGun:
@@ -121,12 +127,11 @@ namespace Combat.Integration.Core
             }
         }
 
-        // The core beam is an attached ray with one damage effect over time (phase 4, step 3a). Phase 5, step 4d: a
-        // shot beam has the same limits.
+        // Step 5f adds Hit spawn triggers and one hit per target to Common shot beams.
         private static bool TryCheckBeam(Ammunition ammunition, bool hasGameplayTriggers, in Effects effects, float range,
-            out string inertReason)
+            out string inertReason, bool shot = false)
         {
-            if (hasGameplayTriggers)
+            if (hasGameplayTriggers && (!shot || !HasOnlyBeamHitSpawns(ammunition)))
                 inertReason = $"beam with trigger {FirstGameplayTrigger(ammunition)}";
             else if (effects.Damage.Count > 1)
                 inertReason = "beam with several damage effects";
@@ -139,7 +144,8 @@ namespace Combat.Integration.Core
                 inertReason = "beam with restore lifetime";
             else if (effects.HasFalloff)
                 inertReason = "beam with falloff";
-            else if (ammunition.ImpactType != BulletImpactType.DamageOverTime)
+            else if (ammunition.ImpactType != BulletImpactType.DamageOverTime &&
+                (!shot || ammunition.ImpactType != BulletImpactType.HitAllTargets))
                 inertReason = $"beam with impact {ammunition.ImpactType}";
             else if (!(range > 0f))
                 inertReason = "beam without range";
@@ -149,6 +155,14 @@ namespace Combat.Integration.Core
             else
                 inertReason = null;
             return inertReason == null;
+        }
+
+        private static bool HasOnlyBeamHitSpawns(Ammunition ammunition)
+        {
+            foreach (var trigger in ammunition.Triggers)
+                if (trigger is BulletTrigger_Detonate || trigger is BulletTrigger_SpawnBullet &&
+                    trigger.Condition != BulletTriggerCondition.Hit) return false;
+            return true;
         }
 
         // The database clamps it to [0, 180°].
@@ -419,13 +433,12 @@ namespace Combat.Integration.Core
                 !TryGetEffects(ammunition, hasGameplayTriggers, out var effects, out inertReason))
                 return null;
 
-            // Legacy ActionWithCooldown: a Hit trigger of a bullet that can take several hits waits out its cooldown.
-            if (trigger.Cooldown > 0f && condition == BulletTriggerConditions.Hit && parent.Body.HitPoints > 0f)
+            if (!(parent.Controller is BulletController_Beam) && trigger.Cooldown > 0f &&
+                condition == BulletTriggerConditions.Hit && parent.Body.HitPoints > 0f)
             {
                 inertReason = "SpawnBullet on Hit with cooldown";
                 return null;
             }
-
             var stats = modifier;
             var parentColor = modifier.Color ?? parent.Body.Color;
             stats.Color = trigger.ColorMode.Apply(trigger.Color.ToUnity(), parentColor.ToUnity()).ToData();
@@ -461,7 +474,8 @@ namespace Combat.Integration.Core
             }
 
             inertReason = null;
-            return BulletTriggerDefinition.Spawn(condition, bullet, pattern, trigger.RandomFactor);
+            return BulletTriggerDefinition.Spawn(condition, bullet, pattern, trigger.RandomFactor,
+                condition == BulletTriggerConditions.Hit && parent.Controller is BulletController_Beam ? trigger.Cooldown : 0f);
         }
 
         // Legacy SpawnBulletsAction: Quantity children (at least one); child i turns by Rotation(i) degrees and starts at
