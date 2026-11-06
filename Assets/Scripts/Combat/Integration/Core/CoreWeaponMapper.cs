@@ -363,7 +363,8 @@ namespace Combat.Integration.Core
                 piercing: shape == BulletShape.PiercingLaser,
                 aura: aura,
                 effects: effects.ToCore(modifier), friendlyFire: body.FriendlyFire,
-                circleCenter: shape == BulletShape.CircularSaw ? new Vec2(0.4f * scale, 0f) : Vec2.Zero, wave: wave, harpoon: harpoon);
+                circleCenter: shape == BulletShape.CircularSaw ? new Vec2(0.4f * scale, 0f) : Vec2.Zero, wave: wave, harpoon: harpoon,
+                addSizeToAimRange: body.AiBulletBehavior != AiBulletBehavior.Beam && body.AiBulletBehavior != AiBulletBehavior.AreaOfEffect);
 
             inertReason = null;
             return bullet;

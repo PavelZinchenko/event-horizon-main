@@ -69,6 +69,7 @@ namespace Combat.Integration.Core
             var stats = specification.Stats;
             var modelScale = stats.ShipModel.ModelScale;
             var barrels = new List<BarrelDefinition>();
+            var turrets = new List<CoreTurretSource>();
             var devices = new List<DeviceDefinition>();
             var infos = new List<CoreDeviceInfo>();
             var aiWeapons = new List<AiWeapon>();
@@ -88,6 +89,8 @@ namespace Combat.Integration.Core
                 {
                     barrelIndex = barrels.Count;
                     barrels.Add(ToBarrel(platform, modelScale));
+                    if (barrels[barrelIndex].IsTurret)
+                        turrets.Add(new CoreTurretSource(barrelIndex, platform.Image, platform.Size * modelScale, stats.TurretColor.Color));
                 }
 
                 foreach (var data in platform.Weapons)
@@ -172,7 +175,8 @@ namespace Combat.Integration.Core
                     Positive(stats.ArmorMultiplier.Value)),
                 // Legacy Body.WorldScale: the target size in the area falloff (phase 5, step 3).
                 scale: NonNegative(modelScale),
-                teleportImmune: stats.ShipModel.ShipType == ShipType.Starbase || stats.ShipModel.ShipType == ShipType.Special);
+                teleportImmune: stats.ShipModel.ShipType == ShipType.Starbase || stats.ShipModel.ShipType == ShipType.Special,
+                targetPriority: isDrone ? TargetPriority.Low : TargetPriority.Normal);
 
             // AI side table (phase 4, steps 6 and 7b): the legacy RequirementChecker facts and the target facts, without
             // inert devices (D6). Legacy Ship gives a drone Low priority; the jammer, stealth and camouflage devices
@@ -187,7 +191,6 @@ namespace Combat.Integration.Core
                 kineticResistance: stats.KineticResistancePercentage,
                 rammingDamageMultiplier: stats.RammingDamageMultiplier * attack,
                 modelScale: modelScale,
-                targetPriority: isDrone ? AiTargetPriority.Low : AiTargetPriority.Normal,
                 chanceToAvoidDrone: 0f);
 
             // Legacy DroneBay and ControllerFactory.CreateDroneController and CreateCloneController (T6).
@@ -198,7 +201,7 @@ namespace Combat.Integration.Core
                     : BehaviorTreeSelection.ForDrone(_database.CombatSettings, bay.DroneBay, bay.Drone.CustomAI, bay.Behaviour == DroneBehaviour.Defensive);
             var kind = isClone ? "clone" : isDrone ? "drone" : "ship";
             var mapping = new CoreShipMapping($"{kind} {specification.Info.Id.Value}", definition, infos,
-                stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot, tint, isClone);
+                stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot, tint, isClone, turrets);
             _mappings[definition] = mapping;
             return mapping;
         }
@@ -359,7 +362,9 @@ namespace Combat.Integration.Core
             var offset = (platform.Offset + platform.Size) * 0.5f;
             var x = (platform.Position.x * 0.5f + (float)System.Math.Cos(angle) * offset) * modelScale;
             var y = (platform.Position.y * 0.5f + (float)System.Math.Sin(angle) * offset) * modelScale;
-            return new BarrelDefinition(new Vec2(x, y), angle);
+            return new BarrelDefinition(new Vec2(x, y), angle, NonNegative(platform.AutoAimingArc) * DegreesToRadians,
+                NonNegative(platform.RotationSpeed) * DegreesToRadians,
+                (bool)platform.Image && (platform.Weapons.Any() || platform.WeaponsObsolete.Any()), offset * modelScale);
         }
 
         private static void Add(List<DeviceDefinition> devices, List<CoreDeviceInfo> infos, DeviceDefinition device, CoreDeviceInfo info)

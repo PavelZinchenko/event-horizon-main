@@ -23,7 +23,7 @@ Rules:
 2. The new core and the old `BattleSimulator` do not reference each other, in either direction.
 3. Phase 2 does not reference `Database` or `ShipConstructor`. Phase 4 adds the database path using contracts shared with Frontier.
 4. Unit tests go into `Physics/Tests/`, `Core/Tests/`, `Network/Tests/` or `Runtime/Tests/` with an Editor-only asmdef. `Tests~/EngineFree.Tests.csproj` compiles all four. Existing pilot tests remain in `Core/Tests/`.
-5. Core grants internal access only to Runtime and Core tests. Core does not reference Network or the application.
+5. Core grants internal access to Runtime and the Core, Runtime and AI test assemblies. Core does not reference Network or the application.
 6. Physics, Core and Runtime are `autoReferenced`, so the application adapter in Assembly-CSharp can use them. An asmdef cannot reference Assembly-CSharp, where the application contracts live.
 
 ## Network library
@@ -893,7 +893,7 @@ Phase 5, step 6b. `WaveDefinition` describes the legacy arc from `BulletPrefab.M
    Growth can reach additional targets. Separation permits another hit on re-entry.
 4. **View and network.** Snapshot `WaveScale` drives a local arc line at the projectile pose.
    Ship shots and children derive the same growth on each owner; the wire format stays unchanged.
-   `EnergyWave` and `EnergyWaveL` map. Satellite `IronBall` still waits for satellite and turret support.
+   `EnergyWave` and `EnergyWaveL` map. Satellite `IronBall` still waits for satellite support.
 5. **Checks.** `WaveTests` covers dimensions, two targets, re-entry, charge, and late ship and child records.
    Physics tests cover scaled query bounds, rotation, torus wrapping, shared templates and reused bullet slots.
 
@@ -966,6 +966,25 @@ The hook uses a circle with radius 0.5 × body size. `Harpoons` owns attachment 
    `BattleRenderer` draws the hook sprite and an interpolated rope to its firing ship, using the nearest arena image.
 7. **Checks.** `HarpoonTests` covers flight, seams, attachment, damage, drain, mass response, break, expiry, destruction, cleanup and remote records.
    `BulletTests` checks that the capped sweep cannot hit beyond range. `ActionNodeTests` checks holding and delayed release.
+
+### Hull auto-aiming barrels
+
+Phase 5, step 12a. `BarrelDefinition` holds the rest muzzle, mount angle, half-arc, turn speed and rotating muzzle offset.
+`BarrelAiming` owns target search, lead, turn limits and idle catch-up. Angles and speeds use radians.
+
+1. Each ship has separate state per barrel. All weapons on one barrel share its target and angle.
+2. Turrets search each tick. Other auto-aiming barrels search at creation, before shots and when the pilot requests a search.
+3. Search excludes allies and `TargetPriority.None`. It scores priority, distance and size, preferring reachable targets over fallbacks.
+   Fallbacks can be outside the arc or within twice the weapon's hit range. Retries wait 0.1 seconds; live targets stay for one second.
+4. Rotation uses target lead, the weapon's relative velocity effect and the barrel's speed and arc.
+   A non-turret mount can spend its accumulated idle time turning as it acquires a target. A lost target returns the barrel to its mount angle.
+5. Projectiles, beams and attached ammunition use the rotating muzzle. `BattleSnapshot.GetBarrels` exposes copied angles and target IDs.
+   `BattleRenderer` interpolates turret sprites relative to the interpolated hull.
+6. `PilotControls` carries an ally target with selected device bits, plus independent search-request bits.
+   `ControlFrame` consumes these requests once. Failed AI tree evaluations still submit them.
+   AI fire checks apply the barrel arc only for a matching or null platform target.
+7. `ShipDefinition.TargetPriority` supplies initial priority. The entity and `ShipState` carry current priority; AI reads the snapshot.
+   Network target records belong to step 12b. Satellite bodies, weapons and views belong to step 12c.
 
 ### Weapon classes and rockets
 
@@ -1283,7 +1302,7 @@ Editor menu *Tools/Combat/Check AI Replay* runs every armed built-in build again
 
 ### Known limits
 
-1. Many devices and ammunition effects stay inert until phase 5; the adapter lists them once per battle. Auto-aiming barrels fire straight; satellites are not attached.
+1. Many devices and ammunition effects stay inert until phase 5; the adapter lists them once per battle. Hull auto-aiming barrels work; satellite bodies and owner turret-target records remain pending.
 2. The built-in database keeps `UseNewCombatSimulator` false until phase 5 coverage passes. Exploration and the controls scene still use the old simulator until phase 6.
 3. A new player ship spawns at a random map point, so the camera whips toward it (legacy spawns the same way).
 4. The Editor pauses the game when it loses focus with an Android build target (`MobileApplication`). Play-mode checks from the CLI must force focus.

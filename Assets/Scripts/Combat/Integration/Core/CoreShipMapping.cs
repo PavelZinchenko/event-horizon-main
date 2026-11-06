@@ -13,7 +13,7 @@ namespace Combat.Integration.Core
     {
         public CoreShipMapping(string name, ShipDefinition definition, IReadOnlyList<CoreDeviceInfo> devices,
             SpriteId modelImage, float modelScale, AiShipProfile ai, BehaviorTreeModel aiTree, float droneRange, bool hasAutopilot,
-            ColorData? tintColor = null, bool isClone = false)
+            ColorData? tintColor = null, bool isClone = false, IReadOnlyList<CoreTurretSource> turrets = null)
         {
             Name = name;
             Definition = definition;
@@ -26,6 +26,7 @@ namespace Combat.Integration.Core
             HasAutopilot = hasAutopilot;
             TintColor = tintColor;
             IsClone = isClone;
+            Turrets = turrets ?? System.Array.Empty<CoreTurretSource>();
         }
 
         // For logs and reports: "ship", "drone" or "clone" and the legacy ship ID.
@@ -54,6 +55,7 @@ namespace Combat.Integration.Core
 
         // The clone a clonning center launches (phase 5, step 7c): a drone in the core that flies with the clone tree.
         public bool IsClone { get; }
+        public IReadOnlyList<CoreTurretSource> Turrets { get; }
     }
 
     // What a bullet or beam view needs from the database (phase 4, step 5, "Views (5)"). Prefab is null when the
@@ -73,6 +75,16 @@ namespace Combat.Integration.Core
         public readonly float BodySize;
         public readonly ColorData ParentColor;
         public readonly BulletTrigger_PlaySfx HitEffect;
+    }
+
+    public readonly struct CoreTurretSource
+    {
+        public readonly int Barrel;
+        public readonly SpriteId Image;
+        public readonly float Size;
+        public readonly ColorData Color;
+        public CoreTurretSource(int barrel, SpriteId image, float size, ColorData color)
+        { Barrel = barrel; Image = image; Size = size; Color = color; }
     }
 
     public readonly struct CoreDeviceInfo

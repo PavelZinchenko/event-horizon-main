@@ -45,12 +45,26 @@ namespace CombatView
             _ships.Add(id, new EntityView(renderer.gameObject, renderer) { Tint = tint ?? Color.white });
         }
 
+        // The turret rides the interpolated hull; its local angle comes from the same two snapshots.
+        public void AddTurret(EntityId id, int barrel, BarrelDefinition definition, Sprite sprite, float size, Color color)
+        {
+            if (!sprite || !_ships.TryGetValue(id, out var ship)) return;
+            var renderer = CreateRenderer("Turret", ship.Root.transform, sprite, ShipSortingOrder + 1);
+            var pivot = sprite.pivot / sprite.rect.size;
+            var scale = 0.5f / Mathf.Max(Mathf.Max(pivot.x, 1f - pivot.x), Mathf.Max(pivot.y, 1f - pivot.y));
+            var shipScale = ship.Root.transform.localScale.x;
+            renderer.transform.localScale = Vector3.one * (scale * size / shipScale);
+            renderer.color = color;
+            ship.Turrets.Add(new TurretView(renderer, barrel, definition, size, shipScale, color));
+        }
+
         public void RemoveShip(EntityId id, RemovalReason reason)
         {
             if (!_ships.TryGetValue(id, out var view))
                 return;
 
             _ships.Remove(id);
+            foreach (var turret in view.Turrets) Object.Destroy(turret.Renderer.gameObject);
             if (reason == RemovalReason.Death && view.HasPose)
                 _fades.Add(new Fade(view.Renderer));
             else
@@ -151,6 +165,14 @@ namespace CombatView
                 var color = Color.Lerp(Color.white, view.Tint, ship.Tint);
                 color.a = (ship.Status & ShipStatusFlags.Faded) != 0 ? FadedAlpha : 1f;
                 view.Renderer.color = color;
+                var barrels = snapshot.GetBarrels(ship);
+                foreach (var turret in view.Turrets)
+                {
+                    turret.Previous = turret.HasAngle ? turret.Current : barrels[turret.Barrel].Angle;
+                    turret.Current = barrels[turret.Barrel].Angle;
+                    turret.HasAngle = true;
+                    turret.Renderer.color = new Color(turret.Color.r, turret.Color.g, turret.Color.b, color.a);
+                }
             }
 
             foreach (var bullet in snapshot.Bullets)
@@ -239,6 +261,17 @@ namespace CombatView
             foreach (var pair in _ships)
                 if (pair.Key != controlled)
                     Place(pair.Value, alpha, anchor);
+
+            foreach (var ship in _ships.Values)
+                foreach (var turret in ship.Turrets)
+                {
+                    var angle = Mathf.LerpAngle(turret.Previous * Mathf.Rad2Deg, turret.Current * Mathf.Rad2Deg, alpha);
+                    var radians = angle * Mathf.Deg2Rad;
+                    var position = turret.Definition.PositionAt(radians) - 0.5f * turret.Size *
+                        new Vec2(Mathf.Cos(radians), Mathf.Sin(radians));
+                    turret.Renderer.transform.localPosition = new Vector3(position.X, position.Y, 0f) / turret.ShipScale;
+                    turret.Renderer.transform.localRotation = Quaternion.Euler(0f, 0f, angle);
+                }
 
             foreach (var pair in _bullets)
                 PlaceBullet(pair.Value, alpha, anchor);
@@ -582,6 +615,7 @@ namespace CombatView
 
             // A ship: the colour ShipState.Tint moves it to.
             public Color Tint { get; set; } = Color.white;
+            public readonly List<TurretView> Turrets = new List<TurretView>();
             public PoseTrack Pose;
             public bool HasPose { get; private set; }
             public Vector2 Position { get; set; }
@@ -606,6 +640,19 @@ namespace CombatView
                 HasPose = false;
                 Root.SetActive(false);
             }
+        }
+
+        private sealed class TurretView
+        {
+            public readonly SpriteRenderer Renderer;
+            public readonly int Barrel;
+            public readonly BarrelDefinition Definition;
+            public readonly float Size, ShipScale;
+            public readonly Color Color;
+            public float Previous, Current;
+            public bool HasAngle;
+            public TurretView(SpriteRenderer renderer, int barrel, BarrelDefinition definition, float size, float shipScale, Color color)
+            { Renderer = renderer; Barrel = barrel; Definition = definition; Size = size; ShipScale = shipScale; Color = color; }
         }
 
         private sealed class SegmentView : EntityView

@@ -165,7 +165,9 @@ namespace Combat.Integration.Core
         private static PilotControls With(in PilotControls controls, ulong systems, bool keepCommands) =>
             PilotControls.Create(controls.HasCourse ? controls.Course : (float?)null, controls.Throttle, systems,
                 keepCommands && controls.SelfDestruct, keepCommands && controls.Vanish,
-                keepCommands && controls.ChangesAllegiance ? controls.Allegiance : (Allegiance?)null);
+                keepCommands && controls.ChangesAllegiance ? controls.Allegiance : (Allegiance?)null,
+                controls.TurretTarget, keepCommands ? controls.TurretTargetSystems : 0,
+                keepCommands ? controls.SearchTurretSystems : 0);
 
         private readonly CoreAutoActivation _autoActivation;
 

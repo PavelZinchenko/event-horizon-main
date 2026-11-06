@@ -416,7 +416,7 @@ public static class CoreShipBattleCheck
     // Unarmed, no engine; legacy body scale 6 for the hull radius 3.
     private static readonly AiShipProfile TargetProfile = new AiShipProfile(null, null, null, isDrone: false, isStarbase: false,
         SizeClass.Undefined, enginePower: 0f, turnRate: 0f, propulsion: 0f, kineticResistance: 0f, rammingDamageMultiplier: 0f,
-        modelScale: 6f, AiTargetPriority.Normal, chanceToAvoidDrone: 0f);
+        modelScale: 6f, chanceToAvoidDrone: 0f);
 
     private const int HardAiLevel = 100;
 

@@ -444,6 +444,7 @@ namespace Combat.Integration.Core
             var model = specification.Stats.ShipModel;
             _renderer.AddShip(item.EntityId, _resourceLocator.GetSprite(model.ModelImage), model.ModelScale,
                 _mapper.Mappings[state.Definition].TintColor?.ToUnity());
+            AddTurrets(item.EntityId, _mapper.Mappings[state.Definition]);
         }
 
         private void OnDroneSpawned(in BattleEvent item)
@@ -451,6 +452,14 @@ namespace Combat.Integration.Core
             var mapping = _mapper.Mappings[item.Definition];
             _renderer.AddShip(item.EntityId, _resourceLocator.GetSprite(mapping.ModelImage), mapping.ModelScale,
                 mapping.TintColor?.ToUnity());
+            AddTurrets(item.EntityId, mapping);
+        }
+
+        private void AddTurrets(CoreEntityId id, CoreShipMapping mapping)
+        {
+            foreach (var turret in mapping.Turrets)
+                _renderer.AddTurret(id, turret.Barrel, mapping.Definition.Barrels[turret.Barrel],
+                    _resourceLocator.GetSprite(turret.Image), turret.Size, turret.Color.ToUnity());
         }
 
         // The roster transition of the same removal comes later in the batch, so the ID stays mapped until the tick ends.

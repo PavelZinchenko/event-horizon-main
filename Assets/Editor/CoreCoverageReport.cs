@@ -24,7 +24,6 @@ public static class CoreCoverageReport
     public const string DeferredListPath = "Assets/Editor/CoreCoverageDeferred.json";
     public const string ReportPath = "Logs/CombatCoverage.md";
 
-    private const string AutoAimingReason = "auto-aiming barrel";
     private const string ArmorRepairReason = "stat armor repair";
     private const string RammingDamageReason = "stat flat ramming damage";
     private const string DroneRangeReason = "stat drone range";
@@ -167,8 +166,6 @@ public static class CoreCoverageReport
             reasons.Add(RammingDamageReason);
         if (stats.DroneRangeMultiplier.HasValue)
             reasons.Add(DroneRangeReason);
-        if (data.Stats.AutoAimingArc > 0f)
-            reasons.Add(AutoAimingReason);
     }
 
     private static List<Row> BuiltinDevices(IDatabase database)
@@ -203,7 +200,7 @@ public static class CoreCoverageReport
             var row = new Row(build.Id.Value, build.Satellite.Name);
             rows.Add(row.Id, row);
             if (build.Satellite.Barrels.Any(barrel => barrel.AutoAimingArc > 0f))
-                row.Reasons.Add(AutoAimingReason);
+                row.Reasons.Add(CoreShipMapper.SatelliteWeaponReason);
 
             foreach (var item in build.Components)
             {
@@ -232,7 +229,7 @@ public static class CoreCoverageReport
         return rows.Values.ToList();
     }
 
-    // Ship features: auto-aiming barrels (D9) and armor regeneration (finding 5). Built-in devices have their own rows.
+    // Ship features: hull barrels are supported; armor regeneration waits for step 13.
     private static List<Row> Ships(IDatabase database)
     {
         var rows = new SortedDictionary<int, Row>();
@@ -240,8 +237,6 @@ public static class CoreCoverageReport
         {
             var row = new Row(ship.Id.Value, ship.Name);
             rows.Add(row.Id, row);
-            if (ship.Barrels.Any(barrel => barrel.AutoAimingArc > 0f))
-                row.Reasons.Add(AutoAimingReason);
             if (ship.Features.Regeneration)
                 row.Reasons.Add(ArmorRepairReason);
         }
