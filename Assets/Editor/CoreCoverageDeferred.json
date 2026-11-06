@@ -1,3 +1,14 @@
 {
-  "items": []
+  "items": [
+    {
+      "reason": "trigger GravityField",
+      "decision": "Deferred (owner, 2026-11-05; phase 5 H4, step 6 finding 8)",
+      "note": "BlackHole_M_1 only. Its child also needs Devour, which the mapper hides behind this first reason."
+    },
+    {
+      "reason": "beam with push",
+      "decision": "Deferred (owner, 2026-11-05; phase 5 step 6, question 1)",
+      "note": "TractorBeam_M only. Inert until the core tractor beam redesign (TASKS.md)."
+    }
+  ]
 }

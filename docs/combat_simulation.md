@@ -180,7 +180,10 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
    and systems. Index, tick offset and systems are `VarUInt`. The sender is the owner of every record.
    **Tick batch (reliable, G2, `SessionCodec` version 13).** One reliable message per tick holds the tick's operations in sequence
    order, then its hits. Header: version (8 bits), tick and last operation sequence (`VarUInt`). No battle ID: the connection is
-   bound to one battle. Then records until zero padding: kind (4 bits from version 8, from 1), record tick − batch tick (zigzag `VarUInt`; a beam
+   bound to one battle. Version policy (owner, 2026-11-06): nothing is released, so format changes do not bump the
+   version; it stays 13 until the first release sets one version and drops the per-version history below. The receiver
+   accepts only its own version, so going back to an older number would let mismatched builds misread each other.
+   Then records until zero padding: kind (4 bits from version 8, from 1), record tick − batch tick (zigzag `VarUInt`; a beam
    end record is one tick ahead), then the record fields. The sender is the owner of every record.
    - **Names by stream count.** The stream is ordered and exactly-once, so both peers count its records the same way (`StreamNames`).
      A ship or drone is named by its control index (spawn-record order). A bullet is named by its age: the latest bullet index minus
@@ -604,7 +607,7 @@ A frame for an unknown or removed entity is dropped, logged and counted in `Reje
 `ResourcePool` ports legacy `Energy` (`IResourcePoints.cs`) with absolute values. A pool starts full with no delay.
 
 1. Stage 2 updates energy, armor and shield, in that order, before any device. Only the part of the step after the delay recharges.
-2. A spend with a positive rate restarts the full delay. A failed `TryConsume` changes nothing. `Consume` clamps and returns the removed amount; a negative amount adds.
+2. A spend with a positive rate restarts the full delay. A failed `TryConsume` changes nothing. A cost of 0 or less always passes and changes nothing, even with an empty or zero-capacity pool, for every device (owner, 2026-11-06). Legacy `Energy.TryGet(0)` fails there, and only some legacy weapons bypass it (`WeaponBase.TryConsumeEnergy`); the owner treats that as a legacy bug. `Consume` clamps and returns the removed amount; a negative amount adds.
 3. A negative rate drains (net consumption). A zero maximum means no resource.
 4. Armor has rate 0: it never regenerates and never starts a delay (Q7).
 5. B4: stage 12 stores the absolute armor and shield deficits on the slot at retreat completion. Deploy applies them as a spend, as legacy `ShipInfo.Create`, so a shield deficit starts the shield delay at deployment. Energy starts full.
@@ -904,9 +907,9 @@ Phase 5, step 6c. `ImpactEffects.Teleport` carries the raw distance; weapon modi
 2. **Contact.** Teleport runs once on entry, including over-time contacts; separation allows another teleport.
    The landing is exact, without a free-space search. `PhysicsWorld.TeleportGroup` moves all attached hinge bodies with their offsets intact.
    Tail segments retain their velocities. Bullets attached to a moved body follow it through the physics attachment path.
-3. **Tail hits.** A direct hit destroys the contacted segment and detaches those behind it, which expire after five seconds.
-   This includes fixed segments, following approved 6c row 5; legacy `FixedWormSegment.Affect` ignores the destruction flag.
-   Losing the head now reaches the legacy rebuild path: wait `1.5 × Cooldown`, then grow subsequent segments every 0.5 seconds.
+3. **Tail hits.** A direct hit destroys a destroyable segment and detaches those behind it, which expire after five seconds.
+   Fixed segments 1 and 2 take the hit as ordinary damage, as legacy `FixedWormSegment.Affect` ignores the destruction flag.
+   The legacy head-rebuild rule stays (wait `1.5 × Cooldown`, then a segment every 0.5 seconds); no built-in path reaches it.
 4. **Network.** `HitEffect.Teleport` carries distance in a discrete hit record. Only the target owner moves the ship; copies follow corrections.
    Predicting the jump would let an older correction return the target to the rift and cause another entry hit.
    Teleport never enters resource correction replay. Segment contacts carry the same effect with `TargetIsBullet`; the owner destroys the segment.
@@ -950,7 +953,7 @@ The hook uses a circle with radius 0.5 × body size. `Harpoons` owns attachment 
    The solver pulls both bodies according to their masses. The hook has no separate solver mass, as agreed in P4.
 3. **Damage and lifetime.** Attached hooks use the existing over-time contact path for damage and energy drain.
    Holding the key renews the hook's lifetime. After release, it expires 0.5 seconds after its last renewal.
-   Zero-cost continuous weapons bypass the energy pool for launch and renewal, including at zero energy or zero capacity, as in legacy.
+   Zero-cost continuous weapons launch and renew at zero energy or zero capacity: `ResourcePool` passes every free cost.
    Point defense or lethal projectile damage removes the hook and rope. Removing the firing ship disposes of both without triggers.
 4. **Break and target loss.** Above range × √1.5, the owner removes the rope and detonates the hook.
    A missing target, or one with contacts disabled, frees the hook. It can attach again while its weapon keeps it alive.
