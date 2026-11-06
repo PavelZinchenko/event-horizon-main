@@ -916,6 +916,28 @@ Phase 5, step 6c. `ImpactEffects.Teleport` carries the raw distance; weapon modi
    `SessionCodecTests` covers ship and segment records and rejects teleport intervals or typed damage records.
    Visual flashes remain outside this phase's scope.
 
+### Capture and crazy drones
+
+Phase 5, step 6d. The mapper supports `CaptureDrones` and `DriveDronesCrazy`, including capture-only ammunition.
+Charge and weapon modifiers leave these flags unchanged. `DroneControl_M` and `EmpBomb` now map.
+
+1. **Targets.** Both effects act on drones and missiles, once per new contact. Ships and tail segments ignore them.
+   A `HitFirstTarget` projectile still stops on a ship. EMP drains remain independent of its ownership effect.
+2. **Drone ownership.** Capture applies the source's allegiance and makes the source ship the mothership.
+   Crazy sets `Undefined` and removes the mothership. `ShipEntity.MothershipOverride` carries this change into `ShipState`.
+   A null override retains the original bay association; an explicit null entity means no mothership.
+   The original bay keeps counting the drone. Its roster side, network owner and identity do not change.
+3. **AI and source protection.** The drone context reads the override and updates its mothership and roster deployment.
+   EMP can remove an owner, and capture can restore one. Mothership nodes then use the new ship.
+   Friendly-fire source protection uses that same link, so the firer's current drones remain safe.
+4. **Missiles.** Ownership changes update allegiance, collision filters and the physics owner group, then restart homing search.
+   `BulletEntity.AllegianceOwner` overrides the original firing ship for allegiance and source protection; child bullets inherit it.
+   Spawn identity and source weapon stay intact. Crazy missiles have no source immunity.
+5. **Network and credit.** `HasRemoteOwners` disables both ownership effects, preserving all other ammunition effects (H9 interim).
+   No network record changes. The core keeps no kill credit, including for captured drones (D13).
+6. **Checks.** `DroneControlTests` covers capture, EMP, source protection, missile search, contact entry, charge and remote-owner exclusion.
+   `TargetNodeTests` covers EMP, recapture and the new mothership's death through the live snapshot.
+
 ### Weapon classes and rockets
 
 Phase 5, steps 4a, 4b, 4f and 4g. `CannonDefinition.Mode` copies the legacy weapon classes that fire projectiles from a held key; `Magazine` is the bullet count (multi-shot) or the burst length (machine gun). Examples: phase 5 plan, "Weapon classes and controllers (4)".

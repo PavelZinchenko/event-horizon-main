@@ -647,7 +647,8 @@ namespace Combat.Integration.Core
                 _support.EnergyRecharge * modifier.EffectPowerMultiplier.Value * modifier.EnergyCostMultiplier.Value,
                 _support.ShieldRecharge * modifier.DamageMultiplier.Value,
                 _support.EnemyEnergyDrain * modifier.EffectPowerMultiplier.Value * modifier.EnergyCostMultiplier.Value,
-                _support.EnemyShieldDrain * modifier.DamageMultiplier.Value, _support.IgnoreShield, _support.Teleport);
+                _support.EnemyShieldDrain * modifier.DamageMultiplier.Value, _support.IgnoreShield, _support.Teleport,
+                _support.CaptureDrones, _support.DriveDronesCrazy);
 
             public bool HasFalloff
             {
@@ -695,10 +696,18 @@ namespace Combat.Integration.Core
             var enemyShieldDrain = 0f;
             var ignoreShield = false;
             var teleport = 0f;
+            var captureDrones = false;
+            var driveDronesCrazy = false;
             foreach (var effect in ammunition.Effects)
             {
                 switch (effect.Type)
                 {
+                    case ImpactEffectType.CaptureDrones:
+                        captureDrones = true;
+                        break;
+                    case ImpactEffectType.DriveDronesCrazy:
+                        driveDronesCrazy = true;
+                        break;
                     case ImpactEffectType.Teleport:
                         teleport += effect.Power;
                         break;
@@ -801,7 +810,8 @@ namespace Combat.Integration.Core
                 return false;
             }
             if (damage.Count == 0 && energyDrain == 0f && shieldDrain == 0f && slowDown == 0f && roll == 0f && ramp == 0f &&
-                restore == 0f && repair == 0f && energyRecharge == 0f && shieldRecharge == 0f && teleport == 0f && !hasGameplayTriggers)
+                restore == 0f && repair == 0f && energyRecharge == 0f && shieldRecharge == 0f && teleport == 0f &&
+                !captureDrones && !driveDronesCrazy && !hasGameplayTriggers)
             {
                 inertReason = "no damage effect";
                 return false;
@@ -812,7 +822,7 @@ namespace Combat.Integration.Core
                 new ImpactEffects(repair: repair, repairDamage: repairDamage, repairDamageType: repairType,
                     energyRecharge: energyRecharge, shieldRecharge: shieldRecharge,
                     enemyEnergyDrain: enemyEnergyDrain, enemyShieldDrain: enemyShieldDrain, ignoreShield: ignoreShield,
-                    teleport: teleport));
+                    teleport: teleport, captureDrones: captureDrones, driveDronesCrazy: driveDronesCrazy));
             inertReason = null;
             return true;
         }
