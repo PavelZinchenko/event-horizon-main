@@ -75,6 +75,8 @@ namespace Combat.Integration.Core
 
             // Legacy root scale BodySize, view scale Size.
             var spriteScale = prefab.Size * size;
+            if (bullet.IsHarpoon)
+                return BulletVisual.ForHarpoon(sprite, spriteScale, 0.05f * size, color, flash);
             if (prefab.Shape != BulletShape.Rocket)
                 return BulletVisual.ForSprite(sprite, spriteScale, color, flash);
 

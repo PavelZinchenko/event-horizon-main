@@ -938,6 +938,32 @@ Charge and weapon modifiers leave these flags unchanged. `DroneControl_M` and `E
 6. **Checks.** `DroneControlTests` covers capture, EMP, source protection, missile search, contact entry, charge and remote-owner exclusion.
    `TargetNodeTests` covers EMP, recapture and the new mothership's death through the live snapshot.
 
+### Harpoons
+
+Phase 5, step 6e. `EnergySiphonHarpoon` and `DotHarpoon` map to continuous cannons with `BulletDefinition.IsHarpoon`.
+The hook uses a circle with radius 0.5 × body size. `Harpoons` owns attachment and break decisions.
+
+1. **Free flight.** `BulletDef.MaxOwnerDistance` caps the sweep endpoint at range from the firing ship, before contact queries.
+   The hook stops at the rope length, including across the arena seam. Capture changes collision ownership, but preserves the rope anchor.
+2. **Attachment.** The first ship, drone or tail segment contact becomes the target at the next stage 4.
+   The hook follows that body's local attachment point. A rope joins the firing ship to that point, with connected-body contacts enabled.
+   The solver pulls both bodies according to their masses. The hook has no separate solver mass, as agreed in P4.
+3. **Damage and lifetime.** Attached hooks use the existing over-time contact path for damage and energy drain.
+   Holding the key renews the hook's lifetime. After release, it expires 0.5 seconds after its last renewal.
+   Zero-cost continuous weapons bypass the energy pool for launch and renewal, including at zero energy or zero capacity, as in legacy.
+   Point defense or lethal projectile damage removes the hook and rope. Removing the firing ship disposes of both without triggers.
+4. **Break and target loss.** Above range × √1.5, the owner removes the rope and detonates the hook.
+   A missing target, or one with contacts disabled, frees the hook. It can attach again while its weapon keeps it alive.
+5. **Network.** Existing `MissileTarget` records carry sticks, segment targets and null-target detachments; the codec does not change.
+   Both copies run the rope solver. Ship corrections move its anchors. A hook copy waits for the owner's removal record, including after nominal expiry.
+   As with sticky mines, a delayed stick record uses the copy's current hook pose; a live duel remains untested.
+6. **AI and view.** `BulletState.AttachedTargetId` exposes the attachment to `HoldHarpoon`.
+   The node holds an enemy ship and retains the key for 0.5 seconds after losing it, using the legacy shared timer.
+   It ignores drones, tail segments and allies. Normal attack selection skips a harpoon with an active hook.
+   `BattleRenderer` draws the hook sprite and an interpolated rope to its firing ship, using the nearest arena image.
+7. **Checks.** `HarpoonTests` covers flight, seams, attachment, damage, drain, mass response, break, expiry, destruction, cleanup and remote records.
+   `BulletTests` checks that the capped sweep cannot hit beyond range. `ActionNodeTests` checks holding and delayed release.
+
 ### Weapon classes and rockets
 
 Phase 5, steps 4a, 4b, 4f and 4g. `CannonDefinition.Mode` copies the legacy weapon classes that fire projectiles from a held key; `Magazine` is the bullet count (multi-shot) or the burst length (machine gun). Examples: phase 5 plan, "Weapon classes and controllers (4)".

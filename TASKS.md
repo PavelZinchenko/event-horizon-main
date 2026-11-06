@@ -30,7 +30,6 @@
 - [ ] Migration phase 5: asteroids as core bodies, with the AI obstacle and asteroid-threat port (`TODO/battle_simulator_phase4.md`, D8)
 - [ ] Migration phase 6: exploration and controls configuration (`TODO/battle_simulator_migration.md`)
 - [ ] Migration phase 7: live duel, release gates and GitHub alpha (`TODO/battle_simulator_migration.md`)
-- [ ] Battle core rule from P4: harpoon hook stops at rope length (`TODO/battle_simulator_physics.md`, "P4 closure")
 - [ ] Verify the tractor beam rope anchor (`autoConfigureConnectedAnchor`) in Unity (`TODO/battle_simulator_physics.md`, P4 risk 3)
 - [ ] CombatSimulation.Physics P3 follow-ups: measure target-spin misses, count buffer growth events (`TODO/battle_simulator_physics.md`, "P3 closure")
 - [ ] Core tractor beam redesign: a breakable rope that reels the target in; old simulator keeps the pull beam (needs owner decisions: physical or one-sided pull, break rule)

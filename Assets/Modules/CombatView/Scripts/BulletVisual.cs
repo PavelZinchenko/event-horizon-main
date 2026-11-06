@@ -8,6 +8,7 @@ namespace CombatView
         Rocket,
         Line,
         Arc,
+        Harpoon,
     }
 
     // The flash at each hit of a bullet: diameter in world units, duration in seconds.
@@ -59,6 +60,9 @@ namespace CombatView
 
         public static BulletVisual ForArc(Sprite sprite, float lineWidth, Color color, HitFlash flash) =>
             new BulletVisual(BulletViewKind.Arc, sprite, 0f, lineWidth, 0f, color, default, 0f, 0f, flash);
+
+        public static BulletVisual ForHarpoon(Sprite sprite, float spriteScale, float ropeWidth, Color color, HitFlash flash) =>
+            new BulletVisual(BulletViewKind.Harpoon, sprite, spriteScale, ropeWidth, 0f, color, default, 0f, 0f, flash);
 
         public BulletViewKind Kind { get; }
 

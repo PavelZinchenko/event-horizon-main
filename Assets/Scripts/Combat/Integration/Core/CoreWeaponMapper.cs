@@ -103,15 +103,15 @@ namespace Combat.Integration.Core
                         return null;
                     chargeContext.Commit();
                     return CannonDefinition.Charged(barrelIndex, cooldown, energyCost, spread, charged);
-                // Legacy ContinuousCannon with a bullet that is not a beam: AuraEmitter is no continuous controller, so
-                // the shot costs EnergyCost (BulletStats.ActivationCost), and holding it EnergyCost per second.
-                case WeaponClass.Continuous when ammunition.Controller is BulletController_AuraEmitter:
-                    var auraContext = new Context(armorMultiplier, children);
-                    var aura = MapBullet(ammunition, modifier, effects, 0, auraContext, out inertReason);
-                    if (aura == null)
+                // Legacy ContinuousCannon with a non-beam bullet: hold one aura or harpoon and renew its lifetime.
+                case WeaponClass.Continuous when ammunition.Controller is BulletController_AuraEmitter ||
+                    ammunition.Controller is BulletController_Harpoon:
+                    var continuousContext = new Context(armorMultiplier, children);
+                    var continuousBullet = MapBullet(ammunition, modifier, effects, 0, continuousContext, out inertReason);
+                    if (continuousBullet == null)
                         return null;
-                    auraContext.Commit();
-                    return new CannonDefinition(barrelIndex, cooldown, energyCost, spread, aura, CannonMode.Continuous);
+                    continuousContext.Commit();
+                    return new CannonDefinition(barrelIndex, cooldown, energyCost, spread, continuousBullet, CannonMode.Continuous);
                 case WeaponClass.Continuous:
                     if (ammunition.Controller.Type != BulletControllerType.Beam)
                         return Inert($"continuous weapon with controller {ammunition.Controller.Type}", out inertReason);
@@ -196,6 +196,7 @@ namespace Combat.Integration.Core
             var body = ammunition.Body;
             var nested = level > 0;
 
+            var harpoon = false;
             var homing = false;
             var magnetic = false;
             var rocket = false;
@@ -218,6 +219,11 @@ namespace Combat.Integration.Core
                     // Legacy RocketController does nothing while the bullet rides on its parent.
                     rocket = !body.AttachedToParent;
                     startingVelocity = controller.StartingVelocityModifier;
+                    break;
+                case BulletController_Harpoon _:
+                    if (body.AttachedToParent || nested || !(body.Range > 0f))
+                        return InertBullet("harpoon without a ship parent or range", out inertReason);
+                    harpoon = true;
                     break;
                 case BulletController_StickyMine controller:
                     if (body.AttachedToParent)
@@ -357,7 +363,7 @@ namespace Combat.Integration.Core
                 piercing: shape == BulletShape.PiercingLaser,
                 aura: aura,
                 effects: effects.ToCore(modifier), friendlyFire: body.FriendlyFire,
-                circleCenter: shape == BulletShape.CircularSaw ? new Vec2(0.4f * scale, 0f) : Vec2.Zero, wave: wave);
+                circleCenter: shape == BulletShape.CircularSaw ? new Vec2(0.4f * scale, 0f) : Vec2.Zero, wave: wave, harpoon: harpoon);
 
             inertReason = null;
             return bullet;
@@ -880,6 +886,7 @@ namespace Combat.Integration.Core
                     return true;
                 case BulletShape.Mine:
                 case BulletShape.CircularSaw:
+                case BulletShape.Harpoon:
                     radius = 0.5f;
                     return true;
                 default:

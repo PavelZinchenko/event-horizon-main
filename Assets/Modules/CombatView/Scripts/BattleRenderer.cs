@@ -160,6 +160,11 @@ namespace CombatView
 
                 if (bullet.HasRay)
                     view.PushEnd(bullet.BeamEndPoint);
+                if (view.Visual.Kind == BulletViewKind.Harpoon)
+                {
+                    view.Line.enabled = snapshot.TryGetShip(bullet.ParentId, out var source);
+                    view.PushEnd(view.Line.enabled ? source.Position : bullet.Position);
+                }
                 // The saw's sprite shares its collider's forward offset, scaled with the aura (phase 5, step 6a).
                 var position = bullet.Position;
                 if (!bullet.HasRay)
@@ -308,6 +313,11 @@ namespace CombatView
                 view.Trail.Clear();
             view.WasPlaced = true;
 
+            if (view.Line && view.Visual.Kind == BulletViewKind.Harpoon)
+            {
+                view.Line.SetPosition(0, view.Position);
+                view.Line.SetPosition(1, Placement.NearestImage(_torus, view.Position, view.End.SamplePosition(alpha, _torus)));
+            }
             if (view.Line && view.Visual.Kind == BulletViewKind.Line)
                 PlaceLine(view, Placement.NearestImage(_torus, view.Position, view.End.SamplePosition(alpha, _torus)));
         }
@@ -341,6 +351,13 @@ namespace CombatView
             LineRenderer line = null;
             switch (kind)
             {
+                case BulletViewKind.Harpoon:
+                    sprite = CreateRenderer("Sprite", root.transform, _genericSprite, BulletSortingOrder);
+                    line = root.AddComponent<LineRenderer>();
+                    line.useWorldSpace = true;
+                    line.positionCount = 2;
+                    line.sortingOrder = TrailSortingOrder;
+                    break;
                 case BulletViewKind.Rocket:
                     var trailObject = new GameObject("Trail");
                     trailObject.transform.SetParent(root.transform, false);
@@ -394,7 +411,7 @@ namespace CombatView
             if (view.Line)
             {
                 view.Line.enabled = true;
-                view.Line.sharedMaterial = LineMaterial(visual.Sprite);
+                view.Line.sharedMaterial = LineMaterial(visual.Kind == BulletViewKind.Harpoon ? null : visual.Sprite);
                 view.Line.startWidth = view.Line.endWidth = visual.LineWidth;
                 view.Line.textureMode = visual.LineBorder > 0f ? LineTextureMode.DistributePerSegment : LineTextureMode.Stretch;
                 view.Line.startColor = view.Line.endColor = visual.Color;
@@ -727,7 +744,7 @@ namespace CombatView
         private readonly Dictionary<WormTailDefinition, Sprite> _segmentLooks = new Dictionary<WormTailDefinition, Sprite>();
         private readonly List<EntityId> _removedSegments = new List<EntityId>();
         private int _segmentStamp;
-        private readonly Stack<BulletView>[] _bulletPools = { new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>() };
+        private readonly Stack<BulletView>[] _bulletPools = { new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>() };
         private readonly List<Fade> _fades = new List<Fade>();
         private readonly List<Flash> _flashes = new List<Flash>();
         private readonly Stack<SpriteRenderer> _flashPool = new Stack<SpriteRenderer>();
