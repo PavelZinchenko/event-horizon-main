@@ -51,6 +51,9 @@ namespace Combat.Integration.Core
                 case DeviceClass.Detonator:
                 case DeviceClass.ClonningCenter:
                 case DeviceClass.WormTailV2:
+                case DeviceClass.Jammer:
+                case DeviceClass.DroneCamouflage:
+                case DeviceClass.MissileCamouflage:
                     return null;
                 default:
                     return $"device {deviceClass}";
@@ -77,6 +80,12 @@ namespace Combat.Integration.Core
             var aiDevices = new List<AiDevice>();
             var aiDroneBays = new List<AiDroneBay>();
             var tint = default(ColorData?);
+
+            // Legacy JammerDevice and CamouflageDevice change the ship's features (phase 5, step 9a): the jammer sets High
+            // priority, each camouflage raises its chance to the device Power, clamped to [0, 1].
+            var targetPriority = isDrone ? TargetPriority.Low : TargetPriority.Normal;
+            var chanceToAvoidDrone = 0f;
+            var chanceToAvoidMissile = 0f;
 
             // Legacy ShipSpecDecorator scales the clone's weapon and ramming damage, but combat never reads the scaled
             // stats; the core applies them (owner, 2026-11-02: a legacy bug).
@@ -136,6 +145,21 @@ namespace Combat.Integration.Core
                     continue;
 
                 var key = IsAlwaysAutomatic(device.DeviceClass) ? -1 : item.KeyBinding;
+                if (IsPassive(device.DeviceClass))
+                {
+                    if (device.DeviceClass == DeviceClass.Jammer)
+                        targetPriority = TargetPriority.High;
+                    else if (device.DeviceClass == DeviceClass.DroneCamouflage)
+                        chanceToAvoidDrone = System.Math.Max(chanceToAvoidDrone, Fraction(device.Power));
+                    else
+                        chanceToAvoidMissile = System.Math.Max(chanceToAvoidMissile, Fraction(device.Power));
+
+                    // The slot keeps the legacy system index; the device itself does nothing (CanBeActivated false).
+                    aiDevices.Add(new AiDevice(devices.Count, device.DeviceClass, true));
+                    Add(devices, infos, InertDefinition, new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, 0f, null));
+                    continue;
+                }
+
                 var mapped = MapDevice(device, stats, out var activationCost);
                 if (mapped != null)
                 {
@@ -192,11 +216,11 @@ namespace Combat.Integration.Core
                 // Legacy Body.WorldScale: the target size in the area falloff (phase 5, step 3).
                 scale: NonNegative(modelScale),
                 teleportImmune: stats.ShipModel.ShipType == ShipType.Starbase || stats.ShipModel.ShipType == ShipType.Special,
-                targetPriority: isDrone ? TargetPriority.Low : TargetPriority.Normal);
+                targetPriority: targetPriority,
+                chanceToAvoidMissile: chanceToAvoidMissile);
 
             // AI side table (phase 4, steps 6 and 7b): the legacy RequirementChecker facts and the target facts, without
-            // inert devices (D6). Legacy Ship gives a drone Low priority; the jammer, stealth and camouflage devices
-            // that change it are inert.
+            // inert devices (D6). Legacy Ship gives a drone Low priority; the jammer sets High (step 9a).
             var ai = new AiShipProfile(aiWeapons, aiDevices, aiDroneBays,
                 isDrone: isDrone,
                 isStarbase: stats.ShipModel.ShipType == ShipType.Starbase,
@@ -207,7 +231,7 @@ namespace Combat.Integration.Core
                 kineticResistance: stats.KineticResistancePercentage,
                 rammingDamageMultiplier: stats.RammingDamageMultiplier * attack,
                 modelScale: modelScale,
-                chanceToAvoidDrone: 0f);
+                chanceToAvoidDrone: chanceToAvoidDrone);
 
             // Legacy DroneBay and ControllerFactory.CreateDroneController and CreateCloneController (T6).
             var aiTree = isClone
@@ -424,6 +448,11 @@ namespace Combat.Integration.Core
         // Legacy DeviceFactory.Create returns null for any other class, and the device gets no system index.
         private static bool IsLegacyDevice(DeviceClass deviceClass) =>
             deviceClass >= DeviceClass.Accelerator && deviceClass <= DeviceClass.Retribution;
+
+        // Legacy devices that only change the ship's features and never activate (phase 5, step 9a).
+        private static bool IsPassive(DeviceClass deviceClass) =>
+            deviceClass == DeviceClass.Jammer || deviceClass == DeviceClass.DroneCamouflage ||
+            deviceClass == DeviceClass.MissileCamouflage;
 
         // These legacy devices ignore the key binding: SystemBase(-1).
         private static bool IsAlwaysAutomatic(DeviceClass deviceClass)
