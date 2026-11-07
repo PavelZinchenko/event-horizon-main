@@ -969,7 +969,7 @@ The hook uses a circle with radius 0.5 × body size. `Harpoons` owns attachment 
 
 ### Hull auto-aiming barrels
 
-Phase 5, step 12a. `BarrelDefinition` holds the rest muzzle, mount angle, half-arc, turn speed and rotating muzzle offset.
+Phase 5, steps 12a–12b. `BarrelDefinition` holds the rest muzzle, mount angle, half-arc, turn speed and rotating muzzle offset.
 `BarrelAiming` owns target search, lead, turn limits and idle catch-up. Angles and speeds use radians.
 
 1. Each ship has separate state per barrel. All weapons on one barrel share its target and angle.
@@ -984,7 +984,21 @@ Phase 5, step 12a. `BarrelDefinition` holds the rest muzzle, mount angle, half-a
    `ControlFrame` consumes these requests once. Failed AI tree evaluations still submit them.
    AI fire checks apply the barrel arc only for a matching or null platform target.
 7. `ShipDefinition.TargetPriority` supplies initial priority. The entity and `ShipState` carry current priority; AI reads the snapshot.
-   Network target records belong to step 12b. Satellite bodies, weapons and views belong to step 12c.
+8. Only the owner searches and consumes pilot target requests. It sends `OwnerOperation.TurretTarget` when a barrel's target changes, including clears.
+   Copies retain the received target and calculate rotation locally. They never search, including before predicted shots.
+   Incoming records apply at stage 1 when due; late records apply without replaying past ticks.
+9. The record names the ship's control index, barrel index, and an optional 64-bit target ID.
+   An ID supports allies and targets whose deployment has not arrived. The codec version remains 13, as agreed before release.
+   Validation checks sender ownership and the live ship's auto-aiming mount. Application checks them again after pending deployments.
+10. `NetworkSession` preserves local ally-target and search requests through input quantization, including requests with unchanged motion and fire controls.
+    These requests use the owner's input delay. Remote inputs carry motion and firing; reliable records carry the resulting barrel targets.
+
+`TurretTargetGateTests` is the engine-free two-owner gate scene. It checks held delivery, unchanged-input ally requests,
+target clears, duplicate records, and final angle convergence with zero- and five-tick input delays.
+The local `Experimental/CombatSimulationHarness` also has a `Turrets` scene with three mounts and six drones per owner.
+On 2026-11-07, seven link profiles ran twice at seed 1 and 150 ms corrections: no target mismatches or unexpected failures.
+Both state and packet hashes repeated. The asymmetric profile retained its known three-tick pacing offset.
+Satellite bodies, weapons, views and their gate belong to step 12c.
 
 ### Weapon classes and rockets
 
@@ -1302,7 +1316,7 @@ Editor menu *Tools/Combat/Check AI Replay* runs every armed built-in build again
 
 ### Known limits
 
-1. Many devices and ammunition effects stay inert until phase 5; the adapter lists them once per battle. Hull auto-aiming barrels work; satellite bodies and owner turret-target records remain pending.
+1. Many devices and ammunition effects stay inert until phase 5; the adapter lists them once per battle. Hull auto-aiming barrels and owner turret-target records work; satellite bodies remain pending.
 2. The built-in database keeps `UseNewCombatSimulator` false until phase 5 coverage passes. Exploration and the controls scene still use the old simulator until phase 6.
 3. A new player ship spawns at a random map point, so the camera whips toward it (legacy spawns the same way).
 4. The Editor pauses the game when it loses focus with an Android build target (`MobileApplication`). Play-mode checks from the CLI must force focus.
