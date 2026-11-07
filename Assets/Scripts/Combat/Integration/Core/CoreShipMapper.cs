@@ -56,6 +56,8 @@ namespace Combat.Integration.Core
                 case DeviceClass.MissileCamouflage:
                 case DeviceClass.Stealth:
                 case DeviceClass.SuperStealth:
+                case DeviceClass.Accelerator:
+                case DeviceClass.Brake:
                     return null;
                 default:
                     return $"device {deviceClass}";
@@ -293,6 +295,15 @@ namespace Combat.Integration.Core
                     activationCost = NonNegative(device.EnergyConsumption);
                     return new StealthDefinition(activationCost, NonNegative(device.Cooldown),
                         device.DeviceClass == DeviceClass.Stealth);
+                // Legacy AcceleratorDevice: max(1, EnergyConsumption x EngineEnergyConsumption) per second while held,
+                // Cooldown from its end, Power on propulsion and velocity (phase 5, step 9c). Legacy ActivationCost is 0.
+                case DeviceClass.Accelerator:
+                    return new AcceleratorDefinition(
+                        System.Math.Max(1f, device.EnergyConsumption * stats.EngineEnergyConsumption),
+                        NonNegative(device.Cooldown), NonNegative(device.Power));
+                // Legacy BrakeDevice: Power / sqrt(ship weight) (phase 5, step 9c).
+                case DeviceClass.Brake:
+                    return new BrakeDefinition(NonNegative(device.Power) / (float)System.Math.Sqrt(Positive(stats.Weight)));
                 default:
                     return null;
             }
@@ -488,7 +499,8 @@ namespace Combat.Integration.Core
                 NonNegative(engine.Propulsion),
                 NonNegative(engine.Velocity),
                 NonNegative(engine.TurnRate * DegreesToRadians),
-                NonNegative(engine.AngularVelocity * DegreesToRadians));
+                NonNegative(engine.AngularVelocity * DegreesToRadians),
+                NonNegative(engine.VelocityLimit));
 
         private static float Positive(float value) => value > MinValue ? value : MinValue;
         private static float NonNegative(float value) => value > 0f ? value : 0f;

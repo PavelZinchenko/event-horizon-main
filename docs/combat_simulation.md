@@ -1125,8 +1125,8 @@ Phase 4, step 7e (D12, D13). The side stays the team: result, timer, surrender, 
 ### Device statuses
 
 Phase 5, steps 7a to 7d (data-model gate, H2) and step 9 (statuses). Examples: `TODO/battle_simulator_phase5.md`,
-"Data-model gate (7)" and "Statuses (9)"; tests: `Core/Tests/GateDeviceTests.cs`, `Core/Tests/WormTailTests.cs` and
-`Core/Tests/StealthTests.cs`. Each device stays a small `ShipDevice` class that composes these parts:
+"Data-model gate (7)" and "Statuses (9)"; tests: `Core/Tests/GateDeviceTests.cs`, `Core/Tests/WormTailTests.cs`,
+`Core/Tests/StealthTests.cs` and `Core/Tests/EngineDeviceTests.cs`. Each device stays a small `ShipDevice` class that composes these parts:
 
 1. **Activation policy.** `ActivationPolicy` is data in the device definition: energy cost, cooldown, when the cooldown starts
    (`AtStart` or `AtEnd`), duration, and an optional release time after which a released bit ends the use. `DeviceActivation`
@@ -1138,7 +1138,9 @@ Phase 5, steps 7a to 7d (data-model gate, H2) and step 9 (statuses). Examples: `
    the AI still see the ship. `EngineOff` gives the engine throttle 0 and no course (the spin brake stays); the engine input
    with it is kept for the correction re-run. `Drift` gives no engine at all: no thrust, no turn and no spin brake, so the
    ship keeps its velocity and spin. `Faded` is for the view (10% opacity). `Stealth` gives target priority `None` and
-   fades the view (step 9b; device 6). The ship snapshot carries the flags, and
+   fades the view (step 9b; device 6). `FullThrottle` gives throttle 1; `EngineOff` wins over it (step 9c; device 7). Two
+   engine values join the flags (step 9c): `EngineScale` multiplies propulsion and `MaxVelocity`, and `Deceleration` is the
+   brake sum (device 8). The engine input keeps both for the correction re-run. The ship snapshot carries the flags, and
    `ShipState.Tint` (0 to 1, the largest of the devices) for the view's colour change.
 3. **Blocked devices.** The mask of stage 3 holds through stage 2 of the next tick: a blocked device sees its bit released, the
    same for every device of the ship (approved change: legacy blocks the devices after the blocking one at once).
@@ -1254,6 +1256,20 @@ Devices:
      own device activity restarts only its cooldown. On the owner, a remote attacker's contact counts only by its record.
    - *View.* 40% opacity for the viewer's side (`BattleRenderer.ViewerSide`), 5% for the others; the opacity moves by 1 per
      second, as legacy, and multiplies the warp's 10%.
+7. **Accelerator** (`Accelerator`, step 9c). It runs while the bit is held and the cooldown has passed, and each tick pays
+   `EnergyPerSecond` × 0.02. The mapper computes it as max(1, `EnergyConsumption` × the ship's `EngineEnergyConsumption`).
+   There is no cost at the start. While on: `FullThrottle`, and `EngineScale` × `Power`; two accelerators multiply. The
+   engine caps the scaled `MaxVelocity` at `EngineDefinition.VelocityLimit` (legacy `ShipSettings.MaxVelocity`, 40);
+   propulsion has no cap. A released bit, a failed payment or a retreat ends it; the cooldown counts from the end.
+   `Active` is the held bit with the cooldown passed, also when the payment fails (legacy). An active accelerator ends
+   stealth.
+   - *Network (H8).* The owner sends the start and the end (`DeviceUse`). The copy follows them. It pays the energy of its
+     held bit as the owner does, so its energy stays close until the correction. A failed payment on the copy ends nothing.
+8. **Brake** (`Brake`, step 9c). A passive device: it ignores its bit and is never active. Its status adds `Power` /
+   √(ship weight) to `Deceleration`. The engine applies the sum against the velocity while the effective throttle is 0.001
+   or less, after the thrust. It stops the ship at zero speed and never reverses it (owner question 6). `EngineOff` (warp)
+   and `FullThrottle` stop the brake. Without an engine (retreat, `Drift`, no energy without an energy-free engine) there is
+   no brake. A copy reads the throttle of its control frames, so it needs no record.
 
 ### Snapshots and events
 
