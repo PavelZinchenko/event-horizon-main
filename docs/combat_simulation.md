@@ -1027,7 +1027,9 @@ A `BarrelDefinition` names its carrier: `Hull` or a satellite index. Its positio
    heading. Its target uses the barrel state and `OwnerOperation.TurretTarget`. A weapon's search request or shot only
    updates the weapon values, as legacy `IAimingSystem.Aim`.
 6. **AI.** `WeaponMount` reads the muzzle from `BattleSnapshot.GetSatellites`. `AttackTurretTargets` fires an aiming
-   satellite's weapon at its target. The fire check still reads the ship heading and gives no arc allowance, as legacy.
+   satellite's weapon at its target. When the satellite holds the enemy, the fire check compares the aim direction with
+   the satellite's muzzle heading, not the ship heading (redesign, owner, 2026-11-07). Other satellites keep the legacy
+   check.
 7. **View.** `BattleRenderer` draws each satellite at its interpolated pose in the ship's colour, and a turret on it relative
    to the satellite. A ship's death fades its satellites; a retreat or vanish removes them.
 8. **Frontier readiness.** A barrel on an inactive satellite is not ready (`Satellite.ActiveTick`; built-in satellites are

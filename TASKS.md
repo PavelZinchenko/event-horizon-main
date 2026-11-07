@@ -18,7 +18,6 @@
 - [ ] Phase 7: run the network session on its own thread with short loop gaps (`TODO/battle_simulator_network.md`, "Open after the gate")
 - [ ] Phase 7: repeat the network bandwidth and drift rows with real ships, with 8-bit resource precision (`TODO/battle_simulator_network.md`, "Open after the gate")
 - [ ] Set the missile correction budget (300-byte placeholder) from a playable scene (`TODO/battle_simulator_network.md`, "Open after the gate")
-- [ ] Review: the AI fires an aiming satellite only when the ship faces the target (legacy fire check; redesign needs owner approval) (`TODO/battle_simulator_phase5.md`, 12c finding 4)
 - [ ] Review: satellite network gate covers only the engine-free test; decide on a `Satellites` scene in the local harness (`TODO/battle_simulator_phase5.md`, 12c finding 7)
 - [ ] Frontier satellite features: custom mount points, steadiness, destroyable satellites with respawn (`TODO/battle_simulator_phase5.md`, "Frontier satellites (later)")
 - [ ] Phase 7: homing copies that orbit a drone explode about 1 s early (`TODO/battle_simulator_phase5.md`, H14)
