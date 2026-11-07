@@ -37,7 +37,6 @@ namespace Combat.Integration.Core
         public IReadOnlyDictionary<WormTailDefinition, SpriteId> SegmentImages => _segmentImages;
 
         // Inert reasons the coverage report also gives (phase 5, step 1).
-        public const string SatelliteWeaponReason = "satellite weapon";
         public const string ObsoleteAmmunitionReason = "obsolete ammunition";
         public const string DroneReplicatorReason = "drone replicator";
 
@@ -69,6 +68,8 @@ namespace Combat.Integration.Core
             var stats = specification.Stats;
             var modelScale = stats.ShipModel.ModelScale;
             var barrels = new List<BarrelDefinition>();
+            var satellites = new List<SatelliteDefinition>();
+            var satelliteSources = new List<CoreSatelliteSource>();
             var turrets = new List<CoreTurretSource>();
             var devices = new List<DeviceDefinition>();
             var infos = new List<CoreDeviceInfo>();
@@ -83,24 +84,38 @@ namespace Combat.Integration.Core
 
             foreach (var platform in specification.Platforms)
             {
-                // D9: satellites are not attached in phase 4, so their weapons have no barrel.
+                // Legacy ShipFactory.CreatePlatform: a hull barrel, or a satellite with at most one barrel in its own frame
+                // (phase 5, step 12c). A satellite without a barrel has no weapons.
                 var barrelIndex = -1;
-                if (platform.Companion == null)
+                var companion = platform.Companion;
+                if (companion == null)
                 {
                     barrelIndex = barrels.Count;
                     barrels.Add(ToBarrel(platform, modelScale));
                     if (barrels[barrelIndex].IsTurret)
                         turrets.Add(new CoreTurretSource(barrelIndex, platform.Image, platform.Size * modelScale, stats.TurretColor.Color));
                 }
+                else
+                {
+                    var satellite = satellites.Count;
+                    var satelliteScale = companion.Satellite.ModelScale;
+                    var aiming = IsAimingSatellite(platform);
+                    satellites.Add(ToSatellite(companion, platform, modelScale, aiming));
+                    satelliteSources.Add(new CoreSatelliteSource(companion.Satellite.ModelImage, satelliteScale));
+                    if (companion.Satellite.Barrels.Count > 0)
+                    {
+                        barrelIndex = barrels.Count;
+                        barrels.Add(ToBarrel(platform, satelliteScale, satellite, aiming));
+                        if (barrels[barrelIndex].IsTurret)
+                            turrets.Add(new CoreTurretSource(barrelIndex, platform.Image, platform.Size * satelliteScale, stats.TurretColor.Color));
+                    }
+                }
 
                 foreach (var data in platform.Weapons)
                 {
                     var weapon = attack == 1f ? data : new ScaledWeapon(data, attack);
                     var name = $"weapon {weapon.Weapon.Id.Value}, ammunition {weapon.Ammunition.Id.Value}";
-                    string reason;
-                    var device = barrelIndex < 0
-                        ? Inert(SatelliteWeaponReason, out reason)
-                        : CoreWeaponMapper.Map(weapon, barrelIndex, stats.ArmorMultiplier.Value, AddChildSource, out reason);
+                    var device = CoreWeaponMapper.Map(weapon, barrelIndex, stats.ArmorMultiplier.Value, AddChildSource, out var reason);
                     AddBulletSource(device, weapon);
                     if (device != null)
                         aiWeapons.Add(ToAiWeapon(weapon, devices.Count, Positive(stats.Weight)));
@@ -165,6 +180,7 @@ namespace Combat.Integration.Core
                 ToEngine(new EngineStats(stats.EnginePowerWihoutEnergy, stats.TurnRateWihoutEnergy, stats.Weight, stats.Layout.CellCount, _database.ShipSettings)),
                 rammingDamageMultiplier: NonNegative(stats.RammingDamageMultiplier) * attack,
                 barrels: barrels,
+                satellites: satellites,
                 devices: devices,
                 resistances: LegacyDamageModel.Resistances(
                     Fraction(stats.KineticResistancePercentage),
@@ -201,7 +217,8 @@ namespace Combat.Integration.Core
                     : BehaviorTreeSelection.ForDrone(_database.CombatSettings, bay.DroneBay, bay.Drone.CustomAI, bay.Behaviour == DroneBehaviour.Defensive);
             var kind = isClone ? "clone" : isDrone ? "drone" : "ship";
             var mapping = new CoreShipMapping($"{kind} {specification.Info.Id.Value}", definition, infos,
-                stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot, tint, isClone, turrets);
+                stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot, tint, isClone, turrets,
+                satelliteSources);
             _mappings[definition] = mapping;
             return mapping;
         }
@@ -355,16 +372,37 @@ namespace Combat.Integration.Core
             return builder.Build(_database.ShipSettings);
         }
 
-        // Legacy FixedPlatform pose: (Position × 0.5 + dir(Rotation) × (Offset + Size) × 0.5) × ModelScale.
-        private static BarrelDefinition ToBarrel(IWeaponPlatformData platform, float modelScale)
+        // Legacy FixedPlatform pose: (Position × 0.5 + dir(Rotation) × (Offset + Size) × 0.5) × the carrier's model scale.
+        // The barrel of an aiming satellite is a fixed platform: the satellite turns instead.
+        private static BarrelDefinition ToBarrel(IWeaponPlatformData platform, float modelScale,
+            int satellite = BarrelDefinition.Hull, bool fixedMount = false)
         {
             var angle = platform.Rotation * DegreesToRadians;
             var offset = (platform.Offset + platform.Size) * 0.5f;
             var x = (platform.Position.x * 0.5f + (float)System.Math.Cos(angle) * offset) * modelScale;
             var y = (platform.Position.y * 0.5f + (float)System.Math.Sin(angle) * offset) * modelScale;
-            return new BarrelDefinition(new Vec2(x, y), angle, NonNegative(platform.AutoAimingArc) * DegreesToRadians,
+            return new BarrelDefinition(new Vec2(x, y), angle, fixedMount ? 0f : NonNegative(platform.AutoAimingArc) * DegreesToRadians,
                 NonNegative(platform.RotationSpeed) * DegreesToRadians,
-                (bool)platform.Image && (platform.Weapons.Any() || platform.WeaponsObsolete.Any()), offset * modelScale);
+                (bool)platform.Image && (platform.Weapons.Any() || platform.WeaponsObsolete.Any()), offset * modelScale, satellite);
+        }
+
+        // Legacy SatelliteFactory.CreateSatellite: an AutoAimingSatelliteController for an arc of at least 5° without an
+        // image and below 360°; else a SatelliteController that keeps the platform rotation.
+        private static bool IsAimingSatellite(IWeaponPlatformData platform) =>
+            platform.Companion.Satellite.Barrels.Count > 0 && !(bool)platform.Image &&
+            platform.AutoAimingArc >= MinAimingSatelliteArc && platform.AutoAimingArc < 360f;
+
+        // Legacy SatelliteFactory: the left slot (-0.5, 0.5) × ship scale + (0, 1.5 × satellite scale) with the arc
+        // -10°..190°, the right slot mirrored. The weight is cells × DefaultWeightPerCell / 1000 (CompanionSpec).
+        private static SatelliteDefinition ToSatellite(ICompanionData companion, IWeaponPlatformData platform, float shipScale,
+            bool aiming)
+        {
+            var side = companion.Location == CompanionLocation.Left ? 1f : -1f;
+            var satelliteScale = companion.Satellite.ModelScale;
+            var slot = new Vec2(-0.5f * shipScale, side * (0.5f * shipScale + 1.5f * satelliteScale));
+            var min = aiming ? (side > 0f ? -10f : -190f) * DegreesToRadians : 0f;
+            var max = aiming ? (side > 0f ? 190f : 10f) * DegreesToRadians : 0f;
+            return new SatelliteDefinition(slot, platform.Rotation * DegreesToRadians, Positive(companion.Weight), min, max);
         }
 
         private static void Add(List<DeviceDefinition> devices, List<CoreDeviceInfo> infos, DeviceDefinition device, CoreDeviceInfo info)
@@ -419,6 +457,7 @@ namespace Combat.Integration.Core
         private static float Fraction(float value) => value > 0f ? value < 1f ? value : 1f : 0f;
 
         private const float MinValue = 0.01f;
+        private const float MinAimingSatelliteArc = 5f;
 
         // Legacy ClonningDevice: size, attack and defence factors of its ShipSpecDecorator (phase 5, step 7c). Defence
         // scales armor, shield and their rates; attack scales weapon damage and the ramming damage multiplier.

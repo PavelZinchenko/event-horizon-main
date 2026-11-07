@@ -8,9 +8,10 @@ using Object = UnityEngine.Object;
 
 namespace CombatView
 {
-    // Draws one core battle: ships, worm tail segments, bullets, beams, hit flashes and ship texts at interpolated poses
-    // (migration phase 3c, step 4; phase 4, steps 5 and 7f; phase 5, step 7d). Events decide when a view exists; snapshots give its poses. Nothing is written back to the
-    // simulation. Bullet looks come from the adapter as BulletVisual values.
+    // Draws one core battle: ships, satellites, worm tail segments, bullets, beams, hit flashes and ship texts at
+    // interpolated poses (migration phase 3c, step 4; phase 4, steps 5 and 7f; phase 5, steps 7d and 12c). Events decide
+    // when a view exists; snapshots give its poses. Nothing is written back to the simulation. Bullet looks come from
+    // the adapter as BulletVisual values.
     public sealed class BattleRenderer : IDisposable
     {
         // The root goes into the given scene: the game loads scenes additively and never changes the active
@@ -45,17 +46,30 @@ namespace CombatView
             _ships.Add(id, new EntityView(renderer.gameObject, renderer) { Tint = tint ?? Color.white });
         }
 
-        // The turret rides the interpolated hull; its local angle comes from the same two snapshots.
+        // Legacy SatelliteFactory (phase 5, step 12c): a satellite has its own body, so its view is not a child of the
+        // ship. Add the ship's satellites in definition order, before its turrets.
+        public void AddSatellite(EntityId id, Sprite sprite, float scale)
+        {
+            if (!_ships.TryGetValue(id, out var ship)) return;
+            var renderer = CreateRenderer("Satellite", _root.transform, sprite ? sprite : _genericSprite, ShipSortingOrder);
+            renderer.gameObject.SetActive(false);
+            renderer.transform.localScale = Vector3.one * scale;
+            ship.Satellites.Add(new EntityView(renderer.gameObject, renderer));
+        }
+
+        // The turret rides the interpolated hull or satellite; its local angle comes from the same two snapshots.
         public void AddTurret(EntityId id, int barrel, BarrelDefinition definition, Sprite sprite, float size, Color color)
         {
             if (!sprite || !_ships.TryGetValue(id, out var ship)) return;
-            var renderer = CreateRenderer("Turret", ship.Root.transform, sprite, ShipSortingOrder + 1);
+            if (definition.Satellite >= ship.Satellites.Count) return;
+            var carrier = definition.Satellite < 0 ? ship : ship.Satellites[definition.Satellite];
+            var renderer = CreateRenderer("Turret", carrier.Root.transform, sprite, ShipSortingOrder + 1);
             var pivot = sprite.pivot / sprite.rect.size;
             var scale = 0.5f / Mathf.Max(Mathf.Max(pivot.x, 1f - pivot.x), Mathf.Max(pivot.y, 1f - pivot.y));
-            var shipScale = ship.Root.transform.localScale.x;
-            renderer.transform.localScale = Vector3.one * (scale * size / shipScale);
+            var carrierScale = carrier.Root.transform.localScale.x;
+            renderer.transform.localScale = Vector3.one * (scale * size / carrierScale);
             renderer.color = color;
-            ship.Turrets.Add(new TurretView(renderer, barrel, definition, size, shipScale, color));
+            ship.Turrets.Add(new TurretView(renderer, barrel, definition, size, carrierScale, color));
         }
 
         public void RemoveShip(EntityId id, RemovalReason reason)
@@ -65,6 +79,12 @@ namespace CombatView
 
             _ships.Remove(id);
             foreach (var turret in view.Turrets) Object.Destroy(turret.Renderer.gameObject);
+            // Legacy SatelliteController: the ship's death destroys its satellites (an explosion), a retreat makes them vanish.
+            foreach (var satellite in view.Satellites)
+                if (reason == RemovalReason.Death && satellite.HasPose)
+                    _fades.Add(new Fade(satellite.Renderer));
+                else
+                    Object.Destroy(satellite.Root);
             if (reason == RemovalReason.Death && view.HasPose)
                 _fades.Add(new Fade(view.Renderer));
             else
@@ -165,6 +185,13 @@ namespace CombatView
                 var color = Color.Lerp(Color.white, view.Tint, ship.Tint);
                 color.a = (ship.Status & ShipStatusFlags.Faded) != 0 ? FadedAlpha : 1f;
                 view.Renderer.color = color;
+                // Legacy Satellite.OnUpdateView: the satellite takes its owner's colour.
+                var satellites = snapshot.GetSatellites(ship);
+                for (var i = 0; i < view.Satellites.Count && i < satellites.Length; ++i)
+                {
+                    view.Satellites[i].Push(satellites[i].Position, satellites[i].Angle);
+                    view.Satellites[i].Renderer.color = color;
+                }
                 var barrels = snapshot.GetBarrels(ship);
                 foreach (var turret in view.Turrets)
                 {
@@ -263,13 +290,17 @@ namespace CombatView
                     Place(pair.Value, alpha, anchor);
 
             foreach (var ship in _ships.Values)
+                foreach (var satellite in ship.Satellites)
+                    Place(satellite, alpha, anchor);
+
+            foreach (var ship in _ships.Values)
                 foreach (var turret in ship.Turrets)
                 {
                     var angle = Mathf.LerpAngle(turret.Previous * Mathf.Rad2Deg, turret.Current * Mathf.Rad2Deg, alpha);
                     var radians = angle * Mathf.Deg2Rad;
                     var position = turret.Definition.PositionAt(radians) - 0.5f * turret.Size *
                         new Vec2(Mathf.Cos(radians), Mathf.Sin(radians));
-                    turret.Renderer.transform.localPosition = new Vector3(position.X, position.Y, 0f) / turret.ShipScale;
+                    turret.Renderer.transform.localPosition = new Vector3(position.X, position.Y, 0f) / turret.CarrierScale;
                     turret.Renderer.transform.localRotation = Quaternion.Euler(0f, 0f, angle);
                 }
 
@@ -616,6 +647,7 @@ namespace CombatView
             // A ship: the colour ShipState.Tint moves it to.
             public Color Tint { get; set; } = Color.white;
             public readonly List<TurretView> Turrets = new List<TurretView>();
+            public readonly List<EntityView> Satellites = new List<EntityView>();
             public PoseTrack Pose;
             public bool HasPose { get; private set; }
             public Vector2 Position { get; set; }
@@ -647,12 +679,12 @@ namespace CombatView
             public readonly SpriteRenderer Renderer;
             public readonly int Barrel;
             public readonly BarrelDefinition Definition;
-            public readonly float Size, ShipScale;
+            public readonly float Size, CarrierScale;
             public readonly Color Color;
             public float Previous, Current;
             public bool HasAngle;
-            public TurretView(SpriteRenderer renderer, int barrel, BarrelDefinition definition, float size, float shipScale, Color color)
-            { Renderer = renderer; Barrel = barrel; Definition = definition; Size = size; ShipScale = shipScale; Color = color; }
+            public TurretView(SpriteRenderer renderer, int barrel, BarrelDefinition definition, float size, float carrierScale, Color color)
+            { Renderer = renderer; Barrel = barrel; Definition = definition; Size = size; CarrierScale = carrierScale; Color = color; }
         }
 
         private sealed class SegmentView : EntityView

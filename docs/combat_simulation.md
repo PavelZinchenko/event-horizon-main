@@ -893,7 +893,7 @@ Phase 5, step 6b. `WaveDefinition` describes the legacy arc from `BulletPrefab.M
    Growth can reach additional targets. Separation permits another hit on re-entry.
 4. **View and network.** Snapshot `WaveScale` drives a local arc line at the projectile pose.
    Ship shots and children derive the same growth on each owner; the wire format stays unchanged.
-   `EnergyWave` and `EnergyWaveL` map. Satellite `IronBall` still waits for satellite support.
+   `EnergyWave` and `EnergyWaveL` map. Satellite `IronBall` maps since step 12c.
 5. **Checks.** `WaveTests` covers dimensions, two targets, re-entry, charge, and late ship and child records.
    Physics tests cover scaled query bounds, rotation, torus wrapping, shared templates and reused bullet slots.
 
@@ -998,23 +998,44 @@ target clears, duplicate records, and final angle convergence with zero- and fiv
 The local `Experimental/CombatSimulationHarness` also has a `Turrets` scene with three mounts and six drones per owner.
 On 2026-11-07, seven link profiles ran twice at seed 1 and 150 ms corrections: no target mismatches or unexpected failures.
 Both state and packet hashes repeated. The asymmetric profile retained its known three-tick pacing offset.
-Satellite bodies, weapons, views and their gate belong to step 12c.
 
 Two hash baselines in `StructureBaselineTests` cover the mounts: a single-player battle and a two-owner duel on `ScriptedBattle.TurretSetup`.
 Each side has a hidden 20° barrel, an 80° side turret, a full-circle beam turret, a low-priority target and a redeployment.
 Their digest adds barrel angles and targets; the step 8b baselines omit them, so their hashes stay unchanged. A new hash needs owner approval.
 
-Satellite rules for step 12c (owner, 2026-11-07):
+### Satellites
 
-1. The mapper gives each satellite its slot position, default direction, arc limits and velocity factor (legacy 0.75).
-   The core does not derive left or right slots, so a list of custom slots needs no core change.
-2. An aiming satellite searches inside its real arc: centre `default + (min + max) / 2`, half-width `(max − min) / 2`.
-   Legacy searches with a wrong centre and no arc limit, so it can lock a target through the ship (D9). The old simulator keeps the defect.
-   The legacy aiming test with the real limits is kept.
-3. A satellite barrel fires only while its satellite is active. Built-in satellites are always active.
+Phase 5, step 12c. Legacy `Satellite` with `SatelliteController` or `AutoAimingSatelliteController`. `SatelliteDefinition`
+holds the slot, rest heading, mass, arc limits, velocity and angular factors (legacy 0.75 and 3) and an optional shape.
+A `BarrelDefinition` names its carrier: `Hull` or a satellite index. Its position and angle are then in the satellite frame.
 
-Frontier satellite features wait for a later task with their schema fields: a list of mount points per ship, `Steadiness`,
-hit points from the ship's hit points, respawn after `RespawnTime`, and weapons disabled while destroyed.
+1. **Mapping.** `CoreShipMapper` gives each companion its slot: left `(−0.5, 0.5) × ship scale + (0, 1.5 × satellite scale)`,
+   right mirrored. The mass is cells × `DefaultWeightPerCell` / 1000. The core never derives a left or right slot.
+   A satellite barrel uses the satellite's model scale. Its weapons map as hull weapons; the `satellite weapon` reason is gone.
+2. **Kinds.** Legacy `SatelliteFactory` rules. An arc of at least 5° below 360° without an image makes an aiming satellite:
+   its one barrel is fixed (arc 0) and the whole satellite turns. Any other satellite keeps the ship heading plus its rest
+   heading; an auto-aiming barrel on it turns as a hull barrel, relative to the satellite.
+3. **Body.** Each satellite is a physics body without a shape, created at the ship centre and heading when the ship gets
+   its pose. Stage 4, after the engines, sets its velocities (legacy `UnitExtensions.MoveTowards`): the ship velocity plus
+   the slot offset × 0.75 × w, and the heading error × 3 × w, with w = 1 / (√(1 + mass) − 1) and Unity's angular drag 0.05.
+   More than 50 units from its slot, it jumps there. The ship's removal destroys the body.
+4. **Shots.** Projectiles, beams and attached ammunition leave from the satellite's present pose and inherit its velocity.
+   The satellite takes the recoil. A satellite keeps no spawn history, so a remote copy fires from its present pose.
+5. **Aiming satellite.** It searches each tick, as a turret, from its slot. The search arc is centred on its limits
+   (owner decision 8): centre `rest + (min + max) / 2`, half-width `(max − min) / 2`. Legacy D9 skips this arc test.
+   It turns toward the lead point from the slot when that direction lies inside `rest + min .. rest + max`, else to its rest
+   heading. Its target uses the barrel state and `OwnerOperation.TurretTarget`. A weapon's search request or shot only
+   updates the weapon values, as legacy `IAimingSystem.Aim`.
+6. **AI.** `WeaponMount` reads the muzzle from `BattleSnapshot.GetSatellites`. `AttackTurretTargets` fires an aiming
+   satellite's weapon at its target. The fire check still reads the ship heading and gives no arc allowance, as legacy.
+7. **View.** `BattleRenderer` draws each satellite at its interpolated pose in the ship's colour, and a turret on it relative
+   to the satellite. A ship's death fades its satellites; a retreat or vanish removes them.
+8. **Frontier readiness.** A barrel on an inactive satellite is not ready (`Satellite.ActiveTick`; built-in satellites are
+   always active). A satellite shape touches drones and hostile ships, takes no hits, and follows the ship's `NoContacts` status.
+   Custom mount points, `Steadiness`, hit points and respawn wait for a later task with their schema fields.
+
+`SatelliteTests` covers the plan examples, the arc fix and the remote record. `SatelliteGateTests` is the two-owner gate:
+held delivery, ally targets, clears, duplicate records, and converged satellite poses with zero- and five-tick delays.
 
 ### Weapon classes and rockets
 

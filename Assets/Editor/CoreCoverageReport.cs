@@ -190,8 +190,8 @@ public static class CoreCoverageReport
         return rows.Values.ToList();
     }
 
-    // D9: a satellite weapon has no barrel. The satellite's devices and stats go to the ship, so its components give
-    // their own reasons too.
+    // The satellite's weapons map as ship weapons on its barrel (phase 5, step 12c). Its devices and stats go to the ship,
+    // so its components give their own reasons.
     private static List<Row> SatelliteBuilds(IDatabase database, List<string> errors)
     {
         var rows = new SortedDictionary<int, Row>();
@@ -199,16 +199,12 @@ public static class CoreCoverageReport
         {
             var row = new Row(build.Id.Value, build.Satellite.Name);
             rows.Add(row.Id, row);
-            if (build.Satellite.Barrels.Any(barrel => barrel.AutoAimingArc > 0f))
-                row.Reasons.Add(CoreShipMapper.SatelliteWeaponReason);
 
             foreach (var item in build.Components)
             {
                 try
                 {
                     var component = new ComponentInfo(item.Component).CreateComponent(1);
-                    if (component.Weapons.Any() || component.WeaponsObsolete.Any())
-                        row.Reasons.Add(CoreShipMapper.SatelliteWeaponReason);
                     AddComponentReasons(component, item.Component, database.ShipSettings, row.Reasons);
                 }
                 catch (Exception e)

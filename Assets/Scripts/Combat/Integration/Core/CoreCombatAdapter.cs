@@ -455,8 +455,11 @@ namespace Combat.Integration.Core
             AddTurrets(item.EntityId, mapping);
         }
 
+        // Satellites first: a turret on a satellite rides its view (phase 5, step 12c).
         private void AddTurrets(CoreEntityId id, CoreShipMapping mapping)
         {
+            foreach (var satellite in mapping.Satellites)
+                _renderer.AddSatellite(id, _resourceLocator.GetSprite(satellite.Image), satellite.Scale);
             foreach (var turret in mapping.Turrets)
                 _renderer.AddTurret(id, turret.Barrel, mapping.Definition.Barrels[turret.Barrel],
                     _resourceLocator.GetSprite(turret.Image), turret.Size, turret.Color.ToUnity());

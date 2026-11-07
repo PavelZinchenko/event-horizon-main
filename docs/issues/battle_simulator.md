@@ -199,6 +199,8 @@ The analysis was done by reading the code on 2026-10-11. No issue was reproduced
 
 **Fix.** Use center `default + (min + max) / 2` and half-width `(max − min) / 2`.
 
+**Status.** Fixed in the new core (phase 5, step 12c; owner, 2026-11-07). The old simulator keeps the defect.
+
 ### D10. Warp drive mode depends on device order — Low, Confirmed
 
 **Where.** `WarpDrive` checks in its constructor whether the ship has a worm tail ([WarpDrive.cs:35](../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Systems/Devices/WarpDrive.cs#L35)). Devices later in the list do not exist yet. The check also ignores `WormTailV2`.

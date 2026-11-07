@@ -13,7 +13,8 @@ namespace Combat.Integration.Core
     {
         public CoreShipMapping(string name, ShipDefinition definition, IReadOnlyList<CoreDeviceInfo> devices,
             SpriteId modelImage, float modelScale, AiShipProfile ai, BehaviorTreeModel aiTree, float droneRange, bool hasAutopilot,
-            ColorData? tintColor = null, bool isClone = false, IReadOnlyList<CoreTurretSource> turrets = null)
+            ColorData? tintColor = null, bool isClone = false, IReadOnlyList<CoreTurretSource> turrets = null,
+            IReadOnlyList<CoreSatelliteSource> satellites = null)
         {
             Name = name;
             Definition = definition;
@@ -27,6 +28,7 @@ namespace Combat.Integration.Core
             TintColor = tintColor;
             IsClone = isClone;
             Turrets = turrets ?? System.Array.Empty<CoreTurretSource>();
+            Satellites = satellites ?? System.Array.Empty<CoreSatelliteSource>();
         }
 
         // For logs and reports: "ship", "drone" or "clone" and the legacy ship ID.
@@ -56,6 +58,9 @@ namespace Combat.Integration.Core
         // The clone a clonning center launches (phase 5, step 7c): a drone in the core that flies with the clone tree.
         public bool IsClone { get; }
         public IReadOnlyList<CoreTurretSource> Turrets { get; }
+
+        // In ShipDefinition.Satellites order (phase 5, step 12c).
+        public IReadOnlyList<CoreSatelliteSource> Satellites { get; }
     }
 
     // What a bullet or beam view needs from the database (phase 4, step 5, "Views (5)"). Prefab is null when the
@@ -85,6 +90,14 @@ namespace Combat.Integration.Core
         public readonly ColorData Color;
         public CoreTurretSource(int barrel, SpriteId image, float size, ColorData color)
         { Barrel = barrel; Image = image; Size = size; Color = color; }
+    }
+
+    // Legacy SatelliteFactory: the satellite sprite at its model scale.
+    public readonly struct CoreSatelliteSource
+    {
+        public readonly SpriteId Image;
+        public readonly float Scale;
+        public CoreSatelliteSource(SpriteId image, float scale) { Image = image; Scale = scale; }
     }
 
     public readonly struct CoreDeviceInfo
