@@ -1000,6 +1000,22 @@ On 2026-11-07, seven link profiles ran twice at seed 1 and 150 ms corrections: n
 Both state and packet hashes repeated. The asymmetric profile retained its known three-tick pacing offset.
 Satellite bodies, weapons, views and their gate belong to step 12c.
 
+Two hash baselines in `StructureBaselineTests` cover the mounts: a single-player battle and a two-owner duel on `ScriptedBattle.TurretSetup`.
+Each side has a hidden 20° barrel, an 80° side turret, a full-circle beam turret, a low-priority target and a redeployment.
+Their digest adds barrel angles and targets; the step 8b baselines omit them, so their hashes stay unchanged. A new hash needs owner approval.
+
+Satellite rules for step 12c (owner, 2026-11-07):
+
+1. The mapper gives each satellite its slot position, default direction, arc limits and velocity factor (legacy 0.75).
+   The core does not derive left or right slots, so a list of custom slots needs no core change.
+2. An aiming satellite searches inside its real arc: centre `default + (min + max) / 2`, half-width `(max − min) / 2`.
+   Legacy searches with a wrong centre and no arc limit, so it can lock a target through the ship (D9). The old simulator keeps the defect.
+   The legacy aiming test with the real limits is kept.
+3. A satellite barrel fires only while its satellite is active. Built-in satellites are always active.
+
+Frontier satellite features wait for a later task with their schema fields: a list of mount points per ship, `Steadiness`,
+hit points from the ship's hit points, respawn after `RespawnTime`, and weapons disabled while destroyed.
+
 ### Weapon classes and rockets
 
 Phase 5, steps 4a, 4b, 4f and 4g. `CannonDefinition.Mode` copies the legacy weapon classes that fire projectiles from a held key; `Magazine` is the bullet count (multi-shot) or the burst length (machine gun). Examples: phase 5 plan, "Weapon classes and controllers (4)".

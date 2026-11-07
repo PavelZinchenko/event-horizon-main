@@ -19,6 +19,7 @@
 - [ ] Phase 7: repeat the network bandwidth and drift rows with real ships, with 8-bit resource precision (`TODO/battle_simulator_network.md`, "Open after the gate")
 - [ ] Set the missile correction budget (300-byte placeholder) from a playable scene (`TODO/battle_simulator_network.md`, "Open after the gate")
 - [ ] Satellite network gate after satellite bodies and weapons are implemented (`TODO/battle_simulator_phase5.md`, step 12c)
+- [ ] Frontier satellite features: custom mount points, steadiness, destroyable satellites with respawn (`TODO/battle_simulator_phase5.md`, "Frontier satellites (later)")
 - [ ] Phase 7: homing copies that orbit a drone explode about 1 s early (`TODO/battle_simulator_phase5.md`, H14)
 - [ ] Core combat scene: device cooldowns in the snapshot, sounds, legacy-quality effects, beacons (`TODO/battle_simulator_scene.md`, out of scope)
 - [ ] Core combat scene: decide the camera whip toward a new player ship (`TODO/battle_simulator_scene.md`, step 4)
