@@ -86,7 +86,7 @@ namespace Combat.Integration.Core
             // Only the font of the legacy text effect prefab is used; the text view is built in code (step 7f).
             var textFont = Resources.Load<TextMesh>(TextEffectPrefab)?.font;
             var flashSprite = resourceLocator.GetSprite(FlashSpriteName);
-            _renderer = new BattleRenderer(torus, bulletSprite, flashSprite, textFont, scene);
+            _renderer = new BattleRenderer(torus, bulletSprite, flashSprite, textFont, scene) { ViewerSide = PlayerSide };
             foreach (var look in _mapper.SegmentImages)
                 _renderer.AddSegmentLook(look.Key, resourceLocator.GetSprite(look.Value));
             _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, resourceLocator, flashSprite);

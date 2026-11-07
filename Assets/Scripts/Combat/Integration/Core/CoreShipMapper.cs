@@ -54,6 +54,8 @@ namespace Combat.Integration.Core
                 case DeviceClass.Jammer:
                 case DeviceClass.DroneCamouflage:
                 case DeviceClass.MissileCamouflage:
+                case DeviceClass.Stealth:
+                case DeviceClass.SuperStealth:
                     return null;
                 default:
                     return $"device {deviceClass}";
@@ -284,6 +286,13 @@ namespace Combat.Integration.Core
                     return new WormTailDefinition(NonNegative(device.Power), System.Math.Max(1, (int)System.Math.Round(device.Size)),
                         NonNegative(device.Cooldown), device.Offset.x, device.Offset.y,
                         IsSegment2(device) ? Segment2Radius : SegmentRadius);
+                // Legacy StealthDevice: EnergyConsumption once per use, Cooldown from its end; SuperStealth survives
+                // contacts (phase 5, step 9b).
+                case DeviceClass.Stealth:
+                case DeviceClass.SuperStealth:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new StealthDefinition(activationCost, NonNegative(device.Cooldown),
+                        device.DeviceClass == DeviceClass.Stealth);
                 default:
                     return null;
             }

@@ -33,6 +33,9 @@ namespace CombatView
             Object.Destroy(probe);
         }
 
+        // The side of the local player (legacy UnitSide.Player): a stealth ship of it stays more visible.
+        public int ViewerSide { get; set; }
+
         // Ships and drones. Legacy rule: the ship's transform scale is its model scale. ShipState.Tint moves the colour
         // from white to tint.
         public void AddShip(EntityId id, Sprite sprite, float scale, Color? tint = null)
@@ -181,25 +184,24 @@ namespace CombatView
 
                 view.Push(ship.Position, ship.Angle);
                 // Legacy WarpDrive: Opacity 0.1 while the warp runs (phase 5, step 7a). Legacy Detonator: the colour
-                // moves to the device colour during the lock (step 7b).
+                // moves to the device colour during the lock (step 7b). Legacy StealthDevice: 40% for the viewer's
+                // side, 5% for the others (step 9b); Render moves the opacity there.
                 var color = Color.Lerp(Color.white, view.Tint, ship.Tint);
                 color.a = (ship.Status & ShipStatusFlags.Faded) != 0 ? FadedAlpha : 1f;
-                view.Renderer.color = color;
-                // Legacy Satellite.OnUpdateView: the satellite takes its owner's colour.
+                view.Color = color;
+                view.StealthTarget = (ship.Status & ShipStatusFlags.Stealth) == 0 ? 1f
+                    : ship.Side == ViewerSide ? OwnStealthAlpha : EnemyStealthAlpha;
                 var satellites = snapshot.GetSatellites(ship);
                 for (var i = 0; i < view.Satellites.Count && i < satellites.Length; ++i)
-                {
                     view.Satellites[i].Push(satellites[i].Position, satellites[i].Angle);
-                    view.Satellites[i].Renderer.color = color;
-                }
                 var barrels = snapshot.GetBarrels(ship);
                 foreach (var turret in view.Turrets)
                 {
                     turret.Previous = turret.HasAngle ? turret.Current : barrels[turret.Barrel].Angle;
                     turret.Current = barrels[turret.Barrel].Angle;
                     turret.HasAngle = true;
-                    turret.Renderer.color = new Color(turret.Color.r, turret.Color.g, turret.Color.b, color.a);
                 }
+                ApplyColor(view);
             }
 
             foreach (var bullet in snapshot.Bullets)
@@ -293,6 +295,14 @@ namespace CombatView
                 foreach (var satellite in ship.Satellites)
                     Place(satellite, alpha, anchor);
 
+            // Legacy StealthDevice.OnUpdateView: the opacity moves by 1 per second.
+            foreach (var ship in _ships.Values)
+            {
+                if (ship.StealthOpacity == ship.StealthTarget) continue;
+                ship.StealthOpacity = Mathf.MoveTowards(ship.StealthOpacity, ship.StealthTarget, deltaTime);
+                ApplyColor(ship);
+            }
+
             foreach (var ship in _ships.Values)
                 foreach (var turret in ship.Turrets)
                 {
@@ -351,6 +361,19 @@ namespace CombatView
             _texts.Clear();
             _textPool.Clear();
             _lineMaterials.Clear();
+        }
+
+        // Legacy Satellite.OnUpdateView: the satellite takes its owner's colour; a turret keeps its own with the ship's
+        // opacity.
+        private static void ApplyColor(EntityView ship)
+        {
+            var color = ship.Color;
+            color.a *= ship.StealthOpacity;
+            ship.Renderer.color = color;
+            foreach (var satellite in ship.Satellites)
+                satellite.Renderer.color = color;
+            foreach (var turret in ship.Turrets)
+                turret.Renderer.color = new Color(turret.Color.r, turret.Color.g, turret.Color.b, color.a);
         }
 
         private Vector2 Place(EntityView view, float alpha, Vector2 reference)
@@ -646,6 +669,11 @@ namespace CombatView
 
             // A ship: the colour ShipState.Tint moves it to.
             public Color Tint { get; set; } = Color.white;
+
+            // A ship: the colour of the last snapshot, and the stealth opacity with its target (phase 5, step 9b).
+            public Color Color { get; set; } = Color.white;
+            public float StealthOpacity { get; set; } = 1f;
+            public float StealthTarget { get; set; } = 1f;
             public readonly List<TurretView> Turrets = new List<TurretView>();
             public readonly List<EntityView> Satellites = new List<EntityView>();
             public PoseTrack Pose;
@@ -788,6 +816,8 @@ namespace CombatView
         private const float FadeDuration = 0.4f;
         private const float FadeScale = 1.3f;
         private const float FadedAlpha = 0.1f;
+        private const float OwnStealthAlpha = 0.4f;
+        private const float EnemyStealthAlpha = 0.05f;
         private const float GenericBeamWidth = 0.2f;
         private const float GenericFlashDiameter = 1f;
         private const float GenericFlashDuration = 0.2f;

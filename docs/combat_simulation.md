@@ -1124,9 +1124,9 @@ Phase 4, step 7e (D12, D13). The side stays the team: result, timer, surrender, 
 
 ### Device statuses
 
-Phase 5, steps 7a to 7d (data-model gate, H2). Examples: `TODO/battle_simulator_phase5.md`, "Data-model gate (7)"; tests:
-`Core/Tests/GateDeviceTests.cs` and `Core/Tests/WormTailTests.cs`. Each device stays a small `ShipDevice` class that composes
-these parts:
+Phase 5, steps 7a to 7d (data-model gate, H2) and step 9 (statuses). Examples: `TODO/battle_simulator_phase5.md`,
+"Data-model gate (7)" and "Statuses (9)"; tests: `Core/Tests/GateDeviceTests.cs`, `Core/Tests/WormTailTests.cs` and
+`Core/Tests/StealthTests.cs`. Each device stays a small `ShipDevice` class that composes these parts:
 
 1. **Activation policy.** `ActivationPolicy` is data in the device definition: energy cost, cooldown, when the cooldown starts
    (`AtStart` or `AtEnd`), duration, and an optional release time after which a released bit ends the use. `DeviceActivation`
@@ -1137,7 +1137,8 @@ these parts:
    ramming, no solid contact. The point-defense query has no category; it skips a drone without contacts itself. Homing and
    the AI still see the ship. `EngineOff` gives the engine throttle 0 and no course (the spin brake stays); the engine input
    with it is kept for the correction re-run. `Drift` gives no engine at all: no thrust, no turn and no spin brake, so the
-   ship keeps its velocity and spin. `Faded` is for the view (10% opacity). The ship snapshot carries the flags, and
+   ship keeps its velocity and spin. `Faded` is for the view (10% opacity). `Stealth` gives target priority `None` and
+   fades the view (step 9b; device 6). The ship snapshot carries the flags, and
    `ShipState.Tint` (0 to 1, the largest of the devices) for the view's colour change.
 3. **Blocked devices.** The mask of stage 3 holds through stage 2 of the next tick: a blocked device sees its bit released, the
    same for every device of the ship (approved change: legacy blocks the devices after the blocking one at once).
@@ -1237,6 +1238,22 @@ Devices:
      travels as a contact on a bullet (`TargetIsBullet`, network plan 9d): it counts once, whether the attacker's or the
      owner's device saw it; a projectile once per segment, a ray, damage over time and a ram (device −1) once per tick. A
      remote projectile that stops at a local segment stops on its owner too. No codec change.
+6. **Stealth** (`Stealth`, `SuperStealth`, step 9b). A held bit starts it when the cooldown has passed and the energy cost
+   is available; it spends the cost once and stays on after the release. While on: the `Stealth` status, so
+   `ShipEntity.TargetPriority` is `None`, also over a jammer's `High`. The AI enemy search, the barrel search and the
+   missile search skip the ship; the AI still sees it within 5 units plus its scale. It survives a retreat.
+   - *End.* Another device of the ship becomes active at stage 2 (`ShipDevice.IsActive`), except point defense and drone
+     bays (`KeepsStealth`; later Ghost, Fortification, energy shields and repair bots). For `Stealth` only, the ship takes
+     a contact: every hit candidate of a local attacker at stage 9, with or without damage; a remote attacker's record at
+     stage 10; a body touch with a ship or a tail segment of any allegiance, in each tick it lasts. A contact ends stealth
+     at stage 2 of the next tick, so the status of the contact tick still has it (legacy `OnHit` after the systems).
+   - *Cooldown.* Each end rule restarts the cooldown, also while stealth is off (legacy `Deactivate`; owner question 5).
+     Legacy device order: an active device before the stealth device restarts it before stealth updates, so a press in
+     that tick starts nothing; one after it counts from the next tick, after stealth may have started and paid.
+   - *Network (H8).* The owner sends the start and the end (`DeviceUse`). A copy never starts or ends stealth itself; its
+     own device activity restarts only its cooldown. On the owner, a remote attacker's contact counts only by its record.
+   - *View.* 40% opacity for the viewer's side (`BattleRenderer.ViewerSide`), 5% for the others; the opacity moves by 1 per
+     second, as legacy, and multiplies the warp's 10%.
 
 ### Snapshots and events
 
