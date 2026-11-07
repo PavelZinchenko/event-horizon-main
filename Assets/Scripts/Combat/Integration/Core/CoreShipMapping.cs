@@ -52,7 +52,8 @@ namespace Combat.Integration.Core
         // Legacy Stats.Autopilot: a player ship also runs the autopilot tree.
         public bool HasAutopilot { get; }
 
-        // The colour ShipState.Tint moves the ship to: the first detonator's (phase 5, step 7b); null without one.
+        // The colour ShipState.Tint moves the ship to: the first detonator's (phase 5, step 7b), ghost's or
+        // fortification's (step 9d); null without one.
         public ColorData? TintColor { get; }
 
         // The clone a clonning center launches (phase 5, step 7c): a drone in the core that flies with the clone tree.

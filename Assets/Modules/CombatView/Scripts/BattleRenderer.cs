@@ -185,9 +185,10 @@ namespace CombatView
                 view.Push(ship.Position, ship.Angle);
                 // Legacy WarpDrive: Opacity 0.1 while the warp runs (phase 5, step 7a). Legacy Detonator: the colour
                 // moves to the device colour during the lock (step 7b). Legacy StealthDevice: 40% for the viewer's
-                // side, 5% for the others (step 9b); Render moves the opacity there.
+                // side, 5% for the others (step 9b); Render moves the opacity there. Legacy Ghost and Fortification
+                // multiply the colour by the device colour with its alpha (step 9d): a ghost fades to 25%.
                 var color = Color.Lerp(Color.white, view.Tint, ship.Tint);
-                color.a = (ship.Status & ShipStatusFlags.Faded) != 0 ? FadedAlpha : 1f;
+                if ((ship.Status & ShipStatusFlags.Faded) != 0) color.a *= FadedAlpha;
                 view.Color = color;
                 view.StealthTarget = (ship.Status & ShipStatusFlags.Stealth) == 0 ? 1f
                     : ship.Side == ViewerSide ? OwnStealthAlpha : EnemyStealthAlpha;

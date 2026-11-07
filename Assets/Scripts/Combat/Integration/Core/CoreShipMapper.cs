@@ -58,6 +58,8 @@ namespace Combat.Integration.Core
                 case DeviceClass.SuperStealth:
                 case DeviceClass.Accelerator:
                 case DeviceClass.Brake:
+                case DeviceClass.Ghost:
+                case DeviceClass.Fortification:
                     return null;
                 default:
                     return $"device {deviceClass}";
@@ -174,14 +176,13 @@ namespace Combat.Integration.Core
                     aiDevices.Add(new AiDevice(devices.Count, device.DeviceClass, key < 0, range,
                         detonator?.Activation.Duration ?? 0f));
 
-                    // Legacy CreateStrongExplosion draws the area in the device colour; the first detonator tints the
-                    // ship during its lock.
+                    // Legacy CreateStrongExplosion draws the area in the device colour. The first detonator, ghost or
+                    // fortification gives the colour that ShipState.Tint moves the ship to.
                     if (detonator != null)
-                    {
                         _bulletSources[detonator.Explosion] = new CoreBulletSource(null, ExplosionFlashSize,
                             device.Color, null);
+                    if (detonator != null || mapped is GhostDefinition || mapped is FortificationDefinition)
                         tint = tint ?? device.Color;
-                    }
                     if (mapped is WormTailDefinition tail)
                         _segmentImages[tail] = SegmentImage(device);
                     Add(devices, infos, mapped,
@@ -304,6 +305,16 @@ namespace Combat.Integration.Core
                 // Legacy BrakeDevice: Power / sqrt(ship weight) (phase 5, step 9c).
                 case DeviceClass.Brake:
                     return new BrakeDefinition(NonNegative(device.Power) / (float)System.Math.Sqrt(Positive(stats.Weight)));
+                // Legacy GhostDevice: EnergyConsumption at the start and per second, Cooldown from its end, Lifetime
+                // (phase 5, step 9d).
+                case DeviceClass.Ghost:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new GhostDefinition(activationCost, NonNegative(device.Cooldown), NonNegative(device.Lifetime));
+                // Legacy FortificationDevice: EnergyConsumption per second, Cooldown from its end, the share Power / 100
+                // or 0.5 when Power is 0 (phase 5, step 9d). Legacy ActivationCost is 0.
+                case DeviceClass.Fortification:
+                    return new FortificationDefinition(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
+                        Fraction(device.Power == 0f ? 0.5f : device.Power / 100f));
                 default:
                     return null;
             }

@@ -1126,7 +1126,7 @@ Phase 4, step 7e (D12, D13). The side stays the team: result, timer, surrender, 
 
 Phase 5, steps 7a to 7d (data-model gate, H2) and step 9 (statuses). Examples: `TODO/battle_simulator_phase5.md`,
 "Data-model gate (7)" and "Statuses (9)"; tests: `Core/Tests/GateDeviceTests.cs`, `Core/Tests/WormTailTests.cs`,
-`Core/Tests/StealthTests.cs` and `Core/Tests/EngineDeviceTests.cs`. Each device stays a small `ShipDevice` class that composes these parts:
+`Core/Tests/StealthTests.cs`, `Core/Tests/EngineDeviceTests.cs` and `Core/Tests/GhostFortificationTests.cs`. Each device stays a small `ShipDevice` class that composes these parts:
 
 1. **Activation policy.** `ActivationPolicy` is data in the device definition: energy cost, cooldown, when the cooldown starts
    (`AtStart` or `AtEnd`), duration, and an optional release time after which a released bit ends the use. `DeviceActivation`
@@ -1141,7 +1141,10 @@ Phase 5, steps 7a to 7d (data-model gate, H2) and step 9 (statuses). Examples: `
    fades the view (step 9b; device 6). `FullThrottle` gives throttle 1; `EngineOff` wins over it (step 9c; device 7). Two
    engine values join the flags (step 9c): `EngineScale` multiplies propulsion and `MaxVelocity`, and `Deceleration` is the
    brake sum (device 8). The engine input keeps both for the correction re-run. The ship snapshot carries the flags, and
-   `ShipState.Tint` (0 to 1, the largest of the devices) for the view's colour change.
+   `ShipState.Tint` (0 to 1, the largest of the devices) for the view's colour change. A detonator gives its elapsed share
+   of the lock; a ghost and a fortification step `DeviceTint` each tick (legacy `OnUpdateView`: 5 × the elapsed time of the
+   distance, toward 1 while on and back to 0 after). The view lerps from white to the mapping's `TintColor`, alpha
+   included, and multiplies the warp's 10% into that alpha.
 3. **Blocked devices.** The mask of stage 3 holds through stage 2 of the next tick: a blocked device sees its bit released, the
    same for every device of the ship (approved change: legacy blocks the devices after the blocking one at once).
 4. **Lethal damage.** At the end of stage 10, after the timer drain, a local ship without armor asks its devices in index
@@ -1270,6 +1273,27 @@ Devices:
    or less, after the thrust. It stops the ship at zero speed and never reverses it (owner question 6). `EngineOff` (warp)
    and `FullThrottle` stop the brake. Without an engine (retreat, `Drift`, no energy without an energy-free engine) there is
    no brake. A copy reads the throttle of its control frames, so it needs no record.
+9. **Ghost** (`Ghost`, step 9d). A held bit starts it when the cooldown has passed and `EnergyCost` is available; the start
+   spends the cost. Each later tick pays `EnergyCost` × 0.02, for at most `Lifetime` after the start tick (legacy pays while
+   the time left is above 0: 3,000 ticks after the start tick for 60 s). While on: `NoContacts`, and every other device
+   except the stealth devices is blocked (legacy `CanActivateSystem`). A released bit, the end of the lifetime, a failed
+   payment or a retreat ends it; the cooldown counts from the end. `Active` is the held bit while on. A ghost keeps
+   stealth on, and stealth can start during a ghost.
+   - *Network (H8).* The owner sends the start and the end (`DeviceUse`). The copy follows them and pays the energy per
+     second of its held bit, but not the start cost and nothing in the start tick. A failed payment on the copy ends nothing.
+   - *View.* The colour moves to the device colour (`#40FFFFFF` for the built-in record: 25% opacity, multiplied by the
+     stealth opacity).
+10. **Fortification** (`Fortification`, step 9d). It runs while the bit is held and the cooldown has passed, and each tick
+    pays `EnergyPerSecond` × 0.02, the start tick too. A start also needs `EnergyPerSecond` in store (legacy
+    `CanBeActivated`). While on: `ResistanceShare` `Share` (item 9 of the parts), so energy, heat and kinetic resistance r
+    becomes `Share` + r (1 − `Share`), as legacy. Corrosive moves toward 0.5, as legacy derives it from the fortified
+    values. The mapper gives `Share` = `Power` / 100, 0.5 when `Power` is 0, clamped to [0, 1]. A released bit, a failed
+    payment or a retreat ends it; the cooldown counts from the end. `Active` is the held bit with `CanBeActivated`, also when
+    the payment fails. A fortification keeps stealth on.
+    - *Network (H8).* As the accelerator (device 7).
+    - *AI.* The `Ram` node with `UseSystems` (legacy `RamNode`) holds the first fortification from a second before the hit,
+      and the first accelerator at full throttle while the course is within 15°, the target is 10 u or more away, and the
+      accelerator is active or the energy is at least 50%.
 
 ### Snapshots and events
 
