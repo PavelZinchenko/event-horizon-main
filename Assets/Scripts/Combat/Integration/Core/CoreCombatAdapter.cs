@@ -475,6 +475,18 @@ namespace Combat.Integration.Core
             foreach (var turret in mapping.Turrets)
                 _renderer.AddTurret(id, turret.Barrel, mapping.Definition.Barrels[turret.Barrel],
                     _resourceLocator.GetSprite(turret.Image), turret.Size, turret.Color.ToUnity());
+
+            // Energy and frontal shields (phase 5, step 10d).
+            var devices = mapping.Definition.Devices;
+            for (var i = 0; i < devices.Count; ++i)
+            {
+                if (!(devices[i] is ShieldDefinition shield) || !_mapper.ShieldLooks.TryGetValue(shield, out var look)) continue;
+                var sprite = look.Image ? _resourceLocator.GetSprite(look.Image) : null;
+                if (sprite == null && !_shieldSprites.TryGetValue(look.ResourcePath, out sprite))
+                    _shieldSprites.Add(look.ResourcePath, sprite = Resources.Load<Sprite>(look.ResourcePath));
+                _renderer.AddShield(id, i, sprite, new Vector2(look.OffsetX, look.OffsetY), look.Size, look.Color.ToUnity(),
+                    look.IdleOpacity);
+            }
         }
 
         // The roster transition of the same removal comes later in the batch, so the ID stays mapped until the tick ends.
@@ -890,6 +902,7 @@ namespace Combat.Integration.Core
         // Legacy ShowMessage effect (RadioTransmitter).
         private const string TextEffectPrefab = "Combat/Effects/MessageText";
         private const string DecoySprite = "Textures/star";
+        private readonly Dictionary<string, Sprite> _shieldSprites = new Dictionary<string, Sprite>();
         private Sprite _decoySprite;
 
         private BattleRunner _runner;

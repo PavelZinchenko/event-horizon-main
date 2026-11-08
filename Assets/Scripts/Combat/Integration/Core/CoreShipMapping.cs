@@ -93,6 +93,28 @@ namespace Combat.Integration.Core
         { Barrel = barrel; Image = image; Size = size; Color = color; }
     }
 
+    // Legacy SatelliteFactory.CreateEnergyShield and CreateFrontalShield (phase 5, step 10d). An empty Image draws the
+    // built-in sprite at ResourcePath. Size is the drawn width; the offset is in the ship frame.
+    public readonly struct CoreShieldLook
+    {
+        public readonly SpriteId Image;
+        public readonly string ResourcePath;
+        public readonly float Size, OffsetX, OffsetY;
+        public readonly ColorData Color;
+        public readonly float IdleOpacity;
+        public CoreShieldLook(SpriteId image, string resourcePath, float size, float offsetX, float offsetY, ColorData color,
+            float idleOpacity)
+        {
+            Image = image;
+            ResourcePath = resourcePath;
+            Size = size;
+            OffsetX = offsetX;
+            OffsetY = offsetY;
+            Color = color;
+            IdleOpacity = idleOpacity;
+        }
+    }
+
     // Legacy SatelliteFactory: the satellite sprite at its model scale.
     public readonly struct CoreSatelliteSource
     {

@@ -83,6 +83,23 @@ namespace CombatView
             ship.Turrets.Add(new TurretView(renderer, barrel, definition, size, carrierScale, color));
         }
 
+        // Legacy EnergyShield unit (phase 5, step 10d): a child of the hull view at the shield's offset, size wide. Its
+        // colour goes from transparent to the idle colour (the device colour, its alpha times the default opacity) by 4 x
+        // the elapsed time of the distance; for 1 s after a hit it fades from the device colour to the idle one.
+        public void AddShield(EntityId id, int deviceIndex, Sprite sprite, Vector2 offset, float size, Color color,
+            float defaultOpacity)
+        {
+            if (!_ships.TryGetValue(id, out var ship)) return;
+            var renderer = CreateRenderer("Shield", ship.Root.transform, sprite ? sprite : _genericSprite, ShipSortingOrder + 1);
+            var carrierScale = ship.Root.transform.localScale.x;
+            renderer.transform.localScale = Vector3.one * (size / carrierScale);
+            renderer.transform.localPosition = new Vector3(offset.x, offset.y, 0f) / carrierScale;
+            renderer.color = Color.clear;
+            var idle = color;
+            idle.a *= defaultOpacity;
+            ship.Shields.Add(new ShieldView(renderer, deviceIndex, color, idle));
+        }
+
         public void RemoveShip(EntityId id, RemovalReason reason)
         {
             if (!_ships.TryGetValue(id, out var view))
@@ -90,6 +107,7 @@ namespace CombatView
 
             _ships.Remove(id);
             foreach (var turret in view.Turrets) Object.Destroy(turret.Renderer.gameObject);
+            foreach (var shield in view.Shields) Object.Destroy(shield.Renderer.gameObject);
             // Legacy SatelliteController: the ship's death destroys its satellites (an explosion), a retreat makes them vanish.
             foreach (var satellite in view.Satellites)
                 if (reason == RemovalReason.Death && satellite.HasPose)
@@ -215,6 +233,17 @@ namespace CombatView
                     turret.HasAngle = true;
                 }
                 ApplyColor(view);
+            }
+
+            foreach (var shield in snapshot.Shields)
+            {
+                if (!_ships.TryGetValue(shield.ShipId, out var view)) continue;
+                foreach (var shieldView in view.Shields)
+                {
+                    if (shieldView.DeviceIndex != shield.DeviceIndex) continue;
+                    shieldView.On = shield.IsOn;
+                    shieldView.HitTime = shield.HitAge < ShieldHitTicks ? shield.HitAge * Battle.TickDuration : float.MaxValue;
+                }
             }
 
             foreach (var bullet in snapshot.Bullets)
@@ -343,6 +372,15 @@ namespace CombatView
             foreach (var ship in _ships.Values)
                 foreach (var satellite in ship.Satellites)
                     Place(satellite, alpha, anchor);
+
+            foreach (var ship in _ships.Values)
+                foreach (var shield in ship.Shields)
+                {
+                    shield.Power = Mathf.Lerp(shield.Power, shield.On ? 1f : 0f, ShieldFadeRate * deltaTime);
+                    shield.HitTime += deltaTime;
+                    var color = shield.HitTime < 1f ? Color.Lerp(shield.Active, shield.Idle, shield.HitTime) : shield.Idle;
+                    shield.Renderer.color = Color.Lerp(Color.clear, color, shield.Power);
+                }
 
             // Legacy StealthDevice.OnUpdateView: the opacity moves by 1 per second.
             foreach (var ship in _ships.Values)
@@ -739,6 +777,7 @@ namespace CombatView
             public float StealthTarget { get; set; } = 1f;
             public readonly List<TurretView> Turrets = new List<TurretView>();
             public readonly List<EntityView> Satellites = new List<EntityView>();
+            public readonly List<ShieldView> Shields = new List<ShieldView>();
             public PoseTrack Pose;
             public bool HasPose { get; private set; }
             public Vector2 Position { get; set; }
@@ -776,6 +815,20 @@ namespace CombatView
             public bool HasAngle;
             public TurretView(SpriteRenderer renderer, int barrel, BarrelDefinition definition, float size, float carrierScale, Color color)
             { Renderer = renderer; Barrel = barrel; Definition = definition; Size = size; CarrierScale = carrierScale; Color = color; }
+        }
+
+        private sealed class ShieldView
+        {
+            public readonly SpriteRenderer Renderer;
+            public readonly int DeviceIndex;
+            public readonly Color Active, Idle;
+            public bool On;
+            public float Power;
+
+            // Seconds since the last hit (legacy _timeFromLastHit, 100 at the start).
+            public float HitTime = float.MaxValue;
+            public ShieldView(SpriteRenderer renderer, int deviceIndex, Color active, Color idle)
+            { Renderer = renderer; DeviceIndex = deviceIndex; Active = active; Idle = idle; }
         }
 
         private sealed class RepairBotView : EntityView
@@ -879,6 +932,10 @@ namespace CombatView
             public Color Color;
             public float Time;
         }
+
+        // Legacy EnergyShield: the power moves by 4 x the elapsed time; a hit shows for 1 s.
+        private const float ShieldFadeRate = 4f;
+        private const long ShieldHitTicks = 50;
 
         private const int SegmentSortingOrder = -1;
         private const int ShipSortingOrder = 0;

@@ -40,6 +40,9 @@ namespace Combat.Integration.Core
         // The device colour of each mapped decoy device, by its decoy ship (phase 5, step 10c).
         public IReadOnlyDictionary<ShipDefinition, ColorData> DecoyColors => _decoyColors;
 
+        // The view of each mapped energy or frontal shield (phase 5, step 10d).
+        public IReadOnlyDictionary<ShieldDefinition, CoreShieldLook> ShieldLooks => _shieldLooks;
+
         // Inert reasons the coverage report also gives (phase 5, step 1).
         public const string ObsoleteAmmunitionReason = "obsolete ammunition";
 
@@ -65,6 +68,8 @@ namespace Combat.Integration.Core
                 case DeviceClass.RepairBot:
                 case DeviceClass.Decoy:
                 case DeviceClass.Fortification:
+                case DeviceClass.EnergyShield:
+                case DeviceClass.PartialShield:
                     return null;
                 default:
                     return $"device {deviceClass}";
@@ -190,6 +195,7 @@ namespace Combat.Integration.Core
                         tint = tint ?? device.Color;
                     if (mapped is RepairBotDefinition repairBot) _repairBotColors[repairBot] = device.Color;
                     if (mapped is DecoyDefinition decoy) _decoyColors[decoy.Ship] = device.Color;
+                    if (mapped is ShieldDefinition shield) _shieldLooks[shield] = ShieldLook(device, modelScale);
                     if (mapped is WormTailDefinition tail)
                         _segmentImages[tail] = SegmentImage(device);
                     Add(devices, infos, mapped,
@@ -277,6 +283,19 @@ namespace Combat.Integration.Core
                     activationCost = NonNegative(device.EnergyConsumption);
                     return new DecoyDefinition(activationCost, NonNegative(device.Cooldown), (int)System.Math.Round(device.Power),
                         NonNegative(device.Range), NonNegative(device.Lifetime), Positive(stats.ArmorMultiplier.Value * 10f));
+                // Legacy EnergyShieldDevice: EnergyConsumption once per use, Cooldown from its end; the prefab circle at Size x
+                // model scale. A hit costs its damage / (Power x ShieldMultiplier) energy (phase 5, step 10d).
+                case DeviceClass.EnergyShield:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return ShieldDefinition.EnergyShield(activationCost, NonNegative(device.Cooldown),
+                        NonNegative(device.Power * stats.ShieldMultiplier.Value),
+                        Positive(EnergyShieldRadius(device) * device.Size * modelScale));
+                // Legacy FrontalShieldDevice: EnergyConsumption per second while held; the FrontalShield prefab polygon at
+                // Size x model scale and Offset x model scale. Legacy ActivationCost is 0.
+                case DeviceClass.PartialShield:
+                    return ShieldDefinition.FrontalShield(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
+                        NonNegative(device.Power * stats.ShieldMultiplier.Value),
+                        FrontalShieldPolygon(Positive(device.Size * modelScale), modelScale * device.Offset.x, modelScale * device.Offset.y));
                 case DeviceClass.PointDefense:
                     activationCost = device.EnergyConsumption;
                     return new PointDefenseDefinition(
@@ -336,6 +355,42 @@ namespace Combat.Integration.Core
                     return null;
             }
         }
+
+        // Legacy CircularObjectInitializer sets the collider radius 0.5 / ImageScale; the EnergyShield and EnergyShieldOutline
+        // prefabs have radius 0.5. Legacy loads Prefab, else EffectPrefab; a custom EffectPrefab collider is not read.
+        private static float EnergyShieldRadius(DeviceStats device) =>
+            device.Prefab is GameObjectPrefab_CircularSpriteObject sprite && sprite.ImageScale > 0f ? 0.5f / sprite.ImageScale : 0.5f;
+
+        // The PolygonCollider2D of the FrontalShield prefab, in its frame (x forward).
+        private static readonly Vec2[] FrontalShieldPoints =
+        {
+            new Vec2(0.1996436f, 0.18302166f), new Vec2(0.0724372f, 0.32446393f), new Vec2(-0.10135025f, 0.40494263f),
+            new Vec2(-0.101905935f, -0.40675685f), new Vec2(0.07480715f, -0.32864812f), new Vec2(0.19838507f, -0.17981833f),
+            new Vec2(0.2412068f, 0.0054100156f),
+        };
+
+        private static Polygon FrontalShieldPolygon(float size, float offsetX, float offsetY)
+        {
+            var points = new Vec2[FrontalShieldPoints.Length];
+            for (var i = 0; i < points.Length; ++i)
+                points[i] = size * FrontalShieldPoints[i] + new Vec2(offsetX, offsetY);
+            return Polygon.FromPoints(points);
+        }
+
+        // Legacy SatelliteFactory: the energy shield draws its prefab record's image (or the EnergyShield prefab's) at an
+        // idle opacity of 0.3; the frontal shield draws the FrontalShield prefab's at 1. Both are Size x model scale wide.
+        private static CoreShieldLook ShieldLook(DeviceStats device, float modelScale)
+        {
+            var energy = device.DeviceClass == DeviceClass.EnergyShield;
+            var image = energy && device.Prefab is GameObjectPrefab_CircularSpriteObject sprite ? sprite.Image
+                : energy && device.Prefab is GameObjectPrefab_CircularOutlineObject outline ? outline.Image : SpriteId.Empty;
+            return new CoreShieldLook(image, energy ? EnergyShieldSprite : FrontalShieldSprite, device.Size * modelScale,
+                energy ? 0f : modelScale * device.Offset.x, energy ? 0f : modelScale * device.Offset.y, device.Color,
+                energy ? 0.3f : 1f);
+        }
+
+        private const string EnergyShieldSprite = "Textures/Effects/shield";
+        private const string FrontalShieldSprite = "Textures/Objects/frontal_shield";
 
         // Legacy DeviceFactory: the database prefab record (built on the WormSegment prefab), else ObjectPrefab.
         private static bool IsSegment2(DeviceStats device) =>
@@ -591,6 +646,7 @@ namespace Combat.Integration.Core
         private readonly Dictionary<object, CoreBulletSource> _bulletSources = new Dictionary<object, CoreBulletSource>();
         private readonly Dictionary<RepairBotDefinition, ColorData> _repairBotColors = new Dictionary<RepairBotDefinition, ColorData>();
         private readonly Dictionary<ShipDefinition, ColorData> _decoyColors = new Dictionary<ShipDefinition, ColorData>();
+        private readonly Dictionary<ShieldDefinition, CoreShieldLook> _shieldLooks = new Dictionary<ShieldDefinition, CoreShieldLook>();
         private readonly Dictionary<WormTailDefinition, SpriteId> _segmentImages = new Dictionary<WormTailDefinition, SpriteId>();
     }
 }
