@@ -119,7 +119,7 @@ public static class CoreCoverageReport
             rows.Add(row.Id, row);
             try
             {
-                AddComponentReasons(new ComponentInfo(component).CreateComponent(1), component, database.ShipSettings, row.Reasons);
+                AddComponentReasons(new ComponentInfo(component).CreateComponent(1), component, row.Reasons);
             }
             catch (Exception e)
             {
@@ -142,7 +142,7 @@ public static class CoreCoverageReport
     }
 
     // Weapons, obsolete weapons, devices and drone bays as the mapper sees them, then the stats.
-    private static void AddComponentReasons(IComponent component, Component data, ShipSettings settings, SortedSet<string> reasons)
+    private static void AddComponentReasons(IComponent component, Component data, SortedSet<string> reasons)
     {
         foreach (var weapon in component.Weapons)
         {
@@ -155,11 +155,7 @@ public static class CoreCoverageReport
         foreach (var device in component.Devices)
             AddReason(reasons, CoreShipMapper.DeviceInertReason(device.DeviceClass));
 
-        // The mapper adds the replicator to every ship with drone bays that builds drones (ShipStatsCalculator.DroneBuildSpeed).
         var stats = component.GetStats();
-        if ((component.DroneBays.Any() && settings.BaseDroneReconstructionSpeed > 0) || stats.DroneReconstructionSpeed > 0)
-            reasons.Add(CoreShipMapper.DroneReplicatorReason);
-
         if (stats.ArmorRepairRate != 0f || stats.ArmorRepairCooldownMultiplier.HasValue)
             reasons.Add(ArmorRepairReason);
         if (stats.RammingDamage != 0f)
@@ -205,7 +201,7 @@ public static class CoreCoverageReport
                 try
                 {
                     var component = new ComponentInfo(item.Component).CreateComponent(1);
-                    AddComponentReasons(component, item.Component, database.ShipSettings, row.Reasons);
+                    AddComponentReasons(component, item.Component, row.Reasons);
                 }
                 catch (Exception e)
                 {

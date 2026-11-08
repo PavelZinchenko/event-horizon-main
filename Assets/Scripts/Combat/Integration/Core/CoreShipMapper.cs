@@ -38,7 +38,6 @@ namespace Combat.Integration.Core
 
         // Inert reasons the coverage report also gives (phase 5, step 1).
         public const string ObsoleteAmmunitionReason = "obsolete ammunition";
-        public const string DroneReplicatorReason = "drone replicator";
 
         // Null for a device class the core runs, else its inert reason (D1).
         public static string DeviceInertReason(DeviceClass deviceClass)
@@ -348,15 +347,18 @@ namespace Combat.Integration.Core
             if (!specification.DroneBays.Any())
                 return;
 
+            // Phase 5, step 10a: legacy DroneReplicator, before the bays.
             if (specification.Stats.DroneBuildSpeed > 0)
-                Add(devices, infos, null, new CoreDeviceInfo("drone replicator", -1, SpriteId.Empty, 0f, DroneReplicatorReason));
+                Add(devices, infos, new DroneReplicatorDefinition(1f / specification.Stats.DroneBuildSpeed),
+                    new CoreDeviceInfo("drone replicator", -1, SpriteId.Empty, 0f, null));
 
             foreach (var item in specification.DroneBays)
             {
                 var bay = item.DroneBay;
                 var drone = Map(BuildDrone(item), isDrone: true, item, isClone: false);
                 aiDroneBays.Add(new AiDroneBay(devices.Count, item.KeyBinding < 0));
-                Add(devices, infos, new DroneBayDefinition(System.Math.Max(1, bay.Capacity), NonNegative(bay.EnergyConsumption), drone.Definition),
+                Add(devices, infos, new DroneBayDefinition(System.Math.Max(1, bay.Capacity), NonNegative(bay.EnergyConsumption),
+                        drone.Definition, System.Math.Max(0, bay.BuildExtraCycles)),
                     new CoreDeviceInfo($"drone bay, drone {item.Drone.Id.Value}", item.KeyBinding, bay.ControlButtonIcon, 0f, null));
             }
         }
