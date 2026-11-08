@@ -37,6 +37,9 @@ namespace Combat.Integration.Core
         public IReadOnlyDictionary<WormTailDefinition, SpriteId> SegmentImages => _segmentImages;
         public IReadOnlyDictionary<RepairBotDefinition, ColorData> RepairBotColors => _repairBotColors;
 
+        // The device colour of each mapped decoy device, by its decoy ship (phase 5, step 10c).
+        public IReadOnlyDictionary<ShipDefinition, ColorData> DecoyColors => _decoyColors;
+
         // Inert reasons the coverage report also gives (phase 5, step 1).
         public const string ObsoleteAmmunitionReason = "obsolete ammunition";
 
@@ -60,6 +63,7 @@ namespace Combat.Integration.Core
                 case DeviceClass.Brake:
                 case DeviceClass.Ghost:
                 case DeviceClass.RepairBot:
+                case DeviceClass.Decoy:
                 case DeviceClass.Fortification:
                     return null;
                 default:
@@ -185,6 +189,7 @@ namespace Combat.Integration.Core
                     if (detonator != null || mapped is GhostDefinition || mapped is FortificationDefinition)
                         tint = tint ?? device.Color;
                     if (mapped is RepairBotDefinition repairBot) _repairBotColors[repairBot] = device.Color;
+                    if (mapped is DecoyDefinition decoy) _decoyColors[decoy.Ship] = device.Color;
                     if (mapped is WormTailDefinition tail)
                         _segmentImages[tail] = SegmentImage(device);
                     Add(devices, infos, mapped,
@@ -266,6 +271,12 @@ namespace Combat.Integration.Core
                     return new RepairBotDefinition(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
                         NonNegative(device.Lifetime), Positive(device.Size), NonNegative(device.Range),
                         NonNegative(stats.ArmorMultiplier.Value * device.Size), NonNegative(device.Power));
+                // Legacy DecoyDevice: EnergyConsumption once per use, Cooldown from the use, RoundToInt(Power) decoys at
+                // Range relative speed, Lifetime, and ArmorMultiplier x 10 hit points (phase 5, step 10c).
+                case DeviceClass.Decoy:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new DecoyDefinition(activationCost, NonNegative(device.Cooldown), (int)System.Math.Round(device.Power),
+                        NonNegative(device.Range), NonNegative(device.Lifetime), Positive(stats.ArmorMultiplier.Value * 10f));
                 case DeviceClass.PointDefense:
                     activationCost = device.EnergyConsumption;
                     return new PointDefenseDefinition(
@@ -579,6 +590,7 @@ namespace Combat.Integration.Core
         private readonly Dictionary<ShipDefinition, CoreShipMapping> _mappings = new Dictionary<ShipDefinition, CoreShipMapping>();
         private readonly Dictionary<object, CoreBulletSource> _bulletSources = new Dictionary<object, CoreBulletSource>();
         private readonly Dictionary<RepairBotDefinition, ColorData> _repairBotColors = new Dictionary<RepairBotDefinition, ColorData>();
+        private readonly Dictionary<ShipDefinition, ColorData> _decoyColors = new Dictionary<ShipDefinition, ColorData>();
         private readonly Dictionary<WormTailDefinition, SpriteId> _segmentImages = new Dictionary<WormTailDefinition, SpriteId>();
     }
 }

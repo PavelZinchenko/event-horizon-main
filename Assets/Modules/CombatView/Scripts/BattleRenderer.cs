@@ -49,6 +49,14 @@ namespace CombatView
             _ships.Add(id, new EntityView(renderer.gameObject, renderer) { Tint = tint ?? Color.white });
         }
 
+        // Legacy Decoy (phase 5, step 10c): the device colour, faded by ShipState.Life as legacy SpriteView with life
+        // opacity (1 - (1 - life)^2).
+        public void AddDecoy(EntityId id, Sprite sprite, float scale, Color color)
+        {
+            AddShip(id, sprite, scale, color);
+            if (_ships.TryGetValue(id, out var view)) view.IsDecoy = true;
+        }
+
         // Legacy SatelliteFactory (phase 5, step 12c): a satellite has its own body, so its view is not a child of the
         // ship. Add the ship's satellites in definition order, before its turrets.
         public void AddSatellite(EntityId id, Sprite sprite, float scale)
@@ -190,8 +198,9 @@ namespace CombatView
                 // moves to the device colour during the lock (step 7b). Legacy StealthDevice: 40% for the viewer's
                 // side, 5% for the others (step 9b); Render moves the opacity there. Legacy Ghost and Fortification
                 // multiply the colour by the device colour with its alpha (step 9d): a ghost fades to 25%.
-                var color = Color.Lerp(Color.white, view.Tint, ship.Tint);
+                var color = view.IsDecoy ? view.Tint : Color.Lerp(Color.white, view.Tint, ship.Tint);
                 if ((ship.Status & ShipStatusFlags.Faded) != 0) color.a *= FadedAlpha;
+                if (view.IsDecoy) color.a *= 1f - (1f - ship.Life) * (1f - ship.Life);
                 view.Color = color;
                 view.StealthTarget = (ship.Status & ShipStatusFlags.Stealth) == 0 ? 1f
                     : ship.Side == ViewerSide ? OwnStealthAlpha : EnemyStealthAlpha;
@@ -720,8 +729,9 @@ namespace CombatView
             // Null for a line.
             public SpriteRenderer Renderer { get; }
 
-            // A ship: the colour ShipState.Tint moves it to.
+            // A ship: the colour ShipState.Tint moves it to. A decoy: its colour.
             public Color Tint { get; set; } = Color.white;
+            public bool IsDecoy { get; set; }
 
             // A ship: the colour of the last snapshot, and the stealth opacity with its target (phase 5, step 9b).
             public Color Color { get; set; } = Color.white;

@@ -408,13 +408,15 @@ namespace Combat.Integration.Core
                             _renderer.AddBullet(item, _bulletVisuals.Get(item));
                         else if (item.IsDrone)
                             OnDroneSpawned(item);
+                        else if (item.IsDecoy)
+                            OnDecoySpawned(item);
                         else
                             OnShipSpawned(snapshot, item);
                         break;
                     case BattleEventKind.Removal:
                         if (item.IsBullet)
                             _renderer.RemoveBullet(item.EntityId);
-                        else if (item.IsDrone)
+                        else if (item.IsDrone || item.IsDecoy)
                             _renderer.RemoveShip(item.EntityId, item.RemovalReason);
                         else
                             OnShipRemoved(item);
@@ -447,6 +449,14 @@ namespace Combat.Integration.Core
             _renderer.AddShip(item.EntityId, _resourceLocator.GetSprite(model.ModelImage), model.ModelScale,
                 _mapper.Mappings[state.Definition].TintColor?.ToUnity());
             AddTurrets(item.EntityId, _mapper.Mappings[state.Definition]);
+        }
+
+        // Legacy Decoy prefab: the star sprite at twice the body scale, in the device colour (phase 5, step 10c).
+        private void OnDecoySpawned(in BattleEvent item)
+        {
+            if (_decoySprite == null) _decoySprite = Resources.Load<Sprite>(DecoySprite);
+            var color = _mapper.DecoyColors.TryGetValue(item.Definition, out var data) ? data.ToUnity() : Color.white;
+            _renderer.AddDecoy(item.EntityId, _decoySprite, 2f * DecoyDefinition.Size, color);
         }
 
         private void OnDroneSpawned(in BattleEvent item)
@@ -879,6 +889,8 @@ namespace Combat.Integration.Core
         private const string FlashSpriteName = "Textures/star";
         // Legacy ShowMessage effect (RadioTransmitter).
         private const string TextEffectPrefab = "Combat/Effects/MessageText";
+        private const string DecoySprite = "Textures/star";
+        private Sprite _decoySprite;
 
         private BattleRunner _runner;
         private readonly BehaviorTreeFactory _trees;
