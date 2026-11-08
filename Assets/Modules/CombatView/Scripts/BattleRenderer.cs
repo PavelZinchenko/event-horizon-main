@@ -95,6 +95,9 @@ namespace CombatView
         }
 
         // The body sprite of the segments of one worm tail (phase 5, step 7d); without one they draw the generic sprite.
+        public void AddRepairBotLook(RepairBotDefinition definition, Sprite sprite, Color laserColor) =>
+            _repairBotLooks[definition] = (sprite, laserColor);
+
         public void AddSegmentLook(WormTailDefinition definition, Sprite sprite)
         {
             if (sprite)
@@ -240,6 +243,7 @@ namespace CombatView
             }
 
             CaptureSegments(snapshot);
+            CaptureRepairBots(snapshot);
         }
 
         // Worm tail segments have no events: a view lives while the snapshot lists its segment. Legacy rule: the segment's
@@ -276,6 +280,41 @@ namespace CombatView
                 _segments.Remove(id);
             }
             _removedSegments.Clear();
+        }
+
+        private void CaptureRepairBots(BattleSnapshot snapshot)
+        {
+            ++_repairBotStamp;
+            foreach (var bot in snapshot.RepairBots)
+            {
+                if (!_repairBots.TryGetValue(bot.Id, out var view))
+                {
+                    _repairBotLooks.TryGetValue(bot.Definition, out var look);
+                    var renderer = CreateRenderer("RepairBot", _root.transform, look.sprite ? look.sprite : _genericSprite, ShipSortingOrder);
+                    renderer.transform.localScale = Vector3.one * bot.Scale;
+                    var line = renderer.gameObject.AddComponent<LineRenderer>();
+                    line.sharedMaterial = _spriteMaterial;
+                    line.useWorldSpace = true;
+                    line.positionCount = 2;
+                    line.startWidth = line.endWidth = 0.04f;
+                    line.startColor = line.endColor = look.color;
+                    line.sortingOrder = BulletSortingOrder;
+                    view = new RepairBotView(renderer, line, bot.ShipId);
+                    _repairBots.Add(bot.Id, view);
+                }
+                view.Push(bot.Position, bot.Angle);
+                view.Line.enabled = bot.Repairing;
+                view.Jitter = bot.Repairing ? _repairBotRandom.Next(-30, 30) : 0f;
+                view.Stamp = _repairBotStamp;
+            }
+            foreach (var pair in _repairBots)
+                if (pair.Value.Stamp != _repairBotStamp) _removedRepairBots.Add(pair.Key);
+            foreach (var id in _removedRepairBots)
+            {
+                Object.Destroy(_repairBots[id].Root);
+                _repairBots.Remove(id);
+            }
+            _removedRepairBots.Clear();
         }
 
         // Once per frame. The controlled ship goes to its image nearest to the anchor, and the anchor follows it,
@@ -321,6 +360,17 @@ namespace CombatView
             foreach (var pair in _segments)
                 Place(pair.Value, alpha, anchor);
 
+            foreach (var bot in _repairBots.Values)
+            {
+                Place(bot, alpha, anchor);
+                if (!bot.Line.enabled || !_ships.TryGetValue(bot.Ship, out var parent)) continue;
+                bot.Renderer.transform.rotation = Quaternion.Euler(0f, 0f, bot.Degrees + bot.Jitter);
+                var delta = _torus.Delta(new Vec2(bot.Position.x, bot.Position.y), new Vec2(parent.Position.x, parent.Position.y));
+                delta = Rot.FromAngle(bot.Jitter * Mathf.Deg2Rad).Rotate(delta);
+                bot.Line.SetPosition(0, new Vector3(bot.Position.x, bot.Position.y, 0f));
+                bot.Line.SetPosition(1, new Vector3(bot.Position.x + delta.X, bot.Position.y + delta.Y, 0f));
+            }
+
             UpdateFades(deltaTime);
             UpdateFlashes(deltaTime, anchor);
             UpdateTexts(deltaTime, anchor);
@@ -354,6 +404,8 @@ namespace CombatView
             _bullets.Clear();
             _segments.Clear();
             _segmentLooks.Clear();
+            _repairBots.Clear();
+            _repairBotLooks.Clear();
             foreach (var pool in _bulletPools)
                 pool.Clear();
             _fades.Clear();
@@ -716,6 +768,16 @@ namespace CombatView
             { Renderer = renderer; Barrel = barrel; Definition = definition; Size = size; CarrierScale = carrierScale; Color = color; }
         }
 
+        private sealed class RepairBotView : EntityView
+        {
+            public RepairBotView(SpriteRenderer renderer, LineRenderer line, EntityId ship) : base(renderer.gameObject, renderer)
+            { Line = line; Ship = ship; }
+            public readonly LineRenderer Line;
+            public readonly EntityId Ship;
+            public float Jitter;
+            public int Stamp;
+        }
+
         private sealed class SegmentView : EntityView
         {
             public SegmentView(GameObject root, SpriteRenderer renderer) : base(root, renderer) { }
@@ -854,6 +916,11 @@ namespace CombatView
         private readonly Dictionary<WormTailDefinition, Sprite> _segmentLooks = new Dictionary<WormTailDefinition, Sprite>();
         private readonly List<EntityId> _removedSegments = new List<EntityId>();
         private int _segmentStamp;
+        private readonly Dictionary<EntityId, RepairBotView> _repairBots = new Dictionary<EntityId, RepairBotView>();
+        private readonly Dictionary<RepairBotDefinition, (Sprite sprite, Color color)> _repairBotLooks = new Dictionary<RepairBotDefinition, (Sprite, Color)>();
+        private readonly List<EntityId> _removedRepairBots = new List<EntityId>();
+        private int _repairBotStamp;
+        private readonly System.Random _repairBotRandom = new System.Random();
         private readonly Stack<BulletView>[] _bulletPools = { new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>() };
         private readonly List<Fade> _fades = new List<Fade>();
         private readonly List<Flash> _flashes = new List<Flash>();

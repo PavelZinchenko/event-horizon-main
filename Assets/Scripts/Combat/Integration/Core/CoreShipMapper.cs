@@ -35,6 +35,7 @@ namespace Combat.Integration.Core
 
         // The body image of each mapped worm tail's segments (phase 5, step 7d).
         public IReadOnlyDictionary<WormTailDefinition, SpriteId> SegmentImages => _segmentImages;
+        public IReadOnlyDictionary<RepairBotDefinition, ColorData> RepairBotColors => _repairBotColors;
 
         // Inert reasons the coverage report also gives (phase 5, step 1).
         public const string ObsoleteAmmunitionReason = "obsolete ammunition";
@@ -58,6 +59,7 @@ namespace Combat.Integration.Core
                 case DeviceClass.Accelerator:
                 case DeviceClass.Brake:
                 case DeviceClass.Ghost:
+                case DeviceClass.RepairBot:
                 case DeviceClass.Fortification:
                     return null;
                 default:
@@ -182,6 +184,7 @@ namespace Combat.Integration.Core
                             device.Color, null);
                     if (detonator != null || mapped is GhostDefinition || mapped is FortificationDefinition)
                         tint = tint ?? device.Color;
+                    if (mapped is RepairBotDefinition repairBot) _repairBotColors[repairBot] = device.Color;
                     if (mapped is WormTailDefinition tail)
                         _segmentImages[tail] = SegmentImage(device);
                     Add(devices, infos, mapped,
@@ -259,6 +262,10 @@ namespace Combat.Integration.Core
             var modelScale = stats.ShipModel.ModelScale;
             switch (device.DeviceClass)
             {
+                case DeviceClass.RepairBot:
+                    return new RepairBotDefinition(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
+                        NonNegative(device.Lifetime), Positive(device.Size), NonNegative(device.Range),
+                        NonNegative(stats.ArmorMultiplier.Value * device.Size), NonNegative(device.Power));
                 case DeviceClass.PointDefense:
                     activationCost = device.EnergyConsumption;
                     return new PointDefenseDefinition(
@@ -571,6 +578,7 @@ namespace Combat.Integration.Core
         private readonly CoreHullBuilder _hullBuilder;
         private readonly Dictionary<ShipDefinition, CoreShipMapping> _mappings = new Dictionary<ShipDefinition, CoreShipMapping>();
         private readonly Dictionary<object, CoreBulletSource> _bulletSources = new Dictionary<object, CoreBulletSource>();
+        private readonly Dictionary<RepairBotDefinition, ColorData> _repairBotColors = new Dictionary<RepairBotDefinition, ColorData>();
         private readonly Dictionary<WormTailDefinition, SpriteId> _segmentImages = new Dictionary<WormTailDefinition, SpriteId>();
     }
 }

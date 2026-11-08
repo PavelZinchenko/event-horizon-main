@@ -87,6 +87,8 @@ namespace Combat.Integration.Core
             var textFont = Resources.Load<TextMesh>(TextEffectPrefab)?.font;
             var flashSprite = resourceLocator.GetSprite(FlashSpriteName);
             _renderer = new BattleRenderer(torus, bulletSprite, flashSprite, textFont, scene) { ViewerSide = PlayerSide };
+            foreach (var look in _mapper.RepairBotColors)
+                _renderer.AddRepairBotLook(look.Key, resourceLocator.GetSprite(new SpriteId("repair_bot", SpriteId.Type.Satellite)), look.Value.ToUnity());
             foreach (var look in _mapper.SegmentImages)
                 _renderer.AddSegmentLook(look.Key, resourceLocator.GetSprite(look.Value));
             _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, resourceLocator, flashSprite);
