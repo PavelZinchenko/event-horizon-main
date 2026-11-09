@@ -104,6 +104,12 @@ namespace Combat.Integration.Core
             foreach (var look in _mapper.SegmentImages)
                 _renderer.AddSegmentLook(look.Key, resourceLocator.GetSprite(look.Value));
             _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, resourceLocator, flashSprite);
+            _visualEffects = new CoreVisualEffects(resourceLocator);
+#if UNITY_EDITOR
+            // Phase 5b, step 3: the owner reviews the effects in the Combat > Effect Preview window.
+            _effectPreview = new CoreEffectPreview(_renderer, _visualEffects, sounds, database, resourceLocator, () =>
+                _ids.TryGetCore(ControlledShip, out var core) ? core : default);
+#endif
             _anchor = new Vector2(0.5f * setup.Width, 0.5f * setup.Height);
             // Step 10: the legacy planet, presentation only (D8).
             if (!rules.DisablePlanet)
@@ -206,7 +212,17 @@ namespace Combat.Integration.Core
 
         // Camera framing by the legacy rule: the player ship and the target with margins, zoomed in on each new
         // player ship. Drawn positions are continuous across the wrap, so the camera never jumps at the map edge.
-        public Rect CameraRect => _framing.Rect;
+        // Phase 5b, step 3: the effects' camera shake moves the rect, as legacy Scene.ViewRect.
+        public Rect CameraRect
+        {
+            get
+            {
+                var rect = _framing.Rect;
+                rect.position += _renderer.CameraOffset;
+                return rect;
+            }
+        }
+
         public Vector2 ViewPoint => _framing.Center;
 
         #endregion
@@ -297,6 +313,9 @@ namespace Combat.Integration.Core
         {
             _playerInputSignal.Event -= OnPlayerInput;
             _runner = null;
+#if UNITY_EDITOR
+            _effectPreview.Dispose();
+#endif
             _renderer.Dispose();
             _planet?.Dispose();
             _asteroids?.Dispose();
@@ -338,6 +357,7 @@ namespace Combat.Integration.Core
                 _ids.TryGetCore(player.Id, out controlled);
 
             var alpha = IsRunning ? Mathf.Clamp01(_accumulator / Battle.TickDuration) : 1f;
+            _renderer.ViewPoint = _framing.Center;
             _renderer.Render(alpha, controlled, ref _anchor, Time.deltaTime);
             _planet?.Render(_anchor, Time.deltaTime);
             _asteroids?.Render(alpha, _anchor, Time.deltaTime);
@@ -994,6 +1014,10 @@ namespace Combat.Integration.Core
         private readonly EntityIdMap _ids = new EntityIdMap();
         private readonly BattleRenderer _renderer;
         private readonly CoreBulletVisuals _bulletVisuals;
+        private readonly CoreVisualEffects _visualEffects;
+#if UNITY_EDITOR
+        private readonly CoreEffectPreview _effectPreview;
+#endif
         private readonly CorePlanet _planet;
         private readonly CoreAsteroids _asteroids;
         private readonly LegacyViewRect _framing = new LegacyViewRect();

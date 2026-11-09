@@ -31,6 +31,15 @@ namespace CombatView
             return prefab;
         }
 
+        // An inactive copy of the prefab in the storage, to configure and then pass to Get as a prefab (step 3). The
+        // renderer root destroys it.
+        public GameObject CreateTemplate(GameObject prefab)
+        {
+            var template = Object.Instantiate(prefab, _storage, false);
+            template.name = prefab.name;
+            return template;
+        }
+
         // A free instance, or a new one. The instance keeps its active state; its component initializes it.
         public GameObject Get(GameObject prefab, Transform parent)
         {

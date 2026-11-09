@@ -32,7 +32,8 @@ namespace CombatView
 
             // Phase 5b, step 2: the new prefabs, their effects and the sounds. Steps 3-8 add their users.
             _prefabs = new PrefabPool(_root.transform);
-            _effects = new EffectPool(_prefabs, torus, _root.transform);
+            _shake = new CameraShake();
+            _effects = new EffectPool(_prefabs, torus, _root.transform, _shake);
             _sounds = new CombatSounds(soundOutput);
 
             // A new sprite renderer carries the built-in sprite material; lines and trails share it.
@@ -219,6 +220,26 @@ namespace CombatView
             _texts.Add(new Text(mesh, position, drift, color));
         }
 
+        // Phase 5b, step 3: the effects and sounds for the view groups of steps 4-8 and the effect preview.
+        public CombatSounds Sounds => _sounds;
+
+        // The camera centre: a shake is weaker far from it. The adapter moves the camera rect by CameraOffset.
+        public Vector2 ViewPoint { get => _shake.ViewPoint; set => _shake.ViewPoint = value; }
+        public Vector2 CameraOffset => _shake.Offset;
+
+        // A record or a named effect prefab (Resources/CombatView/Effects/<name>) at a world point. The caller sets its
+        // position offset, size and colour, and runs it; null without a record or a prefab.
+        public IEffect AddEffect(EffectRecord record, Vec2 point) => _effects.Create(record, point);
+        public IEffect AddEffect(string prefab, Vec2 point) => _effects.Create(LoadEffect(prefab), point);
+
+        // A record or a named effect prefab on a ship view, in its local space, so it moves and scales with it. The
+        // ship's removal destroys it with the view.
+        public IEffect AddShipEffect(EntityId id, EffectRecord record) =>
+            _ships.TryGetValue(id, out var view) ? _effects.Create(record, view.Root.transform) : null;
+
+        public IEffect AddShipEffect(EntityId id, string prefab) =>
+            _ships.TryGetValue(id, out var view) ? _effects.Create(LoadEffect(prefab), view.Root.transform) : null;
+
         // The event feed (phase 5b, step 2): the adapter passes every event of the tick in order, after its own handling
         // and before Capture of the same snapshot.
         public void OnEvent(BattleSnapshot snapshot, in BattleEvent item)
@@ -385,6 +406,7 @@ namespace CombatView
         public void Render(float alpha, EntityId controlled, ref Vector2 anchor, float deltaTime)
         {
             _time += deltaTime;
+            _shake.Update(Time.unscaledDeltaTime);
 
             if (!controlled.IsNull && _ships.TryGetValue(controlled, out var controlledView) && controlledView.HasPose)
                 anchor = Place(controlledView, alpha, anchor);
@@ -755,6 +777,8 @@ namespace CombatView
             return mesh;
         }
 
+        private GameObject LoadEffect(string name) => string.IsNullOrEmpty(name) ? null : _prefabs.Load(EffectFolder + name);
+
         private static SpriteRenderer CreateRenderer(string name, Transform parent, Sprite sprite, int sortingOrder)
         {
             var gameObject = new GameObject(name);
@@ -982,6 +1006,9 @@ namespace CombatView
         private const float GenericFlashDiameter = 1f;
         private const float GenericFlashDuration = 0.2f;
 
+        // The named effect prefabs (step 3), with their legacy names.
+        private const string EffectFolder = "Effects/";
+
         // Legacy TrailView on CommonRocket (_duration).
         private const float TrailDuration = 0.5f;
 
@@ -1004,6 +1031,7 @@ namespace CombatView
         private readonly Torus _torus;
         private readonly PrefabPool _prefabs;
         private readonly EffectPool _effects;
+        private readonly CameraShake _shake;
         private readonly CombatSounds _sounds;
         private readonly List<IBattleEventView> _eventViews = new List<IBattleEventView>();
         private readonly Sprite _genericSprite;
