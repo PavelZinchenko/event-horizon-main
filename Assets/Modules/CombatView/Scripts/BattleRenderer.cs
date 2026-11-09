@@ -180,10 +180,16 @@ namespace CombatView
 
             bullet.LastFlashTime = _time;
             var look = bullet.Visual.Flash;
+            AddFlash(hit.Point, look.Diameter, look.Color, look.Duration);
+        }
+
+        // One flash at a world point, as a hit flash: a teleporter jump draws one at each end (phase 5, step 11b).
+        public void AddFlash(Vec2 point, float diameter, Color color, float duration)
+        {
             var renderer = _flashPool.Count > 0 ? _flashPool.Pop() : CreateRenderer("Flash", _root.transform, _flashSprite, FlashSortingOrder);
             renderer.gameObject.SetActive(true);
-            renderer.transform.localScale = Vector3.one * ScaleToDiameter(_flashSprite, Mathf.Max(MinFlashDiameter, look.Diameter));
-            _flashes.Add(new Flash(renderer, hit.Point, look.Color, Mathf.Max(MinFlashDuration, look.Duration)));
+            renderer.transform.localScale = Vector3.one * ScaleToDiameter(_flashSprite, Mathf.Max(MinFlashDiameter, diameter));
+            _flashes.Add(new Flash(renderer, point, color, Mathf.Max(MinFlashDuration, duration)));
         }
 
         // Legacy RadioTransmitter and the MessageText effect (ShowMessage, step 7f): the text starts at the ship and

@@ -32,6 +32,7 @@ namespace Combat.Integration.Core
             }
 
             KeyBindings = keys.Values.Select(group => (IReadOnlyList<int>)group).ToList();
+            _releaseImmediately = keys.Values.Select(group => group.All(i => mapping.Devices[i].ReleaseImmediately)).ToArray();
             DroneBays = droneBays;
             _devices = new DeviceState[devices.Count];
         }
@@ -40,7 +41,8 @@ namespace Combat.Integration.Core
         public IReadOnlyList<int> DroneBays { get; }
 
         public SpriteId GetButtonIcon(int system) => _mapping.Devices[system].Icon;
-        public bool ReleaseImmediately(int keyGroup) => false;
+        // Legacy ShouReleaseButtonImmediately over the group (phase 5, step 11b, finding 7).
+        public bool ReleaseImmediately(int keyGroup) => _releaseImmediately[keyGroup];
 
         public float GetCooldown(int system) => _devices[system].Cooldown;
 
@@ -49,5 +51,6 @@ namespace Combat.Integration.Core
 
         private readonly CoreShipMapping _mapping;
         private readonly DeviceState[] _devices;
+        private readonly bool[] _releaseImmediately;
     }
 }

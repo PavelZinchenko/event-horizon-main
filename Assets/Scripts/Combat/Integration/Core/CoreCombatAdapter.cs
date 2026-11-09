@@ -430,6 +430,9 @@ namespace Combat.Integration.Core
                     case BattleEventKind.Hit:
                         _renderer.AddHit(item);
                         break;
+                    case BattleEventKind.Teleport:
+                        OnTeleport(item);
+                        break;
                 }
             }
         }
@@ -457,6 +460,17 @@ namespace Combat.Integration.Core
             if (_decoySprite == null) _decoySprite = Resources.Load<Sprite>(DecoySprite);
             var color = _mapper.DecoyColors.TryGetValue(item.Definition, out var data) ? data.ToUnity() : Color.white;
             _renderer.AddDecoy(item.EntityId, _decoySprite, 2f * DecoyDefinition.Size, color);
+        }
+
+        // Legacy TeleporterDevice: its effect at the start point (OnActivate), then at the end point (OnDeactivate), for
+        // 0.5 s each (phase 5, step 11b).
+        private void OnTeleport(in BattleEvent item)
+        {
+            if (!(item.Definition?.Devices[item.DeviceIndex] is TeleporterDefinition teleporter) ||
+                !_mapper.TeleporterFlashes.TryGetValue(teleporter, out var look)) return;
+            var color = look.Color.ToUnity();
+            _renderer.AddFlash(item.Point, look.Diameter, color, TeleportFlashSeconds);
+            _renderer.AddFlash(item.Destination, look.Diameter, color, TeleportFlashSeconds);
         }
 
         private void OnDroneSpawned(in BattleEvent item)
@@ -902,6 +916,7 @@ namespace Combat.Integration.Core
         // Legacy ShowMessage effect (RadioTransmitter).
         private const string TextEffectPrefab = "Combat/Effects/MessageText";
         private const string DecoySprite = "Textures/star";
+        private const float TeleportFlashSeconds = 0.5f;
         private readonly Dictionary<string, Sprite> _shieldSprites = new Dictionary<string, Sprite>();
         private Sprite _decoySprite;
 

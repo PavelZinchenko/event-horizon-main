@@ -119,6 +119,15 @@ namespace Combat.Integration.Core
         }
     }
 
+    // Legacy StaticEffect of a teleporter (phase 5, step 11b): one flash for 0.5 s at each end of the jump, Diameter
+    // device Size x model scale.
+    public readonly struct CoreFlashLook
+    {
+        public readonly ColorData Color;
+        public readonly float Diameter;
+        public CoreFlashLook(ColorData color, float diameter) { Color = color; Diameter = diameter; }
+    }
+
     // Legacy SatelliteFactory: the satellite sprite at its model scale.
     public readonly struct CoreSatelliteSource
     {
@@ -129,13 +138,15 @@ namespace Combat.Integration.Core
 
     public readonly struct CoreDeviceInfo
     {
-        public CoreDeviceInfo(string name, int keyBinding, SpriteId icon, float activationCost, string inertReason)
+        public CoreDeviceInfo(string name, int keyBinding, SpriteId icon, float activationCost, string inertReason,
+            bool releaseImmediately = false)
         {
             Name = name;
             KeyBinding = keyBinding;
             Icon = icon;
             ActivationCost = activationCost;
             InertReason = inertReason;
+            ReleaseImmediately = releaseImmediately;
         }
 
         public readonly string Name;
@@ -151,6 +162,10 @@ namespace Combat.Integration.Core
 
         // Not null for an inert device (D1).
         public readonly string InertReason;
+
+        // Legacy ShouReleaseButtonImmediately for this system alone (phase 5, step 11b): a button of systems that all
+        // have it cannot be locked by a double tap.
+        public readonly bool ReleaseImmediately;
         public bool IsInert => InertReason != null;
     }
 }

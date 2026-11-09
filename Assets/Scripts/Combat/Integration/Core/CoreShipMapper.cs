@@ -43,6 +43,9 @@ namespace Combat.Integration.Core
         // The view of each mapped energy or frontal shield (phase 5, step 10d).
         public IReadOnlyDictionary<ShieldDefinition, CoreShieldLook> ShieldLooks => _shieldLooks;
 
+        // The two flashes of each mapped teleporter with an effect (phase 5, step 11b).
+        public IReadOnlyDictionary<TeleporterDefinition, CoreFlashLook> TeleporterFlashes => _teleporterFlashes;
+
         // Inert reasons the coverage report also gives (phase 5, step 1).
         public const string ObsoleteAmmunitionReason = "obsolete ammunition";
 
@@ -72,6 +75,7 @@ namespace Combat.Integration.Core
                 case DeviceClass.PartialShield:
                 case DeviceClass.ToxicWaste:
                 case DeviceClass.Retribution:
+                case DeviceClass.Teleporter:
                     return null;
                 default:
                     return $"device {deviceClass}";
@@ -147,13 +151,14 @@ namespace Combat.Integration.Core
                     if (device != null)
                         aiWeapons.Add(ToAiWeapon(weapon, devices.Count, Positive(stats.Weight)));
                     var cost = device is BeamDefinition beam ? beam.ActivationCost : (device as CannonDefinition)?.EnergyCost ?? 0f;
-                    Add(devices, infos, device, new CoreDeviceInfo(name, weapon.KeyBinding, weapon.Weapon.Stats.ControlButtonIcon, cost, reason));
+                    Add(devices, infos, device, new CoreDeviceInfo(name, weapon.KeyBinding, weapon.Weapon.Stats.ControlButtonIcon, cost, reason,
+                        ReleasesWeaponButton(weapon.Weapon.Stats, weapon.Stats.FireRateMultiplier.Value)));
                 }
 
                 // Until step 4 (D2) the core has no obsolete ammunition.
                 foreach (var weapon in platform.WeaponsObsolete)
                     Add(devices, infos, null, new CoreDeviceInfo("weapon with obsolete ammunition", weapon.KeyBinding,
-                        weapon.Weapon.ControlButtonIcon, 0f, ObsoleteAmmunitionReason));
+                        weapon.Weapon.ControlButtonIcon, 0f, ObsoleteAmmunitionReason, ReleasesWeaponButton(weapon.Weapon, 1f)));
             }
 
             foreach (var item in specification.Devices)
@@ -202,15 +207,18 @@ namespace Combat.Integration.Core
                     if (mapped is RepairBotDefinition repairBot) _repairBotColors[repairBot] = device.Color;
                     if (mapped is DecoyDefinition decoy) _decoyColors[decoy.Ship] = device.Color;
                     if (mapped is ShieldDefinition shield) _shieldLooks[shield] = ShieldLook(device, modelScale);
+                    if (mapped is TeleporterDefinition teleporter && (device.VisualEffect != null || device.EffectPrefab))
+                        _teleporterFlashes[teleporter] = new CoreFlashLook(device.Color, device.Size * modelScale);
                     if (mapped is WormTailDefinition tail)
                         _segmentImages[tail] = SegmentImage(device);
                     Add(devices, infos, mapped,
-                        new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, activationCost, null));
+                        new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, activationCost, null,
+                            ReleasesDeviceButton(device.DeviceClass)));
                 }
                 else
                 {
                     Add(devices, infos, null, new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, 0f,
-                        inertReason ?? DeviceInertReason(device.DeviceClass)));
+                        inertReason ?? DeviceInertReason(device.DeviceClass), ReleasesDeviceButton(device.DeviceClass)));
                 }
             }
 
@@ -317,6 +325,11 @@ namespace Combat.Integration.Core
                     activationCost = NonNegative(device.EnergyConsumption);
                     return new WarpDriveDefinition(activationCost, NonNegative(device.Cooldown), Positive(device.Power),
                         NonNegative(device.Range));
+                // Legacy TeleporterDevice, obsolete (owner decision 3): EnergyConsumption once per use, Cooldown from the use,
+                // Range as the jump (phase 5, step 11b).
+                case DeviceClass.Teleporter:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new TeleporterDefinition(activationCost, NonNegative(device.Cooldown), NonNegative(device.Range));
                 // Legacy DetonatorDevice: EnergyConsumption once per use, Lifetime as the lock, and a heat explosion of
                 // Power x cells x damage multiplier within Range x sqrt(model scale) (phase 5, step 7b).
                 case DeviceClass.Detonator:
@@ -455,7 +468,8 @@ namespace Combat.Integration.Core
                 aiDroneBays.Add(new AiDroneBay(devices.Count, item.KeyBinding < 0));
                 var device = item.Device;
                 Add(devices, infos, new ClonningCenterDefinition(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
-                    clone.Definition), new CoreDeviceInfo(DeviceName(device), item.KeyBinding, device.ControlButtonIcon, 0f, null));
+                    clone.Definition), new CoreDeviceInfo(DeviceName(device), item.KeyBinding, device.ControlButtonIcon, 0f, null,
+                    ReleasesDeviceButton(DeviceClass.ClonningCenter)));
             }
 
             if (!specification.DroneBays.Any())
@@ -473,7 +487,8 @@ namespace Combat.Integration.Core
                 aiDroneBays.Add(new AiDroneBay(devices.Count, item.KeyBinding < 0));
                 Add(devices, infos, new DroneBayDefinition(System.Math.Max(1, bay.Capacity), NonNegative(bay.EnergyConsumption),
                         drone.Definition, System.Math.Max(0, bay.BuildExtraCycles)),
-                    new CoreDeviceInfo($"drone bay, drone {item.Drone.Id.Value}", item.KeyBinding, bay.ControlButtonIcon, 0f, null));
+                    new CoreDeviceInfo($"drone bay, drone {item.Drone.Id.Value}", item.KeyBinding, bay.ControlButtonIcon, 0f, null,
+                        releaseImmediately: true));
             }
         }
 
@@ -601,6 +616,32 @@ namespace Combat.Integration.Core
         private static bool IsLegacyDevice(DeviceClass deviceClass) =>
             deviceClass >= DeviceClass.Accelerator && deviceClass <= DeviceClass.Retribution;
 
+        // Legacy ShouReleaseButtonImmediately (phase 5, step 11b, finding 7): these device classes, every drone bay, and
+        // every weapon except a continuous one with a fire rate between 0 and 1. The fire rate is legacy WeaponFactory's.
+        private static bool ReleasesDeviceButton(DeviceClass deviceClass)
+        {
+            switch (deviceClass)
+            {
+                case DeviceClass.TeleporterV2:
+                case DeviceClass.Teleporter:
+                case DeviceClass.Detonator:
+                case DeviceClass.PointDefense:
+                case DeviceClass.PartialShield:
+                case DeviceClass.ClonningCenter:
+                case DeviceClass.TimeMachine:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static bool ReleasesWeaponButton(WeaponStats weapon, float fireRateMultiplier)
+        {
+            if (weapon.WeaponClass != WeaponClass.Continuous) return true;
+            var fireRate = weapon.FireRate > 0 && fireRateMultiplier <= 0 ? -1f : weapon.FireRate * fireRateMultiplier;
+            return !(fireRate > 0f && fireRate < 1f);
+        }
+
         // Legacy devices that only change the ship's features and never activate (phase 5, step 9a).
         private static bool IsPassive(DeviceClass deviceClass) =>
             deviceClass == DeviceClass.Jammer || deviceClass == DeviceClass.DroneCamouflage ||
@@ -696,6 +737,7 @@ namespace Combat.Integration.Core
         private readonly Dictionary<RepairBotDefinition, ColorData> _repairBotColors = new Dictionary<RepairBotDefinition, ColorData>();
         private readonly Dictionary<ShipDefinition, ColorData> _decoyColors = new Dictionary<ShipDefinition, ColorData>();
         private readonly Dictionary<ShieldDefinition, CoreShieldLook> _shieldLooks = new Dictionary<ShieldDefinition, CoreShieldLook>();
+        private readonly Dictionary<TeleporterDefinition, CoreFlashLook> _teleporterFlashes = new Dictionary<TeleporterDefinition, CoreFlashLook>();
         private readonly Dictionary<WormTailDefinition, SpriteId> _segmentImages = new Dictionary<WormTailDefinition, SpriteId>();
     }
 }
