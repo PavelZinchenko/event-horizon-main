@@ -44,6 +44,9 @@ namespace Combat.Integration.Core
 
         private BulletVisual Create(in CoreBulletSource source, bool isBeam, BulletDefinition bullet, float sizeScale)
         {
+            if (source.Hidden)
+                return BulletVisual.Hidden;
+
             var parent = source.ParentColor.ToUnity();
             var size = source.BodySize * sizeScale;
             var prefab = source.Prefab;

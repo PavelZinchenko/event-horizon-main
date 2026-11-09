@@ -66,21 +66,25 @@ namespace Combat.Integration.Core
 
     // What a bullet or beam view needs from the database (phase 4, step 5, "Views (5)"). Prefab is null when the
     // ammunition has no BulletPrefab record. ParentColor is legacy BulletStats.Color: the weapon's colour, else the body's.
-    // HitEffect is the first PlaySfx trigger on Hit with a visual effect, or null.
+    // HitEffect is the first PlaySfx trigger on Hit with a visual effect, or null. Hidden marks a carrier without a
+    // prefab and without effects: legacy draws nothing for it (phase 5, step 11a, finding 9).
     public readonly struct CoreBulletSource
     {
-        public CoreBulletSource(BulletPrefab prefab, float bodySize, ColorData parentColor, BulletTrigger_PlaySfx hitEffect)
+        public CoreBulletSource(BulletPrefab prefab, float bodySize, ColorData parentColor, BulletTrigger_PlaySfx hitEffect,
+            bool hidden = false)
         {
             Prefab = prefab;
             BodySize = bodySize;
             ParentColor = parentColor;
             HitEffect = hitEffect;
+            Hidden = hidden;
         }
 
         public readonly BulletPrefab Prefab;
         public readonly float BodySize;
         public readonly ColorData ParentColor;
         public readonly BulletTrigger_PlaySfx HitEffect;
+        public readonly bool Hidden;
     }
 
     public readonly struct CoreTurretSource

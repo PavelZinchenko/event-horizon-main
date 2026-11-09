@@ -133,7 +133,7 @@ namespace CombatView
         // A null visual draws the generic sprite or a plain line; it should not happen for a mapped weapon.
         public void AddBullet(in BattleEvent spawn, BulletVisual visual)
         {
-            if (_bullets.ContainsKey(spawn.EntityId))
+            if (visual == BulletVisual.Hidden || _bullets.ContainsKey(spawn.EntityId))
                 return;
 
             if (visual == null)

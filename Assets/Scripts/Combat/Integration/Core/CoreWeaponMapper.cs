@@ -127,6 +127,27 @@ namespace Combat.Integration.Core
             }
         }
 
+        // Phase 5, step 11a: the bullet of a device without a weapon, as legacy BulletFactory builds it from the device's
+        // modifier at power level 1. A beam, or a bullet that needs its live ship, cannot be a death spawn.
+        public static BulletDefinition MapDeviceBullet(Ammunition ammunition, WeaponStatModifier modifier,
+            float armorMultiplier, ChildBullet children, out string inertReason)
+        {
+            if (!TryCheckTriggers(ammunition, out var hasGameplayTriggers, out inertReason) ||
+                !TryGetEffects(ammunition, hasGameplayTriggers, out var effects, out inertReason))
+                return null;
+            if (ammunition.Controller is BulletController_Beam)
+                return InertBullet("device with a beam", out inertReason);
+            if (ammunition.Body.AttachedToParent || ammunition.Controller is BulletController_Harpoon)
+                return InertBullet("death spawn attached to its ship", out inertReason);
+
+            var context = new Context(armorMultiplier, children);
+            var bullet = MapBullet(ammunition, modifier, effects, 0, context, out inertReason);
+            if (bullet == null)
+                return null;
+            context.Commit();
+            return bullet;
+        }
+
         // Step 5f adds Hit spawn triggers and one hit per target to Common shot beams.
         private static bool TryCheckBeam(Ammunition ammunition, bool hasGameplayTriggers, in Effects effects, float range,
             out string inertReason, bool shot = false)

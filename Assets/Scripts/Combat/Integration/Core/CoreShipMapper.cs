@@ -70,6 +70,8 @@ namespace Combat.Integration.Core
                 case DeviceClass.Fortification:
                 case DeviceClass.EnergyShield:
                 case DeviceClass.PartialShield:
+                case DeviceClass.ToxicWaste:
+                case DeviceClass.Retribution:
                     return null;
                 default:
                     return $"device {deviceClass}";
@@ -176,7 +178,11 @@ namespace Combat.Integration.Core
                     continue;
                 }
 
-                var mapped = MapDevice(device, stats, out var activationCost);
+                string inertReason = null;
+                var activationCost = 0f;
+                var mapped = IsDeathSpawn(device.DeviceClass)
+                    ? MapDeathSpawn(device, stats, out inertReason)
+                    : MapDevice(device, stats, out activationCost);
                 if (mapped != null)
                 {
                     // Legacy WarpDrive.MaxRange for the Chase node and DetonatorDevice.ActivationTime for DetonateShip;
@@ -204,7 +210,7 @@ namespace Combat.Integration.Core
                 else
                 {
                     Add(devices, infos, null, new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, 0f,
-                        DeviceInertReason(device.DeviceClass)));
+                        inertReason ?? DeviceInertReason(device.DeviceClass)));
                 }
             }
 
@@ -356,6 +362,41 @@ namespace Combat.Integration.Core
             }
         }
 
+        private static bool IsDeathSpawn(DeviceClass deviceClass) =>
+            deviceClass == DeviceClass.ToxicWaste || deviceClass == DeviceClass.Retribution;
+
+        // Legacy ToxicWaste and RetributionDevice (phase 5, step 11a; owner decisions 1, 2 and 6): one bullet of
+        // AmmunitionId at the death, with damage x Power x the ship damage multiplier. The toxic cloud takes the area
+        // multiplier ship scale x Size + 1, so the 1-unit radius of ammunition 186 gives the legacy radius; the pack keeps
+        // its own size. A ToxicWaste without ammunition (mods, until E5) gets ammunition 186 (question 4).
+        private DeathSpawnDefinition MapDeathSpawn(DeviceStats device, IShipStats stats, out string inertReason)
+        {
+            var toxic = device.DeviceClass == DeviceClass.ToxicWaste;
+            var ammunition = device.AmmunitionId ??
+                (toxic ? _database.GetAmmunition(new ItemId<Ammunition>(ToxicCloudId)) : null);
+            if (ammunition == null)
+            {
+                inertReason = "death spawn without ammunition";
+                return null;
+            }
+
+            var modifier = new WeaponStatModifier
+            {
+                DamageMultiplier = StatMultiplier.FromValue(device.Power * stats.DamageMultiplier.Value),
+            };
+            if (toxic)
+                modifier.AoeRadiusMultiplier = StatMultiplier.FromValue(NonNegative(stats.ShipModel.ModelScale * device.Size) + 1f);
+
+            var bullet = CoreWeaponMapper.MapDeviceBullet(ammunition, modifier, stats.ArmorMultiplier.Value, AddChildSource,
+                out inertReason);
+            if (bullet == null)
+                return null;
+
+            _bulletSources[bullet] = new CoreBulletSource(ammunition.Body.BulletPrefab, ammunition.Body.Size,
+                ammunition.Body.Color, HitEffect(ammunition), IsHiddenCarrier(ammunition));
+            return new DeathSpawnDefinition(bullet);
+        }
+
         // Legacy CircularObjectInitializer sets the collider radius 0.5 / ImageScale; the EnergyShield and EnergyShieldOutline
         // prefabs have radius 0.5. Legacy loads Prefab, else EffectPrefab; a custom EffectPrefab collider is not read.
         private static float EnergyShieldRadius(DeviceStats device) =>
@@ -445,13 +486,18 @@ namespace Combat.Integration.Core
 
             var body = weapon.Ammunition.Body;
             _bulletSources[key] = new CoreBulletSource(body.BulletPrefab, body.Size, weapon.Stats.Color ?? body.Color,
-                HitEffect(weapon.Ammunition));
+                HitEffect(weapon.Ammunition), IsHiddenCarrier(weapon.Ammunition));
         }
 
         // Phase 5, step 2: a child bullet looks like its own ammunition, in the colour of its trigger (legacy CreateFactory).
         private void AddChildSource(BulletDefinition bullet, Ammunition ammunition, ColorData color) =>
             _bulletSources[bullet] = new CoreBulletSource(ammunition.Body.BulletPrefab, ammunition.Body.Size, color,
-                HitEffect(ammunition));
+                HitEffect(ammunition), IsHiddenCarrier(ammunition));
+
+        // Legacy BulletFactory draws a bullet without a prefab only through its trigger effects; without effects it is a
+        // carrier, such as the wraith pack (phase 5, step 11a, finding 9).
+        private static bool IsHiddenCarrier(Ammunition ammunition) =>
+            ammunition.Body.BulletPrefab == null && ammunition.Effects.Count == 0;
 
         // Legacy WeaponInfo from BulletStats at power level 1. Recoil counts for common weapons only, per unit of ship weight.
         // The spread is the weapon's, in radians.
@@ -606,6 +652,9 @@ namespace Combat.Integration.Core
         private const string Segment2Prefab = "WormSegment2";
         private const string SegmentImageName = "worm_segment";
         private const string Segment2Image = "worm_segment2";
+
+        // ToxicCloud: the built-in cloud of legacy ToxicWaste (phase 5, step 11a, question 9 (b)).
+        private const int ToxicCloudId = 186;
 
         // The hit flash of a detonator explosion: the generic size 1 (D11), not the 20-unit area.
         private const float ExplosionFlashSize = 1f;

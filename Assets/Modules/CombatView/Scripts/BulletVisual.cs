@@ -64,6 +64,10 @@ namespace CombatView
         public static BulletVisual ForHarpoon(Sprite sprite, float spriteScale, float ropeWidth, Color color, HitFlash flash) =>
             new BulletVisual(BulletViewKind.Harpoon, sprite, spriteScale, ropeWidth, 0f, color, default, 0f, 0f, flash);
 
+        // A bullet the renderer does not draw, such as a carrier without a look (phase 5, step 11a).
+        public static readonly BulletVisual Hidden =
+            new BulletVisual(BulletViewKind.Sprite, null, 0f, 0f, 0f, default, default, 0f, 0f, default);
+
         public BulletViewKind Kind { get; }
 
         // Null: the renderer's generic sprite.
