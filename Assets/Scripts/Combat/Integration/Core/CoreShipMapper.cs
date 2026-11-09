@@ -256,7 +256,11 @@ namespace Combat.Integration.Core
                 scale: NonNegative(modelScale),
                 teleportImmune: stats.ShipModel.ShipType == ShipType.Starbase || stats.ShipModel.ShipType == ShipType.Special,
                 targetPriority: targetPriority,
-                chanceToAvoidMissile: chanceToAvoidMissile);
+                chanceToAvoidMissile: chanceToAvoidMissile,
+                // Legacy ShipStats: armor repairs only with a positive rate (phase 5, step 13). Clones take the
+                // decorator's rate (x 0.9).
+                armorRepairRate: NonNegative(stats.ArmorRepairRate),
+                armorRepairDelay: NonNegative(stats.ArmorRepairCooldown));
 
             // AI side table (phase 4, steps 6 and 7b): the legacy RequirementChecker facts and the target facts, without
             // inert devices (D6). Legacy Ship gives a drone Low priority; the jammer sets High (step 9a).

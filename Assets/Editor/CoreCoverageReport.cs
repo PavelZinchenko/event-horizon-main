@@ -17,16 +17,13 @@ using Component = GameDatabase.DataModel.Component;
 // a weapon gives only its first reason, as in the mapper. A reason is deferred when DeferredListPath names it, so the
 // tool and the release notes read one list. The phase completes when no row is inert.
 // Rows are records, not builds: a component maps alone, with the modifiers of its own data and no ship bonuses.
-// Ship stats the core does not read (finding 5) are reasons of the components and ships that carry them.
-// EngineEnergyConsumption has no row: legacy reads it only for the Accelerator energy cost, so the Accelerator covers it.
+// Ship stats give no reason (phase 5, step 13): the mapper passes armor repair, flat RammingDamage reaches the core
+// through the legacy RammingDamageMultiplier, DroneRangeModifier through the bay Range, and EngineEnergyConsumption
+// through the Accelerator energy cost.
 public static class CoreCoverageReport
 {
     public const string DeferredListPath = "Assets/Editor/CoreCoverageDeferred.json";
     public const string ReportPath = "Logs/CombatCoverage.md";
-
-    private const string ArmorRepairReason = "stat armor repair";
-    private const string RammingDamageReason = "stat flat ramming damage";
-    private const string DroneRangeReason = "stat drone range";
 
     // Writes the report file and adds its summary to report. Returns false for errors: components that fail to build
     // and deferred entries that no row uses (a renamed reason).
@@ -141,7 +138,7 @@ public static class CoreCoverageReport
         return rows.Values.ToList();
     }
 
-    // Weapons, obsolete weapons, devices and drone bays as the mapper sees them, then the stats.
+    // Weapons, obsolete weapons, devices and drone bays as the mapper sees them.
     private static void AddComponentReasons(IComponent component, Component data, SortedSet<string> reasons)
     {
         foreach (var weapon in component.Weapons)
@@ -154,14 +151,6 @@ public static class CoreCoverageReport
             reasons.Add(CoreShipMapper.ObsoleteAmmunitionReason);
         foreach (var device in component.Devices)
             AddReason(reasons, CoreShipMapper.DeviceInertReason(device.DeviceClass));
-
-        var stats = component.GetStats();
-        if (stats.ArmorRepairRate != 0f || stats.ArmorRepairCooldownMultiplier.HasValue)
-            reasons.Add(ArmorRepairReason);
-        if (stats.RammingDamage != 0f)
-            reasons.Add(RammingDamageReason);
-        if (stats.DroneRangeMultiplier.HasValue)
-            reasons.Add(DroneRangeReason);
     }
 
     private static List<Row> BuiltinDevices(IDatabase database)
@@ -221,7 +210,7 @@ public static class CoreCoverageReport
         return rows.Values.ToList();
     }
 
-    // Ship features: hull barrels are supported; armor regeneration waits for step 13.
+    // Ship features: hull barrels and armor regeneration are supported, so a ship row lists only its builds.
     private static List<Row> Ships(IDatabase database)
     {
         var rows = new SortedDictionary<int, Row>();
@@ -229,8 +218,6 @@ public static class CoreCoverageReport
         {
             var row = new Row(ship.Id.Value, ship.Name);
             rows.Add(row.Id, row);
-            if (ship.Features.Regeneration)
-                row.Reasons.Add(ArmorRepairReason);
         }
 
         foreach (var build in database.ShipBuildList)

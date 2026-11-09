@@ -609,8 +609,9 @@ A frame for an unknown or removed entity is dropped, logged and counted in `Reje
 1. Stage 2 updates energy, armor and shield, in that order, before any device. Only the part of the step after the delay recharges.
 2. A spend with a positive rate restarts the full delay. A failed `TryConsume` changes nothing. A cost of 0 or less always passes and changes nothing, even with an empty or zero-capacity pool, for every device (owner, 2026-11-06). Legacy `Energy.TryGet(0)` fails there, and only some legacy weapons bypass it (`WeaponBase.TryConsumeEnergy`); the owner treats that as a legacy bug. `Consume` clamps and returns the removed amount; a negative amount adds.
 3. A negative rate drains (net consumption). A zero maximum means no resource.
-4. Armor has rate 0: it never regenerates and never starts a delay (Q7).
-5. B4: stage 12 stores the absolute armor and shield deficits on the slot at retreat completion. Deploy applies them as a spend, as legacy `ShipInfo.Create`, so a shield deficit starts the shield delay at deployment. Energy starts full.
+4. Armor repairs at `ShipDefinition.ArmorRepairRate` after `ArmorRepairDelay` (Q7; phase 5, step 13). The mapper gives legacy `ArmorRepairRate` and `ArmorRepairCooldown`: bionic ships (`Features.Regeneration`, 1% of the maximum armor per second), `BionicArmor` components and the infected ship modification. Every other ship has rate 0: its armor never repairs and never starts a delay. Only the owner repairs; a remote copy follows corrections, as for the shield.
+5. Armor damage restarts the repair delay even when a larger repair in the same tick nets it out (`DamageSystem.ApplyShieldFirst`). Legacy applies each impact alone, so its hit restarts the delay; the core nets a tick (owner, 2026-11-09). A repair alone does not restart it.
+6. B4: stage 12 stores the absolute armor and shield deficits on the slot at retreat completion. Deploy applies them as a spend, as legacy `ShipInfo.Create`, so a shield or armor deficit starts its delay at deployment. Energy starts full.
 
 ### Engine
 
