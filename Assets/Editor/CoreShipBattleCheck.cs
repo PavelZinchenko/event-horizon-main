@@ -109,6 +109,14 @@ public static class CoreShipBattleCheck
         var started = false;
         var killSent = false;
         var bullets = new HashSet<EntityId>();
+        // Step 14d diagnostic: the tick -1 snapshot lists every asteroid.
+        var asteroids = new HashSet<EntityId>();
+        foreach (var asteroid in runner.Snapshot.Asteroids)
+            asteroids.Add(asteroid.Id);
+        var shipTouch = default(EntityId);
+        var targetTouch = default(EntityId);
+        var targetStart = default(Vec2);
+        var targetStarted = false;
         for (var tick = 0; tick < FightTicks + DeathTicks && !runner.IsCompleted; ++tick)
         {
             runner.Step();
@@ -134,8 +142,14 @@ public static class CoreShipBattleCheck
                     case BattleEventKind.Hit when item.EntityId == target && !target.IsNull && bullets.Contains(item.AttackerId):
                         ++result.Hits;
                         break;
+                    case BattleEventKind.Hit when item.EntityId == ship && !ship.IsNull && asteroids.Contains(item.AttackerId):
+                        ++result.AsteroidRams;
+                        result.AsteroidRamDamage += item.Damage;
+                        break;
                     case BattleEventKind.Removal when item.EntityId == ship && !ship.IsNull:
                         result.Died = item.RemovalReason == RemovalReason.Death;
+                        result.DeathTick = tick;
+                        result.DiedBeforeKill = !killSent;
                         break;
                 }
             }
@@ -149,6 +163,7 @@ public static class CoreShipBattleCheck
                 }
 
                 result.MaxDistance = Math.Max(result.MaxDistance, torus.Delta(start, current.Position).Length);
+                result.AsteroidTouches += CountTouch(current, asteroids, ref shipTouch);
                 if (!target.IsNull && snapshot.TryGetShip(target, out var other))
                 {
                     var delta = torus.Delta(current.Position, other.Position);
@@ -157,8 +172,21 @@ public static class CoreShipBattleCheck
                     {
                         result.MinGap = gap;
                         result.AimError = Math.Abs(Mathf.DeltaAngle(current.Angle * Mathf.Rad2Deg, Mathf.Atan2(delta.Y, delta.X) * Mathf.Rad2Deg));
+                        MeasureAsteroids(snapshot, torus, current, delta, result);
                     }
                 }
+            }
+
+            if (!target.IsNull && snapshot.TryGetShip(target, out var fixture))
+            {
+                if (!targetStarted)
+                {
+                    targetStart = fixture.Position;
+                    targetStarted = true;
+                }
+
+                result.TargetMoved = Math.Max(result.TargetMoved, torus.Delta(targetStart, fixture.Position).Length);
+                result.TargetAsteroidTouches += CountTouch(fixture, asteroids, ref targetTouch);
             }
 
             // The fight ends early once every expected kind of activity was seen.
@@ -168,6 +196,43 @@ public static class CoreShipBattleCheck
                 killSent = runner.KillAll(1, runner.Tick);
         }
     }
+
+    // A new touch of an asteroid: the hull touches its last body contact, an asteroid other than the one it touched in the
+    // previous tick.
+    private static int CountTouch(in ShipState ship, HashSet<EntityId> asteroids, ref EntityId touching)
+    {
+        var current = ship.TouchesLastBodyContact && asteroids.Contains(ship.LastBodyContact) ? ship.LastBodyContact : default;
+        var isNew = !current.IsNull && current != touching;
+        touching = current;
+        return isNew ? 1 : 0;
+    }
+
+    // At the closest approach: the gap from the build's hull to the nearest asteroid, and the smallest gap from an
+    // asteroid to the line between the two ship centres (negative: the asteroid crosses the line).
+    private static void MeasureAsteroids(BattleSnapshot snapshot, Torus torus, in ShipState ship, Vec2 toTarget, Result result)
+    {
+        result.NearestAsteroidGap = float.MaxValue;
+        result.LineAsteroidGap = float.MaxValue;
+        var length = toTarget.Length;
+        foreach (var asteroid in snapshot.Asteroids)
+        {
+            var offset = torus.Delta(ship.Position, asteroid.Position);
+            var radius = 0.5f * asteroid.Size;
+            result.NearestAsteroidGap = Math.Min(result.NearestAsteroidGap, offset.Length - radius - ship.Definition.HullRadius);
+            if (!(length > 0f)) continue;
+            var along = Mathf.Clamp((offset.X * toTarget.X + offset.Y * toTarget.Y) / length, 0f, length);
+            var side = new Vec2(offset.X - toTarget.X * along / length, offset.Y - toTarget.Y * along / length);
+            result.LineAsteroidGap = Math.Min(result.LineAsteroidGap, side.Length - radius);
+        }
+    }
+
+    private static string AsteroidReport(Result item) =>
+        $"asteroids: build touches {item.AsteroidTouches}, rams {item.AsteroidRams} ({item.AsteroidRamDamage:F0} damage), " +
+        (item.DiedBeforeKill ? $"died at tick {item.DeathTick} before kill-all, " : "") +
+        $"nearest gap {Gap(item.NearestAsteroidGap)}, line gap {Gap(item.LineAsteroidGap)} at the closest approach; " +
+        $"target touches {item.TargetAsteroidTouches}, moved {item.TargetMoved:F1}";
+
+    private static string Gap(float value) => value == float.MaxValue ? "none" : value.ToString("F1");
 
     private static string Describe(ShipDefinition definition, DeviceDefinition device, int index)
     {
@@ -194,11 +259,11 @@ public static class CoreShipBattleCheck
         Section(report, "Exceptions", results.Where(item => item.Exception != null), item => item.Exception);
         var fought = results.Where(item => item.Exception == null).ToList();
         Section(report, "Armed, never fired", fought.Where(item => item.Armed && item.Shots == 0),
-            item => $"closest gap {item.MinGap:F1}; {item.Weapons}");
+            item => $"closest gap {item.MinGap:F1}; {item.Weapons}; {AsteroidReport(item)}");
         Section(report, "Information: fired, never hit the target, cannot turn",
             fought.Where(item => item.Shots > 0 && item.Hits == 0 && !item.CanTurn), item => $"{item.Shots} shots");
         Section(report, "Information: fired, never hit the target", fought.Where(item => item.Shots > 0 && item.Hits == 0 && item.CanTurn),
-            item => $"{item.Shots} shots, closest gap {item.MinGap:F1} at heading error {item.AimError:F0} deg; {item.Weapons}");
+            item => $"{item.Shots} shots, closest gap {item.MinGap:F1} at heading error {item.AimError:F0} deg; {item.Weapons}; {AsteroidReport(item)}");
         Section(report, "Drone bays, never launched", fought.Where(item => item.HasBays && item.Launches == 0), null);
         Section(report, "Engine, never moved", fought.Where(item => item.HasEngine && item.MaxDistance <= MinDistance),
             item => $"moved {item.MaxDistance:F2}");
@@ -410,6 +475,17 @@ public static class CoreShipBattleCheck
         public float MinGap = float.MaxValue;
         public float AimError;
         public string Weapons;
+
+        // Step 14d diagnostic.
+        public int AsteroidTouches;
+        public int AsteroidRams;
+        public float AsteroidRamDamage;
+        public int DeathTick = -1;
+        public bool DiedBeforeKill;
+        public float NearestAsteroidGap = float.MaxValue;
+        public float LineAsteroidGap = float.MaxValue;
+        public int TargetAsteroidTouches;
+        public float TargetMoved;
     }
 
     // A fixed, unkillable and unarmed circle. Its mass keeps pushes and rams from moving it; it deals no ramming damage.
