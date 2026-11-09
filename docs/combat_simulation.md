@@ -1201,6 +1201,17 @@ Phase 5, step 14 (H10; legacy `Asteroid`, `CombatManager`). `AsteroidSetup`, `As
 10. **Adapter** (step 14d). `CoreAsteroids.Layout` (`Assets/Scripts/Combat/Integration/Core/CoreAsteroids.cs`) draws 10 asteroids unless `DisableAsteroids`, from a `System.Random` seeded from the battle seed, in the legacy order per asteroid: size (uniform 2-5), position (whole numbers, uniform over the torus), velocity (a uniform point of the unit disc × 10 / size). Mass is size² × 5, hit points size² × 100 × p, and the ramming multiplier p, where p = `Experience.LevelToPowerMultiplier(GalaxySettings.EnemyLevel(StarLevel))`. The adapter has only local owners. *Check Ship Battles* adds the same layout with p = 1, from the build seed.
 11. **View** (step 14d, H11). `CoreAsteroids` instantiates the legacy `Asteroid` prefab per asteroid at scale = size, without its rigidbody, collider and physics components; its `AsteroidView` builds the rock mesh and spins it, presentation only. The root takes the interpolated core pose. On `AsteroidRemoval` the adapter removes the view and draws the area glow in grey (half alpha) at 2 × size for 2 s, the legacy smoke size and time. No smoke, disturbance or sound.
 
+### Mod-only AI nodes
+
+M3 stub ports ([plan](../TODO/battle_simulator_phase5_part2.md#stub-ports-m3)). No built-in tree changes its outcome through these nodes, but Frontier trees reach all of them. Since this port, no node type is a stub (`NodeBuilder.Stub` stays for node types the schema adds later).
+
+1. **Conditions.** `MainTargetWithinAttackRange` compares the distance with the lerped range of the selected weapons; a range of 0 or less fails. `TargetDistance` gives `Success` without a target, as legacy does, and uses `LimitedRange` when `MaxDistance` is not positive. `HasMothership` is true while the mothership is in the snapshot.
+2. **Movement.** `MaintainAttackRange` circles the target (`Navigation.FlyAround`, spin 0) between the lerped range, capped at half the area width, and that range less the tolerance share. `SlowDown` brakes to a stop within the tolerance.
+3. **Starbases.** `TargetAllyStarbase` and `TargetEnemyStarbase` keep a matching target, then the last starbase found, then search at most once a second for the first `SizeClass.Starbase` ship of the asked allegiance in snapshot order.
+4. **Thrust.** `EnginePropulsionForce` compares throttle × (propulsion vector · forward) of the last tick with its value. It is computed from the snapshot (question 2 (a)), so it uses the velocity after that thrust. A starbase or an engine without propulsion fails.
+5. **Mothership.** `MakeTargetMothership` sets the main target as the mothership through `AiContext.SetMothership`; it fails when the target already is the mothership or has left. A ship keeps it in its AI, and the mothership nodes, `FindEnemyNearMothership` and `FindDamagedAlly` read it. Destroyed and retreated read the target's roster slot; a target without a slot (a drone or a decoy) reads as destroyed when it leaves. A drone keeps it in its AI only (question 1 (a)): its world owner and allegiance stay, unlike legacy `Type.Owner`, and the next capture or berserk replaces it.
+6. **Checks.** `TargetNodeTests` covers the examples of the plan; `NodeBuilderTests.EveryNodeTypeHasAPort` fails when a node type has no port.
+
 ### Allegiance and ship commands
 
 Phase 4, step 7e (D12, D13). The side stays the team: result, timer, surrender, kill-all and spawn placement read it.
