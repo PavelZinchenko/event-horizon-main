@@ -1171,6 +1171,18 @@ Phase 5, step 11b. `TeleporterDefinition` and `TeleporterDevice` (`Devices/Telep
 5. **Mapping.** `EnergyConsumption` as the cost, `Cooldown`, `Range`. A device with `VisualEffect` or `EffectPrefab` gets a flash look: the device colour at `Size` × model scale.
 6. **Presentation.** The adapter draws one flash at each end of the jump for 0.5 s (legacy `StaticEffect` on `OnActivate` and `OnDeactivate`), with the hit-flash sprite. No sounds (H11).
 
+### Gravity generator
+
+Phase 5, step 11c. `GravityGeneratorDefinition` and `GravityGeneratorDevice` (`Devices/GravityGenerator.cs`) and `GravityWaveQueries` (`Devices/GravityWaveQueries.cs`) port legacy `GravityGenerator` as a device effect, not a bullet. Only `Boss02` (build 3, component 68) has it. Differences from legacy are rows in the behaviour changes table of `TODO/battle_simulator_implementation.md`. Tests: `Core/Tests/GravityGeneratorTests.cs`.
+
+1. **Activation.** A held bit with the cooldown passed and `EnergyConsumption` in store spends it once. The cooldown runs from the use, so a held bit fires again at each cooldown. A use ends stealth. Each use adds a `GravityWave` event: the ship, the device index and the wave centre (`Point`).
+2. **Wave.** From the use tick, for 25 ticks (legacy 0.5 s, fixed), stage 6 queries a circle of `Range` at the use point (`CollisionFilters.GravityWave`: a query category no shape has, so only a shape that ignores everything ignores it). Each unit counts once per use.
+3. **Targets.** Every unit in the circle except the own ship (its hull, shields and satellites), its tail segments, its repair bot and the bullets attached to it (`AttachedToParent`). The own drones, decoys and free bullets count. Beams and beam bolts do not. Shield shapes drop the push (legacy shield units, 10d finding 3): an energy shield takes the hull's contacts, so its ship is not pushed; a frontal shield leaves them, so its ship is. A ghost or another unit without contacts is skipped.
+4. **Effect.** Stage 9 removes a bullet with reason `Death`: its `Destroyed` and `Detonated` triggers run, no `Hit` trigger. Any other unit takes an impulse of `Power` × √(its body mass) at its origin, away from the centre, from the poses at the start of the step; there is no damage. A tail segment takes a tenth, as for every push. A unit at the exact centre gets no push.
+5. **Network (H8).** Only the owner runs the wave. The owner sends a device-use record; the copy starts its cooldown and adds a `GravityWave` event from its own pose. A remote ship gets a zero-damage hit record with the impulse; its owner pushes it when the record arrives. A remote repair bot or decoy gets a contact record with the impulse. A remote tail segment's record has no push, so the segment follows corrections. A remote bullet: the owner predicts the removal and sends a stop record with the generator's device index; the bullet's owner removes it with reason `Death` and, because of the device index, runs no `Hit` trigger. No codec change.
+6. **Mapping.** `EnergyConsumption` as the cost, `Cooldown`, `Range` and `Power`, none scaled by the ship. A device with `VisualEffect` or `EffectPrefab` gets a flash look: the device colour at 2 × `Range` for `Lifetime`.
+7. **Presentation.** The adapter draws one flash at the wave centre (legacy `FlashEffect` on `OnActivate`, which follows the ship). No sounds (H11).
+
 ### Allegiance and ship commands
 
 Phase 4, step 7e (D12, D13). The side stays the team: result, timer, surrender, kill-all and spawn placement read it.

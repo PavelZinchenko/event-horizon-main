@@ -46,6 +46,9 @@ namespace Combat.Integration.Core
         // The two flashes of each mapped teleporter with an effect (phase 5, step 11b).
         public IReadOnlyDictionary<TeleporterDefinition, CoreFlashLook> TeleporterFlashes => _teleporterFlashes;
 
+        // The flash of each mapped gravity generator with an effect (phase 5, step 11c).
+        public IReadOnlyDictionary<GravityGeneratorDefinition, CoreFlashLook> GravityWaveFlashes => _gravityWaveFlashes;
+
         // Inert reasons the coverage report also gives (phase 5, step 1).
         public const string ObsoleteAmmunitionReason = "obsolete ammunition";
 
@@ -76,6 +79,7 @@ namespace Combat.Integration.Core
                 case DeviceClass.ToxicWaste:
                 case DeviceClass.Retribution:
                 case DeviceClass.Teleporter:
+                case DeviceClass.GravityGenerator:
                     return null;
                 default:
                     return $"device {deviceClass}";
@@ -209,6 +213,9 @@ namespace Combat.Integration.Core
                     if (mapped is ShieldDefinition shield) _shieldLooks[shield] = ShieldLook(device, modelScale);
                     if (mapped is TeleporterDefinition teleporter && (device.VisualEffect != null || device.EffectPrefab))
                         _teleporterFlashes[teleporter] = new CoreFlashLook(device.Color, device.Size * modelScale);
+                    if (mapped is GravityGeneratorDefinition generator && (device.VisualEffect != null || device.EffectPrefab))
+                        _gravityWaveFlashes[generator] = new CoreFlashLook(device.Color, 2f * generator.Range,
+                            NonNegative(device.Lifetime));
                     if (mapped is WormTailDefinition tail)
                         _segmentImages[tail] = SegmentImage(device);
                     Add(devices, infos, mapped,
@@ -330,6 +337,12 @@ namespace Combat.Integration.Core
                 case DeviceClass.Teleporter:
                     activationCost = NonNegative(device.EnergyConsumption);
                     return new TeleporterDefinition(activationCost, NonNegative(device.Cooldown), NonNegative(device.Range));
+                // Legacy GravityGenerator: EnergyConsumption once per use, Cooldown from the use, a wave of Range for 0.5 s
+                // that pushes by Power x sqrt(mass) (phase 5, step 11c). Neither is scaled by the ship.
+                case DeviceClass.GravityGenerator:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new GravityGeneratorDefinition(activationCost, NonNegative(device.Cooldown), NonNegative(device.Range),
+                        device.Power);
                 // Legacy DetonatorDevice: EnergyConsumption once per use, Lifetime as the lock, and a heat explosion of
                 // Power x cells x damage multiplier within Range x sqrt(model scale) (phase 5, step 7b).
                 case DeviceClass.Detonator:
@@ -738,6 +751,7 @@ namespace Combat.Integration.Core
         private readonly Dictionary<ShipDefinition, ColorData> _decoyColors = new Dictionary<ShipDefinition, ColorData>();
         private readonly Dictionary<ShieldDefinition, CoreShieldLook> _shieldLooks = new Dictionary<ShieldDefinition, CoreShieldLook>();
         private readonly Dictionary<TeleporterDefinition, CoreFlashLook> _teleporterFlashes = new Dictionary<TeleporterDefinition, CoreFlashLook>();
+        private readonly Dictionary<GravityGeneratorDefinition, CoreFlashLook> _gravityWaveFlashes = new Dictionary<GravityGeneratorDefinition, CoreFlashLook>();
         private readonly Dictionary<WormTailDefinition, SpriteId> _segmentImages = new Dictionary<WormTailDefinition, SpriteId>();
     }
 }

@@ -433,6 +433,9 @@ namespace Combat.Integration.Core
                     case BattleEventKind.Teleport:
                         OnTeleport(item);
                         break;
+                    case BattleEventKind.GravityWave:
+                        OnGravityWave(item);
+                        break;
                 }
             }
         }
@@ -471,6 +474,15 @@ namespace Combat.Integration.Core
             var color = look.Color.ToUnity();
             _renderer.AddFlash(item.Point, look.Diameter, color, TeleportFlashSeconds);
             _renderer.AddFlash(item.Destination, look.Diameter, color, TeleportFlashSeconds);
+        }
+
+        // Legacy GravityGenerator: its effect at 2 x Range for the device Lifetime (OnActivate), at the wave centre; legacy
+        // follows the ship (phase 5, step 11c).
+        private void OnGravityWave(in BattleEvent item)
+        {
+            if (!(item.Definition?.Devices[item.DeviceIndex] is GravityGeneratorDefinition generator) ||
+                !_mapper.GravityWaveFlashes.TryGetValue(generator, out var look)) return;
+            _renderer.AddFlash(item.Point, look.Diameter, look.Color.ToUnity(), look.Duration);
         }
 
         private void OnDroneSpawned(in BattleEvent item)

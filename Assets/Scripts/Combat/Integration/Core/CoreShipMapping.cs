@@ -120,12 +120,20 @@ namespace Combat.Integration.Core
     }
 
     // Legacy StaticEffect of a teleporter (phase 5, step 11b): one flash for 0.5 s at each end of the jump, Diameter
-    // device Size x model scale.
+    // device Size x model scale. Legacy FlashEffect of a gravity generator (step 11c): one flash for Duration (device
+    // Lifetime) at the wave centre, Diameter 2 x Range.
     public readonly struct CoreFlashLook
     {
         public readonly ColorData Color;
         public readonly float Diameter;
-        public CoreFlashLook(ColorData color, float diameter) { Color = color; Diameter = diameter; }
+        public readonly float Duration;
+
+        public CoreFlashLook(ColorData color, float diameter, float duration = 0f)
+        {
+            Color = color;
+            Diameter = diameter;
+            Duration = duration;
+        }
     }
 
     // Legacy SatelliteFactory: the satellite sprite at its model scale.
