@@ -1187,7 +1187,7 @@ Phase 5, step 11c. `GravityGeneratorDefinition` and `GravityGeneratorDevice` (`D
 
 ### Asteroids
 
-Phase 5, step 14a (H10; legacy `Asteroid`, `CombatManager`). `AsteroidSetup`, `Asteroid` and `Asteroids` (`Asteroids/Asteroids.cs`). Rules and examples: `TODO/battle_simulator_phase5_part2.md`, "Asteroids (14, M4)". Tests: `Core/Tests/AsteroidTests.cs`.
+Phase 5, step 14 (H10; legacy `Asteroid`, `CombatManager`). `AsteroidSetup`, `Asteroid` and `Asteroids` (`Asteroids/Asteroids.cs`); adapter and view `CoreAsteroids`. Rules and examples: `TODO/battle_simulator_phase5_part2.md`, "Asteroids (14, M4)". Tests: `Core/Tests/AsteroidTests.cs`.
 
 1. **Setup.** `BattleSetup.Asteroids` lists them: position, velocity, size (the circle diameter), mass, hit points and ramming multiplier, all finite; size, mass and hit points positive. The adapter draws them from the battle seed; the core holds no asteroid rule (owner question 3). A battle with a remote owner takes none (owner question 2): nobody owns an asteroid, so the setup throws.
 2. **Creation.** The `Battle` constructor creates them in setup order, before tick 0, so the tick âˆ’1 snapshot lists them. Each is a body with one circle (`EntityKind.Asteroid`), angular damping 0.02 (legacy angular drag) and no linear damping. Its owner is the first roster owner, a local one.
@@ -1198,6 +1198,8 @@ Phase 5, step 14a (H10; legacy `Asteroid`, `CombatManager`). `AsteroidSetup`, `A
 7. **Placement.** `TryFindFreePosition` counts asteroid shapes, so a deployment or a launch moves clear of an asteroid. Legacy `FindFreePlace` checks ships only; the core keeps its rule (owner question 6, 2026-11-09).
 8. **AI threats** (step 14b). `TargetLists.UpdateThreats` reads asteroids after bullets, with the legacy rule: within 20 units, a path that passes the ship within 5 s, the asteroid size as its scale. `AiContext.TryGetThreat` gives `AvoidThreats` and `DefendWithFrontalShield` the position and velocity of either.
 9. **Obstacles** (step 14c). At stage 8 `BodyContactMemory` sets each ship's last body contact and whether it still touches it (legacy `Collider.LastCollision` and `ActiveCollision`); `ShipState` carries both. Only hull contacts with a ship hull, a tail segment, a repair bot or an asteroid count. A touch that began in the step wins, smallest entity ID first; else the last contact stays while it touches; else the touching body with the smallest ID replaces it. `TargetLists.IsObstacle` ports legacy `ThreatAnalyzer.IsObstacle`, and `BypassObstaclesNode` ports the legacy node (no longer a stub).
+10. **Adapter** (step 14d). `CoreAsteroids.Layout` (`Assets/Scripts/Combat/Integration/Core/CoreAsteroids.cs`) draws 10 asteroids unless `DisableAsteroids`, from a `System.Random` seeded from the battle seed, in the legacy order per asteroid: size (uniform 2-5), position (whole numbers, uniform over the torus), velocity (a uniform point of the unit disc × 10 / size). Mass is size² × 5, hit points size² × 100 × p, and the ramming multiplier p, where p = `Experience.LevelToPowerMultiplier(GalaxySettings.EnemyLevel(StarLevel))`. The adapter has only local owners. *Check Ship Battles* adds the same layout with p = 1, from the build seed.
+11. **View** (step 14d, H11). `CoreAsteroids` instantiates the legacy `Asteroid` prefab per asteroid at scale = size, without its rigidbody, collider and physics components; its `AsteroidView` builds the rock mesh and spins it, presentation only. The root takes the interpolated core pose. On `AsteroidRemoval` the adapter removes the view and draws the area glow in grey (half alpha) at 2 × size for 2 s, the legacy smoke size and time. No smoke, disturbance or sound.
 
 ### Allegiance and ship commands
 
@@ -1497,7 +1499,7 @@ Editor menu *Tools/Combat/Check AI Replay* runs every armed built-in build again
 3. Each view keeps the previous and current pose and interpolates with alpha = accumulator / 0.02 s.
 4. Torus wrap: the controlled ship goes to its image nearest to the anchor, and the anchor follows it. Every other view goes to its image nearest to the new anchor. `IShipView.VisualPosition` is that image, so the radar and the camera agree. Drawn coordinates can leave the base map; simulation positions are never written back.
 5. The camera uses the legacy `Combat.Scene.ViewRect` framing of the player and the target, and zooms in on each player deployment.
-6. `CorePlanet` instantiates the legacy planet prefab unless `DisablePlanet`: presentation only, colour, position and size from a `System.Random` seeded from the battle seed. Asteroids are phase 5.
+6. `CorePlanet` instantiates the legacy planet prefab unless `DisablePlanet`: presentation only, colour, position and size from a `System.Random` seeded from the battle seed. `CoreAsteroids` draws the asteroids with the legacy prefab ("Asteroids", items 10 and 11).
 
 ### Known limits
 

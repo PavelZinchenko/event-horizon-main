@@ -73,11 +73,15 @@ namespace Combat.Integration.Core
 
             // The seed is drawn here, outside the core, which never uses a random source of its own.
             var seed = (ulong)(uint)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+            var torus = new Torus(size, size);
+            // Phase 5, step 14d: the legacy asteroids, drawn from the seed. Every owner here is local; the core rejects
+            // asteroids in a battle with a remote owner (owner question 2 (a)).
+            var asteroids = rules.DisableAsteroids ? null : CoreAsteroids.Layout(seed, torus,
+                Maths.Experience.LevelToPowerMultiplier(database.GalaxySettings.EnemyLevel(rules.StarLevel)));
             // Step 9: the core ends an OnlyOneShip battle after the first player death (SS2).
             var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, timeLimitTicks,
                 timerMode: ToTimerMode(rules.TimeOutMode), playerSide: PlayerSide, maxActiveShipsBySide: maxActiveBySide,
-                onlyOneShip: rules.ShipSelection == PlayerShipSelectionMode.OnlyOneShip);
-            var torus = new Torus(setup.Width, setup.Height);
+                onlyOneShip: rules.ShipSelection == PlayerShipSelectionMode.OnlyOneShip, asteroids: asteroids);
             _trees = CorePilotProvider.CreateTrees(seed, torus, _mapper, OnBroadcast);
             _pilots = new CorePilotProvider(database.CombatSettings, _trees, _mapper.Mappings, PlayerSide, combatModel.EnemyFleet.AiLevel);
             _runner = new BattleRunner(setup, _pilots);
@@ -96,6 +100,8 @@ namespace Combat.Integration.Core
             // Step 10: the legacy planet, presentation only (D8).
             if (!rules.DisablePlanet)
                 _planet = CorePlanet.Create(seed, torus, scene);
+            if (asteroids != null)
+                _asteroids = CoreAsteroids.Create(torus, scene);
 
             messenger.AddListener(EventType.EscapeKeyPressed, OnEscapeKeyPressed);
             _playerInputSignal.Event += OnPlayerInput;
@@ -285,6 +291,7 @@ namespace Combat.Integration.Core
             _runner = null;
             _renderer.Dispose();
             _planet?.Dispose();
+            _asteroids?.Dispose();
             _views.Clear();
             _viewsByCore.Clear();
             _ids.Clear();
@@ -325,6 +332,7 @@ namespace Combat.Integration.Core
             var alpha = IsRunning ? Mathf.Clamp01(_accumulator / Battle.TickDuration) : 1f;
             _renderer.Render(alpha, controlled, ref _anchor, Time.deltaTime);
             _planet?.Render(_anchor, Time.deltaTime);
+            _asteroids?.Render(alpha, _anchor, Time.deltaTime);
 
             foreach (var pair in _viewsByCore)
                 if (_renderer.TryGetShipPose(pair.Key, out var position, out var degrees))
@@ -388,6 +396,7 @@ namespace Combat.Integration.Core
             ApplyResults(snapshot);
             HandleEvents(snapshot);
             _renderer.Capture(snapshot);
+            _asteroids?.Capture(snapshot);
             ShowBroadcasts(snapshot);
             UpdateProjection(snapshot);
 
@@ -436,6 +445,9 @@ namespace Combat.Integration.Core
                     case BattleEventKind.GravityWave:
                         OnGravityWave(item);
                         break;
+                    case BattleEventKind.AsteroidRemoval:
+                        OnAsteroidRemoved(item);
+                        break;
                 }
             }
         }
@@ -483,6 +495,14 @@ namespace Combat.Integration.Core
             if (!(item.Definition?.Devices[item.DeviceIndex] is GravityGeneratorDefinition generator) ||
                 !_mapper.GravityWaveFlashes.TryGetValue(generator, out var look)) return;
             _renderer.AddFlash(item.Point, look.Diameter, look.Color.ToUnity(), look.Duration);
+        }
+
+        // Legacy AsteroidExplosionAction plays smoke at 2 x the size for 2 s, a disturbance and a sound. H11 (owner question
+        // 5): the step 3 area glow in grey at 2 x the size, for the smoke's 2 s.
+        private void OnAsteroidRemoved(in BattleEvent item)
+        {
+            if (_asteroids != null && _asteroids.Remove(item.EntityId, out var size))
+                _renderer.AddFlash(item.Point, 2f * size, AsteroidDeathColor, AsteroidDeathSeconds);
         }
 
         private void OnDroneSpawned(in BattleEvent item)
@@ -929,6 +949,9 @@ namespace Combat.Integration.Core
         private const string TextEffectPrefab = "Combat/Effects/MessageText";
         private const string DecoySprite = "Textures/star";
         private const float TeleportFlashSeconds = 0.5f;
+        private const float AsteroidDeathSeconds = 2f;
+        // Grey at the half alpha of the step 3 area glow.
+        private static readonly Color AsteroidDeathColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
         private readonly Dictionary<string, Sprite> _shieldSprites = new Dictionary<string, Sprite>();
         private Sprite _decoySprite;
 
@@ -962,6 +985,7 @@ namespace Combat.Integration.Core
         private readonly BattleRenderer _renderer;
         private readonly CoreBulletVisuals _bulletVisuals;
         private readonly CorePlanet _planet;
+        private readonly CoreAsteroids _asteroids;
         private readonly LegacyViewRect _framing = new LegacyViewRect();
 
         private readonly ICombatModel _combatModel;

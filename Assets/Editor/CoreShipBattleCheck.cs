@@ -88,8 +88,11 @@ public static class CoreShipBattleCheck
             new RosterSlotSetup(BuildSlot, 0, definition),
             new RosterSlotSetup(TargetSlot, 1, Target),
         };
-        var setup = new BattleSetup(new BattleId(1), (ulong)result.BuildId, roster, ArenaSize, ArenaSize);
-        var torus = new Torus(setup.Width, setup.Height);
+        // Phase 5, step 14d: the ten asteroids of a level 0 campaign battle, drawn from the build seed.
+        var torus = new Torus(ArenaSize, ArenaSize);
+        var seed = (ulong)result.BuildId;
+        var setup = new BattleSetup(new BattleId(1), seed, roster, ArenaSize, ArenaSize,
+            asteroids: CoreAsteroids.Layout(seed, torus, AsteroidPowerMultiplier));
         // The fixture target has no mapping, so the trees get its profile here.
         var mappings = mapper.Mappings;
         var trees = new BehaviorTreeFactory(setup.MatchSeed, torus,
@@ -424,6 +427,7 @@ public static class CoreShipBattleCheck
     private static readonly RosterId TargetSlot = new RosterId(2);
 
     private const float ArenaSize = 200f;
+    private const float AsteroidPowerMultiplier = 1f;
     private const float MinDistance = 1f;
     private const float DefaultStandOff = 8f;
     private const float AimTolerance = 30f;
