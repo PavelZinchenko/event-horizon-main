@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CombatSimulation.Ai;
 using CombatSimulation.Core;
+using Constructor.Model;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
 
@@ -14,7 +15,7 @@ namespace Combat.Integration.Core
         public CoreShipMapping(string name, ShipDefinition definition, IReadOnlyList<CoreDeviceInfo> devices,
             SpriteId modelImage, float modelScale, AiShipProfile ai, BehaviorTreeModel aiTree, float droneRange, bool hasAutopilot,
             ColorData? tintColor = null, bool isClone = false, IReadOnlyList<CoreTurretSource> turrets = null,
-            IReadOnlyList<CoreSatelliteSource> satellites = null)
+            IReadOnlyList<CoreSatelliteSource> satellites = null, CoreShipLookSource look = null)
         {
             Name = name;
             Definition = definition;
@@ -29,6 +30,7 @@ namespace Combat.Integration.Core
             IsClone = isClone;
             Turrets = turrets ?? System.Array.Empty<CoreTurretSource>();
             Satellites = satellites ?? System.Array.Empty<CoreSatelliteSource>();
+            Look = look;
         }
 
         // For logs and reports: "ship", "drone" or "clone" and the legacy ship ID.
@@ -62,6 +64,42 @@ namespace Combat.Integration.Core
 
         // In ShipDefinition.Satellites order (phase 5, step 12c).
         public IReadOnlyList<CoreSatelliteSource> Satellites { get; }
+
+        // What the ship view draws besides the model (phase 5b, step 4).
+        public CoreShipLookSource Look { get; }
+    }
+
+    // Legacy ShipFactory.CreateShip's view parts (phase 5b, step 4): the colour schemes, the engines, the shield
+    // outline, the explosion by the legacy rule (CreateDestructionEffect) and the wreck. Explosion is null for the
+    // legacy obsolete explosion; its sound is then the hard-coded one.
+    public sealed class CoreShipLookSource
+    {
+        public CoreShipLookSource(ColorScheme shipColor, ColorScheme turretColor, ColorData engineColor,
+            IReadOnlyList<Engine> engines, bool hasShield, bool isDrone, VisualEffect explosion, AudioClipId explosionSound,
+            bool leavesWreck)
+        {
+            ShipColor = shipColor;
+            TurretColor = turretColor;
+            EngineColor = engineColor;
+            Engines = engines;
+            HasShield = hasShield;
+            IsDrone = isDrone;
+            Explosion = explosion;
+            ExplosionSound = explosionSound;
+            LeavesWreck = leavesWreck;
+        }
+
+        public ColorScheme ShipColor { get; }
+        public ColorScheme TurretColor { get; }
+        public ColorData EngineColor { get; }
+        public IReadOnlyList<Engine> Engines { get; }
+        public bool HasShield { get; }
+
+        // Drones and clones (legacy motherShip != null).
+        public bool IsDrone { get; }
+        public VisualEffect Explosion { get; }
+        public AudioClipId ExplosionSound { get; }
+        public bool LeavesWreck { get; }
     }
 
     // What a bullet or beam view needs from the database (phase 4, step 5, "Views (5)"). Prefab is null when the

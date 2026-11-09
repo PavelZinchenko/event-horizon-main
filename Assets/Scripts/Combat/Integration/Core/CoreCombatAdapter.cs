@@ -95,10 +95,23 @@ namespace Combat.Integration.Core
             var textFont = Resources.Load<TextMesh>(TextEffectPrefab)?.font;
             var flashSprite = resourceLocator.GetSprite(FlashSpriteName);
             // Phase 5b, owner question 6: legacy combat sets only the damage text; shadows and static wrecks stay off.
-            var viewSettings = new CombatViewSettings(damageText: gameSettings.ShowDamage, shadows: false, staticWrecks: false);
+            // Step 4: the power saving mode draws no engine trails (legacy TrailRendererPool).
+            var viewSettings = new CombatViewSettings(damageText: gameSettings.ShowDamage, shadows: false, staticWrecks: false,
+                trails: gameSettings.QualityMode >= 0);
             var sounds = new CoreSoundOutput(soundPlayer, resourceLocator);
+            _sounds = sounds;
             _renderer = new BattleRenderer(torus, bulletSprite, flashSprite, textFont, scene, viewSettings, sounds)
-                { ViewerSide = PlayerSide };
+            {
+                ViewerSide = PlayerSide,
+                // Phase 5b, step 4: the legacy combat Settings clips (a loop, as legacy SoundLoopEffect plays it) and the
+                // satellite's hard-coded explosion.
+                RetreatSound = new SoundClip(resourceLocator.GetAudioClip(new AudioClipId(RetreatSoundName)), true),
+                WarpSound = sounds.Resolve(new AudioClipId(WarpSoundName)),
+                SatelliteExplosionSound = sounds.Resolve(new AudioClipId(SatelliteExplosionSoundName)),
+            };
+            // Legacy DamageIndicator colours: the shield, then the LegacyDamageModel types.
+            _renderer.SetDamageTextColors(new Color(0.5f, 0.5f, 0.5f), new Color(0.5f, 1f, 0.5f), new Color(0f, 1f, 1f),
+                new Color(1f, 1f, 0f), new Color(1f, 0.5f, 1f));
             foreach (var look in _mapper.RepairBotColors)
                 _renderer.AddRepairBotLook(look.Key, resourceLocator.GetSprite(new SpriteId("repair_bot", SpriteId.Type.Satellite)), look.Value.ToUnity());
             foreach (var look in _mapper.SegmentImages)
@@ -476,6 +489,9 @@ namespace Combat.Integration.Core
                     case BattleEventKind.AsteroidRemoval:
                         OnAsteroidRemoved(item);
                         break;
+                    case BattleEventKind.Damage:
+                        _renderer.AddDamage(item);
+                        break;
                 }
 
                 _renderer.OnEvent(snapshot, item);
@@ -493,10 +509,41 @@ namespace Combat.Integration.Core
             _views.Add(id, view);
             _viewsByCore.Add(item.EntityId, view);
 
-            var model = specification.Stats.ShipModel;
-            _renderer.AddShip(item.EntityId, _resourceLocator.GetSprite(model.ModelImage), model.ModelScale,
-                _mapper.Mappings[state.Definition].TintColor?.ToUnity());
-            AddTurrets(item.EntityId, _mapper.Mappings[state.Definition]);
+            var mapping = _mapper.Mappings[state.Definition];
+            _renderer.AddShip(item.EntityId, GetLook(mapping), item.Side);
+            AddTurrets(item.EntityId, mapping);
+        }
+
+        // The view of every ship of one definition (phase 5b, step 4), built on first use.
+        private ShipLook GetLook(CoreShipMapping mapping)
+        {
+            if (_looks.TryGetValue(mapping.Definition, out var look))
+                return look;
+
+            look = new ShipLook(_resourceLocator.GetSprite(mapping.ModelImage), mapping.ModelScale)
+                { Tint = mapping.TintColor?.ToUnity() };
+            var source = mapping.Look;
+            if (source != null)
+            {
+                var engines = new EngineLook[source.Engines.Count];
+                for (var i = 0; i < engines.Length; ++i)
+                    engines[i] = new EngineLook(source.Engines[i].Position.ToUnity() * 0.5f, source.Engines[i].Size);
+
+                look.Color = source.ShipColor.Color.ToUnity();
+                look.IsHsv = source.ShipColor.IsHsv;
+                look.Hue = source.ShipColor.Hue;
+                look.Saturation = source.ShipColor.Saturation;
+                look.IsDrone = source.IsDrone;
+                look.EngineColor = source.EngineColor.ToUnity();
+                look.Engines = engines;
+                look.HasShield = source.HasShield;
+                look.Explosion = _visualEffects.Get(source.Explosion);
+                look.ExplosionSound = _sounds.Resolve(source.ExplosionSound);
+                look.LeavesWreck = source.LeavesWreck;
+            }
+
+            _looks.Add(mapping.Definition, look);
+            return look;
         }
 
         // Legacy Decoy prefab: the star sprite at twice the body scale, in the device colour (phase 5, step 10c).
@@ -538,8 +585,7 @@ namespace Combat.Integration.Core
         private void OnDroneSpawned(in BattleEvent item)
         {
             var mapping = _mapper.Mappings[item.Definition];
-            _renderer.AddShip(item.EntityId, _resourceLocator.GetSprite(mapping.ModelImage), mapping.ModelScale,
-                mapping.TintColor?.ToUnity());
+            _renderer.AddShip(item.EntityId, GetLook(mapping), item.Side);
             AddTurrets(item.EntityId, mapping);
         }
 
@@ -548,9 +594,12 @@ namespace Combat.Integration.Core
         {
             foreach (var satellite in mapping.Satellites)
                 _renderer.AddSatellite(id, _resourceLocator.GetSprite(satellite.Image), satellite.Scale);
+            // Legacy ShipFactory.CreatePlatform applies the turret scheme's HSV to every turret.
+            var turretColor = mapping.Look?.TurretColor ?? default;
             foreach (var turret in mapping.Turrets)
                 _renderer.AddTurret(id, turret.Barrel, mapping.Definition.Barrels[turret.Barrel],
-                    _resourceLocator.GetSprite(turret.Image), turret.Size, turret.Color.ToUnity());
+                    _resourceLocator.GetSprite(turret.Image), turret.Size, turret.Color.ToUnity(), turretColor.Hue,
+                    turretColor.Saturation);
 
             // Energy and frontal shields (phase 5, step 10d).
             var devices = mapping.Definition.Devices;
@@ -978,6 +1027,11 @@ namespace Combat.Integration.Core
         // Legacy ShowMessage effect (RadioTransmitter).
         private const string TextEffectPrefab = "Combat/Effects/MessageText";
         private const string DecoySprite = "Textures/star";
+        // Legacy combat Settings component (CombatScene): ShipRetreatSound and ShipWarpSound. Legacy
+        // DroneExplosionActionObsolete of a satellite.
+        private const string RetreatSoundName = "flux_02";
+        private const string WarpSoundName = "shot_06";
+        private const string SatelliteExplosionSoundName = "explosion_10";
         private const float TeleportFlashSeconds = 0.5f;
         private const float AsteroidDeathSeconds = 2f;
         // Grey at the half alpha of the step 3 area glow.
@@ -1015,6 +1069,8 @@ namespace Combat.Integration.Core
         private readonly BattleRenderer _renderer;
         private readonly CoreBulletVisuals _bulletVisuals;
         private readonly CoreVisualEffects _visualEffects;
+        private readonly CoreSoundOutput _sounds;
+        private readonly Dictionary<ShipDefinition, ShipLook> _looks = new Dictionary<ShipDefinition, ShipLook>();
 #if UNITY_EDITOR
         private readonly CoreEffectPreview _effectPreview;
 #endif

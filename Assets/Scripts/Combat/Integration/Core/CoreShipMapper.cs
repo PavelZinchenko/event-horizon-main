@@ -11,6 +11,7 @@ using Constructor.Model;
 using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
+using GameDatabase.Extensions;
 using GameDatabase.Model;
 using Services.Resources;
 
@@ -285,9 +286,29 @@ namespace Combat.Integration.Core
             var kind = isClone ? "clone" : isDrone ? "drone" : "ship";
             var mapping = new CoreShipMapping($"{kind} {specification.Info.Id.Value}", definition, infos,
                 stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot, tint, isClone, turrets,
-                satelliteSources);
+                satelliteSources, LookSource(stats, isDrone));
             _mappings[definition] = mapping;
             return mapping;
+        }
+
+        // Legacy ShipFactory.CreateShip and CreateDestructionEffect (phase 5b, step 4). A clone is a drone here, as legacy
+        // gives it a mother ship.
+        private CoreShipLookSource LookSource(IShipStats stats, bool isDrone)
+        {
+            var model = stats.ShipModel;
+            var isSmallShip = model.ModelScale < 0.9f;
+            var explosion = model.VisualEffects.CustomExplosionEffect;
+            var sound = model.VisualEffects.CustomExplosionSound;
+            if (explosion == null)
+                explosion = isSmallShip ? _database.ShipSettings.DroneExplosionEffect : _database.ShipSettings.ShipExplosionEffect;
+            if (!sound)
+                sound = isSmallShip ? _database.ShipSettings.DroneExplosionSound : _database.ShipSettings.ShipExplosionSound;
+            // Legacy ShipExplosionActionObsolete and DroneExplosionActionObsolete play their own clip.
+            if (explosion == null)
+                sound = new AudioClipId(isSmallShip ? "explosion_10" : "explosion_01");
+
+            return new CoreShipLookSource(stats.ShipColor, stats.TurretColor, model.EngineColor, model.Engines,
+                stats.ShieldPoints > 0, isDrone, explosion, sound, model.VisualEffects.LeaveWreck.IsEnabled(!isSmallShip));
         }
 
         // The device classes the core runs (DeviceInertReason null); null for the others. The activation cost is legacy

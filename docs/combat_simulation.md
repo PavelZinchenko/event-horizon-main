@@ -1425,6 +1425,7 @@ Stage 14 writes a `BattleSnapshot` of the tick it completed, then increments `Ba
 | Child bullet | 5 (`Created`) or 12 | `Spawn` of a bullet whose `ParentId` is a bullet; at stage 12 before its parent's `Removal` (bullet triggers) |
 | Bullet removal | 12 | `Removal` of a bullet (`Death` at a hit, `Expiry`, or `Disposal` after disarm or beam shutdown), after the ship changes, in entity ID order |
 | Result | 13 | `Result` with the `BattleResult` |
+| Damage text | 10, published at 14 | `Damage` per ship and kind of loss: the shield loss (`DeviceIndex` −1), then each type's armor damage after the shield and its resistance (`DeviceIndex` the type). Presentation only (phase 5b, step 4); the network replay emits none. They come last in the batch, after the result, so the other events keep their sequence numbers |
 
 A repeated destruction emits nothing. `RosterTransitionReason` has the same values as the application's `RosterChangeReason`. Every single-player event is committed; mixed-ownership events carry explicit authority as described above.
 
@@ -1506,7 +1507,7 @@ Editor menu *Tools/Combat/Check AI Replay* runs every armed built-in build again
 `BattleRenderer` (`CombatView` module) draws ships and bullets as sprites under one root in the combat scene. Scenes load additively and the active scene never changes, so the root is moved into the combat scene.
 
 1. Ships and drones use the model sprite at scale `ModelScale`. Worm tail segments use the body sprite of their prefab at their body scale, below the ships; a view lives while the snapshot lists its segment. Bullets and beams use their `BulletPrefab` image, size and colour (phase 4 step 5; rules in `TODO/battle_simulator_phase4.md`, "Views (5)"); a bullet without view data gets the generic sprite and one warning. Hits by bullets flash.
-2. A removal by death fades the ship out in 0.4 s. There are no other effects or sounds.
+2. Ships, satellites and turrets use the new `Ships/Default`, `Satellites/default` and `Guns/turret` prefabs with the copied `ShipView` (phase 5b, step 4): the HSV colour scheme (`HsvMaterials`, the shared `ShipHsv` material), engine lights and trails, the shield outline, the damage text from the `Damage` events, the explosion record and sound at death, the wreck, and the retreat wave and warp. A decoy still fades out in 0.4 s until its own prefab (step 7).
 3. Each view keeps the previous and current pose and interpolates with alpha = accumulator / 0.02 s.
 4. Torus wrap: the controlled ship goes to its image nearest to the anchor, and the anchor follows it. Every other view goes to its image nearest to the new anchor. `IShipView.VisualPosition` is that image, so the radar and the camera agree. Drawn coordinates can leave the base map; simulation positions are never written back.
 5. The camera uses the legacy `Combat.Scene.ViewRect` framing of the player and the target, and zooms in on each player deployment.

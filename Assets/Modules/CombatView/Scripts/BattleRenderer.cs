@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CombatSimulation.Core;
 using CombatSimulation.Physics;
 using CombatView.Effects;
+using CombatView.Views;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -12,7 +13,7 @@ namespace CombatView
     // Draws one core battle: ships, satellites, worm tail segments, bullets, beams, hit flashes and ship texts at
     // interpolated poses (migration phase 3c, step 4; phase 4, steps 5 and 7f; phase 5, steps 7d and 12c). Events decide
     // when a view exists; snapshots give its poses. Nothing is written back to the simulation. Bullet looks come from
-    // the adapter as BulletVisual values.
+    // the adapter as BulletVisual values, ship looks as ShipLook values (phase 5b, step 4).
     public sealed class BattleRenderer : IDisposable
     {
         // The root goes into the given scene: the game loads scenes additively and never changes the active
@@ -40,6 +41,12 @@ namespace CombatView
             var probe = _root.AddComponent<SpriteRenderer>();
             _spriteMaterial = probe.sharedMaterial;
             Object.Destroy(probe);
+
+            // Step 4: the ship prefabs and their effects. The HSV material is shared with legacy (owner rule 3).
+            _hsv = new HsvMaterials(_spriteMaterial, Resources.Load<Material>(HsvMaterialPath));
+            if (settings.Trails)
+                _trails = new TrailPool(_prefabs.Load(TrailPrefab)?.GetComponent<TrailRenderer>(), _root.transform);
+            _shipAssets = new ShipEffectAssets(_effects, _prefabs, _trails, _sounds);
         }
 
         public CombatViewSettings Settings { get; }
@@ -47,45 +54,38 @@ namespace CombatView
         // The side of the local player (legacy UnitSide.Player): a stealth ship of it stays more visible.
         public int ViewerSide { get; set; }
 
-        // Ships and drones. Legacy rule: the ship's transform scale is its model scale. ShipState.Tint moves the colour
-        // from white to tint.
-        public void AddShip(EntityId id, Sprite sprite, float scale, Color? tint = null)
-        {
-            if (_ships.ContainsKey(id))
-                return;
-
-            var renderer = CreateRenderer("Ship", _root.transform, sprite ? sprite : _genericSprite, ShipSortingOrder);
-            renderer.gameObject.SetActive(false);
-            renderer.transform.localScale = Vector3.one * scale;
-            _ships.Add(id, new EntityView(renderer.gameObject, renderer) { Tint = tint ?? Color.white });
-        }
+        // Ships and drones on the ship prefab (phase 5b, step 4), with their engine lights and trails, shield outline and
+        // damage text. Legacy rule: the ship's transform scale is its model scale. The colour is the look's colour times
+        // the way from white to its tint by ShipState.Tint. side: the ship's side, for the damage text opacity.
+        public void AddShip(EntityId id, ShipLook look, int side) => AddShip(id, look, side, false);
 
         // Legacy Decoy (phase 5, step 10c): the device colour, faded by ShipState.Life as legacy SpriteView with life
-        // opacity (1 - (1 - life)^2).
-        public void AddDecoy(EntityId id, Sprite sprite, float scale, Color color)
-        {
-            AddShip(id, sprite, scale, color);
-            if (_ships.TryGetValue(id, out var view)) view.IsDecoy = true;
-        }
+        // opacity (1 - (1 - life)^2). It keeps the plain fade at its death until its own prefab (step 7).
+        public void AddDecoy(EntityId id, Sprite sprite, float scale, Color color) =>
+            AddShip(id, new ShipLook(sprite, scale) { Color = color }, ViewerSide, true);
 
         // Legacy SatelliteFactory (phase 5, step 12c): a satellite has its own body, so its view is not a child of the
         // ship. Add the ship's satellites in definition order, before its turrets.
         public void AddSatellite(EntityId id, Sprite sprite, float scale)
         {
             if (!_ships.TryGetValue(id, out var ship)) return;
-            var renderer = CreateRenderer("Satellite", _root.transform, sprite ? sprite : _genericSprite, ShipSortingOrder);
-            renderer.gameObject.SetActive(false);
-            renderer.transform.localScale = Vector3.one * scale;
-            ship.Satellites.Add(new EntityView(renderer.gameObject, renderer));
+            var view = CreateShipView(SatellitePrefab, _root.transform, sprite, ShipSortingOrder);
+            view.gameObject.SetActive(false);
+            view.transform.localScale = Vector3.one * scale;
+            ship.Satellites.Add(new EntityView(view.gameObject, view.Renderer));
         }
 
         // The turret rides the interpolated hull or satellite; its local angle comes from the same two snapshots.
-        public void AddTurret(EntityId id, int barrel, BarrelDefinition definition, Sprite sprite, float size, Color color)
+        // Legacy ShipFactory.CreatePlatform: the turret prefab with the HSV of the turret colour scheme.
+        public void AddTurret(EntityId id, int barrel, BarrelDefinition definition, Sprite sprite, float size, Color color,
+            float hue = 0f, float saturation = 0f)
         {
             if (!sprite || !_ships.TryGetValue(id, out var ship)) return;
             if (definition.Satellite >= ship.Satellites.Count) return;
             var carrier = definition.Satellite < 0 ? ship : ship.Satellites[definition.Satellite];
-            var renderer = CreateRenderer("Turret", carrier.Root.transform, sprite, ShipSortingOrder + 1);
+            var view = CreateShipView(TurretPrefab, carrier.Root.transform, sprite, ShipSortingOrder + 1);
+            view.ApplyHsv(hue, saturation, _hsv);
+            var renderer = view.Renderer;
             var pivot = sprite.pivot / sprite.rect.size;
             var scale = 0.5f / Mathf.Max(Mathf.Max(pivot.x, 1f - pivot.x), Mathf.Max(pivot.y, 1f - pivot.y));
             var carrierScale = carrier.Root.transform.localScale.x;
@@ -111,25 +111,51 @@ namespace CombatView
             ship.Shields.Add(new ShieldView(renderer, deviceIndex, color, idle));
         }
 
+        // Phase 5b, step 4: a death leaves the explosion with its sound and the wreck (legacy
+        // ShipFactory.CreateDestructionEffect); a retreat leaves the warp (legacy ShipWarpEffect). The view goes at once,
+        // with its turrets and shields.
         public void RemoveShip(EntityId id, RemovalReason reason)
         {
             if (!_ships.TryGetValue(id, out var view))
                 return;
 
             _ships.Remove(id);
-            foreach (var turret in view.Turrets) Object.Destroy(turret.Renderer.gameObject);
-            foreach (var shield in view.Shields) Object.Destroy(shield.Renderer.gameObject);
+            view.Effects?.Dispose();
+            view.DamageText?.Dispose();
+            if (view.HasPose && !view.IsDecoy && reason == RemovalReason.Death)
+                AddDeathEffects(view);
+            if (view.HasPose && reason == RemovalReason.Retreat)
+                AddWarpEffects(view);
+
             // Legacy SatelliteController: the ship's death destroys its satellites (an explosion), a retreat makes them vanish.
             foreach (var satellite in view.Satellites)
+            {
                 if (reason == RemovalReason.Death && satellite.HasPose)
-                    _fades.Add(new Fade(satellite.Renderer));
-                else
-                    Object.Destroy(satellite.Root);
-            if (reason == RemovalReason.Death && view.HasPose)
+                    AddSatelliteExplosion(satellite, view.Velocity);
+                Object.Destroy(satellite.Root);
+            }
+
+            if (view.IsDecoy && reason == RemovalReason.Death && view.HasPose)
                 _fades.Add(new Fade(view.Renderer));
             else
                 Object.Destroy(view.Root);
         }
+
+        // Phase 5b, step 4: the core's Damage event (owner, 2026-11-09) adds to the ship's damage text.
+        public void AddDamage(in BattleEvent item)
+        {
+            if (_ships.TryGetValue(item.EntityId, out var view))
+                view.DamageText?.ApplyDamage(item.DeviceIndex, item.Damage);
+        }
+
+        // The damage text colours by slot: 0 the shield, 1 + n damage type n (legacy DamageIndicator). Ships added
+        // before the call have no damage text.
+        public void SetDamageTextColors(params Color[] colors) => _damageColors = colors;
+
+        // Clips of the legacy combat Settings component and of legacy hard-coded effects.
+        public SoundClip RetreatSound { get => _shipAssets.RetreatSound; set => _shipAssets.RetreatSound = value; }
+        public SoundClip WarpSound { get; set; }
+        public SoundClip SatelliteExplosionSound { get; set; }
 
         // The body sprite of the segments of one worm tail (phase 5, step 7d); without one they draw the generic sprite.
         public void AddRepairBotLook(RepairBotDefinition definition, Sprite sprite, Color laserColor) =>
@@ -257,12 +283,19 @@ namespace CombatView
                     continue;
 
                 view.Push(ship.Position, ship.Angle);
+                view.Velocity = new Vector2(ship.LinearVelocity.X, ship.LinearVelocity.Y);
+                view.AngularVelocity = ship.AngularVelocity * Mathf.Rad2Deg;
+                view.Effects?.Capture(ship.Throttle, ship.Shield.Exists ? ship.Shield.Value / ship.Shield.Max : 0f,
+                    ship.IsRetreating);
                 // Legacy WarpDrive: Opacity 0.1 while the warp runs (phase 5, step 7a). Legacy Detonator: the colour
                 // moves to the device colour during the lock (step 7b). Legacy StealthDevice: 40% for the viewer's
                 // side, 5% for the others (step 9b); Render moves the opacity there. Legacy Ghost and Fortification
-                // multiply the colour by the device colour with its alpha (step 9d): a ghost fades to 25%.
-                var color = view.IsDecoy ? view.Tint : Color.Lerp(Color.white, view.Tint, ship.Tint);
-                if ((ship.Status & ShipStatusFlags.Faded) != 0) color.a *= FadedAlpha;
+                // multiply the colour by the device colour with its alpha (step 9d): a ghost fades to 25%. Phase 5b,
+                // step 4: the look's colour (legacy Features colour) multiplies the result.
+                var look = view.Look;
+                var color = view.IsDecoy ? look.Color : look.Color * Color.Lerp(Color.white, look.Tint ?? Color.white, ship.Tint);
+                view.Opacity = (ship.Status & ShipStatusFlags.Faded) != 0 ? FadedAlpha : 1f;
+                color.a *= view.Opacity;
                 if (view.IsDecoy) color.a *= 1f - (1f - ship.Life) * (1f - ship.Life);
                 view.Color = color;
                 view.StealthTarget = (ship.Status & ShipStatusFlags.Stealth) == 0 ? 1f
@@ -436,6 +469,15 @@ namespace CombatView
                 ApplyColor(ship);
             }
 
+            // Phase 5b, step 4: legacy Features.Color and Features.Opacity, with the stealth opacity.
+            foreach (var ship in _ships.Values)
+            {
+                var color = ship.Color;
+                color.a *= ship.StealthOpacity;
+                ship.Effects?.Update(deltaTime, color, ship.Opacity * ship.StealthOpacity);
+                ship.DamageText?.Update(deltaTime);
+            }
+
             foreach (var ship in _ships.Values)
                 foreach (var turret in ship.Turrets)
                 {
@@ -489,7 +531,9 @@ namespace CombatView
         {
             _sounds.Dispose();
             _effects.Dispose();
+            _trails?.Dispose();
             _prefabs.Dispose();
+            _hsv.Dispose();
             _eventViews.Clear();
 
             // The scene unload can destroy the root first.
@@ -513,6 +557,159 @@ namespace CombatView
             _texts.Clear();
             _textPool.Clear();
             _lineMaterials.Clear();
+        }
+
+        private void AddShip(EntityId id, ShipLook look, int side, bool isDecoy)
+        {
+            if (_ships.ContainsKey(id) || look == null)
+                return;
+
+            var shipView = CreateShipView(ShipPrefab, _root.transform, look.Sprite, ShipSortingOrder);
+            shipView.gameObject.SetActive(false);
+            shipView.transform.localScale = Vector3.one * look.Scale;
+            if (look.IsHsv)
+                shipView.ApplyHsv(look.Hue, look.Saturation, _hsv);
+
+            var view = new EntityView(shipView.gameObject, shipView.Renderer) { Look = look, IsDecoy = isDecoy };
+            if (!isDecoy)
+                view.Effects = new ShipEffects(look, shipView.transform, _shipAssets);
+
+            // Legacy ShipFactory: no damage text for drones; 0.75 opacity for the player's side, 0.5 for the others.
+            if (!isDecoy && !look.IsDrone && Settings.DamageText && _damageColors != null)
+            {
+                var opacity = side == ViewerSide ? 0.75f : 0.5f;
+                var colors = new Color[_damageColors.Length];
+                for (var i = 0; i < colors.Length; ++i)
+                    colors[i] = new Color(_damageColors[i].r, _damageColors[i].g, _damageColors[i].b, opacity);
+                view.DamageText = new DamageText(colors, (damage, color) => ShowDamage(view, damage, color));
+            }
+
+            _ships.Add(id, view);
+        }
+
+        // A view of the ship, satellite or turret prefab; a plain ShipView without the prefab.
+        private ShipView CreateShipView(string path, Transform parent, Sprite sprite, int sortingOrder)
+        {
+            var prefab = _prefabs.Load(path);
+            var view = prefab ? Object.Instantiate(prefab, parent, false).GetComponent<ShipView>() : null;
+            if (!view)
+            {
+                var gameObject = new GameObject(path);
+                gameObject.transform.SetParent(parent, false);
+                view = gameObject.AddComponent<ShipView>();
+            }
+
+            view.Renderer.sprite = sprite ? sprite : _genericSprite;
+            view.Renderer.sortingOrder = sortingOrder;
+            return view;
+        }
+
+        // Legacy ShipExplosionAction and ShipWreckAction at the view's last pose.
+        private void AddDeathEffects(EntityView view)
+        {
+            var look = view.Look;
+            var point = new Vec2(view.Position.x, view.Position.y);
+            var drift = view.Velocity * 0.05f;
+            if (look.Explosion != null)
+            {
+                var explosion = _effects.Create(look.Explosion, point);
+                if (explosion != null)
+                {
+                    explosion.Rotation = view.Degrees;
+                    explosion.Size = look.Scale;
+                    explosion.Run(look.Explosion.MaxElementLifetime, drift, 0f);
+                }
+            }
+            else
+                AddObsoleteExplosion(look, point, drift);
+
+            _sounds.Play(look.ExplosionSound);
+
+            if (!look.LeavesWreck)
+                return;
+
+            var wreck = _effects.Create(_prefabs.Load(WreckPrefab), point);
+            if (wreck == null)
+                return;
+
+            var renderer = ((Component)wreck).GetComponent<SpriteRenderer>();
+            if (renderer)
+                renderer.sprite = look.Sprite;
+            wreck.Rotation = view.Degrees;
+            wreck.Size = look.Scale;
+            wreck.Color = Color.Lerp(Color.black, look.Color, 0.5f);
+            if (Settings.StaticWrecks)
+                wreck.Run(WreckLifetime, Vector2.zero, 0);
+            else
+                wreck.Run(WreckLifetime, view.Velocity * 0.2f, view.AngularVelocity);
+        }
+
+        // Legacy ShipExplosionActionObsolete and DroneExplosionActionObsolete, for a ship without an explosion record.
+        // Their smoke layers wait for the Smoke prefabs (step 8); the disturbance has no view in the new scene.
+        private void AddObsoleteExplosion(ShipLook look, Vec2 point, Vector2 drift)
+        {
+            if (look.IsSmall)
+            {
+                RunEffect(FlashPrefab, point, ExplosionColor, look.Scale * 4f, 0.3f, drift);
+                return;
+            }
+
+            RunEffect(WavePrefab, point, ExplosionColor, look.Scale * 6f, 1f, drift);
+            RunEffect(FlashAdditivePrefab, point, ExplosionColor, look.Scale * 4f, 1f, drift);
+        }
+
+        // Legacy DroneExplosionActionObsolete of a satellite: a flash and explosion_10; the smoke waits for step 8.
+        private void AddSatelliteExplosion(EntityView satellite, Vector2 velocity)
+        {
+            var point = new Vec2(satellite.Position.x, satellite.Position.y);
+            RunEffect(FlashPrefab, point, ExplosionColor, satellite.Root.transform.localScale.x * 4f, 0.3f, velocity * 0.05f);
+            _sounds.Play(SatelliteExplosionSound);
+        }
+
+        // Legacy ShipWarpEffect.
+        private void AddWarpEffects(EntityView view)
+        {
+            var point = new Vec2(view.Position.x, view.Position.y);
+            var drift = view.Velocity * 0.05f;
+            var scale = view.Look.Scale;
+            RunEffect(WavePrefab, point, ShipEffects.WarpColor, scale * 6f, 1f, drift);
+            RunEffect(FlashAdditivePrefab, point, ShipEffects.WarpColor, scale * 5f, 1f, drift);
+            RunEffect(FlashAdditivePrefab, point, Color.white, scale * 4f, 1f, drift);
+            _sounds.Play(WarpSound);
+        }
+
+        private void RunEffect(string prefab, Vec2 point, Color color, float size, float lifetime, Vector2 velocity)
+        {
+            var effect = _effects.Create(_prefabs.Load(prefab), point);
+            if (effect == null)
+                return;
+
+            effect.Color = color;
+            effect.Size = size;
+            effect.Run(lifetime, velocity, 0f);
+        }
+
+        // Legacy EffectFactory.CreateDamageTextEffect: at the ship, for 2 s, drifting with the ship's velocity plus 1
+        // unit per second in a random direction; nothing off screen.
+        private void ShowDamage(EntityView view, float damage, Color color)
+        {
+            var camera = Camera.main;
+            if (camera)
+            {
+                var viewport = camera.WorldToViewportPoint(view.Position);
+                if (viewport.x < 0f || viewport.x > 1f || viewport.y < 0f || viewport.y > 1f)
+                    return;
+            }
+
+            var effect = _effects.Create(_prefabs.Load(DamageTextPrefab), new Vec2(view.Position.x, view.Position.y));
+            if (effect == null)
+                return;
+
+            if (effect is TextEffect text)
+                text.Text = DamageText.Format(damage);
+            effect.Color = color;
+            var angle = (float)(_textRandom.NextDouble() * 2.0 * Math.PI);
+            effect.Run(DamageTextLifetime, view.Velocity + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)), 0f);
         }
 
         // Legacy Satellite.OnUpdateView: the satellite takes its owner's colour; a turret keeps its own with the ship's
@@ -821,9 +1018,17 @@ namespace CombatView
             // Null for a line.
             public SpriteRenderer Renderer { get; }
 
-            // A ship: the colour ShipState.Tint moves it to. A decoy: its colour.
-            public Color Tint { get; set; } = Color.white;
+            // Ships and decoys (phase 5b, step 4): the look, the ship's effects and damage text, and the last
+            // snapshot's velocities (Unity units; degrees per second).
+            public ShipLook Look { get; set; }
             public bool IsDecoy { get; set; }
+            public ShipEffects Effects { get; set; }
+            public DamageText DamageText { get; set; }
+            public Vector2 Velocity { get; set; }
+            public float AngularVelocity { get; set; }
+
+            // Legacy Features.Opacity without the stealth: 0.1 while faded.
+            public float Opacity { get; set; } = 1f;
 
             // A ship: the colour of the last snapshot, and the stealth opacity with its target (phase 5, step 9b).
             public Color Color { get; set; } = Color.white;
@@ -1009,6 +1214,23 @@ namespace CombatView
         // The named effect prefabs (step 3), with their legacy names.
         private const string EffectFolder = "Effects/";
 
+        // Step 4: the ship prefabs and effects, with their legacy names; the shared HSV material.
+        private const string ShipPrefab = "Ships/Default";
+        private const string SatellitePrefab = "Satellites/default";
+        private const string TurretPrefab = "Guns/turret";
+        private const string TrailPrefab = "Objects/TrailRenderer";
+        private const string WreckPrefab = "Effects/Wreck";
+        private const string DamageTextPrefab = "Effects/DamageText";
+        private const string FlashPrefab = "Effects/Flash";
+        private const string FlashAdditivePrefab = "Effects/FlashAdditive";
+        private const string WavePrefab = "Effects/Wave";
+        private const string HsvMaterialPath = "Materials/ShipHsv";
+
+        // Legacy ShipWreckAction, EffectFactory.CreateDamageTextEffect and ColorTable.ShipExplosionColor.
+        private const float WreckLifetime = 60f;
+        private const float DamageTextLifetime = 2f;
+        private static readonly Color ExplosionColor = new Color(1f, 0.66f, 0.59f);
+
         // Legacy TrailView on CommonRocket (_duration).
         private const float TrailDuration = 0.5f;
 
@@ -1033,6 +1255,10 @@ namespace CombatView
         private readonly EffectPool _effects;
         private readonly CameraShake _shake;
         private readonly CombatSounds _sounds;
+        private readonly HsvMaterials _hsv;
+        private readonly TrailPool _trails;
+        private readonly ShipEffectAssets _shipAssets;
+        private Color[] _damageColors;
         private readonly List<IBattleEventView> _eventViews = new List<IBattleEventView>();
         private readonly Sprite _genericSprite;
         private readonly Sprite _flashSprite;
