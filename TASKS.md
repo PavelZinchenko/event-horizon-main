@@ -28,7 +28,7 @@
 - [ ] Charged beam lifetime × (0.5 + 0.5 × charge) in legacy `BulletStats` (deferred E2, `TODO/battle_simulator_ammo_mapping.md`, G9; the core does it since phase 5, step 4f)
 - [ ] Capsule hit shape for long bullets (deferred E3, `TODO/battle_simulator_ammo_mapping.md`, G10)
 - [In Progress] Migration phase 5: built-in device coverage, data-model gate and explicit deferrals (`TODO/battle_simulator_migration.md`)
-- [ ] Migration phase 5: asteroids as core bodies, with the AI obstacle and asteroid-threat port (`TODO/battle_simulator_phase4.md`, D8)
+- [In Progress] Migration phase 5: asteroids as core bodies, with the AI obstacle and asteroid-threat port (`TODO/battle_simulator_phase4.md`, D8)
 - [ ] Migration phase 6: exploration and controls configuration (`TODO/battle_simulator_migration.md`)
 - [ ] Migration phase 7: live duel, release gates and GitHub alpha (`TODO/battle_simulator_migration.md`)
 - [ ] Verify the tractor beam rope anchor (`autoConfigureConnectedAnchor`) in Unity (`TODO/battle_simulator_physics.md`, P4 risk 3)

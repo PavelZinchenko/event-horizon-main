@@ -537,6 +537,7 @@ Internal `SpawnIdentity` hashes these fields using 64-bit FNV-1a, then applies t
 | --- | --- |
 | Root | Tag byte 1, battle ID (64 bits), roster ID (32 bits), deployment number (32 bits), spawn tick (64 bits) |
 | Child | Tag byte 2, parent entity ID (64 bits), spawn tick (64 bits), source index (32 bits), slot (32 bits), sequence (32 bits) |
+| Asteroid | Tag byte 4, battle ID (64 bits), index in `BattleSetup.Asteroids` (32 bits) |
 
 All numeric fields use little-endian byte order. The offset basis is `14695981039346656037`; the prime is `1099511628211`.
 Arithmetic wraps at 64 bits. A zero result becomes one.
@@ -1184,6 +1185,18 @@ Phase 5, step 11c. `GravityGeneratorDefinition` and `GravityGeneratorDevice` (`D
 6. **Mapping.** `EnergyConsumption` as the cost, `Cooldown`, `Range` and `Power`, none scaled by the ship. A device with `VisualEffect` or `EffectPrefab` gets a flash look: the device colour at 2 × `Range` for `Lifetime`.
 7. **Presentation.** The adapter draws one flash at the wave centre (legacy `FlashEffect` on `OnActivate`, which follows the ship). No sounds (H11).
 
+### Asteroids
+
+Phase 5, step 14a (H10; legacy `Asteroid`, `CombatManager`). `AsteroidSetup`, `Asteroid` and `Asteroids` (`Asteroids/Asteroids.cs`). Rules and examples: `TODO/battle_simulator_phase5_part2.md`, "Asteroids (14, M4)". Tests: `Core/Tests/AsteroidTests.cs`.
+
+1. **Setup.** `BattleSetup.Asteroids` lists them: position, velocity, size (the circle diameter), mass, hit points and ramming multiplier, all finite; size, mass and hit points positive. The adapter draws them from the battle seed; the core holds no asteroid rule (owner question 3). A battle with a remote owner takes none (owner question 2): nobody owns an asteroid, so the setup throws.
+2. **Creation.** The `Battle` constructor creates them in setup order, before tick 0, so the tick âˆ’1 snapshot lists them. Each is a body with one circle (`EntityKind.Asteroid`), angular damping 0.02 (legacy angular drag) and no linear damping. Its owner is the first roster owner, a local one.
+3. **Collision.** `CollisionFilters.Asteroid` is a category of its own outside the allegiance groups (legacy layer `Default` pairs with every layer). Ships, drones, decoys, bullets, beams, tail segments, satellites, repair bots and other asteroids meet it; a unit without contacts does not. Point defense skips it. Its allegiance is `Undefined` (legacy side): hostile to every other allegiance, a friend of another asteroid and of a crazy drone.
+4. **Hits.** A projectile, a ray, a beam bolt, a stuck bullet's damage over time and a gravity wave reach it through the contact pipeline. Stage 9 adds the candidate's total damage of every type, without resistance, and applies a projectile's push or a gravity wave's impulse at its origin. No other effect acts on it (legacy `Asteroid.OnCollision` reads damage, impulse and `Destroy`; `Devour` and `BlackHole` are deferred, H4). A sticky bullet and a harpoon hold it as any body.
+5. **Ramming.** `RammingTracker` treats it as a ship: it rams hostile ships, drones, decoys, tail segments and repair bots with its own multiplier, and they ram it with theirs (legacy `DefaultCollisionBehaviour`). Two asteroids never deal damage.
+6. **Death.** Stage 10 applies the damage; below 0 hit points the asteroid dies (legacy strict test). Stage 12 removes it after the repair bots and adds an `AsteroidRemoval` event: entity, last position, side âˆ’1. No credit, no loot.
+7. **Placement.** `TryFindFreePosition` counts asteroid shapes, so a deployment or a launch moves clear of an asteroid. Legacy `FindFreePlace` checks ships only; the core keeps its rule (owner question 6, 2026-11-09).
+
 ### Allegiance and ship commands
 
 Phase 4, step 7e (D12, D13). The side stays the team: result, timer, surrender, kill-all and spawn placement read it.
@@ -1372,7 +1385,7 @@ Devices:
 
 Stage 14 writes a `BattleSnapshot` of the tick it completed, then increments `Battle.Tick`. `Battle.Snapshot` returns the published one. The constructor publishes tick −1: every slot `Ready`, no ships, no events.
 
-1. Contents: battle ID, tick, timer, result, `Ships` (active roster ships in roster order, then drones by entity ID), `Bullets` (live bullets in storage order; the order has no meaning), `Segments` (live worm tail segments in storage order: entity, ship, side, owner, definition, number, detached, scale and pose), `Roster` (every slot in setup order) and `Events` (the tick's presentation batch), plus `OutgoingHits` (resolved contacts for remote ship and drone owners, and contacts on remote bullets for their owners). The lists are `ReadOnlySpan` views over arrays the battle reuses.
+1. Contents: battle ID, tick, timer, result, `Ships` (active roster ships in roster order, then drones by entity ID), `Bullets` (live bullets in storage order; the order has no meaning), `Segments` (live worm tail segments in storage order: entity, ship, side, owner, definition, number, detached, scale and pose), `Asteroids` (live asteroids in setup order: entity, size, mass, hit points and maximum, pose and velocity), `Roster` (every slot in setup order) and `Events` (the tick's presentation batch), plus `OutgoingHits` (resolved contacts for remote ship and drone owners, and contacts on remote bullets for their owners). The lists are `ReadOnlySpan` views over arrays the battle reuses.
 2. `ShipState`: entity, roster ID, side, allegiance, owner, definition, pose and velocities from the physics body, armor, shield and energy (value and maximum), the controls in force and the retreat completion tick.
 3. `BulletState`: entity, parent entity, side, owner, definition, pose, velocity and expiry tick. Projectiles retain `Definition` (`BulletDefinition`). Beams set `BeamDefinition` and `IsBeam`, with `Definition` null. Their pose is the sampled ray origin and angle; `BeamEndPoint` and `BeamTargetId` describe the accepted hit or full range. Beam velocity is zero and expiry is `long.MaxValue` because the device owns lifetime.
 4. `RosterSlotState`: roster ID, side, owner, status, deployment count and order, revision, active entity (null unless active), the retained B4 deficits and `DamageFraction` (B2).
