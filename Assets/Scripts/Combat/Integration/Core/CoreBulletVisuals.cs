@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CombatSimulation.Core;
 using CombatView;
+using EffectColorMode = CombatView.Effects.ColorMode;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Extensions;
@@ -10,7 +11,8 @@ using UnityEngine;
 namespace Combat.Integration.Core
 {
     // Turns the bullet sources of the mapper into views (phase 4, step 5, "Views (5)"), once per definition at its first
-    // spawn. Legacy sources: PrefabCache.GetBulletPrefab, ProjectileInitializer, TrailView and BeamInitializer.
+    // spawn. Phase 5b, step 5: one BulletLook per BulletPrefab record, as legacy PrefabCache.GetBulletPrefab made one
+    // prefab per record; the renderer's shape prefabs apply it as the legacy initializers did.
     public sealed class CoreBulletVisuals
     {
         public CoreBulletVisuals(IReadOnlyDictionary<object, CoreBulletSource> sources, IResourceLocator resourceLocator,
@@ -47,48 +49,61 @@ namespace Combat.Integration.Core
             if (source.Hidden)
                 return BulletVisual.Hidden;
 
+            // Legacy BulletFactory.ConfigureView: the view colour is the weapon's bullet colour; the root scale BodySize.
             var parent = source.ParentColor.ToUnity();
             var size = source.BodySize * sizeScale;
             var prefab = source.Prefab;
             var flash = Flash(source.HitEffect, parent, size);
 
-            // Legacy BulletFactory: without a record the bullet has no look of its own; its trigger effects draw it.
-            // Until H11 decides the area views, the core scene draws the legacy flash glow at the area's diameter in its
-            // colour, half transparent (phase 5, step 3).
+            // Legacy BulletFactory: without a record the bullet has no look of its own (the AreaOfEffect prefab is
+            // empty); its trigger effects draw it. Until step 6 gives them their effects, the core scene draws the legacy
+            // flash glow at the area's diameter in its colour, half transparent (phase 5, step 3), and a plain beam
+            // ("Views (5)", item 5).
             if (prefab == null)
+                return isBeam
+                    ? new BulletVisual(_plainBeam ??= PlainBeam(), 1f, parent, flash)
+                    : new BulletVisual(_area ??= Area(_areaSprite), bullet.Scale, parent, flash);
+
+            if (!_looks.TryGetValue(prefab, out var look))
             {
-                if (isBeam)
-                    return BulletVisual.ForLine(null, PlainBeamWidth, 0f, parent, flash);
-                var area = parent;
-                area.a *= AreaAlpha;
-                return BulletVisual.ForSprite(_areaSprite, ScaleToDiameter(_areaSprite, bullet.Scale), area, flash);
+                look = new BulletLook(Kind(prefab.Shape), _resourceLocator.GetSprite(prefab.Image), prefab.MainColor.ToUnity(),
+                    (EffectColorMode)prefab.MainColorMode, prefab.SecondColor.ToUnity(), (EffectColorMode)prefab.SecondColorMode,
+                    prefab.Size, prefab.Margins);
+                _looks.Add(prefab, look);
             }
 
-            var sprite = _resourceLocator.GetSprite(prefab.Image);
-            var color = prefab.MainColorMode.Apply(prefab.MainColor.ToUnity(), parent);
-            if (!isBeam && bullet.Wave != null)
-                return BulletVisual.ForArc(sprite, prefab.Size * size, color, flash);
-            // Legacy BeamInitializer: thickness Size x BodySize. Only LaserView (laser and piercing laser) has a border,
-            // Margins x BodySize; LightningView (energy beam, lightning) stretches the whole image.
-            if (isBeam)
-            {
-                var border = prefab.Shape == BulletShape.LaserBeam || prefab.Shape == BulletShape.PiercingLaser ? prefab.Margins * size : 0f;
-                return BulletVisual.ForLine(sprite, prefab.Size * size, border, color, flash);
-            }
-
-            // Legacy root scale BodySize, view scale Size.
-            var spriteScale = prefab.Size * size;
-            if (bullet.IsHarpoon)
-                return BulletVisual.ForHarpoon(sprite, spriteScale, 0.05f * size, color, flash);
-            if (prefab.Shape != BulletShape.Rocket)
-                return BulletVisual.ForSprite(sprite, spriteScale, color, flash);
-
-            // Legacy TrailView: width 1 x the trail object's scale (0.5 x BodySize), half alpha.
-            var trailColor = prefab.SecondColorMode.Apply(prefab.SecondColor.ToUnity(), parent);
-            trailColor.a *= TrailAlpha;
-            return BulletVisual.ForRocket(sprite, spriteScale, color, trailColor, TrailScale * size,
-                (prefab.Margins + TrailGap) * size, flash);
+            return new BulletVisual(look, size, parent, flash);
         }
+
+        // Legacy PrefabCache.GetBulletPrefab: the shape picks the prefab.
+        private static BulletViewKind Kind(BulletShape shape)
+        {
+            switch (shape)
+            {
+                case BulletShape.Rocket: return BulletViewKind.Rocket;
+                case BulletShape.LaserBeam: return BulletViewKind.Laser;
+                case BulletShape.LightningBolt: return BulletViewKind.Lightning;
+                case BulletShape.EnergyBeam: return BulletViewKind.EnergyBeam;
+                case BulletShape.PiercingLaser: return BulletViewKind.PiercingLaser;
+                case BulletShape.Spark: return BulletViewKind.Spark;
+                case BulletShape.Mine: return BulletViewKind.Mine;
+                case BulletShape.Wave: return BulletViewKind.Arc;
+                case BulletShape.BlackHole: return BulletViewKind.BlackHole;
+                case BulletShape.Harpoon: return BulletViewKind.Harpoon;
+                case BulletShape.CircularSaw: return BulletViewKind.CircularSaw;
+                default: return BulletViewKind.Projectile;
+            }
+        }
+
+        // The projectile prefab's sprite (alpha scale 1.5) at a diameter of 1, its colour times half the area colour.
+        private static BulletLook Area(Sprite sprite) =>
+            new BulletLook(BulletViewKind.Projectile, sprite, new Color(1f, 1f, 1f, AreaAlpha / ProjectileAlphaScale),
+                EffectColorMode.Multiply, Color.white, EffectColorMode.TakeFromOwner, ScaleToDiameter(sprite, 1f), 0f);
+
+        // The laser prefab without a texture or border, PlainBeamWidth wide.
+        private static BulletLook PlainBeam() =>
+            new BulletLook(BulletViewKind.Laser, null, Color.white, EffectColorMode.TakeFromOwner, Color.white,
+                EffectColorMode.TakeFromOwner, PlainBeamWidth, 0f);
 
         // Legacy CreateVisualEffect and ShowHitEffectAction: the Hit trigger's size (1 when unset) x the bullet's world
         // scale (BodySize), its colour and lifetime. Without one legacy shows nothing; D11 keeps a generic flash of
@@ -118,14 +133,15 @@ namespace Combat.Integration.Core
         // "Views (5)", item 5.
         private const float PlainBeamWidth = 0.2f;
 
-        // Legacy CommonRocket prefab: trail scale, its gap behind the engine, and TrailView._alpha.
-        private const float TrailScale = 0.5f;
-        private const float TrailGap = 0.1f;
-        private const float TrailAlpha = 0.5f;
+        // The CommonProjectile prefab's SpriteView._alphaScale.
+        private const float ProjectileAlphaScale = 1.5f;
 
         private readonly IReadOnlyDictionary<object, CoreBulletSource> _sources;
         private readonly IResourceLocator _resourceLocator;
         private readonly Sprite _areaSprite;
         private readonly Dictionary<object, BulletVisual> _visuals = new Dictionary<object, BulletVisual>();
+        private readonly Dictionary<BulletPrefab, BulletLook> _looks = new Dictionary<BulletPrefab, BulletLook>();
+        private BulletLook _area;
+        private BulletLook _plainBeam;
     }
 }

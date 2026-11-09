@@ -1,14 +1,24 @@
+using CombatView.Effects;
 using UnityEngine;
 
 namespace CombatView
 {
+    // The legacy BulletPrefab shapes (phase 5b, step 5). Each has its prefab in Resources/CombatView/Bullets with the
+    // legacy name.
     public enum BulletViewKind : byte
     {
-        Sprite,
+        Projectile,
         Rocket,
-        Line,
+        Laser,
+        Lightning,
+        EnergyBeam,
+        PiercingLaser,
+        Spark,
+        Mine,
         Arc,
+        BlackHole,
         Harpoon,
+        CircularSaw,
     }
 
     // The flash at each hit of a bullet: diameter in world units, duration in seconds.
@@ -26,61 +36,58 @@ namespace CombatView
         public readonly float Duration;
     }
 
-    // How one bullet or beam is drawn (migration phase 4, step 5). The adapter builds it from the database, so this
-    // module never reads it. Sizes are world units; the sprite is drawn at its bounds x SpriteScale.
-    public sealed class BulletVisual
+    // One database BulletPrefab record as plain data (phase 5b, step 5), so this module needs no database types. The
+    // renderer makes one prefab template per look, as legacy PrefabCache.GetBulletPrefab made one per record.
+    public sealed class BulletLook
     {
-        private BulletVisual(BulletViewKind kind, Sprite sprite, float spriteScale, float lineWidth, float lineBorder,
-            Color color, Color trailColor, float trailWidth, float trailOffset, HitFlash flash)
+        public BulletLook(BulletViewKind kind, Sprite image, Color mainColor, ColorMode mainColorMode, Color secondColor,
+            ColorMode secondColorMode, float size, float margins)
         {
             Kind = kind;
-            Sprite = sprite;
-            SpriteScale = spriteScale;
-            LineWidth = lineWidth;
-            LineBorder = lineBorder;
-            Color = color;
-            TrailColor = trailColor;
-            TrailWidth = trailWidth;
-            TrailOffset = trailOffset;
-            Flash = flash;
+            Image = image;
+            MainColor = mainColor;
+            MainColorMode = mainColorMode;
+            SecondColor = secondColor;
+            SecondColorMode = secondColorMode;
+            Size = size;
+            Margins = margins;
         }
-
-        public static BulletVisual ForSprite(Sprite sprite, float spriteScale, Color color, HitFlash flash) =>
-            new BulletVisual(BulletViewKind.Sprite, sprite, spriteScale, 0f, 0f, color, default, 0f, 0f, flash);
-
-        // The trail starts TrailOffset behind the origin, TrailWidth wide, and narrows to half of it.
-        public static BulletVisual ForRocket(Sprite sprite, float spriteScale, Color color, Color trailColor,
-            float trailWidth, float trailOffset, HitFlash flash) =>
-            new BulletVisual(BulletViewKind.Rocket, sprite, spriteScale, 0f, 0f, color, trailColor, trailWidth, trailOffset, flash);
-
-        // A null sprite draws a plain line. Otherwise the texture's first and last thirds cover LineBorder at each
-        // end, and its middle third stretches between them (legacy LaserView).
-        public static BulletVisual ForLine(Sprite sprite, float lineWidth, float lineBorder, Color color, HitFlash flash) =>
-            new BulletVisual(BulletViewKind.Line, sprite, 0f, lineWidth, lineBorder, color, default, 0f, 0f, flash);
-
-        public static BulletVisual ForArc(Sprite sprite, float lineWidth, Color color, HitFlash flash) =>
-            new BulletVisual(BulletViewKind.Arc, sprite, 0f, lineWidth, 0f, color, default, 0f, 0f, flash);
-
-        public static BulletVisual ForHarpoon(Sprite sprite, float spriteScale, float ropeWidth, Color color, HitFlash flash) =>
-            new BulletVisual(BulletViewKind.Harpoon, sprite, spriteScale, ropeWidth, 0f, color, default, 0f, 0f, flash);
-
-        // A bullet the renderer does not draw, such as a carrier without a look (phase 5, step 11a).
-        public static readonly BulletVisual Hidden =
-            new BulletVisual(BulletViewKind.Sprite, null, 0f, 0f, 0f, default, default, 0f, 0f, default);
 
         public BulletViewKind Kind { get; }
 
-        // Null: the renderer's generic sprite.
-        public Sprite Sprite { get; }
-        public float SpriteScale { get; }
-        public float LineWidth { get; }
-        public float LineBorder { get; }
+        // Null: the prefab's own sprite; a beam draws the plain white texture.
+        public Sprite Image { get; }
+        public Color MainColor { get; }
+        public ColorMode MainColorMode { get; }
+        public Color SecondColor { get; }
+        public ColorMode SecondColorMode { get; }
+        public float Size { get; }
+        public float Margins { get; }
+
+        // The beam shapes: the renderer sets the view's Size to the ray length.
+        public bool IsLine => Kind == BulletViewKind.Laser || Kind == BulletViewKind.Lightning ||
+            Kind == BulletViewKind.EnergyBeam || Kind == BulletViewKind.PiercingLaser;
+    }
+
+    // How one bullet or beam definition is drawn (migration phase 4, step 5; phase 5b, step 5). The adapter builds it
+    // from the database. BodySize is the legacy root scale; Color is the legacy view colour (the weapon's bullet colour),
+    // which each part of the prefab combines with its own colour by its colour mode.
+    public sealed class BulletVisual
+    {
+        public BulletVisual(BulletLook look, float bodySize, Color color, HitFlash flash)
+        {
+            Look = look;
+            BodySize = bodySize;
+            Color = color;
+            Flash = flash;
+        }
+
+        // A bullet the renderer does not draw, such as a carrier without a look (phase 5, step 11a).
+        public static readonly BulletVisual Hidden = new BulletVisual(null, 0f, default, default);
+
+        public BulletLook Look { get; }
+        public float BodySize { get; }
         public Color Color { get; }
-
-        public Color TrailColor { get; }
-        public float TrailWidth { get; }
-        public float TrailOffset { get; }
-
         public HitFlash Flash { get; }
     }
 }

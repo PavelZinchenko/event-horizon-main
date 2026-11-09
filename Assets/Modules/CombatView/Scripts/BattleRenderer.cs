@@ -13,7 +13,8 @@ namespace CombatView
     // Draws one core battle: ships, satellites, worm tail segments, bullets, beams, hit flashes and ship texts at
     // interpolated poses (migration phase 3c, step 4; phase 4, steps 5 and 7f; phase 5, steps 7d and 12c). Events decide
     // when a view exists; snapshots give its poses. Nothing is written back to the simulation. Bullet looks come from
-    // the adapter as BulletVisual values, ship looks as ShipLook values (phase 5b, step 4).
+    // the adapter as BulletVisual values, drawn on the shape prefabs (phase 5b, step 5); ship looks as ShipLook values
+    // (step 4).
     public sealed class BattleRenderer : IDisposable
     {
         // The root goes into the given scene: the game loads scenes additively and never changes the active
@@ -47,6 +48,15 @@ namespace CombatView
             if (settings.Trails)
                 _trails = new TrailPool(_prefabs.Load(TrailPrefab)?.GetComponent<TrailRenderer>(), _root.transform);
             _shipAssets = new ShipEffectAssets(_effects, _prefabs, _trails, _sounds);
+
+            // Step 5: the bullet prefabs, one template per look. A bullet without view data draws the generic sprite
+            // or a plain beam.
+            _bulletTemplates = new BulletTemplates(_prefabs);
+            _genericBulletLook = new BulletLook(BulletViewKind.Projectile, genericSprite, Color.white, ColorMode.UseMyOwn,
+                Color.white, ColorMode.UseMyOwn, ScaleToDiameter(genericSprite, 1f), 0f);
+            _genericBeam = new BulletVisual(new BulletLook(BulletViewKind.Laser, null, Color.white, ColorMode.UseMyOwn,
+                    Color.white, ColorMode.UseMyOwn, GenericBeamWidth, 0f), 1f, Color.white,
+                new HitFlash(GenericFlashDiameter, Color.white, GenericFlashDuration));
         }
 
         public CombatViewSettings Settings { get; }
@@ -167,7 +177,9 @@ namespace CombatView
                 _segmentLooks[definition] = sprite;
         }
 
-        // A null visual draws the generic sprite or a plain line; it should not happen for a mapped weapon.
+        // Phase 5b, step 5: an instance of the look's template (the shape prefab of Resources/CombatView/Bullets). It
+        // shows from the first snapshot. A null visual draws the generic sprite or a plain beam; it should not happen
+        // for a mapped weapon.
         public void AddBullet(in BattleEvent spawn, BulletVisual visual)
         {
             if (visual == BulletVisual.Hidden || _bullets.ContainsKey(spawn.EntityId))
@@ -176,26 +188,36 @@ namespace CombatView
             if (visual == null)
             {
                 WarnOnce(ref _visualWarned, "bullet without view data");
-                var flash = new HitFlash(GenericFlashDiameter, Color.white, GenericFlashDuration);
-                visual = spawn.IsBeam
-                    ? BulletVisual.ForLine(null, GenericBeamWidth, 0f, Color.white, flash)
-                    : BulletVisual.ForSprite(null, ScaleToDiameter(_genericSprite, 2f * spawn.BulletDefinition.Radius), Color.white, flash);
+                visual = spawn.IsBeam ? _genericBeam : new BulletVisual(_genericBulletLook,
+                    2f * spawn.BulletDefinition.Radius, Color.white, _genericBeam.Flash);
             }
 
-            var pool = _bulletPools[(int)visual.Kind];
-            var view = pool.Count > 0 ? pool.Pop() : CreateBulletView(visual.Kind);
-            Configure(view, visual);
+            var template = _bulletTemplates.Get(visual.Look);
+            if (!template)
+                return;
+
+            var instance = _prefabs.Get(template, _root.transform);
+            var setup = instance.GetComponent<BulletViewSetup>();
+            setup.Bind(_trails);
+            var view = new BulletView(instance, setup, visual);
+
+            // Legacy HarpoonController: the rope is as long as the weapon range.
+            if (setup.Rope && !spawn.IsBeam)
+                setup.Rope.Initialize(spawn.BulletDefinition.Range);
             _bullets.Add(spawn.EntityId, view);
         }
 
+        // Legacy Bullet.Dispose: the view resets and its trail fades out where it is. A view that never showed has not
+        // initialized itself, so it has nothing to reset.
         public void RemoveBullet(EntityId id)
         {
             if (!_bullets.TryGetValue(id, out var view))
                 return;
 
             _bullets.Remove(id);
-            view.Clear();
-            _bulletPools[(int)view.Visual.Kind].Push(view);
+            if (view.HasPose && view.View)
+                view.View.Dispose();
+            _prefabs.Release(view.Root);
         }
 
         // A predicted copy took its owner's ID (network plan, P2): the view stays.
@@ -329,33 +351,27 @@ namespace CombatView
                 if (!_bullets.TryGetValue(bullet.Id, out var view))
                     continue;
 
+                // Legacy Bullet.UpdateView: the view's life is the share of the lifetime left, 1 in the spawn tick. The
+                // first snapshot gives the full lifetime; a beam the device holds keeps 1.
+                var life = 1f;
+                if (bullet.ExpiryTick != long.MaxValue)
+                {
+                    var left = bullet.ExpiryTick - snapshot.Tick + 1;
+                    if (view.LifetimeTicks <= 0)
+                        view.LifetimeTicks = Math.Max(1L, left);
+                    life = Mathf.Clamp01((float)left / view.LifetimeTicks);
+                }
+
+                view.PreviousLife = view.HasPose ? view.Life : life;
+                view.Life = life;
+                view.ParentId = bullet.ParentId;
+                // An aura grows and shrinks with its power (phase 5, step 4g); the view takes the latest tick's size.
+                view.AuraPower = bullet.IsBeam ? 1f : bullet.AuraPower;
+                view.WaveScale = bullet.WaveScale;
+
                 if (bullet.HasRay)
                     view.PushEnd(bullet.BeamEndPoint);
-                if (view.Visual.Kind == BulletViewKind.Harpoon)
-                {
-                    view.Line.enabled = snapshot.TryGetShip(bullet.ParentId, out var source);
-                    view.PushEnd(view.Line.enabled ? source.Position : bullet.Position);
-                }
-                // The saw's sprite shares its collider's forward offset, scaled with the aura (phase 5, step 6a).
-                var position = bullet.Position;
-                if (!bullet.HasRay)
-                    position = _torus.Wrap(position + Rot.FromAngle(bullet.Angle).Rotate(
-                        bullet.Definition.CircleCenter * bullet.AuraPower));
-                view.Push(position, bullet.Angle);
-
-                if (view.Visual.Kind == BulletViewKind.Arc)
-                {
-                    var wave = bullet.Definition.Wave;
-                    for (var i = 0; i < view.Line.positionCount; ++i)
-                    {
-                        var point = wave.ArcPoint((float)i / (view.Line.positionCount - 1)) * bullet.WaveScale;
-                        view.Line.SetPosition(i, new Vector3(point.X, point.Y, 0f));
-                    }
-                }
-
-                // An aura grows and shrinks with its power (phase 5, step 4g); the sprite takes the latest tick's size.
-                if (view.Renderer && !bullet.IsBeam && bullet.Definition.IsAura)
-                    view.Renderer.transform.localScale = Vector3.one * (view.Visual.SpriteScale * bullet.AuraPower);
+                view.Push(bullet.Position, bullet.Angle);
             }
 
             CaptureSegments(snapshot);
@@ -490,7 +506,7 @@ namespace CombatView
                 }
 
             foreach (var pair in _bullets)
-                PlaceBullet(pair.Value, alpha, anchor);
+                PlaceBullet(pair.Value, alpha, anchor, deltaTime);
 
             foreach (var pair in _segments)
                 Place(pair.Value, alpha, anchor);
@@ -540,23 +556,18 @@ namespace CombatView
             if (_root)
                 Object.Destroy(_root);
 
-            foreach (var material in _lineMaterials.Values)
-                Object.Destroy(material);
-
             _ships.Clear();
             _bullets.Clear();
+            _bulletTemplates.Clear();
             _segments.Clear();
             _segmentLooks.Clear();
             _repairBots.Clear();
             _repairBotLooks.Clear();
-            foreach (var pool in _bulletPools)
-                pool.Clear();
             _fades.Clear();
             _flashes.Clear();
             _flashPool.Clear();
             _texts.Clear();
             _textPool.Clear();
-            _lineMaterials.Clear();
         }
 
         private void AddShip(EntityId id, ShipLook look, int side, bool isDecoy)
@@ -736,138 +747,43 @@ namespace CombatView
             return view.Position;
         }
 
-        private void PlaceBullet(BulletView view, float alpha, Vector2 anchor)
+        // Legacy Bullet.UpdateView after the body: the root takes the pose and the legacy root scale (BodySize), then the
+        // view takes the life, and a beam its length. A beam root points at the ray end, so its line runs along local x.
+        private void PlaceBullet(BulletView view, float alpha, Vector2 anchor, float deltaTime)
         {
-            if (!view.HasPose)
+            if (!view.HasPose || !view.View)
                 return;
 
-            var previous = view.Position;
             Place(view, alpha, anchor);
+            var root = view.Root.transform;
+            var visual = view.Visual;
+            root.localScale = Vector3.one * (visual.BodySize * view.AuraPower);
 
-            // Legacy TrailView: a fresh view, or a jump over 1 unit (a new image at the wrap), starts a new trail.
-            if (view.Trail && (!view.WasPlaced || (view.Position - previous).sqrMagnitude > 1f))
-                view.Trail.Clear();
-            view.WasPlaced = true;
-
-            if (view.Line && view.Visual.Kind == BulletViewKind.Harpoon)
+            var baseView = view.View;
+            if (!view.WasPlaced)
             {
-                view.Line.SetPosition(0, view.Position);
-                view.Line.SetPosition(1, Placement.NearestImage(_torus, view.Position, view.End.SamplePosition(alpha, _torus)));
-            }
-            if (view.Line && view.Visual.Kind == BulletViewKind.Line)
-                PlaceLine(view, Placement.NearestImage(_torus, view.Position, view.End.SamplePosition(alpha, _torus)));
-        }
-
-        // Legacy LaserView.UpdateLine: four points, so the texture's end thirds keep their length (the border) and the
-        // middle third stretches. A line shorter than two borders is hidden.
-        private static void PlaceLine(BulletView view, Vector2 end)
-        {
-            var start = view.Position;
-            var length = Vector2.Distance(start, end);
-            var border = view.Visual.LineBorder;
-            view.Line.enabled = length >= 2f * border;
-            if (!view.Line.enabled)
-                return;
-
-            var direction = length > 0f ? (end - start) / length : Vector2.zero;
-            view.Line.SetPosition(0, start);
-            view.Line.SetPosition(1, start + direction * border);
-            view.Line.SetPosition(2, end - direction * border);
-            view.Line.SetPosition(3, end);
-        }
-
-        private BulletView CreateBulletView(BulletViewKind kind)
-        {
-            var root = new GameObject(kind.ToString());
-            root.SetActive(false);
-            root.transform.SetParent(_root.transform, false);
-
-            SpriteRenderer sprite = null;
-            TrailRenderer trail = null;
-            LineRenderer line = null;
-            switch (kind)
-            {
-                case BulletViewKind.Harpoon:
-                    sprite = CreateRenderer("Sprite", root.transform, _genericSprite, BulletSortingOrder);
-                    line = root.AddComponent<LineRenderer>();
-                    line.useWorldSpace = true;
-                    line.positionCount = 2;
-                    line.sortingOrder = TrailSortingOrder;
-                    break;
-                case BulletViewKind.Rocket:
-                    var trailObject = new GameObject("Trail");
-                    trailObject.transform.SetParent(root.transform, false);
-                    trail = trailObject.AddComponent<TrailRenderer>();
-                    trail.sharedMaterial = _spriteMaterial;
-                    trail.sortingOrder = TrailSortingOrder;
-                    trail.time = TrailDuration;
-                    trail.minVertexDistance = 0.1f;
-                    trail.numCapVertices = 0;
-                    sprite = CreateRenderer("Sprite", root.transform, _genericSprite, BulletSortingOrder);
-                    break;
-                case BulletViewKind.Line:
-                case BulletViewKind.Arc:
-                    line = root.AddComponent<LineRenderer>();
-                    line.useWorldSpace = kind == BulletViewKind.Line;
-                    line.positionCount = kind == BulletViewKind.Line ? 4 : 17;
-                    line.sortingOrder = BulletSortingOrder;
-                    line.numCapVertices = 0;
-                    break;
-                default:
-                    sprite = CreateRenderer("Sprite", root.transform, _genericSprite, BulletSortingOrder);
-                    break;
+                baseView.Color = visual.Color;
+                view.WasPlaced = true;
             }
 
-            return new BulletView(root, sprite, trail, line);
-        }
-
-        private void Configure(BulletView view, BulletVisual visual)
-        {
-            view.Visual = visual;
-            view.LastFlashTime = float.NegativeInfinity;
-
-            if (view.Renderer)
+            baseView.Life = Mathf.Lerp(view.PreviousLife, view.Life, alpha);
+            if (visual.Look.IsLine && view.HasEnd)
             {
-                view.Renderer.sprite = visual.Sprite ? visual.Sprite : _genericSprite;
-                view.Renderer.color = visual.Color;
-                view.Renderer.transform.localScale = Vector3.one * visual.SpriteScale;
+                var end = Placement.NearestImage(_torus, view.Position, view.End.SamplePosition(alpha, _torus));
+                var delta = end - view.Position;
+                if (delta.sqrMagnitude > 0f)
+                    root.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
+                baseView.Size = delta.magnitude;
             }
+            else if (visual.Look.Kind == BulletViewKind.Arc && visual.BodySize > 0f)
+                baseView.Size = view.WaveScale / visual.BodySize;
 
-            if (view.Trail)
-            {
-                view.Trail.transform.localPosition = new Vector3(-visual.TrailOffset, 0f, 0f);
-                view.Trail.startWidth = visual.TrailWidth;
-                view.Trail.endWidth = 0.5f * visual.TrailWidth;
-                view.Trail.startColor = visual.TrailColor;
-                var end = visual.TrailColor;
-                end.a = 0f;
-                view.Trail.endColor = end;
-            }
+            baseView.UpdateView(deltaTime);
 
-            if (view.Line)
-            {
-                view.Line.enabled = true;
-                view.Line.sharedMaterial = LineMaterial(visual.Kind == BulletViewKind.Harpoon ? null : visual.Sprite);
-                view.Line.startWidth = view.Line.endWidth = visual.LineWidth;
-                view.Line.textureMode = visual.LineBorder > 0f ? LineTextureMode.DistributePerSegment : LineTextureMode.Stretch;
-                view.Line.startColor = view.Line.endColor = visual.Color;
-            }
-        }
-
-        // Legacy BeamInitializer: the record image's texture along the line. One material per texture.
-        private Material LineMaterial(Sprite sprite)
-        {
-            if (!sprite)
-                return _spriteMaterial;
-
-            var texture = sprite.texture;
-            if (!_lineMaterials.TryGetValue(texture, out var material))
-            {
-                material = new Material(_spriteMaterial) { mainTexture = texture };
-                _lineMaterials.Add(texture, material);
-            }
-
-            return material;
+            // Legacy DistanceJointVisualizer: the rope ends at the drawn ship; without it the rope is hidden.
+            var rope = view.Setup.Rope;
+            if (rope)
+                rope.UpdateRope(_ships.TryGetValue(view.ParentId, out var ship) && ship.HasPose ? ship.Position : (Vector2?)null);
         }
 
         private void UpdateFades(float deltaTime)
@@ -1108,24 +1024,35 @@ namespace CombatView
             public int Stamp { get; set; }
         }
 
+        // Phase 5b, step 5: an instance of a bullet prefab. The pool keeps the instance; this wrapper lives with the bullet.
         private sealed class BulletView : EntityView
         {
-            public BulletView(GameObject root, SpriteRenderer renderer, TrailRenderer trail, LineRenderer line)
-                : base(root, renderer)
+            public BulletView(GameObject root, BulletViewSetup setup, BulletVisual visual) : base(root, null)
             {
-                Trail = trail;
-                Line = line;
+                Setup = setup;
+                View = setup.View;
+                Visual = visual;
             }
 
-            public TrailRenderer Trail { get; }
-            public LineRenderer Line { get; }
-            public BulletVisual Visual { get; set; }
-            public float LastFlashTime { get; set; }
+            public BulletViewSetup Setup { get; }
+            public BaseView View { get; }
+            public BulletVisual Visual { get; }
+            public float LastFlashTime { get; set; } = float.NegativeInfinity;
             public bool WasPlaced { get; set; }
+
+            // The life of the last two snapshots, and the ticks of the full lifetime.
+            public float PreviousLife { get; set; } = 1f;
+            public float Life { get; set; } = 1f;
+            public long LifetimeTicks { get; set; }
+
+            public EntityId ParentId { get; set; }
+            public float AuraPower { get; set; } = 1f;
+            public float WaveScale { get; set; }
 
             // Beams and beam bolts: the ray end point, interpolated like the pose. Called before Push, so the first end point
             // starts the track together with the first pose.
             public PoseTrack End;
+            public bool HasEnd { get; private set; }
 
             public void PushEnd(Vec2 point)
             {
@@ -1133,12 +1060,7 @@ namespace CombatView
                     End.Push(point, 0f);
                 else
                     End.Reset(point, 0f);
-            }
-
-            public override void Clear()
-            {
-                base.Clear();
-                WasPlaced = false;
+                HasEnd = true;
             }
         }
 
@@ -1198,7 +1120,6 @@ namespace CombatView
 
         private const int SegmentSortingOrder = -1;
         private const int ShipSortingOrder = 0;
-        private const int TrailSortingOrder = 1;
         private const int BulletSortingOrder = 2;
         private const int FlashSortingOrder = 3;
         private const int TextSortingOrder = 4;
@@ -1230,9 +1151,6 @@ namespace CombatView
         private const float WreckLifetime = 60f;
         private const float DamageTextLifetime = 2f;
         private static readonly Color ExplosionColor = new Color(1f, 0.66f, 0.59f);
-
-        // Legacy TrailView on CommonRocket (_duration).
-        private const float TrailDuration = 0.5f;
 
         // "Views (5)", item 6.
         private const float FlashInterval = 0.1f;
@@ -1267,6 +1185,9 @@ namespace CombatView
         private readonly GameObject _root;
         private readonly Dictionary<EntityId, EntityView> _ships = new Dictionary<EntityId, EntityView>();
         private readonly Dictionary<EntityId, BulletView> _bullets = new Dictionary<EntityId, BulletView>();
+        private readonly BulletTemplates _bulletTemplates;
+        private readonly BulletLook _genericBulletLook;
+        private readonly BulletVisual _genericBeam;
         private readonly Dictionary<EntityId, SegmentView> _segments = new Dictionary<EntityId, SegmentView>();
         private readonly Dictionary<WormTailDefinition, Sprite> _segmentLooks = new Dictionary<WormTailDefinition, Sprite>();
         private readonly List<EntityId> _removedSegments = new List<EntityId>();
@@ -1276,13 +1197,11 @@ namespace CombatView
         private readonly List<EntityId> _removedRepairBots = new List<EntityId>();
         private int _repairBotStamp;
         private readonly System.Random _repairBotRandom = new System.Random();
-        private readonly Stack<BulletView>[] _bulletPools = { new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>(), new Stack<BulletView>() };
         private readonly List<Fade> _fades = new List<Fade>();
         private readonly List<Flash> _flashes = new List<Flash>();
         private readonly Stack<SpriteRenderer> _flashPool = new Stack<SpriteRenderer>();
         private readonly List<Text> _texts = new List<Text>();
         private readonly Stack<TextMesh> _textPool = new Stack<TextMesh>();
         private readonly System.Random _textRandom = new System.Random();
-        private readonly Dictionary<Texture, Material> _lineMaterials = new Dictionary<Texture, Material>();
     }
 }
