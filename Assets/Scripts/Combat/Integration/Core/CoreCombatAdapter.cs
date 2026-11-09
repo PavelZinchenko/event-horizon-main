@@ -12,9 +12,11 @@ using GameDatabase.Extensions;
 using GameDatabase.Model;
 using GameStateMachine.States;
 using Gui.Combat;
+using Services.Audio;
 using Services.Localization;
 using Services.Messenger;
 using Services.Resources;
+using Services.Settings;
 using UnityEngine;
 using Zenject;
 using CoreEntityId = CombatSimulation.Core.EntityId;
@@ -40,6 +42,8 @@ namespace Combat.Integration.Core
             ExitSignal.Trigger exitTrigger,
             ILocalization localization,
             PlayerInputSignal playerInputSignal,
+            ISoundPlayer soundPlayer,
+            IGameSettings gameSettings,
             UnityEngine.SceneManagement.Scene scene)
         {
             _combatModel = combatModel;
@@ -90,7 +94,11 @@ namespace Combat.Integration.Core
             // Only the font of the legacy text effect prefab is used; the text view is built in code (step 7f).
             var textFont = Resources.Load<TextMesh>(TextEffectPrefab)?.font;
             var flashSprite = resourceLocator.GetSprite(FlashSpriteName);
-            _renderer = new BattleRenderer(torus, bulletSprite, flashSprite, textFont, scene) { ViewerSide = PlayerSide };
+            // Phase 5b, owner question 6: legacy combat sets only the damage text; shadows and static wrecks stay off.
+            var viewSettings = new CombatViewSettings(damageText: gameSettings.ShowDamage, shadows: false, staticWrecks: false);
+            var sounds = new CoreSoundOutput(soundPlayer, resourceLocator);
+            _renderer = new BattleRenderer(torus, bulletSprite, flashSprite, textFont, scene, viewSettings, sounds)
+                { ViewerSide = PlayerSide };
             foreach (var look in _mapper.RepairBotColors)
                 _renderer.AddRepairBotLook(look.Key, resourceLocator.GetSprite(new SpriteId("repair_bot", SpriteId.Type.Satellite)), look.Value.ToUnity());
             foreach (var look in _mapper.SegmentImages)
@@ -449,6 +457,8 @@ namespace Combat.Integration.Core
                         OnAsteroidRemoved(item);
                         break;
                 }
+
+                _renderer.OnEvent(snapshot, item);
             }
         }
 

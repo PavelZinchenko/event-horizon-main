@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CombatSimulation.Core;
 using CombatSimulation.Physics;
+using CombatView.Effects;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -17,21 +18,30 @@ namespace CombatView
         // The root goes into the given scene: the game loads scenes additively and never changes the active
         // scene, so a plain new GameObject would outlive the combat scene.
         // The flash sprite is legacy Flash's glow; without it flashes use the generic sprite. The text font is legacy
-        // MessageText's; without it ship texts are not drawn.
-        public BattleRenderer(Torus torus, Sprite genericSprite, Sprite flashSprite, Font textFont, Scene scene)
+        // MessageText's; without it ship texts are not drawn. A null sound output plays nothing.
+        public BattleRenderer(Torus torus, Sprite genericSprite, Sprite flashSprite, Font textFont, Scene scene,
+            CombatViewSettings settings, ISoundOutput soundOutput)
         {
             _torus = torus;
             _genericSprite = genericSprite;
             _flashSprite = flashSprite ? flashSprite : genericSprite;
             _textFont = textFont;
+            Settings = settings;
             _root = new GameObject("CoreBattleViews");
             SceneManager.MoveGameObjectToScene(_root, scene);
+
+            // Phase 5b, step 2: the new prefabs, their effects and the sounds. Steps 3-8 add their users.
+            _prefabs = new PrefabPool(_root.transform);
+            _effects = new EffectPool(_prefabs, torus, _root.transform);
+            _sounds = new CombatSounds(soundOutput);
 
             // A new sprite renderer carries the built-in sprite material; lines and trails share it.
             var probe = _root.AddComponent<SpriteRenderer>();
             _spriteMaterial = probe.sharedMaterial;
             Object.Destroy(probe);
         }
+
+        public CombatViewSettings Settings { get; }
 
         // The side of the local player (legacy UnitSide.Player): a stealth ship of it stays more visible.
         public int ViewerSide { get; set; }
@@ -207,6 +217,14 @@ namespace CombatView
             var angle = (float)(_textRandom.NextDouble() * 2.0 * Math.PI);
             var drift = new Vec2(velocity.X + TextDriftSpeed * Mathf.Cos(angle), velocity.Y + TextDriftSpeed * Mathf.Sin(angle));
             _texts.Add(new Text(mesh, position, drift, color));
+        }
+
+        // The event feed (phase 5b, step 2): the adapter passes every event of the tick in order, after its own handling
+        // and before Capture of the same snapshot.
+        public void OnEvent(BattleSnapshot snapshot, in BattleEvent item)
+        {
+            foreach (var view in _eventViews)
+                view.OnEvent(snapshot, item);
         }
 
         // After every step. Copies the poses; the snapshot spans are valid only until the next step.
@@ -427,6 +445,7 @@ namespace CombatView
             UpdateFades(deltaTime);
             UpdateFlashes(deltaTime, anchor);
             UpdateTexts(deltaTime, anchor);
+            _effects.Update(deltaTime, anchor);
         }
 
         // The pose of the last Render, in Unity units and degrees.
@@ -446,6 +465,11 @@ namespace CombatView
 
         public void Dispose()
         {
+            _sounds.Dispose();
+            _effects.Dispose();
+            _prefabs.Dispose();
+            _eventViews.Clear();
+
             // The scene unload can destroy the root first.
             if (_root)
                 Object.Destroy(_root);
@@ -978,6 +1002,10 @@ namespace CombatView
         private float _time;
 
         private readonly Torus _torus;
+        private readonly PrefabPool _prefabs;
+        private readonly EffectPool _effects;
+        private readonly CombatSounds _sounds;
+        private readonly List<IBattleEventView> _eventViews = new List<IBattleEventView>();
         private readonly Sprite _genericSprite;
         private readonly Sprite _flashSprite;
         private readonly Font _textFont;
