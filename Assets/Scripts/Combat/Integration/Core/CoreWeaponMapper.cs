@@ -25,14 +25,19 @@ namespace Combat.Integration.Core
     // and SiphonHitPoints effects (ImpactEffects); step 5b adds SlowDown and Roll; step 5c ProgressiveDamage on a beam.
     public static class CoreWeaponMapper
     {
-        // A child bullet the mapper made: the ship mapper records its view source.
-        public delegate void ChildBullet(BulletDefinition bullet, Ammunition ammunition, ColorData color);
+        // A child bullet the mapper made, with its modifiers (the trigger colour among them): the ship mapper records its
+        // view source.
+        public delegate void ChildBullet(BulletDefinition bullet, Ammunition ammunition, WeaponStatModifier stats);
+
+        // A SpawnBullet trigger the mapper made, with its database record, for the view's spawn sound (phase 5b, step 6).
+        // A trigger past its nesting limit has none, as legacy built no action for it.
+        public delegate void SpawnTrigger(BulletTriggerDefinition trigger, BulletTrigger_SpawnBullet source);
 
         public static DeviceDefinition Map(IWeaponData weapon, int barrelIndex, float armorMultiplier, out string inertReason) =>
-            Map(weapon, barrelIndex, armorMultiplier, null, out inertReason);
+            Map(weapon, barrelIndex, armorMultiplier, null, null, out inertReason);
 
         public static DeviceDefinition Map(IWeaponData weapon, int barrelIndex, float armorMultiplier, ChildBullet children,
-            out string inertReason)
+            SpawnTrigger spawns, out string inertReason)
         {
             var stats = weapon.Weapon.Stats;
             var ammunition = weapon.Ammunition;
@@ -60,7 +65,7 @@ namespace Combat.Integration.Core
                     // Legacy BulletStats.GetBulletLifetime: a beam controller has no speed.
                     if (!(body.Lifetime > 0f))
                         return Inert("shot beam without lifetime", out inertReason);
-                    var beamContext = new Context(armorMultiplier, children);
+                    var beamContext = new Context(armorMultiplier, children, spawns);
                     var beamTriggers = MapTriggers(ammunition, modifier, 0, beamContext, out inertReason);
                     if (beamTriggers == null) return null;
                     beamContext.Commit();
@@ -78,7 +83,7 @@ namespace Combat.Integration.Core
                     var magazine = mode == CannonMode.MultiShot || mode == CannonMode.MachineGun ? stats.Magazine : 1;
                     if (magazine < 1)
                         return Inert($"weapon class {stats.WeaponClass} without magazine", out inertReason);
-                    var context = new Context(armorMultiplier, children);
+                    var context = new Context(armorMultiplier, children, spawns);
                     var bullet = MapBullet(ammunition, modifier, effects, 0, context, out inertReason);
                     if (bullet == null)
                         return null;
@@ -97,7 +102,7 @@ namespace Combat.Integration.Core
                         chargedDamage.Amount * modifier.DamageMultiplier.Value, body.Lifetime, chargedDamage.DamageType,
                         spread, TrackingAngle(ammunition), effects.ToCore(modifier), friendlyFire: body.FriendlyFire);
                 case WeaponClass.RequiredCharging:
-                    var chargeContext = new Context(armorMultiplier, children);
+                    var chargeContext = new Context(armorMultiplier, children, spawns);
                     var charged = MapBullet(ammunition, modifier, effects, 0, chargeContext, out inertReason);
                     if (charged == null)
                         return null;
@@ -106,7 +111,7 @@ namespace Combat.Integration.Core
                 // Legacy ContinuousCannon with a non-beam bullet: hold one aura or harpoon and renew its lifetime.
                 case WeaponClass.Continuous when ammunition.Controller is BulletController_AuraEmitter ||
                     ammunition.Controller is BulletController_Harpoon:
-                    var continuousContext = new Context(armorMultiplier, children);
+                    var continuousContext = new Context(armorMultiplier, children, spawns);
                     var continuousBullet = MapBullet(ammunition, modifier, effects, 0, continuousContext, out inertReason);
                     if (continuousBullet == null)
                         return null;
@@ -130,7 +135,7 @@ namespace Combat.Integration.Core
         // Phase 5, step 11a: the bullet of a device without a weapon, as legacy BulletFactory builds it from the device's
         // modifier at power level 1. A beam, or a bullet that needs its live ship, cannot be a death spawn.
         public static BulletDefinition MapDeviceBullet(Ammunition ammunition, WeaponStatModifier modifier,
-            float armorMultiplier, ChildBullet children, out string inertReason)
+            float armorMultiplier, ChildBullet children, SpawnTrigger spawns, out string inertReason)
         {
             if (!TryCheckTriggers(ammunition, out var hasGameplayTriggers, out inertReason) ||
                 !TryGetEffects(ammunition, hasGameplayTriggers, out var effects, out inertReason))
@@ -140,7 +145,7 @@ namespace Combat.Integration.Core
             if (ammunition.Body.AttachedToParent || ammunition.Controller is BulletController_Harpoon)
                 return InertBullet("death spawn attached to its ship", out inertReason);
 
-            var context = new Context(armorMultiplier, children);
+            var context = new Context(armorMultiplier, children, spawns);
             var bullet = MapBullet(ammunition, modifier, effects, 0, context, out inertReason);
             if (bullet == null)
                 return null;
@@ -427,6 +432,7 @@ namespace Combat.Integration.Core
                         if (child == null)
                             return null;
                         result.Add(child);
+                        context.Add(child, spawn);
                         break;
                     case BulletTrigger_Detonate _:
                         if ((condition & (BulletTriggerConditions.Hit | BulletTriggerConditions.Expired)) != 0)
@@ -454,6 +460,7 @@ namespace Combat.Integration.Core
                     if (child == null)
                         return null;
                     result.Add(child);
+                    context.Add(child, spawn);
                 }
             }
 
@@ -507,7 +514,7 @@ namespace Combat.Integration.Core
                 if (bullet == null)
                     return null;
                 context.Bullets.Add(key, bullet);
-                context.Add(bullet, ammunition, stats.Color.Value);
+                context.Add(bullet, ammunition, stats);
             }
 
             inertReason = null;
@@ -938,10 +945,11 @@ namespace Combat.Integration.Core
         // The weapon's mapping state. Child sources reach the ship mapper only when the whole weapon maps.
         private sealed class Context
         {
-            public Context(float armorMultiplier, ChildBullet children)
+            public Context(float armorMultiplier, ChildBullet children, SpawnTrigger spawns)
             {
                 ArmorMultiplier = armorMultiplier;
                 _children = children;
+                _spawns = spawns;
             }
 
             public float ArmorMultiplier { get; }
@@ -950,19 +958,30 @@ namespace Combat.Integration.Core
             public readonly Dictionary<(Ammunition, int, WeaponStatModifier), BulletDefinition> Bullets =
                 new Dictionary<(Ammunition, int, WeaponStatModifier), BulletDefinition>();
 
-            public void Add(BulletDefinition bullet, Ammunition ammunition, ColorData color)
+            public void Add(BulletDefinition bullet, Ammunition ammunition, WeaponStatModifier stats)
             {
-                if (_children != null) _pending.Add((bullet, ammunition, color));
+                if (_children != null) _pending.Add((bullet, ammunition, stats));
+            }
+
+            public void Add(BulletTriggerDefinition trigger, BulletTrigger_SpawnBullet source)
+            {
+                if (_spawns != null) _pendingSpawns.Add((trigger, source));
             }
 
             public void Commit()
             {
-                foreach (var (bullet, ammunition, color) in _pending)
-                    _children(bullet, ammunition, color);
+                foreach (var (bullet, ammunition, stats) in _pending)
+                    _children(bullet, ammunition, stats);
+                foreach (var (trigger, source) in _pendingSpawns)
+                    _spawns(trigger, source);
             }
 
             private readonly ChildBullet _children;
-            private readonly List<(BulletDefinition, Ammunition, ColorData)> _pending = new List<(BulletDefinition, Ammunition, ColorData)>();
+            private readonly SpawnTrigger _spawns;
+            private readonly List<(BulletDefinition, Ammunition, WeaponStatModifier)> _pending =
+                new List<(BulletDefinition, Ammunition, WeaponStatModifier)>();
+            private readonly List<(BulletTriggerDefinition, BulletTrigger_SpawnBullet)> _pendingSpawns =
+                new List<(BulletTriggerDefinition, BulletTrigger_SpawnBullet)>();
         }
 
         // Legacy BulletFactory.MaxNestingLevel.

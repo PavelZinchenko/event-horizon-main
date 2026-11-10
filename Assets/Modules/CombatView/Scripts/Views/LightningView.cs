@@ -33,10 +33,12 @@ namespace CombatView.Views
             _colorMode = colorMode;
         }
 
+        // Legacy seeded each bolt from the hash of a new object; a pooled instance takes a new seed at each release.
         public override void Dispose()
         {
             _lineLength = 0;
             _lineRenderer.enabled = false;
+            NewSeed();
         }
 
         public override void UpdateView(float elapsedTime)
@@ -50,7 +52,13 @@ namespace CombatView.Views
         {
             _lineRenderer = GetComponent<LineRenderer>();
             _lineRenderer.enabled = false;
-            _random = new System.Random(GetHashCode());
+            NewSeed();
+        }
+
+        private void NewSeed()
+        {
+            _seed = EffectMath.Random.Next();
+            _random = new System.Random(_seed);
         }
 
         protected override void OnGameObjectDestroyed() { }
@@ -109,7 +117,7 @@ namespace CombatView.Views
             var p23 = (p2 + p3) / 2;
 
             if (isStatic)
-                _random = new System.Random(GetHashCode());
+                _random = new System.Random(_seed);
 
             for (var i = 1; i <= steps; ++i)
             {
@@ -135,6 +143,7 @@ namespace CombatView.Views
         private float _objectScale;
 
         private System.Random _random;
+        private int _seed;
         private LineRenderer _lineRenderer;
     }
 }

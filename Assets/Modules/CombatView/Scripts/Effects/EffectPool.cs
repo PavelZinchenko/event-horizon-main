@@ -76,6 +76,31 @@ namespace CombatView.Effects
             return effect;
         }
 
+        // Step 6: a world effect goes to a new point, as legacy ShowHitEffectAction moved its one effect to each hit.
+        public void MoveTo(IEffect effect, Vec2 point)
+        {
+            var index = IndexOf(effect);
+            if (index >= 0 && _effects[index].Point.HasValue)
+                _effects[index] = new Item(effect, _effects[index].Owner, _effects[index].Host, point);
+        }
+
+        // Step 6, legacy CompositeEffect.Detach: an effect on a view stays in the world at the point, turned by the
+        // degrees, at its own size; the parent's scale no longer applies. Its owner can then release the parent.
+        public void Detach(IEffect effect, Vec2 point, float degrees)
+        {
+            var index = IndexOf(effect);
+            if (index < 0 || _effects[index].Point.HasValue || !_effects[index].Owner)
+                return;
+
+            var host = TakeHost();
+            var transform = ((Component)_effects[index].Owner).transform;
+            transform.SetParent(host, false);
+            transform.localPosition = new Vector3(0f, 0f, WorldRecordZ);
+            effect.Position = Vector2.zero;
+            effect.Rotation = degrees;
+            _effects[index] = new Item(effect, _effects[index].Owner, host, point);
+        }
+
         // After the views are placed, so an effect on a view follows it in the same frame.
         public void Update(float deltaTime, Vector2 anchor)
         {
@@ -140,11 +165,24 @@ namespace CombatView.Effects
                 return null;
             }
 
-            // Legacy EffectFactory: the element values go to the instance before its Initialize.
+            // Legacy EffectFactory: the element values go to the instance before its Initialize, and the element starts
+            // at the record root whatever its prefab's position (the Wave prefab has z -3).
             if (element != null)
+            {
                 instance.GetComponent<IEffectElement>()?.Setup(element);
+                instance.transform.localPosition = Vector3.zero;
+            }
             effect.Initialize(_prefabs);
             return effect;
+        }
+
+        // The newest first: a bullet's effects are usually recent.
+        private int IndexOf(IEffect effect)
+        {
+            for (var i = _effects.Count - 1; i >= 0; --i)
+                if (_effects[i].Effect == effect)
+                    return i;
+            return -1;
         }
 
         private Transform TakeHost()

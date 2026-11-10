@@ -34,6 +34,9 @@ namespace Combat.Integration.Core
         // The view data of every mapped weapon, keyed by its BulletDefinition (cannon) or BeamDefinition (step 5).
         public IReadOnlyDictionary<object, CoreBulletSource> BulletSources => _bulletSources;
 
+        // The database record of each mapped SpawnBullet trigger with a sound (phase 5b, step 6).
+        public IReadOnlyDictionary<BulletTriggerDefinition, BulletTrigger_SpawnBullet> SpawnTriggers => _spawnTriggers;
+
         // The body image of each mapped worm tail's segments (phase 5, step 7d).
         public IReadOnlyDictionary<WormTailDefinition, SpriteId> SegmentImages => _segmentImages;
         public IReadOnlyDictionary<RepairBotDefinition, ColorData> RepairBotColors => _repairBotColors;
@@ -151,7 +154,8 @@ namespace Combat.Integration.Core
                 {
                     var weapon = attack == 1f ? data : new ScaledWeapon(data, attack);
                     var name = $"weapon {weapon.Weapon.Id.Value}, ammunition {weapon.Ammunition.Id.Value}";
-                    var device = CoreWeaponMapper.Map(weapon, barrelIndex, stats.ArmorMultiplier.Value, AddChildSource, out var reason);
+                    var device = CoreWeaponMapper.Map(weapon, barrelIndex, stats.ArmorMultiplier.Value, AddChildSource,
+                        AddSpawnTrigger, out var reason);
                     AddBulletSource(device, weapon);
                     if (device != null)
                         aiWeapons.Add(ToAiWeapon(weapon, devices.Count, Positive(stats.Weight)));
@@ -439,12 +443,12 @@ namespace Combat.Integration.Core
                 modifier.AoeRadiusMultiplier = StatMultiplier.FromValue(NonNegative(stats.ShipModel.ModelScale * device.Size) + 1f);
 
             var bullet = CoreWeaponMapper.MapDeviceBullet(ammunition, modifier, stats.ArmorMultiplier.Value, AddChildSource,
-                out inertReason);
+                AddSpawnTrigger, out inertReason);
             if (bullet == null)
                 return null;
 
-            _bulletSources[bullet] = new CoreBulletSource(ammunition.Body.BulletPrefab, ammunition.Body.Size,
-                ammunition.Body.Color, HitEffect(ammunition), IsHiddenCarrier(ammunition));
+            _bulletSources[bullet] = new CoreBulletSource(ammunition.Body.BulletPrefab, BodySize(ammunition, modifier),
+                ammunition.Body.Color, ammunition);
             return new DeathSpawnDefinition(bullet);
         }
 
@@ -530,7 +534,7 @@ namespace Combat.Integration.Core
             }
         }
 
-        // Legacy BulletStats: BodySize is Body.Size at power level 1; the colour is the weapon's, else the body's.
+        // Legacy BulletStats: the colour is the weapon's, else the body's.
         private void AddBulletSource(DeviceDefinition device, IWeaponData weapon)
         {
             object key = device is CannonDefinition cannon ? cannon.Bullet : device as BeamDefinition;
@@ -538,19 +542,28 @@ namespace Combat.Integration.Core
                 return;
 
             var body = weapon.Ammunition.Body;
-            _bulletSources[key] = new CoreBulletSource(body.BulletPrefab, body.Size, weapon.Stats.Color ?? body.Color,
-                HitEffect(weapon.Ammunition), IsHiddenCarrier(weapon.Ammunition));
+            _bulletSources[key] = new CoreBulletSource(body.BulletPrefab, BodySize(weapon.Ammunition, weapon.Stats),
+                weapon.Stats.Color ?? body.Color, weapon.Ammunition);
         }
 
         // Phase 5, step 2: a child bullet looks like its own ammunition, in the colour of its trigger (legacy CreateFactory).
-        private void AddChildSource(BulletDefinition bullet, Ammunition ammunition, ColorData color) =>
-            _bulletSources[bullet] = new CoreBulletSource(ammunition.Body.BulletPrefab, ammunition.Body.Size, color,
-                HitEffect(ammunition), IsHiddenCarrier(ammunition));
+        private void AddChildSource(BulletDefinition bullet, Ammunition ammunition, WeaponStatModifier stats) =>
+            _bulletSources[bullet] = new CoreBulletSource(ammunition.Body.BulletPrefab, BodySize(ammunition, stats),
+                stats.Color.Value, ammunition);
 
-        // Legacy BulletFactory draws a bullet without a prefab only through its trigger effects; without effects it is a
-        // carrier, such as the wraith pack (phase 5, step 11a, finding 9).
-        private static bool IsHiddenCarrier(Ammunition ammunition) =>
-            ammunition.Body.BulletPrefab == null && ammunition.Effects.Count == 0;
+        // Legacy BulletStats.BodySize at power level 1: an area bullet (all targets or over time, with effects) also
+        // takes the area multiplier, which a SpawnBullet trigger's Size raises (the oblivion cannon cloud: 1 x 5).
+        private static float BodySize(Ammunition ammunition, WeaponStatModifier stats) =>
+            ammunition.ImpactType != BulletImpactType.HitFirstTarget && ammunition.Effects.Count > 0
+                ? ammunition.Body.Size * stats.AoeRadiusMultiplier.Value
+                : ammunition.Body.Size;
+
+        // Phase 5b, step 6: the view plays the sound of each SpawnBullet trigger that the core runs.
+        private void AddSpawnTrigger(BulletTriggerDefinition trigger, BulletTrigger_SpawnBullet source)
+        {
+            if (source.AudioClip)
+                _spawnTriggers[trigger] = source;
+        }
 
         // Legacy WeaponInfo from BulletStats at power level 1. Recoil counts for common weapons only, per unit of ship weight.
         // The spread is the weapon's, in radians.
@@ -577,15 +590,6 @@ namespace Combat.Integration.Core
                 default:
                     return AiWeaponClass.Common;
             }
-        }
-
-        private static BulletTrigger_PlaySfx HitEffect(Ammunition ammunition)
-        {
-            foreach (var trigger in ammunition.Triggers)
-                if (trigger.Condition == BulletTriggerCondition.Hit && trigger is BulletTrigger_PlaySfx sfx && sfx.VisualEffect != null)
-                    return sfx;
-
-            return null;
         }
 
         // Legacy DroneBay constructor without the random speed spread (owner, 2026-10-29).
@@ -772,6 +776,8 @@ namespace Combat.Integration.Core
         private readonly CoreHullBuilder _hullBuilder;
         private readonly Dictionary<ShipDefinition, CoreShipMapping> _mappings = new Dictionary<ShipDefinition, CoreShipMapping>();
         private readonly Dictionary<object, CoreBulletSource> _bulletSources = new Dictionary<object, CoreBulletSource>();
+        private readonly Dictionary<BulletTriggerDefinition, BulletTrigger_SpawnBullet> _spawnTriggers =
+            new Dictionary<BulletTriggerDefinition, BulletTrigger_SpawnBullet>();
         private readonly Dictionary<RepairBotDefinition, ColorData> _repairBotColors = new Dictionary<RepairBotDefinition, ColorData>();
         private readonly Dictionary<ShipDefinition, ColorData> _decoyColors = new Dictionary<ShipDefinition, ColorData>();
         private readonly Dictionary<ShieldDefinition, CoreShieldLook> _shieldLooks = new Dictionary<ShieldDefinition, CoreShieldLook>();

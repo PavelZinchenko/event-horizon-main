@@ -50,13 +50,15 @@ namespace CombatView
             _shipAssets = new ShipEffectAssets(_effects, _prefabs, _trails, _sounds);
 
             // Step 5: the bullet prefabs, one template per look. A bullet without view data draws the generic sprite
-            // or a plain beam.
+            // or a plain beam. Step 6: a bullet without a look gets an empty root for its trigger effects.
             _bulletTemplates = new BulletTemplates(_prefabs);
             _genericBulletLook = new BulletLook(BulletViewKind.Projectile, genericSprite, Color.white, ColorMode.UseMyOwn,
                 Color.white, ColorMode.UseMyOwn, ScaleToDiameter(genericSprite, 1f), 0f);
             _genericBeam = new BulletVisual(new BulletLook(BulletViewKind.Laser, null, Color.white, ColorMode.UseMyOwn,
-                    Color.white, ColorMode.UseMyOwn, GenericBeamWidth, 0f), 1f, Color.white,
-                new HitFlash(GenericFlashDiameter, Color.white, GenericFlashDuration));
+                Color.white, ColorMode.UseMyOwn, GenericBeamWidth, 0f), 1f, Color.white);
+            _emptyBullet = new GameObject("Bullet");
+            _emptyBullet.SetActive(false);
+            _emptyBullet.transform.SetParent(_root.transform, false);
         }
 
         public CombatViewSettings Settings { get; }
@@ -179,42 +181,55 @@ namespace CombatView
 
         // Phase 5b, step 5: an instance of the look's template (the shape prefab of Resources/CombatView/Bullets). It
         // shows from the first snapshot. A null visual draws the generic sprite or a plain beam; it should not happen
-        // for a mapped weapon.
+        // for a mapped weapon. Step 6: the Created sounds play at once, the Created effects at the first snapshot.
         public void AddBullet(in BattleEvent spawn, BulletVisual visual)
         {
-            if (visual == BulletVisual.Hidden || _bullets.ContainsKey(spawn.EntityId))
+            if (_bullets.ContainsKey(spawn.EntityId))
                 return;
 
             if (visual == null)
             {
                 WarnOnce(ref _visualWarned, "bullet without view data");
                 visual = spawn.IsBeam ? _genericBeam : new BulletVisual(_genericBulletLook,
-                    2f * spawn.BulletDefinition.Radius, Color.white, _genericBeam.Flash);
+                    2f * spawn.BulletDefinition.Radius, Color.white);
             }
 
-            var template = _bulletTemplates.Get(visual.Look);
-            if (!template)
+            if (visual.IsEmpty)
                 return;
 
-            var instance = _prefabs.Get(template, _root.transform);
-            var setup = instance.GetComponent<BulletViewSetup>();
-            setup.Bind(_trails);
+            var template = visual.Look != null ? _bulletTemplates.Get(visual.Look) : null;
+            if (visual.Look != null && !template && visual.Triggers.Count == 0)
+                return;
+
+            var instance = _prefabs.Get(template ? template : _emptyBullet, _root.transform);
+            var setup = template ? instance.GetComponent<BulletViewSetup>() : null;
+            if (setup)
+                setup.Bind(_trails);
             var view = new BulletView(instance, setup, visual);
 
             // Legacy HarpoonController: the rope is as long as the weapon range.
-            if (setup.Rope && !spawn.IsBeam)
+            if (setup && setup.Rope && !spawn.IsBeam)
                 setup.Rope.Initialize(spawn.BulletDefinition.Range);
+
+            if (visual.Triggers.Count > 0)
+            {
+                view.Triggers = new BulletTriggerPlayer(visual.Triggers, _effects, _sounds);
+                view.Triggers.Start();
+            }
+
             _bullets.Add(spawn.EntityId, view);
         }
 
         // Legacy Bullet.Dispose: the view resets and its trail fades out where it is. A view that never showed has not
-        // initialized itself, so it has nothing to reset.
-        public void RemoveBullet(EntityId id)
+        // initialized itself, so it has nothing to reset. Step 6: first the triggers of the removal's conditions (the
+        // core's BattleEvent.RemovalConditions) at the last snapshot pose; the bullet's effects then stay or go.
+        public void RemoveBullet(EntityId id, BulletTriggerConditions conditions)
         {
             if (!_bullets.TryGetValue(id, out var view))
                 return;
 
             _bullets.Remove(id);
+            view.Triggers?.Remove(conditions, LastPose(view), view.HasPose);
             if (view.HasPose && view.View)
                 view.View.Dispose();
             _prefabs.Release(view.Root);
@@ -230,17 +245,50 @@ namespace CombatView
             _bullets.Add(id, view);
         }
 
-        // One accepted hit by a drawn bullet; rams and point defense have no bullet and no flash. A beam hits every
-        // tick, so one attacker flashes at most every FlashInterval seconds.
+        // Phase 5b, step 6: one accepted hit. Legacy CollisionManager runs the collision actions of the bullet that hits,
+        // then OnCollision on both units, so the bullet that hits and a bullet that is hit run their Hit bullet actions.
+        // A gravity wave (a device index) runs no Hit trigger (phase 5, step 11c). A remote hit has no point (owner
+        // question 9 (a)): its effects go to the target.
         public void AddHit(in BattleEvent hit)
         {
-            if (!_bullets.TryGetValue(hit.AttackerId, out var bullet) || _time - bullet.LastFlashTime < FlashInterval)
-                return;
+            var time = hit.Tick * Battle.TickDuration;
+            if (_bullets.TryGetValue(hit.AttackerId, out var bullet) && bullet.Triggers != null)
+            {
+                var point = hit.Point;
+                var velocity = Vector2.zero;
+                if (_ships.TryGetValue(hit.EntityId, out var ship) && ship.HasPose)
+                {
+                    velocity = ship.Velocity;
+                    if (point.Equals(Vec2.Zero))
+                        point = new Vec2(ship.Position.x, ship.Position.y);
+                }
+                else if (point.Equals(Vec2.Zero))
+                {
+                    if (_bullets.TryGetValue(hit.EntityId, out var other) && other.HasPose)
+                        point = LastPose(other).Point;
+                    else if (bullet.HasPose)
+                        point = LastPose(bullet).Point;
+                }
 
-            bullet.LastFlashTime = _time;
-            var look = bullet.Visual.Flash;
-            AddFlash(hit.Point, look.Diameter, look.Color, look.Duration);
+                // A bullet that hits in its spawn tick (a beam's first tick) has no pose yet: its hit effects start at
+                // the hit point, unturned, and its effects on the bullet wait for the pose.
+                if (bullet.HasPose)
+                {
+                    var pose = CurrentPose(bullet);
+                    bullet.Triggers.Hit(hit.Tick, hit.EntityId, point, velocity, pose);
+                    bullet.Triggers.Collide(time, pose, bullet.LifetimeLeft);
+                }
+                else if (!point.Equals(Vec2.Zero))
+                    bullet.Triggers.Hit(hit.Tick, hit.EntityId, point, velocity, new BulletPose(null, point, 0f,
+                        bullet.Visual.BodySize, bullet.Visual.BodySize * bullet.AuraPower));
+            }
+
+            if (hit.DeviceIndex < 0)
+                Collide(hit.EntityId, time);
         }
+
+        // Point defense: legacy runs the Hit bullet actions of the disarmed bullet before its Disarmed ones.
+        public void AddDisarm(in BattleEvent disarm) => Collide(disarm.EntityId, disarm.Tick * Battle.TickDuration);
 
         // One flash at a world point, as a hit flash: a teleporter jump draws one at each end (phase 5, step 11b).
         public void AddFlash(Vec2 point, float diameter, Color color, float duration)
@@ -364,6 +412,8 @@ namespace CombatView
 
                 view.PreviousLife = view.HasPose ? view.Life : life;
                 view.Life = life;
+                view.LifetimeLeft = bullet.ExpiryTick == long.MaxValue ? float.PositiveInfinity
+                    : (bullet.ExpiryTick - snapshot.Tick + 1) * Battle.TickDuration;
                 view.ParentId = bullet.ParentId;
                 // An aura grows and shrinks with its power (phase 5, step 4g); the view takes the latest tick's size.
                 view.AuraPower = bullet.IsBeam ? 1f : bullet.AuraPower;
@@ -371,7 +421,16 @@ namespace CombatView
 
                 if (bullet.HasRay)
                     view.PushEnd(bullet.BeamEndPoint);
+                var first = !view.HasPose;
                 view.Push(bullet.Position, bullet.Angle);
+
+                // Step 6: the Created effects at the first pose; the Cooldown triggers on every tick.
+                if (view.Triggers == null)
+                    continue;
+                var pose = CurrentPose(view);
+                if (first)
+                    view.Triggers.Show(pose, view.LifetimeLeft);
+                view.Triggers.Tick(snapshot.Tick * Battle.TickDuration, pose, view.LifetimeLeft);
             }
 
             CaptureSegments(snapshot);
@@ -454,7 +513,6 @@ namespace CombatView
         // Without a controlled ship the anchor stays. Alpha is the share of the next tick that has passed.
         public void Render(float alpha, EntityId controlled, ref Vector2 anchor, float deltaTime)
         {
-            _time += deltaTime;
             _shake.Update(Time.unscaledDeltaTime);
 
             if (!controlled.IsNull && _ships.TryGetValue(controlled, out var controlledView) && controlledView.HasPose)
@@ -751,13 +809,15 @@ namespace CombatView
         // view takes the life, and a beam its length. A beam root points at the ray end, so its line runs along local x.
         private void PlaceBullet(BulletView view, float alpha, Vector2 anchor, float deltaTime)
         {
-            if (!view.HasPose || !view.View)
+            if (!view.HasPose)
                 return;
 
             Place(view, alpha, anchor);
             var root = view.Root.transform;
             var visual = view.Visual;
             root.localScale = Vector3.one * (visual.BodySize * view.AuraPower);
+            if (!view.View)
+                return;
 
             var baseView = view.View;
             if (!view.WasPlaced)
@@ -912,6 +972,24 @@ namespace CombatView
             return extent > 0f ? diameter / extent : diameter;
         }
 
+        // Step 6: a bullet's place for its triggers at the latest snapshot, on its root.
+        private BulletPose CurrentPose(BulletView view)
+        {
+            var pose = LastPose(view);
+            return new BulletPose(view.Root.transform, pose.Point, pose.Degrees, pose.BodySize, pose.WorldScale);
+        }
+
+        // The latest snapshot pose without the root: where a removed bullet leaves its effects.
+        private BulletPose LastPose(BulletView view) => new BulletPose(null, _torus.Wrap(view.Pose.SamplePosition(1f, _torus)),
+            view.Pose.SampleAngle(1f) * Mathf.Rad2Deg, view.Visual.BodySize, view.Visual.BodySize * view.AuraPower);
+
+        // Legacy Bullet.OnCollision on a bullet that is hit or disarmed.
+        private void Collide(EntityId id, float time)
+        {
+            if (_bullets.TryGetValue(id, out var bullet) && bullet.Triggers != null && bullet.HasPose)
+                bullet.Triggers.Collide(time, CurrentPose(bullet), bullet.LifetimeLeft);
+        }
+
         private static void WarnOnce(ref bool warned, string kind)
         {
             if (warned)
@@ -1030,15 +1108,19 @@ namespace CombatView
             public BulletView(GameObject root, BulletViewSetup setup, BulletVisual visual) : base(root, null)
             {
                 Setup = setup;
-                View = setup.View;
+                View = setup ? setup.View : null;
                 Visual = visual;
             }
 
+            // Null for a bullet without a look (step 6): its root carries only trigger effects.
             public BulletViewSetup Setup { get; }
             public BaseView View { get; }
             public BulletVisual Visual { get; }
-            public float LastFlashTime { get; set; } = float.NegativeInfinity;
             public bool WasPlaced { get; set; }
+
+            // Step 6: null without sound or effect triggers. The seconds of lifetime left at the latest snapshot.
+            public BulletTriggerPlayer Triggers { get; set; }
+            public float LifetimeLeft { get; set; } = float.PositiveInfinity;
 
             // The life of the last two snapshots, and the ticks of the full lifetime.
             public float PreviousLife { get; set; } = 1f;
@@ -1129,8 +1211,6 @@ namespace CombatView
         private const float OwnStealthAlpha = 0.4f;
         private const float EnemyStealthAlpha = 0.05f;
         private const float GenericBeamWidth = 0.2f;
-        private const float GenericFlashDiameter = 1f;
-        private const float GenericFlashDuration = 0.2f;
 
         // The named effect prefabs (step 3), with their legacy names.
         private const string EffectFolder = "Effects/";
@@ -1153,7 +1233,6 @@ namespace CombatView
         private static readonly Color ExplosionColor = new Color(1f, 0.66f, 0.59f);
 
         // "Views (5)", item 6.
-        private const float FlashInterval = 0.1f;
         private const float FlashAlphaScale = 2f;
         private const float MinFlashDiameter = 0.3f;
         private const float MinFlashDuration = 0.05f;
@@ -1166,7 +1245,6 @@ namespace CombatView
         private const float TextOffsetZ = -0.1f;
 
         private bool _visualWarned;
-        private float _time;
 
         private readonly Torus _torus;
         private readonly PrefabPool _prefabs;
@@ -1188,6 +1266,7 @@ namespace CombatView
         private readonly BulletTemplates _bulletTemplates;
         private readonly BulletLook _genericBulletLook;
         private readonly BulletVisual _genericBeam;
+        private readonly GameObject _emptyBullet;
         private readonly Dictionary<EntityId, SegmentView> _segments = new Dictionary<EntityId, SegmentView>();
         private readonly Dictionary<WormTailDefinition, Sprite> _segmentLooks = new Dictionary<WormTailDefinition, Sprite>();
         private readonly List<EntityId> _removedSegments = new List<EntityId>();

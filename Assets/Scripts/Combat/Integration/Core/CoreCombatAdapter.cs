@@ -116,8 +116,9 @@ namespace Combat.Integration.Core
                 _renderer.AddRepairBotLook(look.Key, resourceLocator.GetSprite(new SpriteId("repair_bot", SpriteId.Type.Satellite)), look.Value.ToUnity());
             foreach (var look in _mapper.SegmentImages)
                 _renderer.AddSegmentLook(look.Key, resourceLocator.GetSprite(look.Value));
-            _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, resourceLocator, flashSprite);
             _visualEffects = new CoreVisualEffects(resourceLocator);
+            _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, _mapper.SpawnTriggers, resourceLocator, _visualEffects,
+                sounds, flashSprite);
 #if UNITY_EDITOR
             // Phase 5b, step 3: the owner reviews the effects in the Combat > Effect Preview window.
             _effectPreview = new CoreEffectPreview(_renderer, _visualEffects, sounds, database, resourceLocator, () =>
@@ -465,11 +466,11 @@ namespace Combat.Integration.Core
                         break;
                     case BattleEventKind.Removal:
                         if (item.IsBullet)
-                            _renderer.RemoveBullet(item.EntityId);
+                            _renderer.RemoveBullet(item.EntityId, item.RemovalConditions);
                         else if (item.IsDrone || item.IsDecoy)
                             _renderer.RemoveShip(item.EntityId, item.RemovalReason);
                         else
-                            OnShipRemoved(item);
+                            OnShipRemoved(item, ViewReason(events, i));
                         break;
                     case BattleEventKind.RosterTransition:
                         OnRosterTransition(snapshot, item);
@@ -479,6 +480,9 @@ namespace Combat.Integration.Core
                         break;
                     case BattleEventKind.Hit:
                         _renderer.AddHit(item);
+                        break;
+                    case BattleEventKind.Disarm:
+                        _renderer.AddDisarm(item);
                         break;
                     case BattleEventKind.Teleport:
                         OnTeleport(item);
@@ -615,7 +619,22 @@ namespace Combat.Integration.Core
         }
 
         // The roster transition of the same removal comes later in the batch, so the ID stays mapped until the tick ends.
-        private void OnShipRemoved(in BattleEvent item)
+        // Legacy ShipInfo.Destroy: surrender and kill-all make the ship vanish, without an explosion or a sound. The core
+        // removes it with Death and names the ForcedDestruction in its slot's transition later in the same batch.
+        private static RemovalReason ViewReason(ReadOnlySpan<BattleEvent> events, int index)
+        {
+            var removal = events[index];
+            if (removal.RemovalReason != RemovalReason.Death)
+                return removal.RemovalReason;
+
+            for (var i = index + 1; i < events.Length; ++i)
+                if (events[i].Kind == BattleEventKind.RosterTransition && events[i].EntityId == removal.EntityId)
+                    return events[i].TransitionReason == RosterTransitionReason.ForcedDestruction
+                        ? RemovalReason.Vanish : removal.RemovalReason;
+            return removal.RemovalReason;
+        }
+
+        private void OnShipRemoved(in BattleEvent item, RemovalReason viewReason)
         {
             if (_viewsByCore.TryGetValue(item.EntityId, out var view))
             {
@@ -625,7 +644,7 @@ namespace Combat.Integration.Core
             }
 
             _pilots.Release(item.EntityId);
-            _renderer.RemoveShip(item.EntityId, item.RemovalReason);
+            _renderer.RemoveShip(item.EntityId, viewReason);
             _removed.Add(item.EntityId);
         }
 

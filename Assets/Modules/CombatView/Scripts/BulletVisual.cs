@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using CombatView.Effects;
 using UnityEngine;
 
@@ -19,21 +21,6 @@ namespace CombatView
         BlackHole,
         Harpoon,
         CircularSaw,
-    }
-
-    // The flash at each hit of a bullet: diameter in world units, duration in seconds.
-    public readonly struct HitFlash
-    {
-        public HitFlash(float diameter, Color color, float duration)
-        {
-            Diameter = diameter;
-            Color = color;
-            Duration = duration;
-        }
-
-        public readonly float Diameter;
-        public readonly Color Color;
-        public readonly float Duration;
     }
 
     // One database BulletPrefab record as plain data (phase 5b, step 5), so this module needs no database types. The
@@ -69,25 +56,26 @@ namespace CombatView
             Kind == BulletViewKind.EnergyBeam || Kind == BulletViewKind.PiercingLaser;
     }
 
-    // How one bullet or beam definition is drawn (migration phase 4, step 5; phase 5b, step 5). The adapter builds it
-    // from the database. BodySize is the legacy root scale; Color is the legacy view colour (the weapon's bullet colour),
-    // which each part of the prefab combines with its own colour by its colour mode.
+    // How one bullet or beam definition is drawn (migration phase 4, step 5; phase 5b, steps 5 and 6). The adapter
+    // builds it from the database. BodySize is the legacy root scale; Color is the legacy view colour (the weapon's
+    // bullet colour), which each part of the prefab combines with its own colour by its colour mode. A null look draws
+    // nothing (the legacy AreaOfEffect prefab is empty); the sound and effect triggers still play.
     public sealed class BulletVisual
     {
-        public BulletVisual(BulletLook look, float bodySize, Color color, HitFlash flash)
+        public BulletVisual(BulletLook look, float bodySize, Color color, IReadOnlyList<BulletSfx> triggers = null)
         {
             Look = look;
             BodySize = bodySize;
             Color = color;
-            Flash = flash;
+            Triggers = triggers ?? Array.Empty<BulletSfx>();
         }
-
-        // A bullet the renderer does not draw, such as a carrier without a look (phase 5, step 11a).
-        public static readonly BulletVisual Hidden = new BulletVisual(null, 0f, default, default);
 
         public BulletLook Look { get; }
         public float BodySize { get; }
         public Color Color { get; }
-        public HitFlash Flash { get; }
+        public IReadOnlyList<BulletSfx> Triggers { get; }
+
+        // Nothing to draw or play: the renderer makes no view.
+        public bool IsEmpty => Look == null && Triggers.Count == 0;
     }
 }
