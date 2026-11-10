@@ -41,17 +41,20 @@ namespace Combat.Integration.Core
         public IReadOnlyDictionary<WormTailDefinition, SpriteId> SegmentImages => _segmentImages;
         public IReadOnlyDictionary<RepairBotDefinition, ColorData> RepairBotColors => _repairBotColors;
 
-        // The device colour of each mapped decoy device, by its decoy ship (phase 5, step 10c).
+        // The device sound of each mapped repair bot device (phase 5b, step 7a): legacy plays it while the bot repairs.
+        public IReadOnlyDictionary<RepairBotDefinition, AudioClipId> RepairBotSounds => _repairBotSounds;
+
+        // The device colour of each mapped decoy device, by its decoy ship (phase 5, step 10c), and its sound (phase 5b,
+        // step 7a).
         public IReadOnlyDictionary<ShipDefinition, ColorData> DecoyColors => _decoyColors;
+        public IReadOnlyDictionary<ShipDefinition, AudioClipId> DecoySounds => _decoySounds;
+
+        // The device index of each mapped weapon on its ship, keyed as BulletSources (phase 5b, step 7a, owner question
+        // 8 (b)): each weapon mapping builds its own definition.
+        public IReadOnlyDictionary<object, int> WeaponDevices => _weaponDevices;
 
         // The view of each mapped energy or frontal shield (phase 5, step 10d).
         public IReadOnlyDictionary<ShieldDefinition, CoreShieldLook> ShieldLooks => _shieldLooks;
-
-        // The two flashes of each mapped teleporter with an effect (phase 5, step 11b).
-        public IReadOnlyDictionary<TeleporterDefinition, CoreFlashLook> TeleporterFlashes => _teleporterFlashes;
-
-        // The flash of each mapped gravity generator with an effect (phase 5, step 11c).
-        public IReadOnlyDictionary<GravityGeneratorDefinition, CoreFlashLook> GravityWaveFlashes => _gravityWaveFlashes;
 
         // Inert reasons the coverage report also gives (phase 5, step 1).
         public const string ObsoleteAmmunitionReason = "obsolete ammunition";
@@ -106,6 +109,7 @@ namespace Combat.Integration.Core
             var turrets = new List<CoreTurretSource>();
             var devices = new List<DeviceDefinition>();
             var infos = new List<CoreDeviceInfo>();
+            var views = new List<CoreDeviceViewSource>();
             var aiWeapons = new List<AiWeapon>();
             var aiDevices = new List<AiDevice>();
             var aiDroneBays = new List<AiDroneBay>();
@@ -156,17 +160,18 @@ namespace Combat.Integration.Core
                     var name = $"weapon {weapon.Weapon.Id.Value}, ammunition {weapon.Ammunition.Id.Value}";
                     var device = CoreWeaponMapper.Map(weapon, barrelIndex, stats.ArmorMultiplier.Value, AddChildSource,
                         AddSpawnTrigger, out var reason);
-                    AddBulletSource(device, weapon);
+                    AddBulletSource(device, weapon, devices.Count);
                     if (device != null)
                         aiWeapons.Add(ToAiWeapon(weapon, devices.Count, Positive(stats.Weight)));
                     var cost = device is BeamDefinition beam ? beam.ActivationCost : (device as CannonDefinition)?.EnergyCost ?? 0f;
-                    Add(devices, infos, device, new CoreDeviceInfo(name, weapon.KeyBinding, weapon.Weapon.Stats.ControlButtonIcon, cost, reason,
-                        ReleasesWeaponButton(weapon.Weapon.Stats, weapon.Stats.FireRateMultiplier.Value)));
+                    Add(devices, infos, views, device, new CoreDeviceInfo(name, weapon.KeyBinding, weapon.Weapon.Stats.ControlButtonIcon, cost, reason,
+                        ReleasesWeaponButton(weapon.Weapon.Stats, weapon.Stats.FireRateMultiplier.Value)),
+                        device != null ? new CoreDeviceViewSource(weapon, barrelIndex) : null);
                 }
 
                 // Until step 4 (D2) the core has no obsolete ammunition.
                 foreach (var weapon in platform.WeaponsObsolete)
-                    Add(devices, infos, null, new CoreDeviceInfo("weapon with obsolete ammunition", weapon.KeyBinding,
+                    Add(devices, infos, views, null, new CoreDeviceInfo("weapon with obsolete ammunition", weapon.KeyBinding,
                         weapon.Weapon.ControlButtonIcon, 0f, ObsoleteAmmunitionReason, ReleasesWeaponButton(weapon.Weapon, 1f)));
             }
 
@@ -188,7 +193,7 @@ namespace Combat.Integration.Core
 
                     // The slot keeps the legacy system index; the device itself does nothing (CanBeActivated false).
                     aiDevices.Add(new AiDevice(devices.Count, device.DeviceClass, true));
-                    Add(devices, infos, InertDefinition, new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, 0f, null));
+                    Add(devices, infos, views, InertDefinition, new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, 0f, null));
                     continue;
                 }
 
@@ -213,29 +218,32 @@ namespace Combat.Integration.Core
                             device.Color, null);
                     if (detonator != null || mapped is GhostDefinition || mapped is FortificationDefinition)
                         tint = tint ?? device.Color;
-                    if (mapped is RepairBotDefinition repairBot) _repairBotColors[repairBot] = device.Color;
-                    if (mapped is DecoyDefinition decoy) _decoyColors[decoy.Ship] = device.Color;
+                    if (mapped is RepairBotDefinition repairBot)
+                    {
+                        _repairBotColors[repairBot] = device.Color;
+                        _repairBotSounds[repairBot] = device.Sound;
+                    }
+                    if (mapped is DecoyDefinition decoy)
+                    {
+                        _decoyColors[decoy.Ship] = device.Color;
+                        _decoySounds[decoy.Ship] = device.Sound;
+                    }
                     if (mapped is ShieldDefinition shield) _shieldLooks[shield] = ShieldLook(device, modelScale);
-                    if (mapped is TeleporterDefinition teleporter && (device.VisualEffect != null || device.EffectPrefab))
-                        _teleporterFlashes[teleporter] = new CoreFlashLook(device.Color, device.Size * modelScale);
-                    if (mapped is GravityGeneratorDefinition generator && (device.VisualEffect != null || device.EffectPrefab))
-                        _gravityWaveFlashes[generator] = new CoreFlashLook(device.Color, 2f * generator.Range,
-                            NonNegative(device.Lifetime));
                     if (mapped is WormTailDefinition tail)
                         _segmentImages[tail] = SegmentImage(device);
-                    Add(devices, infos, mapped,
+                    Add(devices, infos, views, mapped,
                         new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, activationCost, null,
-                            ReleasesDeviceButton(device.DeviceClass)));
+                            ReleasesDeviceButton(device.DeviceClass)), new CoreDeviceViewSource(device));
                 }
                 else
                 {
-                    Add(devices, infos, null, new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, 0f,
+                    Add(devices, infos, views, null, new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, 0f,
                         inertReason ?? DeviceInertReason(device.DeviceClass), ReleasesDeviceButton(device.DeviceClass)));
                 }
             }
 
             if (!isDrone)
-                AddDroneBays(specification, devices, infos, aiDroneBays);
+                AddDroneBays(specification, devices, infos, views, aiDroneBays);
 
             var engine = new EngineStats(stats.EnginePower, stats.TurnRate, stats.Weight, stats.Layout.CellCount, _database.ShipSettings);
             var definition = new ShipDefinition(
@@ -290,7 +298,7 @@ namespace Combat.Integration.Core
             var kind = isClone ? "clone" : isDrone ? "drone" : "ship";
             var mapping = new CoreShipMapping($"{kind} {specification.Info.Id.Value}", definition, infos,
                 stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot, tint, isClone, turrets,
-                satelliteSources, LookSource(stats, isDrone));
+                satelliteSources, LookSource(stats, isDrone), views);
             _mappings[definition] = mapping;
             return mapping;
         }
@@ -498,7 +506,7 @@ namespace Combat.Integration.Core
 
         // Legacy CreateDroneBays: clonning centers, then the replicator if the ship builds drones, then the bays.
         private void AddDroneBays(IShipSpecification specification, List<DeviceDefinition> devices, List<CoreDeviceInfo> infos,
-            List<AiDroneBay> aiDroneBays)
+            List<CoreDeviceViewSource> views, List<AiDroneBay> aiDroneBays)
         {
             // Legacy ClonningDevice: EnergyConsumption once per clone and Cooldown (phase 5, step 7c). The clone is the
             // ship through ShipSpecDecorator; every center of the ship launches the same clone.
@@ -509,9 +517,9 @@ namespace Combat.Integration.Core
                     CloneMultiplier), isDrone: true, bay: null, isClone: true);
                 aiDroneBays.Add(new AiDroneBay(devices.Count, item.KeyBinding < 0));
                 var device = item.Device;
-                Add(devices, infos, new ClonningCenterDefinition(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
+                Add(devices, infos, views, new ClonningCenterDefinition(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
                     clone.Definition), new CoreDeviceInfo(DeviceName(device), item.KeyBinding, device.ControlButtonIcon, 0f, null,
-                    ReleasesDeviceButton(DeviceClass.ClonningCenter)));
+                    ReleasesDeviceButton(DeviceClass.ClonningCenter)), new CoreDeviceViewSource(device));
             }
 
             if (!specification.DroneBays.Any())
@@ -519,7 +527,7 @@ namespace Combat.Integration.Core
 
             // Phase 5, step 10a: legacy DroneReplicator, before the bays.
             if (specification.Stats.DroneBuildSpeed > 0)
-                Add(devices, infos, new DroneReplicatorDefinition(1f / specification.Stats.DroneBuildSpeed),
+                Add(devices, infos, views, new DroneReplicatorDefinition(1f / specification.Stats.DroneBuildSpeed),
                     new CoreDeviceInfo("drone replicator", -1, SpriteId.Empty, 0f, null));
 
             foreach (var item in specification.DroneBays)
@@ -527,19 +535,21 @@ namespace Combat.Integration.Core
                 var bay = item.DroneBay;
                 var drone = Map(BuildDrone(item), isDrone: true, item, isClone: false);
                 aiDroneBays.Add(new AiDroneBay(devices.Count, item.KeyBinding < 0));
-                Add(devices, infos, new DroneBayDefinition(System.Math.Max(1, bay.Capacity), NonNegative(bay.EnergyConsumption),
+                Add(devices, infos, views, new DroneBayDefinition(System.Math.Max(1, bay.Capacity), NonNegative(bay.EnergyConsumption),
                         drone.Definition, System.Math.Max(0, bay.BuildExtraCycles)),
                     new CoreDeviceInfo($"drone bay, drone {item.Drone.Id.Value}", item.KeyBinding, bay.ControlButtonIcon, 0f, null,
-                        releaseImmediately: true));
+                        releaseImmediately: true), new CoreDeviceViewSource(bay));
             }
         }
 
         // Legacy BulletStats: the colour is the weapon's, else the body's.
-        private void AddBulletSource(DeviceDefinition device, IWeaponData weapon)
+        private void AddBulletSource(DeviceDefinition device, IWeaponData weapon, int deviceIndex)
         {
             object key = device is CannonDefinition cannon ? cannon.Bullet : device as BeamDefinition;
             if (key == null)
                 return;
+
+            _weaponDevices[key] = deviceIndex;
 
             var body = weapon.Ammunition.Body;
             _bulletSources[key] = new CoreBulletSource(body.BulletPrefab, BodySize(weapon.Ammunition, weapon.Stats),
@@ -638,10 +648,12 @@ namespace Combat.Integration.Core
             return new SatelliteDefinition(slot, platform.Rotation * DegreesToRadians, Positive(companion.Weight), min, max);
         }
 
-        private static void Add(List<DeviceDefinition> devices, List<CoreDeviceInfo> infos, DeviceDefinition device, CoreDeviceInfo info)
+        private static void Add(List<DeviceDefinition> devices, List<CoreDeviceInfo> infos, List<CoreDeviceViewSource> views,
+            DeviceDefinition device, CoreDeviceInfo info, CoreDeviceViewSource view = null)
         {
             devices.Add(device ?? InertDefinition);
             infos.Add(info);
+            views.Add(view);
         }
 
         private static DeviceDefinition Inert(string reason, out string inertReason)
@@ -779,10 +791,11 @@ namespace Combat.Integration.Core
         private readonly Dictionary<BulletTriggerDefinition, BulletTrigger_SpawnBullet> _spawnTriggers =
             new Dictionary<BulletTriggerDefinition, BulletTrigger_SpawnBullet>();
         private readonly Dictionary<RepairBotDefinition, ColorData> _repairBotColors = new Dictionary<RepairBotDefinition, ColorData>();
+        private readonly Dictionary<RepairBotDefinition, AudioClipId> _repairBotSounds = new Dictionary<RepairBotDefinition, AudioClipId>();
         private readonly Dictionary<ShipDefinition, ColorData> _decoyColors = new Dictionary<ShipDefinition, ColorData>();
+        private readonly Dictionary<ShipDefinition, AudioClipId> _decoySounds = new Dictionary<ShipDefinition, AudioClipId>();
+        private readonly Dictionary<object, int> _weaponDevices = new Dictionary<object, int>();
         private readonly Dictionary<ShieldDefinition, CoreShieldLook> _shieldLooks = new Dictionary<ShieldDefinition, CoreShieldLook>();
-        private readonly Dictionary<TeleporterDefinition, CoreFlashLook> _teleporterFlashes = new Dictionary<TeleporterDefinition, CoreFlashLook>();
-        private readonly Dictionary<GravityGeneratorDefinition, CoreFlashLook> _gravityWaveFlashes = new Dictionary<GravityGeneratorDefinition, CoreFlashLook>();
         private readonly Dictionary<WormTailDefinition, SpriteId> _segmentImages = new Dictionary<WormTailDefinition, SpriteId>();
     }
 }

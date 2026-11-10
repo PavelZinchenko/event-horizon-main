@@ -59,6 +59,9 @@ namespace CombatView
         public SoundClip ExplosionSound { get; set; }
         public bool LeavesWreck { get; set; }
 
+        // Step 7a: the view data of each device, in device order; a null entry shows nothing.
+        public IReadOnlyList<DeviceLook> Devices { get; set; } = Array.Empty<DeviceLook>();
+
         // Legacy rule: a model scale below 0.9 is a small ship (drone explosion, no wreck by default).
         public bool IsSmall => Scale < 0.9f;
     }

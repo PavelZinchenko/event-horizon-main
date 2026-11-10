@@ -113,10 +113,12 @@ namespace Combat.Integration.Core
             _renderer.SetDamageTextColors(new Color(0.5f, 0.5f, 0.5f), new Color(0.5f, 1f, 0.5f), new Color(0f, 1f, 1f),
                 new Color(1f, 1f, 0f), new Color(1f, 0.5f, 1f));
             foreach (var look in _mapper.RepairBotColors)
-                _renderer.AddRepairBotLook(look.Key, resourceLocator.GetSprite(new SpriteId("repair_bot", SpriteId.Type.Satellite)), look.Value.ToUnity());
+                _renderer.AddRepairBotLook(look.Key, resourceLocator.GetSprite(new SpriteId("repair_bot", SpriteId.Type.Satellite)), look.Value.ToUnity(),
+                    _mapper.RepairBotSounds.TryGetValue(look.Key, out var sound) ? sounds.Resolve(sound) : default);
             foreach (var look in _mapper.SegmentImages)
                 _renderer.AddSegmentLook(look.Key, resourceLocator.GetSprite(look.Value));
             _visualEffects = new CoreVisualEffects(resourceLocator);
+            _deviceLooks = new CoreDeviceLooks(_visualEffects, sounds);
             _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, _mapper.SpawnTriggers, resourceLocator, _visualEffects,
                 sounds, flashSprite);
 #if UNITY_EDITOR
@@ -456,7 +458,7 @@ namespace Combat.Integration.Core
                 {
                     case BattleEventKind.Spawn:
                         if (item.IsBullet)
-                            _renderer.AddBullet(item, _bulletVisuals.Get(item));
+                            OnBulletSpawned(item);
                         else if (item.IsDrone)
                             OnDroneSpawned(item);
                         else if (item.IsDecoy)
@@ -485,10 +487,10 @@ namespace Combat.Integration.Core
                         _renderer.AddDisarm(item);
                         break;
                     case BattleEventKind.Teleport:
-                        OnTeleport(item);
+                        _renderer.AddTeleport(item);
                         break;
                     case BattleEventKind.GravityWave:
-                        OnGravityWave(item);
+                        _renderer.AddGravityWave(item);
                         break;
                     case BattleEventKind.AsteroidRemoval:
                         OnAsteroidRemoved(item);
@@ -546,36 +548,32 @@ namespace Combat.Integration.Core
                 look.LeavesWreck = source.LeavesWreck;
             }
 
+            // Phase 5b, step 7a: the sounds and effects of the weapons, devices and drone bays.
+            look.Devices = _deviceLooks.Create(mapping);
+
             _looks.Add(mapping.Definition, look);
             return look;
         }
 
-        // Legacy Decoy prefab: the star sprite at twice the body scale, in the device colour (phase 5, step 10c).
+        // Phase 5b, step 7a (owner question 8 (b)): a bullet of a weapon's own definition is its shot. A charged copy has
+        // the weapon's definition as its uncharged one; child bullets have definitions of their own.
+        private void OnBulletSpawned(in BattleEvent item)
+        {
+            _renderer.AddBullet(item, _bulletVisuals.Get(item));
+            object key = item.IsBeam ? item.BeamDefinition.Uncharged : (object)item.BulletDefinition.Uncharged;
+            if (_mapper.WeaponDevices.TryGetValue(key, out var device))
+                _renderer.AddShot(item.ParentId, device, item.Tick);
+        }
+
+        // Legacy Decoy prefab: the star sprite at twice the body scale, in the device colour (phase 5, step 10c). Phase 5b,
+        // step 7a: legacy CreateDecoy's flash at 4 x the decoy size, and the device sound.
         private void OnDecoySpawned(in BattleEvent item)
         {
             if (_decoySprite == null) _decoySprite = Resources.Load<Sprite>(DecoySprite);
             var color = _mapper.DecoyColors.TryGetValue(item.Definition, out var data) ? data.ToUnity() : Color.white;
-            _renderer.AddDecoy(item.EntityId, _decoySprite, 2f * DecoyDefinition.Size, color);
-        }
-
-        // Legacy TeleporterDevice: its effect at the start point (OnActivate), then at the end point (OnDeactivate), for
-        // 0.5 s each (phase 5, step 11b).
-        private void OnTeleport(in BattleEvent item)
-        {
-            if (!(item.Definition?.Devices[item.DeviceIndex] is TeleporterDefinition teleporter) ||
-                !_mapper.TeleporterFlashes.TryGetValue(teleporter, out var look)) return;
-            var color = look.Color.ToUnity();
-            _renderer.AddFlash(item.Point, look.Diameter, color, TeleportFlashSeconds);
-            _renderer.AddFlash(item.Destination, look.Diameter, color, TeleportFlashSeconds);
-        }
-
-        // Legacy GravityGenerator: its effect at 2 x Range for the device Lifetime (OnActivate), at the wave centre; legacy
-        // follows the ship (phase 5, step 11c).
-        private void OnGravityWave(in BattleEvent item)
-        {
-            if (!(item.Definition?.Devices[item.DeviceIndex] is GravityGeneratorDefinition generator) ||
-                !_mapper.GravityWaveFlashes.TryGetValue(generator, out var look)) return;
-            _renderer.AddFlash(item.Point, look.Diameter, look.Color.ToUnity(), look.Duration);
+            var sound = _mapper.DecoySounds.TryGetValue(item.Definition, out var clip) ? _sounds.Resolve(clip) : default;
+            _renderer.AddDecoy(item.EntityId, _decoySprite, 2f * DecoyDefinition.Size, color, sound, 4f * DecoyDefinition.Size,
+                item.Tick);
         }
 
         // Legacy AsteroidExplosionAction plays smoke at 2 x the size for 2 s, a disturbance and a sound. H11 (owner question
@@ -586,11 +584,14 @@ namespace Combat.Integration.Core
                 _renderer.AddFlash(item.Point, 2f * size, AsteroidDeathColor, AsteroidDeathSeconds);
         }
 
+        // Phase 5b, step 7a: the launch of a drone bay or a clonning center.
         private void OnDroneSpawned(in BattleEvent item)
         {
             var mapping = _mapper.Mappings[item.Definition];
             _renderer.AddShip(item.EntityId, GetLook(mapping), item.Side);
             AddTurrets(item.EntityId, mapping);
+            if (item.BayKey.HasValue)
+                _renderer.AddLaunch(item.ParentId, item.BayKey.Value.DeviceIndex, item.EntityId);
         }
 
         // Satellites first: a turret on a satellite rides its view (phase 5, step 12c).
@@ -1051,7 +1052,6 @@ namespace Combat.Integration.Core
         private const string RetreatSoundName = "flux_02";
         private const string WarpSoundName = "shot_06";
         private const string SatelliteExplosionSoundName = "explosion_10";
-        private const float TeleportFlashSeconds = 0.5f;
         private const float AsteroidDeathSeconds = 2f;
         // Grey at the half alpha of the step 3 area glow.
         private static readonly Color AsteroidDeathColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
@@ -1088,6 +1088,7 @@ namespace Combat.Integration.Core
         private readonly BattleRenderer _renderer;
         private readonly CoreBulletVisuals _bulletVisuals;
         private readonly CoreVisualEffects _visualEffects;
+        private readonly CoreDeviceLooks _deviceLooks;
         private readonly CoreSoundOutput _sounds;
         private readonly Dictionary<ShipDefinition, ShipLook> _looks = new Dictionary<ShipDefinition, ShipLook>();
 #if UNITY_EDITOR

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CombatSimulation.Ai;
 using CombatSimulation.Core;
+using Constructor;
 using Constructor.Model;
 using GameDatabase.DataModel;
 using GameDatabase.Model;
@@ -15,7 +16,8 @@ namespace Combat.Integration.Core
         public CoreShipMapping(string name, ShipDefinition definition, IReadOnlyList<CoreDeviceInfo> devices,
             SpriteId modelImage, float modelScale, AiShipProfile ai, BehaviorTreeModel aiTree, float droneRange, bool hasAutopilot,
             ColorData? tintColor = null, bool isClone = false, IReadOnlyList<CoreTurretSource> turrets = null,
-            IReadOnlyList<CoreSatelliteSource> satellites = null, CoreShipLookSource look = null)
+            IReadOnlyList<CoreSatelliteSource> satellites = null, CoreShipLookSource look = null,
+            IReadOnlyList<CoreDeviceViewSource> deviceViews = null)
         {
             Name = name;
             Definition = definition;
@@ -31,6 +33,7 @@ namespace Combat.Integration.Core
             Turrets = turrets ?? System.Array.Empty<CoreTurretSource>();
             Satellites = satellites ?? System.Array.Empty<CoreSatelliteSource>();
             Look = look;
+            DeviceViews = deviceViews ?? System.Array.Empty<CoreDeviceViewSource>();
         }
 
         // For logs and reports: "ship", "drone" or "clone" and the legacy ship ID.
@@ -67,6 +70,29 @@ namespace Combat.Integration.Core
 
         // What the ship view draws besides the model (phase 5b, step 4).
         public CoreShipLookSource Look { get; }
+
+        // The database source of each device's sounds and effects (phase 5b, step 7a), in device order; a null entry
+        // has none.
+        public IReadOnlyList<CoreDeviceViewSource> DeviceViews { get; }
+    }
+
+    // Where one device's sounds and effects come from (phase 5b, step 7a): a weapon on its barrel, a device, or a drone
+    // bay. The ship's model scale sizes the legacy device effects.
+    public sealed class CoreDeviceViewSource
+    {
+        public CoreDeviceViewSource(IWeaponData weapon, int barrel)
+        {
+            Weapon = weapon;
+            Barrel = barrel;
+        }
+
+        public CoreDeviceViewSource(DeviceStats device) => Device = device;
+        public CoreDeviceViewSource(DroneBayStats droneBay) => DroneBay = droneBay;
+
+        public IWeaponData Weapon { get; }
+        public int Barrel { get; } = -1;
+        public DeviceStats? Device { get; }
+        public DroneBayStats? DroneBay { get; }
     }
 
     // Legacy ShipFactory.CreateShip's view parts (phase 5b, step 4): the colour schemes, the engines, the shield
@@ -151,23 +177,6 @@ namespace Combat.Integration.Core
             OffsetY = offsetY;
             Color = color;
             IdleOpacity = idleOpacity;
-        }
-    }
-
-    // Legacy StaticEffect of a teleporter (phase 5, step 11b): one flash for 0.5 s at each end of the jump, Diameter
-    // device Size x model scale. Legacy FlashEffect of a gravity generator (step 11c): one flash for Duration (device
-    // Lifetime) at the wave centre, Diameter 2 x Range.
-    public readonly struct CoreFlashLook
-    {
-        public readonly ColorData Color;
-        public readonly float Diameter;
-        public readonly float Duration;
-
-        public CoreFlashLook(ColorData color, float diameter, float duration = 0f)
-        {
-            Color = color;
-            Diameter = diameter;
-            Duration = duration;
         }
     }
 

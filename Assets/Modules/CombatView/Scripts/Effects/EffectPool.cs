@@ -76,12 +76,16 @@ namespace CombatView.Effects
             return effect;
         }
 
-        // Step 6: a world effect goes to a new point, as legacy ShowHitEffectAction moved its one effect to each hit.
+        // Step 6: a world effect goes to a new point, as legacy ShowHitEffectAction moved its one effect to each hit. The
+        // host carries the point, so the effect's own offset (its drift since the last hit) goes back to zero.
         public void MoveTo(IEffect effect, Vec2 point)
         {
             var index = IndexOf(effect);
-            if (index >= 0 && _effects[index].Point.HasValue)
-                _effects[index] = new Item(effect, _effects[index].Owner, _effects[index].Host, point);
+            if (index < 0 || !_effects[index].Point.HasValue)
+                return;
+
+            _effects[index] = new Item(effect, _effects[index].Owner, _effects[index].Host, point);
+            effect.Position = Vector2.zero;
         }
 
         // Step 6, legacy CompositeEffect.Detach: an effect on a view stays in the world at the point, turned by the
