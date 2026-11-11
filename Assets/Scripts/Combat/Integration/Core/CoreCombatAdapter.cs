@@ -113,14 +113,13 @@ namespace Combat.Integration.Core
             // Legacy DamageIndicator colours: the shield, then the LegacyDamageModel types.
             _renderer.SetDamageTextColors(new Color(0.5f, 0.5f, 0.5f), new Color(0.5f, 1f, 0.5f), new Color(0f, 1f, 1f),
                 new Color(1f, 1f, 0f), new Color(1f, 0.5f, 1f));
-            // Phase 5b, step 7b: the repair bot beam is the legacy Laser effect prefab's texture until its record (7c).
-            var repairBeam = resourceLocator.GetSprite(new SpriteId(RepairBeamImage, SpriteId.Type.Ammunition));
-            foreach (var look in _mapper.RepairBotColors)
-                _renderer.AddRepairBotLook(look.Key, new RepairBotLook(look.Value.ToUnity(), repairBeam,
-                    _mapper.RepairBotSounds.TryGetValue(look.Key, out var sound) ? sounds.Resolve(sound) : default));
             foreach (var source in _mapper.SegmentSources)
                 _renderer.AddSegmentLook(source.Key, SegmentLook(source.Value, resourceLocator));
             _visualEffects = new CoreVisualEffects(resourceLocator);
+            foreach (var look in _mapper.RepairBotColors)
+                _renderer.AddRepairBotLook(look.Key, new RepairBotLook(look.Value.ToUnity(),
+                    RepairBeam(_mapper.RepairBotEffects.TryGetValue(look.Key, out var effect) ? effect : null),
+                    _mapper.RepairBotSounds.TryGetValue(look.Key, out var sound) ? sounds.Resolve(sound) : default));
             _deviceLooks = new CoreDeviceLooks(_visualEffects, sounds);
             _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, _mapper.SpawnTriggers, resourceLocator, _visualEffects,
                 sounds);
@@ -618,7 +617,8 @@ namespace Combat.Integration.Core
         }
 
         // Phase 5b, step 7b, legacy CustomPrefabLoader: a CircularSpriteObject record sets the EnergyShield prefab's sprite,
-        // a CircularOutlineObject record builds the EnergyShieldOutline ring.
+        // a CircularOutlineObject record builds the EnergyShieldOutline ring. Step 7c: a ColliderSpriteObject record sets
+        // the FrontalShield prefab's sprite.
         private ShieldLook GetShieldLook(ShieldDefinition shield)
         {
             if (_shieldLooks.TryGetValue(shield, out var look) || !_mapper.ShieldLooks.TryGetValue(shield, out var source))
@@ -644,6 +644,9 @@ namespace Combat.Integration.Core
                     look.Thickness = outline.Thickness;
                     look.AspectRatio = outline.AspectRatio;
                     break;
+                case GameObjectPrefab_ColliderSpriteObject frontal:
+                    look.Image = _resourceLocator.GetSprite(frontal.Image);
+                    break;
             }
 
             _shieldLooks.Add(shield, look);
@@ -664,6 +667,23 @@ namespace Combat.Integration.Core
                 JointScale = record?.JointImageScale ?? 0f,
                 JointOffset = record?.JointImageOffset ?? 0f,
             };
+        }
+
+        // Phase 5b, step 7c: the first Laser element of the repair bot's record. A device without a record (a mod) gets
+        // the legacy Laser effect prefab: its texture, 1 wide, in the device colour; a record without a Laser element
+        // draws no beam.
+        private CombatView.Effects.EffectElement RepairBeam(VisualEffect effect)
+        {
+            if (effect == null)
+                return new CombatView.Effects.EffectElement(CombatView.Effects.EffectKind.Laser,
+                    _resourceLocator.GetSprite(new SpriteId(RepairBeamImage, SpriteId.Type.Effect)),
+                    CombatView.Effects.ColorMode.TakeFromOwner, Color.white, 1, 1f, 0f, 0f, 0f, 1f, 1f, Vector2.zero, 0f,
+                    loop: false, inverse: false, useRealTime: false);
+
+            foreach (var element in effect.Elements)
+                if (element.Type == VisualEffectType.Laser)
+                    return _visualEffects.ToElement(element, CombatView.Effects.EffectKind.Laser);
+            return null;
         }
 
         // The roster transition of the same removal comes later in the batch, so the ID stays mapped until the tick ends.
@@ -1098,7 +1118,7 @@ namespace Combat.Integration.Core
         private const string RetreatSoundName = "flux_02";
         private const string WarpSoundName = "shot_06";
         private const string DroneExplosionSoundName = "explosion_10";
-        // The texture of the legacy Laser effect prefab (Textures/Bullets/laser).
+        // The texture of the legacy Laser effect prefab (Textures/Bullets/laser; the same image is Textures/Effects/laser).
         private const string RepairBeamImage = "laser";
         private const float AsteroidDeathSeconds = 2f;
         // Grey at the half alpha of the step 3 area glow.

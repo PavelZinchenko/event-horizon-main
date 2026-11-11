@@ -12,7 +12,7 @@
   "ActivationType": 1,
   "Color": "#C07FDBDB",
   "Sound": "*flux_01",
-  "EffectPrefab": "Laser2",
+  "VisualEffect": 37,
   "ObjectPrefab": "RepairBot",
   "ControlButtonIcon": "controls_repair"
 }

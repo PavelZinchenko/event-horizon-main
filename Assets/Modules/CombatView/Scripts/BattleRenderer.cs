@@ -330,6 +330,10 @@ namespace CombatView
             if (visual.IsEmpty)
                 return;
 
+            // Step 7c (owner, 2026-11-11): the detonating ship dies in this tick; its explosion record replaces the ship's.
+            if (visual.Burst != null && _ships.TryGetValue(spawn.ParentId, out var detonated))
+                detonated.Detonated = true;
+
             var template = visual.Look != null ? _bulletTemplates.Get(visual.Look) : null;
             if (visual.Look != null && !template && visual.Triggers.Count == 0)
                 return;
@@ -700,7 +704,9 @@ namespace CombatView
 
         // Step 7b, legacy SatelliteFactory.CreateRepairBot: the RepairBot prefab at the device size, and the Laser effect
         // on it, 0.4 x the device size ahead, 1 + flight radius + device size long, in the device colour. Both values are
-        // in the bot's frame, which the device size scales, as legacy.
+        // in the bot's frame, which the device size scales, as legacy. Step 7c: the beam is the Laser element of the
+        // device's record; its Size multiplies the length, its colour mode combines its colour with the device colour,
+        // and its offset and rotation add to the legacy pose.
         private RepairBotView CreateRepairBot(in RepairBotState bot)
         {
             _repairBotLooks.TryGetValue(bot.Definition, out var look);
@@ -711,13 +717,14 @@ namespace CombatView
             root.transform.localScale = Vector3.one * bot.Scale;
 
             var view = new RepairBotView(root) { Sound = look?.Sound ?? default };
-            var beam = _effects.Create(EffectKind.Laser, look?.LaserImage, root.transform);
+            var element = look?.Beam;
+            var beam = _effects.Create(element, root.transform);
             if (beam != null)
             {
-                beam.Position = new Vector2(RepairBeamOffset * bot.Definition.Size, 0f);
-                beam.Rotation = 0f;
-                beam.Color = look?.Color ?? Color.white;
-                beam.Size = 1f + bot.Definition.Range + bot.Definition.Size;
+                beam.Position = new Vector2(RepairBeamOffset * bot.Definition.Size, 0f) + element.Offset;
+                beam.Rotation = element.Rotation;
+                beam.Color = element.ColorMode.Apply(element.Color, look.Color);
+                beam.Size = element.Size * (1f + bot.Definition.Range + bot.Definition.Size);
                 beam.Life = 0f;
                 beam.Visible = false;
                 view.Beam = beam;
@@ -909,7 +916,11 @@ namespace CombatView
             var look = view.Look;
             var point = new Vec2(view.Position.x, view.Position.y);
             var drift = view.Velocity * 0.05f;
-            if (look.Explosion != null)
+            if (view.Detonated)
+            {
+                // Step 7c: the detonator's record is the explosion.
+            }
+            else if (look.Explosion != null)
             {
                 var explosion = _effects.Create(look.Explosion, point);
                 if (explosion != null)
@@ -965,12 +976,16 @@ namespace CombatView
             _sounds.Play(DroneExplosionSound);
         }
 
-        // Step 7b: the named effects of an area at its first pose, at their share of its BodySize.
+        // Step 7c: the detonator's explosion record at the area's first pose, at its radius, in the device colour, for the
+        // whole record (legacy CreateStrongExplosion ran its effects for DetonatorDevice's 1 s).
         private void PlayBurst(BulletVisual visual, Vec2 point)
         {
-            foreach (var (prefab, sizeRatio) in visual.Burst.Effects)
-                RunEffect(EffectFolder + prefab, point, visual.Color, sizeRatio * visual.BodySize, visual.Burst.Lifetime,
-                    Vector2.zero);
+            var effect = _effects.Create(visual.Burst, point);
+            if (effect == null)
+                return;
+            effect.Color = visual.Color;
+            effect.Size = 0.5f * visual.BodySize;
+            effect.Run(0f, Vector2.zero, 0f);
         }
 
         private static string ShieldPrefab(ShieldViewKind kind)
@@ -1307,6 +1322,9 @@ namespace CombatView
             // Step 7a: the device effects (built on first use); a decoy's spawn flash size until its first pose.
             public DeviceEffects Devices { get; set; }
             public float SpawnFlashSize { get; set; }
+
+            // Step 7c: its detonator exploded; the death shows no ship explosion, only its sound and wreck.
+            public bool Detonated { get; set; }
             public Vector2 Velocity { get; set; }
             public float AngularVelocity { get; set; }
 

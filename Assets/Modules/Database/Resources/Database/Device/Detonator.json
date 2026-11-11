@@ -12,6 +12,6 @@
   "ActivationType": 1,
   "Color": "#FF8040",
   "Sound": "launch_03",
-  "EffectPrefab": "Flash",
+  "VisualEffect": 36,
   "ControlButtonIcon": "controls_selfdestruct"
 }

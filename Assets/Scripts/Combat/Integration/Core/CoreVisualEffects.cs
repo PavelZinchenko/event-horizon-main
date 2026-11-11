@@ -41,7 +41,7 @@ namespace Combat.Integration.Core
             element.ParticleSize, element.Offset.ToUnity(), element.Rotation, element.Loop, element.Inverse,
             element.UseRealTime);
 
-        // The view enum keeps the database order; Laser comes with the database edits of step 7.
+        // The view enum keeps the database order.
         public static bool TryGetKind(VisualEffectType type, out EffectKind kind)
         {
             switch (type)
@@ -56,6 +56,7 @@ namespace Combat.Integration.Core
                 case VisualEffectType.Lightning: kind = EffectKind.Lightning; return true;
                 case VisualEffectType.LightningStrike: kind = EffectKind.LightningStrike; return true;
                 case VisualEffectType.Sprite: kind = EffectKind.Sprite; return true;
+                case VisualEffectType.Laser: kind = EffectKind.Laser; return true;
                 default: kind = default; return false;
             }
         }

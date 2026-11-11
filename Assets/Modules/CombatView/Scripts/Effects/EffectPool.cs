@@ -51,12 +51,12 @@ namespace CombatView.Effects
             return effect;
         }
 
-        // Step 7b: one element effect on a view (the repair bot beam until its record in step 7c), with the element
-        // template of the kind and image. The owner sets its values and disposes it before it destroys the parent.
-        public IEffect Create(EffectKind kind, Sprite image, Transform parent)
+        // Step 7b: one element effect on a view (step 7c: the repair bot beam, an element of its record), set up from the
+        // element. The owner sets its values and disposes it before it destroys the parent.
+        public IEffect Create(EffectElement element, Transform parent)
         {
-            var template = parent ? _templates.Get(kind, image) : null;
-            var effect = template ? Instantiate(template, parent, null) : null;
+            var template = parent && element != null ? _templates.Get(element.Kind, element.Image) : null;
+            var effect = template ? Instantiate(template, parent, element) : null;
             if (effect != null)
                 _effects.Add(new Item(effect, (Component)effect, parent, null));
             return effect;

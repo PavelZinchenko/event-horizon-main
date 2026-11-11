@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using CombatSimulation.Core;
 using CombatView;
 using EffectColorMode = CombatView.Effects.ColorMode;
+using EffectElement = CombatView.Effects.EffectElement;
+using EffectKind = CombatView.Effects.EffectKind;
+using EffectRecord = CombatView.Effects.EffectRecord;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Extensions;
@@ -62,14 +65,14 @@ namespace Combat.Integration.Core
 
             // Legacy BulletFactory: without a record the bullet has no look of its own (the AreaOfEffect prefab is
             // empty); its trigger effects draw it (step 6). A beam keeps a plain line ("Views (5)", item 5). The
-            // detonator explosion has no ammunition: step 7b plays legacy CreateStrongExplosion's effects on its
-            // diameter until its effect record (step 7c).
+            // detonator explosion has no ammunition: step 7c plays the device's record on its radius.
             if (prefab == null)
             {
                 if (isBeam)
                     return new BulletVisual(_plainBeam ??= PlainBeam(), 1f, parent, triggers);
                 if (source.Ammunition == null)
-                    return new BulletVisual(null, bullet.Scale, parent, burst: DetonatorBurst);
+                    return new BulletVisual(null, bullet.Scale, parent,
+                        burst: _effects.Get(source.Explosion) ?? (_detonatorBurst ??= DetonatorBurst()));
                 return new BulletVisual(null, size, parent, triggers);
             }
 
@@ -195,10 +198,19 @@ namespace Combat.Integration.Core
             new BulletLook(BulletViewKind.Laser, null, Color.white, EffectColorMode.TakeFromOwner, Color.white,
                 EffectColorMode.TakeFromOwner, PlainBeamWidth, 0f);
 
-        // Legacy SpaceObjectFactory.CreateStrongExplosion with DetonatorDevice's lifetime of 1 s: WaveStrong at 1.1 x the
-        // radius, FlashAdditive and OrbAdditive at 2 x the radius. The area's diameter is 2 x the radius.
-        private static readonly AreaBurst DetonatorBurst = new AreaBurst(1f, ("WaveStrong", 0.55f), ("FlashAdditive", 1f),
-            ("OrbAdditive", 1f));
+        // Phase 5b, step 7c: a detonator without a record (a mod) plays a copy of the built-in record 36, legacy
+        // SpaceObjectFactory.CreateStrongExplosion with DetonatorDevice's 1 s: a Shockwave at 1.1 x the radius, two
+        // FlashAdditive elements at 2 x the radius.
+        private EffectRecord DetonatorBurst() => new EffectRecord(new[]
+        {
+            BurstElement(EffectKind.Shockwave, "wave", 1.1f),
+            BurstElement(EffectKind.FlashAdditive, "star", 2f),
+            BurstElement(EffectKind.FlashAdditive, "cloud", 2f),
+        });
+
+        private EffectElement BurstElement(EffectKind kind, string image, float size) => new EffectElement(kind,
+            _resourceLocator.GetSprite(new GameDatabase.Model.SpriteId(image, GameDatabase.Model.SpriteId.Type.Effect)), EffectColorMode.TakeFromOwner, Color.white,
+            1, size, 0f, 0f, 0f, 1f, 1f, Vector2.zero, 0f, loop: false, inverse: false, useRealTime: false);
 
         // "Views (5)", item 5.
         private const float PlainBeamWidth = 0.2f;
@@ -211,5 +223,6 @@ namespace Combat.Integration.Core
         private readonly Dictionary<object, BulletVisual> _visuals = new Dictionary<object, BulletVisual>();
         private readonly Dictionary<BulletPrefab, BulletLook> _looks = new Dictionary<BulletPrefab, BulletLook>();
         private BulletLook _plainBeam;
+        private EffectRecord _detonatorBurst;
     }
 }

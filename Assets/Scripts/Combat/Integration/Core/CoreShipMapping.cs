@@ -131,21 +131,24 @@ namespace Combat.Integration.Core
     // What a bullet or beam view needs from the database (phase 4, step 5, "Views (5)"). Prefab is null when the
     // ammunition has no BulletPrefab record. ParentColor is legacy BulletStats.Color: the weapon's colour, else the body's.
     // Ammunition gives the sound and effect triggers (phase 5b, step 6); null for a bullet of no ammunition record (the
-    // detonator explosion).
+    // detonator explosion). Explosion is the detonator's Device.VisualEffect record (phase 5b, step 7c), else null.
     public readonly struct CoreBulletSource
     {
-        public CoreBulletSource(BulletPrefab prefab, float bodySize, ColorData parentColor, Ammunition ammunition)
+        public CoreBulletSource(BulletPrefab prefab, float bodySize, ColorData parentColor, Ammunition ammunition,
+            VisualEffect explosion = null)
         {
             Prefab = prefab;
             BodySize = bodySize;
             ParentColor = parentColor;
             Ammunition = ammunition;
+            Explosion = explosion;
         }
 
         public readonly BulletPrefab Prefab;
         public readonly float BodySize;
         public readonly ColorData ParentColor;
         public readonly Ammunition Ammunition;
+        public readonly VisualEffect Explosion;
     }
 
     public readonly struct CoreTurretSource
@@ -159,8 +162,9 @@ namespace Combat.Integration.Core
     }
 
     // Legacy SatelliteFactory.CreateEnergyShield and CreateFrontalShield (phase 5, step 10d). Prefab is the energy
-    // shield's database record (a sprite or a ring); null draws the EnergyShield or FrontalShield prefab as it is (phase
-    // 5b, step 7b). Size is the drawn width; the offset is in the ship frame.
+    // shield's database record (a sprite or a ring) or the frontal shield's (a ColliderSpriteObject, phase 5b, step 7c);
+    // null draws the EnergyShield or FrontalShield prefab as it is (phase 5b, step 7b). Size is the drawn width; the
+    // offset is in the ship frame.
     public readonly struct CoreShieldLook
     {
         public readonly bool IsFrontal;

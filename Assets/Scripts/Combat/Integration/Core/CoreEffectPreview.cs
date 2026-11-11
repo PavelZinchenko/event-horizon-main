@@ -118,7 +118,7 @@ namespace Combat.Integration.Core
                 Current = null;
         }
 
-        // The first built-in element of the type, alone; Laser has no user before step 7, so it gets a beam of 5 by 0.3.
+        // The first built-in element of the type, alone.
         private static Item CreateTypeItem(EffectKind kind, List<VisualEffect> records, CoreVisualEffects effects,
             IResourceLocator resourceLocator)
         {
@@ -133,14 +133,6 @@ namespace Combat.Integration.Core
                     var single = new EffectRecord(new[] { effects.ToElement(element, kind) });
                     return new Item($"{kind} (record {record.Id.Value}, element {i})", single, null);
                 }
-            }
-
-            if (kind == EffectKind.Laser)
-            {
-                var image = resourceLocator.GetSprite(new SpriteId(LaserImage, SpriteId.Type.Effect));
-                var laser = new EffectElement(kind, image, CombatView.Effects.ColorMode.UseMyOwn, Color.white, 1, 5f, 0f, 0f,
-                    0f, 1f, 0.3f, Vector2.zero, 0f, loop: false, inverse: false, useRealTime: false);
-                return new Item($"{kind} (no record: {LaserImage}, 5 x 0.3)", new EffectRecord(new[] { laser }), null);
             }
 
             return new Item($"{kind} (no built-in element)", null, null);
@@ -200,7 +192,6 @@ namespace Combat.Integration.Core
 
         // Owner question 10 (a) list: the named prefabs of step 3.
         private static readonly string[] NamedPrefabs = { "FlashAdditive", "OrbAdditive", "Charge1", "Charge2", "Flicker", "Wave", "Lightning" };
-        private const string LaserImage = "beam";
         private const string AsteroidDeathSound = "explosion_08";
 
         private readonly BattleRenderer _renderer;

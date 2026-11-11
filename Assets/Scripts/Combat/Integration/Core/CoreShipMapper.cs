@@ -44,6 +44,9 @@ namespace Combat.Integration.Core
         // The device sound of each mapped repair bot device (phase 5b, step 7a): legacy plays it while the bot repairs.
         public IReadOnlyDictionary<RepairBotDefinition, AudioClipId> RepairBotSounds => _repairBotSounds;
 
+        // The beam record of each mapped repair bot device (phase 5b, step 7c), or null.
+        public IReadOnlyDictionary<RepairBotDefinition, VisualEffect> RepairBotEffects => _repairBotEffects;
+
         // The device colour of each mapped decoy device, by its decoy ship (phase 5, step 10c), and its sound (phase 5b,
         // step 7a).
         public IReadOnlyDictionary<ShipDefinition, ColorData> DecoyColors => _decoyColors;
@@ -211,17 +214,19 @@ namespace Combat.Integration.Core
                     aiDevices.Add(new AiDevice(devices.Count, device.DeviceClass, key < 0, range,
                         detonator?.Activation.Duration ?? 0f));
 
-                    // Legacy CreateStrongExplosion draws the area in the device colour. The first detonator, ghost or
-                    // fortification gives the colour that ShipState.Tint moves the ship to.
+                    // Legacy CreateStrongExplosion draws the area in the device colour; phase 5b, step 7c: with the
+                    // device's record. The first detonator, ghost or fortification gives the colour that ShipState.Tint
+                    // moves the ship to.
                     if (detonator != null)
                         _bulletSources[detonator.Explosion] = new CoreBulletSource(null, ExplosionFlashSize,
-                            device.Color, null);
+                            device.Color, null, device.VisualEffect);
                     if (detonator != null || mapped is GhostDefinition || mapped is FortificationDefinition)
                         tint = tint ?? device.Color;
                     if (mapped is RepairBotDefinition repairBot)
                     {
                         _repairBotColors[repairBot] = device.Color;
                         _repairBotSounds[repairBot] = device.Sound;
+                        _repairBotEffects[repairBot] = device.VisualEffect;
                     }
                     if (mapped is DecoyDefinition decoy)
                     {
@@ -350,11 +355,13 @@ namespace Combat.Integration.Core
                         NonNegative(device.Power * stats.ShieldMultiplier.Value),
                         Positive(EnergyShieldRadius(device) * device.Size * modelScale));
                 // Legacy FrontalShieldDevice: EnergyConsumption per second while held; the FrontalShield prefab polygon at
-                // Size x model scale and Offset x model scale. Legacy ActivationCost is 0.
+                // Size x model scale and Offset x model scale. Legacy ActivationCost is 0. Phase 5b, step 7c: the polygon
+                // of the device's ColliderSpriteObject record.
                 case DeviceClass.PartialShield:
                     return ShieldDefinition.FrontalShield(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
                         NonNegative(device.Power * stats.ShieldMultiplier.Value),
-                        FrontalShieldPolygon(Positive(device.Size * modelScale), modelScale * device.Offset.x, modelScale * device.Offset.y));
+                        FrontalShieldPolygon(FrontalShieldOutline(device), Positive(device.Size * modelScale),
+                            modelScale * device.Offset.x, modelScale * device.Offset.y));
                 case DeviceClass.PointDefense:
                     activationCost = device.EnergyConsumption;
                     return new PointDefenseDefinition(
@@ -474,20 +481,42 @@ namespace Combat.Integration.Core
             new Vec2(0.2412068f, 0.0054100156f),
         };
 
-        private static Polygon FrontalShieldPolygon(float size, float offsetX, float offsetY)
+        // Phase 5b, step 7c (owner, 2026-11-11): the first collider outline (3 or more points) of the device's
+        // ColliderSpriteObject record, in its frame. Without one (no record, a circle, a capsule, an empty list) the
+        // FrontalShield prefab polygon; the analyzer reports such a record.
+        private static IReadOnlyList<Vec2> FrontalShieldOutline(DeviceStats device)
         {
-            var points = new Vec2[FrontalShieldPoints.Length];
+            if (device.Prefab is GameObjectPrefab_ColliderSpriteObject prefab)
+            {
+                foreach (var shape in prefab.Collider)
+                {
+                    if (shape.Points.Count < 3) continue;
+                    var points = new Vec2[shape.Points.Count];
+                    for (var i = 0; i < points.Length; ++i)
+                        points[i] = new Vec2(shape.Points[i].x, shape.Points[i].y);
+                    return points;
+                }
+            }
+
+            return FrontalShieldPoints;
+        }
+
+        private static Polygon FrontalShieldPolygon(IReadOnlyList<Vec2> outline, float size, float offsetX, float offsetY)
+        {
+            var points = new Vec2[outline.Count];
             for (var i = 0; i < points.Length; ++i)
-                points[i] = size * FrontalShieldPoints[i] + new Vec2(offsetX, offsetY);
+                points[i] = size * outline[i] + new Vec2(offsetX, offsetY);
             return Polygon.FromPoints(points);
         }
 
         // Legacy SatelliteFactory: the energy shield draws its prefab record (or the EnergyShield prefab) at an idle
-        // opacity of 0.3; the frontal shield draws the FrontalShield prefab at 1. Both are Size x model scale wide.
+        // opacity of 0.3; the frontal shield draws the FrontalShield prefab at 1 (phase 5b, step 7c: with the image of its
+        // ColliderSpriteObject record). Both are Size x model scale wide.
         private static CoreShieldLook ShieldLook(DeviceStats device, float modelScale)
         {
             var energy = device.DeviceClass == DeviceClass.EnergyShield;
-            return new CoreShieldLook(!energy, energy ? device.Prefab : null, device.Size * modelScale,
+            var prefab = energy || device.Prefab is GameObjectPrefab_ColliderSpriteObject ? device.Prefab : null;
+            return new CoreShieldLook(!energy, prefab, device.Size * modelScale,
                 energy ? 0f : modelScale * device.Offset.x, energy ? 0f : modelScale * device.Offset.y, device.Color,
                 energy ? 0.3f : 1f);
         }
@@ -782,6 +811,7 @@ namespace Combat.Integration.Core
             new Dictionary<BulletTriggerDefinition, BulletTrigger_SpawnBullet>();
         private readonly Dictionary<RepairBotDefinition, ColorData> _repairBotColors = new Dictionary<RepairBotDefinition, ColorData>();
         private readonly Dictionary<RepairBotDefinition, AudioClipId> _repairBotSounds = new Dictionary<RepairBotDefinition, AudioClipId>();
+        private readonly Dictionary<RepairBotDefinition, VisualEffect> _repairBotEffects = new Dictionary<RepairBotDefinition, VisualEffect>();
         private readonly Dictionary<ShipDefinition, ColorData> _decoyColors = new Dictionary<ShipDefinition, ColorData>();
         private readonly Dictionary<ShipDefinition, AudioClipId> _decoySounds = new Dictionary<ShipDefinition, AudioClipId>();
         private readonly Dictionary<object, int> _weaponDevices = new Dictionary<object, int>();

@@ -63,7 +63,7 @@ namespace CombatView
     public sealed class BulletVisual
     {
         public BulletVisual(BulletLook look, float bodySize, Color color, IReadOnlyList<BulletSfx> triggers = null,
-            AreaBurst burst = null)
+            EffectRecord burst = null)
         {
             Look = look;
             BodySize = bodySize;
@@ -77,8 +77,9 @@ namespace CombatView
         public Color Color { get; }
         public IReadOnlyList<BulletSfx> Triggers { get; }
 
-        // Step 7b: named effects at the first pose, or null.
-        public AreaBurst Burst { get; }
+        // Step 7c: the detonator's explosion record, played once at the first pose at half the BodySize (the area's
+        // radius), or null. Its ship dies in the same tick without its own explosion.
+        public EffectRecord Burst { get; }
 
         // Nothing to draw or play: the renderer makes no view.
         public bool IsEmpty => Look == null && Triggers.Count == 0 && Burst == null;

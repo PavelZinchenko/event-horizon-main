@@ -267,11 +267,11 @@ How a color combines with the parent (owner) color.
 
 ### VisualEffectType
 
-Element kinds of a [VisualEffect](VisualEffect.md): `Flash` (0), `FlashAdditive` (1), `Shockwave` (2), `Smoke` (3), `SmokeAdditive` (4), `Shake` (5, camera shake), `Spark` (6), `Lightning` (7), `LightningStrike` (8), `Sprite` (9).
+Element kinds of a [VisualEffect](VisualEffect.md): `Flash` (0), `FlashAdditive` (1), `Shockwave` (2), `Smoke` (3), `SmokeAdditive` (4), `Shake` (5, camera shake), `Spark` (6), `Lightning` (7), `LightningStrike` (8), `Sprite` (9), `Laser` (10, new combat simulator only: the repair bot beam; legacy draws nothing).
 
 ### ObjectPrefabType
 
-[GameObjectPrefab](GameObjectPrefab.md) kinds: `Undefined` (0), `WormTailSegment` (1), `CircularSpriteObject` (2), `CircularOutlineObject` (3).
+[GameObjectPrefab](GameObjectPrefab.md) kinds: `Undefined` (0), `WormTailSegment` (1), `CircularSpriteObject` (2), `CircularOutlineObject` (3), `ColliderSpriteObject` (4, new combat simulator only: a sprite with a collider, the frontal shield).
 
 ### Obsolete weapon enums
 

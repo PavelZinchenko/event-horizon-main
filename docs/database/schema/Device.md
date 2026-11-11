@@ -60,7 +60,7 @@ Each row lists the fields that the class reads ([DeviceFactory.cs:35](../../../A
 | `GravityGenerator` | Push impulse × √target weight | Radius | Effect size = `Size × 2 × Range` | After use | Effect duration | Per use | Destroys missiles, energy bolts, and area effects in the radius. |
 | `Jammer` | | | | | | none | Always passive. Enemies prefer the ship as a target. |
 | `MissileCamouflage` | Chance 0…1 that missiles ignore the ship | | | | | none | Always passive. |
-| `PartialShield` | Like `EnergyShield` | | Shield size | After switch-off | | Per second | `Offset` places the shield. `Color`. The prefab is fixed. |
+| `PartialShield` | Like `EnergyShield` | | Shield size | After switch-off | | Per second | `Offset` places the shield. `Color`. Legacy: the prefab is fixed. New combat simulator: the image and shape of a `ColliderSpriteObject` `Prefab` ([GameObjectPrefab: Frontal shields](GameObjectPrefab.md#frontal-shields)). |
 | `PointDefense` | Damage per hit on drones, × damage multiplier | | Radius beyond half the ship scale | After switch-off, and between intercepts | | On switch-on, and per intercept | `Color`. Disarms enemy missiles and bolts in the radius. |
 | `RepairBot` | Percent of maximum armor repaired per second | Flight radius beyond half the ship scale | Bot size and bot hit points | After switch-off | Rebuild delay after the bot is destroyed | Per second | Beam `Color`. `Sound` plays on the bot. Not on bionic hulls. |
 | `Retribution` | Damage multiplier of the bullet, × damage multiplier | | | | | none | Fires `AmmunitionId` when the ship is destroyed. Always passive. |
@@ -99,7 +99,11 @@ AI behavior trees use devices by class: the `ActivateDevice` node and the `HasDe
 
 - `Sound` plays on activation. `Ghost` also plays it on deactivation. `PointDefense` and `RepairBot` pass it to their units ([DeviceFactory.cs:178](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Systems/DeviceFactory.cs#L178)).
 - `VisualEffect` wins over `EffectPrefab` ([DeviceFactory.cs:184](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Systems/DeviceFactory.cs#L184)). The `Accelerator` creates its flash only when `EffectPrefab` is set, even when `VisualEffect` is set.
-- Built-in records set `ObjectPrefab` on a decoy, a partial shield, the toxic waste, and the repair bots, and `EffectPrefab` on the detonator, the point defense, and the repair bots. These classes use fixed prefabs and ignore the values.
+- Built-in records set `ObjectPrefab` on a decoy, the toxic waste, and the repair bots, and `EffectPrefab` on the point defense. These classes use fixed prefabs and ignore the values.
+- New combat simulator only (migration phase 5b, step 7c); legacy ignores these fields for these classes:
+  - `Detonator`: `VisualEffect` is the explosion, played at the explosion radius in `Color` for the whole record. It replaces the ship's own explosion. Built-in record 36. Without one, a copy of record 36.
+  - `RepairBot`: the first `Laser` element of `VisualEffect` is the beam. Its `Size` multiplies the legacy length `1 + Range + Size`. Built-in record 37. Without a record, the legacy beam; a record without a `Laser` element draws none.
+  - `PartialShield`: a `ColliderSpriteObject` `Prefab` gives the image and the shape. Built-in record 4.
 
 ### Compatibility
 

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using CombatView.Effects;
 using UnityEngine;
 
 namespace CombatView
@@ -12,7 +12,7 @@ namespace CombatView
         // Legacy EnergyShieldOutline: a ring mesh (the database CircularOutlineObject record).
         EnergyOutline,
 
-        // Legacy FrontalShield: the prefab's sprite.
+        // Legacy FrontalShield: a sprite (step 7c: the database ColliderSpriteObject record, or the prefab's).
         Frontal,
     }
 
@@ -45,32 +45,19 @@ namespace CombatView
         public float JointOffset { get; set; }
     }
 
-    // The repair bots of one device: the beam colour and texture, and the device sound.
+    // The repair bots of one device: the device colour, the beam (step 7c: the first Laser element of the device's
+    // record), and the device sound. The beam's Size multiplies the legacy length; a null beam draws none.
     public sealed class RepairBotLook
     {
-        public RepairBotLook(Color color, Sprite laserImage, SoundClip sound)
+        public RepairBotLook(Color color, EffectElement beam, SoundClip sound)
         {
             Color = color;
-            LaserImage = laserImage;
+            Beam = beam;
             Sound = sound;
         }
 
         public Color Color { get; }
-        public Sprite LaserImage { get; }
+        public EffectElement Beam { get; }
         public SoundClip Sound { get; }
-    }
-
-    // Named effect prefabs that an area plays once at its first pose (step 7b: the legacy detonator explosion until its
-    // database record in step 7c). Each runs at SizeRatio x the bullet's BodySize in the bullet's colour.
-    public sealed class AreaBurst
-    {
-        public AreaBurst(float lifetime, params (string Prefab, float SizeRatio)[] effects)
-        {
-            Lifetime = lifetime;
-            Effects = effects;
-        }
-
-        public float Lifetime { get; }
-        public IReadOnlyList<(string Prefab, float SizeRatio)> Effects { get; }
     }
 }
