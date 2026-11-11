@@ -7,6 +7,7 @@ using CombatSimulation.Physics;
 using CombatSimulation.Runtime;
 using CombatView;
 using GameDatabase;
+using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Extensions;
 using GameDatabase.Model;
@@ -107,20 +108,22 @@ namespace Combat.Integration.Core
                 // satellite's hard-coded explosion.
                 RetreatSound = new SoundClip(resourceLocator.GetAudioClip(new AudioClipId(RetreatSoundName)), true),
                 WarpSound = sounds.Resolve(new AudioClipId(WarpSoundName)),
-                SatelliteExplosionSound = sounds.Resolve(new AudioClipId(SatelliteExplosionSoundName)),
+                DroneExplosionSound = sounds.Resolve(new AudioClipId(DroneExplosionSoundName)),
             };
             // Legacy DamageIndicator colours: the shield, then the LegacyDamageModel types.
             _renderer.SetDamageTextColors(new Color(0.5f, 0.5f, 0.5f), new Color(0.5f, 1f, 0.5f), new Color(0f, 1f, 1f),
                 new Color(1f, 1f, 0f), new Color(1f, 0.5f, 1f));
+            // Phase 5b, step 7b: the repair bot beam is the legacy Laser effect prefab's texture until its record (7c).
+            var repairBeam = resourceLocator.GetSprite(new SpriteId(RepairBeamImage, SpriteId.Type.Ammunition));
             foreach (var look in _mapper.RepairBotColors)
-                _renderer.AddRepairBotLook(look.Key, resourceLocator.GetSprite(new SpriteId("repair_bot", SpriteId.Type.Satellite)), look.Value.ToUnity(),
-                    _mapper.RepairBotSounds.TryGetValue(look.Key, out var sound) ? sounds.Resolve(sound) : default);
-            foreach (var look in _mapper.SegmentImages)
-                _renderer.AddSegmentLook(look.Key, resourceLocator.GetSprite(look.Value));
+                _renderer.AddRepairBotLook(look.Key, new RepairBotLook(look.Value.ToUnity(), repairBeam,
+                    _mapper.RepairBotSounds.TryGetValue(look.Key, out var sound) ? sounds.Resolve(sound) : default));
+            foreach (var source in _mapper.SegmentSources)
+                _renderer.AddSegmentLook(source.Key, SegmentLook(source.Value, resourceLocator));
             _visualEffects = new CoreVisualEffects(resourceLocator);
             _deviceLooks = new CoreDeviceLooks(_visualEffects, sounds);
             _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, _mapper.SpawnTriggers, resourceLocator, _visualEffects,
-                sounds, flashSprite);
+                sounds);
 #if UNITY_EDITOR
             // Phase 5b, step 3: the owner reviews the effects in the Combat > Effect Preview window.
             _effectPreview = new CoreEffectPreview(_renderer, _visualEffects, sounds, database, resourceLocator, () =>
@@ -498,6 +501,9 @@ namespace Combat.Integration.Core
                     case BattleEventKind.Damage:
                         _renderer.AddDamage(item);
                         break;
+                    case BattleEventKind.AuxiliaryRemoval:
+                        _renderer.RemoveAuxiliary(item.EntityId, item.Point, item.RemovalReason);
+                        break;
                 }
 
                 _renderer.OnEvent(snapshot, item);
@@ -565,15 +571,13 @@ namespace Combat.Integration.Core
                 _renderer.AddShot(item.ParentId, device, item.Tick);
         }
 
-        // Legacy Decoy prefab: the star sprite at twice the body scale, in the device colour (phase 5, step 10c). Phase 5b,
-        // step 7a: legacy CreateDecoy's flash at 4 x the decoy size, and the device sound.
+        // Legacy Decoy prefab at the body scale, in the device colour (phase 5, step 10c; phase 5b, step 7b). Step 7a:
+        // legacy CreateDecoy's flash at 4 x the decoy size, and the device sound.
         private void OnDecoySpawned(in BattleEvent item)
         {
-            if (_decoySprite == null) _decoySprite = Resources.Load<Sprite>(DecoySprite);
             var color = _mapper.DecoyColors.TryGetValue(item.Definition, out var data) ? data.ToUnity() : Color.white;
             var sound = _mapper.DecoySounds.TryGetValue(item.Definition, out var clip) ? _sounds.Resolve(clip) : default;
-            _renderer.AddDecoy(item.EntityId, _decoySprite, 2f * DecoyDefinition.Size, color, sound, 4f * DecoyDefinition.Size,
-                item.Tick);
+            _renderer.AddDecoy(item.EntityId, DecoyDefinition.Size, color, sound, 4f * DecoyDefinition.Size, item.Tick);
         }
 
         // Legacy AsteroidExplosionAction plays smoke at 2 x the size for 2 s, a disturbance and a sound. H11 (owner question
@@ -609,14 +613,57 @@ namespace Combat.Integration.Core
             // Energy and frontal shields (phase 5, step 10d).
             var devices = mapping.Definition.Devices;
             for (var i = 0; i < devices.Count; ++i)
+                if (devices[i] is ShieldDefinition shield)
+                    _renderer.AddShield(id, i, GetShieldLook(shield));
+        }
+
+        // Phase 5b, step 7b, legacy CustomPrefabLoader: a CircularSpriteObject record sets the EnergyShield prefab's sprite,
+        // a CircularOutlineObject record builds the EnergyShieldOutline ring.
+        private ShieldLook GetShieldLook(ShieldDefinition shield)
+        {
+            if (_shieldLooks.TryGetValue(shield, out var look) || !_mapper.ShieldLooks.TryGetValue(shield, out var source))
+                return look;
+
+            look = new ShieldLook
             {
-                if (!(devices[i] is ShieldDefinition shield) || !_mapper.ShieldLooks.TryGetValue(shield, out var look)) continue;
-                var sprite = look.Image ? _resourceLocator.GetSprite(look.Image) : null;
-                if (sprite == null && !_shieldSprites.TryGetValue(look.ResourcePath, out sprite))
-                    _shieldSprites.Add(look.ResourcePath, sprite = Resources.Load<Sprite>(look.ResourcePath));
-                _renderer.AddShield(id, i, sprite, new Vector2(look.OffsetX, look.OffsetY), look.Size, look.Color.ToUnity(),
-                    look.IdleOpacity);
+                Kind = source.IsFrontal ? ShieldViewKind.Frontal : ShieldViewKind.Energy,
+                Offset = new Vector2(source.OffsetX, source.OffsetY),
+                Size = source.Size,
+                Color = source.Color.ToUnity(),
+                IdleOpacity = source.IdleOpacity,
+            };
+            switch (source.Prefab)
+            {
+                case GameObjectPrefab_CircularSpriteObject sprite:
+                    look.Image = _resourceLocator.GetSprite(sprite.Image);
+                    break;
+                case GameObjectPrefab_CircularOutlineObject outline:
+                    look.Kind = ShieldViewKind.EnergyOutline;
+                    look.Image = _resourceLocator.GetSprite(outline.Image);
+                    look.ImageScale = outline.ImageScale;
+                    look.Thickness = outline.Thickness;
+                    look.AspectRatio = outline.AspectRatio;
+                    break;
             }
+
+            _shieldLooks.Add(shield, look);
+            return look;
+        }
+
+        // Phase 5b, step 7b, legacy WormTailSegmentInitializer: a database record sets the WormSegment prefab's sprites and
+        // its joint.
+        private static SegmentLook SegmentLook(in CoreSegmentSource source, IResourceLocator resourceLocator)
+        {
+            var record = source.Record;
+            return new SegmentLook
+            {
+                IsSegment2 = source.IsSegment2,
+                HasRecord = record != null,
+                Body = record != null ? resourceLocator.GetSprite(record.BodyImage) : null,
+                Joint = record != null ? resourceLocator.GetSprite(record.JointImage) : null,
+                JointScale = record?.JointImageScale ?? 0f,
+                JointOffset = record?.JointImageOffset ?? 0f,
+            };
         }
 
         // The roster transition of the same removal comes later in the batch, so the ID stays mapped until the tick ends.
@@ -1046,17 +1093,17 @@ namespace Combat.Integration.Core
         private const string FlashSpriteName = "Textures/star";
         // Legacy ShowMessage effect (RadioTransmitter).
         private const string TextEffectPrefab = "Combat/Effects/MessageText";
-        private const string DecoySprite = "Textures/star";
         // Legacy combat Settings component (CombatScene): ShipRetreatSound and ShipWarpSound. Legacy
-        // DroneExplosionActionObsolete of a satellite.
+        // DroneExplosionActionObsolete of a satellite, a decoy, a repair bot or a tail segment.
         private const string RetreatSoundName = "flux_02";
         private const string WarpSoundName = "shot_06";
-        private const string SatelliteExplosionSoundName = "explosion_10";
+        private const string DroneExplosionSoundName = "explosion_10";
+        // The texture of the legacy Laser effect prefab (Textures/Bullets/laser).
+        private const string RepairBeamImage = "laser";
         private const float AsteroidDeathSeconds = 2f;
         // Grey at the half alpha of the step 3 area glow.
         private static readonly Color AsteroidDeathColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-        private readonly Dictionary<string, Sprite> _shieldSprites = new Dictionary<string, Sprite>();
-        private Sprite _decoySprite;
+        private readonly Dictionary<ShieldDefinition, ShieldLook> _shieldLooks = new Dictionary<ShieldDefinition, ShieldLook>();
 
         private BattleRunner _runner;
         private readonly BehaviorTreeFactory _trees;

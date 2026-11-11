@@ -19,14 +19,13 @@ namespace Combat.Integration.Core
     {
         public CoreBulletVisuals(IReadOnlyDictionary<object, CoreBulletSource> sources,
             IReadOnlyDictionary<BulletTriggerDefinition, BulletTrigger_SpawnBullet> spawnTriggers,
-            IResourceLocator resourceLocator, CoreVisualEffects effects, CoreSoundOutput sounds, Sprite areaSprite)
+            IResourceLocator resourceLocator, CoreVisualEffects effects, CoreSoundOutput sounds)
         {
             _sources = sources;
             _spawnTriggers = spawnTriggers;
             _resourceLocator = resourceLocator;
             _effects = effects;
             _sounds = sounds;
-            _areaSprite = areaSprite;
         }
 
         // Null when the mapper recorded no source for the spawn's definition.
@@ -63,14 +62,14 @@ namespace Combat.Integration.Core
 
             // Legacy BulletFactory: without a record the bullet has no look of its own (the AreaOfEffect prefab is
             // empty); its trigger effects draw it (step 6). A beam keeps a plain line ("Views (5)", item 5). The
-            // detonator explosion has no ammunition: it keeps the step 3 glow, the legacy flash in its colour at half
-            // opacity, until its effect record (step 7).
+            // detonator explosion has no ammunition: step 7b plays legacy CreateStrongExplosion's effects on its
+            // diameter until its effect record (step 7c).
             if (prefab == null)
             {
                 if (isBeam)
                     return new BulletVisual(_plainBeam ??= PlainBeam(), 1f, parent, triggers);
                 if (source.Ammunition == null)
-                    return new BulletVisual(_area ??= Area(_areaSprite), bullet.Scale, parent);
+                    return new BulletVisual(null, bullet.Scale, parent, burst: DetonatorBurst);
                 return new BulletVisual(null, size, parent, triggers);
             }
 
@@ -191,42 +190,26 @@ namespace Combat.Integration.Core
             }
         }
 
-        // The projectile prefab's sprite (alpha scale 1.5) at a diameter of 1, its colour times half the area colour.
-        private static BulletLook Area(Sprite sprite) =>
-            new BulletLook(BulletViewKind.Projectile, sprite, new Color(1f, 1f, 1f, AreaAlpha / ProjectileAlphaScale),
-                EffectColorMode.Multiply, Color.white, EffectColorMode.TakeFromOwner, ScaleToDiameter(sprite, 1f), 0f);
-
         // The laser prefab without a texture or border, PlainBeamWidth wide.
         private static BulletLook PlainBeam() =>
             new BulletLook(BulletViewKind.Laser, null, Color.white, EffectColorMode.TakeFromOwner, Color.white,
                 EffectColorMode.TakeFromOwner, PlainBeamWidth, 0f);
 
-        private const float AreaAlpha = 0.5f;
-
-        private static float ScaleToDiameter(Sprite sprite, float diameter)
-        {
-            if (!sprite)
-                return diameter;
-
-            var extent = Mathf.Max(sprite.bounds.size.x, sprite.bounds.size.y);
-            return extent > 0f ? diameter / extent : diameter;
-        }
+        // Legacy SpaceObjectFactory.CreateStrongExplosion with DetonatorDevice's lifetime of 1 s: WaveStrong at 1.1 x the
+        // radius, FlashAdditive and OrbAdditive at 2 x the radius. The area's diameter is 2 x the radius.
+        private static readonly AreaBurst DetonatorBurst = new AreaBurst(1f, ("WaveStrong", 0.55f), ("FlashAdditive", 1f),
+            ("OrbAdditive", 1f));
 
         // "Views (5)", item 5.
         private const float PlainBeamWidth = 0.2f;
-
-        // The CommonProjectile prefab's SpriteView._alphaScale.
-        private const float ProjectileAlphaScale = 1.5f;
 
         private readonly IReadOnlyDictionary<object, CoreBulletSource> _sources;
         private readonly IReadOnlyDictionary<BulletTriggerDefinition, BulletTrigger_SpawnBullet> _spawnTriggers;
         private readonly IResourceLocator _resourceLocator;
         private readonly CoreVisualEffects _effects;
         private readonly CoreSoundOutput _sounds;
-        private readonly Sprite _areaSprite;
         private readonly Dictionary<object, BulletVisual> _visuals = new Dictionary<object, BulletVisual>();
         private readonly Dictionary<BulletPrefab, BulletLook> _looks = new Dictionary<BulletPrefab, BulletLook>();
-        private BulletLook _area;
         private BulletLook _plainBeam;
     }
 }

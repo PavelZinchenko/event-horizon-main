@@ -14,7 +14,8 @@ namespace CombatView
     // interpolated poses (migration phase 3c, step 4; phase 4, steps 5 and 7f; phase 5, steps 7d and 12c). Events decide
     // when a view exists; snapshots give its poses. Nothing is written back to the simulation. Bullet looks come from
     // the adapter as BulletVisual values, drawn on the shape prefabs (phase 5b, step 5); ship looks as ShipLook values
-    // (step 4), with the sounds and effects of their weapons, devices and drone bays (step 7a).
+    // (step 4), with the sounds and effects of their weapons, devices and drone bays (step 7a). Decoys, shields, repair
+    // bots and worm tail segments use the device object prefabs (step 7b).
     public sealed class BattleRenderer : IDisposable
     {
         // The root goes into the given scene: the game loads scenes additively and never changes the active
@@ -70,19 +71,59 @@ namespace CombatView
         // Ships and drones on the ship prefab (phase 5b, step 4), with their engine lights and trails, shield outline and
         // damage text. Legacy rule: the ship's transform scale is its model scale. The colour is the look's colour times
         // the way from white to its tint by ShipState.Tint. side: the ship's side, for the damage text opacity.
-        public void AddShip(EntityId id, ShipLook look, int side) => AddShip(id, look, side, false);
-
-        // Legacy Decoy (phase 5, step 10c): the device colour, faded by ShipState.Life as legacy SpriteView with life
-        // opacity (1 - (1 - life)^2). It keeps the plain fade at its death until its own prefab (step 7b).
-        // Step 7a, legacy DecoyDevice and SpaceObjectFactory.CreateDecoy: the device sound once per use (the decoys of
-        // one tick), and a FlashAdditive of flashSize in the device colour for 0.3 s at each decoy's first pose.
-        public void AddDecoy(EntityId id, Sprite sprite, float scale, Color color, SoundClip sound, float flashSize, long tick)
+        public void AddShip(EntityId id, ShipLook look, int side)
         {
-            AddShip(id, new ShipLook(sprite, scale) { Color = color }, ViewerSide, true);
-            if (!_ships.TryGetValue(id, out var view))
+            if (_ships.ContainsKey(id) || look == null)
                 return;
 
-            view.SpawnFlashSize = flashSize;
+            var shipView = CreateShipView(ShipPrefab, _root.transform, look.Sprite, ShipSortingOrder);
+            shipView.gameObject.SetActive(false);
+            shipView.transform.localScale = Vector3.one * look.Scale;
+            if (look.IsHsv)
+                shipView.ApplyHsv(look.Hue, look.Saturation, _hsv);
+
+            var view = new EntityView(shipView.gameObject, shipView.Renderer)
+            {
+                Look = look,
+                Effects = new ShipEffects(look, shipView.transform, _shipAssets),
+            };
+
+            // Legacy ShipFactory: no damage text for drones; 0.75 opacity for the player's side, 0.5 for the others.
+            if (!look.IsDrone && Settings.DamageText && _damageColors != null)
+            {
+                var opacity = side == ViewerSide ? 0.75f : 0.5f;
+                var colors = new Color[_damageColors.Length];
+                for (var i = 0; i < colors.Length; ++i)
+                    colors[i] = new Color(_damageColors[i].r, _damageColors[i].g, _damageColors[i].b, opacity);
+                view.DamageText = new DamageText(colors, (damage, color) => ShowDamage(view, damage, color));
+            }
+
+            _ships.Add(id, view);
+        }
+
+        // Legacy SpaceObjectFactory.CreateDecoy (phase 5, step 10c): the Decoy prefab at the body scale in the device
+        // colour (step 7b). Its views ignore the life, as legacy. Step 7a, legacy DecoyDevice: the device sound once per
+        // use (the decoys of one tick), and a FlashAdditive of flashSize in the device colour for 0.3 s at each decoy's
+        // first pose.
+        public void AddDecoy(EntityId id, float scale, Color color, SoundClip sound, float flashSize, long tick)
+        {
+            if (_ships.ContainsKey(id))
+                return;
+
+            var prefab = _prefabs.Load(DecoyPrefab);
+            if (!prefab)
+                return;
+
+            var instance = Object.Instantiate(prefab, _root.transform, false);
+            instance.SetActive(false);
+            instance.transform.localScale = Vector3.one * scale;
+            _ships.Add(id, new EntityView(instance, null)
+            {
+                Look = new ShipLook(null, scale) { Color = color },
+                IsDecoy = true,
+                View = instance.GetComponent<BaseView>(),
+                SpawnFlashSize = flashSize,
+            });
             if (sound.IsEmpty || (_decoySoundTick == tick && _decoySound.Clip == sound.Clip))
                 return;
 
@@ -163,18 +204,33 @@ namespace CombatView
         // Legacy EnergyShield unit (phase 5, step 10d): a child of the hull view at the shield's offset, size wide. Its
         // colour goes from transparent to the idle colour (the device colour, its alpha times the default opacity) by 4 x
         // the elapsed time of the distance; for 1 s after a hit it fades from the device colour to the idle one.
-        public void AddShield(EntityId id, int deviceIndex, Sprite sprite, Vector2 offset, float size, Color color,
-            float defaultOpacity)
+        // Step 7b: the EnergyShield, EnergyShieldOutline or FrontalShield prefab (legacy SatelliteFactory and
+        // CustomPrefabLoader).
+        public void AddShield(EntityId id, int deviceIndex, ShieldLook look)
         {
-            if (!_ships.TryGetValue(id, out var ship)) return;
-            var renderer = CreateRenderer("Shield", ship.Root.transform, sprite ? sprite : _genericSprite, ShipSortingOrder + 1);
+            if (look == null || !_ships.TryGetValue(id, out var ship)) return;
+            var prefab = _prefabs.Load(ShieldPrefab(look.Kind));
+            var view = prefab ? Object.Instantiate(prefab, ship.Root.transform, false).GetComponent<BaseView>() : null;
+            if (!view) return;
+
             var carrierScale = ship.Root.transform.localScale.x;
-            renderer.transform.localScale = Vector3.one * (size / carrierScale);
-            renderer.transform.localPosition = new Vector3(offset.x, offset.y, 0f) / carrierScale;
-            renderer.color = Color.clear;
-            var idle = color;
-            idle.a *= defaultOpacity;
-            ship.Shields.Add(new ShieldView(renderer, deviceIndex, color, idle));
+            view.transform.localScale = Vector3.one * (look.Size / carrierScale);
+            view.transform.localPosition = new Vector3(look.Offset.x, look.Offset.y, 0f) / carrierScale;
+            if (view is CircleView circle)
+            {
+                circle.Initialize(look.Image, look.ImageScale, look.Thickness, look.AspectRatio);
+                circle.Renderer.sortingOrder = ShipSortingOrder + 1;
+            }
+            else if (view.TryGetComponent<SpriteRenderer>(out var renderer))
+            {
+                if (look.Image) renderer.sprite = look.Image;
+                renderer.sortingOrder = ShipSortingOrder + 1;
+            }
+
+            view.Color = Color.clear;
+            var idle = look.Color;
+            idle.a *= look.IdleOpacity;
+            ship.Shields.Add(new ShieldView(view, deviceIndex, look.Color, idle));
         }
 
         // Phase 5b, step 4: a death leaves the explosion with its sound and the wreck (legacy
@@ -198,14 +254,39 @@ namespace CombatView
             foreach (var satellite in view.Satellites)
             {
                 if (reason == RemovalReason.Death && satellite.HasPose)
-                    AddSatelliteExplosion(satellite, view.Velocity);
+                    AddDroneExplosion(satellite.Position, satellite.Root.transform.localScale.x, view.Velocity);
                 Object.Destroy(satellite.Root);
             }
 
+            // Step 7b: legacy Decoy has DroneExplosionActionObsolete.
             if (view.IsDecoy && reason == RemovalReason.Death && view.HasPose)
-                _fades.Add(new Fade(view.Renderer));
+                AddDroneExplosion(view.Position, view.Look.Scale, view.Velocity);
+            Object.Destroy(view.Root);
+        }
+
+        // Step 7b: the core's AuxiliaryRemoval of a repair bot or a tail segment. Legacy RepairBot and the worm segments
+        // have DroneExplosionActionObsolete; it runs at a death, not at a vanish or a retreat.
+        public void RemoveAuxiliary(EntityId id, Vec2 point, RemovalReason reason)
+        {
+            var bot = _repairBots.TryGetValue(id, out var botView) ? botView : null;
+            var segment = bot == null && _segments.TryGetValue(id, out var segmentView) ? segmentView : null;
+            var view = (EntityView)bot ?? segment;
+            if (view == null)
+                return;
+
+            if (reason == RemovalReason.Death && view.HasPose)
+                AddDroneExplosion(new Vector2(point.X, point.Y), view.Scale, Vector2.zero);
+
+            if (bot != null)
+            {
+                _repairBots.Remove(id);
+                DisposeRepairBot(bot);
+            }
             else
-                Object.Destroy(view.Root);
+            {
+                _segments.Remove(id);
+                DisposeSegment(segment);
+            }
         }
 
         // Phase 5b, step 4: the core's Damage event (owner, 2026-11-09) adds to the ship's damage text.
@@ -222,19 +303,14 @@ namespace CombatView
         // Clips of the legacy combat Settings component and of legacy hard-coded effects.
         public SoundClip RetreatSound { get => _shipAssets.RetreatSound; set => _shipAssets.RetreatSound = value; }
         public SoundClip WarpSound { get; set; }
-        public SoundClip SatelliteExplosionSound { get; set; }
+        public SoundClip DroneExplosionSound { get; set; }
 
         // Phase 5b, step 7a: legacy SatelliteFactory.CreateRepairBot plays the device sound while the bot repairs; a loop
-        // stops when it ends.
-        public void AddRepairBotLook(RepairBotDefinition definition, Sprite sprite, Color laserColor, SoundClip sound) =>
-            _repairBotLooks[definition] = new RepairBotLook(sprite, laserColor, sound);
+        // stops when it ends. Step 7b: the RepairBot prefab with its beam.
+        public void AddRepairBotLook(RepairBotDefinition definition, RepairBotLook look) => _repairBotLooks[definition] = look;
 
-        // The body sprite of the segments of one worm tail (phase 5, step 7d); without one they draw the generic sprite.
-        public void AddSegmentLook(WormTailDefinition definition, Sprite sprite)
-        {
-            if (sprite)
-                _segmentLooks[definition] = sprite;
-        }
+        // The segment prefab of one worm tail (phase 5, step 7d; phase 5b, step 7b).
+        public void AddSegmentLook(WormTailDefinition definition, SegmentLook look) => _segmentLooks[definition] = look;
 
         // Phase 5b, step 5: an instance of the look's template (the shape prefab of Resources/CombatView/Bullets). It
         // shows from the first snapshot. A null visual draws the generic sprite or a plain beam; it should not happen
@@ -434,7 +510,6 @@ namespace CombatView
                 var color = view.IsDecoy ? look.Color : look.Color * Color.Lerp(Color.white, look.Tint ?? Color.white, ship.Tint);
                 view.Opacity = (ship.Status & ShipStatusFlags.Faded) != 0 ? FadedAlpha : 1f;
                 color.a *= view.Opacity;
-                if (view.IsDecoy) color.a *= 1f - (1f - ship.Life) * (1f - ship.Life);
                 view.Color = color;
                 view.StealthTarget = (ship.Status & ShipStatusFlags.Stealth) == 0 ? 1f
                     : ship.Side == ViewerSide ? OwnStealthAlpha : EnemyStealthAlpha;
@@ -491,6 +566,8 @@ namespace CombatView
                     view.PushEnd(bullet.BeamEndPoint);
                 var first = !view.HasPose;
                 view.Push(bullet.Position, bullet.Angle);
+                if (first && view.Visual.Burst != null)
+                    PlayBurst(view.Visual, bullet.Position);
 
                 // Step 6: the Created effects at the first pose; the Cooldown triggers on every tick.
                 if (view.Triggers == null)
@@ -505,26 +582,28 @@ namespace CombatView
             CaptureRepairBots(snapshot);
         }
 
-        // Worm tail segments have no events: a view lives while the snapshot lists its segment. Legacy rule: the segment's
-        // transform scale is its body scale. Legacy wreck sprites and the spawn and explosion effects stay out (H11).
+        // Worm tail segments have no spawn events: a view lives while the snapshot lists its segment, or until the core's
+        // AuxiliaryRemoval (step 7b). Legacy rule: the segment's transform scale is its body scale. Step 7b, legacy
+        // SpaceObjectFactory.CreateWormTailSegment: the segment prefab with the ship's colour scheme; legacy
+        // WormSegmentFactory runs OrbAdditive on each segment after the head, 2 wide in the scheme colour at half alpha,
+        // for 0.5 s.
         private void CaptureSegments(BattleSnapshot snapshot)
         {
             ++_segmentStamp;
             foreach (var segment in snapshot.Segments)
             {
+                var created = false;
                 if (!_segments.TryGetValue(segment.Id, out var view))
                 {
-                    if (!_segmentLooks.TryGetValue(segment.Definition, out var sprite))
-                        sprite = _genericSprite;
-                    var renderer = CreateRenderer("Segment", _root.transform, sprite, SegmentSortingOrder);
-                    renderer.gameObject.SetActive(false);
-                    renderer.transform.localScale = Vector3.one * segment.Scale;
-                    view = new SegmentView(renderer.gameObject, renderer);
+                    view = CreateSegment(segment);
                     _segments.Add(segment.Id, view);
+                    created = true;
                 }
 
                 view.Push(segment.Position, segment.Angle);
                 view.Stamp = _segmentStamp;
+                if (created && segment.Number > 1)
+                    view.SpawnEffect = AddSegmentSpawnEffect(view, segment.ShipId);
             }
 
             if (_segments.Count == snapshot.Segments.Length)
@@ -535,12 +614,61 @@ namespace CombatView
                     _removedSegments.Add(pair.Key);
             foreach (var id in _removedSegments)
             {
-                Object.Destroy(_segments[id].Root);
+                DisposeSegment(_segments[id]);
                 _segments.Remove(id);
             }
             _removedSegments.Clear();
         }
 
+        private SegmentView CreateSegment(in TailSegmentState segment)
+        {
+            _segmentLooks.TryGetValue(segment.Definition, out var look);
+            var prefab = _prefabs.Load(look != null && look.IsSegment2 ? Segment2Prefab : SegmentPrefab);
+            GameObject root;
+            if (prefab)
+                root = Object.Instantiate(prefab, _root.transform, false);
+            else
+                root = CreateRenderer("Segment", _root.transform, _genericSprite, SegmentSortingOrder).gameObject;
+
+            root.SetActive(false);
+            root.transform.localScale = Vector3.one * segment.Scale;
+            var segmentView = root.GetComponent<ShipSegmentView>();
+            if (segmentView)
+            {
+                if (look != null && look.HasRecord && !look.IsSegment2)
+                    segmentView.Initialize(look.Body, look.Joint, look.JointScale, look.JointOffset);
+                if (_ships.TryGetValue(segment.ShipId, out var ship) && ship.Look != null)
+                    segmentView.ApplyHsv(ship.Look.Hue, ship.Look.Saturation, _hsv);
+            }
+
+            return new SegmentView(root);
+        }
+
+        private IEffect AddSegmentSpawnEffect(SegmentView view, EntityId shipId)
+        {
+            if (!_ships.TryGetValue(shipId, out var ship) || ship.Look == null)
+                return null;
+
+            var effect = _effects.Create(_prefabs.Load(OrbAdditivePrefab), view.Root.transform);
+            if (effect == null)
+                return null;
+
+            var color = ship.Look.Color;
+            color.a *= 0.5f;
+            effect.Size = SegmentSpawnEffectSize;
+            effect.Color = color;
+            effect.Run(SegmentSpawnEffectLifetime, Vector2.zero, 0f);
+            return effect;
+        }
+
+        private static void DisposeSegment(SegmentView view)
+        {
+            if (view.SpawnEffect != null && view.SpawnEffect.IsAlive)
+                view.SpawnEffect.Dispose();
+            Object.Destroy(view.Root);
+        }
+
+        // Repair bots have no spawn events either; the core's AuxiliaryRemoval ends them (step 7b).
         private void CaptureRepairBots(BattleSnapshot snapshot)
         {
             ++_repairBotStamp;
@@ -548,25 +676,15 @@ namespace CombatView
             {
                 if (!_repairBots.TryGetValue(bot.Id, out var view))
                 {
-                    _repairBotLooks.TryGetValue(bot.Definition, out var look);
-                    var renderer = CreateRenderer("RepairBot", _root.transform, look.Sprite ? look.Sprite : _genericSprite, ShipSortingOrder);
-                    renderer.transform.localScale = Vector3.one * bot.Scale;
-                    var line = renderer.gameObject.AddComponent<LineRenderer>();
-                    line.sharedMaterial = _spriteMaterial;
-                    line.useWorldSpace = true;
-                    line.positionCount = 2;
-                    line.startWidth = line.endWidth = 0.04f;
-                    line.startColor = line.endColor = look.Color;
-                    line.sortingOrder = BulletSortingOrder;
-                    view = new RepairBotView(renderer, line, bot.ShipId) { Sound = look.Sound };
+                    view = CreateRepairBot(bot);
                     _repairBots.Add(bot.Id, view);
                 }
                 view.Push(bot.Position, bot.Angle);
-                if (bot.Repairing && !view.Line.enabled)
+                if (bot.Repairing && !view.Repairing)
                     StartRepairSound(view);
-                else if (!bot.Repairing && view.Line.enabled)
+                else if (!bot.Repairing && view.Repairing)
                     StopRepairSound(view);
-                view.Line.enabled = bot.Repairing;
+                view.Repairing = bot.Repairing;
                 view.Jitter = bot.Repairing ? _repairBotRandom.Next(-30, 30) : 0f;
                 view.Stamp = _repairBotStamp;
             }
@@ -574,11 +692,46 @@ namespace CombatView
                 if (pair.Value.Stamp != _repairBotStamp) _removedRepairBots.Add(pair.Key);
             foreach (var id in _removedRepairBots)
             {
-                StopRepairSound(_repairBots[id]);
-                Object.Destroy(_repairBots[id].Root);
+                DisposeRepairBot(_repairBots[id]);
                 _repairBots.Remove(id);
             }
             _removedRepairBots.Clear();
+        }
+
+        // Step 7b, legacy SatelliteFactory.CreateRepairBot: the RepairBot prefab at the device size, and the Laser effect
+        // on it, 0.4 x the device size ahead, 1 + flight radius + device size long, in the device colour. Both values are
+        // in the bot's frame, which the device size scales, as legacy.
+        private RepairBotView CreateRepairBot(in RepairBotState bot)
+        {
+            _repairBotLooks.TryGetValue(bot.Definition, out var look);
+            var prefab = _prefabs.Load(RepairBotPrefab);
+            var root = prefab ? Object.Instantiate(prefab, _root.transform, false)
+                : CreateRenderer("RepairBot", _root.transform, _genericSprite, ShipSortingOrder).gameObject;
+            root.SetActive(false);
+            root.transform.localScale = Vector3.one * bot.Scale;
+
+            var view = new RepairBotView(root) { Sound = look?.Sound ?? default };
+            var beam = _effects.Create(EffectKind.Laser, look?.LaserImage, root.transform);
+            if (beam != null)
+            {
+                beam.Position = new Vector2(RepairBeamOffset * bot.Definition.Size, 0f);
+                beam.Rotation = 0f;
+                beam.Color = look?.Color ?? Color.white;
+                beam.Size = 1f + bot.Definition.Range + bot.Definition.Size;
+                beam.Life = 0f;
+                beam.Visible = false;
+                view.Beam = beam;
+            }
+
+            return view;
+        }
+
+        private void DisposeRepairBot(RepairBotView view)
+        {
+            StopRepairSound(view);
+            if (view.Beam != null && view.Beam.IsAlive)
+                view.Beam.Dispose();
+            Object.Destroy(view.Root);
         }
 
         // Legacy SoundEffect on the bot: a plain clip plays at each start, a loop runs until the bot stops repairing.
@@ -622,7 +775,8 @@ namespace CombatView
                     shield.Power = Mathf.Lerp(shield.Power, shield.On ? 1f : 0f, ShieldFadeRate * deltaTime);
                     shield.HitTime += deltaTime;
                     var color = shield.HitTime < 1f ? Color.Lerp(shield.Active, shield.Idle, shield.HitTime) : shield.Idle;
-                    shield.Renderer.color = Color.Lerp(Color.clear, color, shield.Power);
+                    shield.View.Color = Color.Lerp(Color.clear, color, shield.Power);
+                    shield.View.UpdateView(deltaTime);
                 }
 
             // Legacy StealthDevice.OnUpdateView: the opacity moves by 1 per second.
@@ -640,6 +794,8 @@ namespace CombatView
                 color.a *= ship.StealthOpacity;
                 ship.Effects?.Update(deltaTime, color, ship.Opacity * ship.StealthOpacity);
                 ship.DamageText?.Update(deltaTime);
+                if (ship.View)
+                    ship.View.UpdateView(deltaTime);
             }
 
             foreach (var ship in _ships.Values)
@@ -663,18 +819,27 @@ namespace CombatView
             foreach (var pair in _segments)
                 Place(pair.Value, alpha, anchor);
 
+            // Legacy UnitEffect: the beam fades in and out over 0.1 s while the bot repairs. The bot faces its ship; the
+            // jitter turns it with its beam.
             foreach (var bot in _repairBots.Values)
             {
                 Place(bot, alpha, anchor);
-                if (!bot.Line.enabled || !_ships.TryGetValue(bot.Ship, out var parent)) continue;
-                bot.Renderer.transform.rotation = Quaternion.Euler(0f, 0f, bot.Degrees + bot.Jitter);
-                var delta = _torus.Delta(new Vec2(bot.Position.x, bot.Position.y), new Vec2(parent.Position.x, parent.Position.y));
-                delta = Rot.FromAngle(bot.Jitter * Mathf.Deg2Rad).Rotate(delta);
-                bot.Line.SetPosition(0, new Vector3(bot.Position.x, bot.Position.y, 0f));
-                bot.Line.SetPosition(1, new Vector3(bot.Position.x + delta.X, bot.Position.y + delta.Y, 0f));
+                if (bot.Repairing)
+                    bot.Root.transform.rotation = Quaternion.Euler(0f, 0f, bot.Degrees + bot.Jitter);
+                var beam = bot.Beam;
+                if (beam == null || !beam.IsAlive) continue;
+                if (bot.Repairing)
+                {
+                    beam.Visible = true;
+                    beam.Life = Mathf.Clamp01(beam.Life + deltaTime / RepairBeamFadeTime);
+                }
+                else if (beam.Visible)
+                {
+                    beam.Life = Mathf.Clamp01(beam.Life - deltaTime / RepairBeamFadeTime);
+                    if (beam.Life <= 0f) beam.Visible = false;
+                }
             }
 
-            UpdateFades(deltaTime);
             UpdateFlashes(deltaTime, anchor);
             UpdateTexts(deltaTime, anchor);
             _effects.Update(deltaTime, anchor);
@@ -715,39 +880,10 @@ namespace CombatView
             _segmentLooks.Clear();
             _repairBots.Clear();
             _repairBotLooks.Clear();
-            _fades.Clear();
             _flashes.Clear();
             _flashPool.Clear();
             _texts.Clear();
             _textPool.Clear();
-        }
-
-        private void AddShip(EntityId id, ShipLook look, int side, bool isDecoy)
-        {
-            if (_ships.ContainsKey(id) || look == null)
-                return;
-
-            var shipView = CreateShipView(ShipPrefab, _root.transform, look.Sprite, ShipSortingOrder);
-            shipView.gameObject.SetActive(false);
-            shipView.transform.localScale = Vector3.one * look.Scale;
-            if (look.IsHsv)
-                shipView.ApplyHsv(look.Hue, look.Saturation, _hsv);
-
-            var view = new EntityView(shipView.gameObject, shipView.Renderer) { Look = look, IsDecoy = isDecoy };
-            if (!isDecoy)
-                view.Effects = new ShipEffects(look, shipView.transform, _shipAssets);
-
-            // Legacy ShipFactory: no damage text for drones; 0.75 opacity for the player's side, 0.5 for the others.
-            if (!isDecoy && !look.IsDrone && Settings.DamageText && _damageColors != null)
-            {
-                var opacity = side == ViewerSide ? 0.75f : 0.5f;
-                var colors = new Color[_damageColors.Length];
-                for (var i = 0; i < colors.Length; ++i)
-                    colors[i] = new Color(_damageColors[i].r, _damageColors[i].g, _damageColors[i].b, opacity);
-                view.DamageText = new DamageText(colors, (damage, color) => ShowDamage(view, damage, color));
-            }
-
-            _ships.Add(id, view);
         }
 
         // A view of the ship, satellite or turret prefab; a plain ShipView without the prefab.
@@ -821,12 +957,30 @@ namespace CombatView
             RunEffect(FlashAdditivePrefab, point, ExplosionColor, look.Scale * 4f, 1f, drift);
         }
 
-        // Legacy DroneExplosionActionObsolete of a satellite: a flash and explosion_10; the smoke waits for step 8.
-        private void AddSatelliteExplosion(EntityView satellite, Vector2 velocity)
+        // Legacy DroneExplosionActionObsolete of a satellite, a decoy, a repair bot or a tail segment: a flash at 4 x the
+        // body scale for 0.3 s and explosion_10; the smoke waits for the Smoke prefabs (step 8).
+        private void AddDroneExplosion(Vector2 position, float scale, Vector2 velocity)
         {
-            var point = new Vec2(satellite.Position.x, satellite.Position.y);
-            RunEffect(FlashPrefab, point, ExplosionColor, satellite.Root.transform.localScale.x * 4f, 0.3f, velocity * 0.05f);
-            _sounds.Play(SatelliteExplosionSound);
+            RunEffect(FlashPrefab, new Vec2(position.x, position.y), ExplosionColor, scale * 4f, 0.3f, velocity * 0.05f);
+            _sounds.Play(DroneExplosionSound);
+        }
+
+        // Step 7b: the named effects of an area at its first pose, at their share of its BodySize.
+        private void PlayBurst(BulletVisual visual, Vec2 point)
+        {
+            foreach (var (prefab, sizeRatio) in visual.Burst.Effects)
+                RunEffect(EffectFolder + prefab, point, visual.Color, sizeRatio * visual.BodySize, visual.Burst.Lifetime,
+                    Vector2.zero);
+        }
+
+        private static string ShieldPrefab(ShieldViewKind kind)
+        {
+            switch (kind)
+            {
+                case ShieldViewKind.EnergyOutline: return EnergyShieldOutlinePrefab;
+                case ShieldViewKind.Frontal: return FrontalShieldPrefab;
+                default: return EnergyShieldPrefab;
+            }
         }
 
         // Legacy ShipWarpEffect.
@@ -881,7 +1035,10 @@ namespace CombatView
         {
             var color = ship.Color;
             color.a *= ship.StealthOpacity;
-            ship.Renderer.color = color;
+            if (ship.Renderer)
+                ship.Renderer.color = color;
+            if (ship.View)
+                ship.View.Color = color;
             foreach (var satellite in ship.Satellites)
                 satellite.Renderer.color = color;
             foreach (var turret in ship.Turrets)
@@ -938,29 +1095,6 @@ namespace CombatView
             var rope = view.Setup.Rope;
             if (rope)
                 rope.UpdateRope(_ships.TryGetValue(view.ParentId, out var ship) && ship.HasPose ? ship.Position : (Vector2?)null);
-        }
-
-        private void UpdateFades(float deltaTime)
-        {
-            for (var i = _fades.Count - 1; i >= 0; --i)
-            {
-                var fade = _fades[i];
-                fade.Time += deltaTime;
-                var progress = fade.Time / FadeDuration;
-                if (progress >= 1f || !fade.Renderer)
-                {
-                    if (fade.Renderer)
-                        Object.Destroy(fade.Renderer.gameObject);
-                    _fades.RemoveAt(i);
-                    continue;
-                }
-
-                var color = fade.Renderer.color;
-                color.a = 1f - progress;
-                fade.Renderer.color = color;
-                fade.Renderer.transform.localScale = fade.Scale * (1f + (FadeScale - 1f) * progress);
-                _fades[i] = fade;
-            }
         }
 
         // A flash stays at its contact point, placed again each frame because the anchor moves. Legacy Flash prefab:
@@ -1154,8 +1288,14 @@ namespace CombatView
 
             public GameObject Root { get; }
 
-            // Null for a line.
+            // Null for a line, and for a prefab of several renderers (a decoy, a repair bot, a segment).
             public SpriteRenderer Renderer { get; }
+
+            // Step 7b: the root view of a decoy prefab, which takes the colour; null for a ship.
+            public BaseView View { get; set; }
+
+            // The body scale: the root's transform scale.
+            public float Scale => Root.transform.localScale.x;
 
             // Ships and decoys (phase 5b, step 4): the look, the ship's effects and damage text, and the last
             // snapshot's velocities (Unity units; degrees per second).
@@ -1221,7 +1361,7 @@ namespace CombatView
 
         private sealed class ShieldView
         {
-            public readonly SpriteRenderer Renderer;
+            public readonly BaseView View;
             public readonly int DeviceIndex;
             public readonly Color Active, Idle;
             public bool On;
@@ -1229,42 +1369,32 @@ namespace CombatView
 
             // Seconds since the last hit (legacy _timeFromLastHit, 100 at the start).
             public float HitTime = float.MaxValue;
-            public ShieldView(SpriteRenderer renderer, int deviceIndex, Color active, Color idle)
-            { Renderer = renderer; DeviceIndex = deviceIndex; Active = active; Idle = idle; }
+            public ShieldView(BaseView view, int deviceIndex, Color active, Color idle)
+            { View = view; DeviceIndex = deviceIndex; Active = active; Idle = idle; }
         }
 
         private sealed class RepairBotView : EntityView
         {
-            public RepairBotView(SpriteRenderer renderer, LineRenderer line, EntityId ship) : base(renderer.gameObject, renderer)
-            { Line = line; Ship = ship; }
-            public readonly LineRenderer Line;
-            public readonly EntityId Ship;
+            public RepairBotView(GameObject root) : base(root, null) { }
+            public bool Repairing;
             public float Jitter;
             public int Stamp;
             public SoundClip Sound;
             public int SoundId;
-        }
 
-        private readonly struct RepairBotLook
-        {
-            public RepairBotLook(Sprite sprite, Color color, SoundClip sound)
-            {
-                Sprite = sprite;
-                Color = color;
-                Sound = sound;
-            }
-
-            public readonly Sprite Sprite;
-            public readonly Color Color;
-            public readonly SoundClip Sound;
+            // Step 7b: the Laser effect on the bot, or null.
+            public IEffect Beam;
         }
 
         private sealed class SegmentView : EntityView
         {
-            public SegmentView(GameObject root, SpriteRenderer renderer) : base(root, renderer) { }
+            public SegmentView(GameObject root) : base(root, null) { }
 
             // The last capture that listed the segment.
             public int Stamp { get; set; }
+
+            // Step 7b: the OrbAdditive of a new segment, or null.
+            public IEffect SpawnEffect { get; set; }
         }
 
         // Phase 5b, step 5: an instance of a bullet prefab. The pool keeps the instance; this wrapper lives with the bullet.
@@ -1311,20 +1441,6 @@ namespace CombatView
             }
         }
 
-        private struct Fade
-        {
-            public Fade(SpriteRenderer renderer)
-            {
-                Renderer = renderer;
-                Scale = renderer.transform.localScale;
-                Time = 0f;
-            }
-
-            public SpriteRenderer Renderer;
-            public Vector3 Scale;
-            public float Time;
-        }
-
         private struct Flash
         {
             public Flash(SpriteRenderer renderer, Vec2 point, Color color, float duration)
@@ -1367,11 +1483,8 @@ namespace CombatView
 
         private const int SegmentSortingOrder = -1;
         private const int ShipSortingOrder = 0;
-        private const int BulletSortingOrder = 2;
         private const int FlashSortingOrder = 3;
         private const int TextSortingOrder = 4;
-        private const float FadeDuration = 0.4f;
-        private const float FadeScale = 1.3f;
         private const float FadedAlpha = 0.1f;
         private const float OwnStealthAlpha = 0.4f;
         private const float EnemyStealthAlpha = 0.05f;
@@ -1391,6 +1504,22 @@ namespace CombatView
         private const string FlashAdditivePrefab = "Effects/FlashAdditive";
         private const string WavePrefab = "Effects/Wave";
         private const string HsvMaterialPath = "Materials/ShipHsv";
+
+        // Step 7b: the device object prefabs, with their legacy names.
+        private const string DecoyPrefab = "Objects/Decoy";
+        private const string EnergyShieldPrefab = "Objects/EnergyShield";
+        private const string EnergyShieldOutlinePrefab = "Objects/EnergyShieldOutline";
+        private const string FrontalShieldPrefab = "Objects/FrontalShield";
+        private const string RepairBotPrefab = "Objects/RepairBot";
+        private const string SegmentPrefab = "Objects/WormSegment";
+        private const string Segment2Prefab = "Objects/WormSegment2";
+        private const string OrbAdditivePrefab = "Effects/OrbAdditive";
+
+        // Legacy SatelliteFactory.CreateRepairBot and UnitEffect; SpaceObjectFactory.CreateSpawnEffect.
+        private const float RepairBeamOffset = 0.4f;
+        private const float RepairBeamFadeTime = 0.1f;
+        private const float SegmentSpawnEffectSize = 2f;
+        private const float SegmentSpawnEffectLifetime = 0.5f;
 
         // Legacy ShipWreckAction, EffectFactory.CreateDamageTextEffect and ColorTable.ShipExplosionColor.
         private const float WreckLifetime = 60f;
@@ -1439,7 +1568,7 @@ namespace CombatView
         private readonly BulletVisual _genericBeam;
         private readonly GameObject _emptyBullet;
         private readonly Dictionary<EntityId, SegmentView> _segments = new Dictionary<EntityId, SegmentView>();
-        private readonly Dictionary<WormTailDefinition, Sprite> _segmentLooks = new Dictionary<WormTailDefinition, Sprite>();
+        private readonly Dictionary<WormTailDefinition, SegmentLook> _segmentLooks = new Dictionary<WormTailDefinition, SegmentLook>();
         private readonly List<EntityId> _removedSegments = new List<EntityId>();
         private int _segmentStamp;
         private readonly Dictionary<EntityId, RepairBotView> _repairBots = new Dictionary<EntityId, RepairBotView>();
@@ -1447,7 +1576,6 @@ namespace CombatView
         private readonly List<EntityId> _removedRepairBots = new List<EntityId>();
         private int _repairBotStamp;
         private readonly System.Random _repairBotRandom = new System.Random();
-        private readonly List<Fade> _fades = new List<Fade>();
         private readonly List<Flash> _flashes = new List<Flash>();
         private readonly Stack<SpriteRenderer> _flashPool = new Stack<SpriteRenderer>();
         private readonly List<Text> _texts = new List<Text>();

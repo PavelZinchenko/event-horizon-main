@@ -62,12 +62,14 @@ namespace CombatView
     // nothing (the legacy AreaOfEffect prefab is empty); the sound and effect triggers still play.
     public sealed class BulletVisual
     {
-        public BulletVisual(BulletLook look, float bodySize, Color color, IReadOnlyList<BulletSfx> triggers = null)
+        public BulletVisual(BulletLook look, float bodySize, Color color, IReadOnlyList<BulletSfx> triggers = null,
+            AreaBurst burst = null)
         {
             Look = look;
             BodySize = bodySize;
             Color = color;
             Triggers = triggers ?? Array.Empty<BulletSfx>();
+            Burst = burst;
         }
 
         public BulletLook Look { get; }
@@ -75,7 +77,10 @@ namespace CombatView
         public Color Color { get; }
         public IReadOnlyList<BulletSfx> Triggers { get; }
 
+        // Step 7b: named effects at the first pose, or null.
+        public AreaBurst Burst { get; }
+
         // Nothing to draw or play: the renderer makes no view.
-        public bool IsEmpty => Look == null && Triggers.Count == 0;
+        public bool IsEmpty => Look == null && Triggers.Count == 0 && Burst == null;
     }
 }

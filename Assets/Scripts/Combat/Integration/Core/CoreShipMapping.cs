@@ -158,25 +158,39 @@ namespace Combat.Integration.Core
         { Barrel = barrel; Image = image; Size = size; Color = color; }
     }
 
-    // Legacy SatelliteFactory.CreateEnergyShield and CreateFrontalShield (phase 5, step 10d). An empty Image draws the
-    // built-in sprite at ResourcePath. Size is the drawn width; the offset is in the ship frame.
+    // Legacy SatelliteFactory.CreateEnergyShield and CreateFrontalShield (phase 5, step 10d). Prefab is the energy
+    // shield's database record (a sprite or a ring); null draws the EnergyShield or FrontalShield prefab as it is (phase
+    // 5b, step 7b). Size is the drawn width; the offset is in the ship frame.
     public readonly struct CoreShieldLook
     {
-        public readonly SpriteId Image;
-        public readonly string ResourcePath;
+        public readonly bool IsFrontal;
+        public readonly GameObjectPrefab Prefab;
         public readonly float Size, OffsetX, OffsetY;
         public readonly ColorData Color;
         public readonly float IdleOpacity;
-        public CoreShieldLook(SpriteId image, string resourcePath, float size, float offsetX, float offsetY, ColorData color,
+        public CoreShieldLook(bool isFrontal, GameObjectPrefab prefab, float size, float offsetX, float offsetY, ColorData color,
             float idleOpacity)
         {
-            Image = image;
-            ResourcePath = resourcePath;
+            IsFrontal = isFrontal;
+            Prefab = prefab;
             Size = size;
             OffsetX = offsetX;
             OffsetY = offsetY;
             Color = color;
             IdleOpacity = idleOpacity;
+        }
+    }
+
+    // Legacy DeviceFactory for WormTailV2 (phase 5b, step 7b): the database record on the WormSegment prefab, else the
+    // WormSegment2 prefab for that ObjectPrefab, else the WormSegment prefab as it is.
+    public readonly struct CoreSegmentSource
+    {
+        public readonly bool IsSegment2;
+        public readonly GameObjectPrefab_WormTailSegment Record;
+        public CoreSegmentSource(bool isSegment2, GameObjectPrefab_WormTailSegment record)
+        {
+            IsSegment2 = isSegment2;
+            Record = record;
         }
     }
 

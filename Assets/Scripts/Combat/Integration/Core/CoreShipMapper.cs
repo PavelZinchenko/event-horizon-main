@@ -37,8 +37,8 @@ namespace Combat.Integration.Core
         // The database record of each mapped SpawnBullet trigger with a sound (phase 5b, step 6).
         public IReadOnlyDictionary<BulletTriggerDefinition, BulletTrigger_SpawnBullet> SpawnTriggers => _spawnTriggers;
 
-        // The body image of each mapped worm tail's segments (phase 5, step 7d).
-        public IReadOnlyDictionary<WormTailDefinition, SpriteId> SegmentImages => _segmentImages;
+        // The segment prefab of each mapped worm tail (phase 5, step 7d; phase 5b, step 7b).
+        public IReadOnlyDictionary<WormTailDefinition, CoreSegmentSource> SegmentSources => _segmentSources;
         public IReadOnlyDictionary<RepairBotDefinition, ColorData> RepairBotColors => _repairBotColors;
 
         // The device sound of each mapped repair bot device (phase 5b, step 7a): legacy plays it while the bot repairs.
@@ -230,7 +230,8 @@ namespace Combat.Integration.Core
                     }
                     if (mapped is ShieldDefinition shield) _shieldLooks[shield] = ShieldLook(device, modelScale);
                     if (mapped is WormTailDefinition tail)
-                        _segmentImages[tail] = SegmentImage(device);
+                        _segmentSources[tail] = new CoreSegmentSource(IsSegment2(device),
+                            device.Prefab as GameObjectPrefab_WormTailSegment);
                     Add(devices, infos, views, mapped,
                         new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, activationCost, null,
                             ReleasesDeviceButton(device.DeviceClass)), new CoreDeviceViewSource(device));
@@ -481,28 +482,19 @@ namespace Combat.Integration.Core
             return Polygon.FromPoints(points);
         }
 
-        // Legacy SatelliteFactory: the energy shield draws its prefab record's image (or the EnergyShield prefab's) at an
-        // idle opacity of 0.3; the frontal shield draws the FrontalShield prefab's at 1. Both are Size x model scale wide.
+        // Legacy SatelliteFactory: the energy shield draws its prefab record (or the EnergyShield prefab) at an idle
+        // opacity of 0.3; the frontal shield draws the FrontalShield prefab at 1. Both are Size x model scale wide.
         private static CoreShieldLook ShieldLook(DeviceStats device, float modelScale)
         {
             var energy = device.DeviceClass == DeviceClass.EnergyShield;
-            var image = energy && device.Prefab is GameObjectPrefab_CircularSpriteObject sprite ? sprite.Image
-                : energy && device.Prefab is GameObjectPrefab_CircularOutlineObject outline ? outline.Image : SpriteId.Empty;
-            return new CoreShieldLook(image, energy ? EnergyShieldSprite : FrontalShieldSprite, device.Size * modelScale,
+            return new CoreShieldLook(!energy, energy ? device.Prefab : null, device.Size * modelScale,
                 energy ? 0f : modelScale * device.Offset.x, energy ? 0f : modelScale * device.Offset.y, device.Color,
                 energy ? 0.3f : 1f);
         }
 
-        private const string EnergyShieldSprite = "Textures/Effects/shield";
-        private const string FrontalShieldSprite = "Textures/Objects/frontal_shield";
-
         // Legacy DeviceFactory: the database prefab record (built on the WormSegment prefab), else ObjectPrefab.
         private static bool IsSegment2(DeviceStats device) =>
             device.Prefab == null && device.ObjectPrefab.ToString() == new PrefabId(Segment2Prefab, PrefabId.Type.Object).ToString();
-
-        private static SpriteId SegmentImage(DeviceStats device) =>
-            device.Prefab is GameObjectPrefab_WormTailSegment segment ? segment.BodyImage :
-            new SpriteId(IsSegment2(device) ? Segment2Image : SegmentImageName, SpriteId.Type.Satellite);
 
         // Legacy CreateDroneBays: clonning centers, then the replicator if the ship builds drones, then the bays.
         private void AddDroneBays(IShipSpecification specification, List<DeviceDefinition> devices, List<CoreDeviceInfo> infos,
@@ -740,13 +732,11 @@ namespace Combat.Integration.Core
         // scales armor, shield and their rates; attack scales weapon damage and the ramming damage multiplier.
         private const float CloneMultiplier = 0.9f;
 
-        // The circle colliders of the legacy segment prefabs at body scale 1 (WormSegment, WormSegment2) and their body
-        // sprites. A mod prefab other than WormSegment2 gets the WormSegment circle.
+        // The circle colliders of the legacy segment prefabs at body scale 1 (WormSegment, WormSegment2). A mod prefab
+        // other than WormSegment2 gets the WormSegment circle.
         private const float SegmentRadius = 0.4419455f;
         private const float Segment2Radius = 0.35618508f;
         private const string Segment2Prefab = "WormSegment2";
-        private const string SegmentImageName = "worm_segment";
-        private const string Segment2Image = "worm_segment2";
 
         // ToxicCloud: the built-in cloud of legacy ToxicWaste (phase 5, step 11a, question 9 (b)).
         private const int ToxicCloudId = 186;
@@ -796,6 +786,6 @@ namespace Combat.Integration.Core
         private readonly Dictionary<ShipDefinition, AudioClipId> _decoySounds = new Dictionary<ShipDefinition, AudioClipId>();
         private readonly Dictionary<object, int> _weaponDevices = new Dictionary<object, int>();
         private readonly Dictionary<ShieldDefinition, CoreShieldLook> _shieldLooks = new Dictionary<ShieldDefinition, CoreShieldLook>();
-        private readonly Dictionary<WormTailDefinition, SpriteId> _segmentImages = new Dictionary<WormTailDefinition, SpriteId>();
+        private readonly Dictionary<WormTailDefinition, CoreSegmentSource> _segmentSources = new Dictionary<WormTailDefinition, CoreSegmentSource>();
     }
 }
