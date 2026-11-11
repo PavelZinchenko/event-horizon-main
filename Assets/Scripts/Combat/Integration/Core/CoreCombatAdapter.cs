@@ -94,21 +94,21 @@ namespace Combat.Integration.Core
             var bulletSprite = resourceLocator.GetSprite(new SpriteId(BulletSpriteName, SpriteId.Type.Ammunition));
             // Only the font of the legacy text effect prefab is used; the text view is built in code (step 7f).
             var textFont = Resources.Load<TextMesh>(TextEffectPrefab)?.font;
-            var flashSprite = resourceLocator.GetSprite(FlashSpriteName);
             // Phase 5b, owner question 6: legacy combat sets only the damage text; shadows and static wrecks stay off.
             // Step 4: the power saving mode draws no engine trails (legacy TrailRendererPool).
             var viewSettings = new CombatViewSettings(damageText: gameSettings.ShowDamage, shadows: false, staticWrecks: false,
                 trails: gameSettings.QualityMode >= 0);
             var sounds = new CoreSoundOutput(soundPlayer, resourceLocator);
             _sounds = sounds;
-            _renderer = new BattleRenderer(torus, bulletSprite, flashSprite, textFont, scene, viewSettings, sounds)
+            _renderer = new BattleRenderer(torus, bulletSprite, textFont, scene, viewSettings, sounds)
             {
                 ViewerSide = PlayerSide,
                 // Phase 5b, step 4: the legacy combat Settings clips (a loop, as legacy SoundLoopEffect plays it) and the
-                // satellite's hard-coded explosion.
+                // satellite's hard-coded explosion. Step 8: the asteroid's.
                 RetreatSound = new SoundClip(resourceLocator.GetAudioClip(new AudioClipId(RetreatSoundName)), true),
                 WarpSound = sounds.Resolve(new AudioClipId(WarpSoundName)),
                 DroneExplosionSound = sounds.Resolve(new AudioClipId(DroneExplosionSoundName)),
+                AsteroidExplosionSound = sounds.Resolve(new AudioClipId(AsteroidExplosionSoundName)),
             };
             // Legacy DamageIndicator colours: the shield, then the LegacyDamageModel types.
             _renderer.SetDamageTextColors(new Color(0.5f, 0.5f, 0.5f), new Color(0.5f, 1f, 0.5f), new Color(0f, 1f, 1f),
@@ -579,12 +579,11 @@ namespace Combat.Integration.Core
             _renderer.AddDecoy(item.EntityId, DecoyDefinition.Size, color, sound, 4f * DecoyDefinition.Size, item.Tick);
         }
 
-        // Legacy AsteroidExplosionAction plays smoke at 2 x the size for 2 s, a disturbance and a sound. H11 (owner question
-        // 5): the step 3 area glow in grey at 2 x the size, for the smoke's 2 s.
+        // Phase 5b, step 8: legacy AsteroidExplosionAction.
         private void OnAsteroidRemoved(in BattleEvent item)
         {
             if (_asteroids != null && _asteroids.Remove(item.EntityId, out var size))
-                _renderer.AddFlash(item.Point, 2f * size, AsteroidDeathColor, AsteroidDeathSeconds);
+                _renderer.AddAsteroidExplosion(item.Point, size);
         }
 
         // Phase 5b, step 7a: the launch of a drone bay or a clonning center.
@@ -1109,20 +1108,16 @@ namespace Combat.Integration.Core
         // Legacy CombatTimer: the alarm of the draw countdown.
         private const int DrawAlarmSeconds = 15;
         private const string BulletSpriteName = "ball";
-        // Legacy Flash effect prefab image.
-        private const string FlashSpriteName = "Textures/star";
         // Legacy ShowMessage effect (RadioTransmitter).
         private const string TextEffectPrefab = "Combat/Effects/MessageText";
         // Legacy combat Settings component (CombatScene): ShipRetreatSound and ShipWarpSound. Legacy
-        // DroneExplosionActionObsolete of a satellite, a decoy, a repair bot or a tail segment.
+        // DroneExplosionActionObsolete of a satellite, a decoy, a repair bot or a tail segment; AsteroidExplosionAction.
         private const string RetreatSoundName = "flux_02";
         private const string WarpSoundName = "shot_06";
         private const string DroneExplosionSoundName = "explosion_10";
+        private const string AsteroidExplosionSoundName = "explosion_08";
         // The texture of the legacy Laser effect prefab (Textures/Bullets/laser; the same image is Textures/Effects/laser).
         private const string RepairBeamImage = "laser";
-        private const float AsteroidDeathSeconds = 2f;
-        // Grey at the half alpha of the step 3 area glow.
-        private static readonly Color AsteroidDeathColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
         private readonly Dictionary<ShieldDefinition, ShieldLook> _shieldLooks = new Dictionary<ShieldDefinition, ShieldLook>();
 
         private BattleRunner _runner;

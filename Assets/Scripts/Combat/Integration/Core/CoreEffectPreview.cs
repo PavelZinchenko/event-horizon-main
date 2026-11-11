@@ -190,8 +190,9 @@ namespace Combat.Integration.Core
             public bool IsEmpty => Record == null && Prefab == null;
         }
 
-        // Owner question 10 (a) list: the named prefabs of step 3.
-        private static readonly string[] NamedPrefabs = { "FlashAdditive", "OrbAdditive", "Charge1", "Charge2", "Flicker", "Wave", "Lightning" };
+        // Owner question 10 (a) list: the named prefabs of step 3; the smoke of step 8.
+        private static readonly string[] NamedPrefabs =
+            { "FlashAdditive", "OrbAdditive", "Charge1", "Charge2", "Flicker", "Wave", "Lightning", "Smoke", "SmokeAdditive" };
         private const string AsteroidDeathSound = "explosion_08";
 
         private readonly BattleRenderer _renderer;

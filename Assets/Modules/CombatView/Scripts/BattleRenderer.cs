@@ -20,14 +20,12 @@ namespace CombatView
     {
         // The root goes into the given scene: the game loads scenes additively and never changes the active
         // scene, so a plain new GameObject would outlive the combat scene.
-        // The flash sprite is legacy Flash's glow; without it flashes use the generic sprite. The text font is legacy
-        // MessageText's; without it ship texts are not drawn. A null sound output plays nothing.
-        public BattleRenderer(Torus torus, Sprite genericSprite, Sprite flashSprite, Font textFont, Scene scene,
-            CombatViewSettings settings, ISoundOutput soundOutput)
+        // The text font is legacy MessageText's; without it ship texts are not drawn. A null sound output plays nothing.
+        public BattleRenderer(Torus torus, Sprite genericSprite, Font textFont, Scene scene, CombatViewSettings settings,
+            ISoundOutput soundOutput)
         {
             _torus = torus;
             _genericSprite = genericSprite;
-            _flashSprite = flashSprite ? flashSprite : genericSprite;
             _textFont = textFont;
             Settings = settings;
             _root = new GameObject("CoreBattleViews");
@@ -304,6 +302,7 @@ namespace CombatView
         public SoundClip RetreatSound { get => _shipAssets.RetreatSound; set => _shipAssets.RetreatSound = value; }
         public SoundClip WarpSound { get; set; }
         public SoundClip DroneExplosionSound { get; set; }
+        public SoundClip AsteroidExplosionSound { get; set; }
 
         // Phase 5b, step 7a: legacy SatelliteFactory.CreateRepairBot plays the device sound while the bot repairs; a loop
         // stops when it ends. Step 7b: the RepairBot prefab with its beam.
@@ -434,13 +433,14 @@ namespace CombatView
             Collide(disarm.EntityId, disarm.Tick * Battle.TickDuration);
         }
 
-        // One plain flash at a world point: the asteroid death until its effects (phase 5b, step 8).
-        public void AddFlash(Vec2 point, float diameter, Color color, float duration)
+        // Phase 5b, step 8: legacy AsteroidExplosionAction. Grey Smoke at 2 x the diameter and SmokeAdditive at 1.5 x, for
+        // 2 s each at a random angle and spin, and explosion_08. The disturbance has no view in the new scene.
+        public void AddAsteroidExplosion(Vec2 point, float diameter)
         {
-            var renderer = _flashPool.Count > 0 ? _flashPool.Pop() : CreateRenderer("Flash", _root.transform, _flashSprite, FlashSortingOrder);
-            renderer.gameObject.SetActive(true);
-            renderer.transform.localScale = Vector3.one * ScaleToDiameter(_flashSprite, Mathf.Max(MinFlashDiameter, diameter));
-            _flashes.Add(new Flash(renderer, point, color, Mathf.Max(MinFlashDuration, duration)));
+            RunEffect(SmokePrefab, point, Color.gray, diameter * 2f, 2f, Vector2.zero, EffectMath.Random.Next(360), EffectMath.Random.Next(-10, 10));
+            RunEffect(SmokeAdditivePrefab, point, Color.gray, diameter * 1.5f, 2f, Vector2.zero, EffectMath.Random.Next(360),
+                EffectMath.Random.Next(-10, 10));
+            _sounds.Play(AsteroidExplosionSound);
         }
 
         // Legacy RadioTransmitter and the MessageText effect (ShowMessage, step 7f): the text starts at the ship and
@@ -847,7 +847,6 @@ namespace CombatView
                 }
             }
 
-            UpdateFlashes(deltaTime, anchor);
             UpdateTexts(deltaTime, anchor);
             _effects.Update(deltaTime, anchor);
         }
@@ -887,8 +886,6 @@ namespace CombatView
             _segmentLooks.Clear();
             _repairBots.Clear();
             _repairBotLooks.Clear();
-            _flashes.Clear();
-            _flashPool.Clear();
             _texts.Clear();
             _textPool.Clear();
         }
@@ -955,25 +952,33 @@ namespace CombatView
         }
 
         // Legacy ShipExplosionActionObsolete and DroneExplosionActionObsolete, for a ship without an explosion record.
-        // Their smoke layers wait for the Smoke prefabs (step 8); the disturbance has no view in the new scene.
+        // The disturbance has no view in the new scene.
         private void AddObsoleteExplosion(ShipLook look, Vec2 point, Vector2 drift)
         {
             if (look.IsSmall)
             {
-                RunEffect(FlashPrefab, point, ExplosionColor, look.Scale * 4f, 0.3f, drift);
+                AddDroneExplosionEffects(point, look.Scale, drift);
                 return;
             }
 
             RunEffect(WavePrefab, point, ExplosionColor, look.Scale * 6f, 1f, drift);
             RunEffect(FlashAdditivePrefab, point, ExplosionColor, look.Scale * 4f, 1f, drift);
+            RunEffect(SmokeAdditivePrefab, point, ExplosionColor, look.Scale * 1.5f, 1f, drift, 0f, EffectMath.Random.Next(-20, 20));
+            RunEffect(SmokePrefab, point, ShipSmokeColor, look.Scale * 2f, 3f, drift, 0f, EffectMath.Random.Next(-20, 20));
         }
 
-        // Legacy DroneExplosionActionObsolete of a satellite, a decoy, a repair bot or a tail segment: a flash at 4 x the
-        // body scale for 0.3 s and explosion_10; the smoke waits for the Smoke prefabs (step 8).
+        // Legacy DroneExplosionActionObsolete of a satellite, a decoy, a repair bot or a tail segment: explosion_10.
         private void AddDroneExplosion(Vector2 position, float scale, Vector2 velocity)
         {
-            RunEffect(FlashPrefab, new Vec2(position.x, position.y), ExplosionColor, scale * 4f, 0.3f, velocity * 0.05f);
+            AddDroneExplosionEffects(new Vec2(position.x, position.y), scale, velocity * 0.05f);
             _sounds.Play(DroneExplosionSound);
+        }
+
+        // Legacy DroneExplosionActionObsolete: a flash at 4 x the body scale for 0.3 s and black smoke at 2 x for 1 s.
+        private void AddDroneExplosionEffects(Vec2 point, float scale, Vector2 drift)
+        {
+            RunEffect(FlashPrefab, point, ExplosionColor, scale * 4f, 0.3f, drift);
+            RunEffect(SmokePrefab, point, Color.black, scale * 2f, 1f, drift, 0f, EffectMath.Random.Next(-30, 30));
         }
 
         // Step 7c: the detonator's explosion record at the area's first pose, at its radius, in the device colour, for the
@@ -1010,7 +1015,8 @@ namespace CombatView
             _sounds.Play(WarpSound);
         }
 
-        private void RunEffect(string prefab, Vec2 point, Color color, float size, float lifetime, Vector2 velocity)
+        private void RunEffect(string prefab, Vec2 point, Color color, float size, float lifetime, Vector2 velocity,
+            float rotation = 0f, float angularVelocity = 0f)
         {
             var effect = _effects.Create(_prefabs.Load(prefab), point);
             if (effect == null)
@@ -1018,7 +1024,8 @@ namespace CombatView
 
             effect.Color = color;
             effect.Size = size;
-            effect.Run(lifetime, velocity, 0f);
+            effect.Rotation = rotation;
+            effect.Run(lifetime, velocity, angularVelocity);
         }
 
         // Legacy EffectFactory.CreateDamageTextEffect: at the ship, for 2 s, drifting with the ship's velocity plus 1
@@ -1110,35 +1117,6 @@ namespace CombatView
             var rope = view.Setup.Rope;
             if (rope)
                 rope.UpdateRope(_ships.TryGetValue(view.ParentId, out var ship) && ship.HasPose ? ship.Position : (Vector2?)null);
-        }
-
-        // A flash stays at its contact point, placed again each frame because the anchor moves. Legacy Flash prefab:
-        // no growth; opacity 1 - t^2 times an alpha scale of 2.
-        private void UpdateFlashes(float deltaTime, Vector2 anchor)
-        {
-            for (var i = _flashes.Count - 1; i >= 0; --i)
-            {
-                var flash = _flashes[i];
-                flash.Time += deltaTime;
-                var progress = flash.Time / flash.Duration;
-                if (progress >= 1f || !flash.Renderer)
-                {
-                    if (flash.Renderer)
-                    {
-                        flash.Renderer.gameObject.SetActive(false);
-                        _flashPool.Push(flash.Renderer);
-                    }
-
-                    _flashes.RemoveAt(i);
-                    continue;
-                }
-
-                var color = flash.Color;
-                color.a = Mathf.Clamp01(color.a * FlashAlphaScale * (1f - progress * progress));
-                flash.Renderer.color = color;
-                flash.Renderer.transform.position = Placement.NearestImage(_torus, anchor, flash.Point);
-                _flashes[i] = flash;
-            }
         }
 
         // Legacy TextEffect with fading: opacity 1 - t^2 and scale 1 - t^3 of the camera's orthographic size, where t
@@ -1459,24 +1437,6 @@ namespace CombatView
             }
         }
 
-        private struct Flash
-        {
-            public Flash(SpriteRenderer renderer, Vec2 point, Color color, float duration)
-            {
-                Renderer = renderer;
-                Point = point;
-                Color = color;
-                Duration = duration;
-                Time = 0f;
-            }
-
-            public SpriteRenderer Renderer;
-            public Vec2 Point;
-            public Color Color;
-            public float Duration;
-            public float Time;
-        }
-
         private struct Text
         {
             public Text(TextMesh mesh, Vec2 point, Vec2 velocity, Color color)
@@ -1501,7 +1461,6 @@ namespace CombatView
 
         private const int SegmentSortingOrder = -1;
         private const int ShipSortingOrder = 0;
-        private const int FlashSortingOrder = 3;
         private const int TextSortingOrder = 4;
         private const float FadedAlpha = 0.1f;
         private const float OwnStealthAlpha = 0.4f;
@@ -1521,6 +1480,9 @@ namespace CombatView
         private const string FlashPrefab = "Effects/Flash";
         private const string FlashAdditivePrefab = "Effects/FlashAdditive";
         private const string WavePrefab = "Effects/Wave";
+        // Step 8: the smoke of the asteroid, drone and obsolete ship explosions.
+        private const string SmokePrefab = "Effects/Smoke";
+        private const string SmokeAdditivePrefab = "Effects/SmokeAdditive";
         private const string HsvMaterialPath = "Materials/ShipHsv";
 
         // Step 7b: the device object prefabs, with their legacy names.
@@ -1546,11 +1508,8 @@ namespace CombatView
         // Legacy SpaceObjectFactory.CreateDecoy: the spawn flash runs 0.3 s.
         private const float DecoyFlashLifetime = 0.3f;
         private static readonly Color ExplosionColor = new Color(1f, 0.66f, 0.59f);
-
-        // "Views (5)", item 6.
-        private const float FlashAlphaScale = 2f;
-        private const float MinFlashDiameter = 0.3f;
-        private const float MinFlashDuration = 0.05f;
+        // Legacy ShipExplosionActionObsolete: the dark smoke.
+        private static readonly Color ShipSmokeColor = new Color(0.1f, 0.1f, 0.1f, 0.5f);
 
         // Legacy RadioTransmitter (_speed, time) and MessageText (TextMesh).
         private const float TextDriftSpeed = 1f;
@@ -1575,7 +1534,6 @@ namespace CombatView
         private Color[] _damageColors;
         private readonly List<IBattleEventView> _eventViews = new List<IBattleEventView>();
         private readonly Sprite _genericSprite;
-        private readonly Sprite _flashSprite;
         private readonly Font _textFont;
         private readonly Material _spriteMaterial;
         private readonly GameObject _root;
@@ -1594,8 +1552,6 @@ namespace CombatView
         private readonly List<EntityId> _removedRepairBots = new List<EntityId>();
         private int _repairBotStamp;
         private readonly System.Random _repairBotRandom = new System.Random();
-        private readonly List<Flash> _flashes = new List<Flash>();
-        private readonly Stack<SpriteRenderer> _flashPool = new Stack<SpriteRenderer>();
         private readonly List<Text> _texts = new List<Text>();
         private readonly Stack<TextMesh> _textPool = new Stack<TextMesh>();
         private readonly System.Random _textRandom = new System.Random();

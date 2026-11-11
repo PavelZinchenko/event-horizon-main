@@ -84,6 +84,79 @@ namespace CombatView.Effects
             mesh.uv = uv;
         }
 
+        // Legacy Primitives.CreateSphere: a cube of six grids of size x size cells pushed onto the sphere, its radius
+        // moved by Perlin noise from a random offset.
+        public static void CreateSphere(Mesh mesh, float radius, int size, float noiseFrequency, float noisePower)
+        {
+            mesh.Clear(false);
+
+            var count = 6 * (size + 1) * (size + 1);
+            var vertices = new Vector3[count];
+            var normals = new Vector3[count];
+            var uv = new Vector2[count];
+            var triangles = new int[6 * 6 * size * size];
+
+            var step = 2.0f / size;
+            var offset = new Vector3(NextFloatSigned() * 100f, NextFloatSigned() * 100f, NextFloatSigned() * 100f);
+            var vertex = 0;
+            var index = 0;
+
+            for (var k = 0; k < 6; ++k)
+            {
+                var start = vertex;
+                var y = -1f;
+                for (var i = 0; i <= size; ++i)
+                {
+                    var x = -1f;
+                    for (var j = 0; j <= size; ++j)
+                    {
+                        Vector3 point;
+                        switch (k)
+                        {
+                            case 0: point = new Vector3(x, y, -1); break;
+                            case 1: point = new Vector3(1, y, x); break;
+                            case 2: point = new Vector3(-x, y, 1); break;
+                            case 3: point = new Vector3(-1, y, -x); break;
+                            case 4: point = new Vector3(-x, -1, y); break;
+                            default: point = new Vector3(x, 1, y); break;
+                        }
+
+                        point = point.normalized * radius;
+                        var temp = offset + point * radius * noiseFrequency;
+                        var scale = 1 + noisePower * (Mathf.PerlinNoise(temp.x, temp.y) + Mathf.PerlinNoise(temp.y, temp.z) -
+                            2 * Mathf.PerlinNoise(temp.z, temp.x));
+                        vertices[vertex] = point * scale;
+                        normals[vertex] = vertices[vertex].normalized;
+                        uv[vertex] = new Vector2(j / (float)size, i / (float)size);
+                        ++vertex;
+                        x += step;
+                    }
+
+                    y += step;
+                }
+
+                for (var i = 0; i < size; ++i)
+                {
+                    for (var j = 0; j < size; ++j)
+                    {
+                        triangles[index++] = start + j;
+                        triangles[index++] = start + size + 1 + j;
+                        triangles[index++] = start + size + 1 + j + 1;
+                        triangles[index++] = start + size + 1 + j + 1;
+                        triangles[index++] = start + j + 1;
+                        triangles[index++] = start + j;
+                    }
+
+                    start += size + 1;
+                }
+            }
+
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
+            mesh.uv = uv;
+            mesh.normals = normals;
+        }
+
         // A texture on a line renderer without a new material: the material stays shared, as the legacy template's.
         public static void SetTexture(Renderer renderer, Texture texture, MaterialPropertyBlock block)
         {

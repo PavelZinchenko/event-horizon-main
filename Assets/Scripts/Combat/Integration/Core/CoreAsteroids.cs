@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Combat.Component.View;
 using CombatSimulation.Core;
 using CombatSimulation.Physics;
 using CombatView;
+using CombatView.Views;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using CoreEntityId = CombatSimulation.Core.EntityId;
@@ -12,8 +12,9 @@ using Object = UnityEngine.Object;
 namespace Combat.Integration.Core
 {
     // Phase 5, step 14d (H10). The adapter draws the legacy asteroid layout from the battle seed (owner question 3), and
-    // this class draws the core asteroids with the legacy prefab, as CorePlanet. The prefab's views build the rock mesh in
-    // Awake; its MeshView spins the mesh with UnityEngine.Random, presentation only.
+    // this class draws the core asteroids. Phase 5b, step 8: the new prefab (Resources/CombatView/Objects/Asteroid), the
+    // legacy one without its body, collider and physics. Its views build the rock mesh in Awake; its MeshView spins the
+    // mesh on the effect random source, presentation only.
     public sealed class CoreAsteroids : IDisposable
     {
         // Legacy CombatManager.Initialize.
@@ -119,15 +120,6 @@ namespace Combat.Integration.Core
             var root = Object.Instantiate(_prefab);
             SceneManager.MoveGameObjectToScene(root, _scene);
             root.transform.localScale = Vector3.one * size;
-
-            // The core owns the physics; the legacy body and collider are never initialized. The components that require
-            // the rigidbody go first.
-            Object.DestroyImmediate(root.GetComponent<Combat.Component.Physics.PhysicsManager>());
-            Object.DestroyImmediate(root.GetComponent<Combat.Component.Body.RigidBodyAdapter>());
-            Object.DestroyImmediate(root.GetComponent<Combat.Component.Collider.CommonCollider>());
-            Object.DestroyImmediate(root.GetComponent<Collider2D>());
-            Object.DestroyImmediate(root.GetComponent<Rigidbody2D>());
-
             return new Item(root, root.GetComponent<IView>(), size);
         }
 
@@ -158,7 +150,7 @@ namespace Combat.Integration.Core
             public PoseTrack Pose;
         }
 
-        private const string PrefabPath = "Combat/Objects/Asteroid";
+        private const string PrefabPath = "CombatView/Objects/Asteroid";
         private const int Salt = 0x41535452;
         private const float MinSize = 2f;
         private const float MaxSize = 5f;

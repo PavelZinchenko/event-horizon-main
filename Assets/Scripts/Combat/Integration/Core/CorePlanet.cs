@@ -1,17 +1,18 @@
 using System;
-using Combat.Component.View;
 using CombatSimulation.Physics;
 using CombatView;
+using CombatView.Views;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace Combat.Integration.Core
 {
-    // The legacy background planet (phase 4, step 10, "Planet (10)"): presentation only, outside the core. The legacy
-    // prefab is reused; its views build their mesh in Awake and need only UpdateView. Colour, position and size come
-    // from the battle seed (PL2), so both duel peers draw the same planet; the tilt and spin stay in the prefab's
-    // MeshView on UnityEngine.Random.
+    // The legacy background planet (phase 4, step 10, "Planet (10)"): presentation only, outside the core. Phase 5b,
+    // step 8 (owner question 11): the new prefab (Resources/CombatView/Objects/Planet), the legacy one without its body;
+    // its views build their mesh in Awake and need only UpdateView. Colour, position and size come from the battle seed
+    // (PL2), so both duel peers draw the same planet; the tilt and spin stay in the prefab's MeshView on the effect
+    // random source.
     public sealed class CorePlanet : IDisposable
     {
         // Null without the prefab.
@@ -36,11 +37,6 @@ namespace Combat.Integration.Core
             var root = Object.Instantiate(prefab);
             SceneManager.MoveGameObjectToScene(root, scene);
             root.transform.localScale = Vector3.one * size;
-
-            // The core owns the physics; the legacy body is never initialized. The adapter requires the rigidbody,
-            // so it goes first.
-            Object.DestroyImmediate(root.GetComponent<Combat.Component.Body.RigidBodyAdapter>());
-            Object.DestroyImmediate(root.GetComponent<Rigidbody2D>());
 
             var view = root.GetComponent<IView>();
             view.Color = color;
@@ -74,7 +70,7 @@ namespace Combat.Integration.Core
                 Object.Destroy(_root);
         }
 
-        private const string PrefabPath = "Combat/Objects/Planet";
+        private const string PrefabPath = "CombatView/Objects/Planet";
         private const int Salt = 0x504C4E54;
 
         private readonly GameObject _root;
