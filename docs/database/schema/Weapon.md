@@ -66,7 +66,9 @@ The same weapon table serves both bullet pipelines. The component's ammunition d
 | Folder | With `AmmunitionObsolete` | With `Ammunition` |
 | --- | ---: | ---: |
 | `Weapon/` | 0 | 25 components |
-| `Weapon/Obsolete/` | 80 components | 10 components |
+| `Weapon/Obsolete/` | 0 | 90 components |
+
+The 80 components with `AmmunitionObsolete` moved to `Ammunition` in phase 4, step 4c ([AmmunitionObsolete: Conversion](AmmunitionObsolete.md#conversion)).
 
 ### Other consumers
 

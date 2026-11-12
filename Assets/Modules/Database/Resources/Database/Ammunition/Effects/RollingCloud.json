@@ -1,0 +1,18 @@
+{
+  "ItemType": 26,
+  "Id": 25,
+  "Elements": [
+    {
+      "Type": 1,
+      "Image": "CloudWhite",
+      "Size": 2.0,
+      "TurnRate": 108.0
+    },
+    {
+      "Type": 1,
+      "Image": "CloudWhite",
+      "Size": 2.5,
+      "TurnRate": -270.0
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "ItemType": 25,
+  "Id": 50,
+  "Body": {
+    "Size": 1.2,
+    "Velocity": 5.0,
+    "Range": 5.0,
+    "Color": "#80FFE2BA",
+    "EnergyCost": 1.0
+  },
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "AudioClip": "shot_07"
+    },
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "VisualEffect": 31,
+      "SyncLifetimeWithBullet": true
+    }
+  ],
+  "ImpactType": 2,
+  "Effects": [
+    {
+      "DamageType": 2,
+      "Power": 30.0
+    }
+  ]
+}

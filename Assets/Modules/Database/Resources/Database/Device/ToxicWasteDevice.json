@@ -7,5 +7,6 @@
   "Lifetime": 4.0,
   "Color": "#80BE945D",
   "ObjectPrefab": "CloudEffect",
+  "AmmunitionId": 186,
   "ControlButtonIcon": "controls_gear"
 }

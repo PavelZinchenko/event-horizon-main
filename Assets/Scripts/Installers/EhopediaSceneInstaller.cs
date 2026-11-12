@@ -27,6 +27,7 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<EhopediaSceneManager>().AsSingle().NonLazy();
             Container.BindInterfacesTo<ViewRect>().AsTransient();
             Container.BindInterfacesTo<Scene>().AsSingle().WithArguments(new SceneSettings { AreaWidth = 200, AreaHeight = 200 }).NonLazy();
+            Container.BindInterfacesTo<Combat.Integration.Legacy.LegacyScenePresentation>().AsSingle();
             Container.BindInterfacesTo<CollisionManager>().AsSingle();
             Container.BindInterfacesTo<AiManager>().AsSingle().NonLazy();
             Container.Bind<WeaponFactory>().AsSingle();

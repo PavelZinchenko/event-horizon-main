@@ -8,6 +8,7 @@ using Services.Audio;
 using CommonComponents.Signals;
 using Zenject;
 using GameServices.Audio;
+using GameDatabase;
 
 namespace GameStateMachine.States
 {
@@ -23,6 +24,7 @@ namespace GameStateMachine.States
             MotherShip motherShip,
             IMusicPlayer musicPlayer,
             DatabaseMusicPlaylist playlist,
+            IDatabase database,
             GameServices.Economy.LootGenerator lootGenerator,
             
             ExitSignal exitSignal,
@@ -38,13 +40,16 @@ namespace GameStateMachine.States
             _onCompleteAction = onCompleteAction;
             _playlist = playlist;
 
+            // Chosen before the scene loads and kept for the state's life (migration phase 4, D10).
+            _useCombatCore = database.CombatSettings.UseNewCombatSimulator;
+
             _exitSignal = exitSignal;
             _exitSignal.Event += OnCombatCompleted;
         }
 
         public override StateType Type => StateType.Combat;
 
-		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.Combat; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return _useCombatCore ? GameScene.CoreCombat : GameScene.Combat; } }
 
 		public override void InstallBindings(DiContainer container)
 		{
@@ -85,6 +90,7 @@ namespace GameStateMachine.States
         }
 
         private Action<ICombatModel> _onCompleteAction;
+        private readonly bool _useCombatCore;
         private readonly ICombatModel _combatModel;
         private readonly ExitSignal _exitSignal;
         private readonly MotherShip _motherShip;

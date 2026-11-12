@@ -32,6 +32,7 @@ namespace GameDatabase.DataModel
 			Range = Utilites.MathEx.Clamp(serializable.Range, 0f, 1E+09f);
 			Lifetime = Utilites.MathEx.Clamp(serializable.Lifetime, 0f, 1E+09f);
 			Weight = Utilites.MathEx.Clamp(serializable.Weight, 0f, 1E+09f);
+			Recoil = Utilites.MathEx.Clamp(serializable.Recoil, 0f, 1E+09f);
 			HitPoints = Utilites.MathEx.Clamp(serializable.HitPoints, 0, 999999999);
 			Color = new ColorData(serializable.Color);
 			BulletPrefab = loader?.GetBulletPrefab(new ItemId<BulletPrefab>(serializable.BulletPrefab)) ?? BulletPrefab.DefaultValue;
@@ -52,6 +53,7 @@ namespace GameDatabase.DataModel
 		public float Range { get; private set; }
 		public float Lifetime { get; private set; }
 		public float Weight { get; private set; }
+		public float Recoil { get; private set; }
 		public int HitPoints { get; private set; }
 		public ColorData Color { get; private set; }
 		public BulletPrefab BulletPrefab { get; private set; }

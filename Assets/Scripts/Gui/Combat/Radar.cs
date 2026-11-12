@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
-using Combat.Component.Ship;
-using Combat.Component.Unit.Classification;
-using Combat.Scene;
-using Combat.Unit;
+using Combat.Integration;
 using GameDatabase.Enums;
 using Services.Resources;
 using UnityEngine.UI;
@@ -21,7 +18,7 @@ namespace Gui.Combat
         [SerializeField] private Color StarbaseColor;
         [SerializeField] private Color DangerColor = Color.red;
 
-        public void Open(IShip ship, IScene scene, IResourceLocator resourceLocator)
+        public void Open(IShipView ship, IScenePresentation scene, IResourceLocator resourceLocator)
         {
             _scene = scene;
             _ship = ship;
@@ -33,7 +30,7 @@ namespace Gui.Combat
 
         private void Update()
         {
-            if (!_ship.IsActive())
+            if (_ship == null || !_ship.IsActive)
             {
                 Close();
                 return;
@@ -42,7 +39,7 @@ namespace Gui.Combat
             var camera = Camera.main;
             if (!camera) return;
 
-            var itemPosition = _ship.Body.VisualPosition;
+            var itemPosition = _ship.VisualPosition;
             var position = _scene.ViewPoint.Direction(itemPosition);
             var cameraHeight = camera.orthographicSize;
             var cameraWidth = cameraHeight* camera.aspect;
@@ -57,8 +54,8 @@ namespace Gui.Combat
             if (!outOfBounds)
                 return;
 
-            var dx = ((position.x > 0 ? position.x : -position.x) - cameraWidth)/(_scene.Settings.AreaWidth/2 - cameraWidth);
-            var dy = ((position.y > 0 ? position.y : -position.y) - cameraHeight)/(_scene.Settings.AreaHeight/2 - cameraHeight);
+            var dx = ((position.x > 0 ? position.x : -position.x) - cameraWidth)/(_scene.MapWidth/2 - cameraWidth);
+            var dy = ((position.y > 0 ? position.y : -position.y) - cameraHeight)/(_scene.MapHeight/2 - cameraHeight);
             var scale = Mathf.Max(1 - 0.5f*Mathf.Max(dx, dy), 0.25f);
 
             var max = Mathf.Max(x > 0 ? x : -x, y > 0 ? y : -y);
@@ -72,7 +69,7 @@ namespace Gui.Combat
 
             RectTransform.anchoredPosition = new Vector2(x, y);
             RectTransform.localScale = Vector3.one*scale;
-            ShipIcon.transform.localEulerAngles = new Vector3(0, 0, _ship.Body.VisualRotation);
+            ShipIcon.transform.localEulerAngles = new Vector3(0, 0, _ship.VisualRotation);
         }
 
         public void Close()
@@ -95,11 +92,10 @@ namespace Gui.Combat
 
         private void Initialize(IResourceLocator resourceLocator)
         {
-            var model = _ship.Specification.Stats;
-            var isAlly = _ship.Type.Side.IsAlly(UnitSide.Player);
-            var isDangerous = _ship.Specification.Info.Class >= DifficultyClass.Class3;
+            var isAlly = _ship.Side == CombatSide.Player;
+            var isDangerous = _ship.Class >= DifficultyClass.Class3;
 
-            switch (model.ShipModel.SizeClass)
+            switch (_ship.SizeClass)
             {
                 case SizeClass.Starbase:
                     _offset = Size*1.8f;
@@ -115,7 +111,7 @@ namespace Gui.Combat
                     break;
             }
 
-            ShipIcon.sprite = resourceLocator.GetSprite(model.ShipModel.ModelImage);
+            ShipIcon.sprite = resourceLocator.GetSprite(_ship.ModelImage);
 
             UpdateScreenSize();
         }
@@ -136,7 +132,7 @@ namespace Gui.Combat
         private float _offset;
         private Vector2 _screenSize;
         private RectTransform _rectTransform;
-        private IShip _ship;
-        private IScene _scene;
+        private IShipView _ship;
+        private IScenePresentation _scene;
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Combat.Effects
 {
-    public class SmokeEffect : EffectBase, IEffectPrefabInitializer
+    public class SmokeEffect : EffectBase, IEffectPrefabInitializer, IEffectInstanceInitializer
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private float _rotationMaxSpeed = 10;
@@ -13,8 +13,7 @@ namespace Combat.Effects
         [SerializeField] private float _positionVariation = 0.4f;
         [SerializeField] private float _sizeVariation = 0.4f;
 
-        [SerializeField] [HideInInspector] private float _randomFactor;
-
+        private float _randomFactor;
         private Color _randomColor;
         private float _randomAngle;
         private float _randomScale;
@@ -25,6 +24,10 @@ namespace Combat.Effects
         {
             var sprite = resourceLocator.GetSprite(data.Image);
             _spriteRenderer.sprite = sprite;
+        }
+
+        public void Setup(VisualEffectElement data)
+        {
             _randomFactor = data.ParticleSize;
         }
 

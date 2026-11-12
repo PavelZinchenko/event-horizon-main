@@ -1,5 +1,6 @@
 ﻿using Combat.Component.Ship;
-using Combat.Unit;
+using Combat.Integration;
+using Combat.Integration.Legacy;
 using Gui.Controls;
 using Gui.Windows;
 using Services.Gui;
@@ -33,9 +34,15 @@ namespace Gui.Combat
             GetComponent<AnimatedWindow>().Close(WindowExitCode.Ok);
         }
 
+        // Temporary entry for exploration, which has no combat adapter, until phase 6.
         public void Open(IShip ship)
         {
-            if (!ship.IsActive())
+            Open(LegacyShipView.Of(ship));
+        }
+
+        public void Open(IShipView ship)
+        {
+            if (ship == null || !ship.IsActive)
                 return;
 
             GetComponent<AnimatedWindow>().Open();
@@ -46,16 +53,16 @@ namespace Gui.Combat
             _ship = ship;
 
             if (_icon)
-                _icon.sprite = _resourceLocator.GetSprite(ship.Specification.Stats.ShipModel.IconImage) ??
-                    _resourceLocator.GetSprite(ship.Specification.Stats.ShipModel.ModelImage);
+                _icon.sprite = _resourceLocator.GetSprite(ship.IconImage) ??
+                    _resourceLocator.GetSprite(ship.ModelImage);
 
-            _shipItem.SetLevel(ship.Specification.Info.Level);
-            _shipItem.SetClass(ship.Specification.Info.Class);
+            _shipItem.SetLevel(ship.Level);
+            _shipItem.SetClass(ship.Class);
 
             UpdateResistance();
 
-            _hasShield = _ship.Stats.Shield.Exists;
-            _hasArmor = _ship.Stats.Armor.Exists;
+            _hasShield = _ship.Shield.Exists;
+            _hasArmor = _ship.Armor.Exists;
 
             _shieldPoints.gameObject.SetActive(_hasShield);
             _armorPoints.gameObject.SetActive(_hasArmor);
@@ -63,7 +70,7 @@ namespace Gui.Combat
 
         private void UpdateResistance()
         {
-            var resistance = _ship.Stats.Resistance;
+            var resistance = _ship.Resistance;
 
             if (_fireResistIcon != null)
             {
@@ -95,7 +102,7 @@ namespace Gui.Combat
 
         private void Update()
         {
-            if (!_ship.IsActive())
+            if (_ship == null || !_ship.IsActive)
             {
                 Close();
                 return;
@@ -108,12 +115,15 @@ namespace Gui.Combat
                 UpdateResistance();
             }
 
-            var total = 0f;
-            if (_hasArmor) total += _ship.Stats.Armor.MaxValue;
-            if (_hasShield) total += _ship.Stats.Shield.MaxValue;
+            var armorValue = _ship.Armor;
+            var shieldValue = _ship.Shield;
 
-            var armor = _hasArmor ? _ship.Stats.Armor.Value : 0;
-            var shield = _hasShield ? _ship.Stats.Shield.Value : 0;
+            var total = 0f;
+            if (_hasArmor) total += armorValue.MaxValue;
+            if (_hasShield) total += shieldValue.MaxValue;
+
+            var armor = _hasArmor ? armorValue.Value : 0;
+            var shield = _hasShield ? shieldValue.Value : 0;
 
             if (_hasArmor)
             {
@@ -128,7 +138,7 @@ namespace Gui.Combat
                 _shieldPoints.SetAllDirty();
             }
 
-            var energy = _ship.Stats.Energy.Percentage;
+            var energy = _ship.Energy.Fraction;
             if (!Mathf.Approximately(_energyPoints.Y1, energy))
             {
                 _energyPoints.Y1 = energy;
@@ -139,6 +149,6 @@ namespace Gui.Combat
         private float _updateResistanceCooldown;
         private bool _hasShield;
         private bool _hasArmor;
-        private IShip _ship;
+        private IShipView _ship;
     }
 }

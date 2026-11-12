@@ -31,6 +31,8 @@ namespace GameDatabase.DataModel
 					return new GameObjectPrefab_CircularSpriteObject(serializable, loader);
 				case ObjectPrefabType.CircularOutlineObject:
 					return new GameObjectPrefab_CircularOutlineObject(serializable, loader);
+				case ObjectPrefabType.ColliderSpriteObject:
+					return new GameObjectPrefab_ColliderSpriteObject(serializable, loader);
 				default:
                     throw new DatabaseException("GameObjectPrefab: Invalid content type - " + serializable.Type);
 			}
@@ -62,6 +64,7 @@ namespace GameDatabase.DataModel
 	    T Create(GameObjectPrefab_WormTailSegment content);
 	    T Create(GameObjectPrefab_CircularSpriteObject content);
 	    T Create(GameObjectPrefab_CircularOutlineObject content);
+	    T Create(GameObjectPrefab_ColliderSpriteObject content);
     }
 
     public partial class GameObjectPrefab_Undefined : GameObjectPrefab
@@ -167,6 +170,29 @@ namespace GameDatabase.DataModel
 		public float ImageScale { get; private set; }
 		public float Thickness { get; private set; }
 		public float AspectRatio { get; private set; }
+
+
+    }
+    public partial class GameObjectPrefab_ColliderSpriteObject : GameObjectPrefab
+    {
+		partial void OnDataDeserialized(GameObjectPrefabSerializable serializable, Database.Loader loader);
+
+  		public GameObjectPrefab_ColliderSpriteObject(GameObjectPrefabSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			Image = new SpriteId(serializable.Image1, SpriteId.Type.Effect);
+			Collider = new ImmutableCollection<ColliderShape>(serializable.Collider?.Select(item => ColliderShape.Create(item, loader)));
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IGameObjectPrefabFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public SpriteId Image { get; private set; }
+		public ImmutableCollection<ColliderShape> Collider { get; private set; }
 
 
     }

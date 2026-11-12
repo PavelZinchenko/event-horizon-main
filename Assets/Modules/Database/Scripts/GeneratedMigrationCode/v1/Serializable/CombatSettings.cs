@@ -28,5 +28,6 @@ namespace DatabaseMigration.v1.Serializable
 		public int OffensiveDroneAI;
 		public int StarbaseAI;
 		public int DefaultCombatRules;
+		public bool UseNewCombatSimulator;
 	}
 }

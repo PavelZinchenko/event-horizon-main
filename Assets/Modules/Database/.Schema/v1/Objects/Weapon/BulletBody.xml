@@ -8,6 +8,7 @@
     <member name="Range" type="float" minvalue="0" maxvalue="999999999" />
     <member name="Lifetime" type="float" minvalue="0" maxvalue="999999999" />
     <member name="Weight" type="float" minvalue="0" maxvalue="999999999" />
+    <member name="Recoil" type="float" minvalue="0" maxvalue="999999999" >Impulse on the parent per shot: Recoil * bullet speed relative to the parent. Not applied when attached to the parent</member>
     <member name="HitPoints" type="int" minvalue="0" maxvalue="999999999" />
     <member name="Color" type="color" />
     <member name="BulletPrefab" type="object" typeid="BulletPrefab" />

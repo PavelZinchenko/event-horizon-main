@@ -22,6 +22,15 @@ namespace Combat.Services
         public GameObject Create(GameObjectPrefab_CircularSpriteObject content) => LoadPrefab(content, "EnergyShield");
         public GameObject Create(GameObjectPrefab_CircularOutlineObject content) => LoadPrefab(content, "EnergyShieldOutline");
 
+        // Migration phase 5b, step 7c: the new combat scene's frontal shield record. Legacy draws its frontal shield from
+        // the FrontalShield prefab and never loads the record; another device that names it gets the prefab as it is.
+        public GameObject Create(GameObjectPrefab_ColliderSpriteObject content)
+        {
+            var prefab = GameObject.Instantiate(_prefabCache.LoadPrefab(new PrefabId("FrontalShield", PrefabId.Type.Object)));
+            prefab.transform.parent = _prefabCache.transform;
+            return prefab;
+        }
+
         private GameObject LoadPrefab<T>(T content, string name) where T : GameObjectPrefab
         {
             var template = _prefabCache.LoadPrefab(new PrefabId(name, PrefabId.Type.Object));

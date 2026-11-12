@@ -57,6 +57,7 @@ namespace Combat.Factory
 					switch (_ammunition.Effects[i].Type)
 					{
 						case ImpactEffectType.Damage:
+                        case ImpactEffectType.DamageWithFalloff:
                         case ImpactEffectType.SiphonHitPoints:
                         case ImpactEffectType.DrainEnergy:
                         case ImpactEffectType.DrainShield:
@@ -107,16 +108,8 @@ namespace Combat.Factory
         public float RelativeVelocityEffect { get { return _ammunition.Body.ParentVelocityEffect; } }
         public float ActivationCost => _ammunition.Controller.Continuous ? EnergyCost * _ammunition.Body.Lifetime : EnergyCost;
 
-        public float Recoil
-        {
-            get
-            {
-                return Weight * 
-                       BulletSpeed * 
-                       _ammunition.Controller.StartingVelocityMultiplier * 
-                       _ammunition.Body.ParentVelocityEffect;
-            }
-        }
+        // Legacy units: impulse per shot = Recoil × bullet speed relative to the parent.
+        public float Recoil => _ammunition.Body.Recoil * SizeMultiplier * _statModifier.WeightMultiplier.Value;
 
         public Color Color { get { return _statModifier.Color?.ToUnity() ?? _ammunition.Body.Color.ToUnity(); } }
         public float Weight { get { return _ammunition.Body.Weight * SizeMultiplier * _statModifier.WeightMultiplier.Value; } }

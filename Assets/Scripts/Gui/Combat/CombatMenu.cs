@@ -1,6 +1,5 @@
-﻿using Combat.Manager;
+﻿using Combat.Integration;
 using Services.Gui;
-using Services.Messenger;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -14,10 +13,10 @@ namespace Gui.Combat
         [SerializeField] private Button _killAllButton;
 
         [Inject]
-        private void Initialize(IMessenger messenger, CombatManager manager)
+        private void Initialize(IBattleView battle, ICombatCommands commands)
         {
-            _manager = manager;
-            messenger.AddListener<int>(EventType.EnemyShipCountChanged, OnEnemyShipCountChanged);
+            _battle = battle;
+            _commands = commands;
         }
 
         public void Open()
@@ -27,42 +26,42 @@ namespace Gui.Combat
 
         public void InitializeWindow()
         {
-            _nextEnemyButton.gameObject.SetActive(_manager.CanCallNextEnemy());
+            _nextEnemyButton.gameObject.SetActive(_battle.CanCallReinforcement);
             _nextEnemyButton.interactable = true;
-            _changeShipButton.gameObject.SetActive(_manager.CanChangeShip());
+            _changeShipButton.gameObject.SetActive(_battle.CanChangeShip);
 #if !UNITY_EDITOR
-            _killAllButton.gameObject.SetActive(_manager.CanKillAllEnemies);
+            _killAllButton.gameObject.SetActive(_battle.KillAllAllowedByRules);
 #endif
         }
 
         public void ExitButtonClicked()
         {
-            _manager.Surrender();
+            _commands.Surrender();
         }
 
         public void NextEnemyButtonClicled()
         {
-            _manager.CallNextEnemy();
+            _commands.CallReinforcement();
         }
 
         public void ChangeShipButtonClicked()
         {
-            _manager.ChangeShip();
+            _commands.Retreat(_battle.ControlledShip);
         }
 
         public void KillThemAll()
         {
-            _manager.KillAllEnemies();
+            _commands.KillAllEnemies();
         }
 
-        private void OnEnemyShipCountChanged(int count)
+        // The window object is inactive while closed, so this runs only while the menu is open.
+        private void Update()
         {
-            if (!gameObject.activeSelf)
-                return;
-            
-            _nextEnemyButton.interactable = _manager.CanCallNextEnemy();
+            if (_nextEnemyButton.gameObject.activeSelf)
+                _nextEnemyButton.interactable = _battle.CanCallReinforcement;
         }
 
-        private CombatManager _manager;
+        private IBattleView _battle;
+        private ICombatCommands _commands;
     }
 }

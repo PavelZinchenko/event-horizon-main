@@ -14,6 +14,10 @@ namespace Combat.Domain
 
         IFleetModel PlayerFleet { get; }
         IFleetModel EnemyFleet { get; }
+
+        // Credits the enemy damage dealt since the previous checkpoint to this player ship.
+        // Called when a player ship leaves the battle (retreat or death); GetReward adds the final checkpoint.
+        void AddExperienceCheckpoint(Constructor.Ships.IShip ship);
     }
 
     public static class CombatModelExtensions

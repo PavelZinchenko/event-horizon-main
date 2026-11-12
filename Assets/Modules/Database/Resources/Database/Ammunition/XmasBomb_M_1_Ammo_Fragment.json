@@ -1,0 +1,35 @@
+{
+  "ItemType": 25,
+  "Id": 184,
+  "Body": {
+    "Size": 0.6,
+    "Velocity": 5.0,
+    "ParentVelocityEffect": 0.0,
+    "Range": 4.0,
+    "BulletPrefab": 25,
+    "EnergyCost": 3.0,
+    "CanBeDisarmed": true
+  },
+  "Triggers": [
+    {
+      "Condition": 6,
+      "EffectType": 1,
+      "AudioClip": "hit_09"
+    },
+    {
+      "Condition": 5,
+      "EffectType": 1,
+      "AudioClip": "hit_09"
+    },
+    {
+      "Condition": 6,
+      "EffectType": 2,
+      "Ammunition": 185
+    },
+    {
+      "Condition": 5,
+      "EffectType": 2,
+      "Ammunition": 185
+    }
+  ]
+}

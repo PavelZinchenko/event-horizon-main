@@ -6,12 +6,11 @@ using Services.Resources;
 namespace Combat.Effects
 {
     [RequireComponent(typeof(SpriteRenderer))]
-    public class SparkEffect : EffectBase, IEffectPrefabInitializer
+    public class SparkEffect : EffectBase, IEffectPrefabInitializer, IEffectInstanceInitializer
     {
-        [HideInInspector][SerializeField] private float _speed;
-        [HideInInspector][SerializeField] private float _sparkSize;
-        [HideInInspector][SerializeField] private float _turnRate;
-
+        private float _speed;
+        private float _sparkSize;
+        private float _turnRate;
         private Vector2 _velocity;
         private float _angularVelocity;
 
@@ -20,7 +19,10 @@ namespace Combat.Effects
             var renderer = GetComponent<SpriteRenderer>();
             var sprite = resourceLocator.GetSprite(data.Image);
             renderer.sprite = sprite;
+        }
 
+        public void Setup(VisualEffectElement data)
+        {
             _speed = data.Size;
             _sparkSize = data.ParticleSize;
             _turnRate = data.TurnRate;

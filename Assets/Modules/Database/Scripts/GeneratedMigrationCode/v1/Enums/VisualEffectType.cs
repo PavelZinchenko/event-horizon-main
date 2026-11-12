@@ -20,5 +20,6 @@ namespace DatabaseMigration.v1.Enums
 		Lightning,
 		LightningStrike,
 		Sprite,
+		Laser,
 	}
 }

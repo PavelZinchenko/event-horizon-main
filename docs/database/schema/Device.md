@@ -60,12 +60,12 @@ Each row lists the fields that the class reads ([DeviceFactory.cs:35](../../../A
 | `GravityGenerator` | Push impulse × √target weight | Radius | Effect size = `Size × 2 × Range` | After use | Effect duration | Per use | Destroys missiles, energy bolts, and area effects in the radius. |
 | `Jammer` | | | | | | none | Always passive. Enemies prefer the ship as a target. |
 | `MissileCamouflage` | Chance 0…1 that missiles ignore the ship | | | | | none | Always passive. |
-| `PartialShield` | Like `EnergyShield` | | Shield size | After switch-off | | Per second | `Offset` places the shield. `Color`. The prefab is fixed. |
+| `PartialShield` | Like `EnergyShield` | | Shield size | After switch-off | | Per second | `Offset` places the shield. `Color`. Legacy: the prefab is fixed. New combat simulator: the image and shape of a `ColliderSpriteObject` `Prefab` ([GameObjectPrefab: Frontal shields](GameObjectPrefab.md#frontal-shields)). |
 | `PointDefense` | Damage per hit on drones, × damage multiplier | | Radius beyond half the ship scale | After switch-off, and between intercepts | | On switch-on, and per intercept | `Color`. Disarms enemy missiles and bolts in the radius. |
 | `RepairBot` | Percent of maximum armor repaired per second | Flight radius beyond half the ship scale | Bot size and bot hit points | After switch-off | Rebuild delay after the bot is destroyed | Per second | Beam `Color`. `Sound` plays on the bot. Not on bionic hulls. |
 | `Retribution` | Damage multiplier of the bullet, × damage multiplier | | | | | none | Fires `AmmunitionId` when the ship is destroyed. Always passive. |
 | `Stealth`, `SuperStealth` | | | | After it ends | | Per use | Enemies cannot target the ship. A hit ends `Stealth` but not `SuperStealth`. Activating most other systems ends both ([StealthDevice.cs:46](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Systems/Devices/StealthDevice.cs#L46)). No time limit. |
-| `Teleporter` | | Jump distance forward | Effect size × scale | After use | | Per use | Effect from `VisualEffect` or `EffectPrefab`, `Color`. The ship stops after the jump. |
+| `Teleporter` | | Jump distance forward | Effect size × scale | After use | | Per use | Obsolete: `TeleporterV2` replaced it, and players cannot get it. Bosses and mods still use it. Effect from `VisualEffect` or `EffectPrefab`, `Color`. The ship stops after the jump. |
 | `TeleporterV2` | Flight speed. The flight lasts `Range / Power` seconds ([WarpDrive.cs:33](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Systems/Devices/WarpDrive.cs#L33)). | Flight distance | Effect size × scale | After the flight | | Per use | Invulnerable and transparent. Releasing the key after 0.1 s stops early. A ship with a `WormTail` device jumps instantly. |
 | `TimeMachine` | | | Effect size × scale | Between uses | Invulnerability after a revive | none | Revives the ship when it dies and the cooldown is over, or on a key press. Restores energy, armor, and shield ([InfinityStone.cs:45](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Systems/Devices/InfinityStone.cs#L45)). Ship tint `Color`. |
 | `ToxicWaste` | Corrosive damage per second, × damage multiplier | | Cloud radius = `scale × Size + 1` | | Cloud duration | none | Creates the cloud when the ship is destroyed ([ToxicWaste.cs:35](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Systems/Devices/ToxicWaste.cs#L35)). Always passive. `Color`. |
@@ -99,7 +99,11 @@ AI behavior trees use devices by class: the `ActivateDevice` node and the `HasDe
 
 - `Sound` plays on activation. `Ghost` also plays it on deactivation. `PointDefense` and `RepairBot` pass it to their units ([DeviceFactory.cs:178](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Systems/DeviceFactory.cs#L178)).
 - `VisualEffect` wins over `EffectPrefab` ([DeviceFactory.cs:184](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Systems/DeviceFactory.cs#L184)). The `Accelerator` creates its flash only when `EffectPrefab` is set, even when `VisualEffect` is set.
-- Built-in records set `ObjectPrefab` on a decoy, a partial shield, the toxic waste, and the repair bots, and `EffectPrefab` on the detonator, the point defense, and the repair bots. These classes use fixed prefabs and ignore the values.
+- Built-in records set `ObjectPrefab` on a decoy, the toxic waste, and the repair bots, and `EffectPrefab` on the point defense. These classes use fixed prefabs and ignore the values.
+- New combat simulator only (migration phase 5b, step 7c); legacy ignores these fields for these classes:
+  - `Detonator`: `VisualEffect` is the explosion, played at the explosion radius in `Color` for the whole record. It replaces the ship's own explosion. Built-in record 36. Without one, a copy of record 36.
+  - `RepairBot`: the first `Laser` element of `VisualEffect` is the beam. Its `Size` multiplies the legacy length `1 + Range + Size`. Built-in record 37. Without a record, the legacy beam; a record without a `Laser` element draws none.
+  - `PartialShield`: a `ColliderSpriteObject` `Prefab` gives the image and the shape. Built-in record 4.
 
 ### Compatibility
 
