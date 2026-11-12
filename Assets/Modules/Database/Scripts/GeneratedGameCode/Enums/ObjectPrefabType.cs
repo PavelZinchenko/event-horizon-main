@@ -14,5 +14,6 @@ namespace GameDatabase.Enums
 		WormTailSegment = 1,
 		CircularSpriteObject = 2,
 		CircularOutlineObject = 3,
+		ColliderSpriteObject = 4,
 	}
 }

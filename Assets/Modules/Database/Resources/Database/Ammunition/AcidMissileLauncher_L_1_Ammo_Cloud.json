@@ -1,0 +1,35 @@
+{
+  "ItemType": 25,
+  "Id": 157,
+  "Body": {
+    "Size": 6.0,
+    "ParentVelocityEffect": 0.01,
+    "Lifetime": 2.0,
+    "AiBulletBehavior": 3
+  },
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "VisualEffect": 26,
+      "Size": 0.5,
+      "SyncLifetimeWithBullet": true
+    },
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "VisualEffect": 27,
+      "Color": "#80FFFFFF",
+      "ColorMode": 3,
+      "Size": 1.0,
+      "Lifetime": 0.3
+    }
+  ],
+  "ImpactType": 2,
+  "Effects": [
+    {
+      "DamageType": 3,
+      "Power": 7.0
+    }
+  ]
+}

@@ -32,6 +32,16 @@ namespace Combat.Collision.Behaviour.Action
 
         public void Dispose() { }
 
+        // Legacy area falloff: full at the centre, 0 when the target's edge (its scale) leaves the radius.
+        public static float GetFalloff(IUnit self, IUnit target)
+        {
+            var radius = self.Body.WorldScale() / 2;
+            if (radius <= 0) return 1f;
+
+            var distance = Vector2.Distance(self.Body.WorldPosition(), target.Body.WorldPosition());
+            return Mathf.Clamp01((radius + target.Body.WorldScale() - distance) / radius);
+        }
+
         private readonly float _impulse;
         private readonly float _damage;
         private readonly float _maxDistance;

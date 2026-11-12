@@ -11,7 +11,7 @@ Each page has the same parts:
 1. **Summary**: what the record is and which systems use it.
 2. **Facts**: item type value, record kind, folder, record count in the built-in catalog, schema file, generated class.
 3. **Fields**: one row per JSON field.
-   - *Type* uses the schema type: `int`, `float`, `bool`, `string`, `char`, `color`, `vector`, `layout`, `image`, `audio`, `prefab`, `enum`, `flags`, `expression`, `ref`, `ref list`, `struct`, `struct list`.
+   - *Type* uses the schema type: `int`, `float`, `bool`, `string`, `char`, `color`, `vector`, `vector list`, `layout`, `image`, `audio`, `prefab`, `enum`, `flags`, `expression`, `ref`, `ref list`, `struct`, `struct list`.
    - *Default / range* shows the schema `default` and the clamp range. An empty cell means the C# default (`0`, `false`, empty) and no clamp.
    - *Meaning* describes the runtime effect, not only the name.
 4. **Structures**: nested objects that only this table uses. Structures that several tables use are on [Shared structures](structures.md).

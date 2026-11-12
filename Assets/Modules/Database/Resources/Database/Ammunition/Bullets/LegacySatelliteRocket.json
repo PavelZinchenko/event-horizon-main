@@ -1,0 +1,10 @@
+{
+  "ItemType": 27,
+  "Id": 28,
+  "Shape": 1,
+  "Image": "rocket2",
+  "Size": 2.0,
+  "Margins": 0.41,
+  "SecondColor": "#C9C5FF",
+  "SecondColorMode": 2
+}

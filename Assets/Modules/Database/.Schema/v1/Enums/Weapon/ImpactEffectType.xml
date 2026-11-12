@@ -19,4 +19,7 @@
     <item name="ProgressiveDamage" />
     <item name="PushFromCenter" />
     <item name="PullToCenter" />
+    <item name="Roll" />
+    <item name="DamageWithFalloff" />
+    <item name="PushFromCenterWithFalloff" />
 </data>

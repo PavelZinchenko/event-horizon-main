@@ -146,8 +146,10 @@ namespace GameStateMachine.States
 		    else
 		        _sessionData.CreateNewGame(_database.Id);
 
+#if !UNITY_EDITOR
             if (!_sessionData.Purchases.RemoveAds)
                 _adsManager.ShowInterstitial();
+#endif
 
             _musicPlayer.Playlist = _databaseMusicPlaylist;
 

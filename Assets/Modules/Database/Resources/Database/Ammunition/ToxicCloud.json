@@ -1,0 +1,27 @@
+{
+  "ItemType": 25,
+  "Id": 186,
+  "Body": {
+    "Size": 2.0,
+    "ParentVelocityEffect": 0.02,
+    "Lifetime": 4.0,
+    "Color": "#80BE945D"
+  },
+  "Controller": {},
+  "Triggers": [
+    {
+      "Condition": 1,
+      "EffectType": 1,
+      "VisualEffect": 5,
+      "Size": 1.0,
+      "Lifetime": 1.2
+    }
+  ],
+  "ImpactType": 2,
+  "Effects": [
+    {
+      "DamageType": 3,
+      "Power": 1.0
+    }
+  ]
+}

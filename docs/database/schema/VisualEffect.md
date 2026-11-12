@@ -11,7 +11,7 @@ Back to the [schema index](index.md).
 | Item type | `26` |
 | Kind | collection |
 | Folder | [`Resources/Database/Ammunition/Effects/`](../../../Assets/Modules/Database/Resources/Database/Ammunition/Effects/) |
-| Records in the built-in catalog | 24, with 62 elements. Record 4 is unused. No element uses `Sprite`, `Offset`, or `Rotation`. |
+| Records in the built-in catalog | 37, with 88 elements. Records 25-35 come from the legacy area and bullet effects ([AmmunitionObsolete: Conversion](AmmunitionObsolete.md#conversion)). Records 36 (detonator explosion) and 37 (repair beam) serve the new combat simulator only. Record 4 is unused. 3 elements use `Sprite`; none uses `Offset` or `Rotation`. |
 | Schema | [VisualEffect.xml](../../../Assets/Modules/Database/.Schema/v1/Objects/Weapon/VisualEffect.xml), [VisualEffectElement.xml](../../../Assets/Modules/Database/.Schema/v1/Objects/Weapon/VisualEffectElement.xml) |
 | Generated class | `GameDatabase.DataModel.VisualEffect` ([generated](../../../Assets/Modules/Database/Scripts/GeneratedGameCode/DataModel/VisualEffect.cs)) |
 | Runtime | [`CompositeEffect`](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/CompositeEffect.cs) with element prefabs from [`PrefabCache.GetEffectPrefab`](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Services/PrefabCache.cs#L151) |
@@ -40,7 +40,7 @@ The record also has the [common fields](index.md#common-fields).
 | `TurnRate` | float | 0, −1000…1000 | Total rotation in degrees over the element's life, not per second ([CompositeEffect.cs:198](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/CompositeEffect.cs#L198)). |
 | `StartTime` | float | 0…1000 | Start of the element on the timeline. |
 | `Lifetime` | float | 1, 0…1000 | Duration of the element on the timeline. Must be above 0 (see [Data rules](#data-rules)). |
-| `ParticleSize` | float | 1, 0.001…100 | `Smoke`, `SmokeAdditive`: strength of the random variation in position, size, color, and spin. `Spark`: scale of each spark. `Lightning`, `LightningStrike`: line thickness. Other types ignore it. |
+| `ParticleSize` | float | 1, 0.001…100 | `Smoke`, `SmokeAdditive`: strength of the random variation in position, size, color, and spin. `Spark`: scale of each spark. `Lightning`, `LightningStrike`: line thickness. `Laser`: beam width. Other types ignore it. |
 | `Offset` | vector | | Position of the element inside the effect. |
 | `Rotation` | float | 0…360 | Start rotation of the element in degrees. |
 | `Loop` | bool | | The element repeats every `Lifetime` from `StartTime` until the effect ends. |
@@ -64,6 +64,7 @@ Callers and their duration *L*:
 | Ammunition trigger `PlaySfx`, `SpawnStaticSfx` | trigger `Lifetime`, or the bullet's remaining life with `SyncLifetimeWithBullet` | trigger `Size` | trigger color ([Ammunition: BulletTrigger](Ammunition.md#bullettrigger-switch)) |
 | Weapon muzzle flash | flash time of the ammunition | ammunition size × `EffectSize` | bullet color ([Weapon: Muzzle flash](Weapon.md#muzzle-flash)) |
 | Device effect | device lifetime or 0.5 s | device size | device color ([Device: Effects and prefabs](Device.md#effects-and-prefabs)) |
+| Detonator explosion (new combat simulator) | the whole record | explosion radius | device color |
 | Ship explosion | the largest element `Lifetime`, without `StartTime`, so elements with a `StartTime` are compressed ([ShipExplosionAction.cs:34](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Triggers/ShipExplosionAction.cs#L34)) | ship scale | none: each element keeps its own `Color`, and `ColorMode` has no effect ([Ship: Combat object](Ship.md#combat-object), [ShipSettings](ShipSettings.md)) |
 
 ### Element types
@@ -74,19 +75,19 @@ Base prefabs: [PrefabCache.cs:151](../../../Assets/Modules/BattleSimulator/Scrip
 | --- | --- | --- |
 | `Flash`, `FlashAdditive` | `Flash`, `FlashAdditive` | Sprite flash. The additive version brightens. |
 | `Shockwave` | `Wave` | Ring that expands from 0 to full size over its life, drawn with the image texture. |
-| `Smoke`, `SmokeAdditive` | `SmokeSimple`, `SmokeSimpleAdditive` | Random offset, size, tint, and spin by `ParticleSize` ([SmokeEffect.cs:28](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/SmokeEffect.cs#L28)). |
-| `Shake` | none | Shakes the camera each time the element becomes visible. Strength: `min(2 × effect size × Size / √(distance + 20), 5)` ([ShakeEffect.cs:24](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/ShakeEffect.cs#L24)). |
-| `Spark` | `Spark` | Sparks fly in random directions at speed `Size`, spin, and swirl by `TurnRate` ([SparkEffect.cs:24](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/SparkEffect.cs#L24)). |
+| `Smoke`, `SmokeAdditive` | `SmokeSimple`, `SmokeSimpleAdditive` | Random offset, size, tint, and spin by `ParticleSize` ([SmokeEffect.cs:31](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/SmokeEffect.cs#L31)). |
+| `Shake` | none | Shakes the camera each time the element becomes visible. Strength: `min(2 × effect size × Size / √(distance + 20), 5)` ([ShakeEffect.cs:24](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/ShakeEffect.cs#L24)). The effect size is the effect's world size: for a `PlaySfx` effect on a bullet, the trigger `Size` × the bullet scale (since phase 4, step 4c; [mapping table, S1](../../../TODO/battle_simulator_ammo_mapping.md#visual-effects)). |
+| `Spark` | `Spark` | Sparks fly in random directions at speed `Size`, spin, and swirl by `TurnRate` ([SparkEffect.cs:26](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/SparkEffect.cs#L26)). |
 | `Lightning` | `LightningStrike` | Animated lightning that changes direction every frame. |
-| `LightningStrike` | `LightningStrike` | One lightning bolt that fades ([LightningEffect.cs:41](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/LightningEffect.cs#L41)). |
+| `LightningStrike` | `LightningStrike` | One lightning bolt that fades ([LightningEffect.cs:42](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Effects/LightningEffect.cs#L42)). |
 | `Sprite` | `Sprite` | Plain sprite. |
+| `Laser` | none in legacy, which draws nothing | New combat simulator only: a straight beam along x, `Size` long and `ParticleSize` wide; the image runs along it in thirds, the end thirds 0.2 × the width long. The repair bot beam. |
 
-The cache keeps one element prefab per `Type` and `Image`. `Spark`, `Smoke`, and `Lightning` prefabs store more values at creation, so elements that share a type and an image also share these values. See [DB15.19](../../issues/database.md#db15-smaller-defects).
+The cache keeps one element prefab per `Type` and `Image`. The prefab holds only the image. `Spark`, `Smoke`, and `Lightning` get `Size`, `TurnRate`, `ParticleSize`, `Color`, and `ColorMode` on each instance (`IEffectInstanceInitializer`), so elements that share a type and an image can use different values.
 
 ### Data rules
 
 1. Give every element a `Lifetime` above 0. A non-looping element with 0 is visible only at the exact start time, so it almost never shows. Built-in effect 9 (`ShockWave`) has a `Shake` element with 0, so its shake never plays. A looping element with 0 gets an invalid life. See [DB15.5](../../issues/database.md#db15-smaller-defects).
-2. Elements with the same `Type` and `Image` must use the same `Size`, `TurnRate`, `ParticleSize`, `Color`, and `ColorMode`, or use different images ([DB15.19](../../issues/database.md#db15-smaller-defects)). Built-in data breaks it three times: effect 15 against eight other effects (`Smoke` with `CloudWhite`), 12 against 19 (`Lightning` with `beam`), and 9, 13, and 14 (`LightningStrike` with `beam`).
-3. Use `UseRealTime` for elements that must keep their speed when a caller stretches the effect, for example a looping glow.
-4. `Quantity` copies only differ for random types. Use several elements with different `Offset` or `Rotation` for fixed patterns.
-5. Each play creates new objects (not pooled). Avoid many elements on effects that play every frame.
+2. Use `UseRealTime` for elements that must keep their speed when a caller stretches the effect, for example a looping glow.
+3. `Quantity` copies only differ for random types. Use several elements with different `Offset` or `Rotation` for fixed patterns.
+4. Each play creates new objects (not pooled). Avoid many elements on effects that play every frame.

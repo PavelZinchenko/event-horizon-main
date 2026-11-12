@@ -29,5 +29,8 @@ namespace GameDatabase.Enums
 		ProgressiveDamage,
 		PushFromCenter,
 		PullToCenter,
+		Roll,
+		DamageWithFalloff,
+		PushFromCenterWithFalloff,
 	}
 }

@@ -35,11 +35,10 @@ namespace Combat.Domain
 
             foreach (var item in _ships)
             {
-                var model = item.ShipUnit;
-                if (model == null)
+                var damage = item.DamageFraction;
+                if (damage == 0f)
                     continue;
 
-                var damage = model.State != UnitState.Destroyed ? 1.0f - model.Stats.Armor.Percentage : 1.0f;
                 experience += (long)(damage * Maths.Experience.TotalExpForShip(item.ShipData));
             }
 

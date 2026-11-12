@@ -4,7 +4,6 @@ using Combat.Component.Ship;
 using Combat.Component.Unit.Classification;
 using Combat.Domain;
 using GameDatabase.Enums;
-using Gui.Combat;
 using Services.Audio;
 using Services.Messenger;
 using UnityEngine;
@@ -18,7 +17,6 @@ namespace Combat.Manager
         [Inject] private readonly ISoundPlayer _soundPlayer;
         [Inject] private readonly IMusicPlayer _musicPlayer;
         [Inject] private readonly Background.CombatBackground _background;
-        [Inject] private readonly TimerPanel _timerPanel;
         [Inject] private readonly CombatManager _combatManager;
         [Inject] private readonly ICombatModel _combatModel;
 
@@ -36,6 +34,8 @@ namespace Combat.Manager
                 return _elapsedTime > _combatModel.Rules.TimeLimit ? 0 : Mathf.CeilToInt(_combatModel.Rules.TimeLimit - _elapsedTime);
             }
         }
+
+        public Integration.CombatTimerState State { get; private set; }
 
         public void ResetTimer()
         {
@@ -90,19 +90,16 @@ namespace Combat.Manager
             _elapsedTime += Time.deltaTime;
             _background.OutOfTimeMode = false;
 
+            var visible = true;
+            var secondsLeft = 0;
+
             if (_activeEnemyShipCount == 0 || _activePlayerShipCount == 0)
             {
-                _timerPanel.Enabled = false;
+                visible = false;
             }
-            else if (_combatModel.Rules.TimeLimit <= 0)
-            {
-                _timerPanel.Enabled = true;
-                _timerPanel.Time = 0;
-            }
-            else
+            else if (_combatModel.Rules.TimeLimit > 0)
             {
                 var timeLeft = Mathf.CeilToInt(_combatModel.Rules.TimeLimit - _elapsedTime);
-                _timerPanel.Enabled = true;
 
                 switch (_combatModel.Rules.TimeOutMode)
                 {
@@ -154,11 +151,11 @@ namespace Combat.Manager
                         break;
                 }
 
-                _timerPanel.Enabled = true;
-                _timerPanel.Time = Mathf.Max(0, timeLeft);
+                secondsLeft = Mathf.Max(0, timeLeft);
             }
 
             SetAlarm(_background.OutOfTimeMode);
+            State = new Integration.CombatTimerState(visible, secondsLeft, _background.OutOfTimeMode);
         }
 
         private void SetAlarm(bool value)

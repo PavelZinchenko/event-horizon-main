@@ -1,0 +1,17 @@
+{
+  "ItemType": 26,
+  "Id": 29,
+  "Elements": [
+    {
+      "Type": 1,
+      "Image": "star",
+      "Size": 4.0
+    },
+    {
+      "Type": 1,
+      "Image": "star",
+      "ColorMode": 1,
+      "Size": 2.0
+    }
+  ]
+}

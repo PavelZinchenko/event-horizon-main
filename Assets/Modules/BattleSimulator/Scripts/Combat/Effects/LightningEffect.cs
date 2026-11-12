@@ -8,12 +8,12 @@ using Combat.Helpers;
 namespace Combat.Effects
 {
     [RequireComponent(typeof(LightningView), typeof(LineRenderer))]
-    public class LightningEffect : ViewEffect, IEffectPrefabInitializer
+    public class LightningEffect : ViewEffect, IEffectPrefabInitializer, IEffectInstanceInitializer
     {
         [HideInInspector][SerializeField] private LightningView _view;
-        [HideInInspector][SerializeField] private float _thickness;
         [HideInInspector][SerializeField] private bool _jiggle;
 
+        private float _thickness;
         private Material _material;
         private float _direction;
 
@@ -38,9 +38,13 @@ namespace Combat.Effects
             _material = renderer.material;
             _material.mainTexture = sprite == null ? null : sprite.texture;
 
-            _view.Initialize(data.Color.ToUnity(), data.ColorMode);
             _view.Animated = data.Type == GameDatabase.Enums.VisualEffectType.Lightning;
             _view.Fading = data.Type == GameDatabase.Enums.VisualEffectType.LightningStrike;
+        }
+
+        public void Setup(VisualEffectElement data)
+        {
+            _view.Initialize(data.Color.ToUnity(), data.ColorMode);
             _thickness = data.ParticleSize;
         }
 

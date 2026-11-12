@@ -17,5 +17,13 @@
       "Image": "turret",
       "Size": 1.0
     }
+  ],
+  "Collider": [
+    {
+      "Points": [
+        {}
+      ],
+      "Radius": 0.5
+    }
   ]
 }

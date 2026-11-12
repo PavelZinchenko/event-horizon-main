@@ -1,4 +1,5 @@
 ﻿using Combat.Component.Body;
+using Combat.Component.Helpers;
 using Combat.Effects;
 using Combat.Helpers;
 using Combat.Scene;
@@ -44,6 +45,7 @@ namespace Combat.Factory
             if (!prefab) return new EmptyEffect();
 
             var gameObject = new GameObjectHolder(prefab, _objectPool, false);
+            gameObject.GetComponent<IEffectInstanceInitializer>()?.Setup(effectData);
 
             gameObject.Transform.parent = parent;
             gameObject.Transform.localPosition = Vector3.zero;
