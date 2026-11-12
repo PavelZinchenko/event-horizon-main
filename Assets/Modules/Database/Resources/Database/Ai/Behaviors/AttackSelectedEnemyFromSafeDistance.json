@@ -9,17 +9,40 @@
         "ItemId": 141
       },
       {
-        "Type": 3,
+        "Type": 12,
         "Nodes": [
           {
-            "Type": 126
+            "Type": 63,
+            "MinValue": 1.0
           },
           {
-            "Type": 115
+            "Type": 3,
+            "Nodes": [
+              {
+                "Type": 126
+              },
+              {
+                "Type": 115,
+                "MaxValue": 0.25
+              },
+              {
+                "Type": 1,
+                "ItemId": 130
+              }
+            ]
           },
           {
-            "Type": 1,
-            "ItemId": 130
+            "Type": 3,
+            "Nodes": [
+              {
+                "Type": 115,
+                "MaxValue": 0.25
+              },
+              {
+                "Type": 1,
+                "ItemId": 130
+              }
+            ]
           }
         ]
       }
