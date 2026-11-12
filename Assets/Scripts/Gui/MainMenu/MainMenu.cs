@@ -150,7 +150,10 @@ namespace Gui.MainMenu
             {
                 var sprite = _resourceLocator.GetSprite(backgroundImage);
                 _backgroundImage.gameObject.SetActive(true);
-                _backgroundImage.SetImage(sprite?.texture);
+                Texture2D texture = null;
+                if (sprite != null)
+                    texture = sprite.texture;
+                _backgroundImage.SetImage(texture);
                 _animatedBackground.SetActive(false);
             }
             else
