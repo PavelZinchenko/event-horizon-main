@@ -19,4 +19,5 @@
     <item name="ProgressiveDamage" />
     <item name="PushFromCenter" />
     <item name="PullToCenter" />
+    <item name="Impulse" />
 </data>

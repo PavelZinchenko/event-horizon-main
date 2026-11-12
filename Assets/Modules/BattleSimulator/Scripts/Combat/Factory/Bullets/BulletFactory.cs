@@ -83,6 +83,10 @@ namespace Combat.Factory
                 parent.Bullets?.Add(bullet);
 
             bullet.UpdatePhysics(0);
+
+            if (!_ammunition.Body.AttachedToParent && parent.Body != null && _ammunition.Body.ParentVelocityEffect != 0f && _stats.Recoil > 0f)
+                parent.Body.ApplyForce(bullet.Body.WorldPosition(), -_stats.Recoil * (bullet.Body.WorldVelocity() - parent.Body.WorldVelocity()));
+
             return bullet;
         }
 
@@ -114,6 +118,8 @@ namespace Combat.Factory
                     collisionBehaviour.AddAction(new RadialPushAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.PullToCenter)
                     collisionBehaviour.AddAction(new RadialPushAction(-effect.Power * _stats.EffectPowerMultiplier, impactType));
+                else if (effect.Type == ImpactEffectType.Impulse)
+                    collisionBehaviour.AddAction(new StrikeAction(effect.Power * _stats.DamageMultiplier, false));
                 else if (effect.Type == ImpactEffectType.DrainEnergy)
                     collisionBehaviour.AddAction(new DrainEnergyAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.SiphonHitPoints)
