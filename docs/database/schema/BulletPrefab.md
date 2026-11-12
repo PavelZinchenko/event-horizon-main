@@ -11,7 +11,7 @@ Back to the [schema index](index.md).
 | Item type | `27` |
 | Kind | collection |
 | Folder | [`Resources/Database/Ammunition/Bullets/`](../../../Assets/Modules/Database/Resources/Database/Ammunition/Bullets/) |
-| Records in the built-in catalog | 21. Records 3 and 11 are unused. No record sets `MainColor` or `MainColorMode`. |
+| Records in the built-in catalog | 35. Records 22-35 come from the legacy bullet prefabs ([AmmunitionObsolete: Conversion](AmmunitionObsolete.md#conversion)). Records 3 and 11 are unused. No record sets `MainColor` or `MainColorMode`. |
 | Schema | [BulletPerfab.xml](../../../Assets/Modules/Database/.Schema/v1/Objects/Weapon/BulletPerfab.xml) (the file name is misspelled) |
 | Generated class | `GameDatabase.DataModel.BulletPrefab` ([generated](../../../Assets/Modules/Database/Scripts/GeneratedGameCode/DataModel/BulletPrefab.cs)) |
 | Runtime | [`PrefabCache.GetBulletPrefab`](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Services/PrefabCache.cs#L114) and the initializers in [`Component/Helpers/`](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Helpers/) |

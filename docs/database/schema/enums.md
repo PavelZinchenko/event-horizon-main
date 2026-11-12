@@ -228,12 +228,15 @@ What an `ImpactEffect` does on contact. `Power` is the strength. `Factor` is a s
 | 16 | `ProgressiveDamage` | Damage over time that ramps up over `Factor` seconds. |
 | 17 | `PushFromCenter` | Pushes the target away from the bullet center. |
 | 18 | `PullToCenter` | Pulls the target toward the bullet center. |
+| 19 | `Roll` | Spins the target. |
+| 20 | `DamageWithFalloff` | `Damage` that falls off linearly from the bullet centre. |
+| 21 | `PushFromCenterWithFalloff` | `PushFromCenter` that falls off linearly from the bullet centre. |
 
 ### BulletControllerType
 
 How a bullet moves. See [Ammunition](Ammunition.md#bulletcontroller-switch).
 
-`Projectile` (0), `Homing` (1), `Beam` (2), `Parametric` (3), `Harpoon` (4), `AuraEmitter` (5), `StickyMine` (6).
+`Projectile` (0), `Homing` (1), `Beam` (2), `Parametric` (3), `Harpoon` (4), `AuraEmitter` (5), `StickyMine` (6), `Rocket` (7, unguided, accelerates).
 
 ### BulletTriggerCondition
 
@@ -264,11 +267,11 @@ How a color combines with the parent (owner) color.
 
 ### VisualEffectType
 
-Element kinds of a [VisualEffect](VisualEffect.md): `Flash` (0), `FlashAdditive` (1), `Shockwave` (2), `Smoke` (3), `SmokeAdditive` (4), `Shake` (5, camera shake), `Spark` (6), `Lightning` (7), `LightningStrike` (8), `Sprite` (9).
+Element kinds of a [VisualEffect](VisualEffect.md): `Flash` (0), `FlashAdditive` (1), `Shockwave` (2), `Smoke` (3), `SmokeAdditive` (4), `Shake` (5, camera shake), `Spark` (6), `Lightning` (7), `LightningStrike` (8), `Sprite` (9), `Laser` (10, new combat simulator only: the repair bot beam; legacy draws nothing).
 
 ### ObjectPrefabType
 
-[GameObjectPrefab](GameObjectPrefab.md) kinds: `Undefined` (0), `WormTailSegment` (1), `CircularSpriteObject` (2), `CircularOutlineObject` (3).
+[GameObjectPrefab](GameObjectPrefab.md) kinds: `Undefined` (0), `WormTailSegment` (1), `CircularSpriteObject` (2), `CircularOutlineObject` (3), `ColliderSpriteObject` (4, new combat simulator only: a sprite with a collider, the frontal shield).
 
 ### Obsolete weapon enums
 

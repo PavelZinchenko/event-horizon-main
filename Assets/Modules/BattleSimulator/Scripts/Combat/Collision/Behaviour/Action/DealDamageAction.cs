@@ -6,9 +6,10 @@ namespace Combat.Collision.Behaviour.Action
 {
     public class DealDamageAction : ICollisionAction
     {
-        public DealDamageAction(DamageType damageType, float damage, BulletImpactType impactType, bool ignoreDefenseBonus = false)
+        public DealDamageAction(DamageType damageType, float damage, BulletImpactType impactType, bool ignoreDefenseBonus = false, bool falloff = false)
         {
             _ignoreDefenseBonus = ignoreDefenseBonus;
+            _falloff = falloff;
             _impactType = impactType;
             _damageType = damageType;
             _damage = damage;
@@ -17,6 +18,7 @@ namespace Combat.Collision.Behaviour.Action
         public void Invoke(IUnit self, IUnit target, CollisionData collisionData, ref Impact selfImpact, ref Impact targetImpact)
         {
             var damage = _ignoreDefenseBonus ? _damage * target.DefenseMultiplier : _damage;
+            if (_falloff) damage *= ApplyExplosionDamageAction.GetFalloff(self, target);
 
             if (_impactType == BulletImpactType.DamageOverTime)
             {
@@ -39,5 +41,6 @@ namespace Combat.Collision.Behaviour.Action
         private readonly BulletImpactType _impactType;
         private readonly DamageType _damageType;
         private readonly bool _ignoreDefenseBonus;
+        private readonly bool _falloff;
     }
 }

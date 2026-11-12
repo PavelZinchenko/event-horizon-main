@@ -1,6 +1,6 @@
 # AmmunitionObsolete
 
-An obsolete ammunition record is a bullet in the old format. One enum value, `AmmunitionClass`, selects fixed code for the movement, the contact effect, and the explosion. The other fields are numbers and assets for that code. Most built-in weapons still use this format. A [Component](Component.md) fires it through `AmmunitionId` together with a [Weapon](Weapon.md). New content should use [Ammunition](Ammunition.md).
+An obsolete ammunition record is a bullet in the old format. One enum value, `AmmunitionClass`, selects fixed code for the movement, the contact effect, and the explosion. The other fields are numbers and assets for that code. The built-in catalog has no records of this format since phase 4, step 4c (see [Conversion](#conversion)); mods may still use it. A [Component](Component.md) fires it through `AmmunitionId` together with a [Weapon](Weapon.md). New content should use [Ammunition](Ammunition.md).
 
 Back to the [schema index](index.md).
 
@@ -10,8 +10,8 @@ Back to the [schema index](index.md).
 | --- | --- |
 | Item type | `4` |
 | Kind | collection, legacy (one `AmmunitionObsoleteStats` struct) |
-| Folder | [`Resources/Database/Ammunition/Obsolete/`](../../../Assets/Modules/Database/Resources/Database/Ammunition/Obsolete/) |
-| Records in the built-in catalog | 81: 79 fired by 80 components, 1 used only as a coupled payload, 1 unused (5). See [Classes](#classes) for the count per class. |
+| Folder | `Resources/Database/Ammunition/Obsolete/` until the conversion (removed) |
+| Records in the built-in catalog | 0. Before the conversion (2026-10-31): 81, of which 79 fired by 80 components, 1 used only as a coupled payload, 1 unused (5). See [Classes](#classes) for the count per class. |
 | Schema | [AmmunitionObsolete.xml](../../../Assets/Modules/Database/.Schema/v1/Objects/AmmunitionObsolete.xml) |
 | Generated class | `GameDatabase.DataModel.AmmunitionObsolete` with the struct `AmmunitionObsoleteStats` ([generated](../../../Assets/Modules/Database/Scripts/GeneratedGameCode/DataModel/AmmunitionObsolete.cs)) |
 | Runtime | [`BulletFactoryObsolete`](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletFactoryObsolete.cs) and the class rules in [`AmmunitionClassExtensions`](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/AmmunitionClassExtensions.cs) |
@@ -49,7 +49,7 @@ The record also has the [common fields](index.md#common-fields). *p* is the powe
 
 Rules come from [`AmmunitionClassExtensions`](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/AmmunitionClassExtensions.cs). *Beam*: bound to the weapon, damage over time, energy per second. *Homing*: seeks a target, launches at 10 % speed. *Expiry*: the bullet also detonates when its lifetime ends.
 
-| Class | Built-in | Movement | On contact | On detonation |
+| Class | Built-in (before 4c) | Movement | On contact | On detonation |
 | --- | ---: | --- | --- | --- |
 | `Common` | 18 | straight | damage, push | |
 | `Fragment` | 1 | straight | damage, push | |
@@ -94,6 +94,17 @@ Classes that are not beams or areas act on the first target only, then self-dest
 - The muzzle flash uses `Size` and `Color` like the new format ([BulletStats.cs:219](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/BulletStats.cs#L219)).
 - The ship editor and the AI read the class through `GetBehaviorType` and `GetEffectType` ([AmmunitionClassExtensions.cs:31](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/Bullets/AmmunitionClassExtensions.cs#L31)).
 - See [Weapon: Old and new ammunition](Weapon.md#old-and-new-ammunition) for which weapons use which format.
+
+### Conversion
+
+[`AmmunitionConverter`](../../../Assets/Modules/Database/Scripts/Migration/v1/AmmunitionConverter.cs) turns one obsolete record (and its coupled record) into [Ammunition](Ammunition.md) records plus the [BulletPrefab](BulletPrefab.md) and [VisualEffect](VisualEffect.md) records they need. It reads no files, so a migration step can call it. The rules, the hit-radius factors, and the accepted differences are in the [mapping table](../../../TODO/battle_simulator_ammo_mapping.md).
+
+1. A converted record keeps its obsolete ID and file name. Components do not change.
+2. Area objects (explosions, EMP, clouds, webs) become child area bullets that a `SpawnBullet` trigger spawns. A `FragBomb` gets its own copy of the coupled record, because legacy overrides its damage, damage type and range.
+3. Child records, bullet prefabs and visual effects take the next free ID of their table in obsolete-ID order, so the same input gives the same files.
+4. The classes `Carrier`, `HomingCarrier`, `HomingTorpedo`, `EmpMissile`, `IonBeam`, `BlackHole` and `ClusterMissile` have no rule; the converter rejects them.
+
+*Tools/Database/Convert Obsolete Ammunition* ([AmmunitionConversionRunner.cs](../../../Assets/Modules/Database/Unity/Editor/AmmunitionConversionRunner.cs)) runs it on the built-in catalog. It writes the files in the Database Editor format, deletes the obsolete files, and copies three images the new records need. With no obsolete records it does nothing. [AmmunitionConverterTests](../../../Assets/Modules/Database/Tests/AmmunitionConverterTests.cs) convert the 81 former built-in records from a fixture.
 
 ### Data rules
 

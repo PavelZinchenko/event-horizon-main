@@ -1,0 +1,19 @@
+{
+    "name": "Database.Unity.Editor",
+    "rootNamespace": "GameDatabase",
+    "references": [
+        "CombatSimulation.Physics",
+        "Database"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

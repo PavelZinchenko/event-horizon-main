@@ -29,5 +29,15 @@
   "Features": {
     "HeatResistance": 1.0,
     "Regeneration": true
-  }
+  },
+  "Collider": [
+    {
+      "Points": [
+        {
+          "x": 0.018737793
+        }
+      ],
+      "Radius": 0.47711182
+    }
+  ]
 }

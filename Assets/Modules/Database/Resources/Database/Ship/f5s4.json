@@ -24,5 +24,15 @@
       "AutoAimingArc": 360.0,
       "WeaponClass": "C"
     }
+  ],
+  "Collider": [
+    {
+      "Points": [
+        {
+          "x": -0.017669678
+        }
+      ],
+      "Radius": 0.47909546
+    }
   ]
 }

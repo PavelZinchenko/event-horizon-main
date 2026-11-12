@@ -1,12 +1,27 @@
 # GitHub Pull Request Handling
 
-This folder stores active pull requests from `PavelZinchenko/event-horizon-main`.
+This folder stores active pull requests from the main repository and from the submodule repositories listed in [Repositories](#repositories).
 Active means open and not merged. Include draft pull requests.
 Track active pull requests only. When a pull request is merged or closed, delete all of its local files.
+
+## Repositories
+
+| Repository | Submodule path | Local folder |
+| --- | --- | --- |
+| `PavelZinchenko/event-horizon-main` | none (main repository) | `.pull_requests/` |
+| `PavelZinchenko/event-horizon-modules` | `Assets/ModulesShared` | `.pull_requests/event-horizon-modules/` |
+
+Pull request numbers are unique only inside one repository. The main repository and a submodule can both have a #12.
+Store each submodule's files in its own folder, named after the GitHub repository. Never put submodule files in the root folder.
+Identify a pull request by repository and number, never by number alone.
+In local text, write `#616` for the main repository and `event-horizon-modules#12` for a submodule.
+To track another submodule, add a row to this table. Synchronization creates the folder.
 
 ## Index
 
 [INDEX.md](INDEX.md) lists every active pull request, one row each, with the last synchronization time.
+Use one table per repository, under a heading with the repository name. Put the main repository first.
+Link submodule files by their folder path, for example `[event-horizon-modules/12.md](event-horizon-modules/12.md)`.
 Each row has a status, links to the snapshot and review, the confirmed-issue count, and a short result.
 Add a row when synchronization creates a snapshot. Delete the row when the pull request is merged or closed.
 
@@ -42,12 +57,13 @@ Stop after each step and report. Run several steps in one go only when the owner
 
 ## Local files
 
-Store one pull request per `.pull_requests/<number>.md` file.
-Use the pull request number as the filename, for example `547.md`.
+Store one pull request per `<folder>/<number>.md` file. `<folder>` is the repository's local folder from [Repositories](#repositories).
+Use the pull request number as the filename, for example `547.md` or `event-horizon-modules/12.md`.
+Keep the snapshot, review, and comment draft of one pull request in the same folder.
 
 Each file must contain:
 
-- GitHub URL, title, state, draft status, and author.
+- Repository, GitHub URL, title, state, draft status, and author.
 - GitHub creation and update timestamps, plus the time of the local check.
 - Base and head branches and commit hashes.
 - GitHub's changed-file count.
@@ -64,6 +80,7 @@ Use this structure:
 
 ```markdown
 ---
+repository: "PavelZinchenko/event-horizon-main"
 pull_request: 547
 url: "https://github.com/PavelZinchenko/event-horizon-main/pull/547"
 title: "Example pull request"
@@ -94,12 +111,23 @@ Total: 1 file.
 - `Assets/Scripts/Example.cs`
 ```
 
+For a submodule pull request, use the submodule repository in `repository` and `url`.
+Write the heading as `# event-horizon-modules#12: Title`.
+List changed paths as GitHub reports them, relative to the submodule repository root, not to the main repository.
+Add the `repository` field to an older snapshot that lacks it at its next synchronization.
+
 ## Local reviews
 
 In the review step, review each pull request whose snapshot has `needs_review: true`, unless the user names other pull requests.
 Store the review in `<number>.review.md` beside the synchronized `<number>.md` snapshot.
-For example, pull request 547 uses `547.review.md`.
+For example, pull request 547 uses `547.review.md`, and `event-horizon-modules#12` uses `event-horizon-modules/12.review.md`.
 Code review is a separate operation from synchronization.
+
+For a submodule pull request:
+
+- Pin source links to commits in the submodule repository.
+- Also trace consumers in the main repository. The main repository uses the submodule at a pinned commit, so read its current `main`.
+- Record a main repository consumer that would break as an issue of the submodule pull request.
 Keep GitHub-derived metadata in the snapshot and local findings in the review.
 
 Each review must contain:
@@ -147,10 +175,12 @@ Merge only after the review passes and the owner confirms the merge.
 Before merging, recheck that the head commit still equals the reviewed head and that the pull request merges cleanly.
 Choose the merge method unless the owner specifies one.
 After the merge, delete the pull request's local files and its index row.
+A merged submodule pull request does not change the main repository. The main repository changes only when its submodule pointer moves.
+Report that the pointer still needs an update, but do not move it without the owner's request.
 
 ## Comment drafts
 
-Store a draft in `<number>.comment-draft.md`. Write it for the pull request author, not for the owner.
+Store a draft in `<number>.comment-draft.md`, in the pull request's folder. Write it for the pull request author, not for the owner.
 Keep it short. The author must be able to apply the fix without reading the local review.
 
 Each draft must contain:
@@ -181,17 +211,17 @@ After posting, record the comment URL in the review and delete the draft file.
 ## Synchronization
 
 1. Read this README and existing local pull request files.
-2. Enumerate all active pull requests and follow pagination until the result set is complete.
+2. Enumerate all active pull requests in each repository from [Repositories](#repositories). Follow pagination until each result set is complete.
 3. Fetch each active pull request's metadata, original description, and changed-file list.
 4. Verify that the file list belongs to the recorded head commit.
 5. Check that the list contains unique paths and matches GitHub's changed-file count.
 6. Create missing files and refresh GitHub-derived content in existing files.
 7. Set `needs_review` in each snapshot: `true` for a new pull request or a moved head commit, otherwise unchanged.
    Add or update each row in [INDEX.md](INDEX.md) and set its status.
-8. For each local pull request missing from the active results, fetch its state directly. If it is merged or closed, delete its local files and its index row.
+8. For each local pull request missing from the active results, fetch its state directly from its own repository. If it is merged or closed, delete its local files and its index row.
 9. Preserve all local analysis, owner notes, and response drafts of active pull requests.
 10. Read back the written files and verify their descriptions, metadata, and file counts.
-11. Report created, updated, unchanged, deleted, and incomplete files, and list the pull requests that need a review.
+11. Report created, updated, unchanged, deleted, and incomplete files per repository, and list the pull requests that need a review.
 
 Do not infer closure from a pull request's absence in active search results. Confirm the state directly before deleting.
 Do not use filesystem modification times as GitHub update times.

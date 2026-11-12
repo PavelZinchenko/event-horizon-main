@@ -1,0 +1,149 @@
+using UnityEngine;
+using CombatView.Effects;
+
+namespace CombatView.Views
+{
+    // Copied from legacy Combat.Component.View.LightningView (migration phase 5b, step 3): a jagged line along local x,
+    // Size long, that narrows from the start width to the end width. Animated, it draws a new line every frame. Changes:
+    // the local ColorMode and the effect helpers replace the database and CommonComponents types.
+    [RequireComponent(typeof(LineRenderer))]
+    public class LightningView : BaseView
+    {
+        [SerializeField] private float _alphaScale = 1.0f;
+        [SerializeField] private float _startWidth = 1.0f;
+        [SerializeField] private float _endWidth = 0.1f;
+        [SerializeField] private float _stepSize = 1.0f;
+        [SerializeField] private float _bezierStepSize = 5.0f;
+        [SerializeField] private float _bezierAmplitude = 5.0f;
+        [SerializeField] private float _pinchFactor = 2.0f;
+        [SerializeField] private bool _animated = false;
+        [SerializeField] private bool _fading = true;
+        [SerializeField] private Color _startColor = Color.white;
+        [SerializeField] private Color _endColor = Color.white;
+        [SerializeField] private Color _baseColor = Color.white;
+        [SerializeField] private ColorMode _colorMode = ColorMode.TakeFromOwner;
+
+        public float Thickness { get { return _startWidth; } set { _startWidth = value; Size = Size; } }
+        public bool Animated { get => _animated; set => _animated = value; }
+        public bool Fading { get => _fading; set => _fading = value; }
+
+        public void Initialize(Color baseColor, ColorMode colorMode)
+        {
+            _baseColor = baseColor;
+            _colorMode = colorMode;
+        }
+
+        // Legacy seeded each bolt from the hash of a new object; a pooled instance takes a new seed at each release.
+        public override void Dispose()
+        {
+            _lineLength = 0;
+            _lineRenderer.enabled = false;
+            NewSeed();
+        }
+
+        public override void UpdateView(float elapsedTime)
+        {
+            base.UpdateView(elapsedTime);
+            if (_animated)
+                UpdateLine();
+        }
+
+        protected override void OnGameObjectCreated()
+        {
+            _lineRenderer = GetComponent<LineRenderer>();
+            _lineRenderer.enabled = false;
+            NewSeed();
+        }
+
+        private void NewSeed()
+        {
+            _seed = EffectMath.Random.Next();
+            _random = new System.Random(_seed);
+        }
+
+        protected override void OnGameObjectDestroyed() { }
+
+        protected override void UpdateLife(float life)
+        {
+            if (_fading)
+                Opacity = 1f - (1f - Life) * (1f - Life);
+        }
+
+        protected override void UpdatePosition(Vector2 position) { }
+        protected override void UpdateRotation(float rotation) { }
+
+        protected override void UpdateSize(float size)
+        {
+            _objectScale = transform.localScale.z;
+            var oldLength = _lineLength;
+            _lineLength = size / _objectScale;
+
+            if (!_animated && !Mathf.Approximately(oldLength, _lineLength))
+                UpdateLine(true);
+        }
+
+        protected override void UpdateColor(Color color)
+        {
+            if (!_lineRenderer) return;
+
+            color = _colorMode.Apply(_baseColor, color);
+            color.a *= _alphaScale * (1f - (1f - Opacity) * (1f - Opacity));
+            _lineRenderer.startColor = color * _startColor;
+            _lineRenderer.endColor = color * _endColor;
+        }
+
+        public void UpdateLine(bool isStatic = false)
+        {
+            if (!_lineRenderer) return;
+
+            if (_lineLength <= 0)
+            {
+                _lineRenderer.enabled = false;
+                return;
+            }
+
+            _lineRenderer.enabled = true;
+            _lineRenderer.startWidth = _startWidth * _objectScale;
+            _lineRenderer.endWidth = _endWidth * _objectScale;
+
+            var steps = 1 + Mathf.FloorToInt(_lineLength / _stepSize);
+            _lineRenderer.positionCount = steps + 1;
+
+            _lineRenderer.SetPosition(0, Vector3.zero);
+
+            var p12 = Vector2.zero;
+            var p2 = new Vector2(_bezierStepSize, _bezierAmplitude * EffectMath.NextFloatSigned(_random));
+            var p3 = new Vector2(2 * _bezierStepSize, _bezierAmplitude * EffectMath.NextFloatSigned(_random));
+            var p23 = (p2 + p3) / 2;
+
+            if (isStatic)
+                _random = new System.Random(_seed);
+
+            for (var i = 1; i <= steps; ++i)
+            {
+                var x = i * _lineLength / steps;
+
+                while (x > p23.x)
+                {
+                    p2 = p3;
+                    p3 = new Vector2(p2.x + _bezierStepSize, _bezierAmplitude * EffectMath.NextFloatSigned(_random));
+                    p12 = p23;
+                    p23 = (p2 + p3) / 2;
+                }
+
+                var p = EffectMath.Bezier(p12, p2, p23, (x - p12.x) / (p23.x - p12.x));
+                var scale = 1f - Mathf.Pow(i / (float)steps, _pinchFactor);
+
+                var position = new Vector3(x, p.y * scale, 0);
+                _lineRenderer.SetPosition(i, position);
+            }
+        }
+
+        private float _lineLength;
+        private float _objectScale;
+
+        private System.Random _random;
+        private int _seed;
+        private LineRenderer _lineRenderer;
+    }
+}

@@ -39,11 +39,20 @@ namespace GameStateMachine.States
 
             _exitSignal = exitSignal;
             _exitSignal.Event += OnCombatCompleted;
+
+            // The database switch selects the new combat core before the scene loads (migration phase 4, D10).
+            // '@' forces it for tests, with or without test ship IDs.
+#if UNITY_EDITOR
+            var forceCombatCore = settings.TestShipId?.Contains('@') == true;
+#else
+            var forceCombatCore = _database.IsEditable && settings.TestShipId?.Contains('@') == true;
+#endif
+            _useCombatCore = _database.CombatSettings.UseNewCombatSimulator || forceCombatCore;
         }
 
         public override StateType Type => StateType.QuickCombat;
 
-		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.Combat; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return _useCombatCore ? GameScene.CoreCombat : GameScene.Combat; } }
 
 		public override void InstallBindings(DiContainer container)
 		{
@@ -145,6 +154,7 @@ namespace GameStateMachine.States
 		}
 
 		private readonly Settings _settings;
+		private readonly bool _useCombatCore;
 		private readonly IDatabase _database;
 		private readonly ISessionData _session;
 		private readonly ExitSignal _exitSignal;

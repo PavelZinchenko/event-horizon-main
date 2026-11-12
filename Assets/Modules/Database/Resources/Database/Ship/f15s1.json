@@ -33,5 +33,15 @@
   ],
   "Features": {
     "ArmorBonus": 0.5
-  }
+  },
+  "Collider": [
+    {
+      "Points": [
+        {
+          "x": 0.05
+        }
+      ],
+      "Radius": 0.45
+    }
+  ]
 }

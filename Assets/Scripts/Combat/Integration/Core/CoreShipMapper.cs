@@ -1,0 +1,821 @@
+using System.Collections.Generic;
+using System.Linq;
+using Combat.Component.Systems.Devices;
+using Combat.Domain;
+using Combat.Factory;
+using CombatSimulation.Ai;
+using CombatSimulation.Core;
+using CombatSimulation.Physics;
+using Constructor;
+using Constructor.Model;
+using GameDatabase;
+using GameDatabase.DataModel;
+using GameDatabase.Enums;
+using GameDatabase.Extensions;
+using GameDatabase.Model;
+using Services.Resources;
+
+namespace Combat.Integration.Core
+{
+    // Maps a ship build to a core ship definition (phase 4, step 3a; rules in TODO/battle_simulator_phase4.md,
+    // "Ship mapping (3a)"). The device index is the legacy system index (ShipFactory.CreateShip), so key bindings and
+    // the AI read the same order. Parts the core cannot run become inert devices (D1).
+    public sealed class CoreShipMapper
+    {
+        public CoreShipMapper(IDatabase database, IResourceLocator resourceLocator)
+        {
+            _database = database;
+            _hullBuilder = new CoreHullBuilder(resourceLocator);
+        }
+
+        // Every ship and drone mapped so far; pilots and views look up the facts the core does not keep.
+        public IReadOnlyDictionary<ShipDefinition, CoreShipMapping> Mappings => _mappings;
+
+        // The view data of every mapped weapon, keyed by its BulletDefinition (cannon) or BeamDefinition (step 5).
+        public IReadOnlyDictionary<object, CoreBulletSource> BulletSources => _bulletSources;
+
+        // The database record of each mapped SpawnBullet trigger with a sound (phase 5b, step 6).
+        public IReadOnlyDictionary<BulletTriggerDefinition, BulletTrigger_SpawnBullet> SpawnTriggers => _spawnTriggers;
+
+        // The segment prefab of each mapped worm tail (phase 5, step 7d; phase 5b, step 7b).
+        public IReadOnlyDictionary<WormTailDefinition, CoreSegmentSource> SegmentSources => _segmentSources;
+        public IReadOnlyDictionary<RepairBotDefinition, ColorData> RepairBotColors => _repairBotColors;
+
+        // The device sound of each mapped repair bot device (phase 5b, step 7a): legacy plays it while the bot repairs.
+        public IReadOnlyDictionary<RepairBotDefinition, AudioClipId> RepairBotSounds => _repairBotSounds;
+
+        // The beam record of each mapped repair bot device (phase 5b, step 7c), or null.
+        public IReadOnlyDictionary<RepairBotDefinition, VisualEffect> RepairBotEffects => _repairBotEffects;
+
+        // The device colour of each mapped decoy device, by its decoy ship (phase 5, step 10c), and its sound (phase 5b,
+        // step 7a).
+        public IReadOnlyDictionary<ShipDefinition, ColorData> DecoyColors => _decoyColors;
+        public IReadOnlyDictionary<ShipDefinition, AudioClipId> DecoySounds => _decoySounds;
+
+        // The device index of each mapped weapon on its ship, keyed as BulletSources (phase 5b, step 7a, owner question
+        // 8 (b)): each weapon mapping builds its own definition.
+        public IReadOnlyDictionary<object, int> WeaponDevices => _weaponDevices;
+
+        // The view of each mapped energy or frontal shield (phase 5, step 10d).
+        public IReadOnlyDictionary<ShieldDefinition, CoreShieldLook> ShieldLooks => _shieldLooks;
+
+        // Inert reasons the coverage report also gives (phase 5, step 1).
+        public const string ObsoleteAmmunitionReason = "obsolete ammunition";
+
+        // Null for a device class the core runs, else its inert reason (D1).
+        public static string DeviceInertReason(DeviceClass deviceClass)
+        {
+            switch (deviceClass)
+            {
+                case DeviceClass.PointDefense:
+                case DeviceClass.TimeMachine:
+                case DeviceClass.TeleporterV2:
+                case DeviceClass.Detonator:
+                case DeviceClass.ClonningCenter:
+                case DeviceClass.WormTailV2:
+                case DeviceClass.Jammer:
+                case DeviceClass.DroneCamouflage:
+                case DeviceClass.MissileCamouflage:
+                case DeviceClass.Stealth:
+                case DeviceClass.SuperStealth:
+                case DeviceClass.Accelerator:
+                case DeviceClass.Brake:
+                case DeviceClass.Ghost:
+                case DeviceClass.RepairBot:
+                case DeviceClass.Decoy:
+                case DeviceClass.Fortification:
+                case DeviceClass.EnergyShield:
+                case DeviceClass.PartialShield:
+                case DeviceClass.ToxicWaste:
+                case DeviceClass.Retribution:
+                case DeviceClass.Teleporter:
+                case DeviceClass.GravityGenerator:
+                    return null;
+                default:
+                    return $"device {deviceClass}";
+            }
+        }
+
+        public CoreShipMapping Map(IShipInfo info) => Map(info.Specification, isDrone: false);
+
+        public CoreShipMapping Map(IShipSpecification specification, bool isDrone) => Map(specification, isDrone, null, false);
+
+        // bay is the drone bay of a drone, else null; it selects the drone's tree and range (step 7f). A clone (phase 5,
+        // step 7c) is a drone without a bay that runs the clone tree.
+        private CoreShipMapping Map(IShipSpecification specification, bool isDrone, IDroneBayData bay, bool isClone)
+        {
+            var stats = specification.Stats;
+            var modelScale = stats.ShipModel.ModelScale;
+            var barrels = new List<BarrelDefinition>();
+            var satellites = new List<SatelliteDefinition>();
+            var satelliteSources = new List<CoreSatelliteSource>();
+            var turrets = new List<CoreTurretSource>();
+            var devices = new List<DeviceDefinition>();
+            var infos = new List<CoreDeviceInfo>();
+            var views = new List<CoreDeviceViewSource>();
+            var aiWeapons = new List<AiWeapon>();
+            var aiDevices = new List<AiDevice>();
+            var aiDroneBays = new List<AiDroneBay>();
+            var tint = default(ColorData?);
+
+            // Legacy JammerDevice and CamouflageDevice change the ship's features (phase 5, step 9a): the jammer sets High
+            // priority, each camouflage raises its chance to the device Power, clamped to [0, 1].
+            var targetPriority = isDrone ? TargetPriority.Low : TargetPriority.Normal;
+            var chanceToAvoidDrone = 0f;
+            var chanceToAvoidMissile = 0f;
+
+            // Legacy ShipSpecDecorator scales the clone's weapon and ramming damage, but combat never reads the scaled
+            // stats; the core applies them (owner, 2026-11-02: a legacy bug).
+            var attack = isClone ? CloneMultiplier : 1f;
+
+            foreach (var platform in specification.Platforms)
+            {
+                // Legacy ShipFactory.CreatePlatform: a hull barrel, or a satellite with at most one barrel in its own frame
+                // (phase 5, step 12c). A satellite without a barrel has no weapons.
+                var barrelIndex = -1;
+                var companion = platform.Companion;
+                if (companion == null)
+                {
+                    barrelIndex = barrels.Count;
+                    barrels.Add(ToBarrel(platform, modelScale));
+                    if (barrels[barrelIndex].IsTurret)
+                        turrets.Add(new CoreTurretSource(barrelIndex, platform.Image, platform.Size * modelScale, stats.TurretColor.Color));
+                }
+                else
+                {
+                    var satellite = satellites.Count;
+                    var satelliteScale = companion.Satellite.ModelScale;
+                    var aiming = IsAimingSatellite(platform);
+                    satellites.Add(ToSatellite(companion, platform, modelScale, aiming));
+                    satelliteSources.Add(new CoreSatelliteSource(companion.Satellite.ModelImage, satelliteScale));
+                    if (companion.Satellite.Barrels.Count > 0)
+                    {
+                        barrelIndex = barrels.Count;
+                        barrels.Add(ToBarrel(platform, satelliteScale, satellite, aiming));
+                        if (barrels[barrelIndex].IsTurret)
+                            turrets.Add(new CoreTurretSource(barrelIndex, platform.Image, platform.Size * satelliteScale, stats.TurretColor.Color));
+                    }
+                }
+
+                foreach (var data in platform.Weapons)
+                {
+                    var weapon = attack == 1f ? data : new ScaledWeapon(data, attack);
+                    var name = $"weapon {weapon.Weapon.Id.Value}, ammunition {weapon.Ammunition.Id.Value}";
+                    var device = CoreWeaponMapper.Map(weapon, barrelIndex, stats.ArmorMultiplier.Value, AddChildSource,
+                        AddSpawnTrigger, out var reason);
+                    AddBulletSource(device, weapon, devices.Count);
+                    if (device != null)
+                        aiWeapons.Add(ToAiWeapon(weapon, devices.Count, Positive(stats.Weight)));
+                    var cost = device is BeamDefinition beam ? beam.ActivationCost : (device as CannonDefinition)?.EnergyCost ?? 0f;
+                    Add(devices, infos, views, device, new CoreDeviceInfo(name, weapon.KeyBinding, weapon.Weapon.Stats.ControlButtonIcon, cost, reason,
+                        ReleasesWeaponButton(weapon.Weapon.Stats, weapon.Stats.FireRateMultiplier.Value)),
+                        device != null ? new CoreDeviceViewSource(weapon, barrelIndex) : null);
+                }
+
+                // Until step 4 (D2) the core has no obsolete ammunition.
+                foreach (var weapon in platform.WeaponsObsolete)
+                    Add(devices, infos, views, null, new CoreDeviceInfo("weapon with obsolete ammunition", weapon.KeyBinding,
+                        weapon.Weapon.ControlButtonIcon, 0f, ObsoleteAmmunitionReason, ReleasesWeaponButton(weapon.Weapon, 1f)));
+            }
+
+            foreach (var item in specification.Devices)
+            {
+                var device = item.Device;
+                if (!IsLegacyDevice(device.DeviceClass))
+                    continue;
+
+                var key = IsAlwaysAutomatic(device.DeviceClass) ? -1 : item.KeyBinding;
+                if (IsPassive(device.DeviceClass))
+                {
+                    if (device.DeviceClass == DeviceClass.Jammer)
+                        targetPriority = TargetPriority.High;
+                    else if (device.DeviceClass == DeviceClass.DroneCamouflage)
+                        chanceToAvoidDrone = System.Math.Max(chanceToAvoidDrone, Fraction(device.Power));
+                    else
+                        chanceToAvoidMissile = System.Math.Max(chanceToAvoidMissile, Fraction(device.Power));
+
+                    // The slot keeps the legacy system index; the device itself does nothing (CanBeActivated false).
+                    aiDevices.Add(new AiDevice(devices.Count, device.DeviceClass, true));
+                    Add(devices, infos, views, InertDefinition, new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, 0f, null));
+                    continue;
+                }
+
+                string inertReason = null;
+                var activationCost = 0f;
+                var mapped = IsDeathSpawn(device.DeviceClass)
+                    ? MapDeathSpawn(device, stats, out inertReason)
+                    : MapDevice(device, stats, out activationCost);
+                if (mapped != null)
+                {
+                    // Legacy WarpDrive.MaxRange for the Chase node and DetonatorDevice.ActivationTime for DetonateShip;
+                    // other classes ignore them.
+                    var range = device.DeviceClass == DeviceClass.TeleporterV2 ? NonNegative(device.Range) : 0f;
+                    var detonator = mapped as DetonatorDefinition;
+                    aiDevices.Add(new AiDevice(devices.Count, device.DeviceClass, key < 0, range,
+                        detonator?.Activation.Duration ?? 0f));
+
+                    // Legacy CreateStrongExplosion draws the area in the device colour; phase 5b, step 7c: with the
+                    // device's record. The first detonator, ghost or fortification gives the colour that ShipState.Tint
+                    // moves the ship to.
+                    if (detonator != null)
+                        _bulletSources[detonator.Explosion] = new CoreBulletSource(null, ExplosionFlashSize,
+                            device.Color, null, device.VisualEffect);
+                    if (detonator != null || mapped is GhostDefinition || mapped is FortificationDefinition)
+                        tint = tint ?? device.Color;
+                    if (mapped is RepairBotDefinition repairBot)
+                    {
+                        _repairBotColors[repairBot] = device.Color;
+                        _repairBotSounds[repairBot] = device.Sound;
+                        _repairBotEffects[repairBot] = device.VisualEffect;
+                    }
+                    if (mapped is DecoyDefinition decoy)
+                    {
+                        _decoyColors[decoy.Ship] = device.Color;
+                        _decoySounds[decoy.Ship] = device.Sound;
+                    }
+                    if (mapped is ShieldDefinition shield) _shieldLooks[shield] = ShieldLook(device, modelScale);
+                    if (mapped is WormTailDefinition tail)
+                        _segmentSources[tail] = new CoreSegmentSource(IsSegment2(device),
+                            device.Prefab as GameObjectPrefab_WormTailSegment);
+                    Add(devices, infos, views, mapped,
+                        new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, activationCost, null,
+                            ReleasesDeviceButton(device.DeviceClass)), new CoreDeviceViewSource(device));
+                }
+                else
+                {
+                    Add(devices, infos, views, null, new CoreDeviceInfo(DeviceName(device), key, device.ControlButtonIcon, 0f,
+                        inertReason ?? DeviceInertReason(device.DeviceClass), ReleasesDeviceButton(device.DeviceClass)));
+                }
+            }
+
+            if (!isDrone)
+                AddDroneBays(specification, devices, infos, views, aiDroneBays);
+
+            var engine = new EngineStats(stats.EnginePower, stats.TurnRate, stats.Weight, stats.Layout.CellCount, _database.ShipSettings);
+            var definition = new ShipDefinition(
+                _hullBuilder.Build(stats.ShipModel),
+                Positive(stats.Weight),
+                ToEngine(engine),
+                Positive(stats.ArmorPoints),
+                new ResourceDefinition(NonNegative(stats.ShieldPoints), stats.ShieldRechargeRate, NonNegative(stats.ShieldRechargeCooldown)),
+                new ResourceDefinition(NonNegative(stats.EnergyPoints), stats.EnergyRechargeRate, NonNegative(stats.EnergyRechargeCooldown)),
+                ToEngine(new EngineStats(stats.EnginePowerWihoutEnergy, stats.TurnRateWihoutEnergy, stats.Weight, stats.Layout.CellCount, _database.ShipSettings)),
+                rammingDamageMultiplier: NonNegative(stats.RammingDamageMultiplier) * attack,
+                barrels: barrels,
+                satellites: satellites,
+                devices: devices,
+                resistances: LegacyDamageModel.Resistances(
+                    Fraction(stats.KineticResistancePercentage),
+                    Fraction(stats.EnergyResistancePercentage),
+                    Fraction(stats.ThermalResistancePercentage),
+                    Fraction(stats.ShieldCorrosiveResistancePercentage),
+                    NonNegative(stats.EnergyAbsorptionPercentage),
+                    Positive(stats.ArmorMultiplier.Value)),
+                // Legacy Body.WorldScale: the target size in the area falloff (phase 5, step 3).
+                scale: NonNegative(modelScale),
+                teleportImmune: stats.ShipModel.ShipType == ShipType.Starbase || stats.ShipModel.ShipType == ShipType.Special,
+                targetPriority: targetPriority,
+                chanceToAvoidMissile: chanceToAvoidMissile,
+                // Legacy ShipStats: armor repairs only with a positive rate (phase 5, step 13). Clones take the
+                // decorator's rate (x 0.9).
+                armorRepairRate: NonNegative(stats.ArmorRepairRate),
+                armorRepairDelay: NonNegative(stats.ArmorRepairCooldown));
+
+            // AI side table (phase 4, steps 6 and 7b): the legacy RequirementChecker facts and the target facts, without
+            // inert devices (D6). Legacy Ship gives a drone Low priority; the jammer sets High (step 9a).
+            var ai = new AiShipProfile(aiWeapons, aiDevices, aiDroneBays,
+                isDrone: isDrone,
+                isStarbase: stats.ShipModel.ShipType == ShipType.Starbase,
+                sizeClass: stats.ShipModel.SizeClass,
+                enginePower: stats.EnginePower,
+                turnRate: stats.TurnRate,
+                propulsion: engine.Propulsion,
+                kineticResistance: stats.KineticResistancePercentage,
+                rammingDamageMultiplier: stats.RammingDamageMultiplier * attack,
+                modelScale: modelScale,
+                chanceToAvoidDrone: chanceToAvoidDrone);
+
+            // Legacy DroneBay and ControllerFactory.CreateDroneController and CreateCloneController (T6).
+            var aiTree = isClone
+                ? BehaviorTreeSelection.ForClone(_database.CombatSettings, specification.CustomAi)
+                : bay == null
+                    ? specification.CustomAi
+                    : BehaviorTreeSelection.ForDrone(_database.CombatSettings, bay.DroneBay, bay.Drone.CustomAI, bay.Behaviour == DroneBehaviour.Defensive);
+            var kind = isClone ? "clone" : isDrone ? "drone" : "ship";
+            var mapping = new CoreShipMapping($"{kind} {specification.Info.Id.Value}", definition, infos,
+                stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot, tint, isClone, turrets,
+                satelliteSources, LookSource(stats, isDrone), views);
+            _mappings[definition] = mapping;
+            return mapping;
+        }
+
+        // Legacy ShipFactory.CreateShip and CreateDestructionEffect (phase 5b, step 4). A clone is a drone here, as legacy
+        // gives it a mother ship.
+        private CoreShipLookSource LookSource(IShipStats stats, bool isDrone)
+        {
+            var model = stats.ShipModel;
+            var isSmallShip = model.ModelScale < 0.9f;
+            var explosion = model.VisualEffects.CustomExplosionEffect;
+            var sound = model.VisualEffects.CustomExplosionSound;
+            if (explosion == null)
+                explosion = isSmallShip ? _database.ShipSettings.DroneExplosionEffect : _database.ShipSettings.ShipExplosionEffect;
+            if (!sound)
+                sound = isSmallShip ? _database.ShipSettings.DroneExplosionSound : _database.ShipSettings.ShipExplosionSound;
+            // Legacy ShipExplosionActionObsolete and DroneExplosionActionObsolete play their own clip.
+            if (explosion == null)
+                sound = new AudioClipId(isSmallShip ? "explosion_10" : "explosion_01");
+
+            return new CoreShipLookSource(stats.ShipColor, stats.TurretColor, model.EngineColor, model.Engines,
+                stats.ShieldPoints > 0, isDrone, explosion, sound, model.VisualEffects.LeaveWreck.IsEnabled(!isSmallShip));
+        }
+
+        // The device classes the core runs (DeviceInertReason null); null for the others. The activation cost is legacy
+        // ISystem.ActivationCost, for the automatic use rule.
+        private static DeviceDefinition MapDevice(DeviceStats device, IShipStats stats, out float activationCost)
+        {
+            activationCost = 0f;
+            var modelScale = stats.ShipModel.ModelScale;
+            switch (device.DeviceClass)
+            {
+                case DeviceClass.RepairBot:
+                    return new RepairBotDefinition(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
+                        NonNegative(device.Lifetime), Positive(device.Size), NonNegative(device.Range),
+                        NonNegative(stats.ArmorMultiplier.Value * device.Size), NonNegative(device.Power));
+                // Legacy DecoyDevice: EnergyConsumption once per use, Cooldown from the use, RoundToInt(Power) decoys at
+                // Range relative speed, Lifetime, and ArmorMultiplier x 10 hit points (phase 5, step 10c).
+                case DeviceClass.Decoy:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new DecoyDefinition(activationCost, NonNegative(device.Cooldown), (int)System.Math.Round(device.Power),
+                        NonNegative(device.Range), NonNegative(device.Lifetime), Positive(stats.ArmorMultiplier.Value * 10f));
+                // Legacy EnergyShieldDevice: EnergyConsumption once per use, Cooldown from its end; the prefab circle at Size x
+                // model scale. A hit costs its damage / (Power x ShieldMultiplier) energy (phase 5, step 10d).
+                case DeviceClass.EnergyShield:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return ShieldDefinition.EnergyShield(activationCost, NonNegative(device.Cooldown),
+                        NonNegative(device.Power * stats.ShieldMultiplier.Value),
+                        Positive(EnergyShieldRadius(device) * device.Size * modelScale));
+                // Legacy FrontalShieldDevice: EnergyConsumption per second while held; the FrontalShield prefab polygon at
+                // Size x model scale and Offset x model scale. Legacy ActivationCost is 0. Phase 5b, step 7c: the polygon
+                // of the device's ColliderSpriteObject record.
+                case DeviceClass.PartialShield:
+                    return ShieldDefinition.FrontalShield(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
+                        NonNegative(device.Power * stats.ShieldMultiplier.Value),
+                        FrontalShieldPolygon(FrontalShieldOutline(device), Positive(device.Size * modelScale),
+                            modelScale * device.Offset.x, modelScale * device.Offset.y));
+                case DeviceClass.PointDefense:
+                    activationCost = device.EnergyConsumption;
+                    return new PointDefenseDefinition(
+                        Positive(device.Size + modelScale / 2f),
+                        NonNegative(device.Cooldown),
+                        NonNegative(device.EnergyConsumption),
+                        NonNegative(device.Power * stats.DamageMultiplier.Value));
+                // Legacy InfinityStone: Cooldown, and Lifetime for the time without contacts (phase 5, step 7a).
+                case DeviceClass.TimeMachine:
+                    return new InfinityStoneDefinition(NonNegative(device.Cooldown), NonNegative(device.Lifetime));
+                // Legacy WarpDrive: EnergyConsumption once per use, Power as the speed, Range (phase 5, step 7a).
+                case DeviceClass.TeleporterV2:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new WarpDriveDefinition(activationCost, NonNegative(device.Cooldown), Positive(device.Power),
+                        NonNegative(device.Range));
+                // Legacy TeleporterDevice, obsolete (owner decision 3): EnergyConsumption once per use, Cooldown from the use,
+                // Range as the jump (phase 5, step 11b).
+                case DeviceClass.Teleporter:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new TeleporterDefinition(activationCost, NonNegative(device.Cooldown), NonNegative(device.Range));
+                // Legacy GravityGenerator: EnergyConsumption once per use, Cooldown from the use, a wave of Range for 0.5 s
+                // that pushes by Power x sqrt(mass) (phase 5, step 11c). Neither is scaled by the ship.
+                case DeviceClass.GravityGenerator:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new GravityGeneratorDefinition(activationCost, NonNegative(device.Cooldown), NonNegative(device.Range),
+                        device.Power);
+                // Legacy DetonatorDevice: EnergyConsumption once per use, Lifetime as the lock, and a heat explosion of
+                // Power x cells x damage multiplier within Range x sqrt(model scale) (phase 5, step 7b).
+                case DeviceClass.Detonator:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new DetonatorDefinition(activationCost, NonNegative(device.Cooldown), NonNegative(device.Lifetime),
+                        DetonatorDefinition.CreateExplosion(
+                            NonNegative(device.Power * stats.Layout.CellCount * stats.DamageMultiplier.Value),
+                            (int)DamageType.Heat, Positive(device.Range), NonNegative(modelScale), Positive(stats.Weight)));
+                // Legacy WormTailDeviceV2: Power x the ship's armor per segment, RoundToInt(Size) segments, Cooldown to
+                // regrow, Offset for the hinges; the circle of the segment prefab (phase 5, step 7d).
+                case DeviceClass.WormTailV2:
+                    return new WormTailDefinition(NonNegative(device.Power), System.Math.Max(1, (int)System.Math.Round(device.Size)),
+                        NonNegative(device.Cooldown), device.Offset.x, device.Offset.y,
+                        IsSegment2(device) ? Segment2Radius : SegmentRadius);
+                // Legacy StealthDevice: EnergyConsumption once per use, Cooldown from its end; SuperStealth survives
+                // contacts (phase 5, step 9b).
+                case DeviceClass.Stealth:
+                case DeviceClass.SuperStealth:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new StealthDefinition(activationCost, NonNegative(device.Cooldown),
+                        device.DeviceClass == DeviceClass.Stealth);
+                // Legacy AcceleratorDevice: max(1, EnergyConsumption x EngineEnergyConsumption) per second while held,
+                // Cooldown from its end, Power on propulsion and velocity (phase 5, step 9c). Legacy ActivationCost is 0.
+                case DeviceClass.Accelerator:
+                    return new AcceleratorDefinition(
+                        System.Math.Max(1f, device.EnergyConsumption * stats.EngineEnergyConsumption),
+                        NonNegative(device.Cooldown), NonNegative(device.Power));
+                // Legacy BrakeDevice: Power / sqrt(ship weight) (phase 5, step 9c).
+                case DeviceClass.Brake:
+                    return new BrakeDefinition(NonNegative(device.Power) / (float)System.Math.Sqrt(Positive(stats.Weight)));
+                // Legacy GhostDevice: EnergyConsumption at the start and per second, Cooldown from its end, Lifetime
+                // (phase 5, step 9d).
+                case DeviceClass.Ghost:
+                    activationCost = NonNegative(device.EnergyConsumption);
+                    return new GhostDefinition(activationCost, NonNegative(device.Cooldown), NonNegative(device.Lifetime));
+                // Legacy FortificationDevice: EnergyConsumption per second, Cooldown from its end, the share Power / 100
+                // or 0.5 when Power is 0 (phase 5, step 9d). Legacy ActivationCost is 0.
+                case DeviceClass.Fortification:
+                    return new FortificationDefinition(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
+                        Fraction(device.Power == 0f ? 0.5f : device.Power / 100f));
+                default:
+                    return null;
+            }
+        }
+
+        private static bool IsDeathSpawn(DeviceClass deviceClass) =>
+            deviceClass == DeviceClass.ToxicWaste || deviceClass == DeviceClass.Retribution;
+
+        // Legacy ToxicWaste and RetributionDevice (phase 5, step 11a; owner decisions 1, 2 and 6): one bullet of
+        // AmmunitionId at the death, with damage x Power x the ship damage multiplier. The toxic cloud takes the area
+        // multiplier ship scale x Size + 1, so the 1-unit radius of ammunition 186 gives the legacy radius; the pack keeps
+        // its own size. A ToxicWaste without ammunition (mods, until E5) gets ammunition 186 (question 4).
+        private DeathSpawnDefinition MapDeathSpawn(DeviceStats device, IShipStats stats, out string inertReason)
+        {
+            var toxic = device.DeviceClass == DeviceClass.ToxicWaste;
+            var ammunition = device.AmmunitionId ??
+                (toxic ? _database.GetAmmunition(new ItemId<Ammunition>(ToxicCloudId)) : null);
+            if (ammunition == null)
+            {
+                inertReason = "death spawn without ammunition";
+                return null;
+            }
+
+            var modifier = new WeaponStatModifier
+            {
+                DamageMultiplier = StatMultiplier.FromValue(device.Power * stats.DamageMultiplier.Value),
+            };
+            if (toxic)
+                modifier.AoeRadiusMultiplier = StatMultiplier.FromValue(NonNegative(stats.ShipModel.ModelScale * device.Size) + 1f);
+
+            var bullet = CoreWeaponMapper.MapDeviceBullet(ammunition, modifier, stats.ArmorMultiplier.Value, AddChildSource,
+                AddSpawnTrigger, out inertReason);
+            if (bullet == null)
+                return null;
+
+            _bulletSources[bullet] = new CoreBulletSource(ammunition.Body.BulletPrefab, BodySize(ammunition, modifier),
+                ammunition.Body.Color, ammunition);
+            return new DeathSpawnDefinition(bullet);
+        }
+
+        // Legacy CircularObjectInitializer sets the collider radius 0.5 / ImageScale; the EnergyShield and EnergyShieldOutline
+        // prefabs have radius 0.5. Legacy loads Prefab, else EffectPrefab; a custom EffectPrefab collider is not read.
+        private static float EnergyShieldRadius(DeviceStats device) =>
+            device.Prefab is GameObjectPrefab_CircularSpriteObject sprite && sprite.ImageScale > 0f ? 0.5f / sprite.ImageScale : 0.5f;
+
+        // The PolygonCollider2D of the FrontalShield prefab, in its frame (x forward).
+        private static readonly Vec2[] FrontalShieldPoints =
+        {
+            new Vec2(0.1996436f, 0.18302166f), new Vec2(0.0724372f, 0.32446393f), new Vec2(-0.10135025f, 0.40494263f),
+            new Vec2(-0.101905935f, -0.40675685f), new Vec2(0.07480715f, -0.32864812f), new Vec2(0.19838507f, -0.17981833f),
+            new Vec2(0.2412068f, 0.0054100156f),
+        };
+
+        // Phase 5b, step 7c (owner, 2026-11-11): the first collider outline (3 or more points) of the device's
+        // ColliderSpriteObject record, in its frame. Without one (no record, a circle, a capsule, an empty list) the
+        // FrontalShield prefab polygon; the analyzer reports such a record.
+        private static IReadOnlyList<Vec2> FrontalShieldOutline(DeviceStats device)
+        {
+            if (device.Prefab is GameObjectPrefab_ColliderSpriteObject prefab)
+            {
+                foreach (var shape in prefab.Collider)
+                {
+                    if (shape.Points.Count < 3) continue;
+                    var points = new Vec2[shape.Points.Count];
+                    for (var i = 0; i < points.Length; ++i)
+                        points[i] = new Vec2(shape.Points[i].x, shape.Points[i].y);
+                    return points;
+                }
+            }
+
+            return FrontalShieldPoints;
+        }
+
+        private static Polygon FrontalShieldPolygon(IReadOnlyList<Vec2> outline, float size, float offsetX, float offsetY)
+        {
+            var points = new Vec2[outline.Count];
+            for (var i = 0; i < points.Length; ++i)
+                points[i] = size * outline[i] + new Vec2(offsetX, offsetY);
+            return Polygon.FromPoints(points);
+        }
+
+        // Legacy SatelliteFactory: the energy shield draws its prefab record (or the EnergyShield prefab) at an idle
+        // opacity of 0.3; the frontal shield draws the FrontalShield prefab at 1 (phase 5b, step 7c: with the image of its
+        // ColliderSpriteObject record). Both are Size x model scale wide.
+        private static CoreShieldLook ShieldLook(DeviceStats device, float modelScale)
+        {
+            var energy = device.DeviceClass == DeviceClass.EnergyShield;
+            var prefab = energy || device.Prefab is GameObjectPrefab_ColliderSpriteObject ? device.Prefab : null;
+            return new CoreShieldLook(!energy, prefab, device.Size * modelScale,
+                energy ? 0f : modelScale * device.Offset.x, energy ? 0f : modelScale * device.Offset.y, device.Color,
+                energy ? 0.3f : 1f);
+        }
+
+        // Legacy DeviceFactory: the database prefab record (built on the WormSegment prefab), else ObjectPrefab.
+        private static bool IsSegment2(DeviceStats device) =>
+            device.Prefab == null && device.ObjectPrefab.ToString() == new PrefabId(Segment2Prefab, PrefabId.Type.Object).ToString();
+
+        // Legacy CreateDroneBays: clonning centers, then the replicator if the ship builds drones, then the bays.
+        private void AddDroneBays(IShipSpecification specification, List<DeviceDefinition> devices, List<CoreDeviceInfo> infos,
+            List<CoreDeviceViewSource> views, List<AiDroneBay> aiDroneBays)
+        {
+            // Legacy ClonningDevice: EnergyConsumption once per clone and Cooldown (phase 5, step 7c). The clone is the
+            // ship through ShipSpecDecorator; every center of the ship launches the same clone.
+            CoreShipMapping clone = null;
+            foreach (var item in specification.ClonningCenters)
+            {
+                clone = clone ?? Map(new ClonningDevice.ShipSpecDecorator(specification, CloneMultiplier, CloneMultiplier,
+                    CloneMultiplier), isDrone: true, bay: null, isClone: true);
+                aiDroneBays.Add(new AiDroneBay(devices.Count, item.KeyBinding < 0));
+                var device = item.Device;
+                Add(devices, infos, views, new ClonningCenterDefinition(NonNegative(device.EnergyConsumption), NonNegative(device.Cooldown),
+                    clone.Definition), new CoreDeviceInfo(DeviceName(device), item.KeyBinding, device.ControlButtonIcon, 0f, null,
+                    ReleasesDeviceButton(DeviceClass.ClonningCenter)), new CoreDeviceViewSource(device));
+            }
+
+            if (!specification.DroneBays.Any())
+                return;
+
+            // Phase 5, step 10a: legacy DroneReplicator, before the bays.
+            if (specification.Stats.DroneBuildSpeed > 0)
+                Add(devices, infos, views, new DroneReplicatorDefinition(1f / specification.Stats.DroneBuildSpeed),
+                    new CoreDeviceInfo("drone replicator", -1, SpriteId.Empty, 0f, null));
+
+            foreach (var item in specification.DroneBays)
+            {
+                var bay = item.DroneBay;
+                var drone = Map(BuildDrone(item), isDrone: true, item, isClone: false);
+                aiDroneBays.Add(new AiDroneBay(devices.Count, item.KeyBinding < 0));
+                Add(devices, infos, views, new DroneBayDefinition(System.Math.Max(1, bay.Capacity), NonNegative(bay.EnergyConsumption),
+                        drone.Definition, System.Math.Max(0, bay.BuildExtraCycles)),
+                    new CoreDeviceInfo($"drone bay, drone {item.Drone.Id.Value}", item.KeyBinding, bay.ControlButtonIcon, 0f, null,
+                        releaseImmediately: true), new CoreDeviceViewSource(bay));
+            }
+        }
+
+        // Legacy BulletStats: the colour is the weapon's, else the body's.
+        private void AddBulletSource(DeviceDefinition device, IWeaponData weapon, int deviceIndex)
+        {
+            object key = device is CannonDefinition cannon ? cannon.Bullet : device as BeamDefinition;
+            if (key == null)
+                return;
+
+            _weaponDevices[key] = deviceIndex;
+
+            var body = weapon.Ammunition.Body;
+            _bulletSources[key] = new CoreBulletSource(body.BulletPrefab, BodySize(weapon.Ammunition, weapon.Stats),
+                weapon.Stats.Color ?? body.Color, weapon.Ammunition);
+        }
+
+        // Phase 5, step 2: a child bullet looks like its own ammunition, in the colour of its trigger (legacy CreateFactory).
+        private void AddChildSource(BulletDefinition bullet, Ammunition ammunition, WeaponStatModifier stats) =>
+            _bulletSources[bullet] = new CoreBulletSource(ammunition.Body.BulletPrefab, BodySize(ammunition, stats),
+                stats.Color.Value, ammunition);
+
+        // Legacy BulletStats.BodySize at power level 1: an area bullet (all targets or over time, with effects) also
+        // takes the area multiplier, which a SpawnBullet trigger's Size raises (the oblivion cannon cloud: 1 x 5).
+        private static float BodySize(Ammunition ammunition, WeaponStatModifier stats) =>
+            ammunition.ImpactType != BulletImpactType.HitFirstTarget && ammunition.Effects.Count > 0
+                ? ammunition.Body.Size * stats.AoeRadiusMultiplier.Value
+                : ammunition.Body.Size;
+
+        // Phase 5b, step 6: the view plays the sound of each SpawnBullet trigger that the core runs.
+        private void AddSpawnTrigger(BulletTriggerDefinition trigger, BulletTrigger_SpawnBullet source)
+        {
+            if (source.AudioClip)
+                _spawnTriggers[trigger] = source;
+        }
+
+        // Legacy WeaponInfo from BulletStats at power level 1. Recoil counts for common weapons only, per unit of ship weight.
+        // The spread is the weapon's, in radians.
+        private static AiWeapon ToAiWeapon(IWeaponData weapon, int deviceIndex, float shipWeight)
+        {
+            var bullet = new BulletStats(weapon.Ammunition, weapon.Stats, false);
+            var weaponClass = ToAiWeaponClass(weapon.Weapon.Stats.WeaponClass);
+            var recoil = weaponClass == AiWeaponClass.Common ? bullet.Recoil / shipWeight : 0f;
+            return new AiWeapon(deviceIndex, weaponClass, bullet.BehaviorType, (AiWeaponCapability)bullet.Capability,
+                bullet.BulletHitRange, recoil, weapon.Weapon.Stats.Spread * DegreesToRadians);
+        }
+
+        // Legacy WeaponBase.GetWeaponType.
+        private static AiWeaponClass ToAiWeaponClass(WeaponClass weaponClass)
+        {
+            switch (weaponClass)
+            {
+                case WeaponClass.Manageable:
+                    return AiWeaponClass.Manageable;
+                case WeaponClass.Continuous:
+                    return AiWeaponClass.Continuous;
+                case WeaponClass.RequiredCharging:
+                    return AiWeaponClass.RequiredCharging;
+                default:
+                    return AiWeaponClass.Common;
+            }
+        }
+
+        // Legacy DroneBay constructor without the random speed spread (owner, 2026-10-29).
+        private IShipSpecification BuildDrone(IDroneBayData data)
+        {
+            var stats = data.DroneBay;
+            var builder = new ShipBuilder(data.Drone);
+            builder.Bonuses.ArmorPointsMultiplier = StatMultiplier.FromValue(stats.DefenseMultiplier);
+            builder.Bonuses.ShieldPointsMultiplier = StatMultiplier.FromValue(stats.DefenseMultiplier);
+            builder.Bonuses.DamageMultiplier = StatMultiplier.FromValue(stats.DamageMultiplier);
+            builder.Bonuses.VelocityMultiplier = StatMultiplier.FromValue(stats.SpeedMultiplier);
+            builder.Bonuses.TurnRateMultiplier = StatMultiplier.FromValue(stats.SpeedMultiplier);
+            return builder.Build(_database.ShipSettings);
+        }
+
+        // Legacy FixedPlatform pose: (Position × 0.5 + dir(Rotation) × (Offset + Size) × 0.5) × the carrier's model scale.
+        // The barrel of an aiming satellite is a fixed platform: the satellite turns instead.
+        private static BarrelDefinition ToBarrel(IWeaponPlatformData platform, float modelScale,
+            int satellite = BarrelDefinition.Hull, bool fixedMount = false)
+        {
+            var angle = platform.Rotation * DegreesToRadians;
+            var offset = (platform.Offset + platform.Size) * 0.5f;
+            var x = (platform.Position.x * 0.5f + (float)System.Math.Cos(angle) * offset) * modelScale;
+            var y = (platform.Position.y * 0.5f + (float)System.Math.Sin(angle) * offset) * modelScale;
+            return new BarrelDefinition(new Vec2(x, y), angle, fixedMount ? 0f : NonNegative(platform.AutoAimingArc) * DegreesToRadians,
+                NonNegative(platform.RotationSpeed) * DegreesToRadians,
+                (bool)platform.Image && (platform.Weapons.Any() || platform.WeaponsObsolete.Any()), offset * modelScale, satellite);
+        }
+
+        // Legacy SatelliteFactory.CreateSatellite: an AutoAimingSatelliteController for an arc of at least 5° without an
+        // image and below 360°; else a SatelliteController that keeps the platform rotation.
+        private static bool IsAimingSatellite(IWeaponPlatformData platform) =>
+            platform.Companion.Satellite.Barrels.Count > 0 && !(bool)platform.Image &&
+            platform.AutoAimingArc >= MinAimingSatelliteArc && platform.AutoAimingArc < 360f;
+
+        // Legacy SatelliteFactory: the left slot (-0.5, 0.5) × ship scale + (0, 1.5 × satellite scale) with the arc
+        // -10°..190°, the right slot mirrored. The weight is cells × DefaultWeightPerCell / 1000 (CompanionSpec).
+        private static SatelliteDefinition ToSatellite(ICompanionData companion, IWeaponPlatformData platform, float shipScale,
+            bool aiming)
+        {
+            var side = companion.Location == CompanionLocation.Left ? 1f : -1f;
+            var satelliteScale = companion.Satellite.ModelScale;
+            var slot = new Vec2(-0.5f * shipScale, side * (0.5f * shipScale + 1.5f * satelliteScale));
+            var min = aiming ? (side > 0f ? -10f : -190f) * DegreesToRadians : 0f;
+            var max = aiming ? (side > 0f ? 190f : 10f) * DegreesToRadians : 0f;
+            return new SatelliteDefinition(slot, platform.Rotation * DegreesToRadians, Positive(companion.Weight), min, max);
+        }
+
+        private static void Add(List<DeviceDefinition> devices, List<CoreDeviceInfo> infos, List<CoreDeviceViewSource> views,
+            DeviceDefinition device, CoreDeviceInfo info, CoreDeviceViewSource view = null)
+        {
+            devices.Add(device ?? InertDefinition);
+            infos.Add(info);
+            views.Add(view);
+        }
+
+        private static DeviceDefinition Inert(string reason, out string inertReason)
+        {
+            inertReason = reason;
+            return null;
+        }
+
+        // Built-in devices have no name; the class names them in logs.
+        private static string DeviceName(DeviceStats device) =>
+            string.IsNullOrEmpty(device.Name) ? device.DeviceClass.ToString() : device.Name;
+
+        // Legacy DeviceFactory.Create returns null for any other class, and the device gets no system index.
+        private static bool IsLegacyDevice(DeviceClass deviceClass) =>
+            deviceClass >= DeviceClass.Accelerator && deviceClass <= DeviceClass.Retribution;
+
+        // Legacy ShouReleaseButtonImmediately (phase 5, step 11b, finding 7): these device classes, every drone bay, and
+        // every weapon except a continuous one with a fire rate between 0 and 1. The fire rate is legacy WeaponFactory's.
+        private static bool ReleasesDeviceButton(DeviceClass deviceClass)
+        {
+            switch (deviceClass)
+            {
+                case DeviceClass.TeleporterV2:
+                case DeviceClass.Teleporter:
+                case DeviceClass.Detonator:
+                case DeviceClass.PointDefense:
+                case DeviceClass.PartialShield:
+                case DeviceClass.ClonningCenter:
+                case DeviceClass.TimeMachine:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static bool ReleasesWeaponButton(WeaponStats weapon, float fireRateMultiplier)
+        {
+            if (weapon.WeaponClass != WeaponClass.Continuous) return true;
+            var fireRate = weapon.FireRate > 0 && fireRateMultiplier <= 0 ? -1f : weapon.FireRate * fireRateMultiplier;
+            return !(fireRate > 0f && fireRate < 1f);
+        }
+
+        // Legacy devices that only change the ship's features and never activate (phase 5, step 9a).
+        private static bool IsPassive(DeviceClass deviceClass) =>
+            deviceClass == DeviceClass.Jammer || deviceClass == DeviceClass.DroneCamouflage ||
+            deviceClass == DeviceClass.MissileCamouflage;
+
+        // These legacy devices ignore the key binding: SystemBase(-1).
+        private static bool IsAlwaysAutomatic(DeviceClass deviceClass)
+        {
+            switch (deviceClass)
+            {
+                case DeviceClass.Brake:
+                case DeviceClass.ToxicWaste:
+                case DeviceClass.WormTail:
+                case DeviceClass.WormTailV2:
+                case DeviceClass.Jammer:
+                case DeviceClass.DroneCamouflage:
+                case DeviceClass.MissileCamouflage:
+                case DeviceClass.Retribution:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Legacy engine values are in degrees; the core uses radians.
+        private static EngineDefinition ToEngine(EngineStats engine) =>
+            new EngineDefinition(
+                NonNegative(engine.Propulsion),
+                NonNegative(engine.Velocity),
+                NonNegative(engine.TurnRate * DegreesToRadians),
+                NonNegative(engine.AngularVelocity * DegreesToRadians),
+                NonNegative(engine.VelocityLimit));
+
+        private static float Positive(float value) => value > MinValue ? value : MinValue;
+        private static float NonNegative(float value) => value > 0f ? value : 0f;
+        private static float Fraction(float value) => value > 0f ? value < 1f ? value : 1f : 0f;
+
+        private const float MinValue = 0.01f;
+        private const float MinAimingSatelliteArc = 5f;
+
+        // Legacy ClonningDevice: size, attack and defence factors of its ShipSpecDecorator (phase 5, step 7c). Defence
+        // scales armor, shield and their rates; attack scales weapon damage and the ramming damage multiplier.
+        private const float CloneMultiplier = 0.9f;
+
+        // The circle colliders of the legacy segment prefabs at body scale 1 (WormSegment, WormSegment2). A mod prefab
+        // other than WormSegment2 gets the WormSegment circle.
+        private const float SegmentRadius = 0.4419455f;
+        private const float Segment2Radius = 0.35618508f;
+        private const string Segment2Prefab = "WormSegment2";
+
+        // ToxicCloud: the built-in cloud of legacy ToxicWaste (phase 5, step 11a, question 9 (b)).
+        private const int ToxicCloudId = 186;
+
+        // The hit flash of a detonator explosion: the generic size 1 (D11), not the 20-unit area.
+        private const float ExplosionFlashSize = 1f;
+        private const float DegreesToRadians = (float)(System.Math.PI / 180.0);
+
+        private static readonly DeviceDefinition InertDefinition = new InertDeviceDefinition();
+
+        // A weapon with its damage multiplier scaled: legacy ShipBuilder's platform damage multiplier for a clone.
+        private sealed class ScaledWeapon : IWeaponData
+        {
+            public ScaledWeapon(IWeaponData weapon, float damage)
+            {
+                _weapon = weapon;
+                _damage = damage;
+            }
+
+            public Weapon Weapon => _weapon.Weapon;
+            public Ammunition Ammunition => _weapon.Ammunition;
+            public int KeyBinding => _weapon.KeyBinding;
+
+            public WeaponStatModifier Stats
+            {
+                get
+                {
+                    var stats = _weapon.Stats;
+                    stats.DamageMultiplier *= _damage;
+                    return stats;
+                }
+            }
+
+            private readonly IWeaponData _weapon;
+            private readonly float _damage;
+        }
+
+        private readonly IDatabase _database;
+        private readonly CoreHullBuilder _hullBuilder;
+        private readonly Dictionary<ShipDefinition, CoreShipMapping> _mappings = new Dictionary<ShipDefinition, CoreShipMapping>();
+        private readonly Dictionary<object, CoreBulletSource> _bulletSources = new Dictionary<object, CoreBulletSource>();
+        private readonly Dictionary<BulletTriggerDefinition, BulletTrigger_SpawnBullet> _spawnTriggers =
+            new Dictionary<BulletTriggerDefinition, BulletTrigger_SpawnBullet>();
+        private readonly Dictionary<RepairBotDefinition, ColorData> _repairBotColors = new Dictionary<RepairBotDefinition, ColorData>();
+        private readonly Dictionary<RepairBotDefinition, AudioClipId> _repairBotSounds = new Dictionary<RepairBotDefinition, AudioClipId>();
+        private readonly Dictionary<RepairBotDefinition, VisualEffect> _repairBotEffects = new Dictionary<RepairBotDefinition, VisualEffect>();
+        private readonly Dictionary<ShipDefinition, ColorData> _decoyColors = new Dictionary<ShipDefinition, ColorData>();
+        private readonly Dictionary<ShipDefinition, AudioClipId> _decoySounds = new Dictionary<ShipDefinition, AudioClipId>();
+        private readonly Dictionary<object, int> _weaponDevices = new Dictionary<object, int>();
+        private readonly Dictionary<ShieldDefinition, CoreShieldLook> _shieldLooks = new Dictionary<ShieldDefinition, CoreShieldLook>();
+        private readonly Dictionary<WormTailDefinition, CoreSegmentSource> _segmentSources = new Dictionary<WormTailDefinition, CoreSegmentSource>();
+    }
+}

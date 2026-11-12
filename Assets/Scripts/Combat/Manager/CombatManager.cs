@@ -40,18 +40,14 @@ namespace Combat.Manager
 
         [Inject] private readonly IScene _scene;
         [Inject] private readonly IDatabase _database;
-        [Inject] private readonly ShipControlsPanel _shipControlsPanel;
         [Inject] private readonly ShipFactory _shipFactory;
         [Inject] private readonly ControllerFactory _controllerFactory;
         [Inject] private readonly SpaceObjectFactory _spaceObjectFactory;
         [Inject] private readonly EffectFactory _effectFactory;
 
         [Inject] private readonly ShipSelectionPanel _shipSelectionPanel;
-        [Inject] private readonly ShipStatsPanel _playerStatsPanel;
-        [Inject] private readonly ShipStatsPanel _enemyStatsPanel;
         [Inject] private readonly CombatMenu _combatMenu;
         [Inject] private readonly Settings _settings;
-        [Inject] private readonly RadarPanel _radarPanel;
         [Inject] private readonly ICombatModel _combatModel;
 
         public void Initialize()
@@ -103,20 +99,6 @@ namespace Combat.Manager
                 return;
 
             CheckIfCanCallNextEnemy();
-
-            switch (ship.Type.Side)
-            {
-                case UnitSide.Player:
-                    _shipControlsPanel.Load(ship);
-                    _messenger.Broadcast(EventType.PlayerShipCountChanged,
-                        _combatModel.PlayerFleet.Ships.Count(item => item.Status == ShipStatus.Ready));
-                    break;
-                case UnitSide.Enemy:
-                    _radarPanel.Add(ship);
-                    _messenger.Broadcast(EventType.EnemyShipCountChanged,
-                        _combatModel.EnemyFleet.Ships.Count(item => item.Status == ShipStatus.Ready));
-                    break;
-            }
         }
 
         public void OnShipDestroyed(IShip ship)
@@ -131,8 +113,6 @@ namespace Combat.Manager
         {
             ship.Create(_shipFactory, _scene.FindFreePlace(40, ship.Side), _combatModel.EnemyFleet.AiLevel);
         }
-
-        public bool IsGamePaused { get { return _pausedCount > 0; } }
 
         public void OnEscapeKeyPressed()
         {
@@ -256,7 +236,7 @@ namespace Combat.Manager
                     }
                     else if (_combatModel.Rules.ShipSelection.CanChooseShip())
                     {
-                        _shipSelectionPanel.Open(_combatModel);
+                        _shipSelectionPanel.Open();
                     }
                     else
                     {
@@ -264,11 +244,6 @@ namespace Combat.Manager
                         CreateShip(shipInfo);
                     }
                 }
-            }
-            else if (!IsGamePaused)
-            {
-                _playerStatsPanel.Open(player);
-                _enemyStatsPanel.Open(enemy);
             }
         }
 
@@ -290,7 +265,6 @@ namespace Combat.Manager
         private float _nextPlayerShipCooldown = _nextShipMaxCooldown;
         private const float _nextShipMaxCooldown = 3.0f;
 
-        private int _pausedCount;
         private readonly ISoundPlayer _soundPlayer;
         private readonly ExitSignal.Trigger _exitTrigger;
         private readonly IMessenger _messenger;

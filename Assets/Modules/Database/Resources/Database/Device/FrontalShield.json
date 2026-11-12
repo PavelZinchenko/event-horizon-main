@@ -11,6 +11,6 @@
   },
   "ActivationType": 1,
   "Color": "#FF6D5A",
-  "ObjectPrefab": "Shield",
+  "Prefab": 4,
   "ControlButtonIcon": "controls_shield"
 }

@@ -38,6 +38,8 @@ namespace GameDatabase.DataModel
 					return new BulletController_AuraEmitter(serializable, loader);
 				case BulletControllerType.StickyMine:
 					return new BulletController_StickyMine(serializable, loader);
+				case BulletControllerType.Rocket:
+					return new BulletController_Rocket(serializable, loader);
 				default:
                     throw new DatabaseException("BulletController: Invalid content type - " + serializable.Type);
 			}
@@ -85,6 +87,7 @@ namespace GameDatabase.DataModel
 	    T Create(BulletController_Harpoon content);
 	    T Create(BulletController_AuraEmitter content);
 	    T Create(BulletController_StickyMine content);
+	    T Create(BulletController_Rocket content);
     }
 
     public partial class BulletController_Projectile : BulletController
@@ -205,6 +208,7 @@ namespace GameDatabase.DataModel
             : base(serializable, loader)
         {
 			var variableResolver = GetVariableResolver();
+			TrackingAngle = Utilites.MathEx.Clamp(serializable.TrackingAngle, 0f, 180f);
 
             OnDataDeserialized(serializable, loader);
         }
@@ -214,6 +218,7 @@ namespace GameDatabase.DataModel
             return factory.Create(this);
         }
 
+		public float TrackingAngle { get; private set; }
 
 		private IVariableResolver _iVariableResolver;
 		protected override IVariableResolver GetVariableResolver() {
@@ -240,9 +245,11 @@ namespace GameDatabase.DataModel
 
 			public override Expression<Variant> ResolveVariable(string name)
 			{
+				if (name == "TrackingAngle") return GetTrackingAngle;
 				return base.ResolveVariable(name);
 			}
 
+			private Variant GetTrackingAngle() => _context.TrackingAngle;
 		}
 
     }
@@ -473,6 +480,59 @@ namespace GameDatabase.DataModel
 			}
 
 			private Variant GetLifetime() => _context.Lifetime;
+		}
+
+    }
+    public partial class BulletController_Rocket : BulletController
+    {
+		partial void OnDataDeserialized(BulletControllerSerializable serializable, Database.Loader loader);
+
+  		public BulletController_Rocket(BulletControllerSerializable serializable, Database.Loader loader)
+            : base(serializable, loader)
+        {
+			var variableResolver = GetVariableResolver();
+			StartingVelocityModifier = Utilites.MathEx.Clamp(serializable.StartingVelocityModifier, 0f, 1000f);
+
+            OnDataDeserialized(serializable, loader);
+        }
+
+        public override T Create<T>(IBulletControllerFactory<T> factory)
+        {
+            return factory.Create(this);
+        }
+
+		public float StartingVelocityModifier { get; private set; }
+
+		private IVariableResolver _iVariableResolver;
+		protected override IVariableResolver GetVariableResolver() {
+			if(_iVariableResolver == null)
+				_iVariableResolver = new VariableResolver(this);
+			return _iVariableResolver;
+		}
+
+		private class VariableResolver : BaseVariableResolver
+		{
+			private BulletController_Rocket _context;
+			
+			protected override BulletController Context => _context;
+
+			public VariableResolver(BulletController_Rocket context)
+			{
+				_context = context;
+			}
+
+			public override IFunction<Variant> ResolveFunction(string name)
+            {
+				return base.ResolveFunction(name);
+			}
+
+			public override Expression<Variant> ResolveVariable(string name)
+			{
+				if (name == "StartingVelocityModifier") return GetStartingVelocityModifier;
+				return base.ResolveVariable(name);
+			}
+
+			private Variant GetStartingVelocityModifier() => _context.StartingVelocityModifier;
 		}
 
     }

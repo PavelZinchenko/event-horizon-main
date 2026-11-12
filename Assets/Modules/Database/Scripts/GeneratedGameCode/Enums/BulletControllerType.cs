@@ -17,5 +17,6 @@ namespace GameDatabase.Enums
 		Harpoon,
 		AuraEmitter,
 		StickyMine,
+		Rocket,
 	}
 }

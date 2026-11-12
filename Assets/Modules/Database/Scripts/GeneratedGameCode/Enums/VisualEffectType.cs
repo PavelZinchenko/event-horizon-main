@@ -20,5 +20,6 @@ namespace GameDatabase.Enums
 		Lightning,
 		LightningStrike,
 		Sprite,
+		Laser,
 	}
 }
