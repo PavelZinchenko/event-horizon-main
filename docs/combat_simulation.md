@@ -598,7 +598,7 @@ A rejection logs a warning and increments the internal `RejectedCommandCount`. P
 Command IDs share one pending namespace with roster commands and self-destruct commands.
 `Submit` also rejects a null entity, a throttle outside [0, 1] or NaN, a non-finite course and a second frame for the same entity and tick.
 The entity is checked at stage 1, after the roster commands: a frame can name the derivable root ID of a ship that deploys in the same tick.
-A frame for an unknown or removed entity is dropped, logged and counted in `RejectedCommandCount`.
+A frame for an unknown or removed entity is dropped and counted in `RejectedCommandCount`, without a log: a pilot's frame applies at its think tick + delay, so a ship that dies in between leaves one in every battle.
 
 1. A frame stays in force until the next frame for that entity. A deployment starts with empty controls.
 2. At stage 1, before the frames, each ship copies its system bits to `PreviousSystems`. `PressedSystems` and `ReleasedSystems` give the edges; the driver sends no events.
