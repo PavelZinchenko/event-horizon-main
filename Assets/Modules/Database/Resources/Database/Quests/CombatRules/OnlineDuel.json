@@ -1,0 +1,13 @@
+{
+  "ItemType": 30,
+  "Id": 9,
+  "MaxEnemyShips": "1",
+  "TimeLimit": "90",
+  "TimeOutMode": 1,
+  "LootCondition": 2,
+  "ExpCondition": 2,
+  "DisableSkillBonuses": true,
+  "DisableRandomLoot": true,
+  "DisableAsteroids": true,
+  "NextEnemyButton": false
+}

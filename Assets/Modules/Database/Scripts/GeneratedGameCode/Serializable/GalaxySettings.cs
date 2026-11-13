@@ -31,5 +31,6 @@ namespace GameDatabase.Serializable
 		public int ArenaCombatRules;
 		public int ChallengeCombatRules;
 		public int QuickCombatRules;
+		public int OnlineDuelRules;
 	}
 }

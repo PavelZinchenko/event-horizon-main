@@ -15,5 +15,6 @@
   "FlagshipCombatRules": 5,
   "ArenaCombatRules": 6,
   "ChallengeCombatRules": 7,
-  "QuickCombatRules": 2
+  "QuickCombatRules": 2,
+  "OnlineDuelRules": 9
 }

@@ -18,4 +18,5 @@
     <member name="ArenaCombatRules" type="object" typeid="CombatRules" />
     <member name="ChallengeCombatRules" type="object" typeid="CombatRules" />
     <member name="QuickCombatRules" type="object" typeid="CombatRules" />
+    <member name="OnlineDuelRules" type="object" typeid="CombatRules" />
 </data>

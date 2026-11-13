@@ -36,6 +36,7 @@ The record has the `ItemType` [common field](index.md#common-fields) and no `Id`
 | `ArenaCombatRules` | ref [CombatRules](CombatRules.md) | | 6 | Rules of arena battles. |
 | `ChallengeCombatRules` | ref [CombatRules](CombatRules.md) | | 7 | Rules of challenge battles. |
 | `QuickCombatRules` | ref [CombatRules](CombatRules.md) | | 2 | Rules of quick combat from the main menu. |
+| `OnlineDuelRules` | ref [CombatRules](CombatRules.md) | | 9 | Rules of the online duel (battle simulator phase 7). No reader yet; the duel state comes in phase 7, step 7. |
 
 Every `…CombatRules` field falls back to `CombatSettings.DefaultCombatRules` when it is `0`. See [CombatRules: Where rules come from](CombatRules.md#where-rules-come-from).
 

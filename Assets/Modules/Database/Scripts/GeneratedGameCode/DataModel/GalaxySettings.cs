@@ -43,6 +43,7 @@ namespace GameDatabase.DataModel
 			ArenaCombatRules = loader?.GetCombatRules(new ItemId<CombatRules>(serializable.ArenaCombatRules)) ?? CombatRules.DefaultValue;
 			ChallengeCombatRules = loader?.GetCombatRules(new ItemId<CombatRules>(serializable.ChallengeCombatRules)) ?? CombatRules.DefaultValue;
 			QuickCombatRules = loader?.GetCombatRules(new ItemId<CombatRules>(serializable.QuickCombatRules)) ?? CombatRules.DefaultValue;
+			OnlineDuelRules = loader?.GetCombatRules(new ItemId<CombatRules>(serializable.OnlineDuelRules)) ?? CombatRules.DefaultValue;
 
 			OnDataDeserialized(serializable, loader);
 		}
@@ -66,6 +67,7 @@ namespace GameDatabase.DataModel
 		public CombatRules ArenaCombatRules { get; private set; }
 		public CombatRules ChallengeCombatRules { get; private set; }
 		public CombatRules QuickCombatRules { get; private set; }
+		public CombatRules OnlineDuelRules { get; private set; }
 
 		public static GalaxySettings DefaultValue { get; private set; }
 

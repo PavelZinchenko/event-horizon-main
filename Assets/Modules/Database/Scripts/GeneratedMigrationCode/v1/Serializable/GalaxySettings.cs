@@ -37,5 +37,6 @@ namespace DatabaseMigration.v1.Serializable
 		public int ArenaCombatRules;
 		public int ChallengeCombatRules;
 		public int QuickCombatRules;
+		public int OnlineDuelRules;
 	}
 }
