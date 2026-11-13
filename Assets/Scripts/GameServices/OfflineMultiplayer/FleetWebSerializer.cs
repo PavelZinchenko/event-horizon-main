@@ -14,7 +14,7 @@ namespace GameServices.Multiplayer
     {
         public static string SerializeFleet(IEnumerable<IShip> ships)
         {
-            var data = ZlibStream.CompressBuffer(SerializeFleetInternal(ships).ToArray());
+            var data = SerializeFleetData(ships);
             var base64 = EncodeUrlBase64(Convert.ToBase64String(data, Base64FormattingOptions.None));
 
             if (base64.Length > 16384)
@@ -28,9 +28,15 @@ namespace GameServices.Multiplayer
             return base64;
         }
 
-        public static IEnumerable<IShip> DeserializeFleet(IDatabase database, string base64)
+        // The compressed fleet without the URL text encoding (online duel handshake).
+        public static byte[] SerializeFleetData(IEnumerable<IShip> ships) =>
+            ZlibStream.CompressBuffer(SerializeFleetInternal(ships).ToArray());
+
+        public static IEnumerable<IShip> DeserializeFleet(IDatabase database, string base64) =>
+            DeserializeFleetData(database, System.Convert.FromBase64String(DecodeUrlBase64(base64)));
+
+        public static IEnumerable<IShip> DeserializeFleetData(IDatabase database, byte[] data)
         {
-            var data = System.Convert.FromBase64String(DecodeUrlBase64(base64));
             var index = 0;
 
             try

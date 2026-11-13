@@ -142,6 +142,33 @@ Authentication, negotiation, disconnect handling, and Unity Relay integration re
 6. The final step also sends its batch. Continue calling `Pump` or `Update` after completion to deliver final records and acknowledgements.
    `PendingReliablePackets` exposes the remaining reliable queue. `IsFaulted` reflects the existing reliable-channel fault state.
 
+### Match handshake
+
+Phase 7, step 4 (2026-11-13). `MatchHandshake` (Runtime) agrees on the match over the connection that the battle then uses.
+A second `PeerConnection` on the same transport would mix sequence numbers, so the handshake owns the connection and stays its receiver.
+
+1. Create it with `MatchHandshake.Host(transport, identity, buildSetup, battleId, seed)` or `MatchHandshake.Guest(...)`.
+   `MatchIdentity` holds the game version, the database hash (`IDatabase.ContentHash`) and the serialized fleet.
+   The host is side 0, owner 0 and the clock reference; the guest is side 1, owner 1 (phase 7, decision 6 interim).
+2. Call `Update(now)`. Each player waits for 8 clock samples (about 2 s), then sends Hello: protocol version, game version,
+   database hash, its input delay D and its fleet. D = min(5, ceil(round trip / 2 × 50)) per sender (N1).
+3. A mismatch sends Reject with a `HandshakeRejection` reason. Both players compare versions and hashes themselves, so both
+   show the reason. The protocol version is read first; any later Hello layout still gets the reason `Protocol`.
+4. The host builds the setup with `buildSetup(MatchPlan)` and sends Setup: battle ID, seed and `SetupHash`. The guest builds
+   its setup and compares the hash: Accept or Reject (`SetupMismatch`, or `SetupFailed` when the build throws).
+5. The host answers Accept with Start: the clock epoch, 1 s ahead of its own clock. State `Ready` on both.
+6. `CreateSession(pilots, now)` creates the `NetworkSession` on the same connection (its `PeerConnection` constructor), replays
+   the buffered messages and starts the clock. After that, the session pumps the connection; `Update` throws.
+7. The peer's reliable messages after its last handshake message (Accept from the guest, Start from the host) belong to the
+   session. Until `CreateSession` they wait in a buffer of at most 256 datagrams, as do input and unreliable datagrams.
+8. After a Reject, keep calling `Update` until `PendingReliablePackets` is 0, then close the transport. Timeouts are step 8.
+
+`SetupHash.Compute(setup)` walks the setup's object graph by reflection: the public properties and fields of each class and
+all fields of each struct (a struct's properties are derived, and `Vec2.Normalized` returns the struct again). Floats count
+by their bits. Collections count their elements only. The local owners are left out; the owner delays are added. Shared
+objects are hashed once; a cycle counts as a marker. A graph deeper than 64 throws with its member path.
+`link.xml` (`Assets/ModulesShared/CombatSimulation/`) keeps the Core and Physics members for IL2CPP.
+
 ### Controls
 
 1. Existing pilot delay remains separate from network delay (owner decision, 2026-10-23).

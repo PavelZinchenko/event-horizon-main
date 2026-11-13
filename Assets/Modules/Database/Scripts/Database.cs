@@ -16,6 +16,7 @@ namespace GameDatabase
         private readonly IJsonSerializer _jsonSerializer;
         private readonly string _modsPath;
         private readonly List<ModInfo> _mods = new List<ModInfo>();
+        private byte[] _contentHash;
 
         // defaultStorage holds the built-in database. modsPath is the mods folder, or empty when the platform has no mods.
         public Database(IDataStorage defaultStorage, IJsonSerializer jsonSerializer, string modsPath)
@@ -37,6 +38,9 @@ namespace GameDatabase
         public IEnumerable<Faction> FactionsWithEmpty => FactionList.Prepend(Faction.Empty);
 
         private IDataStorage Storage => _storage ?? _defaultStorage;
+
+        public byte[] ContentHash => _contentHash ??= DatabaseContentHash.Compute(_storage,
+            _content?.DatabaseSettings != null && _content.DatabaseSettings.UnloadOriginalDatabase ? null : _defaultStorage);
 
         public bool TryAddModFromFile(string path)
         {
@@ -144,6 +148,7 @@ namespace GameDatabase
         {
             Clear();
             _storage = null;
+            _contentHash = null;
 
             DatabaseLoading?.Invoke(storage);
 

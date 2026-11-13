@@ -921,7 +921,7 @@ namespace Combat.Integration.Core
         private static int CeilSeconds(long ticks) =>
             (int)(ticks > 0 ? (ticks + TicksPerSecond - 1) / TicksPerSecond : -(-ticks / TicksPerSecond));
 
-        private static TimerMode ToTimerMode(TimeOutMode mode)
+        internal static TimerMode ToTimerMode(TimeOutMode mode)
         {
             switch (mode)
             {

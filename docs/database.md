@@ -325,6 +325,8 @@ How schema options change the generated data model:
 
 `LoadDefault()` catches and logs every exception. When it fails, the database stays empty and every settings property is `null`.
 
+`IDatabase.ContentHash` is a SHA-256 of the loaded JSON records ([`DatabaseContentHash`](../Assets/Modules/Database/Scripts/Storage/DatabaseContentHash.cs)): the mod, then the built-in catalog unless the mod unloads it. Each record counts by its own digest, sorted, so file order does not count. Carriage returns are removed, so line endings do not count. Images, audio and localization do not count. The online duel compares it (battle simulator phase 7, step 4). It is computed on first use, because it reads every record again, and reset by every load.
+
 ## Mods and merge rules
 
 ### Locations

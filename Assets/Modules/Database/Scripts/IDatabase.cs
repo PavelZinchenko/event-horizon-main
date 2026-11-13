@@ -22,6 +22,9 @@ namespace GameDatabase
 
         IEnumerable<Faction> FactionsWithEmpty { get; }
 
+        // SHA-256 of the loaded records (Storage.DatabaseContentHash). Computed on first use: it reads every record again.
+        byte[] ContentHash { get; }
+
         #region temporary members
         // TODO: remove this after database editor can edit builds
         void SaveShipBuild(ItemId<ShipBuild> id);
