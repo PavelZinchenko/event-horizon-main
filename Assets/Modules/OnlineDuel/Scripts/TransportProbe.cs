@@ -1,12 +1,14 @@
 #if UNITY_EDITOR
 using System;
+using System.Threading;
 using CombatSimulation.Network;
 using UnityEditor;
 using UnityEngine;
 
 namespace OnlineDuel
 {
-    // Development check for two editor instances (Multiplayer Play Mode): a direct link that runs a PeerConnection.
+    // Development check for two editor instances (Multiplayer Play Mode): a direct or Relay link that runs a
+    // PeerConnection.
     // Turn it on with Tools/Online Duel/Transport Probe; every instance that enters play mode then shows it.
     public sealed class TransportProbe : MonoBehaviour, IPeerReceiver
     {
@@ -75,20 +77,33 @@ namespace OnlineDuel
 
         private void OnGUI()
         {
-            GUILayout.BeginArea(new Rect(10, 10, 340, 400), GUI.skin.box);
-            GUILayout.Label("Transport probe (direct)");
-            if (_transport == null)
+            GUILayout.BeginArea(new Rect(10, 10, 340, 480), GUI.skin.box);
+            GUILayout.Label("Transport probe");
+            if (_pending != null)
             {
+                GUILayout.Label("Waiting for Unity Services...");
+                if (GUILayout.Button("Cancel")) Close();
+            }
+            else if (_transport == null)
+            {
+                GUILayout.Label("Direct: address, port");
                 _address = GUILayout.TextField(_address);
                 _port = GUILayout.TextField(_port);
                 if (GUILayout.Button("Host") && ushort.TryParse(_port, out var hostPort)) Open(() => RelayTransport.ListenDirect(hostPort));
                 if (GUILayout.Button("Join") && ushort.TryParse(_port, out var joinPort)) Open(() => RelayTransport.ConnectDirect(_address, joinPort));
+                GUILayout.Label("Relay: join code");
+                _joinCode = GUILayout.TextField(_joinCode);
+                if (GUILayout.Button("Host (Relay)")) HostRelay();
+                if (GUILayout.Button("Join (Relay)")) JoinRelay();
                 if (_error != null) GUILayout.Label(_error);
             }
             else
             {
+                if (_relayCode != null) GUILayout.Label($"Join code: {_relayCode}");
+                if (DuelRelay.PlayerId != null) GUILayout.Label($"Player: {DuelRelay.PlayerId}");
                 GUILayout.Label($"{(_transport.IsHost ? "Host" : "Guest")}, port {_transport.LocalPort}: {_transport.State}" +
-                    (_transport.State == LinkState.Closed ? $" ({_transport.CloseReason})" : string.Empty));
+                    (_transport.State == LinkState.Closed ? $" ({_transport.CloseReason})" : string.Empty) +
+                    (_transport.AllocationInvalid ? ", allocation invalid" : string.Empty));
                 if (_peer != null)
                 {
                     GUILayout.Label($"Round trip: {_peer.Clock.RoundTripSeconds * 1000:F1} ms");
@@ -116,8 +131,65 @@ namespace OnlineDuel
             }
         }
 
+        private async void HostRelay()
+        {
+            var pending = Begin();
+            try
+            {
+                var (transport, joinCode) = await DuelRelay.HostAsync(pending.Token);
+                if (End(pending, transport)) _relayCode = joinCode;
+            }
+            catch (Exception e)
+            {
+                Fail(pending, e);
+            }
+        }
+
+        private async void JoinRelay()
+        {
+            var pending = Begin();
+            try
+            {
+                End(pending, await DuelRelay.JoinAsync(_joinCode, pending.Token));
+            }
+            catch (Exception e)
+            {
+                Fail(pending, e);
+            }
+        }
+
+        private CancellationTokenSource Begin()
+        {
+            _error = null;
+            return _pending = new CancellationTokenSource();
+        }
+
+        // False when Close or OnDestroy cancelled the request while it ran; the transport is then disposed.
+        private bool End(CancellationTokenSource pending, RelayTransport transport)
+        {
+            if (pending.IsCancellationRequested)
+            {
+                transport.Dispose();
+                return false;
+            }
+            _pending = null;
+            _transport = transport;
+            return true;
+        }
+
+        private void Fail(CancellationTokenSource pending, Exception e)
+        {
+            if (pending.IsCancellationRequested) return;
+            _pending = null;
+            _error = e.Message;
+            Debug.LogException(e);
+        }
+
         private void Close()
         {
+            _pending?.Cancel();
+            _pending = null;
+            _relayCode = null;
             _transport?.Dispose();
             _transport = null;
             _peer = null;
@@ -135,6 +207,9 @@ namespace OnlineDuel
         private string _address = "127.0.0.1";
         private string _port = "7777";
         private string _error;
+        private string _joinCode = string.Empty;
+        private string _relayCode;
+        private CancellationTokenSource _pending;
         private RelayTransport _transport;
         private PeerConnection _peer;
         private double _nextReliable;

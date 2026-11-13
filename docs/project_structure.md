@@ -47,7 +47,7 @@ Assembly boundaries are defined by `.asmdef` files. Check references before movi
 - `GalaxyMap` - Prefabs and materials that draw the star map. The scripts are in `Assets/Scripts/Legacy/Map/`. See [GalaxyMap module](galaxy_map.md).
 - `GameServices` - Application lifecycle, the additive scene loader, and combat input with key rebinding. See [GameServices module](game_services.md).
 - `GameSession` - Schema-driven session state, save/load support, and serialization code generation. See [GameSession module](game_session.md).
-- `OnlineDuel` - Online duel over Unity Transport: `RelayTransport` and a development transport probe. See [phase 7 plan](../TODO/battle_simulator_phase7.md).
+- `OnlineDuel` - Online duel over Unity Transport and Unity Relay: `RelayTransport`, `DuelRelay` (sign-in, host, join) and a development transport probe. See [phase 7 plan](../TODO/battle_simulator_phase7.md).
 - `Quests` - Quest construction and runtime processing, including requirements, actions, fleets, and rewards. See [Quests module](quests.md).
 - `ResourceLocator` - Runtime lookup of sprites and sound clips by name, with mod fallback. See [ResourceLocator module](resource_locator.md).
 - `SecurityStub` - Open-source replacement for the private `Security` assembly. See [Services](services.md#securitystub).

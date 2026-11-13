@@ -5,6 +5,7 @@ using CombatSimulation.Network;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using Unity.Networking.Transport.Error;
+using Unity.Networking.Transport.Relay;
 
 namespace OnlineDuel
 {
@@ -37,9 +38,33 @@ namespace OnlineDuel
             return transport;
         }
 
-        private RelayTransport(NetworkSettings settings, bool isHost)
+        // The host binds to the Relay server of its allocation and waits there for the guest.
+        public static RelayTransport ListenRelay(RelayServerData relay)
+        {
+            var transport = new RelayTransport(RelaySettings(ref relay), true, true);
+            transport.Listen(NetworkEndpoint.AnyIpv4);
+            return transport;
+        }
+
+        // The guest connects to the host through the Relay server of the joined allocation.
+        public static RelayTransport ConnectRelay(RelayServerData relay)
+        {
+            var transport = new RelayTransport(RelaySettings(ref relay), false, true);
+            transport.Connect(relay.Endpoint);
+            return transport;
+        }
+
+        private static NetworkSettings RelaySettings(ref RelayServerData relay)
+        {
+            var settings = new NetworkSettings(Allocator.Temp);
+            settings.WithRelayParameters(ref relay);
+            return settings;
+        }
+
+        private RelayTransport(NetworkSettings settings, bool isHost, bool usesRelay = false)
         {
             _isHost = isHost;
+            _usesRelay = usesRelay;
             _driver = NetworkDriver.Create(settings);
         }
 
@@ -50,12 +75,21 @@ namespace OnlineDuel
         public ushort LocalPort => _driver.IsCreated ? _driver.GetLocalEndpoint().Port : (ushort)0;
         public long DroppedDatagrams { get; private set; }
         public long RejectedConnections { get; private set; }
+        // The Relay server dropped the allocation: it was invalid or timed out. A new allocation is needed.
+        public bool AllocationInvalid { get; private set; }
 
         // Receives, sends what EndSend queued and keeps every event: the next driver update clears the driver's queue.
         public void Update()
         {
             if (!_driver.IsCreated) return;
             _driver.ScheduleUpdate().Complete();
+            if (_usesRelay && State != LinkState.Closed &&
+                _driver.GetRelayConnectionStatus() == RelayConnectionStatus.AllocationInvalid)
+            {
+                AllocationInvalid = true;
+                Close(DisconnectReason.Default);
+                return;
+            }
             AcceptConnections();
             if (State == LinkState.Closed || !_connection.IsCreated) return;
 
@@ -106,6 +140,8 @@ namespace OnlineDuel
             return true;
         }
 
+        // Leaves the match. With Relay this also leaves the Relay session (network decision 10): the driver stops its
+        // keep-alive messages, and the Relay server frees the allocation after its inactivity timeout of about 10 s.
         public void Dispose()
         {
             if (!_driver.IsCreated) return;
@@ -186,6 +222,7 @@ namespace OnlineDuel
         }
 
         private readonly bool _isHost;
+        private readonly bool _usesRelay;
         private NetworkDriver _driver;
         private NetworkConnection _connection;
         private readonly Queue<Packet> _received = new Queue<Packet>();
