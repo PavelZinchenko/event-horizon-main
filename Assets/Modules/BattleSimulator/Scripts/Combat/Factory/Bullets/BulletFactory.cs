@@ -84,10 +84,6 @@ namespace Combat.Factory
                 parent.Bullets?.Add(bullet);
 
             bullet.UpdatePhysics(0);
-
-            if (!_ammunition.Body.AttachedToParent && parent.Body != null && _ammunition.Body.ParentVelocityEffect != 0f && _stats.Recoil > 0f)
-                parent.Body.ApplyForce(bullet.Body.WorldPosition(), -_stats.Recoil * (bullet.Body.WorldVelocity() - parent.Body.WorldVelocity()));
-
             return bullet;
         }
 
