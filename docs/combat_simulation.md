@@ -152,12 +152,20 @@ A second `PeerConnection` on the same transport would mix sequence numbers, so t
 1. Create it with `MatchHandshake.Host(transport, identity, buildSetup, battleId, seed)` or `MatchHandshake.Guest(...)`.
    `MatchIdentity` holds the game version, the database hash (`IDatabase.ContentHash`) and the serialized fleet.
    The host is side 0, owner 0 and the clock reference; the guest is side 1, owner 1 (phase 7, decision 6 interim).
-2. Call `Update(now)`. Each player waits for 8 clock samples (about 2 s), then sends Hello: protocol version, game version,
-   database hash, its input delay D and its fleet. D = min(5, ceil(round trip / 2 × 50)) per sender (N1).
+2. Call `Update(now)`. Each player waits for 8 clock samples (about 2 s), then sends Hello: protocol version (2), game
+   version, database hash, source hash, its input delay D and its fleet. D = min(5, ceil(round trip / 2 × 50)) per sender (N1).
+   The source hash (`CoreSourceHash`, phase 7, step 9) is SHA-256 over the `.cs` files of `ModulesShared/CombatSimulation`
+   and `Scripts/Combat/Integration/Core`, without `Tests` folders, comments and whitespace. A mismatch rejects with `Source`:
+   builds of one game version with different combat code. It hashes source, not binaries, so Mono and IL2CPP builds of one
+   source agree. `CoreSourceHashBuildStep` writes it to `Assets/Resources/CoreSourceHash.txt` (git-ignored) before every
+   build; the editor computes it from the files.
 3. A mismatch sends Reject with a `HandshakeRejection` reason. Both players compare versions and hashes themselves, so both
    show the reason. The protocol version is read first; any later Hello layout still gets the reason `Protocol`.
 4. The host builds the setup with `buildSetup(MatchPlan)` and sends Setup: battle ID, seed and `SetupHash`. The guest builds
-   its setup and compares the hash: Accept or Reject (`SetupMismatch`, or `SetupFailed` when the build throws).
+   its setup and sends Accept with its own hash, or Reject (`SetupFailed`) when the build throws. A different hash only
+   sets `SetupHashDiffers` on both players, and the lobby logs it (phase 7, step 9, owner 2026-11-14): Mono (the editor,
+   macOS builds) and IL2CPP round some derived values differently in the last bits, from equal versions, database and
+   fleets. Owner corrections repair that drift. `SetupMismatch` is no longer sent.
 5. The host answers Accept with Start: the clock epoch, 1 s ahead of its own clock. State `Ready` on both.
 6. `CreateSession(pilots, now)` creates the `NetworkSession` on the same connection (its `PeerConnection` constructor), replays
    the buffered messages and starts the clock. After that, the session pumps the connection; `Update` throws.

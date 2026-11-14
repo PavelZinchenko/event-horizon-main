@@ -110,7 +110,8 @@ namespace Combat.Integration.Core
                 .OrderBy(item => item.Id.Value).ToList();
             var random = new System.Random(_transport.IsHost ? 1 : 2);
             var fleet = builds.OrderBy(_ => random.Next()).Take(FleetSize).Create(0, random, database);
-            var identity = new MatchIdentity(Application.version, database.ContentHash, FleetWebSerializer.SerializeFleetData(fleet));
+            var identity = new MatchIdentity(Application.version, database.ContentHash, FleetWebSerializer.SerializeFleetData(fleet),
+                CoreSourceHash.Value);
             if (!_transport.IsHost) return MatchHandshake.Guest(_transport, identity, _duelSetup.Build);
             var seed = new System.Random();
             return MatchHandshake.Host(_transport, identity, _duelSetup.Build, new BattleId((ulong)seed.Next(1, int.MaxValue)),

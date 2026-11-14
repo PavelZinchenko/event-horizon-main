@@ -51,6 +51,8 @@ namespace Gui.MainMenu
 
         private const string DefaultAddress = "127.0.0.1";
         private const string DefaultPort = "7777";
+        // How long a rejecting player keeps the link open so that the peer gets the Reject and shows its reason.
+        private const double RejectDeliverySeconds = 2;
 
         public void CreateGameRelay()
         {
@@ -67,13 +69,13 @@ namespace Gui.MainMenu
         public void CreateGameDirect()
         {
             if (CanStart() && TryGetPort(out var port))
-                Open(() => RelayTransport.ListenDirect(port));
+                Open(() => RelayTransport.ListenDirect(port), "$DuelCannotListen");
         }
 
         public void JoinGameDirect()
         {
             if (CanStart() && TryGetPort(out var port))
-                Open(() => RelayTransport.ConnectDirect(_address.Trim(), port));
+                Open(() => RelayTransport.ConnectDirect(_address.Trim(), port), "$DuelCannotConnect");
         }
 
         public void Cancel()
@@ -139,14 +141,39 @@ namespace Gui.MainMenu
             _handshake?.Update(Now());
             _transport.Flush();
 
-            if (_handshake?.State == HandshakeState.Rejected)
-                Stop(RejectionKey(_handshake.Rejection));
+            if (_rejectedAt.HasValue)
+            {
+                // Our Reject is on its way: stop once the peer has it, the peer left, or the wait is over.
+                if (_handshake.PendingReliablePackets == 0 || _transport.State == LinkState.Closed ||
+                    Now() - _rejectedAt.Value > RejectDeliverySeconds)
+                    Stop(_statusKey);
+            }
+            else if (_handshake?.State == HandshakeState.Rejected)
+                OnRejected();
             else if (_handshake?.State == HandshakeState.Ready)
                 StartDuel();
             else if (_transport.State == LinkState.Closed)
-                Stop(_transport.TimedOut ? "$DuelNoAnswer" : "$DuelConnectionClosed");
+            {
+                Debug.LogWarning($"DuelLobby: link closed ({_transport.CloseReason}, timed out: {_transport.TimedOut}, " +
+                    $"allocation invalid: {_transport.AllocationInvalid}, handshake: {_handshake?.State})");
+                Stop(ClosedKey(_transport));
+            }
             else
                 ShowProgress();
+        }
+
+        private void OnRejected()
+        {
+            LogRejection(_handshake);
+            var key = RejectionKey(_handshake.Rejection);
+            // A Reject from the peer, or a silent peer: nothing to deliver.
+            if (_handshake.RejectedByPeer || _handshake.Rejection == HandshakeRejection.Timeout)
+            {
+                Stop(key);
+                return;
+            }
+            SetStatus(key);
+            _rejectedAt = Now();
         }
 
         private void OnDestroy() => Close();
@@ -174,17 +201,22 @@ namespace Gui.MainMenu
             return false;
         }
 
-        private void Open(Func<RelayTransport> create)
+        private void Open(Func<RelayTransport> create, string errorKey)
         {
             try
             {
                 _transport = create();
                 SetStatus(null);
             }
+            catch (ArgumentException e)
+            {
+                Debug.LogException(e);
+                SetStatus("$DuelInvalidAddress");
+            }
             catch (Exception e)
             {
                 Debug.LogException(e);
-                SetStatus("$DuelConnectionError");
+                SetStatus(errorKey);
             }
             UpdateControls();
         }
@@ -246,7 +278,10 @@ namespace Gui.MainMenu
             if (pending.IsCancellationRequested || pending != _pending) return;
             _pending = null;
             Debug.LogException(e);
-            SetStatus("$DuelConnectionError");
+            if (e is DuelServiceException service)
+                SetStatus(ServiceErrorKey(service.Error), service.Error == DuelServiceError.Unknown ? service.Code : 0);
+            else
+                SetStatus("$DuelConnectionError");
         }
 
         private MatchHandshake CreateHandshake()
@@ -256,7 +291,7 @@ namespace Gui.MainMenu
                 var mapper = new CoreShipMapper(_database, _resourceLocator);
                 _duelSetup = new CoreDuelSetup(_database, mapper);
                 var fleet = FleetWebSerializer.SerializeFleetData(_playerFleet.ActiveShipGroup.Ships);
-                var identity = new MatchIdentity(Application.version, _database.ContentHash, fleet);
+                var identity = new MatchIdentity(Application.version, _database.ContentHash, fleet, CoreSourceHash.Value);
                 if (!_transport.IsHost) return MatchHandshake.Guest(_transport, identity, _duelSetup.Build);
                 var random = new System.Random();
                 return MatchHandshake.Host(_transport, identity, _duelSetup.Build,
@@ -265,7 +300,7 @@ namespace Gui.MainMenu
             catch (Exception e)
             {
                 Debug.LogException(e);
-                Stop("$DuelConnectionError");
+                Stop("$DuelPrepareError");
                 return null;
             }
         }
@@ -273,6 +308,11 @@ namespace Gui.MainMenu
         // From here the duel owns the transport: the session thread starts at once and the combat state disposes it.
         private void StartDuel()
         {
+            // A warning only: Mono (editor, macOS) and IL2CPP round some derived values differently (MatchHandshake).
+            if (_handshake.SetupHashDiffers)
+                Debug.LogWarning($"DuelLobby: setup hash differs (local {_handshake.SetupHashValue:X16}, " +
+                    $"remote {_handshake.RemoteSetupHash:X16}); the duel continues.");
+
             CoreDuelBattle duel;
             try
             {
@@ -281,7 +321,7 @@ namespace Gui.MainMenu
             catch (Exception e)
             {
                 Debug.LogException(e);
-                Stop("$DuelConnectionError");
+                Stop("$DuelStartError");
                 return;
             }
 
@@ -314,6 +354,7 @@ namespace Gui.MainMenu
             _pending?.Cancel();
             _pending = null;
             _relayCode = null;
+            _rejectedAt = null;
             _handshake = null;
             _duelSetup = null;
             _transport?.Dispose();
@@ -343,11 +384,21 @@ namespace Gui.MainMenu
             _copyCodeButton.gameObject.SetActive(hasCode);
         }
 
-        private void SetStatus(string key)
+        // code: an error code for the player to report, shown after the text; 0 shows none.
+        private void SetStatus(string key, int code = 0)
         {
-            if (key == _statusKey) return;
+            if (key == _statusKey && code == _statusCode) return;
             _statusKey = key;
-            _statusText.text = key == null ? string.Empty : _localization.GetString(key);
+            _statusCode = code;
+            _statusText.text = key == null ? string.Empty :
+                code == 0 ? _localization.GetString(key) : $"{_localization.GetString(key)} ({code})";
+        }
+
+        private static void LogRejection(MatchHandshake handshake)
+        {
+            Debug.LogWarning($"DuelLobby: handshake rejected ({handshake.Rejection}, " +
+                $"{(handshake.RejectedByPeer ? "by the peer" : "here")}, {(handshake.IsHost ? "host" : "guest")})");
+            if (handshake.SetupError != null) Debug.LogException(handshake.SetupError);
         }
 
         private static string RejectionKey(HandshakeRejection rejection)
@@ -359,10 +410,36 @@ namespace Gui.MainMenu
                     return "$DuelRejectedVersion";
                 case HandshakeRejection.Database:
                     return "$DuelRejectedDatabase";
+                case HandshakeRejection.Source:
+                    return "$DuelRejectedBuild";
                 case HandshakeRejection.Timeout:
                     return "$DuelNoAnswer";
+                case HandshakeRejection.InvalidMessage:
+                    return "$DuelRejectedMessage";
                 default:
                     return "$DuelRejectedSetup";
+            }
+        }
+
+        private static string ClosedKey(RelayTransport transport)
+        {
+            if (transport.AllocationInvalid) return "$DuelRelayLost";
+            if (transport.TimedOut) return "$DuelNoAnswer";
+            if (transport.CloseReason == Unity.Networking.Transport.Error.DisconnectReason.ClosedByRemote) return "$DuelPeerLeft";
+            return "$DuelConnectionClosed";
+        }
+
+        private static string ServiceErrorKey(DuelServiceError error)
+        {
+            switch (error)
+            {
+                case DuelServiceError.InvalidCode: return "$DuelInvalidCode";
+                case DuelServiceError.CodeNotFound: return "$DuelCodeNotFound";
+                case DuelServiceError.NoInternet: return "$DuelNoInternet";
+                case DuelServiceError.ServiceUnavailable: return "$DuelServiceUnavailable";
+                case DuelServiceError.TooManyRequests: return "$DuelTooManyRequests";
+                case DuelServiceError.SignInFailed: return "$DuelSignInFailed";
+                default: return "$DuelConnectionError";
             }
         }
 
@@ -383,6 +460,9 @@ namespace Gui.MainMenu
         private string _port;
         private string _relayCode;
         private string _statusKey = string.Empty;
+        private int _statusCode;
+        // Set while our Reject is on its way to the peer.
+        private double? _rejectedAt;
         private CancellationTokenSource _pending;
         private RelayTransport _transport;
         private MatchHandshake _handshake;

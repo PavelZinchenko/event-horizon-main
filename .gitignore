@@ -95,3 +95,7 @@ ExportedObj/
 !/Tests~/*.csproj
 /Tests~/bin/
 /Tests~/obj/
+
+# Combat source hash, written before each build (CoreSourceHashBuildStep)
+/Assets/Resources/CoreSourceHash.txt
+/Assets/Resources/CoreSourceHash.txt.meta
