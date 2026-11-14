@@ -157,18 +157,9 @@ namespace DatabaseMigration.v1
             if (type == AmmunitionClassObsolete.EnergySiphon)
                 Add(effects, ImpactEffectType.DrainEnergy, DamageType.Impact, Mul(4m, item.EnergyCost));
 
-            // StrikeAction: push = bullet velocity × weight, plus impact damage of the same size (G2, difference 1).
+            // StrikeAction at the moment of impact: velocity × weight push plus impact damage of the same size. Power 1 to matches BulletFacotryObsolete.
             if (HasDirectImpulse(type) && item.Impulse > 0)
-            {
-                var strike = Mul(item.Velocity, item.Impulse);
-                var damage = effects.Find(effect => effect.Type == ImpactEffectType.Damage && effect.DamageType == DamageType.Impact);
-                if (damage != null)
-                    damage.Power = Add(damage.Power, strike);
-                else
-                    Add(effects, ImpactEffectType.Damage, DamageType.Impact, strike);
-
-                Add(effects, ImpactEffectType.Push, DamageType.Impact, item.Impulse);
-            }
+                Add(effects, ImpactEffectType.Impulse, DamageType.Impact, 1f);
 
             if (type == AmmunitionClassObsolete.DroneControl)
                 effects.Add(new ImpactEffectSerializable { Type = ImpactEffectType.CaptureDrones });
