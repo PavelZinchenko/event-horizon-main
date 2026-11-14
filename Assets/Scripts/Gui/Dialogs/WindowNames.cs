@@ -9,5 +9,6 @@
         public static readonly string OutOfFuelDialog = "OutOfFuelDialog";
         public static readonly string Settings = "Settings";
         public static readonly string MessageBoxWindow = "MessageBoxWindow";
+        public static readonly string DuelLobby = "DuelLobbyWindow";
     }
 }

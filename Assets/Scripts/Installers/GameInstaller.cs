@@ -234,6 +234,7 @@ namespace Installers
 			Container.Bind<QuickCombatState>().AsTransient();
 			Container.BindFactory<QuickCombatState.Settings, QuickCombatState, QuickCombatState.Factory>();
 
+			Container.Bind<OnlineDuelResult>().AsSingle();
 			Container.Bind<OnlineDuelCombatState>().AsTransient();
 			Container.BindFactory<Combat.Integration.Core.CoreDuelBattle, OnlineDuelCombatState, OnlineDuelCombatState.Factory>();
 
@@ -327,7 +328,11 @@ namespace Installers
             Container.BindTrigger<CeasefireSignal.Trigger>();
             Container.BindSignal<PlayerInputSignal>();
             Container.BindTrigger<PlayerInputSignal.Trigger>();
-		}
+            Container.BindSignal<OpenDuelLobbySignal>();
+            Container.BindTrigger<OpenDuelLobbySignal.Trigger>();
+            Container.BindSignal<StartOnlineDuelSignal>();
+            Container.BindTrigger<StartOnlineDuelSignal.Trigger>();
+        }
 
         private void BindLegacyServices()
         {

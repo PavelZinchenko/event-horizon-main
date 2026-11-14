@@ -21,6 +21,7 @@ namespace GameServices.SceneManager
 		Ehopedia,
 		Settings,
 		CoreCombat,
+        DuelLobby,
 	}
 
     public static class GameSceneExtension
@@ -68,7 +69,9 @@ namespace GameServices.SceneManager
 					return "SettingsScene";
 				case GameScene.CoreCombat:
 					return "CoreCombatScene";
-				default:
+                case GameScene.DuelLobby:
+                    return "DuelLobbyScene";
+                default:
                     throw new InvalidEnumArgumentException("scene", (int)scene, scene.GetType());
             }
         }

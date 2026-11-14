@@ -228,6 +228,23 @@ Phase 7, step 6 (2026-11-14). An online duel runs in `CoreCombatScene` with a `C
    explain becomes a drawn offset that fades with a 0.1 s time constant; satellites take their ship's offset. A jump over
    5 units and a teleport snap. Missiles are not smoothed.
 
+### Duel lobby
+
+Phase 7, step 7 (2026-11-14). The main menu's *Online duel* button (shown when `CombatSettings.UseNewCombatSimulator` is on)
+opens `DuelLobbyScene` as a modal state over `MainMenuState`.
+
+1. `DuelLobby` (`Gui.MainMenu`) hosts or joins over Relay (join code) or a direct link (address, port; also in builds). It
+   pumps the transport on the main thread and runs the handshake with the active ship group (Q3); the host draws the battle ID
+   and seed. An empty group cannot host or join. While a link or a Relay request is open, the mode toggles and the start
+   controls are disabled.
+2. At handshake `Ready` the lobby creates the `CoreDuelBattle`, fires `StartOnlineDuelSignal` and closes. A modal state's parent
+   cannot load a state while suspended, so `MainMenuState` keeps the duel state in `_loadOnResume` and loads it when the lobby
+   unloads. The session thread runs meanwhile; its queue holds 30 s.
+3. Back: `CoreCombatAdapter.OnCompleted` sets `CoreDuelBattle.Result`. `OnlineDuelCombatState` stores the outcome in the
+   singleton `OnlineDuelResult` and loads the main menu, which reopens the lobby; the lobby shows the outcome in its status
+   line. A session that stopped without a result shows "no result".
+4. The handshake has no timeout yet (step 8): a guest on a dead address waits until *Cancel*.
+
 ### Controls
 
 1. Existing pilot delay remains separate from network delay (owner decision, 2026-10-23).

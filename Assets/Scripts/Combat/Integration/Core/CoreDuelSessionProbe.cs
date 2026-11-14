@@ -11,13 +11,10 @@ using Constructor.Extensions;
 using GameDatabase;
 using GameDatabase.Enums;
 using GameServices.Multiplayer;
-using GameStateMachine;
-using GameStateMachine.States;
 using OnlineDuel;
 using Services.Resources;
 using UnityEditor;
 using UnityEngine;
-using Zenject;
 using CoreRosterId = CombatSimulation.Core.RosterId;
 using Debug = UnityEngine.Debug;
 
@@ -30,10 +27,7 @@ namespace Combat.Integration.Core
     // difference of the two means is the tick offset. Not Stopwatch: Unity's runtime counts it from the process start,
     // so two editor instances read different values (step 6 finding). Built-in database; each player gets six random common ships.
     // Turn it on with Tools/Online Duel/Session Probe; every instance that enters play mode then shows it.
-    // Step 6 check: with "Combat scene" on, both instances use the game's database and, at handshake Ready, load the duel
-    // combat state (CoreCombatScene); the players fly their ships. "Default combat rules" replaces the duel rules with
-    // CombatSettings.DefaultCombatRules (the mod fallback; asteroids and loot allowed). Both instances must set both
-    // options alike; the setup hash rejects most differences.
+    // The duel combat scene runs from the game's lobby (main menu, Online duel), not from here (step 7).
     public sealed class CoreDuelSessionProbe : MonoBehaviour
     {
         private const string PrefKey = "OnlineDuel.SessionProbe";
@@ -105,25 +99,13 @@ namespace Combat.Integration.Core
             _handshake?.Update(now);
             _transport.Flush();
             if (_handshake?.State != HandshakeState.Ready) return;
-            if (_combatScene) StartCombatScene();
-            else StartSession(Now());
+            StartSession(Now());
         }
 
         private MatchHandshake CreateHandshake()
         {
             IDatabase database = _database;
-            if (_combatScene)
-            {
-                var container = GameContainer();
-                database = container.Resolve<IDatabase>();
-                _mapper = new CoreShipMapper(database, container.Resolve<IResourceLocator>());
-            }
-            _duelSetup = new CoreDuelSetup(database, _mapper, _defaultRules ? database.CombatSettings.DefaultCombatRules : null);
-            return CreateHandshake(database);
-        }
-
-        private MatchHandshake CreateHandshake(IDatabase database)
-        {
+            _duelSetup = new CoreDuelSetup(database, _mapper);
             var builds = database.ShipBuildList.Where(item => item.Ship.ShipType == ShipType.Common)
                 .OrderBy(item => item.Id.Value).ToList();
             var random = new System.Random(_transport.IsHost ? 1 : 2);
@@ -133,26 +115,6 @@ namespace Combat.Integration.Core
             var seed = new System.Random();
             return MatchHandshake.Host(_transport, identity, _duelSetup.Build, new BattleId((ulong)seed.Next(1, int.MaxValue)),
                 (ulong)seed.Next());
-        }
-
-        // The duel combat state owns the duel from here; the probe lets go of the transport.
-        // The game's services live in the loader scene's SceneContext, not in the ProjectContext. Null until it installed.
-        private static DiContainer GameContainer()
-        {
-            foreach (var context in FindObjectsByType<SceneContext>(FindObjectsSortMode.None))
-                if (context.HasInstalled && context.Container.HasBinding<IStateMachine>())
-                    return context.Container;
-            return null;
-        }
-
-        private void StartCombatScene()
-        {
-            var duel = new CoreDuelBattle(_handshake, _duelSetup, _transport, Now);
-            _transport = null;
-            _handshake = null;
-            _relayCode = null;
-            var container = GameContainer();
-            container.Resolve<IStateMachine>().LoadState(container.Resolve<GameStateFactory>().CreateOnlineDuelCombatState(duel));
         }
 
         // From here the session thread owns the transport.
@@ -212,9 +174,6 @@ namespace Combat.Integration.Core
 
         private void OnGUI()
         {
-            // The duel's combat scene has its own HUD.
-            if (GameContainer()?.Resolve<IStateMachine>().ActiveState == StateType.OnlineDuelCombat)
-                return;
             GUILayout.BeginArea(new Rect(10, 10, 380, 560), GUI.skin.box);
             GUILayout.Label("Session probe");
             if (_pending != null)
@@ -233,8 +192,6 @@ namespace Combat.Integration.Core
                 _joinCode = GUILayout.TextField(_joinCode);
                 if (GUILayout.Button("Host (Relay)")) HostRelay();
                 if (GUILayout.Button("Join (Relay)")) JoinRelay();
-                _combatScene = GUILayout.Toggle(_combatScene, "Combat scene (step 6)");
-                _defaultRules = GUILayout.Toggle(_defaultRules, "Default combat rules");
                 if (_error != null) GUILayout.Label(_error);
             }
             else
@@ -280,7 +237,6 @@ namespace Combat.Integration.Core
 
         private void Open(Func<RelayTransport> create)
         {
-            if (!CanStart()) return;
             try
             {
                 _transport = create();
@@ -294,7 +250,6 @@ namespace Combat.Integration.Core
 
         private async void HostRelay()
         {
-            if (!CanStart()) return;
             var pending = Begin();
             try
             {
@@ -309,7 +264,6 @@ namespace Combat.Integration.Core
 
         private async void JoinRelay()
         {
-            if (!CanStart()) return;
             var pending = Begin();
             try
             {
@@ -319,14 +273,6 @@ namespace Combat.Integration.Core
             {
                 Fail(pending, e);
             }
-        }
-
-        // The combat scene mode needs the game: wait for the main menu.
-        private bool CanStart()
-        {
-            if (!_combatScene || GameContainer() != null) return true;
-            _error = "Combat scene: the game is not loaded yet.";
-            return false;
         }
 
         private CancellationTokenSource Begin()
@@ -385,8 +331,6 @@ namespace Combat.Integration.Core
         private GameDatabase.Database _database;
         private CoreShipMapper _mapper;
         private CoreDuelSetup _duelSetup;
-        private bool _combatScene;
-        private bool _defaultRules;
         private string _address = "127.0.0.1";
         private string _port = "7777";
         private string _error;

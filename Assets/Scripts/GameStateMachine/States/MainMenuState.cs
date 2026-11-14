@@ -25,7 +25,10 @@ namespace GameStateMachine.States
             DailyReward dailyReward,
             DailyRewardAwailableSignal dailyRewardAwailableSignal,
 			OpenGameSettingsSignal openGameSettingsSignal,
-			ReloadUiSignal reloadUiSignal,
+            OpenDuelLobbySignal openDuelLobbySignal,
+            StartOnlineDuelSignal startOnlineDuelSignal,
+            OnlineDuelResult onlineDuelResult,
+            ReloadUiSignal reloadUiSignal,
             ExitSignal exitSignal)
             : base(stateMachine, stateFactory)
         {
@@ -52,6 +55,11 @@ namespace GameStateMachine.States
 			_openShipEditorSignal.Event += OnOpenShipEditor;
 			_openGameSettingsSignal = openGameSettingsSignal;
 			_openGameSettingsSignal.Event += OnOpenGameSettings;
+            _openDuelLobbySignal = openDuelLobbySignal;
+            _openDuelLobbySignal.Event += OnOpenDuelLobby;
+            _startOnlineDuelSignal = startOnlineDuelSignal;
+            _startOnlineDuelSignal.Event += OnStartOnlineDuel;
+            _onlineDuelResult = onlineDuelResult;
         }
 
         public override StateType Type { get { return StateType.MainMenu; } }
@@ -61,6 +69,13 @@ namespace GameStateMachine.States
 		protected override void OnLoad()
         {
             _musicPlayer.Play(AudioTrackType.Menu);
+
+            // Back from an online duel: the lobby reopens and shows the result.
+            if (_onlineDuelResult.HasResult)
+            {
+                OnOpenDuelLobby();
+                return;
+            }
 
 #if UNITY_STANDALONE
 #else
@@ -107,7 +122,22 @@ namespace GameStateMachine.States
 			LoadStateAdditive(StateFactory.CreateGameSettingsState());
 		}
 
-		public void OnOpenEhopedia()
+        private void OnOpenDuelLobby()
+        {
+            LoadStateAdditive(StateFactory.CreateDuelLobbyState());
+        }
+
+        // The lobby is a modal state over this one, so the duel loads when the lobby closes and this state resumes.
+        private void OnStartOnlineDuel(Combat.Integration.Core.CoreDuelBattle duel)
+        {
+            var state = StateFactory.CreateOnlineDuelCombatState(duel);
+            if (Condition == GameStateCondition.Active)
+                LoadState(state);
+            else
+                _loadOnResume = state;
+        }
+
+        public void OnOpenEhopedia()
         {
 			LoadStateAdditive(StateFactory.CreateEchopediaState());
         }
@@ -144,13 +174,18 @@ namespace GameStateMachine.States
         private readonly DailyReward _dailyReward;
         private readonly DailyRewardAwailableSignal _dailyRewardAwailableSignal;
 		private readonly OpenGameSettingsSignal _openGameSettingsSignal;
+        private readonly OpenDuelLobbySignal _openDuelLobbySignal;
+        private readonly StartOnlineDuelSignal _startOnlineDuelSignal;
+        private readonly OnlineDuelResult _onlineDuelResult;
 
-		public class Factory : Factory<MainMenuState> { }
+        public class Factory : Factory<MainMenuState> { }
     }
 
     public class StartGameSignal : SmartWeakSignal<StartGameSignal> {}
     public class StartQuickBattleSignal : SmartWeakSignal<StartQuickBattleSignal, bool, string> {}
     public class ConfigureControlsSignal : SmartWeakSignal<ConfigureControlsSignal> {}
 	public class ReloadUiSignal : SmartWeakSignal<ReloadUiSignal> {}
-	public class OpenGameSettingsSignal : SmartWeakSignal<OpenGameSettingsSignal> {}
+    public class OpenGameSettingsSignal : SmartWeakSignal<OpenGameSettingsSignal> { }
+    public class OpenDuelLobbySignal : SmartWeakSignal<OpenDuelLobbySignal> { }
+    public class StartOnlineDuelSignal : SmartWeakSignal<StartOnlineDuelSignal, Combat.Integration.Core.CoreDuelBattle> { }
 }

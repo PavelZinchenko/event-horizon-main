@@ -61,6 +61,8 @@ namespace Combat.Integration.Core
         public DuelCombatModel Model { get; }
         public IReadOnlyList<Slot> Slots { get; }
         public Func<double> Now { get; }
+        // Main thread: the adapter sets it when the battle completes; default while it runs or after a lost session.
+        public CombatSimulation.Core.BattleResult Result { get; set; }
 
         // Legacy PlayerInputSignal: the autopilot tree holds back at the next tick.
         public void MarkPlayerInput() => Interlocked.Exchange(ref _playerInput, 1);

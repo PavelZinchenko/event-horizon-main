@@ -128,5 +128,10 @@ namespace GameStateMachine.States
 		{
 			return CreateModalDialogState(Gui.Common.WindowNames.Settings, GameScene.Settings);
 		}
-	}
+
+        public IGameState CreateDuelLobbyState()
+        {
+            return CreateModalDialogState(Gui.Common.WindowNames.DuelLobby, GameScene.DuelLobby);
+        }
+    }
 }

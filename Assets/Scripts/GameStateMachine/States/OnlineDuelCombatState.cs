@@ -10,7 +10,8 @@ using Zenject;
 namespace GameStateMachine.States
 {
     // The battle of an online duel (phase 7, step 6; Q2): CoreCombatScene with the duel bound. The state owns the duel:
-    // it stops the session thread and leaves the Relay session when it unloads. No reward and no campaign callback.
+    // it stops the session thread and leaves the Relay session when it unloads. No reward and no campaign callback; the
+    // outcome goes to OnlineDuelResult for the lobby.
     // The game never pauses here; the shared battle clock does not stop for one player (owner, 2026-11-14).
     public class OnlineDuelCombatState : BaseState
     {
@@ -22,10 +23,12 @@ namespace GameStateMachine.States
             IApplication application,
             IMusicPlayer musicPlayer,
             DatabaseMusicPlaylist playlist,
+            OnlineDuelResult lastResult,
             ExitSignal exitSignal)
             : base(stateMachine, stateFactory)
         {
             _duel = duel;
+            _lastResult = lastResult;
             _application = application;
             _musicPlayer = musicPlayer;
             _playlist = playlist;
@@ -58,16 +61,18 @@ namespace GameStateMachine.States
             _duel.Dispose();
         }
 
-        // Step 7 returns to the lobby with the result.
+        // The main menu reopens the lobby, which shows the result.
         private void OnCombatCompleted()
         {
             if (Condition != GameStateCondition.Active)
                 return;
 
+            _lastResult.Set(_duel);
             LoadState(StateFactory.CreateMainMenuState());
         }
 
         private readonly CoreDuelBattle _duel;
+        private readonly OnlineDuelResult _lastResult;
         private readonly IApplication _application;
         private readonly ExitSignal _exitSignal;
         private readonly IMusicPlayer _musicPlayer;

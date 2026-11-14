@@ -1076,7 +1076,10 @@ namespace Combat.Integration.Core
             CheckOutcome(result);
             // Phase 7, step 6 check: both players log the same result; the sides are core sides.
             if (_duel != null)
+            {
+                _duel.Result = result;
                 Debug.Log($"CoreCombatAdapter: duel result {result}, local side {_localSide}, tick {_lastTick}");
+            }
             _exitDelay = result.Reason == BattleEndReason.ShipLost ? 0f : ExitDelaySeconds;
         }
 

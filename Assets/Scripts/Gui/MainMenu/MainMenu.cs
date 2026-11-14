@@ -30,6 +30,7 @@ namespace Gui.MainMenu
         [Inject] private readonly ILocalization _localization;
         [Inject] private readonly IResourceLocator _resourceLocator;
         [Inject] private readonly OpenGameSettingsSignal.Trigger _openSettingsTrigger;
+        [Inject] private readonly OpenDuelLobbySignal.Trigger _openDuelLobbyTrigger;
 
         [Inject]
         private void Initialize(
@@ -58,6 +59,7 @@ namespace Gui.MainMenu
         [SerializeField] private Button _startGameButton;
         [SerializeField] private Button _continueGameButton;
         [SerializeField] private Button _constructorButton;
+        [SerializeField] private Button _onlineDuelButton;
         [SerializeField] private Button _reloadDatabaseButton;
         [SerializeField] private InputField _inputField;
         [SerializeField] private GameObject _animatedBackground;
@@ -74,7 +76,12 @@ namespace Gui.MainMenu
             _guiManager.OpenWindow(Common.WindowNames.SelectDifficultyDialog, OnDialogClosed);
         }
 
-		public void OpenSettings()
+        public void StartOnlineDuel()
+        {
+            _openDuelLobbyTrigger.Fire();
+        }
+
+        public void OpenSettings()
 		{
 			_openSettingsTrigger.Fire();
 		}
@@ -172,6 +179,7 @@ namespace Gui.MainMenu
             _continueGameButton.gameObject.SetActive(gameExists);
             _constructorButton.gameObject.SetActive(_database.IsEditable);
             _reloadDatabaseButton.gameObject.SetActive(_database.IsEditable);
+            _onlineDuelButton?.gameObject.SetActive(_database.CombatSettings.UseNewCombatSimulator);
         }
 
 		private OpenShipEditorSignal.Trigger _openShipEditorTrigger;
