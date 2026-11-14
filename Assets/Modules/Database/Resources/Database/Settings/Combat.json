@@ -6,5 +6,6 @@
   "DefensiveDroneAI": 3,
   "OffensiveDroneAI": 2,
   "StarbaseAI": 10,
-  "DefaultCombatRules": 1
+  "DefaultCombatRules": 1,
+  "UseNewCombatSimulator": true
 }
