@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using CombatSimulation.Network;
 using Unity.Collections;
+using Unity.Jobs;
 using Unity.Networking.Transport;
 using Unity.Networking.Transport.Error;
 using Unity.Networking.Transport.Relay;
@@ -13,8 +13,11 @@ namespace OnlineDuel
 
     // ITransport over Unity Transport: one remote peer, plain datagrams on the null pipeline. Network N4: the
     // reliability stays in CombatSimulation.Network, so no Transport pipeline stage is used.
-    // Single thread. Call order per loop: Update, then the PeerConnection, then Flush.
-    public sealed class RelayTransport : ITransport, IDisposable
+    // One thread at a time. Call order per loop: Update, then the PeerConnection, then Flush.
+    // Phase 7, step 5: the session thread may own it. Unity allows Allocator.Temp only on the main thread and in jobs,
+    // and BeginSend allocates with it, so TrySend queues the datagram and a job sends the queue in Update and Flush.
+    // The driver is created from persistent settings for the same reason.
+    public sealed class RelayTransport : IPumpedTransport, IDisposable
     {
         // Datagrams that Update received and TryReceive has not taken yet. A full queue drops new datagrams;
         // PeerConnection treats them as lost.
@@ -23,7 +26,7 @@ namespace OnlineDuel
         // Development mode without Relay. The host listens on the port; port 0 picks a free port (see LocalPort).
         public static RelayTransport ListenDirect(ushort port)
         {
-            var transport = new RelayTransport(new NetworkSettings(Allocator.Temp), true);
+            var transport = new RelayTransport(new NetworkSettings(Allocator.Persistent), true);
             transport.Listen(NetworkEndpoint.AnyIpv4.WithPort(port));
             return transport;
         }
@@ -33,7 +36,7 @@ namespace OnlineDuel
         {
             if (!NetworkEndpoint.TryParse(address, port, out var endpoint))
                 throw new ArgumentException($"Not an IP address: '{address}'", nameof(address));
-            var transport = new RelayTransport(new NetworkSettings(Allocator.Temp), false);
+            var transport = new RelayTransport(new NetworkSettings(Allocator.Persistent), false);
             transport.Connect(endpoint);
             return transport;
         }
@@ -56,7 +59,7 @@ namespace OnlineDuel
 
         private static NetworkSettings RelaySettings(ref RelayServerData relay)
         {
-            var settings = new NetworkSettings(Allocator.Temp);
+            var settings = new NetworkSettings(Allocator.Persistent);
             settings.WithRelayParameters(ref relay);
             return settings;
         }
@@ -65,7 +68,11 @@ namespace OnlineDuel
         {
             _isHost = isHost;
             _usesRelay = usesRelay;
-            _driver = NetworkDriver.Create(settings);
+            try { _driver = NetworkDriver.Create(settings); }
+            finally { settings.Dispose(); }
+            _outgoing = new NativeList<byte>(MaxQueuedDatagrams * 64, Allocator.Persistent);
+            _outgoingLengths = new NativeList<int>(MaxQueuedDatagrams, Allocator.Persistent);
+            _sendFailures = new NativeArray<int>(1, Allocator.Persistent);
         }
 
         public bool IsHost => _isHost;
@@ -74,6 +81,8 @@ namespace OnlineDuel
         public DisconnectReason CloseReason { get; private set; }
         public ushort LocalPort => _driver.IsCreated ? _driver.GetLocalEndpoint().Port : (ushort)0;
         public long DroppedDatagrams { get; private set; }
+        // Queued datagrams the send job could not send: the driver's send queue was full, or the link closed.
+        public long FailedSends { get; private set; }
         public long RejectedConnections { get; private set; }
         // The Relay server dropped the allocation: it was invalid or timed out. A new allocation is needed.
         public bool AllocationInvalid { get; private set; }
@@ -82,7 +91,8 @@ namespace OnlineDuel
         public void Update()
         {
             if (!_driver.IsCreated) return;
-            _driver.ScheduleUpdate().Complete();
+            _driver.ScheduleUpdate(ScheduleSends()).Complete();
+            SendsDone();
             if (_usesRelay && State != LinkState.Closed &&
                 _driver.GetRelayConnectionStatus() == RelayConnectionStatus.AllocationInvalid)
             {
@@ -114,19 +124,25 @@ namespace OnlineDuel
         // Sends now what TrySend queued, instead of at the next Update.
         public void Flush()
         {
-            if (_driver.IsCreated) _driver.ScheduleFlushSend().Complete();
+            if (!_driver.IsCreated) return;
+            _driver.ScheduleFlushSend(ScheduleSends()).Complete();
+            SendsDone();
         }
 
+        // Queues the datagram for the next Update or Flush.
         public bool TrySend(ReadOnlySpan<byte> datagram)
         {
             if (State != LinkState.Connected || datagram.IsEmpty) return false;
-            var status = _driver.BeginSend(NetworkPipeline.Null, _connection, out var writer, datagram.Length);
+            var capacity = _driver.GetMaxSupportedPayloadSize(_connection, NetworkPipeline.Null);
+            if (capacity < 0) return false;
             // A datagram above the Transport payload limit is a caller error, not backpressure.
-            if (status == (int)StatusCode.NetworkPacketOverflow) throw new ArgumentOutOfRangeException(nameof(datagram));
-            if (status != (int)StatusCode.Success) return false;
-            // WriteBytes only reads the span; it has no ReadOnlySpan overload.
-            writer.WriteBytes(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(datagram), datagram.Length));
-            return _driver.EndSend(writer) >= 0;
+            if (datagram.Length > capacity) throw new ArgumentOutOfRangeException(nameof(datagram));
+            if (_outgoingLengths.Length >= MaxQueuedDatagrams) return false;
+            var start = _outgoing.Length;
+            _outgoing.ResizeUninitialized(start + datagram.Length);
+            datagram.CopyTo(_outgoing.AsArray().GetSubArray(start, datagram.Length).AsSpan());
+            _outgoingLengths.Add(datagram.Length);
+            return true;
         }
 
         public bool TryReceive(Span<byte> buffer, out int length)
@@ -153,6 +169,9 @@ namespace OnlineDuel
             }
             if (State != LinkState.Closed) Close(DisconnectReason.Default);
             _driver.Dispose();
+            _outgoing.Dispose();
+            _outgoingLengths.Dispose();
+            _sendFailures.Dispose();
         }
 
         private void Listen(NetworkEndpoint endpoint)
@@ -172,8 +191,27 @@ namespace OnlineDuel
 
         private void Fail(string message)
         {
-            _driver.Dispose();
+            Dispose();
             throw new InvalidOperationException(message);
+        }
+
+        private JobHandle ScheduleSends()
+        {
+            if (_outgoingLengths.Length == 0) return default;
+            _sendFailures[0] = 0;
+            return new SendJob
+            {
+                Driver = _driver.ToConcurrent(), Connection = _connection, Bytes = _outgoing, Lengths = _outgoingLengths,
+                Failures = _sendFailures,
+            }.Schedule();
+        }
+
+        private void SendsDone()
+        {
+            if (_outgoingLengths.Length == 0) return;
+            FailedSends += _sendFailures[0];
+            _outgoing.Clear();
+            _outgoingLengths.Clear();
         }
 
         // One peer per match: the host keeps the first guest and turns away the rest.
@@ -215,6 +253,34 @@ namespace OnlineDuel
             _connection = default;
         }
 
+        // Jobs may allocate with Allocator.Temp, as BeginSend does. A closed link fails each send.
+        private struct SendJob : IJob
+        {
+            public NetworkDriver.Concurrent Driver;
+            public NetworkConnection Connection;
+            [ReadOnly] public NativeList<byte> Bytes;
+            [ReadOnly] public NativeList<int> Lengths;
+            public NativeArray<int> Failures;
+
+            public void Execute()
+            {
+                var bytes = Bytes.AsArray();
+                var offset = 0;
+                for (var i = 0; i < Lengths.Length; ++i)
+                {
+                    var length = Lengths[i];
+                    if (Driver.BeginSend(NetworkPipeline.Null, Connection, out var writer, length) != (int)StatusCode.Success)
+                        ++Failures[0];
+                    else
+                    {
+                        writer.WriteBytes(bytes.GetSubArray(offset, length));
+                        if (Driver.EndSend(writer) < 0) ++Failures[0];
+                    }
+                    offset += length;
+                }
+            }
+        }
+
         private sealed class Packet
         {
             internal byte[] Bytes = Array.Empty<byte>();
@@ -225,6 +291,10 @@ namespace OnlineDuel
         private readonly bool _usesRelay;
         private NetworkDriver _driver;
         private NetworkConnection _connection;
+        // The datagrams TrySend queued, back to back, and their lengths.
+        private NativeList<byte> _outgoing;
+        private NativeList<int> _outgoingLengths;
+        private NativeArray<int> _sendFailures;
         private readonly Queue<Packet> _received = new Queue<Packet>();
         private readonly Stack<Packet> _pool = new Stack<Packet>();
     }

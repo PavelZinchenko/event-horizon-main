@@ -15,7 +15,6 @@
 
 ## Planned (battle simulator — `docs/issues/battle_simulator.md`)
 - [ ] Performance gate: set a snapshot budget or close the risk; R1 measured 0.34 ms per tick at R2 (2026-11-12) (`TODO/battle_simulator_core.md`, risk 3)
-- [ ] Phase 7: run the network session on its own thread with short loop gaps (`TODO/battle_simulator_network.md`, "Open after the gate")
 - [ ] Phase 7: repeat the network bandwidth and drift rows with real ships, with 8-bit resource precision (`TODO/battle_simulator_network.md`, "Open after the gate")
 - [ ] Set the missile correction budget (300-byte placeholder) from a playable scene (`TODO/battle_simulator_network.md`, "Open after the gate")
 - [ ] Phase 7: add a satellite carrier to the harness `Turrets` scene; measure copy satellite drift and predicted muzzle offset (`TODO/battle_simulator_phase5.md`, 12c finding 7)

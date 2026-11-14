@@ -39,7 +39,7 @@ Runtime uses it through `NetworkSession` (step 6). Core remains independent of N
 4. `TryReceive` consumes one datagram and reports its original length, even when the receive buffer is too small. The peer rejects oversized packets.
 5. Call `Update(now)` regularly with finite, nondecreasing monotonic seconds. It receives packets, then sends one datagram with everything queued since the last call:
    input and unreliable sections, acknowledgements, clock probes, reliable retries and new reliable data.
-6. All state belongs to the instance. Use one thread; receiver callbacks must not reenter the peer or throw.
+6. All state belongs to the instance. Use one thread at a time; receiver callbacks must not reenter the peer or throw.
 7. Queue methods copy their payloads. `IPeerReceiver` callbacks expose borrowed spans that expire when the callback returns.
 8. Use a fresh transport and peer for each match. Session negotiation, authentication, reconnects and disconnect policy remain phase 7 work.
 
@@ -168,6 +168,40 @@ all fields of each struct (a struct's properties are derived, and `Vec2.Normaliz
 by their bits. Collections count their elements only. The local owners are left out; the owner delays are added. Shared
 objects are hashed once; a cycle counts as a marker. A graph deeper than 64 throws with its member path.
 `link.xml` (`Assets/ModulesShared/CombatSimulation/`) keeps the Core and Physics members for IL2CPP.
+
+### Session thread
+
+Phase 7, step 5 (2026-11-14). `SessionThread` (Runtime) runs one `NetworkSession` and its transport on a worker thread, so
+Unity frames do not pace the ticks (gate D1). Single-player battles keep the main-thread `BattleRunner`.
+
+1. Create it with `SessionThread(session, transport, clock)` after `CreateSession`. The transport is an `IPumpedTransport`
+   (Network): `Update` receives, `Flush` sends. `clock` returns monotonic seconds from the source the handshake used.
+2. After `Start`, only the worker touches the session and the transport. `Dispose` stops and joins the worker; the caller then
+   owns both again. The main thread never reads `session.Snapshot` while the worker runs.
+3. Commands: `Post(SessionCommand)` queues a deployment, retreat, self-destruction, surrender or player controls. The worker
+   runs them at the session's tick at the start of its next iteration. Controls that the session refuses (an invalid
+   entity, throttle or course) count in `Status.RejectedCommands`.
+4. Snapshots: after each tick the worker copies the snapshot (`BattleSnapshot.CopyTo`) into a pooled copy and queues it.
+   `TryTake` returns the oldest copy, so no tick's events are lost; `Release` returns it to the pool. The copy is complete
+   before it is queued, and the worker never writes a copy that the reader holds. A copy into a warm target allocates
+   nothing. A reader more than `MaxQueuedSnapshots` (500, 10 s) behind stops the worker with an error.
+5. Loop, as R1: commands, `transport.Update`, `Pump`, then `Step` and publish for each due tick on its own, then
+   `transport.Flush`. After the result it calls `Update` until `Dispose`, so the final packets reach the peer.
+6. Wait (owner, 2026-11-14): sleep 1 ms at a time until about 2 ms before the next due tick
+   (`TickClock.SecondsUntil`), then spin. A sleep is skipped when the longest recent sleep would end inside that margin.
+7. `Status`: last published tick, completion, queued copies, catch-up ticks, the largest loop gap and step lateness, round
+   trip and clock error.
+
+`RelayTransport` (OnlineDuel) can run on the worker. Unity allows `Allocator.Temp` only on the main thread and inside jobs.
+`BeginSend` and `PopEvent` allocate with it, and `NetworkSettings(Allocator.Temp)` too. So `TrySend` queues datagrams in
+persistent native lists, and a job sends them before the driver update or flush. The driver uses `PopEventForConnection`,
+`Accept` and `Disconnect` directly, which do not allocate. Job scheduling and `Complete` from the worker work in Unity
+6000.0.75f1 (EditMode `TransportThreadTests`). Unity documents scheduling only from the main thread, so an IL2CPP build
+must confirm it (step 9).
+
+Known limit: a 1 ms sleep takes about 15.6 ms on Windows without a raised timer resolution. The worker then pumps the network
+about once per tick: ticks stay on time, but each direction gets up to one tick of extra delay (engine-free test host: round
+trip 10-14 ms over an in-memory link).
 
 ### Controls
 
@@ -1433,7 +1467,7 @@ Stage 14 writes a `BattleSnapshot` of the tick it completed, then increments `Ba
 3. `BulletState`: entity, parent entity, side, owner, definition, pose, velocity and expiry tick. Projectiles retain `Definition` (`BulletDefinition`). Beams set `BeamDefinition` and `IsBeam`, with `Definition` null. Their pose is the sampled ray origin and angle; `BeamEndPoint` and `BeamTargetId` describe the accepted hit or full range. Beam velocity is zero and expiry is `long.MaxValue` because the device owns lifetime.
 4. `RosterSlotState`: roster ID, side, owner, status, deployment count and order, revision, active entity (null unless active), the retained B4 deficits and `DamageFraction` (B2).
 5. `DeviceState` (phase 4, step 3b): `GetDevices(ship)` returns one entry per device of a `ShipState` from the same snapshot, in control-bit order. `Ready` is legacy `CanBeActivated` for the next tick with the end-of-tick resources; the bit does not count. `Active` is legacy `SystemBase.Active`: the bit was held and the device's checks passed before it spent energy. `Cooldown` is the HUD fraction (0 ready, 1 blocked). Drone bays add `InHangar` and `ActiveDrones`; beams, manageable cannons and charging weapons add `ActiveBullet` (the attached beam, the bullet in flight, or the last shot's live bullet; phase 5, steps 4b and 4f); charging weapons add `Charge` (step 4f). Inert devices are never ready or active and show cooldown 1. No peer sends it: each derives it from its own simulation. The rules per device are in [the phase 4 plan](../TODO/battle_simulator_phase4.md#device-state-3b).
-6. Two buffers: the battle writes one while readers use the other. A reader finishes with a snapshot before the next `Step()` returns; the snapshot of tick `t` stays intact while tick `t + 1` runs. A worker-thread reader needs a third buffer.
+6. Two buffers: the battle writes one while readers use the other. A reader finishes with a snapshot before the next `Step()` returns; the snapshot of tick `t` stays intact while tick `t + 1` runs. A reader on another thread takes a copy (`CopyTo`, [Session thread](#session-thread)).
 7. Publishing allocates nothing once the arrays fit the battle (unit tests: ships, cannon hits, missile salvos, sustained beam hits and repeated beam activations, and the full fleet of the scripted battle). The copy size is measured in [Scripted battle](#scripted-battle).
 
 `BattleEvent` is one flat struct per event, tagged by `Kind`. Its identity is battle ID, tick and `Sequence` (the position in the batch). Beam spawn/removal events carry `BeamDefinition`, `ParentId`, `IsBeam` and `IsBullet`; `BulletDefinition` is null. A beam emits one spawn and removal per activation and a `Hit` for each accepted tick. Events follow stage order. Roster transitions follow roster order; drone removals follow entity ID order; hits follow contact order. An entity event comes before the roster transition of the same operation:
@@ -1847,4 +1881,4 @@ accepted defects are in `TODO/battle_simulator_network.md`, "Gate result".
    150 ms, Dogfight and Churn. 4 of 8 runs pass; only shooter advantage differs from the desktop verdict. The phone's session
    is replayed on the desktop: 0 differing tick hashes in 19 phone runs, so the full core is bit-identical on IL2CPP ARM64.
 5. A coarse session loop raises shooter advantage and tick offset (R1 D1). A session driven by Unity frames needs its own thread
-   with short loop gaps (phase 7).
+   with short loop gaps: [Session thread](#session-thread) (phase 7, step 5).

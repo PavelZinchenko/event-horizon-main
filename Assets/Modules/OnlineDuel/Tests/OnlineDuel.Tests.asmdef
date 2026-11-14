@@ -2,6 +2,7 @@
     "name": "OnlineDuel.Tests",
     "references": [
         "OnlineDuel",
+        "Unity.Collections",
         "CombatSimulation.Network",
         "Unity.Networking.Transport"
     ],
