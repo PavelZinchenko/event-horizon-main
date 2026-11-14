@@ -93,7 +93,9 @@ Channels:
 
 Packet buffers and reliable reassembly storage retain their capacities for reuse.
 Capacity growth may allocate; warmed steady traffic, including retries and reassembly, allocates zero bytes in the tests.
-Reliable queues survive blackouts without dropping messages. Long-blackout queue limits remain phase 7 work.
+Reliable queues survive blackouts without dropping messages. `PendingReliableBytes` gives the queued and unacknowledged
+stream; the session thread sets its limit (phase 7, step 8). `LastReceiveTime` is the update time of the last well-formed
+datagram (before the first, of the first update); disconnect timeouts measure the silence from it.
 An acknowledged stream with a malformed length prefix faults the connection (`IsFaulted`); it never silently discards an application message.
 A reliable section without data, or with more data than a datagram can carry, is invalid and consumes no sequence.
 
@@ -161,7 +163,9 @@ A second `PeerConnection` on the same transport would mix sequence numbers, so t
    the buffered messages and starts the clock. After that, the session pumps the connection; `Update` throws.
 7. The peer's reliable messages after its last handshake message (Accept from the guest, Start from the host) belong to the
    session. Until `CreateSession` they wait in a buffer of at most 256 datagrams, as do input and unreliable datagrams.
-8. After a Reject, keep calling `Update` until `PendingReliablePackets` is 0, then close the transport. Timeouts are step 8.
+8. After a Reject, keep calling `Update` until `PendingReliablePackets` is 0, then close the transport.
+9. Timeout (step 8, Q4): while Measuring or Exchanging, a peer without any datagram for `LinkTimeoutSeconds` (10 s) ends the
+   handshake as Rejected with `Timeout`. The reason is local; no Reject is sent.
 
 `SetupHash.Compute(setup)` walks the setup's object graph by reflection: the public properties and fields of each class and
 all fields of each struct (a struct's properties are derived, and `Vec2.Normalized` returns the struct again). Floats count
@@ -191,6 +195,16 @@ Unity frames do not pace the ticks (gate D1). Single-player battles keep the mai
    (`TickClock.SecondsUntil`), then spin. A sleep is skipped when the longest recent sleep would end inside that margin.
 7. `Status`: last published tick, completion, queued copies, catch-up ticks, the largest loop gap and step lateness, round
    trip and clock error.
+8. Link loss (step 8): before the result, each iteration checks the link. The first failed check sets `Status.LinkLoss`,
+   and the thread stops without an error. It stops pumping, so the peer sees silence. In order:
+   `ReaderStalled` (no `TryTake` for the link timeout, counted from the first one, so a scene load does not count: the app
+   is in the background or its main thread stalls); `TransportClosed` (`IPumpedTransport.IsClosed` for more than
+   `ClosedGraceSeconds`, 0.5 s, so the ticks still step a result that the leaving peer's last batch completes); `Silence` (no datagram
+   for the link timeout, default `MatchHandshake.LinkTimeoutSeconds`, 10 s); `Backlog` (`PendingReliableBytes` above
+   `MaxReliableBacklogBytes`, 1 MiB: a one-way link, where the peer still sends but receives nothing).
+
+`RelayTransport` sets Transport's limits to the same 10 s: a guest stops connecting after 10 attempts of 1 s, and Transport
+closes a link without any packet for 10 s (defaults: 60 attempts, 30 s). `TimedOut` tells such a close from a peer that left.
 
 `RelayTransport` (OnlineDuel) can run on the worker. Unity allows `Allocator.Temp` only on the main thread and inside jobs.
 `BeginSend` and `PopEvent` allocate with it, and `NetworkSettings(Allocator.Temp)` too. So `TrySend` queues datagrams in
@@ -227,6 +241,9 @@ Phase 7, step 6 (2026-11-14). An online duel runs in `CoreCombatScene` with a `C
 8. `BattleRenderer.SmoothCorrections`: for ships and drones of other sides, a jump that the last snapshot's velocities do not
    explain becomes a drawn offset that fades with a 0.1 s time constant; satellites take their ship's offset. A jump over
    5 units and a teleport snap. Missiles are not smoothed.
+9. A stopped session thread (step 8): the adapter handles the copies already published, then ends the battle. A link loss
+   sets `CoreDuelBattle.LinkLoss`; the player's outcome is a draw (decision 3). A thread error ends without a result. Both
+   freeze the battle and exit after the usual 3 s. The peer decides for itself: it sees the same loss, or silence.
 
 ### Duel lobby
 
@@ -243,7 +260,9 @@ opens `DuelLobbyScene` as a modal state over `MainMenuState`.
 3. Back: `CoreCombatAdapter.OnCompleted` sets `CoreDuelBattle.Result`. `OnlineDuelCombatState` stores the outcome in the
    singleton `OnlineDuelResult` and loads the main menu, which reopens the lobby; the lobby shows the outcome in its status
    line. A session that stopped without a result shows "no result".
-4. The handshake has no timeout yet (step 8): a guest on a dead address waits until *Cancel*.
+4. Timeouts (step 8): a guest on a dead address gets "does not answer" after about 10 s (Transport's connect limit), as
+   does a peer that goes silent in the handshake. A lost link in the battle shows "connection lost, draw"
+   (`OnlineDuelOutcome.Disconnected`). The host waits for a guest without a limit.
 
 ### Controls
 

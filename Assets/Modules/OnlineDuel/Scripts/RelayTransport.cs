@@ -22,11 +22,13 @@ namespace OnlineDuel
         // Datagrams that Update received and TryReceive has not taken yet. A full queue drops new datagrams;
         // PeerConnection treats them as lost.
         public const int MaxQueuedDatagrams = 256;
+        public const int LinkTimeoutMilliseconds = 10000;
+        private const int ConnectAttemptMilliseconds = 1000;
 
         // Development mode without Relay. The host listens on the port; port 0 picks a free port (see LocalPort).
         public static RelayTransport ListenDirect(ushort port)
         {
-            var transport = new RelayTransport(new NetworkSettings(Allocator.Persistent), true);
+            var transport = new RelayTransport(Settings(), true);
             transport.Listen(NetworkEndpoint.AnyIpv4.WithPort(port));
             return transport;
         }
@@ -36,7 +38,7 @@ namespace OnlineDuel
         {
             if (!NetworkEndpoint.TryParse(address, port, out var endpoint))
                 throw new ArgumentException($"Not an IP address: '{address}'", nameof(address));
-            var transport = new RelayTransport(new NetworkSettings(Allocator.Persistent), false);
+            var transport = new RelayTransport(Settings(), false);
             transport.Connect(endpoint);
             return transport;
         }
@@ -59,8 +61,20 @@ namespace OnlineDuel
 
         private static NetworkSettings RelaySettings(ref RelayServerData relay)
         {
-            var settings = new NetworkSettings(Allocator.Persistent);
+            var settings = Settings();
             settings.WithRelayParameters(ref relay);
+            return settings;
+        }
+
+        // Phase 7, step 8 (Q4): a guest gives up connecting after about LinkTimeoutMilliseconds, and Transport closes a link
+        // without any packet for as long. Transport defaults are 60 attempts and 30 s.
+        private static NetworkSettings Settings()
+        {
+            var settings = new NetworkSettings(Allocator.Persistent);
+            settings.WithNetworkConfigParameters(
+                connectTimeoutMS: ConnectAttemptMilliseconds,
+                maxConnectAttempts: LinkTimeoutMilliseconds / ConnectAttemptMilliseconds,
+                disconnectTimeoutMS: LinkTimeoutMilliseconds);
             return settings;
         }
 
@@ -77,6 +91,10 @@ namespace OnlineDuel
 
         public bool IsHost => _isHost;
         public LinkState State { get; private set; }
+        public bool IsClosed => State == LinkState.Closed;
+        // Closed because the peer never answered or went silent, not because it left.
+        public bool TimedOut => IsClosed &&
+            (CloseReason == DisconnectReason.Timeout || CloseReason == DisconnectReason.MaxConnectionAttempts);
         // Valid when State is Closed.
         public DisconnectReason CloseReason { get; private set; }
         public ushort LocalPort => _driver.IsCreated ? _driver.GetLocalEndpoint().Port : (ushort)0;

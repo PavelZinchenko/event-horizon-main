@@ -144,7 +144,7 @@ namespace Gui.MainMenu
             else if (_handshake?.State == HandshakeState.Ready)
                 StartDuel();
             else if (_transport.State == LinkState.Closed)
-                Stop("$DuelConnectionClosed");
+                Stop(_transport.TimedOut ? "$DuelNoAnswer" : "$DuelConnectionClosed");
             else
                 ShowProgress();
         }
@@ -359,6 +359,8 @@ namespace Gui.MainMenu
                     return "$DuelRejectedVersion";
                 case HandshakeRejection.Database:
                     return "$DuelRejectedDatabase";
+                case HandshakeRejection.Timeout:
+                    return "$DuelNoAnswer";
                 default:
                     return "$DuelRejectedSetup";
             }
@@ -371,6 +373,7 @@ namespace Gui.MainMenu
                 case OnlineDuelOutcome.Victory: return "$DuelVictory";
                 case OnlineDuelOutcome.Defeat: return "$DuelDefeat";
                 case OnlineDuelOutcome.Draw: return "$DuelDraw";
+                case OnlineDuelOutcome.Disconnected: return "$DuelDisconnected";
                 default: return "$DuelNoResult";
             }
         }

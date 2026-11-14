@@ -219,7 +219,9 @@ namespace Combat.Integration.Core
             var status = _thread.Status;
             GUILayout.Label($"Tick {_tick}" + (_result.IsCompleted
                 ? $", {_result.Outcome} (side {_result.WinningSide}, {_result.Reason})" : string.Empty));
-            GUILayout.Label(status.IsRunning ? "Session thread running" : $"Session thread stopped: {_thread.Error?.Message}");
+            GUILayout.Label(status.IsRunning ? "Session thread running"
+                : status.LinkLoss != SessionLinkLoss.None ? $"Link lost: {status.LinkLoss}"
+                : $"Session thread stopped: {_thread.Error?.Message}");
             GUILayout.Label($"Queued copies {status.QueuedSnapshots}, catch-up ticks {status.CatchUpTicks}");
             GUILayout.Label($"Max loop gap {status.MaxGap:F1} ms, max late step {status.MaxLate:F1} ms");
             GUILayout.Label($"Round trip {status.RoundTrip:F1} ms, clock error {status.ClockErrorTicks:F2} ticks");

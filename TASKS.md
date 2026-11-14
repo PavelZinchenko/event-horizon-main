@@ -28,6 +28,7 @@
 - [ ] Migration phase 6 (deferred): exploration and controls configuration (`TODO/battle_simulator_migration.md`)
 - [In Progress] Migration phase 7: online duel (`TODO/battle_simulator_phase7.md`); release gates and GitHub alpha deferred (`TODO/battle_simulator_migration.md`)
 - [ ] Duel rule for `CaptureDrones` and `DriveDronesCrazy`; interim: no effect with remote owners (`TODO/battle_simulator_phase5.md`, H9)
+- [ ] Duel clock pause on a network gap (deferred proposal; `TODO/battle_simulator_phase7.md`, step 8 item 4)
 - [ ] Verify the tractor beam rope anchor (`autoConfigureConnectedAnchor`) in Unity (`TODO/battle_simulator_physics.md`, P4 risk 3)
 - [ ] CombatSimulation.Physics P3 follow-ups: measure target-spin misses, count buffer growth events (`TODO/battle_simulator_physics.md`, "P3 closure")
 - [ ] Core tractor beam redesign: a breakable rope that reels the target in; old simulator keeps the pull beam (needs owner decisions: physical or one-sided pull, break rule)

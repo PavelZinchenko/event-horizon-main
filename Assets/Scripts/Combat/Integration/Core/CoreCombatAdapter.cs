@@ -423,11 +423,13 @@ namespace Combat.Integration.Core
         private void RunDuel()
         {
             var thread = _duel.Thread;
-            // Step 8 ends the match on a stopped thread; until then the battle freezes, and the reason goes to the log.
-            if (!_threadErrorLogged && thread.Error != null)
+            // Read before the copies: a thread that stopped has published all of its copies by then.
+            var linkLoss = thread.Status.LinkLoss;
+            var error = thread.Error;
+            if (!_threadErrorLogged && error != null)
             {
                 _threadErrorLogged = true;
-                Debug.LogError($"CoreCombatAdapter: the duel session thread stopped at tick {thread.Status.Tick}: {thread.Error}");
+                Debug.LogError($"CoreCombatAdapter: the duel session thread stopped at tick {thread.Status.Tick}: {error}");
             }
 
             while (thread.TryTake(out var snapshot, out var publishedAt))
@@ -443,6 +445,12 @@ namespace Combat.Integration.Core
 
             if (!IsRunning)
                 return;
+
+            if (linkLoss != SessionLinkLoss.None || error != null)
+            {
+                EndDuelWithoutResult(linkLoss);
+                return;
+            }
 
             RunPlayerCommander();
             if (_playerInput)
@@ -1081,6 +1089,17 @@ namespace Combat.Integration.Core
                 Debug.Log($"CoreCombatAdapter: duel result {result}, local side {_localSide}, tick {_lastTick}");
             }
             _exitDelay = result.Reason == BattleEndReason.ShipLost ? 0f : ExitDelaySeconds;
+        }
+
+        // Phase 7, step 8: the session thread stopped before the result. A lost link is a draw on this player (decision 3);
+        // a thread error (linkLoss None) ends without a result. The battle freezes, then exits as after a result.
+        private void EndDuelWithoutResult(SessionLinkLoss linkLoss)
+        {
+            _duelCompleted = true;
+            _duel.LinkLoss = linkLoss;
+            Debug.LogWarning($"CoreCombatAdapter: duel ended without a result ({linkLoss}), local side {_localSide}, tick {_lastTick}");
+            if (_exitDelay < 0f)
+                _exitDelay = ExitDelaySeconds;
         }
 
         // Migration plan, "Completion order" (RR3): the core result and the campaign victory, which reads the roster,

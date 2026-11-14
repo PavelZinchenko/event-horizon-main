@@ -51,6 +51,8 @@ namespace Combat.Integration.Core
             var session = handshake.CreateSession(Pilots, clock());
             Thread = new SessionThread(session, transport, clock, MaxQueuedSnapshots, beforeStep: BeforeStep);
             Thread.Start();
+            // Step 8: no state unloads when the app quits or Play mode stops, and the background worker would keep the link.
+            UnityEngine.Application.quitting += Dispose;
         }
 
         public CombatSimulation.Core.BattleSetup Setup { get; }
@@ -63,6 +65,9 @@ namespace Combat.Integration.Core
         public Func<double> Now { get; }
         // Main thread: the adapter sets it when the battle completes; default while it runs or after a lost session.
         public CombatSimulation.Core.BattleResult Result { get; set; }
+        // Main thread: the adapter sets it when the session thread gave up the link before the result. The match then
+        // ends in a draw on this player (decision 3).
+        public SessionLinkLoss LinkLoss { get; set; }
 
         // Legacy PlayerInputSignal: the autopilot tree holds back at the next tick.
         public void MarkPlayerInput() => Interlocked.Exchange(ref _playerInput, 1);
@@ -86,6 +91,7 @@ namespace Combat.Integration.Core
         {
             if (_disposed) return;
             _disposed = true;
+            UnityEngine.Application.quitting -= Dispose;
             Thread.Dispose();
             _transport.Dispose();
         }
