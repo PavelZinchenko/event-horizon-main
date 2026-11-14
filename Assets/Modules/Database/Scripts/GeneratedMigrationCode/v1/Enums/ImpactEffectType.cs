@@ -32,5 +32,6 @@ namespace DatabaseMigration.v1.Enums
 		Roll,
 		DamageWithFalloff,
 		PushFromCenterWithFalloff,
+		Impulse,
 	}
 }

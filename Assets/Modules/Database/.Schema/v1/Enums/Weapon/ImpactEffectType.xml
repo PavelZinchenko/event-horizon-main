@@ -22,4 +22,5 @@
     <item name="Roll" />
     <item name="DamageWithFalloff" />
     <item name="PushFromCenterWithFalloff" />
+    <item name="Impulse" />
 </data>

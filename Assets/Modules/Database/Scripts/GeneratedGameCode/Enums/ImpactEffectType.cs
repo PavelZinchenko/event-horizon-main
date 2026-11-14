@@ -32,5 +32,6 @@ namespace GameDatabase.Enums
 		Roll,
 		DamageWithFalloff,
 		PushFromCenterWithFalloff,
+		Impulse,
 	}
 }

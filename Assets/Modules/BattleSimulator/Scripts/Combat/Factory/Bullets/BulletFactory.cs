@@ -123,6 +123,8 @@ namespace Combat.Factory
                     collisionBehaviour.AddAction(new RadialPushAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.PullToCenter)
                     collisionBehaviour.AddAction(new RadialPushAction(-effect.Power * _stats.EffectPowerMultiplier, impactType));
+                else if (effect.Type == ImpactEffectType.Impulse)
+                    collisionBehaviour.AddAction(new StrikeAction(effect.Power * _stats.DamageMultiplier, false));
                 else if (effect.Type == ImpactEffectType.DrainEnergy)
                     collisionBehaviour.AddAction(new DrainEnergyAction(effect.Power * _stats.EffectPowerMultiplier, impactType));
                 else if (effect.Type == ImpactEffectType.SiphonHitPoints)
