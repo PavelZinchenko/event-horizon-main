@@ -22,5 +22,6 @@
         Ehopedia,
 
         TestScene,
+        OnlineDuelCombat,
     }
 }

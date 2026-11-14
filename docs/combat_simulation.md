@@ -203,6 +203,31 @@ Known limit: a 1 ms sleep takes about 15.6 ms on Windows without a raised timer 
 about once per tick: ticks stay on time, but each direction gets up to one tick of extra delay (engine-free test host: round
 trip 10-14 ms over an in-memory link).
 
+### Duel combat scene
+
+Phase 7, step 6 (2026-11-14). An online duel runs in `CoreCombatScene` with a `CoreDuelBattle` bound (Q2).
+
+1. `CoreDuelBattle` (Assembly-CSharp) is created on the main thread when the handshake is `Ready`. It creates the session and starts
+   its `SessionThread` at once (queue limit 1,500 copies, 30 s), so the network runs while the scene loads. It owns the thread and
+   the transport; `Dispose` stops the thread, then closes the transport. `OnlineDuelCombatState` owns it.
+2. The battle scene reuses the mapper and the slots of `CoreDuelSetup`'s last `Build`: each `Map` call makes new definitions,
+   and the views look up the session's definitions in the mapper that made them. `DuelCombatModel` holds the fleets as
+   `ShipInfo` (local ships `CombatSide.Player`) and gives no loot and no experience.
+3. `CoreCombatAdapter` with a duel: each frame it takes every snapshot copy, oldest first, through the same handling as a
+   single-player step. Commands go to `SessionThread.Post`. The render alpha is the time since the newest copy was published.
+   No enemy commander, kill-all, reinforcement, asteroids or effect preview.
+4. Threads: `PlayerPilot` and the player pilot map of `CorePilotProvider` sit behind locks. Player input reaches the trees
+   through `SessionThread`'s `beforeStep` hook; ShowMessage texts reach the main thread through a locked queue with their tick.
+5. Deployment (owner, 2026-11-14): the player does not wait for the peer's ship. The ship panel opens at once; the first ready
+   ship deploys 30 s after it first opened if none is selected, and the timer panel shows the countdown (alarm in the last
+   10 s). A posted deployment counts as pending for 1 s. A player has 3 retreats.
+6. No pause: `IApplication.AlwaysRunning` keeps `timeScale` at 1 while the menu is open and without focus.
+7. Deaths and the result: the core already shows only committed facts. Ship deaths and roster changes come from the owner's
+   records, predicted armor 0 never kills, and `Result` is final only after both watermarks. Only bullet removals are predicted.
+8. `BattleRenderer.SmoothCorrections`: for ships and drones of other sides, a jump that the last snapshot's velocities do not
+   explain becomes a drawn offset that fades with a 0.1 s time constant; satellites take their ship's offset. A jump over
+   5 units and a teleport snap. Missiles are not smoothed.
+
 ### Controls
 
 1. Existing pilot delay remains separate from network delay (owner decision, 2026-10-23).

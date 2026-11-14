@@ -13,7 +13,22 @@ namespace Services.GameApplication
         private bool _applicationFocused = true;
         private readonly GamePauseCounter _pauseCounter = new();
 
-        public bool Paused => _pauseCounter.Paused || !IsActive;
+        public bool Paused => !_alwaysRunning && (_pauseCounter.Paused || !IsActive);
+
+        public bool AlwaysRunning
+        {
+            get => _alwaysRunning;
+            set
+            {
+                if (_alwaysRunning == value)
+                    return;
+
+                _alwaysRunning = value;
+                UpdateStatus();
+            }
+        }
+
+        private bool _alwaysRunning;
         public bool IsActive => !_applicationPaused && (_applicationFocused || _settings.RunInBackground);
 
         private void Start()

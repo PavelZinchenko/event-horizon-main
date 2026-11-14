@@ -15,7 +15,8 @@ namespace Combat.Integration.Core
     // ship gets a new player pilot, with the autopilot tree when it has the autopilot component. An enemy ship runs its
     // own tree or the enemy tree at the fleet's AI level; a starbase its own or the starbase tree; a drone the tree of
     // its bay; a clone its own or the clone tree. The runner creates the pilot at the spawn event, so it exists before the
-    // adapter handles that event.
+    // adapter handles that event. In an online duel the session thread creates the pilots while the main thread reads
+    // the player pilots (phase 7, step 6), so that map sits behind a lock.
     public sealed class CorePilotProvider : IPilotProvider
     {
         // playerSide −1: no player pilots, every ship runs its tree (Editor checks). An AI level below 0 gives enemy
@@ -71,7 +72,8 @@ namespace Combat.Integration.Core
             if (ship.Side == _playerSide)
             {
                 var pilot = new PlayerPilot(autoActivation);
-                _playerPilots[ship.Id] = pilot;
+                lock (_playerPilots)
+                    _playerPilots[ship.Id] = pilot;
                 schedule = PlayerPilot.Schedule;
                 if (!mapping.HasAutopilot)
                     return pilot;
@@ -102,11 +104,23 @@ namespace Combat.Integration.Core
             return Tree(enemyTree, mapping, AiSettings.FromAiLevel(_enemyAiLevel), ship.Id, schedule, autoActivation);
         }
 
-        public bool TryGetPlayerPilot(CoreEntityId ship, out PlayerPilot pilot) => _playerPilots.TryGetValue(ship, out pilot);
+        public bool TryGetPlayerPilot(CoreEntityId ship, out PlayerPilot pilot)
+        {
+            lock (_playerPilots)
+                return _playerPilots.TryGetValue(ship, out pilot);
+        }
 
-        public void Release(CoreEntityId ship) => _playerPilots.Remove(ship);
+        public void Release(CoreEntityId ship)
+        {
+            lock (_playerPilots)
+                _playerPilots.Remove(ship);
+        }
 
-        public void Clear() => _playerPilots.Clear();
+        public void Clear()
+        {
+            lock (_playerPilots)
+                _playerPilots.Clear();
+        }
 
         private IPilot Tree(BehaviorTreeModel tree, CoreShipMapping mapping, AiSettings settings, CoreEntityId ship,
             PilotSchedule schedule, CoreAutoActivation autoActivation) =>

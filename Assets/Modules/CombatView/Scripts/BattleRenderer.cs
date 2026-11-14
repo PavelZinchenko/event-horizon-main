@@ -66,6 +66,11 @@ namespace CombatView
         // The side of the local player (legacy UnitSide.Player): a stealth ship of it stays more visible.
         public int ViewerSide { get; set; }
 
+        // Online duel (phase 7, step 6): an owner's correction moves a remote ship or drone at once. A jump that its last
+        // velocity does not explain becomes a drawn offset that fades in about CorrectionFadeSeconds. A jump over
+        // CorrectionSnapDistance and a teleport are drawn at once. Ships of ViewerSide are never corrected.
+        public bool SmoothCorrections { get; set; }
+
         // Ships and drones on the ship prefab (phase 5b, step 4), with their engine lights and trails, shield outline and
         // damage text. Legacy rule: the ship's transform scale is its model scale. The colour is the look's colour times
         // the way from white to its tint by ShipState.Tint. side: the ship's side, for the damage text opacity.
@@ -82,6 +87,7 @@ namespace CombatView
 
             var view = new EntityView(shipView.gameObject, shipView.Renderer)
             {
+                Side = side,
                 Look = look,
                 Effects = new ShipEffects(look, shipView.transform, _shipAssets),
             };
@@ -158,8 +164,11 @@ namespace CombatView
         // Step 7a: legacy TeleporterDevice at both ends of the jump (phase 5, step 11b).
         public void AddTeleport(in BattleEvent item)
         {
-            if (_ships.TryGetValue(item.EntityId, out var view))
-                Devices(view)?.Teleport(item.DeviceIndex, item.Point, item.Destination, view.HasPose ? LastDegrees(view) : 0f);
+            if (!_ships.TryGetValue(item.EntityId, out var view))
+                return;
+
+            Devices(view)?.Teleport(item.DeviceIndex, item.Point, item.Destination, view.HasPose ? LastDegrees(view) : 0f);
+            view.SnapNext = true;
         }
 
         // Step 7a: legacy GravityGenerator (phase 5, step 11c); its effect follows the ship.
@@ -496,6 +505,8 @@ namespace CombatView
                 if (!_ships.TryGetValue(ship.Id, out var view))
                     continue;
 
+                if (SmoothCorrections && view.Side != ViewerSide)
+                    AddCorrectionOffset(view, ship.Position, ship.Angle);
                 view.Push(ship.Position, ship.Angle);
                 view.Velocity = new Vector2(ship.LinearVelocity.X, ship.LinearVelocity.Y);
                 view.AngularVelocity = ship.AngularVelocity * Mathf.Rad2Deg;
@@ -764,6 +775,18 @@ namespace CombatView
         public void Render(float alpha, EntityId controlled, ref Vector2 anchor, float deltaTime)
         {
             _shake.Update(Time.unscaledDeltaTime);
+
+            if (SmoothCorrections)
+            {
+                var fade = Mathf.Exp(-deltaTime / CorrectionFadeSeconds);
+                foreach (var ship in _ships.Values)
+                {
+                    ship.Offset *= fade;
+                    ship.AngleOffset *= fade;
+                    foreach (var satellite in ship.Satellites)
+                        satellite.Offset = ship.Offset;
+                }
+            }
 
             if (!controlled.IsNull && _ships.TryGetValue(controlled, out var controlledView) && controlledView.HasPose)
                 anchor = Place(controlledView, alpha, anchor);
@@ -1072,10 +1095,38 @@ namespace CombatView
             if (!view.HasPose)
                 return reference;
 
-            view.Position = Placement.NearestImage(_torus, reference, view.Pose.SamplePosition(alpha, _torus));
-            view.Degrees = view.Pose.SampleAngle(alpha) * Mathf.Rad2Deg;
+            view.Position = Placement.NearestImage(_torus, reference, view.Pose.SamplePosition(alpha, _torus)) + view.Offset;
+            view.Degrees = (view.Pose.SampleAngle(alpha) + view.AngleOffset) * Mathf.Rad2Deg;
             view.Root.transform.SetPositionAndRotation(view.Position, Quaternion.Euler(0f, 0f, view.Degrees));
             return view.Position;
+        }
+
+        // The jump between the pose extrapolated from the last snapshot's velocities and the new pose stays on screen as an
+        // offset, so the drawn ship does not move by it at once.
+        private void AddCorrectionOffset(EntityView view, Vec2 position, float angle)
+        {
+            if (!view.HasPose || view.SnapNext)
+            {
+                view.SnapNext = false;
+                view.Offset = Vector2.zero;
+                view.AngleOffset = 0f;
+                return;
+            }
+
+            var current = view.Pose.SamplePosition(1f, _torus);
+            var velocity = view.Velocity * Battle.TickDuration;
+            var jump = _torus.Delta(new Vec2(current.X + velocity.x, current.Y + velocity.y), position);
+            var expectedAngle = view.Pose.SampleAngle(1f) + view.AngularVelocity * Mathf.Deg2Rad * Battle.TickDuration;
+            var angleJump = Mathf.Repeat(angle - expectedAngle + Mathf.PI, 2f * Mathf.PI) - Mathf.PI;
+            if (jump.X * jump.X + jump.Y * jump.Y > CorrectionSnapDistance * CorrectionSnapDistance)
+            {
+                view.Offset = Vector2.zero;
+                view.AngleOffset = 0f;
+                return;
+            }
+
+            view.Offset -= new Vector2(jump.X, jump.Y);
+            view.AngleOffset -= angleJump;
         }
 
         // Legacy Bullet.UpdateView after the body: the root takes the pose and the legacy root scale (BodySize), then the
@@ -1318,6 +1369,12 @@ namespace CombatView
             public readonly List<ShieldView> Shields = new List<ShieldView>();
             public PoseTrack Pose;
             public bool HasPose { get; private set; }
+
+            // A ship's side; the drawn correction offset (Unity units, radians), and a teleport that resets it.
+            public int Side { get; set; }
+            public Vector2 Offset { get; set; }
+            public float AngleOffset { get; set; }
+            public bool SnapNext { get; set; }
             public Vector2 Position { get; set; }
             public float Degrees { get; set; }
 
@@ -1457,6 +1514,8 @@ namespace CombatView
 
         // Legacy EnergyShield: the power moves by 4 x the elapsed time; a hit shows for 1 s.
         private const float ShieldFadeRate = 4f;
+        private const float CorrectionFadeSeconds = 0.1f;
+        private const float CorrectionSnapDistance = 5f;
         private const long ShieldHitTicks = 50;
 
         private const int SegmentSortingOrder = -1;

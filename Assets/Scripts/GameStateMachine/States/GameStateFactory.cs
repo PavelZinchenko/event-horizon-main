@@ -26,6 +26,7 @@ namespace GameStateMachine.States
         [Inject] private readonly CombatRewardState.Factory _combatRewardStateFactory;
 		[Inject] private readonly ExplorationState.Factory _explorationStateFactory;
 		[Inject] private readonly QuickCombatState.Factory _quickCombatStateFactory;
+		[Inject] private readonly OnlineDuelCombatState.Factory _onlineDuelCombatStateFactory;
 		[Inject] private readonly ShipEditorState.Factory _shipEditorStateStateFactory;
 		[Inject] private readonly ModalDialogState.Factory _modalDialogStateFactory;
 
@@ -101,6 +102,11 @@ namespace GameStateMachine.States
 		public IGameState CreateQuickCombatState(QuickCombatState.Settings settings)
 		{
 			return _quickCombatStateFactory.Create(settings);
+		}
+
+		public IGameState CreateOnlineDuelCombatState(Combat.Integration.Core.CoreDuelBattle duel)
+		{
+			return _onlineDuelCombatStateFactory.Create(duel);
 		}
 
 		public IGameState CreateCombatRewardState(IReward reward)

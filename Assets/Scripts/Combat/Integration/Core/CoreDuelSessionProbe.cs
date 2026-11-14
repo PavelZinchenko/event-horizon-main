@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using CombatSimulation.Core;
 using CombatSimulation.Physics;
@@ -10,10 +11,13 @@ using Constructor.Extensions;
 using GameDatabase;
 using GameDatabase.Enums;
 using GameServices.Multiplayer;
+using GameStateMachine;
+using GameStateMachine.States;
 using OnlineDuel;
 using Services.Resources;
 using UnityEditor;
 using UnityEngine;
+using Zenject;
 using CoreRosterId = CombatSimulation.Core.RosterId;
 using Debug = UnityEngine.Debug;
 
@@ -22,9 +26,14 @@ namespace Combat.Integration.Core
     // Phase 7, step 5 check: two editor instances (Multiplayer Play Mode) run a duel with AI pilots on both sides: the
     // handshake on the main thread, then the session on its thread, over a direct or Relay link. Each instance deploys
     // its next ship when it has none active and shows the loop health. Both instances read one system clock
-    // (Stopwatch), so a step's deviation from its ideal time (epoch + tick / 50) compares across them: the difference
-    // of the two means is the tick offset. Built-in database; each player gets six random common ships.
+    // (QueryPerformanceCounter), so a step's deviation from its ideal time (epoch + tick / 50) compares across them: the
+    // difference of the two means is the tick offset. Not Stopwatch: Unity's runtime counts it from the process start,
+    // so two editor instances read different values (step 6 finding). Built-in database; each player gets six random common ships.
     // Turn it on with Tools/Online Duel/Session Probe; every instance that enters play mode then shows it.
+    // Step 6 check: with "Combat scene" on, both instances use the game's database and, at handshake Ready, load the duel
+    // combat state (CoreCombatScene); the players fly their ships. "Default combat rules" replaces the duel rules with
+    // CombatSettings.DefaultCombatRules (the mod fallback; asteroids and loot allowed). Both instances must set both
+    // options alike; the setup hash rejects most differences.
     public sealed class CoreDuelSessionProbe : MonoBehaviour
     {
         private const string PrefKey = "OnlineDuel.SessionProbe";
@@ -52,8 +61,21 @@ namespace Combat.Integration.Core
             probe.AddComponent<CoreDuelSessionProbe>();
         }
 
-        // Seconds of the system-wide monotonic clock: every process on the PC reads the same timeline.
+        // Seconds of the system-wide monotonic clock: every process on the PC reads the same timeline. Other editors fall
+        // back to Stopwatch; their deviation means then do not compare across instances.
+#if UNITY_EDITOR_WIN
+        [DllImport("kernel32.dll")]
+        private static extern bool QueryPerformanceCounter(out long count);
+
+        [DllImport("kernel32.dll")]
+        private static extern bool QueryPerformanceFrequency(out long frequency);
+
+        private static readonly double CounterFrequency = QueryPerformanceFrequency(out var frequency) ? frequency : 1;
+
+        private static double Now() => QueryPerformanceCounter(out var count) ? count / CounterFrequency : 0;
+#else
         private static double Now() => Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency;
+#endif
 
         private void Awake()
         {
@@ -69,6 +91,11 @@ namespace Combat.Integration.Core
             if (_thread != null)
             {
                 Drain();
+                if (!_errorLogged && !_thread.Status.IsRunning && _thread.Error != null)
+                {
+                    _errorLogged = true;
+                    Debug.LogError($"CoreDuelSessionProbe: the session thread stopped at tick {_thread.Status.Tick}: {_thread.Error}");
+                }
                 return;
             }
 
@@ -77,20 +104,55 @@ namespace Combat.Integration.Core
             if (_handshake == null && _transport.State == LinkState.Connected) _handshake = CreateHandshake();
             _handshake?.Update(now);
             _transport.Flush();
-            if (_handshake?.State == HandshakeState.Ready) StartSession(Now());
+            if (_handshake?.State != HandshakeState.Ready) return;
+            if (_combatScene) StartCombatScene();
+            else StartSession(Now());
         }
 
         private MatchHandshake CreateHandshake()
         {
-            var builds = _database.ShipBuildList.Where(item => item.Ship.ShipType == ShipType.Common)
+            IDatabase database = _database;
+            if (_combatScene)
+            {
+                var container = GameContainer();
+                database = container.Resolve<IDatabase>();
+                _mapper = new CoreShipMapper(database, container.Resolve<IResourceLocator>());
+            }
+            _duelSetup = new CoreDuelSetup(database, _mapper, _defaultRules ? database.CombatSettings.DefaultCombatRules : null);
+            return CreateHandshake(database);
+        }
+
+        private MatchHandshake CreateHandshake(IDatabase database)
+        {
+            var builds = database.ShipBuildList.Where(item => item.Ship.ShipType == ShipType.Common)
                 .OrderBy(item => item.Id.Value).ToList();
             var random = new System.Random(_transport.IsHost ? 1 : 2);
-            var fleet = builds.OrderBy(_ => random.Next()).Take(FleetSize).Create(0, random, _database);
-            var identity = new MatchIdentity(Application.version, _database.ContentHash, FleetWebSerializer.SerializeFleetData(fleet));
+            var fleet = builds.OrderBy(_ => random.Next()).Take(FleetSize).Create(0, random, database);
+            var identity = new MatchIdentity(Application.version, database.ContentHash, FleetWebSerializer.SerializeFleetData(fleet));
             if (!_transport.IsHost) return MatchHandshake.Guest(_transport, identity, _duelSetup.Build);
             var seed = new System.Random();
             return MatchHandshake.Host(_transport, identity, _duelSetup.Build, new BattleId((ulong)seed.Next(1, int.MaxValue)),
                 (ulong)seed.Next());
+        }
+
+        // The duel combat state owns the duel from here; the probe lets go of the transport.
+        // The game's services live in the loader scene's SceneContext, not in the ProjectContext. Null until it installed.
+        private static DiContainer GameContainer()
+        {
+            foreach (var context in FindObjectsByType<SceneContext>(FindObjectsSortMode.None))
+                if (context.HasInstalled && context.Container.HasBinding<IStateMachine>())
+                    return context.Container;
+            return null;
+        }
+
+        private void StartCombatScene()
+        {
+            var duel = new CoreDuelBattle(_handshake, _duelSetup, _transport, Now);
+            _transport = null;
+            _handshake = null;
+            _relayCode = null;
+            var container = GameContainer();
+            container.Resolve<IStateMachine>().LoadState(container.Resolve<GameStateFactory>().CreateOnlineDuelCombatState(duel));
         }
 
         // From here the session thread owns the transport.
@@ -150,6 +212,9 @@ namespace Combat.Integration.Core
 
         private void OnGUI()
         {
+            // The duel's combat scene has its own HUD.
+            if (GameContainer()?.Resolve<IStateMachine>().ActiveState == StateType.OnlineDuelCombat)
+                return;
             GUILayout.BeginArea(new Rect(10, 10, 380, 560), GUI.skin.box);
             GUILayout.Label("Session probe");
             if (_pending != null)
@@ -168,6 +233,8 @@ namespace Combat.Integration.Core
                 _joinCode = GUILayout.TextField(_joinCode);
                 if (GUILayout.Button("Host (Relay)")) HostRelay();
                 if (GUILayout.Button("Join (Relay)")) JoinRelay();
+                _combatScene = GUILayout.Toggle(_combatScene, "Combat scene (step 6)");
+                _defaultRules = GUILayout.Toggle(_defaultRules, "Default combat rules");
                 if (_error != null) GUILayout.Label(_error);
             }
             else
@@ -200,10 +267,11 @@ namespace Combat.Integration.Core
             GUILayout.Label($"Max loop gap {status.MaxGap:F1} ms, max late step {status.MaxLate:F1} ms");
             GUILayout.Label($"Round trip {status.RoundTrip:F1} ms, clock error {status.ClockErrorTicks:F2} ticks");
             GUILayout.Label($"Pending reliable {status.PendingReliablePackets}, rejected commands {status.RejectedCommands}");
+            // Both labels always: the control count must not change between the layout and repaint events.
             lock (_lock)
             {
-                if (_steps == 0) return;
-                GUILayout.Label($"Step deviation: mean {_deviationSum / _steps:F2} ms, min {_deviationMin:F1}, max {_deviationMax:F1}");
+                GUILayout.Label(_steps == 0 ? "Step deviation: -"
+                    : $"Step deviation: mean {_deviationSum / _steps:F2} ms, min {_deviationMin:F1}, max {_deviationMax:F1}");
                 GUILayout.Label($"Steps {_steps}, more than one tick off {_offTicks}");
             }
         }
@@ -212,6 +280,7 @@ namespace Combat.Integration.Core
 
         private void Open(Func<RelayTransport> create)
         {
+            if (!CanStart()) return;
             try
             {
                 _transport = create();
@@ -225,6 +294,7 @@ namespace Combat.Integration.Core
 
         private async void HostRelay()
         {
+            if (!CanStart()) return;
             var pending = Begin();
             try
             {
@@ -239,6 +309,7 @@ namespace Combat.Integration.Core
 
         private async void JoinRelay()
         {
+            if (!CanStart()) return;
             var pending = Begin();
             try
             {
@@ -248,6 +319,14 @@ namespace Combat.Integration.Core
             {
                 Fail(pending, e);
             }
+        }
+
+        // The combat scene mode needs the game: wait for the main menu.
+        private bool CanStart()
+        {
+            if (!_combatScene || GameContainer() != null) return true;
+            _error = "Combat scene: the game is not loaded yet.";
+            return false;
         }
 
         private CancellationTokenSource Begin()
@@ -291,6 +370,7 @@ namespace Combat.Integration.Core
             _result = default;
             _tick = -1;
             _seen = false;
+            _errorLogged = false;
             _deploying = default;
             lock (_lock)
             {
@@ -305,6 +385,8 @@ namespace Combat.Integration.Core
         private GameDatabase.Database _database;
         private CoreShipMapper _mapper;
         private CoreDuelSetup _duelSetup;
+        private bool _combatScene;
+        private bool _defaultRules;
         private string _address = "127.0.0.1";
         private string _port = "7777";
         private string _error;
@@ -318,6 +400,7 @@ namespace Combat.Integration.Core
         private int _localSide;
         private long _tick = -1, _deployTick;
         private bool _seen;
+        private bool _errorLogged;
         private CoreRosterId _deploying;
         private BattleResult _result;
         // Written by the session thread.

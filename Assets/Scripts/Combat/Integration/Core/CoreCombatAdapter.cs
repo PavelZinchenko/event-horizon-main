@@ -30,6 +30,10 @@ namespace Combat.Integration.Core
     // Projects the shared combat core through the application contracts (migration phase 3c).
     // The BattleRunner is the authority: commands go to it, and the projection only copies its snapshots.
     // Steps the battle at the core's fixed rate and handles each tick's events right after its step, so no event is lost.
+    // Online duel (phase 7, step 6): with a CoreDuelBattle bound, the session thread is the authority. Commands go to
+    // its queue, and every tick's snapshot copy goes through the same handling, oldest first. The local player's ships
+    // are CombatSide.Player; the peer deploys, retreats and surrenders its own. No enemy commander, kill-all,
+    // reinforcement or asteroids; ship selection has a 30 s limit, and a player has 3 retreats (owner, 2026-11-14).
     public sealed class CoreCombatAdapter : IRosterView, IBattleView, IShipViews, IShipControlSource, ICombatCommands, ITickable, IDisposable
     {
         [Inject]
@@ -45,9 +49,12 @@ namespace Combat.Integration.Core
             PlayerInputSignal playerInputSignal,
             ISoundPlayer soundPlayer,
             IGameSettings gameSettings,
-            UnityEngine.SceneManagement.Scene scene)
+            UnityEngine.SceneManagement.Scene scene,
+            [InjectOptional] CoreDuelBattle duel)
         {
             _combatModel = combatModel;
+            _duel = duel;
+            _localSide = duel?.LocalSide ?? PlayerSide;
             _localization = localization;
             _playerInputSignal = playerInputSignal;
             _resourceLocator = resourceLocator;
@@ -55,41 +62,59 @@ namespace Combat.Integration.Core
             _shipSelectionPanel = shipSelectionPanel;
             _exitTrigger = exitTrigger;
 
-            _mapper = new CoreShipMapper(database, resourceLocator);
+            var rules = combatModel.Rules;
             var roster = new List<RosterSlotSetup>();
-            var nextId = 1;
-            foreach (var info in combatModel.PlayerFleet.Ships)
-                AddSlot(new RosterId(nextId++), CombatSide.Player, info, roster);
-            foreach (var info in combatModel.EnemyFleet.Ships)
-                AddSlot(new RosterId(nextId++), CombatSide.Enemy, info, roster);
+            if (duel != null)
+            {
+                _mapper = duel.Mapper;
+                foreach (var slot in duel.Slots)
+                    AddSlot(new RosterId((int)slot.RosterId.Value), slot.Side, slot.Info, slot.Mapping.Definition);
+            }
+            else
+            {
+                _mapper = new CoreShipMapper(database, resourceLocator);
+                var nextId = 1;
+                foreach (var info in combatModel.PlayerFleet.Ships)
+                    roster.Add(AddSlot(new RosterId(nextId++), CombatSide.Player, info, _mapper.Map(info).Definition));
+                foreach (var info in combatModel.EnemyFleet.Ships)
+                    roster.Add(AddSlot(new RosterId(nextId++), CombatSide.Enemy, info, _mapper.Map(info).Definition));
+            }
             LogInertDevices();
 
-            var rules = combatModel.Rules;
             var size = rules.BattleMapSize;
 
             // Step 8: the core runs the legacy timer rules (TM1). The player side allows one ship; the enemy side
             // allows MaxEnemyShips, or more when the rules start with more (TM2).
             var timeLimitTicks = (long)rules.TimeLimit * TicksPerSecond;
             _maxActive[(int)CombatSide.Player] = 1;
-            _maxActive[(int)CombatSide.Enemy] = Math.Max(rules.MaxEnemyShips, rules.InitialEnemyShips);
+            // The duel setup allows one active ship per side, whatever the rules say.
+            _maxActive[(int)CombatSide.Enemy] = duel != null ? 1 : Math.Max(rules.MaxEnemyShips, rules.InitialEnemyShips);
             var maxActiveBySide = new int[BattleSetup.SideCount];
             maxActiveBySide[PlayerSide] = _maxActive[(int)CombatSide.Player];
             maxActiveBySide[EnemySide] = _maxActive[(int)CombatSide.Enemy];
 
-            // The seed is drawn here, outside the core, which never uses a random source of its own.
-            var seed = (ulong)(uint)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+            // The seed is drawn here, outside the core, which never uses a random source of its own. A duel uses the
+            // match seed, so both players see the same planet.
+            var seed = duel?.Setup.MatchSeed ?? (ulong)(uint)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
             var torus = new Torus(size, size);
             // Phase 5, step 14d: the legacy asteroids, drawn from the seed. Every owner here is local; the core rejects
-            // asteroids in a battle with a remote owner (owner question 2 (a)).
-            var asteroids = rules.DisableAsteroids ? null : CoreAsteroids.Layout(seed, torus,
+            // asteroids in a battle with a remote owner (owner question 2 (a)), so a duel has none.
+            var asteroids = rules.DisableAsteroids || duel != null ? null : CoreAsteroids.Layout(seed, torus,
                 Maths.Experience.LevelToPowerMultiplier(database.GalaxySettings.EnemyLevel(rules.StarLevel)));
-            // Step 9: the core ends an OnlyOneShip battle after the first player death (SS2).
-            var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, timeLimitTicks,
-                timerMode: ToTimerMode(rules.TimeOutMode), playerSide: PlayerSide, maxActiveShipsBySide: maxActiveBySide,
-                onlyOneShip: rules.ShipSelection == PlayerShipSelectionMode.OnlyOneShip, asteroids: asteroids);
-            _trees = CorePilotProvider.CreateTrees(seed, torus, _mapper, OnBroadcast);
-            _pilots = new CorePilotProvider(database.CombatSettings, _trees, _mapper.Mappings, PlayerSide, combatModel.EnemyFleet.AiLevel);
-            _runner = new BattleRunner(setup, _pilots);
+            if (duel != null)
+            {
+                _pilots = duel.Pilots;
+            }
+            else
+            {
+                // Step 9: the core ends an OnlyOneShip battle after the first player death (SS2).
+                var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, timeLimitTicks,
+                    timerMode: ToTimerMode(rules.TimeOutMode), playerSide: PlayerSide, maxActiveShipsBySide: maxActiveBySide,
+                    onlyOneShip: rules.ShipSelection == PlayerShipSelectionMode.OnlyOneShip, asteroids: asteroids);
+                _trees = CorePilotProvider.CreateTrees(seed, torus, _mapper, OnBroadcast);
+                _pilots = new CorePilotProvider(database.CombatSettings, _trees, _mapper.Mappings, PlayerSide, combatModel.EnemyFleet.AiLevel);
+                _runner = new BattleRunner(setup, _pilots);
+            }
 
             var bulletSprite = resourceLocator.GetSprite(new SpriteId(BulletSpriteName, SpriteId.Type.Ammunition));
             // Only the font of the legacy text effect prefab is used; the text view is built in code (step 7f).
@@ -102,7 +127,8 @@ namespace Combat.Integration.Core
             _sounds = sounds;
             _renderer = new BattleRenderer(torus, bulletSprite, textFont, scene, viewSettings, sounds)
             {
-                ViewerSide = PlayerSide,
+                ViewerSide = _localSide,
+                SmoothCorrections = duel != null,
                 // Phase 5b, step 4: the legacy combat Settings clips (a loop, as legacy SoundLoopEffect plays it) and the
                 // satellite's hard-coded explosion. Step 8: the asteroid's.
                 RetreatSound = new SoundClip(resourceLocator.GetAudioClip(new AudioClipId(RetreatSoundName)), true),
@@ -124,11 +150,13 @@ namespace Combat.Integration.Core
             _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, _mapper.SpawnTriggers, resourceLocator, _visualEffects,
                 sounds);
 #if UNITY_EDITOR
-            // Phase 5b, step 3: the owner reviews the effects in the Combat > Effect Preview window.
-            _effectPreview = new CoreEffectPreview(_renderer, _visualEffects, sounds, database, resourceLocator, () =>
+            // Phase 5b, step 3: the owner reviews the effects in the Combat > Effect Preview window. Not in a duel: it maps
+            // ships while the session thread reads the mapper.
+            if (duel == null)
+                _effectPreview = new CoreEffectPreview(_renderer, _visualEffects, sounds, database, resourceLocator, () =>
                 _ids.TryGetCore(ControlledShip, out var core) ? core : default);
 #endif
-            _anchor = new Vector2(0.5f * setup.Width, 0.5f * setup.Height);
+            _anchor = new Vector2(0.5f * size, 0.5f * size);
             // Step 10: the legacy planet, presentation only (D8).
             if (!rules.DisablePlanet)
                 _planet = CorePlanet.Create(seed, torus, scene);
@@ -178,6 +206,13 @@ namespace Combat.Integration.Core
         {
             get
             {
+                // A duel shows the ship selection limit while the local player has no ship.
+                if (IsRunning && _selectionDeadline != NoDeadline && Count(CombatSide.Player, ShipStatus.Active) == 0)
+                {
+                    var selection = CeilSeconds(_selectionDeadline - CommandTick);
+                    return new CombatTimerState(true, Math.Max(0, selection), selection <= SelectionAlarmSeconds);
+                }
+
                 if (!IsRunning || Count(CombatSide.Player, ShipStatus.Active) == 0 || Count(CombatSide.Enemy, ShipStatus.Active) == 0)
                     return new CombatTimerState(false, 0, false);
 
@@ -185,7 +220,7 @@ namespace Combat.Integration.Core
                 if (rules.TimeLimit <= 0)
                     return new CombatTimerState(true, 0, false);
 
-                var left = CeilSeconds((long)rules.TimeLimit * TicksPerSecond - _runner.Snapshot.TimerElapsedTicks);
+                var left = CeilSeconds((long)rules.TimeLimit * TicksPerSecond - TimerElapsedTicks);
                 var alarm = false;
                 switch (rules.TimeOutMode)
                 {
@@ -209,13 +244,14 @@ namespace Combat.Integration.Core
             }
         }
 
-        // Legacy CombatManager.CanChangeShip.
+        // Legacy CombatManager.CanChangeShip. A duel allows DuelMaxRetreats (owner, 2026-11-14).
         public bool CanChangeShip =>
-            IsRunning && _combatModel.Rules.ShipSelection == PlayerShipSelectionMode.Default && Count(CombatSide.Player, ShipStatus.Ready) > 0;
+            IsRunning && _combatModel.Rules.ShipSelection == PlayerShipSelectionMode.Default && Count(CombatSide.Player, ShipStatus.Ready) > 0 &&
+            (_duel == null || _retreats < DuelMaxRetreats);
 
         // Legacy CombatManager.CanCallNextEnemy; the menu shows the button by this rule only (TM5).
         public bool CanCallReinforcement => IsRunning && CanCallNextEnemy;
-        public bool KillAllAllowedByRules => _combatModel.Rules.KillThemAllButton;
+        public bool KillAllAllowedByRules => _duel == null && _combatModel.Rules.KillThemAllButton;
 
         #endregion
 
@@ -280,7 +316,12 @@ namespace Combat.Integration.Core
             if (!CanChangeShip || ship != ControlledShip || ship == _retreatRequested || !_ids.TryGetCore(ship, out var core))
                 return;
 
-            if (_runner.Retreat(core, _runner.Tick))
+            if (_duel != null)
+            {
+                _duel.Thread.Post(SessionCommand.Retreat(core));
+                _retreatRequested = ship;
+            }
+            else if (_runner.Retreat(core, _runner.Tick))
                 _retreatRequested = ship;
         }
 
@@ -294,6 +335,12 @@ namespace Combat.Integration.Core
         {
             if (!IsRunning)
                 return;
+            // The duel's result comes back in a later snapshot, once the peer has the surrender.
+            if (_duel != null)
+            {
+                _duel.Thread.Post(SessionCommand.Surrender(_localSide));
+                return;
+            }
             if (!_runner.Surrender(PlayerSide, _runner.Tick))
                 return;
 
@@ -304,7 +351,7 @@ namespace Combat.Integration.Core
 
         public void KillAllEnemies()
         {
-            if (!IsRunning)
+            if (!IsRunning || _duel != null)
                 return;
 #if !UNITY_EDITOR
             if (!KillAllAllowedByRules)
@@ -317,10 +364,13 @@ namespace Combat.Integration.Core
 
         public void Tick()
         {
-            if (_runner == null)
+            if (_runner == null && _duel == null)
                 return;
 
-            RunSteps();
+            if (_duel != null)
+                RunDuel();
+            else
+                RunSteps();
             _playerInput = false;
             Render();
             UpdateExit();
@@ -331,8 +381,10 @@ namespace Combat.Integration.Core
         {
             _playerInputSignal.Event -= OnPlayerInput;
             _runner = null;
+            // The duel state owns the session thread and stops it.
+            _duel = null;
 #if UNITY_EDITOR
-            _effectPreview.Dispose();
+            _effectPreview?.Dispose();
 #endif
             _renderer.Dispose();
             _planet?.Dispose();
@@ -366,6 +418,37 @@ namespace Combat.Integration.Core
             }
         }
 
+        // Every snapshot copy the session thread published since the last frame, oldest first. After the result the thread
+        // only pumps the network and publishes nothing more.
+        private void RunDuel()
+        {
+            var thread = _duel.Thread;
+            // Step 8 ends the match on a stopped thread; until then the battle freezes, and the reason goes to the log.
+            if (!_threadErrorLogged && thread.Error != null)
+            {
+                _threadErrorLogged = true;
+                Debug.LogError($"CoreCombatAdapter: the duel session thread stopped at tick {thread.Status.Tick}: {thread.Error}");
+            }
+
+            while (thread.TryTake(out var snapshot, out var publishedAt))
+            {
+                if (IsRunning)
+                {
+                    _duelCompleted = snapshot.IsCompleted;
+                    _publishedAt = publishedAt;
+                    Process(snapshot);
+                }
+                thread.Release(snapshot);
+            }
+
+            if (!IsRunning)
+                return;
+
+            RunPlayerCommander();
+            if (_playerInput)
+                _duel.MarkPlayerInput();
+        }
+
         // Also after the result, so the last frame stays on screen; only the stepping stops.
         private void Render()
         {
@@ -374,7 +457,9 @@ namespace Combat.Integration.Core
             if (player != null)
                 _ids.TryGetCore(player.Id, out controlled);
 
-            var alpha = IsRunning ? Mathf.Clamp01(_accumulator / Battle.TickDuration) : 1f;
+            var alpha = !IsRunning ? 1f : _duel != null
+                ? Mathf.Clamp01((float)(_duel.Now() - _publishedAt) / Battle.TickDuration)
+                : Mathf.Clamp01(_accumulator / Battle.TickDuration);
             _renderer.ViewPoint = _framing.Center;
             _renderer.Render(alpha, controlled, ref _anchor, Time.deltaTime);
             _planet?.Render(_anchor, Time.deltaTime);
@@ -392,16 +477,20 @@ namespace Combat.Integration.Core
         private CoreShipView ActiveView(EntityId id) => _views.TryGetValue(id, out var view) && view.IsActive ? view : null;
 
         // False after the result (the core then throws on every step and command) and after disposal.
-        private bool IsRunning => _runner != null && !_runner.IsCompleted;
+        private bool IsRunning => _duel != null ? !_duelCompleted : _runner != null && !_runner.IsCompleted;
 
-        private void AddSlot(RosterId id, CombatSide side, IShipInfo info, List<RosterSlotSetup> roster)
+        // The tick that the next command targets: the runner's, or in a duel the one after the last handled snapshot.
+        private long CommandTick => _runner?.Tick ?? _lastTick + 1;
+
+        private long TimerElapsedTicks => _runner?.Snapshot.TimerElapsedTicks ?? _timerElapsedTicks;
+
+        private RosterSlotSetup AddSlot(RosterId id, CombatSide side, IShipInfo info, ShipDefinition definition)
         {
-            var definition = _mapper.Map(info).Definition;
             var slot = new Slot(id, side, info, definition.Armor, this);
             (side == CombatSide.Player ? _playerSlots : _enemySlots).Add(slot);
             _slotsById.Add(id, slot);
             _slotsByCore.Add(ToCore(id), slot);
-            roster.Add(new RosterSlotSetup(ToCore(id), ToCoreSide(side), definition));
+            return new RosterSlotSetup(ToCore(id), ToCoreSide(side), definition);
         }
 
         // M1 check: the console lists the inert devices (D1) once per battle, by mapped ship or drone.
@@ -438,7 +527,14 @@ namespace Combat.Integration.Core
                 _trees.OnPlayerInput(_runner.Tick);
 
             _runner.Step();
-            var snapshot = _runner.Snapshot;
+            Process(_runner.Snapshot);
+        }
+
+        // One tick's snapshot: the runner's after its step, or a copy from the session thread.
+        private void Process(BattleSnapshot snapshot)
+        {
+            _lastTick = snapshot.Tick;
+            _timerElapsedTicks = snapshot.TimerElapsedTicks;
             ApplyResults(snapshot);
             HandleEvents(snapshot);
             _renderer.Capture(snapshot);
@@ -447,7 +543,7 @@ namespace Combat.Integration.Core
             UpdateProjection(snapshot);
 
             if (snapshot.IsCompleted)
-                OnCompleted();
+                OnCompleted(snapshot.Result);
         }
 
         private void HandleEvents(BattleSnapshot snapshot)
@@ -730,7 +826,10 @@ namespace Combat.Integration.Core
             if (item.TransitionReason == RosterTransitionReason.Deployed)
             {
                 if (slot.Side == CombatSide.Player)
+                {
                     _framing.Zoom();
+                    _selectionDeadline = NoDeadline;
+                }
 
                 slot.DeploymentOrder = ++_deploymentCounter;
                 slot.ActiveEntity = entity;
@@ -738,6 +837,8 @@ namespace Combat.Integration.Core
             }
             else
             {
+                if (_duel != null && slot.Side == CombatSide.Player && item.TransitionReason == RosterTransitionReason.Retreated)
+                    _retreats++;
                 slot.ActiveEntity = EntityId.None;
                 if (previous == ShipStatus.Active)
                     _nextDeployTick[(int)slot.Side] = snapshot.Tick + 1 + DeployDelayTicks;
@@ -822,6 +923,9 @@ namespace Combat.Integration.Core
         {
             get
             {
+                // The peer deploys its own ships.
+                if (_duel != null)
+                    return false;
                 var rules = _combatModel.Rules;
                 if (rules.TimeOutMode != TimeOutMode.CallNextEnemy && rules.TimeOutMode != TimeOutMode.CallNextEnemyOrDraw)
                     return false;
@@ -838,7 +942,7 @@ namespace Combat.Integration.Core
             get
             {
                 var limit = (long)_combatModel.Rules.TimeLimit * TicksPerSecond;
-                return limit > 0 && _runner.Snapshot.TimerElapsedTicks >= limit &&
+                return limit > 0 && TimerElapsedTicks >= limit &&
                     Count(CombatSide.Player, ShipStatus.Active) > 0 && Count(CombatSide.Enemy, ShipStatus.Active) > 0;
             }
         }
@@ -846,11 +950,13 @@ namespace Combat.Integration.Core
         // Legacy CombatManager.UpdateLocalGame: the player side waits for an active enemy. Then, at once at the start
         // and 3 s after the player ship left, the selection panel opens, or ByOrder deploys the first ready ship.
         // A closed panel opens again 3 s later, as the legacy cooldown restarts.
+        // Duel (owner, 2026-11-14): the player does not wait for the peer's ship, and the first ready ship deploys when no
+        // ship is selected SelectionLimitTicks after the panel first opened.
         private void RunPlayerCommander()
         {
-            if (_runner.Tick < _nextDeployTick[(int)CombatSide.Player])
+            if (Count(CombatSide.Player, ShipStatus.Active) > 0)
                 return;
-            if (Count(CombatSide.Enemy, ShipStatus.Active) == 0 || Count(CombatSide.Player, ShipStatus.Active) > 0)
+            if (_duel == null && Count(CombatSide.Enemy, ShipStatus.Active) == 0)
                 return;
             if (IsDeployPending(_enemySlots) || IsDeployPending(_playerSlots))
                 return;
@@ -862,13 +968,24 @@ namespace Combat.Integration.Core
             if (slot == null)
                 return;
 
+            if (_selectionDeadline != NoDeadline && CommandTick >= _selectionDeadline)
+            {
+                TryDeploy(slot);
+                return;
+            }
+
+            if (CommandTick < _nextDeployTick[(int)CombatSide.Player])
+                return;
+
             if (!_combatModel.Rules.ShipSelection.CanChooseShip())
             {
                 TryDeploy(slot);
                 return;
             }
 
-            _nextDeployTick[(int)CombatSide.Player] = _runner.Tick + DeployDelayTicks;
+            _nextDeployTick[(int)CombatSide.Player] = CommandTick + DeployDelayTicks;
+            if (_duel != null && _selectionDeadline == NoDeadline)
+                _selectionDeadline = CommandTick + SelectionLimitTicks;
             var panel = _shipSelectionPanel.Value;
             if (panel)
                 panel.Open();
@@ -882,6 +999,15 @@ namespace Combat.Integration.Core
             var slots = slot.Side == CombatSide.Player ? _playerSlots : _enemySlots;
             if (CountActiveOrPending(slots) >= _maxActive[(int)slot.Side])
                 return;
+
+            // The session thread submits a duel deployment at its own tick, which this thread does not know: the request
+            // counts as pending for DuelPendingTicks.
+            if (_duel != null)
+            {
+                _duel.Thread.Post(SessionCommand.Deploy(ToCore(slot.Id)));
+                slot.PendingDeployTick = CommandTick + DuelPendingTicks;
+                return;
+            }
 
             var tick = _runner.Tick;
             if (_runner.Deploy(ToCore(slot.Id), tick))
@@ -942,13 +1068,15 @@ namespace Combat.Integration.Core
 
         // The battle freezes at the result: stepping stops, and the last frame and the death fades stay on screen.
         // Surrender ends the same way. A ShipLost result already waited the legacy 3 s in the core, so it exits at once (SS3).
-        private void OnCompleted()
+        private void OnCompleted(BattleResult result)
         {
             if (_exitDelay >= 0f)
                 return;
 
-            var result = _runner.Snapshot.Result;
             CheckOutcome(result);
+            // Phase 7, step 6 check: both players log the same result; the sides are core sides.
+            if (_duel != null)
+                Debug.Log($"CoreCombatAdapter: duel result {result}, local side {_localSide}, tick {_lastTick}");
             _exitDelay = result.Reason == BattleEndReason.ShipLost ? 0f : ExitDelaySeconds;
         }
 
@@ -956,7 +1084,7 @@ namespace Combat.Integration.Core
         // must agree. A mismatch is only logged; neither is rewritten, and the battle exits as usual.
         private void CheckOutcome(BattleResult result)
         {
-            var coreVictory = result.Outcome == BattleOutcome.Victory && result.WinningSide == PlayerSide;
+            var coreVictory = result.Outcome == BattleOutcome.Victory && result.WinningSide == _localSide;
             var victory = _combatModel.IsVictory();
             if (coreVictory == victory)
                 return;
@@ -994,6 +1122,7 @@ namespace Combat.Integration.Core
         // build time; the text is the same.
         private void ShowBroadcasts(BattleSnapshot snapshot)
         {
+            _duel?.TakeBroadcasts(snapshot.Tick, OnBroadcast);
             foreach (var item in _broadcasts)
                 if (snapshot.TryGetShip(item.Ship, out var state))
                     _renderer.AddText(_localization.Localize(item.Text), item.Color.ToUnity(), state.Position, state.LinearVelocity);
@@ -1104,6 +1233,12 @@ namespace Combat.Integration.Core
         private const int MaxStepsPerFrame = 5;
         private const long DeployDelayTicks = 3 * TicksPerSecond;
         private const long NoPendingDeploy = -1;
+        private const long NoDeadline = -1;
+        // Duel: the ship selection limit (owner, 2026-11-14) with its alarm, and how long a posted deployment counts as pending.
+        private const long SelectionLimitTicks = 30 * TicksPerSecond;
+        private const int SelectionAlarmSeconds = 10;
+        private const long DuelPendingTicks = TicksPerSecond;
+        private const int DuelMaxRetreats = 3;
         private const float ExitDelaySeconds = 3f;
         // Legacy CombatTimer: the alarm of the draw countdown.
         private const int DrawAlarmSeconds = 15;
@@ -1121,6 +1256,18 @@ namespace Combat.Integration.Core
         private readonly Dictionary<ShieldDefinition, ShieldLook> _shieldLooks = new Dictionary<ShieldDefinition, ShieldLook>();
 
         private BattleRunner _runner;
+        private CoreDuelBattle _duel;
+        private readonly int _localSide;
+        // The last handled snapshot's tick and timer, in both modes; the duel's result flag and the copy's publish time.
+        private long _lastTick = -1;
+        private long _timerElapsedTicks;
+        private bool _duelCompleted;
+        private double _publishedAt;
+        // Duel: the tick at which the first ready ship deploys while no ship is selected.
+        private long _selectionDeadline = NoDeadline;
+        // Duel: the local player's completed retreats.
+        private int _retreats;
+        private bool _threadErrorLogged;
         private readonly BehaviorTreeFactory _trees;
         private readonly CorePilotProvider _pilots;
         private readonly List<Broadcast> _broadcasts = new List<Broadcast>();

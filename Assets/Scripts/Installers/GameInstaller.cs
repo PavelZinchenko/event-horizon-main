@@ -234,6 +234,9 @@ namespace Installers
 			Container.Bind<QuickCombatState>().AsTransient();
 			Container.BindFactory<QuickCombatState.Settings, QuickCombatState, QuickCombatState.Factory>();
 
+			Container.Bind<OnlineDuelCombatState>().AsTransient();
+			Container.BindFactory<Combat.Integration.Core.CoreDuelBattle, OnlineDuelCombatState, OnlineDuelCombatState.Factory>();
+
 			Container.Bind<ShipEditorState>().AsTransient();
 			Container.BindFactory<ShipEditorState.Context, ShipEditorState, ShipEditorState.Factory>();
 

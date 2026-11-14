@@ -8,6 +8,10 @@ namespace Services.GameApplication
         bool IsActive { get; }
         bool Paused { get; }
 
+        // While true the game never pauses (online duel, phase 7, step 6): pause requests still count, but time runs on,
+        // also without focus. The shared battle clock does not stop for one player.
+        bool AlwaysRunning { get; set; }
+
         void Pause(object sender = null);
         void Resume(object sender = null);
     }

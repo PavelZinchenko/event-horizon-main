@@ -87,6 +87,7 @@ To add a state, change four places: the state class with a nested `Factory`, a `
 | `CombatState` | Combat | Star map, arena, quests, star content | Runs combat for an `ICombatModel`, applies the reward, invokes the completion callback, then loads the reward window or the star map. |
 | `CombatRewardState` | Combat | Combat | Shows the reward window, then loads the star map. |
 | `QuickCombatState` | Combat or CoreCombat | Main menu | Builds random or test fleets from the database. `@` in the test ship ID loads `CoreCombatScene`. |
+| `OnlineDuelCombatState` | CoreCombat | Session probe (editor); the lobby from phase 7, step 7 | Binds a running `CoreDuelBattle` and its `DuelCombatModel`. No reward. Sets `IApplication.AlwaysRunning`; disposes the duel on unload. See [combat simulation](combat_simulation.md#duel-combat-scene). |
 | `ExplorationState` | Exploration | Star map | Planet exploration. |
 | `SkillTreeState` | SkillTree | Star map | Player skill tree. |
 | `ShipEditorState` | ShipEditor | Main menu, star map | Ship editor with either a player-inventory context or a database context. |
