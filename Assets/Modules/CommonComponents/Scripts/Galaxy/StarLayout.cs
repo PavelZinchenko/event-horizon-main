@@ -161,7 +161,7 @@ namespace GameModel
 
 		private static Vector2Data GetStarOffset(int id, int gameseed)
 		{
-            var random = RandomState.FromSeed(gameseed + id);
+            var random = RandomState.FromSeed((ulong)(gameseed + id));
             var (x, y) = random.InsideUnitCircle();
             return new Vector2Data(x * _offset, y * _offset);
         }

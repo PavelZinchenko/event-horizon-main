@@ -65,7 +65,7 @@ namespace Domain.Shipyard
                 return true;
             }
 
-            var layout = new ShipLayoutModel(ShipElementType.SatelliteL, new ShipLayoutAdapter(satellite.BaseModel.Layout),
+            var layout = new ShipLayoutModel(ShipElementType.Satellite(mountPoint), new ShipLayoutAdapter(satellite.BaseModel.Layout),
                 satellite.BaseModel.Barrels, componentTracker);
 
             return HasInvalidComponents(layout, satellite.Components, componentTracker);
@@ -81,7 +81,7 @@ namespace Domain.Shipyard
                 return null;
             }
 
-            var layout = new ShipLayoutModel(ShipElementType.SatelliteL, new ShipLayoutAdapter(satellite.BaseModel.Layout),
+            var layout = new ShipLayoutModel(ShipElementType.Satellite(mountPoint), new ShipLayoutAdapter(satellite.BaseModel.Layout),
                 satellite.BaseModel.Barrels, componentTracker);
 
             RemoveInvalidComponents(layout, satellite.Components, componentTracker, storage);

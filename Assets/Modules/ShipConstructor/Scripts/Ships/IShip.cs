@@ -18,11 +18,6 @@ namespace Constructor.Ships
         IItemCollection<IntegratedComponent> Components { get; }
         ISatelliteCollection Satellites { get; }
 
-        [System.Obsolete("Use Satellites[0]. Remove after satellite mount points phase 9.")]
-        ISatellite FirstSatellite { get; set; }
-        [System.Obsolete("Use Satellites[1]. Remove after satellite mount points phase 9.")]
-        ISatellite SecondSatellite { get; set; }
-
 		DifficultyClass ExtraThreatLevel { get; }
 		BehaviorTreeModel CustomAi { get; }
 

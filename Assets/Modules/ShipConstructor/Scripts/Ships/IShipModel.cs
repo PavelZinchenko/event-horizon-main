@@ -31,9 +31,6 @@ namespace Constructor.Ships
         // TODO: remove
         Ship BaseModel { get; }
 
-        [System.Obsolete("Use BaseModel. Remove after satellite mount points phase 9.")]
-        Ship OriginalShip { get; }
-
         IItemCollection<IShipModification> Modifications { get; }
         LayoutModifications LayoutModifications { get; }
 

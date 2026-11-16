@@ -119,7 +119,6 @@ IShip  (CommonShip / EnemyShip / ArenaShip / EditorModeShip)
 `BaseShip` ([BaseShip.cs](../Assets/Modules/ShipConstructor/Scripts/Ships/BaseShip.cs)) supplies the shared parts:
 
 - `Satellites` is a `SatelliteCollection`. Index *i* holds the satellite on mount point *i* of `Model.Satellites`. Setting a different satellite sets `DataChanged`, and so does the `Experience` setter.
-- `FirstSatellite` and `SecondSatellite` are obsolete aliases for `Satellites[0]` and `Satellites[1]`. They stay until satellite mount points phase 9, because Main's shared ShipEditor and the session code still use them.
 - `DataChanged` is true when the ship, a satellite, the model, or the colour scheme changed. Setting it to `false` clears all of them.
 - `CreateBuilder` creates a `ShipBuilder` and multiplies armor, shield, damage, and ramming bonuses by `Experience.PowerMultiplier`. It adds every satellite with its mount point and index. `ShipBuilder.AllMountPoints` then selects which are part of the ship (see [Building a ship specification](#building-a-ship-specification)).
 - `Name` returns the hull name. Its setter throws `InvalidOperationException`; `CommonShip` overrides it.

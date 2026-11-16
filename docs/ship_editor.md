@@ -1,6 +1,6 @@
 # ShipEditor Module
 
-The ShipEditor module is the screen where a player or a database author fits a ship. The player places components on the hull and on two satellites, sets key bindings and drone behaviour, unlocks built-in components, and saves presets. The module owns the scene, the editing model, the undo list, the UI, and the runtime meshes. The application supplies the ship, the inventory, and persistence through one context interface.
+The ShipEditor module is the screen where a player or a database author fits a ship. The player places components on the hull and on the satellites at its mount points, sets key bindings and drone behaviour, unlocks built-in components, and saves presets. The module owns the scene, the editing model, the undo list, the UI, and the runtime meshes. The application supplies the ship, the inventory, and persistence through one context interface.
 
 | | |
 | --- | --- |
@@ -45,7 +45,7 @@ The ShipEditor module is the screen where a player or a database author fits a s
 
 | Term | Meaning |
 | --- | --- |
-| Element | One of three editable parts: the ship hull, the left satellite, or the right satellite. Enum `ShipElementType` (`Ship`, `SatelliteL`, `SatelliteR`). |
+| Element | One editable part: the ship hull or the satellite on one mount point. Struct `ShipElementType`: `Ship` or `Satellite(mountPoint)`. |
 | Layout | The cell grid of an element. Each cell has a `CellType`: Outer, Inner, InnerOuter, Engine, Weapon, or Empty. |
 | Custom cell | A cell that the player added through hull expansion. `*` (`CustomizableCell`) is a free slot. `X` (`CustomWeaponCell`) is an added weapon cell. |
 | Component | A database `Component` with a modification and quality, wrapped in `ComponentInfo`. |
@@ -71,8 +71,8 @@ The ShipEditor module is the screen where a player or a database author fits a s
 | [Model/BarrelMapBuilder.cs](../Assets/ModulesShared/ShipEditor/Scripts/Model/BarrelMapBuilder.cs) | Maps every weapon cell to a barrel index. |
 | [Model/ComponentModel.cs](../Assets/ModulesShared/ShipEditor/Scripts/Model/ComponentModel.cs) | `IComponentModel`, `ComponentModel`, `ComponentSettings`. |
 | [Model/ShipEditorEvents.cs](../Assets/ModulesShared/ShipEditor/Scripts/Model/ShipEditorEvents.cs) | Model events and their triggers. |
-| [Model/ShipElementContainer.cs](../Assets/ModulesShared/ShipEditor/Scripts/Model/ShipElementContainer.cs) | Struct with one slot per element. Used by the model and by `ShipView`. |
-| [Model/Extensions.cs](../Assets/ModulesShared/ShipEditor/Scripts/Model/Extensions.cs) | `CellIndex` (packs x, y into a `ulong`) and element/location conversion. |
+| [Model/LayoutList.cs](../Assets/ModulesShared/ShipEditor/Scripts/Model/LayoutList.cs) | `LayoutList` (one layout per element) and `SatelliteList` (one satellite per mount point). |
+| [Model/Extensions.cs](../Assets/ModulesShared/ShipEditor/Scripts/Model/Extensions.cs) | `CellIndex` (packs x, y into a `ulong`). |
 | [Model/Commands/](../Assets/ModulesShared/ShipEditor/Scripts/Model/Commands/) | `ICommand`, `CommandList`, `InstallComponentCommand`, `RemoveComponentCommand`. |
 | [Layout/EditorShipLayout.cs](../Assets/ModulesShared/ShipEditor/Scripts/Layout/EditorShipLayout.cs) | Renders one element: hull, components, locks, selection, weapon classes, ship image. |
 | [Layout/ShipMeshBuilder.cs](../Assets/ModulesShared/ShipEditor/Scripts/Layout/ShipMeshBuilder.cs) | Hull cell mesh. |
@@ -205,9 +205,9 @@ All interfaces are in [IShipEditorContext.cs](../Assets/ModulesShared/ShipEditor
 `IShipEditorModel` ([ShipEditorModel.cs:27](../Assets/ModulesShared/ShipEditor/Scripts/Model/ShipEditorModel.cs#L27)) is the only API that the UI uses to change the ship. `ShipEditorModel` keeps:
 
 - `_ship`: the selected `IShip`.
-- `_layout`: a `ShipElementContainer<ShipLayoutModel>` with one layout per element. A satellite slot without a satellite holds `null`.
-- `_satellite`: a `ShipElementContainer<ISatellite>` for the two satellites.
-- `_compatibilityChecker`: one `ComponentTracker` for the whole ship. All three layouts report to it.
+- `_layouts`: a `LayoutList` with one layout per element. A mount point without a satellite holds `null`.
+- `_satellites`: a `SatelliteList` with one satellite per mount point.
+- `_compatibilityChecker`: one `ComponentTracker` for the whole ship. All layouts report to it.
 - `_shipName`: the edited name, or `null` when unchanged.
 
 ### Ship selection
@@ -218,7 +218,7 @@ The constructor calls `SelectShip(context.Ship)`. The ship list calls it again f
 2. Creates a new `ComponentTracker` for the new ship and clears the edited name.
 3. Creates the hull `ShipLayoutModel` from `ship.Model.Layout` and `ship.Model.Barrels`.
 4. Installs the ship's components with `InitializeLayout`.
-5. Creates the satellite layouts with `InitializeSatellite` for both sides. Each call fires `SatelliteChanged`.
+5. Creates the satellite layouts with `InitializeSatellite` for each mount point. Each call fires `SatelliteChanged`.
 6. Fires `ShipChanged`.
 
 `InitializeLayout` ([line 391](../Assets/ModulesShared/ShipEditor/Scripts/Model/ShipEditorModel.cs#L391)) checks each stored component with `IsSuitableLocation` and `ComponentTracker.IsCompatible`. It logs and skips a component that fails. A skipped component is not returned to the inventory. The fleet normally contains no such components, because `PlayerFleet` runs `ShipValidator.RemoveInvalidParts` when a session loads ([PlayerFleet.cs:96](../Assets/Scripts/Domain/Player/PlayerFleet.cs#L96)). At the end, `InitializeLayout` resets `DataChanged`, so an untouched layout is not written back.
@@ -328,15 +328,19 @@ The tracker stores one key per database `Component`, not per placed instance. `O
 
 ## Satellites
 
-The ship has two satellite slots: `SatelliteLocation.Left` and `Right`. Each slot holds an `ISatellite` and, when present, a `ShipLayoutModel` built from `satellite.Information.Layout` and `Barrels`.
+The ship has one satellite slot per mount point of `ship.Model.Satellites`. A starbase has none. Each slot holds an `ISatellite` and, when present, a `ShipLayoutModel` built from `satellite.BaseModel.Layout` and `Barrels`. `SatelliteList` and `LayoutList` ([LayoutList.cs](../Assets/ModulesShared/ShipEditor/Scripts/Model/LayoutList.cs)) size their arrays from the mount point count when a ship is selected.
 
 | Operation | Code | Behaviour |
 | --- | --- | --- |
-| Install from inventory | `TryInstallSatellite(location, Satellite)` ([line 148](../Assets/ModulesShared/ShipEditor/Scripts/Model/ShipEditorModel.cs#L148)) | Removes the current satellite, checks size, withdraws one satellite, creates an empty `CommonSatellite`. |
-| Install a build | `InstallSatellite(location, ISatellite)` ([line 142](../Assets/ModulesShared/ShipEditor/Scripts/Model/ShipEditorModel.cs#L142)) | Removes the current satellite and installs the given object with its components. No size check and no inventory change. Used in database mode. |
-| Remove | `RemoveSatellite(location)` ([line 165](../Assets/ModulesShared/ShipEditor/Scripts/Model/ShipEditorModel.cs#L165)) | Saves the satellite's components into the satellite object, returns unlocked components to the inventory, returns the satellite, fires `MultipleComponentsChanged` and `SatelliteChanged`. |
+| Install from inventory | `TryInstallSatellite(mountPoint, Satellite)` ([line 145](../Assets/ModulesShared/ShipEditor/Scripts/Model/ShipEditorModel.cs#L145)) | Removes the current satellite, checks size against that mount point, withdraws one satellite, creates an empty `CommonSatellite`. |
+| Install a build | `InstallSatellite(mountPoint, ISatellite)` ([line 138](../Assets/ModulesShared/ShipEditor/Scripts/Model/ShipEditorModel.cs#L138)) | Removes the current satellite and installs the given object with its components. No size check and no inventory change. Used in database mode. |
+| Remove | `RemoveSatellite(mountPoint)` ([line 163](../Assets/ModulesShared/ShipEditor/Scripts/Model/ShipEditorModel.cs#L163)) | Saves the satellite's components into the satellite object, returns unlocked components to the inventory, returns the satellite, fires `MultipleComponentsChanged` and `SatelliteChanged`. |
 
-The satellite panel disables incompatible items, so the UI never calls `InstallSatellite` with an incompatible build. The components panel hides the satellite groups for starbases and when the inventory has no satellites and the slot is empty ([ComponentsPanel.cs:136](../Assets/ModulesShared/ShipEditor/Scripts/UI/ComponentsPanel.cs#L136)).
+The size check is `ComponentTracker.IsCompatible(satellite, mountPoint)`. In Main it calls `IsSuitableSatelliteSize(satellite, mountPoint, settings)`: the mount point's size range, then the model-scale check. Frontier (`EH_FRONTIER`) checks the size range only.
+
+The satellite panel disables incompatible items, so the UI never calls `InstallSatellite` with an incompatible build. The components panel has one satellite group per mount point. It hides a group when the inventory has no satellites and the slot is empty ([ComponentsPanel.cs:141](../Assets/ModulesShared/ShipEditor/Scripts/UI/ComponentsPanel.cs#L141)).
+
+Main's legacy combat uses only mount points 0 and 1. A satellite on a later mount point appears in the editor and in the new simulator, but not in legacy combat.
 
 Known defects: selecting the satellite type that is already installed empties the slot ([SE1](issues/ship_editor.md#se1-reselecting-the-installed-satellite-type-empties-it)). Removal destroys locked satellite components ([SE2](issues/ship_editor.md#se2-removing-a-satellite-destroys-its-locked-components)).
 
@@ -346,7 +350,7 @@ Known defects: selecting the satellite type that is already installed empties th
 
 1. When `_shipName` is not empty, it writes `IShip.Name`.
 2. When the hull layout has `DataChanged`, it replaces `IShip.Components` with `ExportComponents(hull)` and clears the flag.
-3. For each side, `SaveSatellite` writes the satellite's components when that layout has `DataChanged`. It then assigns the satellite to `FirstSatellite` / `SecondSatellite`. This assignment always runs and always marks the ship as changed.
+3. For each mount point, `SaveSatellite` writes the satellite's components when that layout has `DataChanged`. It then assigns the satellite to `IShip.Satellites[i]`. `SatelliteCollection` sets `DataChanged` only when the satellite differs.
 
 `ExportComponents` ([line 361](../Assets/ModulesShared/ShipEditor/Scripts/Model/ShipEditorModel.cs#L361)) sorts components by `Y * 10000 + X` and creates one `IntegratedComponent` per component with: `ComponentInfo`, X, Y, barrel ID, key binding, behaviour, and the locked flag.
 
@@ -357,7 +361,7 @@ The ship object decides where the data goes:
 
 ## Presets
 
-A preset ([ShipPreset.cs](../Assets/Modules/ShipConstructor/Scripts/Ships/ShipPreset.cs)) stores a hull, a name, the hull components, and two optional satellites with their components.
+A preset ([ShipPreset.cs](../Assets/Modules/ShipConstructor/Scripts/Ships/ShipPreset.cs)) stores a hull, a name, the hull components, and an optional satellite with its components for each mount point.
 
 | Action | Code | Behaviour |
 | --- | --- | --- |
@@ -369,11 +373,11 @@ A preset ([ShipPreset.cs](../Assets/Modules/ShipConstructor/Scripts/Ships/ShipPr
 
 `LoadShipFromPreset`:
 
-1. Returns `false` when the preset hull differs from `Ship.Model.OriginalShip`.
-2. Removes all unlocked components and both satellites, returning them to the inventory.
+1. Returns `false` when the preset hull differs from `Ship.Model.BaseModel`.
+2. Removes all unlocked components and all satellites, returning them to the inventory.
 3. Installs each hull component from the preset. It skips a component that is already at that position (a kept locked component). It counts a failure when the location, the compatibility check, or the inventory withdrawal fails.
 4. Installs each preset satellite with `TryInstallSatellite`, then its components.
-5. Fires `SatelliteChanged` for both sides and `MultipleComponentsChanged`.
+5. Fires `SatelliteChanged` for each mount point and `MultipleComponentsChanged`.
 6. Returns `false` when any part failed. The UI then shows `$PartiallyLoadedPreset`.
 
 Loading is best effort: the editor loads what the inventory allows. Preset loading also restores each component's locked flag ([SE4](issues/ship_editor.md#se4-a-preset-restores-the-locked-flag)).
@@ -490,7 +494,7 @@ Drag and drop:
 
 1. A list item or the component panel calls `DraggableComponent.Initialize(content, eventData)`. `DragHandler` starts this only after the pointer moves more than 10% of the screen. The draggable takes over the pointer (`eventData.pointerDrag`).
 2. Each `OnDrag` moves the icon and calls `ShipEditorWindow.ShowPlacement`. `ShipView.ShowSelection` draws a green/red preview on all three elements.
-3. `OnEndDrag` calls `ShipEditorWindow.DropComponent`. The window hides the preview, then tries `InstallComponentCommand` on the hull, then the left satellite, then the right satellite. The first success wins.
+3. `OnEndDrag` calls `ShipEditorWindow.DropComponent`. The window hides the preview, then tries `InstallComponentCommand` on the hull, then on each satellite in mount point order. The first success wins.
 4. A drop that fits nowhere does nothing. A component that the player dragged off the ship is then back in the inventory, and undo can restore it.
 
 Overview mode (`SetOverviewMode`) moves the camera focus to the screen centre and zooms to the whole ship. Clicks and drags are ignored in this mode.
@@ -548,7 +552,7 @@ Details:
 - `ShipLayoutElement` destroys its mesh and materials when it gets a new mesh and in `OnDestroy`.
 - The sprite of the hull is scaled to `OriginalSize` cells and offset by the layout rectangle, so it lines up with expanded layouts.
 
-`ShipView` places the satellites left and right of the hull, `_satelliteOffset` units apart. The view's scale, rotation, and position come from `IShipDataProvider`.
+`ShipView` places each satellite at its mount point position `p`, rotated so that the ship's forward axis points up: `(-p.y, p.x) × (shipSize + satelliteSize + _satelliteOffset) / 2`, where each size is the larger side of the layout. Main's legacy combat ignores mount point positions, so its satellite positions differ a little from the editor's. The view's scale, rotation, and position come from `IShipDataProvider`.
 
 `CameraController` builds its own projection matrix so the visible centre follows a UI `RectTransform` ("focus"). It smooths position, rotation, zoom, and focus with `SmoothDamp`. `Background` scales a nebula quad to the camera and scrolls it with the camera.
 

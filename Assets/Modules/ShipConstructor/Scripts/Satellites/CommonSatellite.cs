@@ -30,7 +30,6 @@ namespace Constructor.Satellites
 
 		public string Name => BaseModel.Name;
         public Satellite BaseModel { get; }
-        [System.Obsolete("Use BaseModel")] public Satellite Information => BaseModel;
 
         public IItemCollection<IntegratedComponent> Components { get { return _components; } }
 

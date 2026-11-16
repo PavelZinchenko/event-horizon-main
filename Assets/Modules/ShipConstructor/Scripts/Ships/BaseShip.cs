@@ -29,20 +29,6 @@ namespace Constructor.Ships
 
         public ISatelliteCollection Satellites => _satellites;
 
-        [Obsolete("Use Satellites[0]")]
-        public ISatellite FirstSatellite
-        {
-            get => _satellites[0];
-            set => _satellites[0] = value;
-        }
-
-        [Obsolete("Use Satellites[1]")]
-        public ISatellite SecondSatellite
-        {
-            get => _satellites[1];
-            set => _satellites[1] = value;
-        }
-
         public virtual DifficultyClass ExtraThreatLevel => DifficultyClass.Default;
         public BehaviorTreeModel CustomAi { get; }
 

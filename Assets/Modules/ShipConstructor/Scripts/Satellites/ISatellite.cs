@@ -8,9 +8,6 @@ namespace Constructor.Satellites
 		string Name { get; }
         Satellite BaseModel { get; }
 
-        [System.Obsolete("Use BaseModel. Remove after satellite mount points phase 9.")]
-        Satellite Information { get; }
-
         IItemCollection<IntegratedComponent> Components { get; }
 
         bool DataChanged { get; set; }

@@ -89,7 +89,6 @@ namespace Constructor.Ships
         }
 
         public Ship BaseModel => _ship;
-        [System.Obsolete("Use BaseModel")] public Ship OriginalShip => _ship;
 
         public ShipBaseStats Stats => _stats;
         public LayoutModifications LayoutModifications => _layoutModifications;
