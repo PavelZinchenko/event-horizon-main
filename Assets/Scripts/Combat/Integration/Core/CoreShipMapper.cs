@@ -96,7 +96,7 @@ namespace Combat.Integration.Core
             }
         }
 
-        public CoreShipMapping Map(IShipInfo info) => Map(info.Specification, isDrone: false);
+        public CoreShipMapping Map(IShipInfo info) => Map(info.CoreSpecification, isDrone: false);
 
         public CoreShipMapping Map(IShipSpecification specification, bool isDrone) => Map(specification, isDrone, null, false);
 
@@ -146,7 +146,7 @@ namespace Combat.Integration.Core
                     var satellite = satellites.Count;
                     var satelliteScale = companion.Satellite.ModelScale;
                     var aiming = IsAimingSatellite(platform);
-                    satellites.Add(ToSatellite(companion, platform, modelScale, aiming));
+                    satellites.Add(ToSatellite(companion, platform, stats, modelScale, aiming));
                     satelliteSources.Add(new CoreSatelliteSource(companion.Satellite.ModelImage, satelliteScale));
                     if (companion.Satellite.Barrels.Count > 0)
                     {
@@ -650,23 +650,48 @@ namespace Combat.Integration.Core
                 (bool)platform.Image && (platform.Weapons.Any() || platform.WeaponsObsolete.Any()), offset * modelScale, satellite);
         }
 
-        // Legacy SatelliteFactory.CreateSatellite: an AutoAimingSatelliteController for an arc of at least 5° without an
-        // image and below 360°; else a SatelliteController that keeps the platform rotation.
+        // Frontier SatelliteFactory.CreateSatellite: an AutoAimingSatelliteController for an arc of at least 5° without an
+        // image and below 360°, on a mount point with a rotation limit of at least 5°; else a SatelliteController that
+        // keeps the platform rotation.
         private static bool IsAimingSatellite(IWeaponPlatformData platform) =>
             platform.Companion.Satellite.Barrels.Count > 0 && !(bool)platform.Image &&
-            platform.AutoAimingArc >= MinAimingSatelliteArc && platform.AutoAimingArc < 360f;
+            platform.AutoAimingArc >= MinAimingSatelliteArc && platform.AutoAimingArc < 360f &&
+            platform.Companion.MountPoint.RotationLimit >= MinAimingSatelliteArc;
 
-        // Legacy SatelliteFactory: the left slot (-0.5, 0.5) × ship scale + (0, 1.5 × satellite scale) with the arc
-        // -10°..190°, the right slot mirrored. The weight is cells × DefaultWeightPerCell / 1000 (CompanionSpec).
-        private static SatelliteDefinition ToSatellite(ICompanionData companion, IWeaponPlatformData platform, float shipScale,
-            bool aiming)
+        // Frontier SatelliteFactory (satellite plan, phase 7). The slot is the mount point position × (ship scale +
+        // satellite scale) / 2; the rest heading is the mount point direction plus the platform rotation. The arc is the
+        // direction from the ship centre to the mount point ± RotationLimit. Frontier's aiming controller keeps the legacy
+        // velocity factor; any other satellite takes Steadiness. The hit points are Satellite.HitPoints of the ship's
+        // armor before ArmorMultiplier, × ArmorMultiplier; a destructible satellite gets a collider from its image. The
+        // weight is cells × DefaultWeightPerCell / 1000 (CompanionSpec).
+        private SatelliteDefinition ToSatellite(ICompanionData companion, IWeaponPlatformData platform, IShipStats stats,
+            float shipScale, bool aiming)
         {
-            var side = companion.Location == CompanionLocation.Left ? 1f : -1f;
-            var satelliteScale = companion.Satellite.ModelScale;
-            var slot = new Vec2(-0.5f * shipScale, side * (0.5f * shipScale + 1.5f * satelliteScale));
-            var min = aiming ? (side > 0f ? -10f : -190f) * DegreesToRadians : 0f;
-            var max = aiming ? (side > 0f ? 190f : 10f) * DegreesToRadians : 0f;
-            return new SatelliteDefinition(slot, platform.Rotation * DegreesToRadians, Positive(companion.Weight), min, max);
+            var satellite = companion.Satellite;
+            var mountPoint = companion.MountPoint;
+            var position = mountPoint.Position;
+            var distance = (shipScale + satellite.ModelScale) * 0.5f;
+            var slot = new Vec2(position.x * distance, position.y * distance);
+            var rest = mountPoint.Direction + platform.Rotation;
+            var direction = Direction(position.x, position.y);
+            var min = aiming ? (direction - rest - mountPoint.RotationLimit) * DegreesToRadians : 0f;
+            var max = aiming ? (direction - rest + mountPoint.RotationLimit) * DegreesToRadians : 0f;
+            var velocityFactor = aiming ? SatelliteDefinition.DefaultVelocityFactor : satellite.Steadiness;
+
+            var armorMultiplier = Positive(stats.ArmorMultiplier.Value);
+            var hitPoints = NonNegativeFinite(satellite.HitPoints(Positive(stats.ArmorPoints) / armorMultiplier) * armorMultiplier);
+            var shape = hitPoints >= SatelliteDefinition.MinHitPoints ? _hullBuilder.SatelliteShape(satellite) : null;
+
+            return new SatelliteDefinition(slot, rest * DegreesToRadians, Positive(companion.Weight), min, max,
+                velocityFactor, shape: shape, hitPoints: hitPoints, respawnTime: satellite.RespawnTime);
+        }
+
+        // Legacy RotationHelpers.Angle: degrees in [0, 360); 0 for the ship centre.
+        private static float Direction(float x, float y)
+        {
+            var angle = (float)System.Math.Atan2(y, x);
+            if (angle < 0f) angle += 2f * (float)System.Math.PI;
+            return angle / DegreesToRadians;
         }
 
         private static void Add(List<DeviceDefinition> devices, List<CoreDeviceInfo> infos, List<CoreDeviceViewSource> views,
@@ -753,6 +778,7 @@ namespace Combat.Integration.Core
         private static float Positive(float value) => value > MinValue ? value : MinValue;
         private static float NonNegative(float value) => value > 0f ? value : 0f;
         private static float Fraction(float value) => value > 0f ? value < 1f ? value : 1f : 0f;
+        private static float NonNegativeFinite(float value) => value > 0f && !float.IsInfinity(value) ? value : 0f;
 
         private const float MinValue = 0.01f;
         private const float MinAimingSatelliteArc = 5f;

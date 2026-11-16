@@ -1141,8 +1141,13 @@ Phase 5, step 12c. Legacy `Satellite` with `SatelliteController` or `AutoAimingS
 holds the slot, rest heading, mass, arc limits, velocity and angular factors (legacy 0.75 and 3) and an optional shape.
 A `BarrelDefinition` names its carrier: `Hull` or a satellite index. Its position and angle are then in the satellite frame.
 
-1. **Mapping.** `CoreShipMapper` gives each companion its slot: left `(−0.5, 0.5) × ship scale + (0, 1.5 × satellite scale)`,
-   right mirrored. The mass is cells × `DefaultWeightPerCell` / 1000. The core never derives a left or right slot.
+1. **Mapping.** `CoreShipMapper` reads each satellite's mount point with the Frontier `SatelliteFactory` formula
+   (satellite plan, phase 7). The slot is the mount point position × (ship scale + satellite scale) / 2. The rest heading
+   is the mount point direction plus the platform rotation. The arc is the direction from the ship centre to the mount
+   point ± `RotationLimit`; a limit below 5° makes a satellite that does not aim. Main's default mount points
+   ((−0.75, ±1.5), direction 0, limit 127) give −10.4°..243.6° on the left: the legacy forward edge, a wider rear edge.
+   The mass is cells × `DefaultWeightPerCell` / 1000. The core never derives a left or right slot. The mapper reads
+   `IShipInfo.CoreSpecification`, which has every mount point; the legacy simulator keeps mount points 0 and 1.
    A satellite barrel uses the satellite's model scale. Its weapons map as hull weapons; the `satellite weapon` reason is gone.
 2. **Kinds.** Legacy `SatelliteFactory` rules. An arc of at least 5° below 360° without an image makes an aiming satellite:
    its one barrel is fixed (arc 0) and the whole satellite turns. Any other satellite keeps the ship heading plus its rest
@@ -1187,7 +1192,12 @@ A `BarrelDefinition` names its carrier: `Hull` or a satellite index. Its positio
    7. **AI.** A weapon on a destroyed satellite is not ready to fire. `TargetNodes` is unchanged: the AI never targets
       satellites, and the obstacle check skips them as before.
 
-   The mapper still gives no shape, hit points or `Steadiness` (phase 7). `DestructibleSatelliteTests` covers contacts,
+   Mapping (phase 7): an aiming satellite keeps the legacy velocity factor 0.75, as Frontier's aiming controller does;
+   any other satellite takes `Steadiness`. The hit points are `Satellite.HitPoints(ArmorPoints / ArmorMultiplier) ×
+   ArmorMultiplier`; `RespawnTime` maps as is. A destructible satellite gets one outline from its sprite's physics shape,
+   reduced with tolerance 0.2 (the path with the largest area), or a circle around the sprite bounds. Frontier's
+   built-in satellite prefabs have circle colliders instead; Main's prefabs have none, so Main uses the sprite rule for
+   every image. Main's built-in satellites have no hit points, so none of them is destructible. `DestructibleSatelliteTests` covers contacts,
    death, respawn, disabled barrels, the snapshot copy, determinism and both network directions.
 
 `SatelliteTests` covers the plan examples, the arc fix and the remote record. `SatelliteGateTests` is the two-owner gate:

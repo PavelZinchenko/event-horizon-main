@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Combat.Component.Unit.Classification;
 using Combat.Unit;
+using Constructor;
 using Constructor.Ships;
 using GameDatabase;
+using GameDatabase.DataModel;
 using GameServices.Player;
 
 namespace Combat.Domain
@@ -16,13 +18,26 @@ namespace Combat.Domain
 
             foreach (var ship in ships)
             {
-                var shipSpec = playerSkills != null ?
-                    ship.CreateBuilder().ApplyPlayerSkills(playerSkills).Build(settings) :
-                    ship.CreateBuilder().Build(settings);
+                var shipSpec = Build(ship, settings, playerSkills, false);
 
-                var shipInfo = new ShipInfo(ship, shipSpec, unitSide);
+                // The new simulator gets every satellite mount point (satellite plan, phase 7, step 4).
+                var coreSpec = ship.Model.Satellites.Count > ShipBuilder.LegacySatelliteSlots
+                    ? Build(ship, settings, playerSkills, true)
+                    : shipSpec;
+
+                var shipInfo = new ShipInfo(ship, shipSpec, coreSpec, unitSide);
                 _ships.Add(shipInfo);
             }
+        }
+
+        private static IShipSpecification Build(IShip ship, ShipSettings settings, PlayerSkills playerSkills, bool allMountPoints)
+        {
+            var builder = ship.CreateBuilder();
+            builder.AllMountPoints = allMountPoints;
+            if (playerSkills != null)
+                builder.ApplyPlayerSkills(playerSkills);
+
+            return builder.Build(settings);
         }
 
         public int AiLevel { get; private set; }

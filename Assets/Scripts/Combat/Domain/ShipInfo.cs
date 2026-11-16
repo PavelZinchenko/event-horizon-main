@@ -26,10 +26,16 @@ namespace Combat.Domain
     public class ShipInfo : IShipInfo
     {
         public ShipInfo(Constructor.Ships.IShip shipData, IShipSpecification shipSpec, UnitSide unitSide)
+            : this(shipData, shipSpec, shipSpec, unitSide)
+        {
+        }
+
+        public ShipInfo(Constructor.Ships.IShip shipData, IShipSpecification shipSpec, IShipSpecification coreSpec, UnitSide unitSide)
         {
             _unitSide = unitSide;
             _shipData = shipData;
             _shipSpec = shipSpec;
+            _coreSpec = coreSpec;
         }
 
         public ShipStatus Status
@@ -50,6 +56,7 @@ namespace Combat.Domain
         public IShip ShipUnit { get; private set; }
         public Constructor.Ships.IShip ShipData { get { return _shipData; } }
         public IShipSpecification Specification => _shipSpec;
+        public IShipSpecification CoreSpecification => _coreSpec;
         public float ActivationTime { get; private set; }
 
         public float Condition
@@ -128,6 +135,7 @@ namespace Combat.Domain
         private readonly UnitSide _unitSide;
         private readonly Constructor.Ships.IShip _shipData;
         private readonly IShipSpecification _shipSpec;
+        private readonly IShipSpecification _coreSpec;
         private bool _hasCoreState;
         private ShipStatus _coreStatus;
         private float _coreDamageFraction;

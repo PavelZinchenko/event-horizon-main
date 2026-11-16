@@ -65,14 +65,13 @@ namespace Constructor.Ships
             builder.Bonuses.DamageMultiplier *= scale;
             builder.Bonuses.RammingDamageMultiplier *= scale;
 
-            // The legacy simulator has only the left and right slots: mount point 0 is left,
-            // mount point 1 is right. Satellites on later mount points are not part of the ship.
-            var count = Math.Min(Model.Satellites.Count, _legacySatelliteSlots);
-            for (int i = 0; i < count; ++i)
+            // ShipBuilder.AllMountPoints selects the mount points that are part of the ship.
+            var mountPoints = Model.Satellites;
+            for (int i = 0; i < mountPoints.Count; ++i)
             {
                 var satellite = _satellites[i];
                 if (satellite != null)
-                    builder.AddSatellite(satellite, i == 0 ? CompanionLocation.Left : CompanionLocation.Right);
+                    builder.AddSatellite(satellite, mountPoints[i], i);
             }
 
             return builder;
@@ -111,7 +110,5 @@ namespace Constructor.Ships
         private bool _dataChanged;
         private readonly ShipColorScheme _colorScheme = new ShipColorScheme();
         private readonly IShipModel _model;
-
-        private const int _legacySatelliteSlots = 2;
     }
 }

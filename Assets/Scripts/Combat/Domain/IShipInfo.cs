@@ -21,6 +21,10 @@ namespace Combat.Domain
         // Built once by the fleet model, with player skills where the rules allow them.
         Constructor.IShipSpecification Specification { get; }
 
+        // The same build for the new combat simulator, with every satellite mount point (satellite plan, phase 7,
+        // step 4). It is Specification when the ship has at most the two legacy mount points.
+        Constructor.IShipSpecification CoreSpecification { get; }
+
         float Condition { get; }
         float ActivationTime { get; }
         UnitSide Side { get; }

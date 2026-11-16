@@ -121,7 +121,7 @@ IShip  (CommonShip / EnemyShip / ArenaShip / EditorModeShip)
 - `Satellites` is a `SatelliteCollection`. Index *i* holds the satellite on mount point *i* of `Model.Satellites`. Setting a different satellite sets `DataChanged`, and so does the `Experience` setter.
 - `FirstSatellite` and `SecondSatellite` are obsolete aliases for `Satellites[0]` and `Satellites[1]`. They stay until satellite mount points phase 9, because Main's shared ShipEditor and the session code still use them.
 - `DataChanged` is true when the ship, a satellite, the model, or the colour scheme changed. Setting it to `false` clears all of them.
-- `CreateBuilder` creates a `ShipBuilder` and multiplies armor, shield, damage, and ramming bonuses by `Experience.PowerMultiplier`. It adds the satellites on mount points 0 and 1 only: index 0 is `CompanionLocation.Left`, index 1 is `Right`. The legacy simulator has no other slots, so satellites on later mount points are not part of the ship stats.
+- `CreateBuilder` creates a `ShipBuilder` and multiplies armor, shield, damage, and ramming bonuses by `Experience.PowerMultiplier`. It adds every satellite with its mount point and index. `ShipBuilder.AllMountPoints` then selects which are part of the ship (see [Building a ship specification](#building-a-ship-specification)).
 - `Name` returns the hull name. Its setter throws `InvalidOperationException`; `CommonShip` overrides it.
 
 ## Ship model and base stats
@@ -347,7 +347,7 @@ The `SatelliteSize` perk ([SatelliteSizeMod.cs](../Assets/Modules/ShipConstructo
 | `ShipBuilder(ShipBuild)` | Drones (`DroneBay`) | Damage, armor, shield × (1 + 0.5 × `DifficultyClass`); the drone bay then overwrites them ([DB15.14](issues/database.md#db15-smaller-defects)) |
 | `ShipBuilder(IShipModel, components)` | Base for the others | — |
 
-Callers set `Bonuses`, `Converter`, and `ExtraDroneBayCapacity` before `Build`. `SizeMultiplier` is copied into the stats but nothing reads it ([SC7](issues/ship_constructor.md#sc7-dead-and-duplicate-code)).
+Callers set `Bonuses`, `Converter`, `ExtraDroneBayCapacity`, and `AllMountPoints` before `Build`. By default the builder keeps only the satellites on mount points 0 and 1 (`LegacySatelliteSlots`): the legacy simulator has no other slots, so later satellites are not part of the ship stats. The new combat simulator sets `AllMountPoints` and gets every mount point (`FleetModel` builds this second specification only for a hull with more than two mount points; `IShipInfo.CoreSpecification`). `SizeMultiplier` is copied into the stats but nothing reads it ([SC7](issues/ship_constructor.md#sc7-dead-and-duplicate-code)).
 
 ### Build steps
 
@@ -357,7 +357,7 @@ Callers set `Bonuses`, `Converter`, and `ExtraDroneBayCapacity` before `Build`. 
 2. Create `ShipInfo(id, visual difficulty, visual level, size)`. `size` = hull cell count + half of all satellite cell counts.
 3. Create weapon platforms (`GetPlatforms`):
    1. One per hull barrel, with `BarrelId` 0, 1, 2, … in barrel order.
-   2. One per satellite, with a `CompanionSpec` (satellite, side, weight = cells × `DefaultWeightPerCell` / 1000). A satellite with one barrel gets the next `BarrelId`. A satellite without a barrel gets `Barrel.Empty` and `BarrelId` −1. A satellite with more barrels throws ([DB15.6](issues/database.md#db15-smaller-defects)).
+   2. One per satellite, with a `CompanionSpec` (satellite, mount point, legacy side, weight = cells × `DefaultWeightPerCell` / 1000). The side is `Left` for mount point 0 and `Right` for any other. A satellite with one barrel gets the next `BarrelId`. A satellite without a barrel gets `Barrel.Empty` and `BarrelId` −1. A satellite with more barrels throws ([DB15.6](issues/database.md#db15-smaller-defects)).
 4. Add the hull's built-in devices. A manual built-in device gets key 5; others get −1.
 5. Enumerate components (`Components`): hull components first, then each satellite's components. The converter adds a barrel offset: hull barrels count first, then each satellite's barrels.
 6. For each component, in order:
@@ -393,7 +393,7 @@ Satellite components count in the ship totals: their armor, energy, engines, and
 | `WeaponPlatform.WeaponData` | Weapon, ammunition, and `WeaponStatModifier` × platform damage, fire rate, energy, and range multipliers. |
 | `DeviceData` | Device stats and key. |
 | `DroneBayData` | Drone bay stats with the ship's drone bonuses added and then × total damage and defense bonus; drone build; key; behaviour. |
-| `CompanionSpec` | Satellite, side, weight. |
+| `CompanionSpec` | Satellite, mount point, legacy side, weight. |
 
 ## Stats calculation
 

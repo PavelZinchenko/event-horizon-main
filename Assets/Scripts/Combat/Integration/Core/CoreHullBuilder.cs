@@ -80,6 +80,61 @@ namespace Combat.Integration.Core
             return shapes;
         }
 
+        // The collider of a destructible satellite (satellite plan, phase 7): Frontier SatelliteFactory gives a satellite
+        // without its own prefab a PolygonCollider2D from the sprite, reduced with tolerance 0.2. Main's satellite prefabs
+        // have no collider, so every satellite takes this rule. The core takes one outline, the path with the largest
+        // area; a sprite without a usable path gets a circle around its bounds.
+        public HullShape SatelliteShape(Satellite satellite)
+        {
+            var scale = satellite.ModelScale;
+            var sprite = _resourceLocator.GetSprite(satellite.ModelImage);
+            if (sprite == null)
+                return HullShape.Circle(Vec2.Zero, 0.5f * scale);
+
+            HullShape best = null;
+            var bestArea = 0f;
+            var path = new List<Vector2>();
+            for (var i = 0; i < sprite.GetPhysicsShapeCount(); ++i)
+            {
+                sprite.GetPhysicsShape(i, path);
+                var reduced = ShapeOptimizationHelper.DouglasPeuckerReduction(path, SatelliteColliderTolerance);
+                if (reduced.Count < 3) continue;
+
+                var points = new Vec2[reduced.Count];
+                for (var j = 0; j < points.Length; ++j)
+                    points[j] = new Vec2(reduced[j].x * scale, reduced[j].y * scale);
+
+                var area = Math.Abs(SignedArea(points));
+                if (area <= bestArea) continue;
+
+                try
+                {
+                    best = HullShape.Outline(points);
+                    bestArea = area;
+                }
+                catch (ArgumentException e)
+                {
+                    if (_reportedSatellites.Add(satellite.Id.Value))
+                        Debug.LogWarning($"CoreHullBuilder: satellite {satellite.Id.Value} ({satellite.ModelImage.Id}) has an invalid collider path, skipped: {e.Message}");
+                }
+            }
+
+            if (best != null)
+                return best;
+
+            var bounds = sprite.bounds;
+            var center = new Vec2(bounds.center.x * scale, bounds.center.y * scale);
+            return HullShape.Circle(center, Mathf.Max(bounds.extents.x, bounds.extents.y) * scale);
+        }
+
+        private static float SignedArea(IReadOnlyList<Vec2> points)
+        {
+            var area = 0f;
+            for (int i = 0, j = points.Count - 1; i < points.Count; j = i++)
+                area += points[j].X * points[i].Y - points[i].X * points[j].Y;
+            return 0.5f * area;
+        }
+
         private bool TryCreate(Ship ship, IReadOnlyList<Vec2> points, float radius, out HullShape shape)
         {
             try
@@ -98,5 +153,9 @@ namespace Combat.Integration.Core
 
         private readonly IResourceLocator _resourceLocator;
         private readonly HashSet<int> _reported = new HashSet<int>();
+        private readonly HashSet<int> _reportedSatellites = new HashSet<int>();
+
+        // Frontier SatelliteFactory: PolygonCollider2D.Optimize(0.2f).
+        private const float SatelliteColliderTolerance = 0.2f;
     }
 }

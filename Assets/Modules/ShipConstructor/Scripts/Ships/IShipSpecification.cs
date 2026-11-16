@@ -49,6 +49,9 @@ namespace Constructor
     public interface ICompanionData
 	{
 		Satellite Satellite { get; }
+		SatelliteMountPoint MountPoint { get; }
+
+		// The legacy slot: mount point 0 is left, any other is right. The legacy simulator gets only mount points 0 and 1.
 		CompanionLocation Location { get; }
 		float Weight { get; }
 	}

@@ -57,9 +57,15 @@ namespace Constructor
 
 		public IComponentConverter Converter { get { return _converter; } set { _converter = value ?? DefaultComponentConverter.Instance; } }
 
-		public void AddSatellite(ISatellite spec, CompanionLocation location)
+		// The legacy simulator has only the left and right slots, mount points 0 and 1: satellites on later mount points
+		// are not part of the ship. The new simulator sets this to build every mount point (satellite plan, phase 7).
+		public bool AllMountPoints { get; set; }
+
+		public const int LegacySatelliteSlots = 2;
+
+		public void AddSatellite(ISatellite spec, SatelliteMountPoint mountPoint, int index)
 		{
-			_satellites.Add(new KeyValuePair<ISatellite, CompanionLocation>(spec, location));
+			_satellites.Add(new SatelliteSlot(spec, mountPoint, index));
 		}
 
 		public IShipSpecification Build(ShipSettings settings)
@@ -173,8 +179,8 @@ namespace Constructor
 			get
 			{
 				var size = 0;
-				foreach (var item in _satellites)
-					size += item.Key.BaseModel.Layout.CellCount;
+				foreach (var item in Satellites)
+					size += item.Satellite.BaseModel.Layout.CellCount;
 
 				return _ship.Layout.CellCount + size/2;
 			}
@@ -189,18 +195,19 @@ namespace Constructor
 		        yield return platform;
 		    }
 
-            foreach (var item in _satellites)
+            foreach (var item in Satellites)
 			{
-				var barrels = item.Key.BaseModel.Barrels;
+				var barrels = item.Satellite.BaseModel.Barrels;
 				var count = barrels.Count();
 
                 if (count > 1)
                     throw new ArgumentException("companions should have one barrel");
 
+                var companion = new CompanionSpec(item.Satellite.BaseModel, item.MountPoint, item.Index, settings);
                 if (count == 0)
-                    yield return new WeaponPlatform(Barrel.Empty) { Companion = new CompanionSpec(item.Key.BaseModel, item.Value, settings) };
+                    yield return new WeaponPlatform(Barrel.Empty) { Companion = companion };
                 else
-                    yield return new WeaponPlatform(barrels.First()) { Companion = new CompanionSpec(item.Key.BaseModel, item.Value, settings), BarrelId = id++ };
+                    yield return new WeaponPlatform(barrels.First()) { Companion = companion, BarrelId = id++ };
             }
 		}
 
@@ -214,20 +221,37 @@ namespace Constructor
 
 			    barrel += _ship.Barrels.Count;
 
-				foreach (var item in _satellites)
+				foreach (var item in Satellites)
 				{
-					foreach (var component in item.Key.Components)
+					foreach (var component in item.Satellite.Components)
                         yield return _converter.Process(component, barrel);
 
-                    barrel += item.Key.BaseModel.Barrels.Count;
+                    barrel += item.Satellite.BaseModel.Barrels.Count;
 				}
 			}
+		}
+
+		private IEnumerable<SatelliteSlot> Satellites =>
+			AllMountPoints ? _satellites : _satellites.Where(item => item.Index < LegacySatelliteSlots);
+
+		private readonly struct SatelliteSlot
+		{
+			public SatelliteSlot(ISatellite satellite, SatelliteMountPoint mountPoint, int index)
+			{
+				Satellite = satellite;
+				MountPoint = mountPoint;
+				Index = index;
+			}
+
+			public ISatellite Satellite { get; }
+			public SatelliteMountPoint MountPoint { get; }
+			public int Index { get; }
 		}
 
         private IComponentConverter _converter = DefaultComponentConverter.Instance;
         private readonly IShipModel _ship;
 		private readonly List<IntegratedComponent> _shipComponents;
-		private readonly List<KeyValuePair<ISatellite, CompanionLocation>> _satellites = new List<KeyValuePair<ISatellite, CompanionLocation>>();
+		private readonly List<SatelliteSlot> _satellites = new List<SatelliteSlot>();
 	}
 
 	public class DeviceData : IDeviceData
@@ -524,14 +548,16 @@ namespace Constructor
 
         public class CompanionSpec : ICompanionData
 		{
-			public CompanionSpec(Satellite satellite, CompanionLocation location, ShipSettings settings)
+			public CompanionSpec(Satellite satellite, SatelliteMountPoint mountPoint, int index, ShipSettings settings)
 			{
 				Satellite = satellite;
-				Location = location;
+				MountPoint = mountPoint;
+				Location = index == 0 ? CompanionLocation.Left : CompanionLocation.Right;
 				Weight = Satellite.Layout.CellCount * settings.DefaultWeightPerCell / 1000f;
 			}
 			
 			public Satellite Satellite { get; private set; }
+			public SatelliteMountPoint MountPoint { get; private set; }
 			public CompanionLocation Location { get; private set; }
 			public float Weight { get; private set; }
 		}		

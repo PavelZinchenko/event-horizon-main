@@ -83,7 +83,10 @@ namespace Combat.Integration.Core
         {
             foreach (var ship in FleetWebSerializer.DeserializeFleetData(Database, fleet).ToList())
             {
-                var specification = ship.CreateBuilder().Build(Database.ShipSettings);
+                // The new simulator gets every satellite mount point (satellite plan, phase 7, step 4).
+                var builder = ship.CreateBuilder();
+                builder.AllMountPoints = true;
+                var specification = builder.Build(Database.ShipSettings);
                 var mapping = Mapper.Map(specification, isDrone: false);
                 var id = new CoreRosterId(nextId++);
                 roster.Add(new RosterSlotSetup(id, side, mapping.Definition, owner));

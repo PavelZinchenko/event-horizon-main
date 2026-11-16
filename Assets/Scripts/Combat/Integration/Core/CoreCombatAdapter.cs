@@ -622,7 +622,7 @@ namespace Combat.Integration.Core
                 return;
 
             var id = _ids.Assign(item.EntityId);
-            var specification = slot.Info.Specification;
+            var specification = slot.Info.CoreSpecification;
             var view = new CoreShipView(id, slot.Side, specification, state, new CoreShipControls(_mapper.Mappings[state.Definition]));
             _views.Add(id, view);
             _viewsByCore.Add(item.EntityId, view);
