@@ -53,11 +53,11 @@ namespace Constructor.Ships.Modification
             switch (type)
             {
                 case ModificationType.AutoTargeting:
-                    return AutoTargetingModification.IsSuitable(ship.OriginalShip);
+                    return AutoTargetingModification.IsSuitable(ship.BaseModel);
                 case ModificationType.WeaponClass:
-                    return WeaponClassMod.IsSuitable(ship.OriginalShip);
+                    return WeaponClassMod.IsSuitable(ship.BaseModel);
                 case ModificationType.SatelliteSize:
-                    return SatelliteSizeMod.IsSuitable(ship.OriginalShip);
+                    return SatelliteSizeMod.IsSuitable(ship);
                 default:
                     return true;
             }

@@ -28,10 +28,7 @@ namespace Constructor.Ships
         {
             const float maxSaturation = 0.25f;
 
-            if (build.Satellites.Count > 0)
-                FirstSatellite = new CommonSatellite(build.Satellites[0]);
-            if (build.Satellites.Count > 1)
-                SecondSatellite = new CommonSatellite(build.Satellites[1]);
+            Satellites.Assign(build.Satellites.Select(CommonSatellite.Create));
 
             _components.Assign(build.Components.Select<InstalledComponent,IntegratedComponent>(ComponentExtensions.FromDatabase));
             _components.DataChangedEvent += OnDataChanged;

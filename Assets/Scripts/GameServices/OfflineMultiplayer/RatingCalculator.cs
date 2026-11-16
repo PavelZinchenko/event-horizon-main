@@ -34,12 +34,12 @@ namespace GameServices.Multiplayer
                 rating += ship.Components.Sum(item => CalculateComponentPower(item.Info));
                 if (ship.FirstSatellite != null)
                 {
-                    rating += ship.FirstSatellite.Information.Layout.CellCount;
+                    rating += ship.FirstSatellite.BaseModel.Layout.CellCount;
                     rating += ship.FirstSatellite.Components.Sum(item => CalculateComponentPower(item.Info));
                 }
                 if (ship.SecondSatellite != null)
                 {
-                    rating += ship.SecondSatellite.Information.Layout.CellCount;
+                    rating += ship.SecondSatellite.BaseModel.Layout.CellCount;
                     rating += ship.SecondSatellite.Components.Sum(item => CalculateComponentPower(item.Info));
                 }
             }

@@ -27,24 +27,20 @@ namespace Constructor.Ships
 
         public abstract IItemCollection<IntegratedComponent> Components { get; }
 
+        public ISatelliteCollection Satellites => _satellites;
+
+        [Obsolete("Use Satellites[0]")]
         public ISatellite FirstSatellite
         {
-            get => _firstSatellite;
-            set
-            {
-                _firstSatellite = value;
-                DataChanged = true;
-            }
+            get => _satellites[0];
+            set => _satellites[0] = value;
         }
 
+        [Obsolete("Use Satellites[1]")]
         public ISatellite SecondSatellite
         {
-            get => _secondSatellite;
-            set
-            {
-                _secondSatellite = value;
-                DataChanged = true;
-            }
+            get => _satellites[1];
+            set => _satellites[1] = value;
         }
 
         public virtual DifficultyClass ExtraThreatLevel => DifficultyClass.Default;
@@ -69,10 +65,15 @@ namespace Constructor.Ships
             builder.Bonuses.DamageMultiplier *= scale;
             builder.Bonuses.RammingDamageMultiplier *= scale;
 
-            if (FirstSatellite != null)
-                builder.AddSatellite(FirstSatellite, CompanionLocation.Left);
-            if (SecondSatellite != null)
-                builder.AddSatellite(SecondSatellite, CompanionLocation.Right);
+            // The legacy simulator has only the left and right slots: mount point 0 is left,
+            // mount point 1 is right. Satellites on later mount points are not part of the ship.
+            var count = Math.Min(Model.Satellites.Count, _legacySatelliteSlots);
+            for (int i = 0; i < count; ++i)
+            {
+                var satellite = _satellites[i];
+                if (satellite != null)
+                    builder.AddSatellite(satellite, i == 0 ? CompanionLocation.Left : CompanionLocation.Right);
+            }
 
             return builder;
         }
@@ -83,9 +84,7 @@ namespace Constructor.Ships
             {
                 if (_dataChanged)
                     return true;
-                if (FirstSatellite != null && FirstSatellite.DataChanged)
-                    return true;
-                if (SecondSatellite != null && SecondSatellite.DataChanged)
+                if (_satellites.DataChanged)
                     return true;
                 if (_model.DataChanged)
                     return true;
@@ -100,10 +99,7 @@ namespace Constructor.Ships
                 if (_dataChanged)
                     return;
 
-                if (FirstSatellite != null)
-                    FirstSatellite.DataChanged = false;
-                if (SecondSatellite != null)
-                    SecondSatellite.DataChanged = false;
+                _satellites.DataChanged = false;
 
                 _model.DataChanged = false;
                 _colorScheme.IsChanged = false;
@@ -111,10 +107,11 @@ namespace Constructor.Ships
         }
 
         private Experience _experience;
-        private ISatellite _firstSatellite;
-        private ISatellite _secondSatellite;
+        private readonly SatelliteCollection _satellites = new SatelliteCollection();
         private bool _dataChanged;
         private readonly ShipColorScheme _colorScheme = new ShipColorScheme();
         private readonly IShipModel _model;
+
+        private const int _legacySatelliteSlots = 2;
     }
 }

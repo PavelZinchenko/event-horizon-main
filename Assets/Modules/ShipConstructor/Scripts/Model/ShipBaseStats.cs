@@ -1,5 +1,4 @@
 ﻿using GameDatabase.DataModel;
-using GameDatabase.Enums;
 using GameDatabase.Model;
 
 namespace Constructor.Model
@@ -28,7 +27,7 @@ namespace Constructor.Model
 
         public ImmutableCollection<Device> BuiltinDevices;
 		public ImmutableCollection<Barrel> Barrels;
-        public SizeClass MaxSatelliteSize;
+        public ImmutableCollection<SatelliteMountPoint> Satellites;
         public float MaxSatelliteModelSize;
     }
 }

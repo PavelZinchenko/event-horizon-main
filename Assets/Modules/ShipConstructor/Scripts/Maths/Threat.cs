@@ -10,10 +10,9 @@ namespace Maths
 		public static float GetShipPower(IShip ship)
 		{
 			var size = ship.Model.Layout.CellCount;
-		    if (ship.FirstSatellite != null)
-		        size += ship.FirstSatellite.Information.Layout.CellCount;
-            if (ship.SecondSatellite != null)
-                size += ship.SecondSatellite.Information.Layout.CellCount;
+			foreach (var satellite in ship.Satellites)
+				if (satellite != null)
+					size += satellite.BaseModel.Layout.CellCount;
 			
 			return ship.Experience.PowerMultiplier * size * (1f + 0.5f*(int)ship.ExtraThreatLevel);
 		}

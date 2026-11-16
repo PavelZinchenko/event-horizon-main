@@ -26,6 +26,7 @@ namespace Constructor.Ships.Modification
 
         public int Seed { get; }
 		public bool ChangesBarrels => false;
+		public bool ChangesSatellites => false;
 
 		private readonly StatMultiplier _value;
     }

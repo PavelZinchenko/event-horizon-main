@@ -16,13 +16,13 @@ namespace StarSystem
         public void CreateShips(IEnumerable<IShip> ships, System.Random random, IList<Planet> planets)
 		{
 			foreach (var ship in ships)
-				CreateShip(ship.Model.OriginalShip, planets[random.Next(planets.Count)].transform.localPosition);
+				CreateShip(ship.Model.BaseModel, planets[random.Next(planets.Count)].transform.localPosition);
 		}
 
 		public void CreateShips(IEnumerable<IShip> ships, Vector2 position)
 		{
 			foreach (var ship in ships.Where(item => item.Model.ShipType != ShipType.Starbase))
-				CreateShip(ship.Model.OriginalShip, position);
+				CreateShip(ship.Model.BaseModel, position);
 		}
 		
 		public Ship CreateShip(GameDatabase.DataModel.Ship data, Vector2 position)

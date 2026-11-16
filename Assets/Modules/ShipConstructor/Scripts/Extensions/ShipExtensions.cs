@@ -13,10 +13,23 @@ namespace Constructor.Extensions
 {
     public static class ShipExtensions
     {
-        public static bool IsSuitableSatelliteSize(this IShip ship, Satellite satellite, ShipSettings settings)
+        public static bool IsSuitableSatelliteSize(this IShip ship, Satellite satellite, int mountPoint, ShipSettings settings)
         {
 			if (ship.Model.ShipType == ShipType.Starbase) return false;
-			return satellite.IsSuitable(ship.Model.MaxSatelliteSize, ship.Model.MaxSatelliteModelSize, settings);
+            var mountPoints = ship.Model.Satellites;
+            if (mountPoint < 0 || mountPoint >= mountPoints.Count) return false;
+            return satellite.IsSuitable(mountPoints[mountPoint], ship.Model.MaxSatelliteModelSize, settings);
+        }
+
+        /// <summary>True when the satellite fits at least one mount point.</summary>
+        public static bool IsSuitableSatelliteSize(this IShip ship, Satellite satellite, ShipSettings settings)
+        {
+            var mountPoints = ship.Model.Satellites;
+            for (int i = 0; i < mountPoints.Count; ++i)
+                if (ship.IsSuitableSatelliteSize(satellite, i, settings))
+                    return true;
+
+            return false;
         }
 
         public static int Price(this IShip ship)
@@ -39,12 +52,13 @@ namespace Constructor.Extensions
 
         public static IShip CreateCopy(this IShip ship)
         {
-            return new CommonShip(ship.Model, ship.Components)
+            var copy = new CommonShip(ship.Model, ship.Components)
             {
-                FirstSatellite = ship.FirstSatellite.CreateCopy(),
-                SecondSatellite = ship.SecondSatellite.CreateCopy(),
                 Name = ship.Name
             };
+
+            copy.Satellites.CopyFrom(ship.Satellites);
+            return copy;
         }
 
         public static void SetLevel(this IShip ship, int level)
@@ -112,14 +126,16 @@ namespace Constructor.Extensions
 
             var companionClass = Maths.Distance.CompanionClass(distance);
 
-            var companions = database.SatelliteBuildList.LimitClass(companionClass).SuitableFor(ship, database.ShipSettings);
+            var builds = database.SatelliteBuildList.LimitClass(companionClass);
 
-            if (companions.Any())
+            for (int i = 0; i < ship.Model.Satellites.Count; ++i)
             {
-                if (ship.FirstSatellite == null && random.Next(3) != 0)
-                    ship.FirstSatellite = new CommonSatellite(companions.RandomElement(random));
-                if (ship.SecondSatellite == null && random.Next(3) != 0)
-                    ship.SecondSatellite = new CommonSatellite(companions.RandomElement(random));
+                var companions = builds.SuitableFor(ship, i, database.ShipSettings);
+                if (!companions.Any())
+                    continue;
+
+                if (ship.Satellites[i] == null && random.Next(3) != 0)
+                    ship.Satellites[i] = new CommonSatellite(companions.RandomElement(random));
             }
 
             return ship;

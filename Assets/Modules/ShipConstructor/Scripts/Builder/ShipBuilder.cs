@@ -67,7 +67,7 @@ namespace Constructor
 			var size = Size;
 		    var data = new ShipBuilderResult();
 
-		    var stats = new ShipStatsCalculator(_ship.OriginalShip, settings);
+		    var stats = new ShipStatsCalculator(_ship.BaseModel, settings);
 		    stats.Bonuses = Bonuses;
 		    stats.ShipColor = ShipColor;
 		    stats.TurretColor = TurretColor;
@@ -174,7 +174,7 @@ namespace Constructor
 			{
 				var size = 0;
 				foreach (var item in _satellites)
-					size += item.Key.Information.Layout.CellCount;
+					size += item.Key.BaseModel.Layout.CellCount;
 
 				return _ship.Layout.CellCount + size/2;
 			}
@@ -191,16 +191,16 @@ namespace Constructor
 
             foreach (var item in _satellites)
 			{
-				var barrels = item.Key.Information.Barrels;
+				var barrels = item.Key.BaseModel.Barrels;
 				var count = barrels.Count();
 
                 if (count > 1)
                     throw new ArgumentException("companions should have one barrel");
 
                 if (count == 0)
-                    yield return new WeaponPlatform(Barrel.Empty) { Companion = new CompanionSpec(item.Key.Information, item.Value, settings) };
+                    yield return new WeaponPlatform(Barrel.Empty) { Companion = new CompanionSpec(item.Key.BaseModel, item.Value, settings) };
                 else
-                    yield return new WeaponPlatform(barrels.First()) { Companion = new CompanionSpec(item.Key.Information, item.Value, settings), BarrelId = id++ };
+                    yield return new WeaponPlatform(barrels.First()) { Companion = new CompanionSpec(item.Key.BaseModel, item.Value, settings), BarrelId = id++ };
             }
 		}
 
@@ -219,7 +219,7 @@ namespace Constructor
 					foreach (var component in item.Key.Components)
                         yield return _converter.Process(component, barrel);
 
-                    barrel += item.Key.Information.Barrels.Count;
+                    barrel += item.Key.BaseModel.Barrels.Count;
 				}
 			}
 		}

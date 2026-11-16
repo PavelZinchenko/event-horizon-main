@@ -14,7 +14,8 @@ namespace Constructor.Satellites
         }
 
 		public string Name => _build.Satellite.Name + " #" + _build.Id.Value;
-        public Satellite Information => _build.Satellite;
+        public Satellite BaseModel => _build.Satellite;
+        [System.Obsolete("Use BaseModel")] public Satellite Information => BaseModel;
 
 		public IItemCollection<IntegratedComponent> Components
 		{

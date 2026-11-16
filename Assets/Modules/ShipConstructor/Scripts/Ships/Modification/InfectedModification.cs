@@ -33,6 +33,7 @@ namespace Constructor.Ships.Modification
 
         public int Seed { get; }
 		public bool ChangesBarrels => false;
+		public bool ChangesSatellites => false;
 
 		private readonly float _armorMultiplier;
         private readonly float _repairRate;

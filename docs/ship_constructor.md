@@ -88,14 +88,15 @@ The ShipConstructor module is the ship model of the game. It describes a ship as
 ```text
 IShip  (CommonShip / EnemyShip / ArenaShip / EditorModeShip)
  ├─ Model: IShipModel (ShipModel)
- │    ├─ OriginalShip: Ship (database hull)
+ │    ├─ BaseModel: Ship (database hull)
+ │    ├─ Satellites: SatelliteMountPoint ×n (from Stats; perks may change them)
  │    ├─ Modifications: IShipModification ×0..3   (perk slots)
  │    ├─ LayoutModifications ── BuildLayout() ──► IShipLayout
  │    └─ Stats: ShipBaseStats  (rebuilt on every perk or layout change)
  ├─ Components: IntegratedComponent ×n
  │    └─ Info: ComponentInfo (Component + ComponentMod + quality + level)
- ├─ FirstSatellite / SecondSatellite: ISatellite
- │    └─ Information: Satellite, Components: IntegratedComponent ×n
+ ├─ Satellites: ISatelliteCollection  (index = mount point; empty slots are null)
+ │    └─ ISatellite: BaseModel: Satellite, Components: IntegratedComponent ×n
  ├─ ColorScheme, Experience, Name, CustomAi, ExtraThreatLevel
  └─ CreateBuilder() ──► ShipBuilder ── Build(ShipSettings) ──► IShipSpecification
                                                                 ├─ Stats: IShipStats (ShipStatsCalculator)
@@ -117,9 +118,10 @@ IShip  (CommonShip / EnemyShip / ArenaShip / EditorModeShip)
 
 `BaseShip` ([BaseShip.cs](../Assets/Modules/ShipConstructor/Scripts/Ships/BaseShip.cs)) supplies the shared parts:
 
-- `FirstSatellite`, `SecondSatellite`, and `Experience` setters set `DataChanged`.
+- `Satellites` is a `SatelliteCollection`. Index *i* holds the satellite on mount point *i* of `Model.Satellites`. Setting a different satellite sets `DataChanged`, and so does the `Experience` setter.
+- `FirstSatellite` and `SecondSatellite` are obsolete aliases for `Satellites[0]` and `Satellites[1]`. They stay until satellite mount points phase 9, because Main's shared ShipEditor and the session code still use them.
 - `DataChanged` is true when the ship, a satellite, the model, or the colour scheme changed. Setting it to `false` clears all of them.
-- `CreateBuilder` ([line 63](../Assets/Modules/ShipConstructor/Scripts/Ships/BaseShip.cs#L63)) creates a `ShipBuilder`, multiplies armor, shield, damage, and ramming bonuses by `Experience.PowerMultiplier`, and adds both satellites.
+- `CreateBuilder` creates a `ShipBuilder` and multiplies armor, shield, damage, and ramming bonuses by `Experience.PowerMultiplier`. It adds the satellites on mount points 0 and 1 only: index 0 is `CompanionLocation.Left`, index 1 is `Right`. The legacy simulator has no other slots, so satellites on later mount points are not part of the ship stats.
 - `Name` returns the hull name. Its setter throws `InvalidOperationException`; `CommonShip` overrides it.
 
 ## Ship model and base stats
@@ -134,9 +136,9 @@ IShip  (CommonShip / EnemyShip / ArenaShip / EditorModeShip)
 Both constructors subscribe `OnModificationsChanged` to the perk list and to the hull expansion. `OnModificationsChanged` ([line 97](../Assets/Modules/ShipConstructor/Scripts/Ships/ShipModel.cs#L97)) rebuilds `ShipBaseStats`:
 
 1. It copies the hull feature bonuses into `StatMultiplier` fields: ship weight, equipment weight, velocity, turn rate, shield, armor, energy, drone attack, drone defense, drone build speed.
-2. It sets `MaxSatelliteSize` to the hull size class and `MaxSatelliteModelSize` to the hull model scale.
-3. It sets `Layout` from `LayoutModifications.BuildLayout()`, `BuiltinDevices` from the hull features, and `Barrels` from the hull.
-4. For each perk, it calls `Apply(ref stats)`. Before the first perk with `ChangesBarrels`, it clones the barrel list, so perks never change the database records.
+2. It sets `MaxSatelliteModelSize` to the hull model scale (Main only; the model-scale fit check reads it).
+3. It sets `Layout` from `LayoutModifications.BuildLayout()`, `BuiltinDevices` from the hull features, `Barrels` from the hull, and `Satellites` from the hull mount points.
+4. For each perk, it calls `Apply(ref stats)`. Before the first perk with `ChangesBarrels`, it clones the barrel list. Before the first perk with `ChangesSatellites`, it clones the mount points (`SatelliteMountPoint.Clone`). Perks therefore never change the database records.
 5. It sets `DataChanged`.
 
 `IsBionic` is `Ship.Features.Regeneration`. Bionic hulls cannot take repair bots, and components can be restricted to bionic or mechanical hulls.
@@ -320,9 +322,18 @@ Values come from [ShipModSettings](database/schema/ShipModSettings.md). `Modific
 | `CommonSatellite` | Session load, `CommonShip(ShipBuild)`, enemy fleets, ShipEditor, `CreateCopy` | `ObservableCollection`; a change sets `DataChanged`. From a `SatelliteBuild`, every component is locked. |
 | `EditorModeSatellite` | `EditorModeShip` | Lazy list with `Locked` cleared. Every change writes the `SatelliteBuild` JSON. `DataChanged` is always false. |
 
-`Satellite.IsSuitable(shipClass, shipModelScale)` ([SatelliteExtensions.cs:18](../Assets/Modules/ShipConstructor/Scripts/Satellites/SatelliteExtensions.cs#L18)): when the satellite has a size class, the ship class must be at least that class. Otherwise the ship model scale must be at least twice the satellite model scale. `IShip.IsSuitableSatelliteSize` adds that starbases accept no satellite and uses the model's `MaxSatelliteSize` and `MaxSatelliteModelSize`, which the `SatelliteSize` perk raises.
+Main's fit rule is `IShip.IsSuitableSatelliteSize(satellite, mountPoint, settings)` ([ShipExtensions.cs](../Assets/Modules/ShipConstructor/Scripts/Extensions/ShipExtensions.cs)). It calls `Satellite.IsSuitable(mountPoint, shipModelScale, settings)` ([SatelliteExtensions.cs](../Assets/Modules/ShipConstructor/Scripts/Satellites/SatelliteExtensions.cs)):
 
-`SuitableFor(Ship)` and `LimitClass(DifficultyClass)` filter satellite builds for enemy ships. They use the database hull, so the `SatelliteSize` perk of a build does not widen the choice.
+1. A starbase accepts no satellite. A mount point index outside `Model.Satellites` accepts none.
+2. The satellite size class must be in the mount point range `MinSizeClass`..`MaxSizeClass`. A satellite with `SizeClass = Undefined` (deprecated) passes only where `MinSizeClass` is `Undefined`. The 1.8 migration gives every default mount point that minimum.
+3. The model scale fits when `Model.MaxSatelliteModelSize` is at least `satellite.ModelScale × ShipSettings.SatelliteModelScaleMultiplier`.
+4. An `Undefined` satellite needs the model scale to fit. A satellite with a size class needs it only while `SatelliteRequireModelScaleWithSizeClass` is set.
+
+`IsSuitableSatelliteSize(satellite, settings)` without an index is true when the satellite fits at least one mount point. Frontier's rule has the range check only.
+
+The `SatelliteSize` perk ([SatelliteSizeMod.cs](../Assets/Modules/ShipConstructor/Scripts/Ships/Modification/SatelliteSizeMod.cs)) raises `MaxSizeClass` on up to two mount points that are below `Titan`: up to `Cruiser`, or one class higher from `Destroyer`. It also adds 0.4 to `MaxSatelliteModelSize`. A hull qualifies when it has a mount point below `Titan` that the perk has not changed.
+
+`SuitableFor(ship, mountPoint, settings)` and `LimitClass(DifficultyClass)` filter satellite builds for enemy ships. `SuitableFor(ship, settings)` keeps builds that fit any mount point. `ShipExtensions.Create` fills each empty mount point with probability 2/3. For two equal mount points, it makes the same random draws as the old left and right slots.
 
 `SatelliteExtensions.CreateCopy` creates a `CommonSatellite` with the same `IntegratedComponent` objects, not copies.
 

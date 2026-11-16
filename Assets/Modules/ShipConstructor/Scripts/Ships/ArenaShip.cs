@@ -11,8 +11,7 @@ namespace Constructor.Ships
             _name = ship.Name;
             _powerMultiplier = powerMultiplier;
             _components.Assign(ship.Components);
-            FirstSatellite = ship.FirstSatellite.CreateCopy();
-            SecondSatellite = ship.SecondSatellite.CreateCopy();
+            Satellites.CopyFrom(ship.Satellites);
         }
 
         public override string Name

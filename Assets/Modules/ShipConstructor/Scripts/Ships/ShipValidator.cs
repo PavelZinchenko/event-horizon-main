@@ -16,12 +16,8 @@ namespace Constructor.Ships
             if (ship.Components.Any(item => item.Info.Data.Availability == Availability.None))
                 return false;
 
-            if (ship.FirstSatellite != null)
-                if (ship.FirstSatellite.Components.Any(item => item.Info.Data.Availability == Availability.None))
-                    return false;
-
-            if (ship.SecondSatellite != null)
-                if (ship.SecondSatellite.Components.Any(item => item.Info.Data.Availability == Availability.None))
+            foreach (var satellite in ship.Satellites)
+                if (satellite != null && satellite.Components.Any(item => item.Info.Data.Availability == Availability.None))
                     return false;
 
             return true;
@@ -73,11 +69,8 @@ namespace Constructor.Ships
                 return false;
             if (ship.Components.Any(item => IsForbiddenOnArena(ship, item)))
                 return false;
-            if (ship.FirstSatellite != null)
-                if (ship.FirstSatellite.Components.Any(item => IsForbiddenOnArena(ship, item)))
-                    return false;
-            if (ship.SecondSatellite != null)
-                if (ship.SecondSatellite.Components.Any(item => IsForbiddenOnArena(ship, item)))
+            foreach (var satellite in ship.Satellites)
+                if (satellite != null && satellite.Components.Any(item => IsForbiddenOnArena(ship, item)))
                     return false;
             
             return IsShipViable(ship, settings);

@@ -8,22 +8,29 @@ namespace Constructor.Satellites
 {
     public class CommonSatellite : ISatellite
     {
+        public static CommonSatellite Create(SatelliteBuild build)
+        {
+            if (build == null) return null;
+            return new CommonSatellite(build);
+        }
+
         public CommonSatellite(Satellite satellite, IEnumerable<IntegratedComponent> components)
         {
-            Information = satellite;
+            BaseModel = satellite;
             _components.Assign(components);
             _components.DataChangedEvent += OnDataChanged;
         }
 
         public CommonSatellite(SatelliteBuild build)
         {
-            Information = build.Satellite;
+            BaseModel = build.Satellite;
             _components.Assign(build.Components.Select<InstalledComponent,IntegratedComponent>(ComponentExtensions.FromDatabase));
             _components.DataChangedEvent += OnDataChanged;
         }
 
-		public string Name => Information.Name;
-        public Satellite Information { get; }
+		public string Name => BaseModel.Name;
+        public Satellite BaseModel { get; }
+        [System.Obsolete("Use BaseModel")] public Satellite Information => BaseModel;
 
         public IItemCollection<IntegratedComponent> Components { get { return _components; } }
 

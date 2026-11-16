@@ -69,7 +69,7 @@ namespace Constructor.Ships
         public float ModelScale => _ship.ModelScale;
         public float IconScale => _ship.IconScale;
         public bool IsBionic => _ship.Features.Regeneration;// || _stats.RegenerationRate > 0;
-        public SizeClass MaxSatelliteSize => _stats.MaxSatelliteSize;
+        public ImmutableCollection<SatelliteMountPoint> Satellites => _stats.Satellites;
         public float MaxSatelliteModelSize => _stats.MaxSatelliteModelSize;
         public IEnumerable<Device> BuiltinDevices => _stats.BuiltinDevices;
 
@@ -88,7 +88,8 @@ namespace Constructor.Ships
             }
         }
 
-        public Ship OriginalShip => _ship;
+        public Ship BaseModel => _ship;
+        [System.Obsolete("Use BaseModel")] public Ship OriginalShip => _ship;
 
         public ShipBaseStats Stats => _stats;
         public LayoutModifications LayoutModifications => _layoutModifications;
@@ -108,14 +109,15 @@ namespace Constructor.Ships
                 DroneAttackMultiplier = new StatMultiplier(_ship.Features.DroneAttackBonus),
                 DroneDefenseMultiplier = new StatMultiplier(_ship.Features.DroneDefenseBonus),
                 DroneBuildSpeedMultiplier = new StatMultiplier(_ship.Features.DroneBuildSpeedBonus),
-                MaxSatelliteSize = _ship.SizeClass,
                 MaxSatelliteModelSize = _ship.ModelScale,
                 Layout = _layoutModifications.BuildLayout(),
 				BuiltinDevices = _ship.Features.BuiltinDevices,
 				Barrels = _ship.Barrels,
+                Satellites = _ship.Satellites,
             };
 
 			bool barrelsCopied = false;
+            bool satellitesCopied = false;
 			foreach (var modification in _modifications)
 			{
 				if (modification.ChangesBarrels && !barrelsCopied)
@@ -123,6 +125,13 @@ namespace Constructor.Ships
 					_stats.Barrels = new ImmutableCollection<Barrel>(_ship.Barrels.Select(Barrel.Clone));
 					barrelsCopied = true;
 				}
+
+                if (modification.ChangesSatellites && !satellitesCopied)
+                {
+                    _stats.Satellites = new ImmutableCollection<SatelliteMountPoint>(
+                        _ship.Satellites.Select(SatelliteMountPoint.Clone));
+                    satellitesCopied = true;
+                }
 
 				modification.Apply(ref _stats);
 			}

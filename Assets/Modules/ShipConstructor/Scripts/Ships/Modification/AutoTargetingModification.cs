@@ -30,6 +30,7 @@ namespace Constructor.Ships.Modification
 		}
 
 		public bool ChangesBarrels => true;
+		public bool ChangesSatellites => false;
 		public int Seed => 0;
 		private const float _autoAiming = 20f;
     }

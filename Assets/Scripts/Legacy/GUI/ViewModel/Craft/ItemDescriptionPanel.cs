@@ -66,10 +66,10 @@ namespace ViewModel.Craft
             _name.text = _localization.GetString(ship.Name);
             _name.color = Gui.Theme.UiTheme.Current.GetQualityColor(ship.Model.Quality());
 
-            if (!string.IsNullOrEmpty(ship.Model.OriginalShip.Description))
+            if (!string.IsNullOrEmpty(ship.Model.BaseModel.Description))
             {
                 _description.gameObject.SetActive(true);
-                _description.text = _localization.Localize(ship.Model.OriginalShip.Description);
+                _description.text = _localization.Localize(ship.Model.BaseModel.Description);
             }
             else
                 _description.gameObject.SetActive(false);
@@ -173,7 +173,7 @@ namespace ViewModel.Craft
             yield return new KeyValuePair<string, string>("$CellCount", size.ToString());
             yield return new KeyValuePair<string, string>("$EngineSize", CalculateEngineSize(ship.Model.Layout).ToString());
 
-            var data = ship.Model.OriginalShip;
+            var data = ship.Model.BaseModel;
             var kineticResistance = CalculateResistance(data.Features.KineticResistance);
             var heatResistance = CalculateResistance(data.Features.HeatResistance);
             var energyResistance = CalculateResistance(data.Features.EnergyResistance);

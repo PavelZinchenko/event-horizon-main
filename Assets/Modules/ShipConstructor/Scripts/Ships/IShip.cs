@@ -3,6 +3,7 @@ using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Model;
 using CommonComponents.Utils;
+using System.Collections.Generic;
 
 namespace Constructor.Ships
 {
@@ -15,7 +16,11 @@ namespace Constructor.Ships
         IShipModel Model { get; }
 
         IItemCollection<IntegratedComponent> Components { get; }
+        ISatelliteCollection Satellites { get; }
+
+        [System.Obsolete("Use Satellites[0]. Remove after satellite mount points phase 9.")]
         ISatellite FirstSatellite { get; set; }
+        [System.Obsolete("Use Satellites[1]. Remove after satellite mount points phase 9.")]
         ISatellite SecondSatellite { get; set; }
 
 		DifficultyClass ExtraThreatLevel { get; }
@@ -26,5 +31,32 @@ namespace Constructor.Ships
         ShipBuilder CreateBuilder();
 
         bool DataChanged { get; set; }
+    }
+
+    public interface ISatelliteCollection : IEnumerable<ISatellite>
+    {
+        int UsedMountPoints { get; }
+        ISatellite this[int index] { get; set; }
+    }
+
+    public static class SatelliteCollectionExtensions 
+    {
+        public static void Assign(this ISatelliteCollection collection, IEnumerable<ISatellite> satellites)
+        {
+            int index = 0;
+            foreach (var satellite in satellites)
+                collection[index++] = satellite;
+            for (int i = index; i < collection.UsedMountPoints; ++i)
+                collection[i] = null;
+        }
+
+        public static void CopyFrom(this ISatelliteCollection collection, IEnumerable<ISatellite> satellites)
+        {
+            int index = 0;
+            foreach (var satellite in satellites)
+                collection[index++] = satellite.CreateCopy();
+            for (int i = index; i < collection.UsedMountPoints; ++i)
+                collection[i] = null;
+        }
     }
 }

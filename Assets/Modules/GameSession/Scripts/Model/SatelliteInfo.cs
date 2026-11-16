@@ -19,7 +19,7 @@ namespace Session.Model
 			}
 			else
 			{
-				_id = satellite.Information.Id.Value;
+				_id = satellite.BaseModel.Id.Value;
 				_components = new ObservableList<ShipComponentInfo>(satellite.Components.Select(item => new ShipComponentInfo(item)), callback);
 			}
 		}

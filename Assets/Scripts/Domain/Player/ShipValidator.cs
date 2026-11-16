@@ -46,7 +46,7 @@ namespace Domain.Shipyard
         private static void ReturnSatelliteToStorage(Constructor.Satellites.ISatellite satellite, IShipPartsStorage storage)
         {
             if (storage == null || satellite == null) return;
-            storage.AddSatellite(satellite.Information);
+            storage.AddSatellite(satellite.BaseModel);
             foreach (var item in satellite.Components)
                 storage.AddComponent(item.Info);
         }
@@ -54,14 +54,14 @@ namespace Domain.Shipyard
         private static bool IsSatelliteInvalid(IShip ship, Constructor.Satellites.ISatellite satellite, ComponentTracker componentTracker, ShipSettings settings)
         {
             if (satellite == null) return false;
-            if (!ship.IsSuitableSatelliteSize(satellite.Information, settings))
+            if (!ship.IsSuitableSatelliteSize(satellite.BaseModel, settings))
             {
-                GameDiagnostics.Trace.LogError($"Incompatible satellite found: {satellite.Information.Name}");
+                GameDiagnostics.Trace.LogError($"Incompatible satellite found: {satellite.BaseModel.Name}");
                 return true;
             }
 
-            var layout = new ShipLayoutModel(ShipElementType.SatelliteL, new ShipLayoutAdapter(satellite.Information.Layout),
-                satellite.Information.Barrels, componentTracker);
+            var layout = new ShipLayoutModel(ShipElementType.SatelliteL, new ShipLayoutAdapter(satellite.BaseModel.Layout),
+                satellite.BaseModel.Barrels, componentTracker);
 
             return HasInvalidComponents(layout, satellite.Components, componentTracker);
         }
@@ -70,14 +70,14 @@ namespace Domain.Shipyard
             ComponentTracker componentTracker, ShipSettings settings, IShipPartsStorage storage)
         {
             if (satellite == null) return null;
-            if (!ship.IsSuitableSatelliteSize(satellite.Information, settings))
+            if (!ship.IsSuitableSatelliteSize(satellite.BaseModel, settings))
             {
                 ReturnSatelliteToStorage(satellite, storage);
                 return null;
             }
 
-            var layout = new ShipLayoutModel(ShipElementType.SatelliteL, new ShipLayoutAdapter(satellite.Information.Layout),
-                satellite.Information.Barrels, componentTracker);
+            var layout = new ShipLayoutModel(ShipElementType.SatelliteL, new ShipLayoutAdapter(satellite.BaseModel.Layout),
+                satellite.BaseModel.Barrels, componentTracker);
 
             RemoveInvalidComponents(layout, satellite.Components, componentTracker, storage);
             ValidateComponentsConfiguration(satellite.Components, storage);

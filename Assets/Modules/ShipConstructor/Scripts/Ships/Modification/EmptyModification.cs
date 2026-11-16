@@ -10,5 +10,6 @@ namespace Constructor.Ships.Modification
         public void Apply(ref ShipBaseStats stats) {}
         public int Seed => 0;
 		public bool ChangesBarrels => false;
+		public bool ChangesSatellites => false;
 	}
 }

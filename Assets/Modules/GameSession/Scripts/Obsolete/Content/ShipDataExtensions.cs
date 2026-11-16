@@ -70,7 +70,7 @@ namespace Session.ContentObsolete
 
             var info = new SatelliteData
             {
-                Id = satellite.Information.Id.Value,
+                Id = satellite.BaseModel.Id.Value,
                 Components = satellite.Components.ToShipComponentsData()
             };
 

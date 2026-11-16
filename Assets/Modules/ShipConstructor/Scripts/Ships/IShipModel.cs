@@ -18,17 +18,20 @@ namespace Constructor.Ships
         Faction Faction { get; }
         IShipLayout Layout { get; }
         ImmutableCollection<Barrel> Barrels { get; }
+        ImmutableCollection<SatelliteMountPoint> Satellites { get; }
         SpriteId ModelImage { get; }
         SpriteId IconImage { get; }
         float ModelScale { get; }
         float IconScale { get; }
         bool IsBionic { get; }
-        public SizeClass MaxSatelliteSize { get; }
-        public float MaxSatelliteModelSize { get; }
+        float MaxSatelliteModelSize { get; }
 
         ShipBaseStats Stats { get; }
 
         // TODO: remove
+        Ship BaseModel { get; }
+
+        [System.Obsolete("Use BaseModel. Remove after satellite mount points phase 9.")]
         Ship OriginalShip { get; }
 
         IItemCollection<IShipModification> Modifications { get; }
