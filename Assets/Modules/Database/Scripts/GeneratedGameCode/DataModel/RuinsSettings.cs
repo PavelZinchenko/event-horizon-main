@@ -26,14 +26,12 @@ namespace GameDatabase.DataModel
 		private RuinsSettings(RuinsSettingsSerializable serializable, Database.Loader loader)
 		{
 			var variableResolver = new VariableResolver(this);
-			ExcludedSatellites = new ImmutableCollection<Satellite>(serializable.ExcludedSatellites?.Select(item => loader.GetSatellite(new ItemId<Satellite>(item), true)));
 			_maxSatelliteCells = new Expressions.IntToInt(serializable.MaxSatelliteCells, 0, 1000, variableResolver) { ParamName1 = "level" };
 			MaxSatelliteCells = _maxSatelliteCells.Evaluate;
 
 			OnDataDeserialized(serializable, loader);
 		}
 
-		public ImmutableCollection<Satellite> ExcludedSatellites { get; private set; }
 		private readonly Expressions.IntToInt _maxSatelliteCells;
 		public delegate int MaxSatelliteCellsDelegate(int level);
 		public MaxSatelliteCellsDelegate MaxSatelliteCells { get; private set; }

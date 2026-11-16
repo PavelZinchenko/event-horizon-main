@@ -15,7 +15,6 @@ namespace GameDatabase.Serializable
 	[Serializable]
 	public class RuinsSettingsSerializable : SerializableItem
 	{
-		public int[] ExcludedSatellites;
 		public string MaxSatelliteCells = "MAX(6, FLOOR(level/2))";
 	}
 }

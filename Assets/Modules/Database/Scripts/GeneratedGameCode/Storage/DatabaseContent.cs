@@ -384,19 +384,6 @@ namespace GameDatabase.Storage
                 if (!_allowDuplicates)
                     throw new DatabaseException("Duplicate Weapon ID - " + item.Id + " (" + name + ")");
             }
-            else if (type == ItemType.BlackMarketSettings)
-            {
-                if (BlackMarketSettings == null)
-                {
-                    var data = _serializer.FromJson<BlackMarketSettingsSerializable>(content);
-                    data.FileName = name;
-                    BlackMarketSettings = data;
-                    return;
-                }
-
-				if (!_allowDuplicates)
-                    throw new DatabaseException("Duplicate BlackMarketSettings file found - " + name);
-            }
             else if (type == ItemType.CombatSettings)
             {
                 if (CombatSettings == null)
@@ -613,7 +600,6 @@ namespace GameDatabase.Storage
             _audioClips.Add(name, audioClip);
         }
 
-		public BlackMarketSettingsSerializable BlackMarketSettings { get; private set; }
 		public CombatSettingsSerializable CombatSettings { get; private set; }
 		public DatabaseSettingsSerializable DatabaseSettings { get; private set; }
 		public DebugSettingsSerializable DebugSettings { get; private set; }

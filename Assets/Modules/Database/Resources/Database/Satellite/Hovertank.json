@@ -5,6 +5,8 @@
   "ModelImage": "hovertank",
   "ModelScale": 1.3,
   "SizeClass": 4,
+  "NotAvailableInBlackMarket": true,
+  "NotAvailableInRuin": true,
   "Layout": "0004000114441111444115544455552225555222550022200",
   "Barrels": [
     {

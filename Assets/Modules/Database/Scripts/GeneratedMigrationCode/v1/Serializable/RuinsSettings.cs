@@ -21,7 +21,6 @@ namespace DatabaseMigration.v1.Serializable
 			FileName = "RuinsSettings.json";
 		}
 
-		public int[] ExcludedSatellites;
 		public string MaxSatelliteCells = "MAX(6, FLOOR(level/2))";
 	}
 }

@@ -5,5 +5,7 @@
   "ModelImage": "powerbank",
   "ModelScale": 1.5,
   "SizeClass": 4,
+  "NotAvailableInBlackMarket": true,
+  "NotAvailableInRuin": true,
   "Layout": "0022200022222001222100222220012221002222200022200"
 }

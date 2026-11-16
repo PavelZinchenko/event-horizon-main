@@ -202,12 +202,6 @@ namespace DatabaseMigration.v1.Storage
                 data.FileName = name;
                 WeaponList.Add(data);
             }
-            else if (type == ItemType.BlackMarketSettings)
-            {
-                var data = _serializer.FromJson<BlackMarketSettingsSerializable>(content);
-                data.FileName = name;
-                BlackMarketSettings = data;
-            }
             else if (type == ItemType.CombatSettings)
             {
                 var data = _serializer.FromJson<CombatSettingsSerializable>(content);
@@ -360,8 +354,6 @@ namespace DatabaseMigration.v1.Storage
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
             foreach (var item in WeaponList)
                 contentLoader.LoadJson(item.FileName, _serializer.ToJson(item));
-            if (BlackMarketSettings != null)
-                contentLoader.LoadJson(BlackMarketSettings.FileName, _serializer.ToJson(BlackMarketSettings));
             if (CombatSettings != null)
                 contentLoader.LoadJson(CombatSettings.FileName, _serializer.ToJson(CombatSettings));
             if (DatabaseSettings != null)
@@ -415,7 +407,6 @@ namespace DatabaseMigration.v1.Storage
             _audioClips.Add(name, audioClip);
         }
 
-		public BlackMarketSettingsSerializable BlackMarketSettings { get; private set; }
 		public CombatSettingsSerializable CombatSettings { get; private set; }
 		public DatabaseSettingsSerializable DatabaseSettings { get; private set; }
 		public DebugSettingsSerializable DebugSettings { get; private set; }
@@ -432,7 +423,6 @@ namespace DatabaseMigration.v1.Storage
 		public UiSettingsSerializable UiSettings { get; private set; }
 		public WeaponSlotsSerializable WeaponSlots { get; private set; }
 
-		public BlackMarketSettingsSerializable CreateBlackMarketSettings() => BlackMarketSettings ?? (BlackMarketSettings = new BlackMarketSettingsSerializable());
 		public CombatSettingsSerializable CreateCombatSettings() => CombatSettings ?? (CombatSettings = new CombatSettingsSerializable());
 		public DatabaseSettingsSerializable CreateDatabaseSettings() => DatabaseSettings ?? (DatabaseSettings = new DatabaseSettingsSerializable());
 		public DebugSettingsSerializable CreateDebugSettings() => DebugSettings ?? (DebugSettings = new DebugSettingsSerializable());
