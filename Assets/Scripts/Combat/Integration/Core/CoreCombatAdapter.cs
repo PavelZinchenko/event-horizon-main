@@ -607,6 +607,9 @@ namespace Combat.Integration.Core
                     case BattleEventKind.AuxiliaryRemoval:
                         _renderer.RemoveAuxiliary(item.EntityId, item.Point, item.RemovalReason);
                         break;
+                    case BattleEventKind.SatelliteChange:
+                        _renderer.ChangeSatellite(item);
+                        break;
                 }
 
                 _renderer.OnEvent(snapshot, item);

@@ -296,6 +296,17 @@ namespace CombatView
             }
         }
 
+        // Satellite plan, phase 6: the core's SatelliteChange. Frontier DestructibleSatellite runs its OnDestroy trigger,
+        // DroneExplosionActionObsolete, at a death; a respawn has no effect. Capture hides and shows the satellite.
+        public void ChangeSatellite(in BattleEvent item)
+        {
+            if (item.RemovalReason != RemovalReason.Death || !_ships.TryGetValue(item.EntityId, out var view) ||
+                item.DeviceIndex < 0 || item.DeviceIndex >= view.Satellites.Count)
+                return;
+            var satellite = view.Satellites[item.DeviceIndex];
+            AddDroneExplosion(new Vector2(item.Point.X, item.Point.Y), satellite.Scale, view.Velocity);
+        }
+
         // Phase 5b, step 4: the core's Damage event (owner, 2026-11-09) adds to the ship's damage text.
         public void AddDamage(in BattleEvent item)
         {
@@ -530,7 +541,13 @@ namespace CombatView
                     : ship.Side == ViewerSide ? OwnStealthAlpha : EnemyStealthAlpha;
                 var satellites = snapshot.GetSatellites(ship);
                 for (var i = 0; i < view.Satellites.Count && i < satellites.Length; ++i)
-                    view.Satellites[i].Push(satellites[i].Position, satellites[i].Angle);
+                {
+                    // Frontier DestructibleSatellite hides a destroyed satellite until it respawns; a turret on it too.
+                    var satellite = view.Satellites[i];
+                    satellite.Push(satellites[i].Position, satellites[i].Angle);
+                    if (satellite.Root.activeSelf != satellites[i].IsActive)
+                        satellite.Root.SetActive(satellites[i].IsActive);
+                }
                 var barrels = snapshot.GetBarrels(ship);
                 foreach (var turret in view.Turrets)
                 {

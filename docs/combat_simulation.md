@@ -1164,9 +1164,31 @@ A `BarrelDefinition` names its carrier: `Hull` or a satellite index. Its positio
    check.
 7. **View.** `BattleRenderer` draws each satellite at its interpolated pose in the ship's colour, and a turret on it relative
    to the satellite. A ship's death fades its satellites; a retreat or vanish removes them.
-8. **Frontier readiness.** A barrel on an inactive satellite is not ready (`Satellite.ActiveTick`; built-in satellites are
-   always active). A satellite shape touches drones and hostile ships, takes no hits, and follows the ship's `NoContacts` status.
-   Custom mount points, `Steadiness`, hit points and respawn wait for a later task with their schema fields.
+8. **Destructible satellites** (satellite plan, phase 6; Frontier `DestructibleSatellite`). `SatelliteDefinition` adds
+   `HitPoints` and `RespawnTime`; `VelocityFactor` takes Frontier `Steadiness`. A satellite with a shape and at least 1 hit
+   point is destructible; any other satellite has no shapes and takes no contacts. The rules:
+   1. **Entity.** A destructible satellite is a contact target of its own (`EntityKind.Satellite`, `SatelliteStore`). Its ID
+      derives from the ship ID and the satellite index, so both devices know it without a spawn record. It never enters the
+      ship store, target searches, roster results or kill counts.
+   2. **Contacts.** Projectiles, beams, beam bolts, areas and gravity waves hit it, and a hostile ship rams it. It takes the
+      total damage without resistance and the push of a projectile or a gravity wave. It deals no ramming damage. Nothing
+      sticks to it. Point defense ignores it. A touch with it ends contact stealth as a touch with a repair bot does.
+   3. **Death.** Stage 10 applies the damage; strictly below 0 hit points the satellite dies at stage 12. Its shapes ignore
+      everything, its barrels are not ready (`ActiveTick`), and its body keeps following the slot. Hit points become 0.
+   4. **Respawn.** At stage 2 of death tick + 1 + `TickTime.AtLeast(RespawnTime)`, before the barrels, the satellite gets
+      full hit points and moves to the ship centre and heading (Frontier `FakeRespawn`). Without a respawn time it stays
+      destroyed. It leaves with its ship.
+   5. **Network.** As a repair bot: the owner keeps the hit points; a remote attacker's contact travels as a hit record; the
+      owner's removal record (reason `Death`) destroys the copy at the owner's tick, so both respawn in the same tick. No
+      wire format changes. A copy shows full hit points until the record arrives.
+   6. **Presentation.** `SatelliteState` adds `IsActive` and `HitPoints`. The `SatelliteChange` event (ship ID, satellite
+      index, position) marks a death (`RemovalReason.Death`) or a respawn (`None`). `BattleRenderer` hides a destroyed
+      satellite and its turret and plays the drone explosion at its death.
+   7. **AI.** A weapon on a destroyed satellite is not ready to fire. `TargetNodes` is unchanged: the AI never targets
+      satellites, and the obstacle check skips them as before.
+
+   The mapper still gives no shape, hit points or `Steadiness` (phase 7). `DestructibleSatelliteTests` covers contacts,
+   death, respawn, disabled barrels, the snapshot copy, determinism and both network directions.
 
 `SatelliteTests` covers the plan examples, the arc fix and the remote record. `SatelliteGateTests` is the two-owner gate:
 held delivery, ally targets, clears, duplicate records, and converged satellite poses with zero- and five-tick delays.
