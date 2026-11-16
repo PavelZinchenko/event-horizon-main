@@ -291,11 +291,10 @@ namespace GameServices.Economy
 
             if (random.Next(3) == 0)
             {
-                var ruinsSettings = _database.RuinsSettings;
-                var itemLevel = ruinsSettings.MaxSatelliteCells(level);
-                var companions = _database.SatelliteList.Where(item => item.Layout.CellCount <= itemLevel && !item.NotAvailableInRuin);
-                foreach (var item in companions.RandomUniqueElements(1, random))
-                    yield return CommonProduct.Create(_factory.CreateSatelliteItem(item));
+                  var itemLevel = Mathf.Max(6, level / 2);
+                  var companions = _database.SatelliteList.Where(item => item.Layout.CellCount <= itemLevel && item.SizeClass != SizeClass.Titan);
+                  foreach (var item in companions.Where(item => item.SizeClass != SizeClass.Titan).RandomUniqueElements(1, random))
+                        yield return CommonProduct.Create(_factory.CreateSatelliteItem(item));
             }
 
             foreach (var item in RandomComponents(Maths.Distance.ComponentLevel(level) + 35, random.Next(1, 3), null, random, false))

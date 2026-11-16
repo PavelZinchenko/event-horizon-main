@@ -24,7 +24,6 @@ namespace GameDatabase
 		GalaxySettings GalaxySettings { get; }
 		LocalizationSettings LocalizationSettings { get; }
 		MusicPlaylist MusicPlaylist { get; }
-		RuinsSettings RuinsSettings { get; }
 		ShipModSettings ShipModSettings { get; }
 		ShipSettings ShipSettings { get; }
 		SkillSettings SkillSettings { get; }
@@ -106,7 +105,6 @@ namespace GameDatabase
 		public GalaxySettings GalaxySettings { get; private set; }
 		public LocalizationSettings LocalizationSettings { get; private set; }
 		public MusicPlaylist MusicPlaylist { get; private set; }
-		public RuinsSettings RuinsSettings { get; private set; }
 		public ShipModSettings ShipModSettings { get; private set; }
 		public ShipSettings ShipSettings { get; private set; }
 		public SkillSettings SkillSettings { get; private set; }
@@ -212,7 +210,6 @@ namespace GameDatabase
 			GalaxySettings = null;
 			LocalizationSettings = null;
 			MusicPlaylist = null;
-			RuinsSettings = null;
 			ShipModSettings = null;
 			ShipSettings = null;
 			SkillSettings = null;
@@ -383,8 +380,6 @@ namespace GameDatabase
 					_database.LocalizationSettings = LocalizationSettings.Create(_content.LocalizationSettings ?? new Serializable.LocalizationSettingsSerializable { ItemType = Enums.ItemType.LocalizationSettings }, this);
 				if (_database.MusicPlaylist == null)
 					_database.MusicPlaylist = MusicPlaylist.Create(_content.MusicPlaylist ?? new Serializable.MusicPlaylistSerializable { ItemType = Enums.ItemType.MusicPlaylist }, this);
-				if (_database.RuinsSettings == null)
-					_database.RuinsSettings = RuinsSettings.Create(_content.RuinsSettings ?? new Serializable.RuinsSettingsSerializable { ItemType = Enums.ItemType.RuinsSettings }, this);
 				if (_database.ShipModSettings == null)
 					_database.ShipModSettings = ShipModSettings.Create(_content.ShipModSettings ?? new Serializable.ShipModSettingsSerializable { ItemType = Enums.ItemType.ShipModSettings }, this);
 				if (_database.ShipSettings == null)

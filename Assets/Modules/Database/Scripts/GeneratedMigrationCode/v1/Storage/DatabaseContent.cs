@@ -250,12 +250,6 @@ namespace DatabaseMigration.v1.Storage
                 data.FileName = name;
                 MusicPlaylist = data;
             }
-            else if (type == ItemType.RuinsSettings)
-            {
-                var data = _serializer.FromJson<RuinsSettingsSerializable>(content);
-                data.FileName = name;
-                RuinsSettings = data;
-            }
             else if (type == ItemType.ShipModSettings)
             {
                 var data = _serializer.FromJson<ShipModSettingsSerializable>(content);
@@ -370,8 +364,6 @@ namespace DatabaseMigration.v1.Storage
                 contentLoader.LoadJson(LocalizationSettings.FileName, _serializer.ToJson(LocalizationSettings));
             if (MusicPlaylist != null)
                 contentLoader.LoadJson(MusicPlaylist.FileName, _serializer.ToJson(MusicPlaylist));
-            if (RuinsSettings != null)
-                contentLoader.LoadJson(RuinsSettings.FileName, _serializer.ToJson(RuinsSettings));
             if (ShipModSettings != null)
                 contentLoader.LoadJson(ShipModSettings.FileName, _serializer.ToJson(ShipModSettings));
             if (ShipSettings != null)
@@ -415,7 +407,6 @@ namespace DatabaseMigration.v1.Storage
 		public GalaxySettingsSerializable GalaxySettings { get; private set; }
 		public LocalizationSettingsSerializable LocalizationSettings { get; private set; }
 		public MusicPlaylistSerializable MusicPlaylist { get; private set; }
-		public RuinsSettingsSerializable RuinsSettings { get; private set; }
 		public ShipModSettingsSerializable ShipModSettings { get; private set; }
 		public ShipSettingsSerializable ShipSettings { get; private set; }
 		public SkillSettingsSerializable SkillSettings { get; private set; }
@@ -431,7 +422,6 @@ namespace DatabaseMigration.v1.Storage
 		public GalaxySettingsSerializable CreateGalaxySettings() => GalaxySettings ?? (GalaxySettings = new GalaxySettingsSerializable());
 		public LocalizationSettingsSerializable CreateLocalizationSettings() => LocalizationSettings ?? (LocalizationSettings = new LocalizationSettingsSerializable());
 		public MusicPlaylistSerializable CreateMusicPlaylist() => MusicPlaylist ?? (MusicPlaylist = new MusicPlaylistSerializable());
-		public RuinsSettingsSerializable CreateRuinsSettings() => RuinsSettings ?? (RuinsSettings = new RuinsSettingsSerializable());
 		public ShipModSettingsSerializable CreateShipModSettings() => ShipModSettings ?? (ShipModSettings = new ShipModSettingsSerializable());
 		public ShipSettingsSerializable CreateShipSettings() => ShipSettings ?? (ShipSettings = new ShipSettingsSerializable());
 		public SkillSettingsSerializable CreateSkillSettings() => SkillSettings ?? (SkillSettings = new SkillSettingsSerializable());
