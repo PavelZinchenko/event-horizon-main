@@ -111,6 +111,12 @@ namespace GameStateMachine.States
 		            }
 		        }
 
+		        foreach (var item in _database.ShipList)
+		        {
+		            if (item.Satellites.Count > 2)
+		                GameDiagnostics.Trace.LogWarning($"ship {item.Id} ({item.Name}): {item.Satellites.Count} satellite mount points, legacy combat uses only the first 2");
+		        }
+
 		        var companions = _database.SatelliteBuildList; //Resources.LoadAll<Constructor.CompanionBuildWrapper> ("Prefabs/Constructor/CompanionBuilds");
 		        foreach (var item in companions)
 		        {
