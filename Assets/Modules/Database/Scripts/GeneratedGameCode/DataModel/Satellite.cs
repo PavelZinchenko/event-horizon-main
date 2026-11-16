@@ -33,6 +33,7 @@ namespace GameDatabase.DataModel
 			SizeClass = serializable.SizeClass;
 			NotAvailableInBlackMarket = serializable.NotAvailableInBlackMarket;
 			NotAvailableInRuin = serializable.NotAvailableInRuin;
+			IgnoreRuinSizeLimit = serializable.IgnoreRuinSizeLimit;
 			Layout = new Layout(serializable.Layout);
 			Barrels = new ImmutableCollection<Barrel>(serializable.Barrels?.Select(item => Barrel.Create(item, loader)));
 
@@ -47,6 +48,7 @@ namespace GameDatabase.DataModel
 		public SizeClass SizeClass { get; private set; }
 		public bool NotAvailableInBlackMarket { get; private set; }
 		public bool NotAvailableInRuin { get; private set; }
+		public bool IgnoreRuinSizeLimit { get; private set; }
 		public Layout Layout { get; private set; }
 		public ImmutableCollection<Barrel> Barrels { get; private set; }
 

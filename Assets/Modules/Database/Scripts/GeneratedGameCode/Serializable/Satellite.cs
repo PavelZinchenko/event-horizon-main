@@ -21,6 +21,7 @@ namespace GameDatabase.Serializable
 		public SizeClass SizeClass;
 		public bool NotAvailableInBlackMarket;
 		public bool NotAvailableInRuin;
+		public bool IgnoreRuinSizeLimit;
 		public string Layout;
 		public BarrelSerializable[] Barrels;
 	}
