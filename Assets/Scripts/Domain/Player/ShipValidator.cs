@@ -20,8 +20,9 @@ namespace Domain.Shipyard
         public static bool HasForbiddenComponents(IShip ship)
         {
             if (HasForbiddenComponents(ship.Components)) return true;
-            if (HasForbiddenComponents(ship.FirstSatellite?.Components)) return true;
-            if (HasForbiddenComponents(ship.SecondSatellite?.Components)) return true;
+            foreach (var satellite in ship.Satellites)
+                if (HasForbiddenComponents(satellite?.Components)) return true;
+
             return false;
         }
 
@@ -29,8 +30,10 @@ namespace Domain.Shipyard
         {
             var componentTracker = new ComponentTracker(ship, settings);
             if (HasInvalidComponents(CreateShipLayout(ship, componentTracker), ship.Components, componentTracker)) return false;
-            if (IsSatelliteInvalid(ship, ship.FirstSatellite, componentTracker, settings)) return false;
-            if (IsSatelliteInvalid(ship, ship.SecondSatellite, componentTracker, settings)) return false;
+
+            for (int i = 0; i < ship.Satellites.UsedMountPoints; ++i)
+                if (IsSatelliteInvalid(ship, ship.Satellites[i], i, componentTracker, settings)) return false;
+
             return true;
         }
 
@@ -39,8 +42,9 @@ namespace Domain.Shipyard
             var componentTracker = new ComponentTracker(ship, settings);
             RemoveInvalidComponents(CreateShipLayout(ship, componentTracker), ship.Components, componentTracker, storage);
             ValidateComponentsConfiguration(ship.Components, storage);
-            ship.FirstSatellite = ValidateSatellite(ship, ship.FirstSatellite, componentTracker, settings, storage);
-            ship.SecondSatellite = ValidateSatellite(ship, ship.SecondSatellite, componentTracker, settings, storage);
+
+            for (int i = 0; i < ship.Satellites.UsedMountPoints; ++i)
+                ship.Satellites[i] = ValidateSatellite(ship, ship.Satellites[i], i, componentTracker, settings, storage);
         }
 
         private static void ReturnSatelliteToStorage(Constructor.Satellites.ISatellite satellite, IShipPartsStorage storage)
@@ -51,10 +55,11 @@ namespace Domain.Shipyard
                 storage.AddComponent(item.Info);
         }
 
-        private static bool IsSatelliteInvalid(IShip ship, Constructor.Satellites.ISatellite satellite, ComponentTracker componentTracker, ShipSettings settings)
+        private static bool IsSatelliteInvalid(IShip ship, Constructor.Satellites.ISatellite satellite, int mountPoint,
+            ComponentTracker componentTracker, ShipSettings settings)
         {
             if (satellite == null) return false;
-            if (!ship.IsSuitableSatelliteSize(satellite.BaseModel, settings))
+            if (!ship.IsSuitableSatelliteSize(satellite.BaseModel, mountPoint, settings))
             {
                 GameDiagnostics.Trace.LogError($"Incompatible satellite found: {satellite.BaseModel.Name}");
                 return true;
@@ -67,10 +72,10 @@ namespace Domain.Shipyard
         }
 
         private static Constructor.Satellites.ISatellite ValidateSatellite(IShip ship, Constructor.Satellites.ISatellite satellite,
-            ComponentTracker componentTracker, ShipSettings settings, IShipPartsStorage storage)
+            int mountPoint, ComponentTracker componentTracker, ShipSettings settings, IShipPartsStorage storage)
         {
             if (satellite == null) return null;
-            if (!ship.IsSuitableSatelliteSize(satellite.BaseModel, settings))
+            if (!ship.IsSuitableSatelliteSize(satellite.BaseModel, mountPoint, settings))
             {
                 ReturnSatelliteToStorage(satellite, storage);
                 return null;
