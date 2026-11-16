@@ -98,8 +98,10 @@ namespace Session
 			foreach (var oldShip in oldData._ships)
 			{
 				var components = TransferComponentsData(oldShip.Components);
-				var satellite1 = new SatelliteInfo(oldShip.Satellite1.Id, TransferComponentsData(oldShip.Satellite1.Components), newData);
-				var satellite2 = new SatelliteInfo(oldShip.Satellite2.Id, TransferComponentsData(oldShip.Satellite2.Components), newData);
+				var oldSatellite1 = oldShip.GetSatellite(0);
+				var oldSatellite2 = oldShip.GetSatellite(1);
+				var satellite1 = new SatelliteInfo(oldSatellite1.Id, TransferComponentsData(oldSatellite1.Components), newData);
+				var satellite2 = new SatelliteInfo(oldSatellite2.Id, TransferComponentsData(oldSatellite2.Components), newData);
 
 				newData.Ships.Add(new v1.ShipInfo(oldShip.Id, oldShip.Name, oldShip.ColorScheme, oldShip.Experience, components,
 					oldShip.Modifications.Layout, oldShip.Modifications.Modifications, satellite1, satellite2, newData));

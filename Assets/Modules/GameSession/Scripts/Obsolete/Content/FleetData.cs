@@ -206,8 +206,11 @@ namespace Session.ContentObsolete
                     Experience = ship.Experience,
                     Components = ship.Components.Select(item => ComponentExtensions.Deserialize(database, item)).ToShipComponentsData(),
                     Modifications = new ShipModificationsData { Modifications = ship.Modifications.Select(item => (item >> 32) == 4 ? (6 << 32) : item ) },
-                    Satellite1 = satellite1 != null ? new SatelliteData { Id = satellite1.Id.Value, Components = satelliteComponents1 } : new SatelliteData(),
-                    Satellite2 = satellite2 != null ? new SatelliteData { Id = satellite2.Id.Value, Components = satelliteComponents2 } : new SatelliteData(),
+                    Satellites = new[]
+                    {
+                        satellite1 != null ? new SatelliteData { Id = satellite1.Id.Value, Components = satelliteComponents1 } : new SatelliteData(),
+                        satellite2 != null ? new SatelliteData { Id = satellite2.Id.Value, Components = satelliteComponents2 } : new SatelliteData(),
+                    },
                 };
 
                 foreach (var value in shipData.Serialize())

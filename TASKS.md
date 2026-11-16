@@ -19,7 +19,7 @@
 - [ ] Set the missile correction budget (300-byte placeholder) from a playable scene (`TODO/battle_simulator_network.md`, "Open after the gate")
 - [ ] Phase 7: add a satellite carrier to the harness `Turrets` scene; measure copy satellite drift and predicted muzzle offset (`TODO/battle_simulator_phase5.md`, 12c finding 7)
 - [ ] Core AI: read the effective engine (accelerator scale and limit, engine without energy) from `ShipState` (`TODO/battle_simulator_phase5.md`, 9c question 10)
-- [In Progress] Frontier satellite features: custom mount points, steadiness, destroyable satellites with respawn (`event-horizon-frontier/TODO/satellite_mount_points.md`; phases 8–9 open)
+- [In Progress] Frontier satellite features: custom mount points, steadiness, destroyable satellites with respawn (`event-horizon-frontier/TODO/satellite_mount_points.md`; phase 8 Unity check and phase 9 step 3 open)
 - [ ] Core combat scene: decide the camera whip toward a new player ship (`TODO/battle_simulator_scene.md`, step 4)
 - [ ] Cost test of the AI threat cut-off (more than 30 pilots) on the new simulator; remove it if not needed (`TODO/battle_simulator_phase4.md`, Targets (7c))
 - [ ] Database editor: collider editor for `Ship.Collider`, after migration phase 4 (`TODO/battle_simulator_phase4.md`, D5)

@@ -36,7 +36,7 @@ A copy of the web root is in `.server/`. Git ignores that folder ([.gitignore:50
 | User ID | The integer that the server assigns to an account key in table `UserIds`. Opponents are addressed by user ID. |
 | Player rating | `Rating`. It changes when the player attacks another fleet. The arena window shows it. |
 | Fleet rating | `AiRating` (Frontier: `FleetRating`). It changes when another player attacks this player's uploaded fleet. Matchmaking compares the attacker's player rating with the defenders' fleet ratings. |
-| Fleet blob | The serialized fleet: binary ship data, zlib-compressed, URL-safe Base64 without padding. [`FleetWebSerializer`](../Assets/Scripts/GameServices/OfflineMultiplayer/FleetWebSerializer.cs) writes format version 4 and reads versions 1–4. The client refuses blobs above 16,384 characters. |
+| Fleet blob | The serialized fleet: binary ship data, zlib-compressed, URL-safe Base64 without padding. [`FleetWebSerializer`](../Assets/Scripts/GameServices/OfflineMultiplayer/FleetWebSerializer.cs) writes format version 4 for the arena and reads versions 1–5. Version 5 (online duel only) stores every satellite; version 4 stores the satellites on mount points 0 and 1. The client refuses blobs above 16,384 characters. |
 | Operation flag | A form or query field whose presence selects the operation, for example `find`. Its value is ignored. |
 | Frontier | *Event Horizon – Frontier*, a separate game. Its client is not in this repository. |
 

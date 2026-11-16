@@ -13,14 +13,19 @@ namespace Session.ContentObsolete
         public ObscuredLong Experience;
         public ShipComponentsData Components;
         public ShipModificationsData Modifications;
-        public SatelliteData Satellite1;
-        public SatelliteData Satellite2;
+        public SatelliteData[] Satellites;
 
-        public const byte Version = 1;
+        // Version 1 stores two satellites (mount points 0 and 1); the arena upload keeps it, so older clients can read it.
+        // Version 2 stores the satellite list.
+        public const byte Version = 2;
+        public const byte TwoSatellitesVersion = 1;
 
-        public IEnumerable<byte> Serialize()
+        public IEnumerable<byte> Serialize(byte version = Version)
         {
-            yield return Version;
+            if (version != Version && version != TwoSatellitesVersion)
+                throw new ArgumentException("ShipData: Unknown version - " + version);
+
+            yield return version;
             foreach (var value in Helpers.Serialize(Id))
                 yield return value;
             foreach (var value in Helpers.Serialize(Name))
@@ -33,17 +38,28 @@ namespace Session.ContentObsolete
                 yield return value;
             foreach (var value in Modifications.Serialize())
                 yield return value;
-            foreach (var value in Satellite1.Serialize())
+            if (version == TwoSatellitesVersion)
+            {
+                foreach (var value in GetSatellite(0).Serialize())
+                    yield return value;
+                foreach (var value in GetSatellite(1).Serialize())
+                    yield return value;
+                yield break;
+            }
+
+            var count = Satellites?.Length ?? 0;
+            foreach (var value in Helpers.Serialize(count))
                 yield return value;
-            foreach (var value in Satellite2.Serialize())
-                yield return value;
+            for (var i = 0; i < count; ++i)
+                foreach (var value in Satellites[i].Serialize())
+                    yield return value;
         }
 
         public static ShipData Deserialize(byte[] buffer, ref int index)
         {
             var version = buffer[index++];
-            if (version != Version)
-                return Deserialize(buffer, ref index, version);
+            if (version != Version && version != TwoSatellitesVersion)
+                throw new ArgumentException("ShipData: Unknown version - " + version);
 
             var info = new ShipData();
             info.Id = Helpers.DeserializeInt(buffer, ref index);
@@ -52,15 +68,27 @@ namespace Session.ContentObsolete
             info.Experience = Helpers.DeserializeLong(buffer, ref index);
             info.Components = ShipComponentsData.Deserialize(buffer, ref index);
             info.Modifications = ShipModificationsData.Deserialize(buffer, ref index);
-            info.Satellite1 = SatelliteData.Deserialize(buffer, ref index);
-            info.Satellite2 = SatelliteData.Deserialize(buffer, ref index);
+
+            if (version == TwoSatellitesVersion)
+            {
+                info.Satellites = new[] { SatelliteData.Deserialize(buffer, ref index), SatelliteData.Deserialize(buffer, ref index) };
+                return info;
+            }
+
+            // A satellite takes at least 10 bytes, so a count above the rest of the buffer is corrupt (remote duel fleets).
+            var count = Helpers.DeserializeInt(buffer, ref index);
+            if (count < 0 || count > (buffer.Length - index) / 10)
+                throw new ArgumentException("ShipData: Invalid satellite count - " + count);
+
+            info.Satellites = new SatelliteData[count];
+            for (var i = 0; i < count; ++i)
+                info.Satellites[i] = SatelliteData.Deserialize(buffer, ref index);
             return info;
         }
 
-        public static ShipData Deserialize(byte[] buffer, ref int index, byte version)
-        {
-            throw new ArgumentException("ShipData: Unknown version - " + version);
-        }
+        // An empty satellite when the list has no entry at the index.
+        public SatelliteData GetSatellite(int index) =>
+            Satellites != null && index < Satellites.Length ? Satellites[index] : new SatelliteData { Components = new ShipComponentsData() };
     }
 
     public struct ShipComponentsData

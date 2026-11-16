@@ -155,7 +155,8 @@ A second `PeerConnection` on the same transport would mix sequence numbers, so t
 2. Call `Update(now)`. Each player waits for 8 clock samples (about 2 s), then sends Hello: protocol version (2), game
    version, database hash, source hash, its input delay D and its fleet. D = min(5, ceil(round trip / 2 × 50)) per sender (N1).
    The source hash (`CoreSourceHash`, phase 7, step 9) is SHA-256 over the `.cs` files of `ModulesShared/CombatSimulation`
-   and `Scripts/Combat/Integration/Core`, without `Tests` folders, comments and whitespace. A mismatch rejects with `Source`:
+   and `Scripts/Combat/Integration/Core`, without `Tests` folders, comments and whitespace. It also hashes the fleet format files
+   `FleetWebSerializer.cs` and GameSession's `ShipData.cs` (satellite plan, phase 8). A mismatch rejects with `Source`:
    builds of one game version with different combat code. It hashes source, not binaries, so Mono and IL2CPP builds of one
    source agree. `CoreSourceHashBuildStep` writes it to `Assets/Resources/CoreSourceHash.txt` (git-ignored) before every
    build; the editor computes it from the files.

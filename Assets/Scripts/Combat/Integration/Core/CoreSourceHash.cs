@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
@@ -23,6 +23,13 @@ namespace Combat.Integration.Core
             "Assets/Scripts/Combat/Integration/Core",
         };
 
+        // Single files outside those folders: the duel fleet format (satellite plan, phase 8).
+        public static readonly string[] Files =
+        {
+            "Assets/Scripts/GameServices/OfflineMultiplayer/FleetWebSerializer.cs",
+            "Assets/Modules/GameSession/Scripts/Obsolete/Content/ShipData.cs",
+        };
+
         // Empty in a build without the hash file; it then matches no other build.
         public static byte[] Value => _value ?? (_value = Load());
 
@@ -38,6 +45,7 @@ namespace Combat.Integration.Core
                     files.Add(relative);
                 }
             }
+            files.AddRange(Files);
             files.Sort(string.CompareOrdinal);
 
             using (var sha = SHA256.Create())

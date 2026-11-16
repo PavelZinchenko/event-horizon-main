@@ -112,8 +112,9 @@ namespace Session.ContentObsolete
             var components = shipData.Components.FromShipComponentsData(database);
             var ship = new CommonShip(shipModel, components);
 
-            ship.Satellites[0] = FromSatelliteData(database, shipData.Satellite1);
-            ship.Satellites[1] = FromSatelliteData(database, shipData.Satellite2);
+            if (shipData.Satellites != null)
+                for (var i = 0; i < shipData.Satellites.Length; ++i)
+                    ship.Satellites[i] = FromSatelliteData(database, shipData.Satellites[i]);
             ship.Name = shipData.Name;
             ship.ColorScheme.Value = shipData.ColorScheme;
             ship.Experience = (long)shipData.Experience;
@@ -135,8 +136,7 @@ namespace Session.ContentObsolete
                     Layout = ship.Model.LayoutModifications.Serialize(),
                     Modifications = ship.Model.Modifications.Select<IShipModification, long>(ShipModificationExtensions.Serialize)
                 },
-                Satellite1 = ship.Satellites[0].ToSatelliteData(),
-                Satellite2 = ship.Satellites[1].ToSatelliteData(),
+                Satellites = ship.Satellites.Select(ToSatelliteData).ToArray(),
             };
         }
 

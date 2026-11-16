@@ -206,6 +206,59 @@ namespace Session.Tests
 				Assert.AreEqual(satellite.Id, satellite.Components.Count);
 		}
 
+		[Test]
+		public void TestShipDataSatelliteList()
+		{
+			var ship = CreateShipData(5, 0, 7);
+			var data = ship.Serialize().ToArray();
+			var index = 0;
+			var result = ContentObsolete.ShipData.Deserialize(data, ref index);
+
+			Assert.AreEqual(data.Length, index);
+			CollectionAssert.AreEqual(new[] { 5, 0, 7 }, result.Satellites.Select(item => item.Id));
+			CollectionAssert.AreEqual(new[] { 5, 0, 7 }, result.Satellites.Select(item => item.Components.Components.Count()));
+		}
+
+		[TestCase(new int[0], new[] { 0, 0 })]
+		[TestCase(new[] { 5 }, new[] { 5, 0 })]
+		[TestCase(new[] { 5, 6, 7 }, new[] { 5, 6 })]
+		public void TestShipDataTwoSatellitesVersion(int[] satellites, int[] expected)
+		{
+			var data = CreateShipData(satellites).Serialize(ContentObsolete.ShipData.TwoSatellitesVersion).ToArray();
+			var index = 0;
+			var result = ContentObsolete.ShipData.Deserialize(data, ref index);
+
+			Assert.AreEqual(ContentObsolete.ShipData.TwoSatellitesVersion, data[0]);
+			Assert.AreEqual(data.Length, index);
+			CollectionAssert.AreEqual(expected, result.Satellites.Select(item => item.Id));
+		}
+
+		[Test]
+		public void TestShipDataInvalidSatelliteCount()
+		{
+			var data = CreateShipData().Serialize().ToArray();
+			data[data.Length - 1] = 0x7f; // The last byte is the high byte of the satellite count.
+			var index = 0;
+			Assert.Throws<System.ArgumentException>(() => ContentObsolete.ShipData.Deserialize(data, ref index));
+		}
+
+		private static ContentObsolete.ShipData CreateShipData(params int[] satellites)
+		{
+			return new ContentObsolete.ShipData
+			{
+				Id = 11,
+				Name = "ship",
+				Satellites = satellites.Select(id => new ContentObsolete.SatelliteData
+				{
+					Id = id,
+					Components = new ContentObsolete.ShipComponentsData
+					{
+						Components = Enumerable.Repeat(new ContentObsolete.ShipComponentsData.Component { Id = id }, id),
+					},
+				}).ToArray(),
+			};
+		}
+
 		// A satellite with id N has N components, so the tests can check that components move with their satellite.
 		private static Model.SatelliteInfo CreateSatellite(int id, IDataChangedCallback callback)
 		{
