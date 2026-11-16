@@ -4,7 +4,7 @@
   "Name": "$Companion_4l",
   "ModelImage": "satellite4",
   "ModelScale": 0.8,
-  "SizeClass": -1,
+  "SizeClass": 3,
   "Layout": "004400004400004400014220111221001100",
   "Barrels": [
     {

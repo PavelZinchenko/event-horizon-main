@@ -29,6 +29,24 @@
     "ShipWeightBonus": -0.3,
     "EquipmentWeightBonus": -0.3
   },
+  "Satellites": [
+    {
+      "Position": {
+        "x": -0.75,
+        "y": 1.5
+      },
+      "RotationLimit": 127.0,
+      "MinSizeClass": -1
+    },
+    {
+      "Position": {
+        "x": -0.75,
+        "y": -1.5
+      },
+      "RotationLimit": 127.0,
+      "MinSizeClass": -1
+    }
+  ],
   "Collider": [
     {
       "Points": [

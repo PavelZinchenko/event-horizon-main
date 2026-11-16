@@ -31,6 +31,7 @@ namespace GameDatabase.Serializable
 		public BarrelSerializable[] Barrels;
 		public ShipFeaturesSerializable Features;
 		public ShipVisualEffectsSerializable VisualEffects;
+		public SatelliteMountPointSerializable[] Satellites;
 		public ToggleState CellsExpansions;
 		public float ColliderTolerance = 0.02f;
 		public ColliderShapeSerializable[] Collider;

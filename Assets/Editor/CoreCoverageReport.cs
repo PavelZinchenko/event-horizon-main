@@ -202,7 +202,7 @@ public static class CoreCoverageReport
 
         foreach (var build in database.ShipBuildList)
         {
-            foreach (var satellite in new[] { build.LeftSatelliteBuild, build.RightSatelliteBuild }.Where(item => item != null).Distinct())
+            foreach (var satellite in build.Satellites.Distinct())
                 if (rows.TryGetValue(satellite.Id.Value, out var row))
                     BuildsOf(row, build).Add(build.Id.Value);
         }

@@ -241,6 +241,8 @@
     }
   ],
   "Perks": {},
-  "LeftSatelliteBuild": 24,
-  "RightSatelliteBuild": 24
+  "Satellites": [
+    24,
+    24
+  ]
 }

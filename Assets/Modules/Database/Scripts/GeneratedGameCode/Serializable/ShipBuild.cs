@@ -26,6 +26,7 @@ namespace GameDatabase.Serializable
 		public ShipBuildPerksSerializable Perks;
 		public bool ExtendedLayout;
 		public bool RandomColor;
+		public int[] Satellites;
 		public int LeftSatelliteBuild;
 		public int RightSatelliteBuild;
 	}

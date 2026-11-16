@@ -1,6 +1,6 @@
 # Satellite
 
-A satellite (in the UI: companion) is a small hull that flies next to a ship. It has a cell layout for components and at most one weapon mount. A ship has a left and a right satellite slot. A [SatelliteBuild](SatelliteBuild.md) adds components to a satellite. The ship editor, the ship builder, combat, loot, and the workshop read satellite records.
+A satellite (in the UI: companion) is a small hull that flies next to a ship. It has a cell layout for components and at most one weapon mount. A ship carries satellites at its mount points ([Ship](Ship.md#satellitemountpoint) `Satellites`). Built-in hulls have two: index 0 is the left slot and index 1 the right slot. A [SatelliteBuild](SatelliteBuild.md) adds components to a satellite. The ship editor, the ship builder, combat, loot, and the workshop read satellite records.
 
 Back to the [schema index](index.md).
 
@@ -26,9 +26,12 @@ The record also has the [common fields](index.md#common-fields).
 | `ModelImage` | image (`Satellite`) | | Sprite in combat, the ship editor, and the workshop. The name also selects an optional combat prefab `Resources/Combat/Satellites/<name>`. |
 | `ModelScale` | float | 0.1…100 | Size in combat world units. It also sets the distance from the ship and the fit for satellites without a size class. |
 | `NotAvailableInBlackMarket` | bool | `false` | Obsolete. Read only by migration 1.7 -> 1.8, which moves the exclusion into [BlackMarketSettings](BlackMarketSettings.md). |
-| `SizeClass` | enum [SizeClass](enums.md#sizeclass) | `Frigate` | Smallest ship class that can carry the satellite. `Undefined` uses `ModelScale` instead (see [Fit](#fit)). The default `Frigate` fits every hull except hulls of class `Undefined`. |
+| `SizeClass` | enum [SizeClass](enums.md#sizeclass) | `Frigate` | Smallest ship class that can carry the satellite (see [Fit](#fit)). `Undefined` is deprecated: it fits by `ModelScale` only, and the loader logs a warning for each such satellite. Built-in satellites use `Frigate` (small), `Cruiser` (medium), `Battleship` (large), and `Titan`. |
 | `Layout` | [layout](../../database.md#layout) | | Cell grid for components. The cell count sets the weight, the price, and the threat. |
 | `Barrels` | struct list [Barrel](structures.md#barrel) | | The weapon mount. Use zero or one barrel. More than one barrel makes the ship builder throw ([DB15.6](../../issues/database.md#db15-smaller-defects)). |
+| `Steadiness` | float | 0.75, 0.1…10 | How fast the satellite follows its slot. 0.75 is the legacy velocity factor. Not read yet: the new combat simulator will read it (satellite mount points, phase 6). |
+| `HitPoints` | expression `FloatToFloat(ship_hp)` | `0`, ≥ 0 | Satellite hit points from the ship's hit points. Below 1 the satellite cannot be destroyed. Not read yet (phase 6). |
+| `RespawnTime` | int | 0, ≥ 0 | Seconds until a destroyed satellite comes back. `0`: it stays destroyed. Not read yet (phase 6). |
 
 ## Notes
 
@@ -36,8 +39,8 @@ The record also has the [common fields](index.md#common-fields).
 
 A ship can carry a satellite when one rule holds ([SatelliteExtensions.cs:18](../../../Assets/Modules/ShipConstructor/Scripts/Satellites/SatelliteExtensions.cs#L18)):
 
-1. The satellite has a size class, and the ship's maximum satellite class is equal or bigger.
-2. The satellite has `SizeClass` `Undefined`, and the ship's maximum satellite scale ≥ 2 × the satellite's `ModelScale`.
+1. The satellite has a size class, and the ship's maximum satellite class is equal or bigger. While `ShipSettings.SatelliteRequireModelScaleWithSizeClass` is true (the default), the scale rule below must also hold.
+2. The satellite has `SizeClass` `Undefined`, and the ship's maximum satellite scale ≥ `ShipSettings.SatelliteModelScaleMultiplier` (default 2) × the satellite's `ModelScale`.
 
 The maximum satellite class is the hull's `SizeClass`, and the maximum scale is the hull's `ModelScale` ([ShipModel.cs:111](../../../Assets/Modules/ShipConstructor/Scripts/Ships/ShipModel.cs#L111)). The `SatelliteSize` perk raises the class by one (to at least `Cruiser`) and the scale by 0.4. Starbases carry no satellites ([ShipExtensions.cs:16](../../../Assets/Modules/ShipConstructor/Scripts/Extensions/ShipExtensions.cs#L16)).
 
@@ -70,6 +73,6 @@ The satellite's components add their stats to the ship. Its weapon uses the barr
 ### Data rules
 
 1. Give a satellite zero or one barrel. Use a barrel when the satellite should carry a weapon.
-2. Set `SizeClass` explicitly. Use `Undefined` for satellites that fit by scale. The default `Frigate` lets almost every ship carry the satellite.
+2. Set `SizeClass` explicitly. Do not use `Undefined`: it is deprecated. The default `Frigate` lets almost every ship carry the satellite.
 3. Use `Titan` for large satellites that must stay out of random loot and the black market.
 4. A changed satellite ID breaks saves: the session stores satellites by ID.

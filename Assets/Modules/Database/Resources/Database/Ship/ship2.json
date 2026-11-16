@@ -40,6 +40,26 @@
       28
     ]
   },
+  "Satellites": [
+    {
+      "Position": {
+        "x": -0.75,
+        "y": 1.5
+      },
+      "RotationLimit": 127.0,
+      "MinSizeClass": -1,
+      "MaxSizeClass": 3
+    },
+    {
+      "Position": {
+        "x": -0.75,
+        "y": -1.5
+      },
+      "RotationLimit": 127.0,
+      "MinSizeClass": -1,
+      "MaxSizeClass": 3
+    }
+  ],
   "Collider": [
     {
       "Points": [

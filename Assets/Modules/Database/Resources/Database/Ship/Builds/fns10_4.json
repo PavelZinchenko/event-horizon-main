@@ -327,6 +327,8 @@
   },
   "ExtendedLayout": true,
   "RandomColor": true,
-  "LeftSatelliteBuild": 31,
-  "RightSatelliteBuild": 31
+  "Satellites": [
+    31,
+    31
+  ]
 }

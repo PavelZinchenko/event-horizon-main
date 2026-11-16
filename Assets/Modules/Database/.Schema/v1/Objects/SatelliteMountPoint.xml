@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="SatelliteMountPoint" type="struct" >
+    <member name="Position" type="vector" />
+    <member name="Direction" type="float" minvalue="-180" maxvalue="180" />
+    <member name="RotationLimit" type="float" minvalue="0" maxvalue="180" default="100" />
+    <member name="MinSizeClass" type="enum" typeid="SizeClass" />
+    <member name="MaxSizeClass" type="enum" typeid="SizeClass" />
+</data>

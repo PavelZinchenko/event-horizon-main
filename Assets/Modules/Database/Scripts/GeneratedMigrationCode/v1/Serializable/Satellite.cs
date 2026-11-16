@@ -28,5 +28,8 @@ namespace DatabaseMigration.v1.Serializable
 		public bool NotAvailableInBlackMarket;
 		public string Layout;
 		public BarrelSerializable[] Barrels;
+		public float Steadiness = 0.75f;
+		public string HitPoints;
+		public int RespawnTime;
 	}
 }

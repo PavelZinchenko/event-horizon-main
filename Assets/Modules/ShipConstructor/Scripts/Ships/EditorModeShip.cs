@@ -13,10 +13,10 @@ namespace Constructor.Ships
             _database = database;
             _shipBuild = build;
 
-            if (build.LeftSatelliteBuild != null)
-                FirstSatellite = new Satellites.EditorModeSatellite(build.LeftSatelliteBuild, database);
-            if (build.RightSatelliteBuild != null)
-                SecondSatellite = new Satellites.EditorModeSatellite(build.RightSatelliteBuild, database);
+            if (build.Satellites.Count > 0)
+                FirstSatellite = new Satellites.EditorModeSatellite(build.Satellites[0], database);
+            if (build.Satellites.Count > 1)
+                SecondSatellite = new Satellites.EditorModeSatellite(build.Satellites[1], database);
         }
 
         public override IItemCollection<IntegratedComponent> Components

@@ -11,6 +11,7 @@
     <member name="Perks" type="struct" typeid="ShipBuildPerks" />
     <member name="ExtendedLayout" type="bool" />
     <member name="RandomColor" type="bool" />
-    <member name="LeftSatelliteBuild" type="object" typeid="SatelliteBuild" />
-    <member name="RightSatelliteBuild" type="object" typeid="SatelliteBuild" />
+    <member name="Satellites" type="object_list" typeid="SatelliteBuild" />
+    <member name="LeftSatelliteBuild" type="object" typeid="SatelliteBuild" options="obsolete" />
+    <member name="RightSatelliteBuild" type="object" typeid="SatelliteBuild" options="obsolete" />
 </data>

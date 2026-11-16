@@ -4,7 +4,7 @@
   "Name": "$Companion_6s",
   "ModelImage": "satellite6",
   "ModelScale": 0.4,
-  "SizeClass": -1,
+  "SizeClass": 0,
   "Layout": "040040212",
   "Barrels": [
     {

@@ -38,6 +38,7 @@ The record also has the [common fields](index.md#common-fields).
 | `Barrels` | struct list [Barrel](structures.md#barrel) | | Weapon mounts. The n-th barrel belongs to the n-th group of connected weapon cells (see [Barrels](#barrels)). |
 | `Features` | struct [ShipFeatures](#shipfeatures) | | Hull bonuses: resistances, multipliers, regeneration, built-in devices. |
 | `VisualEffects` | struct [ShipVisualEffects](#shipvisualeffects) | | Overrides of the destruction effect, sound, and wreck. |
+| `Satellites` | struct list [SatelliteMountPoint](#satellitemountpoint) | | Satellite mount points. Empty: the hull carries no satellites. Built-in hulls have two, starbases none. |
 | `CellsExpansions` | enum [ToggleState](enums.md#togglestate) | `Default` | Whether the player can buy extra cells around the layout. `Default` uses `ShipSettings.DisableCellsExpansions`. See [Cell expansions](#cell-expansions). |
 | `ColliderTolerance` | float | 0.02, 0…1 | Simplification tolerance of the polygon collider that combat builds from the sprite. A larger value gives fewer vertices. No built-in record sets it. |
 | `Collider` | struct list [ColliderShape](#collidershape) | | Hull shapes for the new combat core. Empty: the core builds the hull from the sprite (see [Combat object](#combat-object)). The old combat scene ignores it and uses the prefab. |
@@ -46,6 +47,21 @@ The record also has the [common fields](index.md#common-fields).
 | `EnergyResistance`, `KineticResistance`, `HeatResistance`, `Regeneration`, `BuiltinDevices`, `BaseWeightModifier` | | obsolete | Old hull bonuses. Migration 1.0 → 1.1 moves them into `Features`. `BaseWeightModifier` becomes `ShipWeightBonus` ([line 65](../../../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_0_1.cs#L65)). The migration replaces an existing `Features` value. |
 
 ## Structures
+
+### SatelliteMountPoint
+
+One satellite slot. Schema: [SatelliteMountPoint.xml](../../../Assets/Modules/Database/.Schema/v1/Objects/SatelliteMountPoint.xml). The structure comes from Event Horizon Frontier.
+
+| Field | Type | Default / range | Meaning |
+| --- | --- | --- | --- |
+| `Position` | vector | | Slot position. The world offset is `Position × (ship ModelScale + satellite ModelScale) / 2`. |
+| `Direction` | float | 0, −180…180 | Rest heading of the satellite, added to its barrel rotation. |
+| `RotationLimit` | float | 100, 0…180 | Half-width of the aiming arc. The arc is centered on the direction of `Position`, not on `Direction`. |
+| `MinSizeClass`, `MaxSizeClass` | enum [SizeClass](enums.md#sizeclass) | `Frigate` | Size classes that fit the slot. |
+
+- The list index is the slot. The old combat scene uses only indices 0 (left) and 1 (right) and ignores the other fields.
+- Not read yet, except for the index: the fit rule and the new combat simulator will read the fields (satellite mount points, phases 2 and 7).
+- Migration 1.7 → 1.8 gives every hull except a starbase two slots: `Position` (−0.75, ±1.5), `Direction` 0, `RotationLimit` 127, `MinSizeClass` `Undefined`, and `MaxSizeClass` = the hull's `SizeClass` (`Frigate` for `Undefined` hulls). The position is close to the legacy slot. The arc covers about −10°…244°: the legacy forward edge stays, and the rear edge widens.
 
 ### ColliderShape
 

@@ -7,4 +7,7 @@
     <member name="NotAvailableInBlackMarket" type="bool" options="obsolete" />
     <member name="Layout" type="layout" />
     <member name="Barrels" type="struct_list" typeid="Barrel" />
+    <member name="Steadiness" type="float" minvalue="0.1" maxvalue="10" default="0.75" />
+    <member name="HitPoints" type="expression" typeid="FloatToFloat" arguments="ship_hp" minvalue="0" />
+    <member name="RespawnTime" type="int" minvalue="0" />
 </data>

@@ -32,7 +32,8 @@ The record also has the [common fields](index.md#common-fields).
 | `Perks` | struct [ShipBuildPerks](#shipbuildperks) | | Up to three ship modifications. |
 | `ExtendedLayout` | bool | | Converts every customizable cell around the layout into a hull cell (see [ExtendedLayout](#extendedlayout)). |
 | `RandomColor` | bool | | Gives each ship a random hue and a saturation of up to 0.25 ([CommonShip.cs:38](../../../Assets/Modules/ShipConstructor/Scripts/Ships/CommonShip.cs#L38)). |
-| `LeftSatelliteBuild`, `RightSatelliteBuild` | ref [SatelliteBuild](SatelliteBuild.md) | | Satellites in the left and right slot. `0` means none. The game does not check the satellite size here. |
+| `Satellites` | ref list [SatelliteBuild](SatelliteBuild.md) | | Satellites by hull mount point index: 0 is the left slot, 1 the right slot. A missing or disabled build fails the load. The game does not check the satellite size here. |
+| `LeftSatelliteBuild`, `RightSatelliteBuild` | ref [SatelliteBuild](SatelliteBuild.md) | obsolete | Old fixed slots. Migration 1.7 → 1.8 moves them into `Satellites`. It drops empty, missing, and disabled builds, so a lone right build becomes index 0. |
 | `NotAvailableInGame` | bool | obsolete | Old flag. Migration 1.2 → 1.3 derives `AvailableForEnemy` (not this flag and the hull is not `Unique`) and `AvailableForPlayer` (not this flag and `DifficultyClass` is `Default`) ([DatabaseUpgrader_2_3.cs:20](../../../Assets/Modules/Database/Scripts/Migration/v1/DatabaseUpgrader_2_3.cs#L20)). 7 built-in records still carry it. |
 
 ## Structures

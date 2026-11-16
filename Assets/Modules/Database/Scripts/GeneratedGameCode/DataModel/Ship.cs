@@ -43,6 +43,7 @@ namespace GameDatabase.DataModel
 			Barrels = new ImmutableCollection<Barrel>(serializable.Barrels?.Select(item => Barrel.Create(item, loader)));
 			Features = ShipFeatures.Create(serializable.Features, loader);
 			VisualEffects = ShipVisualEffects.Create(serializable.VisualEffects, loader);
+			Satellites = new ImmutableCollection<SatelliteMountPoint>(serializable.Satellites?.Select(item => SatelliteMountPoint.Create(item, loader)));
 			CellsExpansions = serializable.CellsExpansions;
 			ColliderTolerance = Utilites.MathEx.Clamp(serializable.ColliderTolerance, 0f, 1f);
 			Collider = new ImmutableCollection<ColliderShape>(serializable.Collider?.Select(item => ColliderShape.Create(item, loader)));
@@ -68,6 +69,7 @@ namespace GameDatabase.DataModel
 		public ImmutableCollection<Barrel> Barrels { get; private set; }
 		public ShipFeatures Features { get; private set; }
 		public ShipVisualEffects VisualEffects { get; private set; }
+		public ImmutableCollection<SatelliteMountPoint> Satellites { get; private set; }
 		public ToggleState CellsExpansions { get; private set; }
 		public float ColliderTolerance { get; private set; }
 		public ImmutableCollection<ColliderShape> Collider { get; private set; }
