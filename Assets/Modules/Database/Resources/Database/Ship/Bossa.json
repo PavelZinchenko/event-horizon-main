@@ -28,20 +28,27 @@
   "Satellites": [
     {
       "Position": {
-        "x": -0.75,
-        "y": 1.5
+        "x": -0.6,
+        "y": 1.2
       },
-      "RotationLimit": 127.0,
-      "MinSizeClass": -1,
+      "Direction": 120.0,
+      "MinSizeClass": 3,
       "MaxSizeClass": 4
     },
     {
       "Position": {
-        "x": -0.75,
-        "y": -1.5
+        "x": -0.6,
+        "y": -1.2
       },
-      "RotationLimit": 127.0,
-      "MinSizeClass": -1,
+      "Direction": -120.0,
+      "MinSizeClass": 3,
+      "MaxSizeClass": 4
+    },
+    {
+      "Position": {
+        "x": 1.3
+      },
+      "MinSizeClass": 3,
       "MaxSizeClass": 4
     }
   ],
