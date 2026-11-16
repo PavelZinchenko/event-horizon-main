@@ -5,6 +5,8 @@
   "ModelImage": "ironball",
   "ModelScale": 1.35,
   "SizeClass": 4,
+  "NotAvailableInBlackMarket": true,
+  "NotAvailableInRuin": true,
   "Layout": "0003300003333330033443303344443333444433033443300333333000033000",
   "Barrels": [
     {
