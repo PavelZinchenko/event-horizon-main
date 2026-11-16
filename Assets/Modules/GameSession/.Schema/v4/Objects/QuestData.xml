@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="QuestData" type="object">
+    <member name="FactionRelations" type="map" key="int" value="int" />
+    <member name="CharacterRelations" type="map" key="int" value="int" />
+    <member name="Statistics" type="map" key="int" value="QuestStatistics" />
+    <member name="Progress" type="map" key="int" value="StarQuestMap" />
+</data>

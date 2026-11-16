@@ -36,7 +36,7 @@ namespace Session.Model
 		private Model.ShipPresetsData _shipPresets;
 
 		public const int VersionMinor = 0;
-		public const int VersionMajor = 3;
+		public const int VersionMajor = 4;
 
 		public bool DataChanged { get; private set; }
 

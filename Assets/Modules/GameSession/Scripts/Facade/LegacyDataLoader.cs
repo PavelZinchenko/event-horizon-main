@@ -91,7 +91,7 @@ namespace Session
 				newData.Satellites.Add(item.Key, item.Value);
 		}
 
-		private void TransferFleetData(ContentObsolete.FleetData oldData, FleetData newData)
+		private void TransferFleetData(ContentObsolete.FleetData oldData, v1.FleetData newData)
 		{
 			foreach (var item in oldData._hangarSlots)
 				newData.HangarSlots.Add(new HangarSlotInfo(item.Index, item.ShipId));
@@ -101,7 +101,7 @@ namespace Session
 				var satellite1 = new SatelliteInfo(oldShip.Satellite1.Id, TransferComponentsData(oldShip.Satellite1.Components), newData);
 				var satellite2 = new SatelliteInfo(oldShip.Satellite2.Id, TransferComponentsData(oldShip.Satellite2.Components), newData);
 
-				newData.Ships.Add(new ShipInfo(oldShip.Id, oldShip.Name, oldShip.ColorScheme, oldShip.Experience, components,
+				newData.Ships.Add(new v1.ShipInfo(oldShip.Id, oldShip.Name, oldShip.ColorScheme, oldShip.Experience, components,
 					oldShip.Modifications.Layout, oldShip.Modifications.Modifications, satellite1, satellite2, newData));
 			}
 		}

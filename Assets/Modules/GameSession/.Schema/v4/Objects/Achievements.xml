@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="Achievements" type="object">
+    <member name="Gained" type="set" value="int" />
+</data>

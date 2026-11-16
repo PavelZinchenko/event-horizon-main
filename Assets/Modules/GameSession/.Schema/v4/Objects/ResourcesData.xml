@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ResourcesData" type="object">
+    <member name="Money" type="long" options="encrypted" />
+    <member name="Stars" type="long" options="encrypted" />
+    <member name="Fuel" type="int" options="encrypted" />
+    <member name="Tokens" type="int" options="encrypted" />
+    <member name="Resources" type="inventory" value="int" options="encrypted" />
+</data>

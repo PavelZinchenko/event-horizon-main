@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="StarMapData" type="object">
+    <member name="PlayerPosition" type="int" />
+    <member name="MapModeZoom" type="single" options="notimportant" />
+    <member name="StarModeZoom" type="single" options="notimportant" />
+    <member name="DiscoveredStars" type="bitset" />
+    <member name="SecuredStars" type="bitset" />
+    <member name="EnemiesOnStars" type="bitset" />
+    <member name="PlanetData" type="map" key="long" value="int" />
+    <member name="Bookmarks" type="map" key="int" value="string" />
+</data>

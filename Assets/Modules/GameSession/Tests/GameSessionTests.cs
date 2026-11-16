@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using Session.Utils;
 
@@ -136,6 +137,93 @@ namespace Session.Tests
 				Assert.AreEqual(GetDefeatCount(i), data2.Bosses.Bosses[i].DefeatCount);
 				Assert.AreEqual(GetDefeatTime(i), data2.Bosses.Bosses[i].LastDefeatTime);
 			}
+		}
+
+		[Test]
+		public void TestShipSatellitesSaveLoad()
+		{
+			var data1 = new Model.SaveGameData(null);
+			var fleet = data1.Fleet;
+			var component = default(Model.ShipComponentInfo);
+			fleet.Ships.Add(new Model.ShipInfo(1, "ship", 0, 0, new[] { component }, new byte[0], new long[0], new[]
+			{
+				new Model.SatelliteInfo(0, new Model.ShipComponentInfo[0], fleet),
+				new Model.SatelliteInfo(7, new[] { component, component }, fleet),
+				new Model.SatelliteInfo(9, new Model.ShipComponentInfo[0], fleet),
+			}, fleet));
+			var presets = data1.ShipPresets;
+			presets.Presets.Add(new Model.ShipPresetInfo(2, "preset", new Model.ShipComponentInfo[0], new[]
+			{
+				new Model.SatelliteInfo(5, new[] { component }, presets),
+			}, presets));
+
+			using (var writer = new SessionDataWriter(new MemoryWriterStream(_buffer)))
+				data1.Serialize(writer);
+
+			var reader = new SessionDataReader(new MemoryReaderStream(_buffer));
+			var data2 = new Model.SaveGameData(reader, null);
+
+			var ship = data2.Fleet.Ships.Single();
+			CollectionAssert.AreEqual(new[] { 0, 7, 9 }, ship.Satellites.Select(item => item.Id));
+			Assert.AreEqual(2, ship.Satellites[1].Components.Count);
+			var preset = data2.ShipPresets.Presets.Single();
+			CollectionAssert.AreEqual(new[] { 5 }, preset.Satellites.Select(item => item.Id));
+			Assert.AreEqual(1, preset.Satellites[0].Components.Count);
+		}
+
+		[TestCase(5, 6, new[] { 5, 6 })]
+		[TestCase(5, 0, new[] { 5 })]
+		[TestCase(0, 6, new[] { 0, 6 })]
+		[TestCase(0, 0, new int[0])]
+		public void TestShipSatellitesMigrationFromV3(int satellite1, int satellite2, int[] expected)
+		{
+			var oldData = new v3.SaveGameData(null);
+			var component = default(Model.ShipComponentInfo);
+			oldData.Fleet.Ships.Add(new v1.ShipInfo(1, "ship", 3, 4, new[] { component }, new byte[] { 1 }, new long[] { 2 },
+				CreateSatellite(satellite1, oldData.Fleet), CreateSatellite(satellite2, oldData.Fleet), oldData.Fleet));
+			oldData.ShipPresets.Presets.Add(CreateV3Preset(2, "preset", satellite1, satellite2));
+
+			var convert = typeof(SessionLoader).GetMethod("Convert_3_4", BindingFlags.Instance | BindingFlags.NonPublic);
+			var newData = (Model.SaveGameData)convert.Invoke(new SessionLoader(), new object[] { oldData });
+
+			var ship = newData.Fleet.Ships.Single();
+			Assert.AreEqual(1, ship.Id);
+			Assert.AreEqual("ship", ship.Name);
+			Assert.AreEqual(3, ship.ColorScheme);
+			Assert.AreEqual(4, ship.Experience);
+			Assert.AreEqual(1, ship.Components.Count);
+			CollectionAssert.AreEqual(new byte[] { 1 }, ship.LayoutModifications);
+			CollectionAssert.AreEqual(new long[] { 2 }, ship.Modifications);
+			CollectionAssert.AreEqual(expected, ship.Satellites.Select(item => item.Id));
+			foreach (var satellite in ship.Satellites)
+				Assert.AreEqual(satellite.Id, satellite.Components.Count);
+
+			var preset = newData.ShipPresets.Presets.Single();
+			Assert.AreEqual(2, preset.Id);
+			Assert.AreEqual("preset", preset.Name);
+			CollectionAssert.AreEqual(expected, preset.Satellites.Select(item => item.Id));
+			foreach (var satellite in preset.Satellites)
+				Assert.AreEqual(satellite.Id, satellite.Components.Count);
+		}
+
+		// A satellite with id N has N components, so the tests can check that components move with their satellite.
+		private static Model.SatelliteInfo CreateSatellite(int id, IDataChangedCallback callback)
+		{
+			return new Model.SatelliteInfo(id, Enumerable.Repeat(default(Model.ShipComponentInfo), id), callback);
+		}
+
+		private v3.ShipPresetInfo CreateV3Preset(int id, string name, int satellite1, int satellite2)
+		{
+			using (var writer = new SessionDataWriter(new MemoryWriterStream(_buffer)))
+			{
+				writer.WriteInt(id, EncodingType.EliasGamma);
+				writer.WriteString(name, EncodingType.EliasGamma);
+				writer.WriteInt(0, EncodingType.EliasGamma);
+				CreateSatellite(satellite1, null).Serialize(writer);
+				CreateSatellite(satellite2, null).Serialize(writer);
+			}
+
+			return new v3.ShipPresetInfo(new SessionDataReader(new MemoryReaderStream(_buffer)), null);
 		}
 	}
 }

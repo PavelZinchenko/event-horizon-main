@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="BossData" type="object">
+    <member name="Bosses" type="map" key="int" value="BossInfo" />
+</data>

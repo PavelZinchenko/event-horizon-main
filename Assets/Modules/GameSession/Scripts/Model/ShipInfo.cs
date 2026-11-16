@@ -20,8 +20,7 @@ namespace Session.Model
 			_components = new ObservableList<ShipComponentInfo>(ship.Components.Select(item => new ShipComponentInfo(item)), callback);
 			_layoutModifications = new ObservableList<byte>(ship.Model.LayoutModifications.Serialize(), callback);
 			_modifications = new ObservableList<long>(ship.Model.Modifications.Select(ShipModificationExtensions.Serialize), callback);
-			_satellite1 = new SatelliteInfo(ship.FirstSatellite, callback);
-			_satellite2 = new SatelliteInfo(ship.SecondSatellite, callback);
+			_satellites = new ObservableList<SatelliteInfo>(ship.Satellites.Select(item => new SatelliteInfo(item, callback)), callback);
 		}
 
 		public ShipInfo(
@@ -32,8 +31,7 @@ namespace Session.Model
 			IEnumerable<ShipComponentInfo> components,
 			IEnumerable<byte> layoutModifications,
 			IEnumerable<long> modifications,
-			SatelliteInfo satellite1,
-			SatelliteInfo satellite2,
+			IEnumerable<SatelliteInfo> satellites,
 			IDataChangedCallback callback)
 		{
 			_id = id;
@@ -43,8 +41,7 @@ namespace Session.Model
 			_components = new ObservableList<ShipComponentInfo>(components, callback);
 			_layoutModifications = new ObservableList<byte>(layoutModifications, callback);
 			_modifications = new ObservableList<long>(modifications, callback);
-			_satellite1 = satellite1;
-			_satellite2 = satellite2;
+			_satellites = new ObservableList<SatelliteInfo>(satellites, callback);
 		}
 
 		public IShip ToShip(IDatabase database)
@@ -60,8 +57,9 @@ namespace Session.Model
 			var components = _components.ToIntegratedComponents(database);
 			var ship = new CommonShip(shipModel, components);
 
-			ship.FirstSatellite = _satellite1.ToSatellite(database);
-			ship.SecondSatellite = _satellite2.ToSatellite(database);
+			for (int i = 0; i < _satellites.Count; ++i)
+				ship.Satellites[i] = _satellites[i].ToSatellite(database);
+
 			ship.Name = _name;
 			ship.ColorScheme.Value = _colorScheme;
 			ship.Experience = (long)_experience;

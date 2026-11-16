@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ResearchData" type="object">
+    <member name="Technologies" type="set" value="int" />
+    <member name="ResearchPoints" type="map" key="int" value="int" options="encrypted" />
+</data>

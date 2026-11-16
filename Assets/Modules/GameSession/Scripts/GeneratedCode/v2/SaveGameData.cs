@@ -19,7 +19,7 @@ namespace Session.v2
 		private Model.BossData _bosses;
 		private Model.CommonObjectData _common;
 		private Model.EventData _events;
-		private Model.FleetData _fleet;
+		private v1.FleetData _fleet;
 		private Model.IapData _iap;
 		private Model.PvpData _pvp;
 		private Model.Inventory _inventory;
@@ -49,7 +49,7 @@ namespace Session.v2
 			_bosses = new Model.BossData(this);
 			_common = new Model.CommonObjectData(this);
 			_events = new Model.EventData(this);
-			_fleet = new Model.FleetData(this);
+			_fleet = new v1.FleetData(this);
 			_iap = new Model.IapData(this);
 			_pvp = new Model.PvpData(this);
 			_inventory = new Model.Inventory(this);
@@ -72,7 +72,7 @@ namespace Session.v2
 			_bosses = new Model.BossData(reader, this);
 			_common = new Model.CommonObjectData(reader, this);
 			_events = new Model.EventData(reader, this);
-			_fleet = new Model.FleetData(reader, this);
+			_fleet = new v1.FleetData(reader, this);
 			_iap = new Model.IapData(reader, this);
 			_pvp = new Model.PvpData(reader, this);
 			_inventory = new Model.Inventory(reader, this);
@@ -145,7 +145,7 @@ namespace Session.v2
 				OnDataChanged();
 			}
 		}
-		public Model.FleetData Fleet
+		public v1.FleetData Fleet
 		{
 			get => _fleet;
 			set

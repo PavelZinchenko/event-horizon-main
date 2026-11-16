@@ -20,8 +20,7 @@ namespace Session.Model
 		private readonly ObservableList<Model.ShipComponentInfo> _components;
 		private readonly ObservableList<byte> _layoutModifications;
 		private readonly ObservableList<long> _modifications;
-		private readonly Model.SatelliteInfo _satellite1;
-		private readonly Model.SatelliteInfo _satellite2;
+		private readonly ObservableList<Model.SatelliteInfo> _satellites;
 
 		public ShipInfo(IDataChangedCallback parent)
 		{
@@ -32,8 +31,7 @@ namespace Session.Model
 			_components = new ObservableList<Model.ShipComponentInfo>(parent);
 			_layoutModifications = new ObservableList<byte>(parent);
 			_modifications = new ObservableList<long>(parent);
-			_satellite1 = new Model.SatelliteInfo(parent);
-			_satellite2 = new Model.SatelliteInfo(parent);
+			_satellites = new ObservableList<Model.SatelliteInfo>(parent);
 		}
 
 		public ShipInfo(SessionDataReader reader, IDataChangedCallback parent)
@@ -69,8 +67,15 @@ namespace Session.Model
 				item = reader.ReadLong(EncodingType.EliasGamma);
 				_modifications.Add(item);
 			}
-			_satellite1 = new Model.SatelliteInfo(reader, parent);
-			_satellite2 = new Model.SatelliteInfo(reader, parent);
+			int satellitesItemCount;
+			satellitesItemCount = reader.ReadInt(EncodingType.EliasGamma);
+			_satellites = new ObservableList<Model.SatelliteInfo>(satellitesItemCount, parent);
+			for (int i = 0; i < satellitesItemCount; ++i)
+			{
+				Model.SatelliteInfo item;
+				item = new Model.SatelliteInfo(reader, parent);
+				_satellites.Add(item);
+			}
 		}
 
 		public int Id => _id;
@@ -80,8 +85,7 @@ namespace Session.Model
 		public ObservableList<Model.ShipComponentInfo> Components => _components;
 		public ObservableList<byte> LayoutModifications => _layoutModifications;
 		public ObservableList<long> Modifications => _modifications;
-		public Model.SatelliteInfo Satellite1 => _satellite1;
-		public Model.SatelliteInfo Satellite2 => _satellite2;
+		public ObservableList<Model.SatelliteInfo> Satellites => _satellites;
 
         public void Serialize(SessionDataWriter writer)
         {
@@ -104,8 +108,11 @@ namespace Session.Model
 			{
 				writer.WriteLong(_modifications[i], EncodingType.EliasGamma);
 			}
-			_satellite1.Serialize(writer);
-			_satellite2.Serialize(writer);
+			writer.WriteInt(_satellites.Count, EncodingType.EliasGamma);
+			for (int i = 0; i < _satellites.Count; ++i)
+			{
+				_satellites[i].Serialize(writer);
+			}
         }
 
         public bool Equals(ShipInfo other)
@@ -117,8 +124,7 @@ namespace Session.Model
 			if (!Components.Equals(other.Components, new Model.ShipComponentInfo.EqualityComparer())) return false;
 			if (!LayoutModifications.Equals(other.LayoutModifications, EqualityComparer<byte>.Default)) return false;
 			if (!Modifications.Equals(other.Modifications, EqualityComparer<long>.Default)) return false;
-			if (!Satellite1.Equals(other.Satellite1)) return false;
-			if (!Satellite2.Equals(other.Satellite2)) return false;
+			if (!Satellites.Equals(other.Satellites, new Model.SatelliteInfo.EqualityComparer())) return false;
             return true;
         }
 

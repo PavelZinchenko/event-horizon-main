@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Collections.Generic;
 using GameDatabase;
 using GameDatabase.Model;
 using GameDatabase.DataModel;
@@ -14,8 +15,20 @@ namespace Session.Model
 			_id = preset.Ship.Id.Value;
 			_name = preset.Name;
 			_components = new ObservableList<ShipComponentInfo>(preset.Components.Select(item => new ShipComponentInfo(item)), callback);
-			_satellite1 = new SatelliteInfo(preset.FirstSatellite, callback);
-			_satellite2 = new SatelliteInfo(preset.SecondSatellite, callback);
+			_satellites = new ObservableList<SatelliteInfo>(preset.Satellites.Select(item => new SatelliteInfo(item, callback)), callback);
+		}
+
+		public ShipPresetInfo(
+			int id,
+			string name,
+			IEnumerable<ShipComponentInfo> components,
+			IEnumerable<SatelliteInfo> satellites,
+			IDataChangedCallback callback)
+		{
+			_id = id;
+			_name = name;
+			_components = new ObservableList<ShipComponentInfo>(components, callback);
+			_satellites = new ObservableList<SatelliteInfo>(satellites, callback);
 		}
 
 		public IShipPreset ToShipPreset(IDatabase database)
@@ -27,8 +40,9 @@ namespace Session.Model
 			var components = _components.ToIntegratedComponents(database);
 			var preset = new ShipPreset(shipData);
             preset.Components.Assign(components);
-			preset.FirstSatellite = _satellite1.ToSatellite(database);
-			preset.SecondSatellite = _satellite2.ToSatellite(database);
+			for (int i = 0; i < _satellites.Count; ++i)
+				preset.Satellites[i] = _satellites[i].ToSatellite(database);
+
 			preset.Name = _name;
 			return preset;
 		}

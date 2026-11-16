@@ -19,7 +19,7 @@ namespace Session.Model
 		private ObservableList<Model.HangarSlotInfo> _hangarSlots;
 
 		public const int VersionMinor = 0;
-		public const int VersionMajor = 1;
+		public const int VersionMajor = 4;
 
 		public bool DataChanged { get; private set; }
 

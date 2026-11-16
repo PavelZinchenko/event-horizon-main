@@ -31,13 +31,20 @@ namespace Session
 		/// These items must be transferred manually:
 		/// property was added - newData.ShipPresets;
 		/// </summary>
-		partial void Upgrage_v2_0_to_v3_0(v2.SaveGameData oldData, Model.SaveGameData newData);
+		partial void Upgrage_v2_0_to_v3_0(v2.SaveGameData oldData, v3.SaveGameData newData);
+		/// <summary>
+		/// These items must be transferred manually:
+		/// copy oldData.Fleet.Ships to newData.Fleet.Ships;
+		/// copy oldData.ShipPresets.Presets to newData.ShipPresets.Presets;
+		/// </summary>
+		partial void Upgrage_v3_0_to_v4_0(v3.SaveGameData oldData, Model.SaveGameData newData);
 
 		public Model.SaveGameData Convert(v1.SaveGameData data)
 		{
 			var data2 = Convert_1_2(data);
 			var data3 = Convert_2_3(data2);
-			return data3;
+			var data4 = Convert_3_4(data3);
+			return data4;
 		}
 
 		public Model.SaveGameData Load(SessionDataReader reader, int versionMajor, int versionMinor)
@@ -56,9 +63,9 @@ namespace Session
 				versionMinor = 0;
 			}
 
-			Model.SaveGameData data3 = null;
+			v3.SaveGameData data3 = null;
 			if (versionMajor == 3)
-				data3 = new Model.SaveGameData(reader, null);
+				data3 = new v3.SaveGameData(reader, null);
 			else if (versionMajor == 2)
 			{
 				data3 = Convert_2_3(data2);
@@ -66,7 +73,17 @@ namespace Session
 				versionMinor = 0;
 			}
 
-			return data3;
+			Model.SaveGameData data4 = null;
+			if (versionMajor == 4)
+				data4 = new Model.SaveGameData(reader, null);
+			else if (versionMajor == 3)
+			{
+				data4 = Convert_3_4(data3);
+				versionMajor = 4;
+				versionMinor = 0;
+			}
+
+			return data4;
 		}
 
 
@@ -97,9 +114,9 @@ namespace Session
 			return newData;
 		}
 
-		private Model.SaveGameData Convert_2_3(v2.SaveGameData oldData)
+		private v3.SaveGameData Convert_2_3(v2.SaveGameData oldData)
 		{
-			var newData = new Model.SaveGameData(null);
+			var newData = new v3.SaveGameData(null);
 			newData.Game = oldData.Game;
 			newData.Achievements = oldData.Achievements;
 			newData.Bosses = oldData.Bosses;
@@ -120,6 +137,33 @@ namespace Session
 			newData.Upgrades = oldData.Upgrades;
 			newData.Wormholes = oldData.Wormholes;
 			Upgrage_v2_0_to_v3_0(oldData, newData);
+			return newData;
+		}
+
+		private Model.SaveGameData Convert_3_4(v3.SaveGameData oldData)
+		{
+			var newData = new Model.SaveGameData(null);
+			newData.Game = oldData.Game;
+			newData.Achievements = oldData.Achievements;
+			newData.Bosses = oldData.Bosses;
+			newData.Common = oldData.Common;
+			newData.Events = oldData.Events;
+			newData.Fleet.ExplorationShipId = oldData.Fleet.ExplorationShipId;
+			newData.Fleet.HangarSlots.Assign(oldData.Fleet.HangarSlots);
+			newData.Iap = oldData.Iap;
+			newData.Pvp = oldData.Pvp;
+			newData.Inventory = oldData.Inventory;
+			newData.Quests = oldData.Quests;
+			newData.Regions = oldData.Regions;
+			newData.Research = oldData.Research;
+			newData.Resources = oldData.Resources;
+			newData.Shop = oldData.Shop;
+			newData.Social = oldData.Social;
+			newData.StarMap = oldData.StarMap;
+			newData.Statistics = oldData.Statistics;
+			newData.Upgrades = oldData.Upgrades;
+			newData.Wormholes = oldData.Wormholes;
+			Upgrage_v3_0_to_v4_0(oldData, newData);
 			return newData;
 		}
 	}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="PvpData" type="object">
+    <member name="ArenaFightsFromTimerStart" type="int" />
+    <member name="ArenaLastFightTime" type="long" />
+    <member name="ArenaTimerStartTime" type="long" />
+</data>

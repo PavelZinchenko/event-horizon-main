@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="GameData" type="object">
+    <member name="GameId" type="string" />
+    <member name="Seed" type="int" default="timestamp" />
+    <member name="StartTime" type="long" />
+    <member name="TotalPlayTime" type="long" options="notimportant" />
+    <member name="SupplyShipStartTime" type="long" />
+    <member name="Counter" type="int" />
+</data>

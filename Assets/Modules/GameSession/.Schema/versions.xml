@@ -3,4 +3,5 @@
     <version name="v1" major="1" minor="0" />
     <version name="v2" major="2" minor="0" />
     <version name="v3" major="3" minor="0" />
+    <version name="v4" major="4" minor="0" />
 </schema>

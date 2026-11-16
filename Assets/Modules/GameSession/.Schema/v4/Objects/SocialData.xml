@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="SocialData" type="object">
+    <member name="FirstDailyRewardDate" type="int" />
+    <member name="LastDailyRewardDate" type="int" />
+</data>

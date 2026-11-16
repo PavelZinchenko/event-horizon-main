@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="ShipComponentInfo" type="struct">
+    <member name="Id" type="int" />
+    <member name="Quality" type="sbyte" />
+    <member name="Modification" type="int" />
+    <member name="UpgradeLevel" type="sbyte" />
+    <member name="X" type="short" />
+    <member name="Y" type="short" />    
+    <member name="BarrelId" type="sbyte" />    
+    <member name="KeyBinding" type="sbyte" />    
+    <member name="Behaviour" type="sbyte" />    
+    <member name="Locked" type="bool" />    
+</data>

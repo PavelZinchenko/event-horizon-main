@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data name="RegionData" type="object">
+    <member name="MilitaryPower" type="map" key="int" value="uint" />
+    <member name="CapturedBases" type="bitset" />
+    <member name="Factions" type="map" key="int" value="int" />
+</data>
