@@ -58,6 +58,7 @@ namespace Combat.Factory
 					{
 						case ImpactEffectType.Damage:
                         case ImpactEffectType.DamageWithFalloff:
+                        case ImpactEffectType.Impulse:
                         case ImpactEffectType.SiphonHitPoints:
                         case ImpactEffectType.DrainEnergy:
                         case ImpactEffectType.DrainShield:

@@ -72,7 +72,7 @@ namespace GameDatabase.Tests
         }
 
         [Test]
-        public void CommonBulletGetsStrikeDamageAndPush()
+        public void CommonBulletGetsStrikeImpulse()
         {
             // PlasmaCannon_S_1: heat 1, impulse 0.01, speed 20, prefab Energy1 (k 1.2).
             var item = Find(ConvertAll(), 48);
@@ -80,10 +80,9 @@ namespace GameDatabase.Tests
             Assert.AreEqual(0.6f, item.Body.Size);
             Assert.AreEqual(0f, item.Body.Lifetime);
             Assert.AreEqual(0.01f, item.Body.Weight);
-            Assert.AreEqual(3, item.Effects.Length);
+            Assert.AreEqual(2, item.Effects.Length);
             AssertEffect(item.Effects[0], ImpactEffectType.Damage, DamageType.Heat, 1f);
-            AssertEffect(item.Effects[1], ImpactEffectType.Damage, DamageType.Impact, 0.2f);
-            AssertEffect(item.Effects[2], ImpactEffectType.Push, DamageType.Impact, 0.01f);
+            AssertEffect(item.Effects[1], ImpactEffectType.Impulse, DamageType.Impact, 1f);
 
             var hit = item.Triggers.Single(trigger => trigger.Condition == BulletTriggerCondition.Hit);
             Assert.AreEqual(1, hit.VisualEffect);
@@ -142,7 +141,8 @@ namespace GameDatabase.Tests
             Assert.AreNotEqual(48, fragment.Id);
             Assert.AreEqual(10f, fragment.Body.Range);
             Assert.AreEqual(2, fragment.Effects.Length);
-            AssertEffect(fragment.Effects[0], ImpactEffectType.Damage, DamageType.Impact, 6.2f);
+            AssertEffect(fragment.Effects[0], ImpactEffectType.Damage, DamageType.Impact, 6f);
+            AssertEffect(fragment.Effects[1], ImpactEffectType.Impulse, DamageType.Impact, 1f);
         }
 
         [Test]
