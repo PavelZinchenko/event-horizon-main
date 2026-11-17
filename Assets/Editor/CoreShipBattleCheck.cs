@@ -85,8 +85,8 @@ public static class CoreShipBattleCheck
 
         var roster = new[]
         {
-            new RosterSlotSetup(BuildSlot, 0, definition),
-            new RosterSlotSetup(TargetSlot, 1, Target),
+            new UnitSetup(BuildSlot, 0, definition),
+            new UnitSetup(TargetSlot, 1, Target),
         };
         // Phase 5, step 14d: the ten asteroids of a level 0 campaign battle, drawn from the build seed.
         var torus = new Torus(ArenaSize, ArenaSize);
@@ -125,10 +125,10 @@ public static class CoreShipBattleCheck
             {
                 switch (item.Kind)
                 {
-                    case BattleEventKind.Spawn when item.RosterId == BuildSlot && !item.IsDrone:
+                    case BattleEventKind.Spawn when item.UnitId == BuildSlot && !item.IsDrone:
                         ship = item.EntityId;
                         break;
-                    case BattleEventKind.Spawn when item.RosterId == TargetSlot && !item.IsDrone:
+                    case BattleEventKind.Spawn when item.UnitId == TargetSlot && !item.IsDrone:
                         target = item.EntityId;
                         break;
                     case BattleEventKind.Spawn when item.IsDrone && item.ParentId == ship:
@@ -499,8 +499,8 @@ public static class CoreShipBattleCheck
 
     private const int HardAiLevel = 100;
 
-    private static readonly RosterId BuildSlot = new RosterId(1);
-    private static readonly RosterId TargetSlot = new RosterId(2);
+    private static readonly UnitId BuildSlot = new UnitId(1);
+    private static readonly UnitId TargetSlot = new UnitId(2);
 
     private const float ArenaSize = 200f;
     private const float AsteroidPowerMultiplier = 1f;

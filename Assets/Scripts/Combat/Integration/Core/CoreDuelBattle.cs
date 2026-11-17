@@ -113,7 +113,7 @@ namespace Combat.Integration.Core
 
         public sealed class Slot
         {
-            public Slot(CombatSimulation.Core.RosterId rosterId, CombatSide side, IShipInfo info, CoreShipMapping mapping)
+            public Slot(CombatSimulation.Core.UnitId rosterId, CombatSide side, IShipInfo info, CoreShipMapping mapping)
             {
                 RosterId = rosterId;
                 Side = side;
@@ -121,7 +121,7 @@ namespace Combat.Integration.Core
                 Mapping = mapping;
             }
 
-            public CombatSimulation.Core.RosterId RosterId { get; }
+            public CombatSimulation.Core.UnitId RosterId { get; }
             public CombatSide Side { get; }
             public IShipInfo Info { get; }
             public CoreShipMapping Mapping { get; }

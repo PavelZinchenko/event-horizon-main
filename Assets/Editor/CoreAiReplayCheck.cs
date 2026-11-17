@@ -131,15 +131,15 @@ public static class CoreAiReplayCheck
         {
             var roster = new[]
             {
-                new RosterSlotSetup(new RosterId(1), 0, first),
-                new RosterSlotSetup(new RosterId(2), 1, second),
+                new UnitSetup(new UnitId(1), 0, first),
+                new UnitSetup(new UnitId(2), 1, second),
             };
             var setup = new BattleSetup(new BattleId(1), seed, roster, ArenaSize, ArenaSize);
             var trees = CorePilotProvider.CreateTrees(seed, new Torus(setup.Width, setup.Height), mapper, OnBroadcast);
             _runner = new BattleRunner(setup, new CorePilotProvider(database.CombatSettings, trees, mapper.Mappings,
                 playerSide: -1, enemyAiLevel: HardAiLevel));
-            _runner.Deploy(new RosterId(1), _runner.Tick);
-            _runner.Deploy(new RosterId(2), _runner.Tick);
+            _runner.Deploy(new UnitId(1), _runner.Tick);
+            _runner.Deploy(new UnitId(2), _runner.Tick);
         }
 
         public readonly List<string> Log = new List<string>();

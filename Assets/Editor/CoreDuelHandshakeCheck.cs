@@ -64,7 +64,7 @@ public static class CoreDuelHandshakeCheck
         if (equal.Host.State == HandshakeState.Ready && equal.Guest.State == HandshakeState.Ready &&
             equal.Host.SetupHashValue == equal.Guest.SetupHashValue)
             report.AppendLine($"Equal players: Ready, setup hash {equal.Host.SetupHashValue:X16}, " +
-                $"{equal.Host.Setup.Roster.Count} slots, setup hash time {equal.HashMilliseconds} ms");
+                $"{equal.Host.Setup.Units.Count} slots, setup hash time {equal.HashMilliseconds} ms");
         else
         {
             ++failures;

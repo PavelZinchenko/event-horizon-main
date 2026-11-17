@@ -15,7 +15,7 @@ using OnlineDuel;
 using Services.Resources;
 using UnityEditor;
 using UnityEngine;
-using CoreRosterId = CombatSimulation.Core.RosterId;
+using CoreUnitId = CombatSimulation.Core.UnitId;
 using Debug = UnityEngine.Debug;
 
 namespace Combat.Integration.Core
@@ -148,7 +148,7 @@ namespace Combat.Integration.Core
         private void Drain()
         {
             var active = false;
-            var ready = default(CoreRosterId);
+            var ready = default(CoreUnitId);
             var hasReady = false;
             while (_thread.TryTake(out var snapshot))
             {
@@ -156,11 +156,11 @@ namespace Combat.Integration.Core
                 if (snapshot.IsCompleted) _result = snapshot.Result;
                 active = false;
                 hasReady = false;
-                foreach (var slot in snapshot.Roster)
+                foreach (var slot in snapshot.Units)
                 {
                     if (slot.Side != _localSide) continue;
-                    if (slot.Status == RosterStatus.Active) active = true;
-                    if (slot.Status == RosterStatus.Ready && !hasReady) { ready = slot.RosterId; hasReady = true; }
+                    if (slot.Status == UnitStatus.Active) active = true;
+                    if (slot.Status == UnitStatus.Ready && !hasReady) { ready = slot.UnitId; hasReady = true; }
                 }
                 _thread.Release(snapshot);
                 _seen = true;
@@ -348,7 +348,7 @@ namespace Combat.Integration.Core
         private long _tick = -1, _deployTick;
         private bool _seen;
         private bool _errorLogged;
-        private CoreRosterId _deploying;
+        private CoreUnitId _deploying;
         private BattleResult _result;
         // Written by the session thread.
         private readonly object _lock = new object();

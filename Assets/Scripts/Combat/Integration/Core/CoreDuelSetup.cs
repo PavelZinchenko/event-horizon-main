@@ -7,14 +7,14 @@ using GameDatabase;
 using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameServices.Multiplayer;
-using CoreRosterId = CombatSimulation.Core.RosterId;
+using CoreUnitId = CombatSimulation.Core.UnitId;
 
 namespace Combat.Integration.Core
 {
     // One roster slot of the duel as the last Build made it: the ship, its specification and its mapping.
     public sealed class CoreDuelSlot
     {
-        public CoreDuelSlot(CoreRosterId rosterId, int side, Constructor.Ships.IShip ship, IShipSpecification specification,
+        public CoreDuelSlot(CoreUnitId rosterId, int side, Constructor.Ships.IShip ship, IShipSpecification specification,
             CoreShipMapping mapping)
         {
             RosterId = rosterId;
@@ -24,7 +24,7 @@ namespace Combat.Integration.Core
             Mapping = mapping;
         }
 
-        public CoreRosterId RosterId { get; }
+        public CoreUnitId RosterId { get; }
         public int Side { get; }
         public Constructor.Ships.IShip Ship { get; }
         public IShipSpecification Specification { get; }
@@ -67,7 +67,7 @@ namespace Combat.Integration.Core
         {
             var rules = CreateRules();
             _slots.Clear();
-            var roster = new List<RosterSlotSetup>();
+            var roster = new List<UnitSetup>();
             var nextId = 1u;
             AddFleet(plan.HostFleet, MatchPlan.HostSide, MatchPlan.HostOwner, roster, ref nextId);
             AddFleet(plan.GuestFleet, MatchPlan.GuestSide, MatchPlan.GuestOwner, roster, ref nextId);
@@ -79,7 +79,7 @@ namespace Combat.Integration.Core
                 onlyOneShip: rules.ShipSelection == PlayerShipSelectionMode.OnlyOneShip);
         }
 
-        private void AddFleet(byte[] fleet, int side, int owner, List<RosterSlotSetup> roster, ref uint nextId)
+        private void AddFleet(byte[] fleet, int side, int owner, List<UnitSetup> roster, ref uint nextId)
         {
             foreach (var ship in FleetWebSerializer.DeserializeFleetData(Database, fleet).ToList())
             {
@@ -88,8 +88,8 @@ namespace Combat.Integration.Core
                 builder.AllMountPoints = true;
                 var specification = builder.Build(Database.ShipSettings);
                 var mapping = Mapper.Map(specification, isDrone: false);
-                var id = new CoreRosterId(nextId++);
-                roster.Add(new RosterSlotSetup(id, side, mapping.Definition, owner));
+                var id = new CoreUnitId(nextId++);
+                roster.Add(new UnitSetup(id, side, mapping.Definition, owner));
                 _slots.Add(new CoreDuelSlot(id, side, ship, specification, mapping));
             }
         }

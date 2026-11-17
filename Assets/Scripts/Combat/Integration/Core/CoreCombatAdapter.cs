@@ -21,7 +21,7 @@ using Services.Settings;
 using UnityEngine;
 using Zenject;
 using CoreEntityId = CombatSimulation.Core.EntityId;
-using CoreRosterId = CombatSimulation.Core.RosterId;
+using CoreUnitId = CombatSimulation.Core.UnitId;
 using LegacyViewRect = Combat.Scene.ViewRect;
 using PlayerInputSignal = Combat.Ai.PlayerInputSignal;
 
@@ -63,7 +63,7 @@ namespace Combat.Integration.Core
             _exitTrigger = exitTrigger;
 
             var rules = combatModel.Rules;
-            var roster = new List<RosterSlotSetup>();
+            var roster = new List<UnitSetup>();
             if (duel != null)
             {
                 _mapper = duel.Mapper;
@@ -492,13 +492,13 @@ namespace Combat.Integration.Core
 
         private long TimerElapsedTicks => _runner?.Snapshot.TimerElapsedTicks ?? _timerElapsedTicks;
 
-        private RosterSlotSetup AddSlot(RosterId id, CombatSide side, IShipInfo info, ShipDefinition definition)
+        private UnitSetup AddSlot(RosterId id, CombatSide side, IShipInfo info, ShipDefinition definition)
         {
             var slot = new Slot(id, side, info, definition.Armor, this);
             (side == CombatSide.Player ? _playerSlots : _enemySlots).Add(slot);
             _slotsById.Add(id, slot);
             _slotsByCore.Add(ToCore(id), slot);
-            return new RosterSlotSetup(ToCore(id), ToCoreSide(side), definition);
+            return new UnitSetup(ToCore(id), ToCoreSide(side), definition);
         }
 
         // M1 check: the console lists the inert devices (D1) once per battle, by mapped ship or drone.
@@ -580,8 +580,8 @@ namespace Combat.Integration.Core
                         else
                             OnShipRemoved(item, ViewReason(events, i));
                         break;
-                    case BattleEventKind.RosterTransition:
-                        OnRosterTransition(snapshot, item);
+                    case BattleEventKind.UnitTransition:
+                        OnUnitTransition(snapshot, item);
                         break;
                     case BattleEventKind.Rename:
                         _renderer.RenameBullet(item.PreviousId, item.EntityId);
@@ -618,7 +618,7 @@ namespace Combat.Integration.Core
 
         private void OnShipSpawned(BattleSnapshot snapshot, in BattleEvent item)
         {
-            if (!_slotsByCore.TryGetValue(item.RosterId, out var slot) || !snapshot.TryGetShip(item.EntityId, out var state))
+            if (!_slotsByCore.TryGetValue(item.UnitId, out var slot) || !snapshot.TryGetShip(item.EntityId, out var state))
                 return;
 
             var id = _ids.Assign(item.EntityId);
@@ -802,8 +802,8 @@ namespace Combat.Integration.Core
                 return removal.RemovalReason;
 
             for (var i = index + 1; i < events.Length; ++i)
-                if (events[i].Kind == BattleEventKind.RosterTransition && events[i].EntityId == removal.EntityId)
-                    return events[i].TransitionReason == RosterTransitionReason.ForcedDestruction
+                if (events[i].Kind == BattleEventKind.UnitTransition && events[i].EntityId == removal.EntityId)
+                    return events[i].TransitionReason == UnitTransitionReason.ForcedDestruction
                         ? RemovalReason.Vanish : removal.RemovalReason;
             return removal.RemovalReason;
         }
@@ -822,9 +822,9 @@ namespace Combat.Integration.Core
             _removed.Add(item.EntityId);
         }
 
-        private void OnRosterTransition(BattleSnapshot snapshot, in BattleEvent item)
+        private void OnUnitTransition(BattleSnapshot snapshot, in BattleEvent item)
         {
-            if (!_slotsByCore.TryGetValue(item.RosterId, out var slot))
+            if (!_slotsByCore.TryGetValue(item.UnitId, out var slot))
                 return;
 
             var previous = slot.Status;
@@ -834,7 +834,7 @@ namespace Combat.Integration.Core
             if (!item.EntityId.IsNull)
                 _ids.TryGet(item.EntityId, out entity);
 
-            if (item.TransitionReason == RosterTransitionReason.Deployed)
+            if (item.TransitionReason == UnitTransitionReason.Deployed)
             {
                 if (slot.Side == CombatSide.Player)
                 {
@@ -848,7 +848,7 @@ namespace Combat.Integration.Core
             }
             else
             {
-                if (_duel != null && slot.Side == CombatSide.Player && item.TransitionReason == RosterTransitionReason.Retreated)
+                if (_duel != null && slot.Side == CombatSide.Player && item.TransitionReason == UnitTransitionReason.Retreated)
                     _retreats++;
                 slot.ActiveEntity = EntityId.None;
                 if (previous == ShipStatus.Active)
@@ -863,8 +863,8 @@ namespace Combat.Integration.Core
         // experience checkpoint in SlotChanged reads the tick's enemy damage (B2). ShipInfo keeps it after the unload.
         private void ApplyResults(BattleSnapshot snapshot)
         {
-            foreach (var state in snapshot.Roster)
-                if (_slotsByCore.TryGetValue(state.RosterId, out var slot))
+            foreach (var state in snapshot.Units)
+                if (_slotsByCore.TryGetValue(state.UnitId, out var slot))
                     slot.Info.ApplyCoreState(ToStatus(state.Status), state.DamageFraction, state.DeploymentOrder);
         }
 
@@ -875,9 +875,9 @@ namespace Combat.Integration.Core
                 if (_viewsByCore.TryGetValue(ship.Id, out var view))
                     view.Update(ship, snapshot.GetDevices(ship));
 
-            foreach (var state in snapshot.Roster)
+            foreach (var state in snapshot.Units)
             {
-                if (!_slotsByCore.TryGetValue(state.RosterId, out var slot))
+                if (!_slotsByCore.TryGetValue(state.UnitId, out var slot))
                     continue;
 
                 slot.ArmorDeficit = state.ArmorDeficit;
@@ -1172,26 +1172,26 @@ namespace Combat.Integration.Core
             return EntityId.None;
         }
 
-        private static CoreRosterId ToCore(RosterId id) => new CoreRosterId((uint)id.Value);
+        private static CoreUnitId ToCore(RosterId id) => new CoreUnitId((uint)id.Value);
         private static int ToCoreSide(CombatSide side) => side == CombatSide.Player ? PlayerSide : EnemySide;
 
-        private static ShipStatus ToStatus(RosterStatus status)
+        private static ShipStatus ToStatus(UnitStatus status)
         {
             switch (status)
             {
-                case RosterStatus.Active: return ShipStatus.Active;
-                case RosterStatus.Destroyed: return ShipStatus.Destroyed;
+                case UnitStatus.Active: return ShipStatus.Active;
+                case UnitStatus.Destroyed: return ShipStatus.Destroyed;
                 default: return ShipStatus.Ready;
             }
         }
 
-        private static RosterChangeReason ToReason(RosterTransitionReason reason)
+        private static RosterChangeReason ToReason(UnitTransitionReason reason)
         {
             switch (reason)
             {
-                case RosterTransitionReason.Deployed: return RosterChangeReason.Deployed;
-                case RosterTransitionReason.Retreated: return RosterChangeReason.Retreated;
-                case RosterTransitionReason.Killed: return RosterChangeReason.Killed;
+                case UnitTransitionReason.Deployed: return RosterChangeReason.Deployed;
+                case UnitTransitionReason.Retreated: return RosterChangeReason.Retreated;
+                case UnitTransitionReason.Killed: return RosterChangeReason.Killed;
                 default: return RosterChangeReason.ForcedDestruction;
             }
         }
@@ -1314,7 +1314,7 @@ namespace Combat.Integration.Core
         private readonly List<Slot> _playerSlots = new List<Slot>();
         private readonly List<Slot> _enemySlots = new List<Slot>();
         private readonly Dictionary<RosterId, Slot> _slotsById = new Dictionary<RosterId, Slot>();
-        private readonly Dictionary<CoreRosterId, Slot> _slotsByCore = new Dictionary<CoreRosterId, Slot>();
+        private readonly Dictionary<CoreUnitId, Slot> _slotsByCore = new Dictionary<CoreUnitId, Slot>();
         private readonly Dictionary<EntityId, CoreShipView> _views = new Dictionary<EntityId, CoreShipView>();
         private readonly Dictionary<CoreEntityId, CoreShipView> _viewsByCore = new Dictionary<CoreEntityId, CoreShipView>();
         private readonly List<CoreEntityId> _removed = new List<CoreEntityId>();
