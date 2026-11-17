@@ -6,6 +6,7 @@ using System.Text;
 using Combat.Integration.Core;
 using CombatSimulation.Ai;
 using CombatSimulation.Core;
+using CombatSimulation.Modes;
 using CombatSimulation.Physics;
 using CombatSimulation.Runtime;
 using Constructor;
@@ -91,7 +92,7 @@ public static class CoreShipBattleCheck
         // Phase 5, step 14d: the ten asteroids of a level 0 campaign battle, drawn from the build seed.
         var torus = new Torus(ArenaSize, ArenaSize);
         var seed = (ulong)result.BuildId;
-        var setup = new BattleSetup(new BattleId(1), seed, roster, ArenaSize, ArenaSize,
+        var setup = new BattleSetup(new BattleId(1), seed, roster, ArenaSize, ArenaSize, RosterRules.Default,
             asteroids: CoreAsteroids.Layout(seed, torus, AsteroidPowerMultiplier));
         // The fixture target has no mapping, so the trees get its profile here.
         var mappings = mapper.Mappings;

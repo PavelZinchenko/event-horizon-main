@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Combat.Domain;
 using CombatSimulation.Ai;
 using CombatSimulation.Core;
+using CombatSimulation.Modes;
 using CombatSimulation.Physics;
 using CombatSimulation.Runtime;
 using CombatView;
@@ -107,10 +108,11 @@ namespace Combat.Integration.Core
             }
             else
             {
-                // Step 9: the core ends an OnlyOneShip battle after the first player death (SS2).
-                var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, timeLimitTicks,
-                    timerMode: ToTimerMode(rules.TimeOutMode), playerSide: PlayerSide, maxActiveShipsBySide: maxActiveBySide,
-                    onlyOneShip: rules.ShipSelection == PlayerShipSelectionMode.OnlyOneShip, asteroids: asteroids);
+                // Step 9: RosterMode ends an OnlyOneShip battle after the first player death (SS2).
+                var battleRules = new RosterRules(timeLimitTicks, timerMode: ToTimerMode(rules.TimeOutMode),
+                    playerSide: PlayerSide, maxActiveShipsBySide: maxActiveBySide,
+                    onlyOneShip: rules.ShipSelection == PlayerShipSelectionMode.OnlyOneShip);
+                var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, battleRules, asteroids: asteroids);
                 _trees = CorePilotProvider.CreateTrees(seed, torus, _mapper, OnBroadcast);
                 _pilots = new CorePilotProvider(database.CombatSettings, _trees, _mapper.Mappings, PlayerSide, combatModel.EnemyFleet.AiLevel);
                 _runner = new BattleRunner(setup, _pilots);

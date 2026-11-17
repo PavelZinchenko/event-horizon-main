@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Combat.Integration.Core;
 using CombatSimulation.Core;
+using CombatSimulation.Modes;
 using CombatSimulation.Physics;
 using CombatSimulation.Runtime;
 using Constructor;
@@ -134,7 +135,7 @@ public static class CoreAiReplayCheck
                 new UnitSetup(new UnitId(1), 0, first),
                 new UnitSetup(new UnitId(2), 1, second),
             };
-            var setup = new BattleSetup(new BattleId(1), seed, roster, ArenaSize, ArenaSize);
+            var setup = new BattleSetup(new BattleId(1), seed, roster, ArenaSize, ArenaSize, RosterRules.Default);
             var trees = CorePilotProvider.CreateTrees(seed, new Torus(setup.Width, setup.Height), mapper, OnBroadcast);
             _runner = new BattleRunner(setup, new CorePilotProvider(database.CombatSettings, trees, mapper.Mappings,
                 playerSide: -1, enemyAiLevel: HardAiLevel));

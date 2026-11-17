@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Constructor;
 using CombatSimulation.Core;
+using CombatSimulation.Modes;
 using CombatSimulation.Runtime;
 using GameDatabase;
 using GameDatabase.DataModel;
@@ -73,10 +74,11 @@ namespace Combat.Integration.Core
             AddFleet(plan.GuestFleet, MatchPlan.GuestSide, MatchPlan.GuestOwner, roster, ref nextId);
 
             var size = rules.BattleMapSize;
-            return new BattleSetup(plan.BattleId, plan.Seed, roster, size, size, (long)rules.TimeLimit * TicksPerSecond,
-                maxActiveShipsPerSide: 1, localOwners: plan.LocalOwners, ownerDelays: plan.OwnerDelays,
+            var battleRules = new RosterRules((long)rules.TimeLimit * TicksPerSecond, maxActiveShipsPerSide: 1,
                 timerMode: CoreCombatAdapter.ToTimerMode(rules.TimeOutMode), playerSide: MatchPlan.HostSide,
                 onlyOneShip: rules.ShipSelection == PlayerShipSelectionMode.OnlyOneShip);
+            return new BattleSetup(plan.BattleId, plan.Seed, roster, size, size, battleRules,
+                localOwners: plan.LocalOwners, ownerDelays: plan.OwnerDelays);
         }
 
         private void AddFleet(byte[] fleet, int side, int owner, List<UnitSetup> roster, ref uint nextId)

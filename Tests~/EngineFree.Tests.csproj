@@ -39,6 +39,7 @@
     <Compile Include="$(Assets)Modules\GameSession\Scripts\**\*.cs" />
     <Compile Include="$(Assets)ModulesShared\CombatSimulation\Physics\Scripts\**\*.cs" />
     <Compile Include="$(Assets)ModulesShared\CombatSimulation\Core\Scripts\**\*.cs" />
+    <Compile Include="$(Assets)ModulesShared\CombatSimulation\Modes\Scripts\**\*.cs" />
     <Compile Include="$(Assets)ModulesShared\CombatSimulation\Runtime\Scripts\**\*.cs" />
     <Compile Include="$(Assets)ModulesShared\CombatSimulation\Network\Scripts\**\*.cs" />
     <Compile Include="$(Assets)ModulesShared\CombatSimulation\Ai\Scripts\**\*.cs" />
