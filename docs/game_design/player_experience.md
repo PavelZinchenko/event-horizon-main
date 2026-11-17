@@ -62,7 +62,7 @@ Do not describe this as unrestricted rebinding across every input device.
 
 The localization system provides language catalogs, text lookup, formatting, and font fallback.
 Mods can supply additional or replacement strings.
-The exact language catalog belongs to the [localization reference](../localization.md#language-lists), rather than a permanent feature-count promise.
+The exact language catalog belongs to the [localization reference](../../Assets/ModulesShared/docs/localization.md#language-lists), rather than a permanent feature-count promise.
 
 Readable text, clear icons, sound feedback, and visible damage effects support decisions during play.
 Database playlists can vary music by activity or combat rules.
@@ -111,6 +111,6 @@ Open questions:
 - [Application layer](../application_layer.md): session states, interface map, and save lifecycle.
 - [StartingNewGameState](../../Assets/Scripts/GameStateMachine/States/StartingNewGameState.cs): starting fuel, inventory, fleet, and unlocked components.
 - [MainMenuState](../../Assets/Scripts/GameStateMachine/States/MainMenuState.cs) and [MainMenu](../../Assets/Scripts/Gui/MainMenu/MainMenu.cs): entry paths.
-- [GameServices: input](../game_services.md#input) and [ShipEditor: controls](../ship_editor.md#key-bindings-and-component-modes): input and rebinding limits.
-- [Localization](../localization.md) and [Media and resources](../resources/index.md): language and presentation support.
+- [GameServices: input](../game_services.md#input) and [ShipEditor: controls](../../Assets/ModulesShared/docs/ship_editor.md#key-bindings-and-component-modes): input and rebinding limits.
+- [Localization](../../Assets/ModulesShared/docs/localization.md) and [Media and resources](../resources/index.md): language and presentation support.
 - [GameSession](../game_session.md) and [Quest persistence](../quests.md#persistence): saved state and reconstruction limits.

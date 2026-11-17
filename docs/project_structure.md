@@ -9,7 +9,7 @@ For the game itself, see [Game design](game.md). For how the parts work together
 - `Assets/` contains gameplay code, scenes, resources, art, editor tools, and vendored Unity plugins.
 - `Packages/` declares Unity Package Manager dependencies. `manifest.json` is the primary package configuration. See [Build pipeline: Package dependencies](build.md#package-dependencies).
 - `ProjectSettings/` stores project-wide Unity settings, including the editor version and per-platform build settings. See [Build pipeline: Platform settings](build.md#platform-settings).
-- `docs/` contains contributor-facing documentation. `docs/game_design/` holds the [game design chapters](game_design/index.md); `docs/issues/` holds known defects by component.
+- `docs/` contains Event Horizon documentation. `docs/game_design/` holds the [game design chapters](game_design/index.md); `docs/issues/` holds game-specific defects. Shared module docs and issues live in [`Assets/ModulesShared/docs/`](../Assets/ModulesShared/docs/).
 - `UIElementsSchema/` contains schemas used by Unity UI authoring tools.
 - `README.md` provides the public project and community overview.
 - `.gitmodules` lists the 7 Git submodules. Each module doc describes its own submodule.
@@ -41,7 +41,7 @@ Assembly boundaries are defined by `.asmdef` files. Check references before movi
 
 - `AppConfiguration` - Generated application configuration plus shared font and UI theme assets. See [AppConfiguration module](app_configuration.md).
 - `BattleSimulator` - Combat simulation, ship behavior, weapons, physics, and combat AI. See [BattleSimulator module](battle_simulator.md).
-- `CombatView` - Sprite views for battles on the new combat core. See [Combat simulation: Views](combat_simulation.md#views).
+- `CombatView` - Sprite views for battles on the new combat core. See [Combat simulator: Views](../Assets/ModulesShared/docs/combat_simulator/unity_integration.md#views).
 - `CommonComponents` - Shared value types (IDs, money, prices), galaxy layout, signals, and general helpers. See [CommonComponents module](common_components.md) and its [issues](issues/common_components.md).
 - `Database` - Schema-driven game data, runtime access and serialization, migrations, and code-generation tools. See [Database module](database.md).
 - `GalaxyMap` - Prefabs and materials that draw the star map. The scripts are in `Assets/Scripts/Legacy/Map/`. See [GalaxyMap module](galaxy_map.md).
@@ -57,15 +57,15 @@ Assembly boundaries are defined by `.asmdef` files. Check references before movi
 
 ## ModulesShared
 
-`Assets/ModulesShared/` is a Git submodule that Event Horizon shares with Event Horizon: Frontier. A change here can break Frontier, and this repository cannot check that. See [Gui: Shared code constraint](gui.md#shared-code-constraint).
+`Assets/ModulesShared/` is a Git submodule that Event Horizon shares with Event Horizon: Frontier. A change here can break Frontier, and this repository cannot check that. See [Gui: Shared code constraint](../Assets/ModulesShared/docs/gui.md#shared-code-constraint).
 
-- `CombatSimulation` - New battle simulator, shared with Frontier. In progress: the engine-free physics library, the battle core and its runtime. Quick combat can run on it in a debug scene. See [Combat simulation](combat_simulation.md).
-- `Diagnostics` - Project logging, assertion, and Unity logger adapters. See [Diagnostics module](diagnostics.md).
-- `Gui` - Shared UI framework, window management, themes, the debug console, and reusable controls. See [Gui module](gui.md).
-- `Localization` - Runtime localization and language-specific XML translation resources. See [Localization module](localization.md).
-- `Resources` - Shared GUI icons. See [Gui: Shared icons](gui.md#shared-icons) and [Sprites](resources/sprites.md).
-- `ShipEditor` - Ship-layout editing context, scene integration, selection, and mesh-building tools. See [ShipEditor module](ship_editor.md).
-- `Utilites` - Inventory collections, random-number generation, serialization helpers, and obscured value types. The directory name intentionally retains its existing spelling. See [Utilites module](utilites.md).
+- `CombatSimulation` - New battle simulator, shared with Frontier. In progress: the engine-free physics library, the battle core and its runtime. Quick combat can run on it in a debug scene. See [Combat simulator](../Assets/ModulesShared/docs/combat_simulator/index.md).
+- `Diagnostics` - Project logging, assertion, and Unity logger adapters. See [Diagnostics module](../Assets/ModulesShared/docs/diagnostics.md).
+- `Gui` - Shared UI framework, window management, themes, the debug console, and reusable controls. See [Gui module](../Assets/ModulesShared/docs/gui.md).
+- `Localization` - Runtime localization and language-specific XML translation resources. See [Localization module](../Assets/ModulesShared/docs/localization.md).
+- `Resources` - Shared GUI icons. See [Gui: Shared icons](../Assets/ModulesShared/docs/gui.md#shared-icons) and [Sprites](resources/sprites.md).
+- `ShipEditor` - Ship-layout editing context, scene integration, selection, and mesh-building tools. See [ShipEditor module](../Assets/ModulesShared/docs/ship_editor.md).
+- `Utilites` - Inventory collections, random-number generation, serialization helpers, and obscured value types. The directory name intentionally retains its existing spelling. See [Utilites module](../Assets/ModulesShared/docs/utilites.md).
 
 ## ModulesPrivate
 

@@ -173,7 +173,7 @@ A `Weapon` cell is stored as `X`. Each accepted change increments `AddedCellCoun
 
 The ship service upgrade panel ([UpgradePanel.cs](../Assets/Scripts/Gui/ShipService/UpgradePanel.cs)) is the only caller of `TryAddCell` and `IsCellValid`. `Reset` returns the hull to stock; the panel then removes components that no longer fit.
 
-Placement of components on these cells is not in this module. The rules are in ShipEditor ([Layout model and placement rules](ship_editor.md#layout-model-and-placement-rules)) and its barrel map ([Barrel map and weapon classes](ship_editor.md#barrel-map-and-weapon-classes)).
+Placement of components on these cells is not in this module. The rules are in ShipEditor ([Layout model and placement rules](../Assets/ModulesShared/docs/ship_editor.md#layout-model-and-placement-rules)) and its barrel map ([Barrel map and weapon classes](../Assets/ModulesShared/docs/ship_editor.md#barrel-map-and-weapon-classes)).
 
 ## Components
 
@@ -222,7 +222,7 @@ The implicit `bool` conversion is true when `Data` is set. `Equals` compares com
 
 ### IntegratedComponent
 
-`IntegratedComponent` ([IntegratedComponent.cs](../Assets/Modules/ShipConstructor/Scripts/IntegratedComponent.cs)) has read-only `Info`, `X`, `Y`, `BarrelId` and mutable `KeyBinding`, `Behaviour`, `Locked`. `X`, `Y` is the top-left cell of the component's square layout. The meaning of `KeyBinding` and `Behaviour` is in [ShipEditor: Key bindings](ship_editor.md#key-bindings-and-component-modes).
+`IntegratedComponent` ([IntegratedComponent.cs](../Assets/Modules/ShipConstructor/Scripts/IntegratedComponent.cs)) has read-only `Info`, `X`, `Y`, `BarrelId` and mutable `KeyBinding`, `Behaviour`, `Locked`. `X`, `Y` is the top-left cell of the component's square layout. The meaning of `KeyBinding` and `Behaviour` is in [ShipEditor: Key bindings](../Assets/ModulesShared/docs/ship_editor.md#key-bindings-and-component-modes).
 
 `ComponentExtensions.FromDatabase(InstalledComponent)` converts a build component. It always sets `Locked = true`. `ToString` throws `NotSupportedException`.
 
@@ -442,7 +442,7 @@ The `*BaseCooldown` fields of `ShipEquipmentStats` are never set, so components 
 | Drone bay | [DroneBay.cs:36](../Assets/Modules/BattleSimulator/Scripts/Combat/Component/Systems/DroneBays/DroneBay.cs#L36) | Armor, shield, damage, velocity, turn rate (overwritten) |
 | Build difficulty | `ShipBuilder(ShipBuild)` | Damage, armor, shield × (1 + 0.5 × class) |
 
-The ShipEditor statistics panel builds a `ShipStatsCalculator` itself, without bonuses ([SE11](issues/ship_editor.md#se11-statistics-duplicate-shipbuilder-and-omit-combat-bonuses)).
+The ShipEditor statistics panel builds a `ShipStatsCalculator` itself, without bonuses ([SE11](../Assets/ModulesShared/docs/issues/ship_editor.md#se11-statistics-duplicate-shipbuilder-and-omit-combat-bonuses)).
 
 ## Engine stats
 
@@ -548,7 +548,7 @@ Current saves do not store ShipConstructor objects. GameSession converts them to
 | --- | --- |
 | [GameSession](game_session.md) | Converts `IShip`, `ISatellite`, `IShipPreset`, `IntegratedComponent`, `ComponentInfo` to and from save structs. Creates `ShipModel`, `CommonShip`, `CommonSatellite`, `ModificationFactory`. |
 | [BattleSimulator](battle_simulator.md) | Reads `IShipSpecification` and `IShipStats`; builds drones with `ShipBuilder(ShipBuild)`; uses `EngineStats`, `CompanionLocation`, `ColorScheme`. |
-| [ShipEditor](ship_editor.md) | Edits `IShip` and satellites; uses `IShipLayout`, `CompatibilityChecker`, `ShipStatsCalculator`, `WeaponDamageCalculator`, `ShipPreset`, `IComponentUpgradesProvider`. |
+| [ShipEditor](../Assets/ModulesShared/docs/ship_editor.md) | Edits `IShip` and satellites; uses `IShipLayout`, `CompatibilityChecker`, `ShipStatsCalculator`, `WeaponDamageCalculator`, `ShipPreset`, `IComponentUpgradesProvider`. |
 | Gui component list | Builds the inventory tree from `ComponentInfo`. |
 | Application layer | Fleet, inventory, loot, crafting, ship service (hull expansion, perks), arena, combat entry (`CreateBuilder().ApplyPlayerSkills().Build()`), exploration enemies, threat display. See [Application layer](application_layer.md). |
 

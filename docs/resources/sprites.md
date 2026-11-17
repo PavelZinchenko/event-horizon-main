@@ -20,7 +20,7 @@ The sprite atlas assets at `Assets/Sprites/` pack the component, satellite, ship
 
 ## Shared Resources icons
 
-`Assets/ModulesShared/Resources/Icons/` contains icons used by shared GUI and ship editor prefabs: navigation, equipment, fleet, journal, scanner, and similar actions. `Icons/WeaponGroup/` contains size or class symbols for weapon groups. `ResourceLocator.Reload` does not collect this folder. The icons reach the game by three routes: serialized UI references; `Resources.Load` by path for the ship editor's component groups (`icons/icon_shield` and others); and the hand-edited `_guiIconSprites` list of the locator for the weapon slot icons. See [Gui module: Shared icons](../gui.md#shared-icons).
+`Assets/ModulesShared/Resources/Icons/` contains icons used by shared GUI and ship editor prefabs: navigation, equipment, fleet, journal, scanner, and similar actions. `Icons/WeaponGroup/` contains size or class symbols for weapon groups. `ResourceLocator.Reload` does not collect this folder. The icons reach the game by three routes: serialized UI references; `Resources.Load` by path for the ship editor's component groups (`icons/icon_shield` and others); and the hand-edited `_guiIconSprites` list of the locator for the weapon slot icons. See [Gui module: Shared icons](../../Assets/ModulesShared/docs/gui.md#shared-icons).
 
 ## ID and update rules
 

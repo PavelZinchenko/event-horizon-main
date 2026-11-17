@@ -349,7 +349,7 @@ A file in the mod folder is a packed mod. A subfolder is a folder mod.
 | `UnloadOriginalDatabase = true` | The built-in catalog is not loaded. The mod must be complete. Code that uses [hard-coded IDs](#hard-coded-ids) can then fail. |
 | Images | Built-in sprites win by name. Mod images are a fallback (see [Media](#media-images-and-audio)). |
 | Audio | Built-in clips win by name. Mod clips are a fallback. |
-| Localization | A mod XML file named after a language (for example `English.xml`) adds strings. See [Localization](localization.md). |
+| Localization | A mod XML file named after a language (for example `English.xml`) adds strings. See [Localization](../Assets/ModulesShared/docs/localization.md). |
 | Duplicate ID or second settings record inside one storage | Depends on how the storage loads. A mod at the current version loads in the [`DatabaseContent`](../Assets/Modules/Database/Scripts/GeneratedGameCode/Storage/DatabaseContent.cs#L19) constructor, where `_allowDuplicates` is still false: the duplicate throws `DatabaseException` and the mod does not load. The built-in catalog (`LoadParent`) and an upgraded mod load after the constructor: the first record wins and later ones are skipped silently. Order depends on file enumeration. See [DB15.29](issues/database.md#db15-smaller-defects). |
 
 ## Storage backends
@@ -454,7 +454,7 @@ The database feeds almost every subsystem. This table lists the main readers. Fi
 | UI | [`UiTheme`](../Assets/ModulesShared/Gui/Scripts/Theme/UiTheme.cs), [`MainMenu`](../Assets/Scripts/Gui/MainMenu/MainMenu.cs), [`ComponentTreeNode`](../Assets/ModulesShared/Gui/Scripts/ComponentList/ComponentTreeNode.cs) | UiSettings, WeaponSlots, LocalizationSettings |
 | Audio | [`DatabaseMusicPlaylist`](../Assets/Scripts/GameServices/Audio/DatabaseMusicPlaylist.cs) | MusicPlaylist, CombatRules.CustomSoundtrack |
 | Debug | [`DatabaseCodesProcessor`](../Assets/Scripts/Legacy/Debug/DatabaseCodesProcessor.cs), [`DebugConsoleLogger`](../Assets/ModulesShared/Gui/Scripts/DebugConsole/DebugConsoleLogger.cs) | DebugSettings |
-| Localization | [Localization module](localization.md) | `GetLocalization(language)` for mod XML |
+| Localization | [Localization module](../Assets/ModulesShared/docs/localization.md) | `GetLocalization(language)` for mod XML |
 | Saves | [GameSession](game_session.md) | Record IDs; legacy name tables |
 
 ## Hard-coded IDs

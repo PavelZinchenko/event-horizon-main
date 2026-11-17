@@ -13,7 +13,7 @@ Unity uses three different reference paths here. Scenes, prefabs, and settings h
 | [Presentation](presentation.md) | Animation, fonts, application icons, splash images, and the WebGL template. |
 | [Configuration and plugin Resources](configuration.md) | ScriptableObjects, the resource locator prefab, and integration or editor resources. |
 | [Database resources](../database.md) | `Assets/Modules/Database/Resources/` supplies the built-in game catalog and migration inputs. |
-| [Localization resources](../localization.md) | `Assets/ModulesShared/Localization/Resources/` supplies language lists and translated text catalogs. |
+| [Localization resources](../../Assets/ModulesShared/docs/localization.md) | `Assets/ModulesShared/Localization/Resources/` supplies language lists and translated text catalogs. |
 
 ## Adding or changing an asset
 

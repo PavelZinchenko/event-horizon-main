@@ -112,4 +112,4 @@ Open questions:
 - [PlayerFleet](../../Assets/Scripts/Domain/Player/PlayerFleet.cs): supporter ship and fleet repair during load.
 - [ArenaTimeManager](../../Assets/Scripts/GameServices/OfflineMultiplayer/ArenaTimeManager.cs): purchase-disabled battle-limit exception.
 - [Database: mods and merge rules](../database.md#mods-and-merge-rules) and [Database editor](../database/editor.md): mod loading and authoring.
-- [Localization](../localization.md#database-and-mod-localization) and [ResourceLocator](../resource_locator.md): text and media precedence.
+- [Localization](../../Assets/ModulesShared/docs/localization.md#database-and-mod-localization) and [ResourceLocator](../resource_locator.md): text and media precedence.

@@ -96,8 +96,8 @@ Every platform uses `LICENSE_COMMERCIAL`. A clone without the private submodule 
 
 | Asset | Type | Used by |
 | --- | --- | --- |
-| [UiTheme.asset](../Assets/Modules/AppConfiguration/ScriptableObjects/UiTheme.asset) | `Gui.Theme.UiTheme` | `ServicesInstaller._defaultUiTheme` in `LoaderScene` and `BaseTestScene`. It is the default theme; a mod can override it. See [Gui module: Themes](gui.md#themes). |
-| [FontTable.asset](../Assets/Modules/AppConfiguration/ScriptableObjects/FontTable.asset) | `Services.Localization.FontTable` | Nothing. The lookup that uses it is disabled. See [Localization: Font fallback](localization.md#font-fallback-systemfontlocator-and-fonttable). |
+| [UiTheme.asset](../Assets/Modules/AppConfiguration/ScriptableObjects/UiTheme.asset) | `Gui.Theme.UiTheme` | `ServicesInstaller._defaultUiTheme` in `LoaderScene` and `BaseTestScene`. It is the default theme; a mod can override it. See [Gui module: Themes](../Assets/ModulesShared/docs/gui.md#themes). |
+| [FontTable.asset](../Assets/Modules/AppConfiguration/ScriptableObjects/FontTable.asset) | `Services.Localization.FontTable` | Nothing. The lookup that uses it is disabled. See [Localization: Font fallback](../Assets/ModulesShared/docs/localization.md#font-fallback-systemfontlocator-and-fonttable). |
 
 ## How to change the configuration
 

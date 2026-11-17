@@ -103,7 +103,7 @@ The player should understand why a component cannot fit or activate.
 Fitting feedback should explain energy shortages, restrictions, and meaningful performance differences.
 
 The editor's statistics omit some combat bonuses, including bonuses applied when entering battle.
-The [existing statistics issue](../issues/ship_editor.md#se11-statistics-duplicate-shipbuilder-and-omit-combat-bonuses) records that limitation.
+The [existing statistics issue](../../Assets/ModulesShared/docs/issues/ship_editor.md#se11-statistics-duplicate-shipbuilder-and-omit-combat-bonuses) records that limitation.
 Displayed fitting values should therefore not be treated as an exact prediction of every encounter.
 
 Open questions:
@@ -114,7 +114,7 @@ Open questions:
 ## Sources
 
 - [ShipConstructor](../ship_constructor.md): component compatibility, statistics, perks, and satellites.
-- [ShipEditor](../ship_editor.md): placement, locks, presets, and activation settings.
+- [ShipEditor](../../Assets/ModulesShared/docs/ship_editor.md): placement, locks, presets, and activation settings.
 - [CompatibilityChecker](../../Assets/Modules/ShipConstructor/Scripts/Component/CompatibilityChecker.cs): biological, class, and device restrictions.
 - [ShipLayoutModel](../../Assets/ModulesShared/ShipEditor/Scripts/Model/ShipLayoutModel.cs): cell and mount checks.
 - [ShipEditorState](../../Assets/Scripts/GameStateMachine/States/ShipEditorState.cs): campaign inventory and unlock context.

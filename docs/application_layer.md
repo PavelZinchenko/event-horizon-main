@@ -45,7 +45,7 @@ The game has no `ProjectContext`. The root container is the `SceneContext` in `L
 | `StarMapSceneInstaller` | `StarMapScene` | Scene `Messenger`, object pool. |
 | `DefaultSceneInstaller` | `SettingsScene`, `SkillTreeScene` | Scene `Messenger` for a configured `GameScene`. |
 | `CombatSceneInstaller` | `CombatScene` | Combat simulation (`Scene`, collisions, AI, factories), combat HUD panels, `CombatManager`, `CombatTimer`, input. |
-| `CoreCombatSceneInstaller` | `CoreCombatScene` | `CoreCombatAdapter` over the new combat core, combat HUD panels and presenters, input. No legacy simulation bindings. See [Combat simulation: Unity integration](combat_simulation.md#unity-integration). |
+| `CoreCombatSceneInstaller` | `CoreCombatScene` | `CoreCombatAdapter` over the new combat core, combat HUD panels and presenters, input. No legacy simulation bindings. See [Combat simulator: Unity integration](../Assets/ModulesShared/docs/combat_simulator/unity_integration.md). |
 | `ExplorationSceneInstaller` | `ExplorationScene` | Same simulation stack plus `ExplorationData` and `ExplorationSceneManager`. |
 | `EhopediaSceneInstaller` | `EhopediaScene` | Simulation stack for ship previews and `EhopediaSceneManager`. |
 | `ConfigSceneInstaller` | `ConfigureControlsScene` | Simulation stack for the controls test range. |
@@ -87,7 +87,7 @@ To add a state, change four places: the state class with a nested `Factory`, a `
 | `CombatState` | Combat | Star map, arena, quests, star content | Runs combat for an `ICombatModel`, applies the reward, invokes the completion callback, then loads the reward window or the star map. |
 | `CombatRewardState` | Combat | Combat | Shows the reward window, then loads the star map. |
 | `QuickCombatState` | Combat or CoreCombat | Main menu | Builds random or test fleets from the database. `@` in the test ship ID loads `CoreCombatScene`. |
-| `OnlineDuelCombatState` | CoreCombat | Main menu (after the duel lobby closes) | Binds a running `CoreDuelBattle` and its `DuelCombatModel`. No reward. Sets `IApplication.AlwaysRunning`; disposes the duel on unload. Stores the outcome in `OnlineDuelResult` and loads the main menu, which reopens the lobby. See [combat simulation](combat_simulation.md#duel-lobby). |
+| `OnlineDuelCombatState` | CoreCombat | Main menu (after the duel lobby closes) | Binds a running `CoreDuelBattle` and its `DuelCombatModel`. No reward. Sets `IApplication.AlwaysRunning`; disposes the duel on unload. Stores the outcome in `OnlineDuelResult` and loads the main menu, which reopens the lobby. See [combat simulator: Duel lobby](../Assets/ModulesShared/docs/combat_simulator/runtime_session.md#duel-lobby). |
 | `ExplorationState` | Exploration | Star map | Planet exploration. |
 | `SkillTreeState` | SkillTree | Star map | Player skill tree. |
 | `ShipEditorState` | ShipEditor | Main menu, star map | Ship editor with either a player-inventory context or a database context. |
@@ -165,7 +165,7 @@ The combat simulation is in the [BattleSimulator module](battle_simulator.md). T
 - `Manager/CombatTimer`: time-limit rules.
 - `Manager/ExplorationSceneManager`, `EhopediaSceneManager`: scene logic for exploration and Ehopedia previews.
 - `Background/`, `Camera/`, `Services/ResourcePreloader`, `Unit/Object/EnemySpawner`.
-- `Integration/`: the contracts that the combat HUD reads and commands (`IRosterView`, `IBattleView`, `IShipViews`, `IShipControlSource`, `ICombatCommands`, `IScenePresentation`) and `CombatExperienceRecorder`. `Legacy/` implements them over `BattleSimulator`; `Core/` over the new combat core ([Combat simulation: Unity integration](combat_simulation.md#unity-integration)).
+- `Integration/`: the contracts that the combat HUD reads and commands (`IRosterView`, `IBattleView`, `IShipViews`, `IShipControlSource`, `ICombatCommands`, `IScenePresentation`) and `CombatExperienceRecorder`. `Legacy/` implements them over `BattleSimulator`; `Core/` over the new combat core ([Combat simulator: Unity integration](../Assets/ModulesShared/docs/combat_simulator/unity_integration.md)).
 
 ## Game Services (`GameServices/`)
 

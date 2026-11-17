@@ -12,8 +12,8 @@ This file records problems in `Assets/Modules/ShipConstructor/`. For the design,
 | [DB15.14](database.md#db15-smaller-defects) | The drone bay overwrites the difficulty bonus of `ShipBuilder(ShipBuild)`. |
 | [DB15.15](database.md#db15-smaller-defects) | `FullyUpgrade` does not count the added cells. |
 | [DB15.18](database.md#db15-smaller-defects) | `ShipBuilder` counts limits before the compatibility check. |
-| [SE10](ship_editor.md#se10-placement-rules-live-in-the-ui-module-and-have-copies) | Placement rules live in ShipEditor; `ShipLayoutObsolete` has a copy. |
-| [SE11](ship_editor.md#se11-statistics-duplicate-shipbuilder-and-omit-combat-bonuses) | The editor statistics omit combat bonuses. |
+| [SE10](../../Assets/ModulesShared/docs/issues/ship_editor.md#se10-placement-rules-live-in-the-ui-module-and-have-copies) | Placement rules live in ShipEditor; `ShipLayoutObsolete` has a copy. |
+| [SE11](../../Assets/ModulesShared/docs/issues/ship_editor.md#se11-statistics-duplicate-shipbuilder-and-omit-combat-bonuses) | The editor statistics omit combat bonuses. |
 | [GS5.14](game_session.md#gs5-smaller-defects) | Ship components are saved with upgrade level 0. |
 
 The analysis was done by reading the code on 2026-10-12. No issue was reproduced in Play Mode. Each issue has a severity (High, Medium, or Low) and a status:
@@ -136,7 +136,7 @@ If arena equalization is intended, only the colour is a defect.
 - `ModificationFactory.Create(ExtraBlueCells)` returns an empty slot ([ModificationFactory.cs:31](../../Assets/Modules/ShipConstructor/Scripts/Ships/Modification/ModificationFactory.cs#L31)). No perk ever has type `ExtraBlueCells`, so the arena check for it is dead ([ShipValidator.cs:71](../../Assets/Modules/ShipConstructor/Scripts/Ships/ShipValidator.cs#L71)). `IsForbiddenOnArena` always returns false ([line 85](../../Assets/Modules/ShipConstructor/Scripts/Ships/ShipValidator.cs#L85)).
 - `ShipModificationExtensions.CreateRandomModifications` has no caller. It would include `Empty`, `ExtraBlueCells`, and `UnlimitedRespawn`, and throw on the last ([ShipModificationExtensions.cs:25](../../Assets/Modules/ShipConstructor/Scripts/Ships/Modification/ShipModificationExtensions.cs#L25)).
 - Unused: `ComponentInfo.FromItemQuality`, `ComponentExtensions._separator`, `WeaponDamageCalculator.MinCooldown`, `ShipExtensions.RandomizeColor`, `Unlocked`, `OfLevel`, `CreateCopy` (only commented-out callers).
-- `ShipLayoutObsolete` is a third copy of the placement rules ([SE10](ship_editor.md#se10-placement-rules-live-in-the-ui-module-and-have-copies)). Its only caller checks satellite builds in `InitializationState`. It ignores expanded cells and maps barrels with its own algorithm.
+- `ShipLayoutObsolete` is a third copy of the placement rules ([SE10](../../Assets/ModulesShared/docs/issues/ship_editor.md#se10-placement-rules-live-in-the-ui-module-and-have-copies)). Its only caller checks satellite builds in `InitializationState`. It ignores expanded cells and maps barrels with its own algorithm.
 - Commented-out code: the old `ActivationType` and `SizeClass` enums, `GetWeaponData`, `IsHoming`, and starbase checks.
 
 **Direction.** Delete the dead members. Replace `ShipLayoutObsolete` in `InitializationState` with ShipEditor's `ShipLayoutModel` (which `ShipValidator` in the application already uses).

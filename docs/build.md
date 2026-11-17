@@ -131,7 +131,7 @@ No passwords or keys are in the repository.
 | `com.unity.purchasing` | 5.3.1 | Unity IAP (`IAP_UNITY`). See [Plugins](plugins.md). |
 | `com.unity.test-framework` | 1.6.0 | Editor tests (`*.Tests` assemblies, Unity Test Runner). |
 | `com.unity.toolchain.win-x86_64-linux-x86_64` | 2.0.11 | IL2CPP Linux builds from a Windows Editor. |
-| `com.unity.ugui` | 2.0.0 | All game UI. See [Gui module](gui.md). |
+| `com.unity.ugui` | 2.0.0 | All game UI. See [Gui module](../Assets/ModulesShared/docs/gui.md). |
 | `com.unity.ui` | 2.0.0 | UI Toolkit. Only `SystemFontLocator` imports `UnityEngine.UIElements` (it creates `FontAsset` objects). |
 
 Most game plugins (Zenject, UniRx, Google Play Games, Steamworks.NET, BouncyCastle, NativeFilePicker) are copies in `Assets/`, not packages. See [Plugins](plugins.md).
