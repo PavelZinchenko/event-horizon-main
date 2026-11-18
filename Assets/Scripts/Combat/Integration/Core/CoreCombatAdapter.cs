@@ -112,7 +112,10 @@ namespace Combat.Integration.Core
                 var battleRules = new RosterRules(timeLimitTicks, timerMode: ToTimerMode(rules.TimeOutMode),
                     playerSide: PlayerSide, maxActiveShipsBySide: maxActiveBySide,
                     onlyOneShip: rules.ShipSelection == PlayerShipSelectionMode.OnlyOneShip);
-                var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, battleRules, asteroids: asteroids);
+                // Phase 2b (D12): a local battle keeps stepping after its result, through the exit delay, as legacy
+                // CombatManager keeps the scene running until Exit. The online duel stops at its result.
+                var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, battleRules, asteroids: asteroids,
+                    continueAfterResult: true);
                 _trees = CorePilotProvider.CreateTrees(seed, torus, _mapper, OnBroadcast);
                 _pilots = new CorePilotProvider(database.CombatSettings, _trees, _mapper.Mappings, PlayerSide, combatModel.EnemyFleet.AiLevel);
                 _runner = new BattleRunner(setup, _pilots);
@@ -290,7 +293,7 @@ namespace Combat.Integration.Core
         {
             description = null;
             commands = null;
-            if (!IsRunning || !_ids.TryGetCore(ship, out var core) || !_viewsByCore.TryGetValue(core, out var view))
+            if (!IsStepping || !_ids.TryGetCore(ship, out var core) || !_viewsByCore.TryGetValue(core, out var view))
                 return false;
             if (!_pilots.TryGetPlayerPilot(core, out var pilot))
                 return false;
@@ -341,11 +344,14 @@ namespace Combat.Integration.Core
             if (_duel != null)
             {
                 _duel.Thread.Post(SessionCommand.Surrender(_localSide));
+                _surrendered = true;
                 return;
             }
             if (!_runner.Surrender(PlayerSide, _runner.Tick))
                 return;
 
+            // Legacy CombatManager.Surrender exits at once, without the 3 s after the result.
+            _surrendered = true;
             // The menu pauses the game, so the frame accumulator does not advance. Surrender decides the battle
             // within its own tick, so one step outside the accumulator reaches the result.
             Step();
@@ -400,12 +406,12 @@ namespace Combat.Integration.Core
 
         private void RunSteps()
         {
-            if (!IsRunning)
+            if (!IsStepping)
                 return;
 
             _accumulator += Time.deltaTime;
             var steps = 0;
-            while (_accumulator >= Battle.TickDuration && IsRunning)
+            while (_accumulator >= Battle.TickDuration && IsStepping)
             {
                 if (steps == MaxStepsPerFrame)
                 {
@@ -459,7 +465,7 @@ namespace Combat.Integration.Core
                 _duel.MarkPlayerInput();
         }
 
-        // Also after the result, so the last frame stays on screen; only the stepping stops.
+        // Also after the stepping stops (a duel's result, disposal), so the last frame stays on screen.
         private void Render()
         {
             var controlled = default(CoreEntityId);
@@ -467,7 +473,7 @@ namespace Combat.Integration.Core
             if (player != null)
                 _ids.TryGetCore(player.Id, out controlled);
 
-            var alpha = !IsRunning ? 1f : _duel != null
+            var alpha = !IsStepping ? 1f : _duel != null
                 ? Mathf.Clamp01((float)(_duel.Now() - _publishedAt) / Battle.TickDuration)
                 : Mathf.Clamp01(_accumulator / Battle.TickDuration);
             _renderer.ViewPoint = _framing.Center;
@@ -486,8 +492,12 @@ namespace Combat.Integration.Core
 
         private CoreShipView ActiveView(EntityId id) => _views.TryGetValue(id, out var view) && view.IsActive ? view : null;
 
-        // False after the result (the core then throws on every step and command) and after disposal.
+        // False after the result and after disposal: no deployment, roster command or timer.
         private bool IsRunning => _duel != null ? !_duelCompleted : _runner != null && !_runner.IsCompleted;
+
+        // The battle steps and the player flies. A local battle also steps after its result (phase 2b, D12); a duel
+        // stops at its result, and the session thread then publishes nothing more.
+        private bool IsStepping => _duel != null ? !_duelCompleted : _runner != null && !_runner.IsStopped;
 
         // The tick that the next command targets: the runner's, or in a duel the one after the last handled snapshot.
         private long CommandTick => _runner?.Tick ?? _lastTick + 1;
@@ -526,11 +536,15 @@ namespace Combat.Integration.Core
         // One tick: deploy by the commander rules, step, then handle the tick's events before the next step.
         private void Step()
         {
-            if (!IsRunning)
+            if (!IsStepping)
                 return;
 
-            RunEnemyCommander();
-            RunPlayerCommander();
+            // After the result the commanders deploy nothing and open no ship selection.
+            if (IsRunning)
+            {
+                RunEnemyCommander();
+                RunPlayerCommander();
+            }
 
             // The pilots of this step think on the snapshot of the current tick.
             if (_playerInput)
@@ -1079,8 +1093,9 @@ namespace Combat.Integration.Core
             return false;
         }
 
-        // The battle freezes at the result: stepping stops, and the last frame and the death fades stay on screen.
-        // Surrender ends the same way. A ShipLost result already waited the legacy 3 s in the core, so it exits at once (SS3).
+        // Legacy CombatManager exits 3 s after the last death; a local battle keeps stepping through them (phase 2b). A duel
+        // freezes at the result, and the last frame and the death fades stay on screen. A surrender exits at once, as
+        // legacy. A ShipLost result already waited the legacy 3 s in the core, so it exits at once too (SS3).
         private void OnCompleted(BattleResult result)
         {
             if (_exitDelay >= 0f)
@@ -1093,7 +1108,7 @@ namespace Combat.Integration.Core
                 _duel.Result = result;
                 Debug.Log($"CoreCombatAdapter: duel result {result}, local side {_localSide}, tick {_lastTick}");
             }
-            _exitDelay = result.Reason == BattleEndReason.ShipLost ? 0f : ExitDelaySeconds;
+            _exitDelay = _surrendered || result.Reason == BattleEndReason.ShipLost ? 0f : ExitDelaySeconds;
         }
 
         // Phase 7, step 8: the session thread stopped before the result. A lost link is a draw on this player (decision 3);
@@ -1123,13 +1138,14 @@ namespace Combat.Integration.Core
             Debug.LogError($"CoreCombatAdapter: the core result ({result}) does not match the campaign victory ({victory}).\n{report}");
         }
 
-        // Real time, not game time: surrender comes from the menu, which pauses the game and stays open.
+        // A local battle counts game time, as legacy CombatManager: a pause stops the battle and the delay together. A duel
+        // counts real time; its session thread does not pause. A delay of 0 (surrender) exits in this frame, paused or not.
         private void UpdateExit()
         {
             if (_exitDelay < 0f || _exited)
                 return;
 
-            _exitDelay -= Time.unscaledDeltaTime;
+            _exitDelay -= _duel != null ? Time.unscaledDeltaTime : Time.deltaTime;
             if (_exitDelay > 0f)
                 return;
 
@@ -1308,6 +1324,7 @@ namespace Combat.Integration.Core
         // Seconds left until the exit after the result; negative while the battle runs.
         private float _exitDelay = -1f;
         private bool _exited;
+        private bool _surrendered;
         private readonly long[] _nextDeployTick = new long[2];
         // Active ship limits by CombatSide, as given to the core.
         private readonly int[] _maxActive = new int[2];
