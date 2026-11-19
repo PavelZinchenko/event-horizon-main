@@ -29,8 +29,9 @@ namespace Combat.Integration.Core
     // The legacy reference is ExplorationSceneManager. The mode's events go to the messenger and the windows: a dock
     // opens the scan window, whose Ok completes the objective; a completion writes the planet's mask and shows the loot.
     // The scene's own menu (Gui/Exploration/CombatMenu) sends Surrender and KillAllEnemies through the messenger, so this
-    // adapter implements none of the roster contracts (E2).
-    public sealed class CoreExplorationAdapter : CoreBattleHost, IScenePresentation
+    // adapter implements none of the roster contracts (E2). IBattleView only for CoreKeyboardDriver (owner, 2026-11-19),
+    // with neutral values.
+    public sealed class CoreExplorationAdapter : CoreBattleHost, IScenePresentation, IBattleView
     {
         [Inject]
         public CoreExplorationAdapter(
@@ -85,9 +86,19 @@ namespace Combat.Integration.Core
             messenger.AddListener(EventType.KillAllEnemies, KillAllEnemies);
         }
 
+        #region IBattleView
+
         // The player's ship and the nearest active enemy ship (legacy Scene.EnemyShip); EntityId.None when there is none.
         public EntityId ControlledShip => _player;
         public EntityId TargetShip => _target;
+
+        // Exploration has no timer, no ship change and no reinforcement; its menu has its own kill-all.
+        public CombatTimerState Timer => new CombatTimerState(false, 0, false);
+        public bool CanChangeShip => false;
+        public bool CanCallReinforcement => false;
+        public bool KillAllAllowedByRules => false;
+
+        #endregion
 
         // E3: the radar's beacons, by objective ID.
         public IEnumerable<IBeaconTarget> Beacons => _beacons.Values;
@@ -229,18 +240,27 @@ namespace Combat.Integration.Core
                 _enemies.Add(ship);
         }
 
-        // Legacy OnPlayerDocked: the scan window; its Ok completes the objective. An undock closes it with Cancel.
+        // Legacy OnPlayerDocked: the scan window; its Ok completes the objective. An undock closes it with Cancel. The
+        // docking brake acts while the window is open (owner, 2026-11-19).
         private void OnDocked(int objective)
         {
             _messenger.Broadcast(EventType.PlayerShipDocked, objective);
             if (!_beacons.TryGetValue(objective, out var beacon) || beacon.IsComplete)
                 return;
 
+            SetDockingInProgress(objective, true);
             _guiManager.OpenWindow(Gui.Exploration.WindowNames.ScanningPanel, code =>
             {
+                SetDockingInProgress(objective, false);
                 if (code == WindowExitCode.Ok)
                     CompleteObjective(objective);
             });
+        }
+
+        private void SetDockingInProgress(int objective, bool inProgress)
+        {
+            if (IsRunning)
+                Runner.SubmitModeCommand(ExplorationMode.DockingInProgress, Runner.Tick, objective, inProgress ? 1 : 0);
         }
 
         private void CompleteObjective(int objective)

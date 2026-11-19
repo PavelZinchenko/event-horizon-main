@@ -60,7 +60,8 @@ namespace Combat.Integration.Core
             var layout = ExplorationLayout.Generate(CreateLayoutInput(exploration, database, content.RandomShipCount));
             // player_lives.md: Main has no respawn; the battle ends 250 ticks after the death (legacy 5 s), with no question.
             var lives = new LivesSetup(0, PlayerOutDelayTicks, SpawnPlacement.At(layout.Start, layout.StartAngle));
-            var rules = new ExplorationRules(layout, content, PlayerUnit, lives, completedObjectives);
+            var rules = new ExplorationRules(layout, content, PlayerUnit, lives, completedObjectives,
+                dockingBrakeRate: DockingBrakeRate, dockingBrakeThrottle: DockingBrakeThrottle);
             var roster = new[] { new UnitSetup(PlayerUnit, PlayerSide, mapper.Map(player, isDrone: false).Definition) };
             // Phase 2b (D12): a local battle keeps stepping after its result, through the exit delay.
             var setup = new BattleSetup(new BattleId(1), matchSeed, roster, WorldSize, WorldSize, rules, zones: layout.Zones,
@@ -173,6 +174,10 @@ namespace Combat.Integration.Core
         // Legacy gas cloud: the GasCloud collider (0.5) x a body size of 1.5 x (5 to 14).
         private const float GasCloudMinRadius = 0.5f * 1.5f * 5f;
         private const float GasCloudMaxRadius = 0.5f * 1.5f * 14f;
+
+        // Legacy DockingStationCollisionBehaviour: below a throttle of 0.1, the velocity loses 3 × its value per second.
+        private const float DockingBrakeRate = 3f;
+        private const float DockingBrakeThrottle = 0.1f;
 
         private const long PlayerOutDelayTicks = 5 * TicksPerSecond;
         private const int TicksPerSecond = 50;

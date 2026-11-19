@@ -18,11 +18,12 @@ namespace GameServices.SceneManager
 		ConfigureControls,
 		Combat,
 		Exploration,
-		Ehopedia,
+        Ehopedia,
 		Settings,
 		CoreCombat,
         DuelLobby,
-	}
+        CoreExploration,
+    }
 
     public static class GameSceneExtension
     {
@@ -61,9 +62,11 @@ namespace GameServices.SceneManager
 					return "ConfigureControlsScene";
 				case GameScene.Combat:
 					return "CombatScene";
-				case GameScene.Exploration:
-					return "ExplorationScene";
-				case GameScene.Ehopedia:
+                case GameScene.Exploration:
+                    return "ExplorationScene";
+                case GameScene.CoreExploration:
+                    return "CoreExplorationScene";
+                case GameScene.Ehopedia:
 					return "EhopediaScene";
 				case GameScene.Settings:
 					return "SettingsScene";

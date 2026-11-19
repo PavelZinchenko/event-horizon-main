@@ -44,6 +44,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DuelLobbyScene.unity
     guid: c1774b950b14dca4a9d804fe370f771e
+  - enabled: 1
+    path: Assets/Scenes/CoreExplorationScene.unity
+    guid: 03adf507ec554264fb2a5506693f7c8c
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 07d6f9791b7f5664293fa0c9ffc66f36,
       type: 2}

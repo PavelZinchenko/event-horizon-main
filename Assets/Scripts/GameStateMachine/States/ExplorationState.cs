@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Game.Exploration;
+using GameDatabase;
 using GameServices.SceneManager;
-using Game.Exploration;
 using Gui.Combat;
 using Services.Audio;
 using Services.Gui;
+using System.Collections.Generic;
 using Zenject;
 
 namespace GameStateMachine.States
@@ -17,6 +18,7 @@ namespace GameStateMachine.States
             IGuiManager guiManager,
             Planet planet,
             IMusicPlayer musicPlayer,
+            IDatabase database,
             EscapeKeyPressedSignal escapeKeyPressedSignal,
             ExitSignal exitSignal)
             : base(stateMachine, stateFactory)
@@ -28,11 +30,12 @@ namespace GameStateMachine.States
             _exitSignal.Event += OnCombatCompleted;
             _escapeKeyPressedSignal = escapeKeyPressedSignal;
             _escapeKeyPressedSignal.Event += OnEscapeKeyPressed;
+            _useCombatCore = database.CombatSettings.UseNewCombatSimulator;
         }
 
         public override StateType Type => StateType.Exploration;
 
-		public override IEnumerable<GameScene> RequiredScenes { get { yield return GameScene.Exploration; } }
+		public override IEnumerable<GameScene> RequiredScenes { get { yield return _useCombatCore ? GameScene.CoreExploration : GameScene.Exploration; } }
 
 		public override void InstallBindings(DiContainer container)
 		{
@@ -79,6 +82,7 @@ namespace GameStateMachine.States
         private readonly Planet _planet;
         private readonly IMusicPlayer _musicPlayer;
         private readonly IGuiManager _guiManager;
+        private readonly bool _useCombatCore;
         private readonly EscapeKeyPressedSignal _escapeKeyPressedSignal;
         private readonly ExitSignal _exitSignal;
 
