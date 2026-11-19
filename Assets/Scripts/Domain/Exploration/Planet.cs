@@ -49,6 +49,19 @@ namespace Game.Exploration
             Color = Type == PlanetType.Infected ? GetInfectedPlanetColor(random) : GetPlanetColor(random);
         }
 
+        // A planet without a star or a session, for the Editor checks (exploration plan, step 6). Only its content
+        // works: the completion state needs the session.
+        public Planet(PlanetType type, int level, int seed, Faction faction, int totalObjectives, Color color)
+        {
+            Type = type;
+            Level = level;
+            Seed = seed;
+            Faction = faction;
+            TotalObjectives = totalObjectives;
+            Color = color;
+            Size = 1.0f;
+        }
+
         private PlanetType GetPlanetType(int index, int starId, System.Random random)
         {
             if (index == InfectedPlanetId) return PlanetType.Infected;

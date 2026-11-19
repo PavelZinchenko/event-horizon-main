@@ -100,9 +100,16 @@ namespace Combat.Integration.Core
 
         public CoreShipMapping Map(IShipSpecification specification, bool isDrone) => Map(specification, isDrone, null, false);
 
+        // Main's exploration ships whose legacy prefab fixes the position and the rotation (exploration plan, E15):
+        // turret_platform_1, outpost1 and hive. A turret (outpost and its turrets, legacy ShipFactory.CreateTurret) also
+        // runs the starbase tree with a NullEngine; the hive (CreateEnemyShip) keeps its engine and the enemy tree.
+        public CoreShipMapping MapStationary(IShipSpecification specification, bool isTurret) =>
+            Map(specification, false, null, false, isStationary: true, isTurret: isTurret);
+
         // bay is the drone bay of a drone, else null; it selects the drone's tree and range (step 7f). A clone (phase 5,
         // step 7c) is a drone without a bay that runs the clone tree.
-        private CoreShipMapping Map(IShipSpecification specification, bool isDrone, IDroneBayData bay, bool isClone)
+        private CoreShipMapping Map(IShipSpecification specification, bool isDrone, IDroneBayData bay, bool isClone,
+            bool isStationary = false, bool isTurret = false)
         {
             var stats = specification.Stats;
             var modelScale = stats.ShipModel.ModelScale;
@@ -252,14 +259,19 @@ namespace Combat.Integration.Core
                 AddDroneBays(specification, devices, infos, views, aiDroneBays);
 
             var engine = new EngineStats(stats.EnginePower, stats.TurnRate, stats.Weight, stats.Layout.CellCount, _database.ShipSettings);
+            // Legacy ShipFactory.CreateStarbase and the starbase prefabs (exploration plan, E15): a starbase keeps its
+            // position and spins at 10 deg/s whatever its pilot does. Its clone keeps the position (the same prefab) and
+            // flies its own engine (CreateClone).
+            var isStarbase = isTurret || stats.ShipModel.ShipType == ShipType.Starbase;
+            var starbaseEngine = isTurret ? NullEngine : isStarbase && !isDrone ? EngineDefinition.Starbase(StarbaseSpin) : null;
             var definition = new ShipDefinition(
                 _hullBuilder.Build(stats.ShipModel),
                 Positive(stats.Weight),
-                ToEngine(engine),
+                starbaseEngine ?? ToEngine(engine),
                 Positive(stats.ArmorPoints),
                 new ResourceDefinition(NonNegative(stats.ShieldPoints), stats.ShieldRechargeRate, NonNegative(stats.ShieldRechargeCooldown)),
                 new ResourceDefinition(NonNegative(stats.EnergyPoints), stats.EnergyRechargeRate, NonNegative(stats.EnergyRechargeCooldown)),
-                ToEngine(new EngineStats(stats.EnginePowerWihoutEnergy, stats.TurnRateWihoutEnergy, stats.Weight, stats.Layout.CellCount, _database.ShipSettings)),
+                starbaseEngine ?? ToEngine(new EngineStats(stats.EnginePowerWihoutEnergy, stats.TurnRateWihoutEnergy, stats.Weight, stats.Layout.CellCount, _database.ShipSettings)),
                 rammingDamageMultiplier: NonNegative(stats.RammingDamageMultiplier) * attack,
                 barrels: barrels,
                 satellites: satellites,
@@ -279,13 +291,15 @@ namespace Combat.Integration.Core
                 // Legacy ShipStats: armor repairs only with a positive rate (phase 5, step 13). Clones take the
                 // decorator's rate (x 0.9).
                 armorRepairRate: NonNegative(stats.ArmorRepairRate),
-                armorRepairDelay: NonNegative(stats.ArmorRepairCooldown));
+                armorRepairDelay: NonNegative(stats.ArmorRepairCooldown),
+                bodyFlags: isStationary ? BodyFlags.FixedPosition | BodyFlags.FixedRotation
+                    : isStarbase ? BodyFlags.FixedPosition : BodyFlags.None);
 
             // AI side table (phase 4, steps 6 and 7b): the legacy RequirementChecker facts and the target facts, without
             // inert devices (D6). Legacy Ship gives a drone Low priority; the jammer sets High (step 9a).
             var ai = new AiShipProfile(aiWeapons, aiDevices, aiDroneBays,
                 isDrone: isDrone,
-                isStarbase: stats.ShipModel.ShipType == ShipType.Starbase,
+                isStarbase: isStarbase,
                 sizeClass: stats.ShipModel.SizeClass,
                 enginePower: stats.EnginePower,
                 turnRate: stats.TurnRate,
@@ -799,6 +813,11 @@ namespace Combat.Integration.Core
         // The hit flash of a detonator explosion: the generic size 1 (D11), not the 20-unit area.
         private const float ExplosionFlashSize = 1f;
         private const float DegreesToRadians = (float)(System.Math.PI / 180.0);
+        // Legacy ShipFactory.CreateStarbase: new StarbaseEngine(10f), in rigidbody degrees per second.
+        private const float StarbaseSpin = 10f * DegreesToRadians;
+
+        // Legacy NullEngine: no thrust and no turn.
+        private static readonly EngineDefinition NullEngine = new EngineDefinition(0f, 0f, 0f, 0f);
 
         private static readonly DeviceDefinition InertDefinition = new InertDeviceDefinition();
 

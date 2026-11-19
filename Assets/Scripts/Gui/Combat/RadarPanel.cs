@@ -34,14 +34,18 @@ namespace Gui.Combat
             (_radars.FirstOrDefault(item => !item.gameObject.activeSelf) ?? CreateRadar()).Open(ship, _scene, _resourceLocator);
         }
 
-        public void AddBeacon(IUnit unit)
+        // Temporary entries for the legacy exploration scene.
+        public void AddBeacon(IUnit unit) => AddBeacon(LegacyBeaconTarget.Of(unit));
+        public void RemoveBeacon(IUnit unit) => RemoveBeacon(LegacyBeaconTarget.Of(unit));
+
+        public void AddBeacon(IBeaconTarget target)
         {
-            (_beaconRadars.FirstOrDefault(item => !item.gameObject.activeSelf) ?? CreateBeaconRadar()).Open(unit, _scene);
+            (_beaconRadars.FirstOrDefault(item => !item.gameObject.activeSelf) ?? CreateBeaconRadar()).Open(target, _scene);
         }
 
-        public void RemoveBeacon(IUnit unit)
+        public void RemoveBeacon(IBeaconTarget target)
         {
-            var index = _beaconRadars.FindIndex(item => item.Unit == unit);
+            var index = _beaconRadars.FindIndex(item => item.Target == target);
             if (index >= 0)
                 _beaconRadars[index].Close();
         }

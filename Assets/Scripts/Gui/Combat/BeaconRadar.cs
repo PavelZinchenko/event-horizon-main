@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using Combat.Component.Unit;
 using Combat.Integration;
-using Combat.Unit;
 using UnityEngine.UI;
 
 namespace Gui.Combat
@@ -12,27 +10,27 @@ namespace Gui.Combat
         [SerializeField] private Image Background;
         [SerializeField] private float Size = 24;
 
-        public void Open(IUnit unit, IScenePresentation scene)
+        public void Open(IBeaconTarget target, IScenePresentation scene)
         {
             _scene = scene;
-            _unit = unit;
+            _target = target;
 
             Initialize();
             Update();
             gameObject.SetActive(true);
         }
 
-        public IUnit Unit => _unit;
+        public IBeaconTarget Target => _target;
 
         private void Update()
         {
-            if (!_unit.IsActive())
+            if (_target == null || !_target.IsActive)
             {
                 Close();
                 return;
             }
 
-            var itemPosition = _unit.Body.Position;
+            var itemPosition = _target.Position;
             var position = _scene.ViewPoint.Direction(itemPosition);
             var cameraHeight = Camera.main.orthographicSize;
             var cameraWidth = cameraHeight * Camera.main.aspect;
@@ -70,7 +68,7 @@ namespace Gui.Combat
 
         public void Close()
         {
-            _unit = null;
+            _target = null;
 
             if (this)
                 gameObject.SetActive(false);
@@ -95,7 +93,7 @@ namespace Gui.Combat
 
         private Vector2 _screenSize;
         private RectTransform _rectTransform;
-        private IUnit _unit;
+        private IBeaconTarget _target;
         private IScenePresentation _scene;
     }
 }

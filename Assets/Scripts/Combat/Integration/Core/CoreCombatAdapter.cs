@@ -8,10 +8,8 @@ using CombatSimulation.Physics;
 using CombatSimulation.Runtime;
 using CombatView;
 using GameDatabase;
-using GameDatabase.DataModel;
 using GameDatabase.Enums;
 using GameDatabase.Extensions;
-using GameDatabase.Model;
 using GameStateMachine.States;
 using Gui.Combat;
 using Services.Audio;
@@ -21,21 +19,17 @@ using Services.Resources;
 using Services.Settings;
 using UnityEngine;
 using Zenject;
-using CoreEntityId = CombatSimulation.Core.EntityId;
 using CoreUnitId = CombatSimulation.Core.UnitId;
-using LegacyViewRect = Combat.Scene.ViewRect;
 using PlayerInputSignal = Combat.Ai.PlayerInputSignal;
 
 namespace Combat.Integration.Core
 {
-    // Projects the shared combat core through the application contracts (migration phase 3c).
-    // The BattleRunner is the authority: commands go to it, and the projection only copies its snapshots.
-    // Steps the battle at the core's fixed rate and handles each tick's events right after its step, so no event is lost.
-    // Online duel (phase 7, step 6): with a CoreDuelBattle bound, the session thread is the authority. Commands go to
-    // its queue, and every tick's snapshot copy goes through the same handling, oldest first. The local player's ships
-    // are CombatSide.Player; the peer deploys, retreats and surrenders its own. No enemy commander, kill-all,
-    // reinforcement or asteroids; ship selection has a 30 s limit, and a player has 3 retreats (owner, 2026-11-14).
-    public sealed class CoreCombatAdapter : IRosterView, IBattleView, IShipViews, IShipControlSource, ICombatCommands, ITickable, IDisposable
+    // Projects the shared combat core's roster battle through the application contracts (migration phase 3c), on the
+    // mode-neutral CoreBattleHost (exploration plan, E1): the roster slots, the commanders, the timer and the results.
+    // Online duel (phase 7, step 6): with a CoreDuelBattle bound, commands go to the session thread's queue. The local
+    // player's ships are CombatSide.Player; the peer deploys, retreats and surrenders its own. No enemy commander,
+    // kill-all, reinforcement or asteroids; ship selection has a 30 s limit, and a player has 3 retreats (owner, 2026-11-14).
+    public sealed class CoreCombatAdapter : CoreBattleHost, IRosterView, IBattleView, ICombatCommands
     {
         [Inject]
         public CoreCombatAdapter(
@@ -52,35 +46,31 @@ namespace Combat.Integration.Core
             IGameSettings gameSettings,
             UnityEngine.SceneManagement.Scene scene,
             [InjectOptional] CoreDuelBattle duel)
+            : base(database, resourceLocator, exitTrigger, localization, playerInputSignal, soundPlayer, scene)
         {
             _combatModel = combatModel;
-            _duel = duel;
-            _localSide = duel?.LocalSide ?? PlayerSide;
-            _localization = localization;
-            _playerInputSignal = playerInputSignal;
-            _resourceLocator = resourceLocator;
             _combatMenu = combatMenu;
             _shipSelectionPanel = shipSelectionPanel;
-            _exitTrigger = exitTrigger;
 
             var rules = combatModel.Rules;
             var roster = new List<UnitSetup>();
+            CoreShipMapper mapper;
             if (duel != null)
             {
-                _mapper = duel.Mapper;
+                mapper = duel.Mapper;
                 foreach (var slot in duel.Slots)
                     AddSlot(new RosterId((int)slot.RosterId.Value), slot.Side, slot.Info, slot.Mapping.Definition);
             }
             else
             {
-                _mapper = new CoreShipMapper(database, resourceLocator);
+                mapper = new CoreShipMapper(database, resourceLocator);
                 var nextId = 1;
                 foreach (var info in combatModel.PlayerFleet.Ships)
-                    roster.Add(AddSlot(new RosterId(nextId++), CombatSide.Player, info, _mapper.Map(info).Definition));
+                    roster.Add(AddSlot(new RosterId(nextId++), CombatSide.Player, info, mapper.Map(info).Definition));
                 foreach (var info in combatModel.EnemyFleet.Ships)
-                    roster.Add(AddSlot(new RosterId(nextId++), CombatSide.Enemy, info, _mapper.Map(info).Definition));
+                    roster.Add(AddSlot(new RosterId(nextId++), CombatSide.Enemy, info, mapper.Map(info).Definition));
             }
-            LogInertDevices();
+            LogInertDevices(mapper);
 
             var size = rules.BattleMapSize;
 
@@ -102,9 +92,12 @@ namespace Combat.Integration.Core
             // asteroids in a battle with a remote owner (owner question 2 (a)), so a duel has none.
             var asteroids = rules.DisableAsteroids || duel != null ? null : CoreAsteroids.Layout(seed, torus,
                 Maths.Experience.LevelToPowerMultiplier(database.GalaxySettings.EnemyLevel(rules.StarLevel)));
+            CorePilotProvider pilots;
+            BattleRunner runner = null;
+            BehaviorTreeFactory trees = null;
             if (duel != null)
             {
-                _pilots = duel.Pilots;
+                pilots = duel.Pilots;
             }
             else
             {
@@ -116,60 +109,18 @@ namespace Combat.Integration.Core
                 // CombatManager keeps the scene running until Exit. The online duel stops at its result.
                 var setup = new BattleSetup(new BattleId(1), seed, roster, size, size, battleRules, asteroids: asteroids,
                     continueAfterResult: true);
-                _trees = CorePilotProvider.CreateTrees(seed, torus, _mapper, OnBroadcast);
-                _pilots = new CorePilotProvider(database.CombatSettings, _trees, _mapper.Mappings, PlayerSide, combatModel.EnemyFleet.AiLevel);
-                _runner = new BattleRunner(setup, _pilots);
+                trees = CorePilotProvider.CreateTrees(seed, torus, mapper, OnBroadcast);
+                pilots = new CorePilotProvider(database.CombatSettings, trees, mapper.Mappings, PlayerSide, combatModel.EnemyFleet.AiLevel);
+                runner = new BattleRunner(setup, pilots);
             }
 
-            var bulletSprite = resourceLocator.GetSprite(new SpriteId(BulletSpriteName, SpriteId.Type.Ammunition));
-            // Only the font of the legacy text effect prefab is used; the text view is built in code (step 7f).
-            var textFont = Resources.Load<TextMesh>(TextEffectPrefab)?.font;
             // Phase 5b, owner question 6: legacy combat sets only the damage text; shadows and static wrecks stay off.
             // Step 4: the power saving mode draws no engine trails (legacy TrailRendererPool).
             var viewSettings = new CombatViewSettings(damageText: gameSettings.ShowDamage, shadows: false, staticWrecks: false,
                 trails: gameSettings.QualityMode >= 0);
-            var sounds = new CoreSoundOutput(soundPlayer, resourceLocator);
-            _sounds = sounds;
-            _renderer = new BattleRenderer(torus, bulletSprite, textFont, scene, viewSettings, sounds)
-            {
-                ViewerSide = _localSide,
-                SmoothCorrections = duel != null,
-                // Phase 5b, step 4: the legacy combat Settings clips (a loop, as legacy SoundLoopEffect plays it) and the
-                // satellite's hard-coded explosion. Step 8: the asteroid's.
-                RetreatSound = new SoundClip(resourceLocator.GetAudioClip(new AudioClipId(RetreatSoundName)), true),
-                WarpSound = sounds.Resolve(new AudioClipId(WarpSoundName)),
-                DroneExplosionSound = sounds.Resolve(new AudioClipId(DroneExplosionSoundName)),
-                AsteroidExplosionSound = sounds.Resolve(new AudioClipId(AsteroidExplosionSoundName)),
-            };
-            // Legacy DamageIndicator colours: the shield, then the LegacyDamageModel types.
-            _renderer.SetDamageTextColors(new Color(0.5f, 0.5f, 0.5f), new Color(0.5f, 1f, 0.5f), new Color(0f, 1f, 1f),
-                new Color(1f, 1f, 0f), new Color(1f, 0.5f, 1f));
-            foreach (var source in _mapper.SegmentSources)
-                _renderer.AddSegmentLook(source.Key, SegmentLook(source.Value, resourceLocator));
-            _visualEffects = new CoreVisualEffects(resourceLocator);
-            foreach (var look in _mapper.RepairBotColors)
-                _renderer.AddRepairBotLook(look.Key, new RepairBotLook(look.Value.ToUnity(),
-                    RepairBeam(_mapper.RepairBotEffects.TryGetValue(look.Key, out var effect) ? effect : null),
-                    _mapper.RepairBotSounds.TryGetValue(look.Key, out var sound) ? sounds.Resolve(sound) : default));
-            _deviceLooks = new CoreDeviceLooks(_visualEffects, sounds);
-            _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, _mapper.SpawnTriggers, resourceLocator, _visualEffects,
-                sounds);
-#if UNITY_EDITOR
-            // Phase 5b, step 3: the owner reviews the effects in the Combat > Effect Preview window. Not in a duel: it maps
-            // ships while the session thread reads the mapper.
-            if (duel == null)
-                _effectPreview = new CoreEffectPreview(_renderer, _visualEffects, sounds, database, resourceLocator, () =>
-                _ids.TryGetCore(ControlledShip, out var core) ? core : default);
-#endif
-            _anchor = new Vector2(0.5f * size, 0.5f * size);
-            // Step 10: the legacy planet, presentation only (D8).
-            if (!rules.DisablePlanet)
-                _planet = CorePlanet.Create(seed, torus, scene);
-            if (asteroids != null)
-                _asteroids = CoreAsteroids.Create(torus, scene);
+            Initialize(mapper, pilots, runner, trees, duel, seed, torus, asteroids, !rules.DisablePlanet, viewSettings);
 
             messenger.AddListener(EventType.EscapeKeyPressed, OnEscapeKeyPressed);
-            _playerInputSignal.Event += OnPlayerInput;
         }
 
         #region IRosterView
@@ -252,56 +203,11 @@ namespace Combat.Integration.Core
         // Legacy CombatManager.CanChangeShip. A duel allows DuelMaxRetreats (owner, 2026-11-14).
         public bool CanChangeShip =>
             IsRunning && _combatModel.Rules.ShipSelection == PlayerShipSelectionMode.Default && Count(CombatSide.Player, ShipStatus.Ready) > 0 &&
-            (_duel == null || _retreats < DuelMaxRetreats);
+            (Duel == null || _retreats < DuelMaxRetreats);
 
         // Legacy CombatManager.CanCallNextEnemy; the menu shows the button by this rule only (TM5).
         public bool CanCallReinforcement => IsRunning && CanCallNextEnemy;
-        public bool KillAllAllowedByRules => _duel == null && _combatModel.Rules.KillThemAllButton;
-
-        #endregion
-
-        #region IShipViews
-
-        public bool TryGetShip(EntityId id, out IShipView ship)
-        {
-            var found = _views.TryGetValue(id, out var view);
-            ship = view;
-            return found;
-        }
-
-        // Camera framing by the legacy rule: the player ship and the target with margins, zoomed in on each new
-        // player ship. Drawn positions are continuous across the wrap, so the camera never jumps at the map edge.
-        // Phase 5b, step 3: the effects' camera shake moves the rect, as legacy Scene.ViewRect.
-        public Rect CameraRect
-        {
-            get
-            {
-                var rect = _framing.Rect;
-                rect.position += _renderer.CameraOffset;
-                return rect;
-            }
-        }
-
-        public Vector2 ViewPoint => _framing.Center;
-
-        #endregion
-
-        #region IShipControlSource
-
-        // Only player ships have controls. A redeployed ship has a new pilot and a new description.
-        public bool TryGetControls(EntityId ship, out IShipControlDescription description, out IShipCommandSink commands)
-        {
-            description = null;
-            commands = null;
-            if (!IsStepping || !_ids.TryGetCore(ship, out var core) || !_viewsByCore.TryGetValue(core, out var view))
-                return false;
-            if (!_pilots.TryGetPlayerPilot(core, out var pilot))
-                return false;
-
-            description = view.Controls;
-            commands = pilot;
-            return true;
-        }
+        public bool KillAllAllowedByRules => Duel == null && _combatModel.Rules.KillThemAllButton;
 
         #endregion
 
@@ -318,15 +224,15 @@ namespace Combat.Integration.Core
         public void Retreat(EntityId ship)
         {
             // One request per ship: the snapshot shows the retreat only after the next step.
-            if (!CanChangeShip || ship != ControlledShip || ship == _retreatRequested || !_ids.TryGetCore(ship, out var core))
+            if (!CanChangeShip || ship != ControlledShip || ship == _retreatRequested || !TryGetCore(ship, out var core))
                 return;
 
-            if (_duel != null)
+            if (Duel != null)
             {
-                _duel.Thread.Post(SessionCommand.Retreat(core));
+                Duel.Thread.Post(SessionCommand.Retreat(core));
                 _retreatRequested = ship;
             }
-            else if (_runner.Retreat(core, _runner.Tick))
+            else if (Runner.Retreat(core, Runner.Tick))
                 _retreatRequested = ship;
         }
 
@@ -341,13 +247,13 @@ namespace Combat.Integration.Core
             if (!IsRunning)
                 return;
             // The duel's result comes back in a later snapshot, once the peer has the surrender.
-            if (_duel != null)
+            if (Duel != null)
             {
-                _duel.Thread.Post(SessionCommand.Surrender(_localSide));
+                Duel.Thread.Post(SessionCommand.Surrender(LocalSide));
                 _surrendered = true;
                 return;
             }
-            if (!_runner.Surrender(PlayerSide, _runner.Tick))
+            if (!Runner.Surrender(PlayerSide, Runner.Tick))
                 return;
 
             // Legacy CombatManager.Surrender exits at once, without the 3 s after the result.
@@ -359,486 +265,63 @@ namespace Combat.Integration.Core
 
         public void KillAllEnemies()
         {
-            if (!IsRunning || _duel != null)
+            if (!IsRunning || Duel != null)
                 return;
 #if !UNITY_EDITOR
             if (!KillAllAllowedByRules)
                 return;
 #endif
-            _runner.KillAll(PlayerSide, _runner.Tick);
+            Runner.KillAll(PlayerSide, Runner.Tick);
         }
 
         #endregion
 
-        public void Tick()
+        #region CoreBattleHost
+
+        protected override EntityId PlayerShip => ControlledShip;
+        protected override EntityId CameraTarget => TargetShip;
+
+        // Legacy Scene.UpdateEnemies: the player stays in the middle when more than one enemy is active.
+        protected override bool CameraCentersPlayer => Count(CombatSide.Enemy, ShipStatus.Active) > 1;
+
+        // The commanders deploy by the roster rules.
+        protected override void BeforeStep()
         {
-            if (_runner == null && _duel == null)
-                return;
-
-            if (_duel != null)
-                RunDuel();
-            else
-                RunSteps();
-            _playerInput = false;
-            Render();
-            UpdateExit();
-        }
-
-        // Scene unload. Clears the battle without events: the roster outcome is already final or abandoned.
-        public void Dispose()
-        {
-            _playerInputSignal.Event -= OnPlayerInput;
-            _runner = null;
-            // The duel state owns the session thread and stops it.
-            _duel = null;
-#if UNITY_EDITOR
-            _effectPreview?.Dispose();
-#endif
-            _renderer.Dispose();
-            _planet?.Dispose();
-            _asteroids?.Dispose();
-            _views.Clear();
-            _viewsByCore.Clear();
-            _ids.Clear();
-            _pilots.Clear();
-            _broadcasts.Clear();
-        }
-
-        private void RunSteps()
-        {
-            if (!IsStepping)
-                return;
-
-            _accumulator += Time.deltaTime;
-            var steps = 0;
-            while (_accumulator >= Battle.TickDuration && IsStepping)
-            {
-                if (steps == MaxStepsPerFrame)
-                {
-                    // A long frame drops the rest instead of catching up later.
-                    _accumulator = 0f;
-                    break;
-                }
-
-                _accumulator -= Battle.TickDuration;
-                Step();
-                steps++;
-            }
-        }
-
-        // Every snapshot copy the session thread published since the last frame, oldest first. After the result the thread
-        // only pumps the network and publishes nothing more.
-        private void RunDuel()
-        {
-            var thread = _duel.Thread;
-            // Read before the copies: a thread that stopped has published all of its copies by then.
-            var linkLoss = thread.Status.LinkLoss;
-            var error = thread.Error;
-            if (!_threadErrorLogged && error != null)
-            {
-                _threadErrorLogged = true;
-                Debug.LogError($"CoreCombatAdapter: the duel session thread stopped at tick {thread.Status.Tick}: {error}");
-            }
-
-            while (thread.TryTake(out var snapshot, out var publishedAt))
-            {
-                if (IsRunning)
-                {
-                    _duelCompleted = snapshot.IsCompleted;
-                    _publishedAt = publishedAt;
-                    Process(snapshot);
-                }
-                thread.Release(snapshot);
-            }
-
-            if (!IsRunning)
-                return;
-
-            if (linkLoss != SessionLinkLoss.None || error != null)
-            {
-                EndDuelWithoutResult(linkLoss);
-                return;
-            }
-
+            RunEnemyCommander();
             RunPlayerCommander();
-            if (_playerInput)
-                _duel.MarkPlayerInput();
         }
 
-        // Also after the stepping stops (a duel's result, disposal), so the last frame stays on screen.
-        private void Render()
+        // The peer deploys its own ships.
+        protected override void OnDuelFrame() => RunPlayerCommander();
+
+        protected override void BeginSnapshot(BattleSnapshot snapshot)
         {
-            var controlled = default(CoreEntityId);
-            var player = ActiveView(ControlledShip);
-            if (player != null)
-                _ids.TryGetCore(player.Id, out controlled);
-
-            var alpha = !IsStepping ? 1f : _duel != null
-                ? Mathf.Clamp01((float)(_duel.Now() - _publishedAt) / Battle.TickDuration)
-                : Mathf.Clamp01(_accumulator / Battle.TickDuration);
-            _renderer.ViewPoint = _framing.Center;
-            _renderer.Render(alpha, controlled, ref _anchor, Time.deltaTime);
-            _planet?.Render(_anchor, Time.deltaTime);
-            _asteroids?.Render(alpha, _anchor, Time.deltaTime);
-
-            foreach (var pair in _viewsByCore)
-                if (_renderer.TryGetShipPose(pair.Key, out var position, out var degrees))
-                    pair.Value.SetVisualPose(position, degrees);
-
-            // Legacy Scene.UpdateEnemies: the player stays in the middle when more than one enemy is active.
-            var target = ActiveView(TargetShip);
-            _framing.Update(player?.VisualPosition, target?.VisualPosition, Count(CombatSide.Enemy, ShipStatus.Active) > 1);
-        }
-
-        private CoreShipView ActiveView(EntityId id) => _views.TryGetValue(id, out var view) && view.IsActive ? view : null;
-
-        // False after the result and after disposal: no deployment, roster command or timer.
-        private bool IsRunning => _duel != null ? !_duelCompleted : _runner != null && !_runner.IsCompleted;
-
-        // The battle steps and the player flies. A local battle also steps after its result (phase 2b, D12); a duel
-        // stops at its result, and the session thread then publishes nothing more.
-        private bool IsStepping => _duel != null ? !_duelCompleted : _runner != null && !_runner.IsStopped;
-
-        // The tick that the next command targets: the runner's, or in a duel the one after the last handled snapshot.
-        private long CommandTick => _runner?.Tick ?? _lastTick + 1;
-
-        private long TimerElapsedTicks => _runner?.Snapshot.TimerElapsedTicks ?? _timerElapsedTicks;
-
-        private UnitSetup AddSlot(RosterId id, CombatSide side, IShipInfo info, ShipDefinition definition)
-        {
-            var slot = new Slot(id, side, info, definition.Armor, this);
-            (side == CombatSide.Player ? _playerSlots : _enemySlots).Add(slot);
-            _slotsById.Add(id, slot);
-            _slotsByCore.Add(ToCore(id), slot);
-            return new UnitSetup(ToCore(id), ToCoreSide(side), definition);
-        }
-
-        // M1 check: the console lists the inert devices (D1) once per battle, by mapped ship or drone.
-        private void LogInertDevices()
-        {
-            var report = new System.Text.StringBuilder();
-            var count = 0;
-            foreach (var mapping in _mapper.Mappings.Values)
-            {
-                for (var i = 0; i < mapping.Devices.Count; ++i)
-                {
-                    var device = mapping.Devices[i];
-                    if (!device.IsInert) continue;
-                    report.AppendLine($"  {mapping.Name}, device {i}: {device.Name}: {device.InertReason}");
-                    ++count;
-                }
-            }
-
-            if (count > 0)
-                Debug.Log($"CoreCombatAdapter: {count} inert devices (phase 5 or step 4).\n{report}");
-        }
-
-        // One tick: deploy by the commander rules, step, then handle the tick's events before the next step.
-        private void Step()
-        {
-            if (!IsStepping)
-                return;
-
-            // After the result the commanders deploy nothing and open no ship selection.
-            if (IsRunning)
-            {
-                RunEnemyCommander();
-                RunPlayerCommander();
-            }
-
-            // The pilots of this step think on the snapshot of the current tick.
-            if (_playerInput)
-                _trees.OnPlayerInput(_runner.Tick);
-
-            _runner.Step();
-            Process(_runner.Snapshot);
-        }
-
-        // One tick's snapshot: the runner's after its step, or a copy from the session thread.
-        private void Process(BattleSnapshot snapshot)
-        {
-            _lastTick = snapshot.Tick;
             _timerElapsedTicks = snapshot.TimerElapsedTicks;
             ApplyResults(snapshot);
-            HandleEvents(snapshot);
-            _renderer.Capture(snapshot);
-            _asteroids?.Capture(snapshot);
-            ShowBroadcasts(snapshot);
-            UpdateProjection(snapshot);
-
-            if (snapshot.IsCompleted)
-                OnCompleted(snapshot.Result);
         }
 
-        private void HandleEvents(BattleSnapshot snapshot)
+        protected override bool TryDescribeShip(CoreUnitId unit, out CombatSide side,
+            out Constructor.IShipSpecification specification)
         {
-            var events = snapshot.Events;
-            for (var i = 0; i < events.Length; ++i)
+            if (!_slotsByCore.TryGetValue(unit, out var slot))
             {
-                var item = events[i];
-                switch (item.Kind)
-                {
-                    case BattleEventKind.Spawn:
-                        if (item.IsBullet)
-                            OnBulletSpawned(item);
-                        else if (item.IsDrone)
-                            OnDroneSpawned(item);
-                        else if (item.IsDecoy)
-                            OnDecoySpawned(item);
-                        else
-                            OnShipSpawned(snapshot, item);
-                        break;
-                    case BattleEventKind.Removal:
-                        if (item.IsBullet)
-                            _renderer.RemoveBullet(item.EntityId, item.RemovalConditions);
-                        else if (item.IsDrone || item.IsDecoy)
-                            _renderer.RemoveShip(item.EntityId, item.RemovalReason);
-                        else
-                            OnShipRemoved(item, ViewReason(events, i));
-                        break;
-                    case BattleEventKind.UnitTransition:
-                        OnUnitTransition(snapshot, item);
-                        break;
-                    case BattleEventKind.Rename:
-                        _renderer.RenameBullet(item.PreviousId, item.EntityId);
-                        break;
-                    case BattleEventKind.Hit:
-                        _renderer.AddHit(item);
-                        break;
-                    case BattleEventKind.Disarm:
-                        _renderer.AddDisarm(item);
-                        break;
-                    case BattleEventKind.Teleport:
-                        _renderer.AddTeleport(item);
-                        break;
-                    case BattleEventKind.GravityWave:
-                        _renderer.AddGravityWave(item);
-                        break;
-                    case BattleEventKind.AsteroidRemoval:
-                        OnAsteroidRemoved(item);
-                        break;
-                    case BattleEventKind.Damage:
-                        _renderer.AddDamage(item);
-                        break;
-                    case BattleEventKind.AuxiliaryRemoval:
-                        _renderer.RemoveAuxiliary(item.EntityId, item.Point, item.RemovalReason);
-                        break;
-                    case BattleEventKind.SatelliteChange:
-                        _renderer.ChangeSatellite(item);
-                        break;
-                }
-
-                _renderer.OnEvent(snapshot, item);
-            }
-        }
-
-        private void OnShipSpawned(BattleSnapshot snapshot, in BattleEvent item)
-        {
-            if (!_slotsByCore.TryGetValue(item.UnitId, out var slot) || !snapshot.TryGetShip(item.EntityId, out var state))
-                return;
-
-            var id = _ids.Assign(item.EntityId);
-            var specification = slot.Info.CoreSpecification;
-            var view = new CoreShipView(id, slot.Side, specification, state, new CoreShipControls(_mapper.Mappings[state.Definition]));
-            _views.Add(id, view);
-            _viewsByCore.Add(item.EntityId, view);
-
-            var mapping = _mapper.Mappings[state.Definition];
-            _renderer.AddShip(item.EntityId, GetLook(mapping), item.Side);
-            AddTurrets(item.EntityId, mapping);
-        }
-
-        // The view of every ship of one definition (phase 5b, step 4), built on first use.
-        private ShipLook GetLook(CoreShipMapping mapping)
-        {
-            if (_looks.TryGetValue(mapping.Definition, out var look))
-                return look;
-
-            look = new ShipLook(_resourceLocator.GetSprite(mapping.ModelImage), mapping.ModelScale)
-                { Tint = mapping.TintColor?.ToUnity() };
-            var source = mapping.Look;
-            if (source != null)
-            {
-                var engines = new EngineLook[source.Engines.Count];
-                for (var i = 0; i < engines.Length; ++i)
-                    engines[i] = new EngineLook(source.Engines[i].Position.ToUnity() * 0.5f, source.Engines[i].Size);
-
-                look.Color = source.ShipColor.Color.ToUnity();
-                look.IsHsv = source.ShipColor.IsHsv;
-                look.Hue = source.ShipColor.Hue;
-                look.Saturation = source.ShipColor.Saturation;
-                look.IsDrone = source.IsDrone;
-                look.EngineColor = source.EngineColor.ToUnity();
-                look.Engines = engines;
-                look.HasShield = source.HasShield;
-                look.Explosion = _visualEffects.Get(source.Explosion);
-                look.ExplosionSound = _sounds.Resolve(source.ExplosionSound);
-                look.LeavesWreck = source.LeavesWreck;
+                side = default;
+                specification = null;
+                return false;
             }
 
-            // Phase 5b, step 7a: the sounds and effects of the weapons, devices and drone bays.
-            look.Devices = _deviceLooks.Create(mapping);
-
-            _looks.Add(mapping.Definition, look);
-            return look;
+            side = slot.Side;
+            specification = slot.Info.CoreSpecification;
+            return true;
         }
 
-        // Phase 5b, step 7a (owner question 8 (b)): a bullet of a weapon's own definition is its shot. A charged copy has
-        // the weapon's definition as its uncharged one; child bullets have definitions of their own.
-        private void OnBulletSpawned(in BattleEvent item)
+        protected override void OnShipRemoved(EntityId ship)
         {
-            _renderer.AddBullet(item, _bulletVisuals.Get(item));
-            object key = item.IsBeam ? item.BeamDefinition.Uncharged : (object)item.BulletDefinition.Uncharged;
-            if (_mapper.WeaponDevices.TryGetValue(key, out var device))
-                _renderer.AddShot(item.ParentId, device, item.Tick);
+            if (ship == _retreatRequested)
+                _retreatRequested = EntityId.None;
         }
 
-        // Legacy Decoy prefab at the body scale, in the device colour (phase 5, step 10c; phase 5b, step 7b). Step 7a:
-        // legacy CreateDecoy's flash at 4 x the decoy size, and the device sound.
-        private void OnDecoySpawned(in BattleEvent item)
-        {
-            var color = _mapper.DecoyColors.TryGetValue(item.Definition, out var data) ? data.ToUnity() : Color.white;
-            var sound = _mapper.DecoySounds.TryGetValue(item.Definition, out var clip) ? _sounds.Resolve(clip) : default;
-            _renderer.AddDecoy(item.EntityId, DecoyDefinition.Size, color, sound, 4f * DecoyDefinition.Size, item.Tick);
-        }
-
-        // Phase 5b, step 8: legacy AsteroidExplosionAction.
-        private void OnAsteroidRemoved(in BattleEvent item)
-        {
-            if (_asteroids != null && _asteroids.Remove(item.EntityId, out var size))
-                _renderer.AddAsteroidExplosion(item.Point, size);
-        }
-
-        // Phase 5b, step 7a: the launch of a drone bay or a clonning center.
-        private void OnDroneSpawned(in BattleEvent item)
-        {
-            var mapping = _mapper.Mappings[item.Definition];
-            _renderer.AddShip(item.EntityId, GetLook(mapping), item.Side);
-            AddTurrets(item.EntityId, mapping);
-            if (item.BayKey.HasValue)
-                _renderer.AddLaunch(item.ParentId, item.BayKey.Value.DeviceIndex, item.EntityId);
-        }
-
-        // Satellites first: a turret on a satellite rides its view (phase 5, step 12c).
-        private void AddTurrets(CoreEntityId id, CoreShipMapping mapping)
-        {
-            foreach (var satellite in mapping.Satellites)
-                _renderer.AddSatellite(id, _resourceLocator.GetSprite(satellite.Image), satellite.Scale);
-            // Legacy ShipFactory.CreatePlatform applies the turret scheme's HSV to every turret.
-            var turretColor = mapping.Look?.TurretColor ?? default;
-            foreach (var turret in mapping.Turrets)
-                _renderer.AddTurret(id, turret.Barrel, mapping.Definition.Barrels[turret.Barrel],
-                    _resourceLocator.GetSprite(turret.Image), turret.Size, turret.Color.ToUnity(), turretColor.Hue,
-                    turretColor.Saturation);
-
-            // Energy and frontal shields (phase 5, step 10d).
-            var devices = mapping.Definition.Devices;
-            for (var i = 0; i < devices.Count; ++i)
-                if (devices[i] is ShieldDefinition shield)
-                    _renderer.AddShield(id, i, GetShieldLook(shield));
-        }
-
-        // Phase 5b, step 7b, legacy CustomPrefabLoader: a CircularSpriteObject record sets the EnergyShield prefab's sprite,
-        // a CircularOutlineObject record builds the EnergyShieldOutline ring. Step 7c: a ColliderSpriteObject record sets
-        // the FrontalShield prefab's sprite.
-        private ShieldLook GetShieldLook(ShieldDefinition shield)
-        {
-            if (_shieldLooks.TryGetValue(shield, out var look) || !_mapper.ShieldLooks.TryGetValue(shield, out var source))
-                return look;
-
-            look = new ShieldLook
-            {
-                Kind = source.IsFrontal ? ShieldViewKind.Frontal : ShieldViewKind.Energy,
-                Offset = new Vector2(source.OffsetX, source.OffsetY),
-                Size = source.Size,
-                Color = source.Color.ToUnity(),
-                IdleOpacity = source.IdleOpacity,
-            };
-            switch (source.Prefab)
-            {
-                case GameObjectPrefab_CircularSpriteObject sprite:
-                    look.Image = _resourceLocator.GetSprite(sprite.Image);
-                    break;
-                case GameObjectPrefab_CircularOutlineObject outline:
-                    look.Kind = ShieldViewKind.EnergyOutline;
-                    look.Image = _resourceLocator.GetSprite(outline.Image);
-                    look.ImageScale = outline.ImageScale;
-                    look.Thickness = outline.Thickness;
-                    look.AspectRatio = outline.AspectRatio;
-                    break;
-                case GameObjectPrefab_ColliderSpriteObject frontal:
-                    look.Image = _resourceLocator.GetSprite(frontal.Image);
-                    break;
-            }
-
-            _shieldLooks.Add(shield, look);
-            return look;
-        }
-
-        // Phase 5b, step 7b, legacy WormTailSegmentInitializer: a database record sets the WormSegment prefab's sprites and
-        // its joint.
-        private static SegmentLook SegmentLook(in CoreSegmentSource source, IResourceLocator resourceLocator)
-        {
-            var record = source.Record;
-            return new SegmentLook
-            {
-                IsSegment2 = source.IsSegment2,
-                HasRecord = record != null,
-                Body = record != null ? resourceLocator.GetSprite(record.BodyImage) : null,
-                Joint = record != null ? resourceLocator.GetSprite(record.JointImage) : null,
-                JointScale = record?.JointImageScale ?? 0f,
-                JointOffset = record?.JointImageOffset ?? 0f,
-            };
-        }
-
-        // Phase 5b, step 7c: the first Laser element of the repair bot's record. A device without a record (a mod) gets
-        // the legacy Laser effect prefab: its texture, 1 wide, in the device colour; a record without a Laser element
-        // draws no beam.
-        private CombatView.Effects.EffectElement RepairBeam(VisualEffect effect)
-        {
-            if (effect == null)
-                return new CombatView.Effects.EffectElement(CombatView.Effects.EffectKind.Laser,
-                    _resourceLocator.GetSprite(new SpriteId(RepairBeamImage, SpriteId.Type.Effect)),
-                    CombatView.Effects.ColorMode.TakeFromOwner, Color.white, 1, 1f, 0f, 0f, 0f, 1f, 1f, Vector2.zero, 0f,
-                    loop: false, inverse: false, useRealTime: false);
-
-            foreach (var element in effect.Elements)
-                if (element.Type == VisualEffectType.Laser)
-                    return _visualEffects.ToElement(element, CombatView.Effects.EffectKind.Laser);
-            return null;
-        }
-
-        // The roster transition of the same removal comes later in the batch, so the ID stays mapped until the tick ends.
-        // Legacy ShipInfo.Destroy: surrender and kill-all make the ship vanish, without an explosion or a sound. The core
-        // removes it with Death and names the ForcedDestruction in its slot's transition later in the same batch.
-        private static RemovalReason ViewReason(ReadOnlySpan<BattleEvent> events, int index)
-        {
-            var removal = events[index];
-            if (removal.RemovalReason != RemovalReason.Death)
-                return removal.RemovalReason;
-
-            for (var i = index + 1; i < events.Length; ++i)
-                if (events[i].Kind == BattleEventKind.UnitTransition && events[i].EntityId == removal.EntityId)
-                    return events[i].TransitionReason == UnitTransitionReason.ForcedDestruction
-                        ? RemovalReason.Vanish : removal.RemovalReason;
-            return removal.RemovalReason;
-        }
-
-        private void OnShipRemoved(in BattleEvent item, RemovalReason viewReason)
-        {
-            if (_viewsByCore.TryGetValue(item.EntityId, out var view))
-            {
-                view.Deactivate();
-                if (view.Id == _retreatRequested)
-                    _retreatRequested = EntityId.None;
-            }
-
-            _pilots.Release(item.EntityId);
-            _renderer.RemoveShip(item.EntityId, viewReason);
-            _removed.Add(item.EntityId);
-        }
-
-        private void OnUnitTransition(BattleSnapshot snapshot, in BattleEvent item)
+        protected override void OnUnitTransition(BattleSnapshot snapshot, in BattleEvent item)
         {
             if (!_slotsByCore.TryGetValue(item.UnitId, out var slot))
                 return;
@@ -848,13 +331,13 @@ namespace Combat.Integration.Core
 
             EntityId entity = EntityId.None;
             if (!item.EntityId.IsNull)
-                _ids.TryGet(item.EntityId, out entity);
+                TryGetEntity(item.EntityId, out entity);
 
             if (item.TransitionReason == UnitTransitionReason.Deployed)
             {
                 if (slot.Side == CombatSide.Player)
                 {
-                    _framing.Zoom();
+                    ZoomCamera();
                     _selectionDeadline = NoDeadline;
                 }
 
@@ -864,7 +347,7 @@ namespace Combat.Integration.Core
             }
             else
             {
-                if (_duel != null && slot.Side == CombatSide.Player && item.TransitionReason == UnitTransitionReason.Retreated)
+                if (Duel != null && slot.Side == CombatSide.Player && item.TransitionReason == UnitTransitionReason.Retreated)
                     _retreats++;
                 slot.ActiveEntity = EntityId.None;
                 if (previous == ShipStatus.Active)
@@ -875,22 +358,9 @@ namespace Combat.Integration.Core
                 SlotChanged?.Invoke(new RosterSlotChange(slot, previous, ToReason(item.TransitionReason), entity));
         }
 
-        // Step 12 (RR1, RR2): the campaign model reads the roster from ShipInfo. Written before the events, so an
-        // experience checkpoint in SlotChanged reads the tick's enemy damage (B2). ShipInfo keeps it after the unload.
-        private void ApplyResults(BattleSnapshot snapshot)
+        // Copies what the slots need from the snapshot.
+        protected override void EndSnapshot(BattleSnapshot snapshot)
         {
-            foreach (var state in snapshot.Units)
-                if (_slotsByCore.TryGetValue(state.UnitId, out var slot))
-                    slot.Info.ApplyCoreState(ToStatus(state.Status), state.DamageFraction, state.DeploymentOrder);
-        }
-
-        // Copies what the views and slots need from the snapshot; spans are valid only until the next step.
-        private void UpdateProjection(BattleSnapshot snapshot)
-        {
-            foreach (var ship in snapshot.Ships)
-                if (_viewsByCore.TryGetValue(ship.Id, out var view))
-                    view.Update(ship, snapshot.GetDevices(ship));
-
             foreach (var state in snapshot.Units)
             {
                 if (!_slotsByCore.TryGetValue(state.UnitId, out var slot))
@@ -902,19 +372,46 @@ namespace Combat.Integration.Core
                 if (slot.PendingDeployTick != NoPendingDeploy && snapshot.Tick >= slot.PendingDeployTick)
                     slot.PendingDeployTick = NoPendingDeploy;
             }
+        }
 
-            foreach (var core in _removed)
+        // Legacy CombatManager exits 3 s after the last death; a local battle keeps stepping through them (phase 2b). A duel
+        // freezes at the result, and the last frame and the death fades stay on screen. A surrender exits at once, as
+        // legacy. A ShipLost result already waited the legacy 3 s in the core, so it exits at once too (SS3).
+        protected override void OnCompleted(BattleResult result)
+        {
+            if (IsExitScheduled)
+                return;
+
+            CheckOutcome(result);
+            // Phase 7, step 6 check: both players log the same result; the sides are core sides.
+            if (Duel != null)
             {
-                if (_viewsByCore.TryGetValue(core, out var view))
-                {
-                    _viewsByCore.Remove(core);
-                    _views.Remove(view.Id);
-                }
-
-                _ids.Release(core);
+                Duel.Result = result;
+                Debug.Log($"CoreCombatAdapter: duel result {result}, local side {LocalSide}, tick {LastTick}");
             }
+            ScheduleExit(_surrendered || result.Reason == BattleEndReason.ShipLost ? 0f : ExitDelaySeconds);
+        }
 
-            _removed.Clear();
+        #endregion
+
+        private long TimerElapsedTicks => Runner?.Snapshot.TimerElapsedTicks ?? _timerElapsedTicks;
+
+        private UnitSetup AddSlot(RosterId id, CombatSide side, IShipInfo info, ShipDefinition definition)
+        {
+            var slot = new Slot(id, side, info, definition.Armor, this);
+            (side == CombatSide.Player ? _playerSlots : _enemySlots).Add(slot);
+            _slotsById.Add(id, slot);
+            _slotsByCore.Add(ToCore(id), slot);
+            return new UnitSetup(ToCore(id), ToCoreSide(side), definition);
+        }
+
+        // Step 12 (RR1, RR2): the campaign model reads the roster from ShipInfo. Written before the events, so an
+        // experience checkpoint in SlotChanged reads the tick's enemy damage (B2). ShipInfo keeps it after the unload.
+        private void ApplyResults(BattleSnapshot snapshot)
+        {
+            foreach (var state in snapshot.Units)
+                if (_slotsByCore.TryGetValue(state.UnitId, out var slot))
+                    slot.Info.ApplyCoreState(ToStatus(state.Status), state.DamageFraction, state.DeploymentOrder);
         }
 
         // Legacy CombatManager: the first InitialEnemyShips ready enemies at once at the start (TM4), and the first
@@ -929,7 +426,7 @@ namespace Combat.Integration.Core
                 return;
             }
 
-            if (_runner.Tick < _nextDeployTick[(int)CombatSide.Enemy])
+            if (Runner.Tick < _nextDeployTick[(int)CombatSide.Enemy])
                 return;
 
             var count = _enemiesStarted ? 1 : Math.Max(1, _combatModel.Rules.InitialEnemyShips);
@@ -951,7 +448,7 @@ namespace Combat.Integration.Core
             get
             {
                 // The peer deploys its own ships.
-                if (_duel != null)
+                if (Duel != null)
                     return false;
                 var rules = _combatModel.Rules;
                 if (rules.TimeOutMode != TimeOutMode.CallNextEnemy && rules.TimeOutMode != TimeOutMode.CallNextEnemyOrDraw)
@@ -983,7 +480,7 @@ namespace Combat.Integration.Core
         {
             if (Count(CombatSide.Player, ShipStatus.Active) > 0)
                 return;
-            if (_duel == null && Count(CombatSide.Enemy, ShipStatus.Active) == 0)
+            if (Duel == null && Count(CombatSide.Enemy, ShipStatus.Active) == 0)
                 return;
             if (IsDeployPending(_enemySlots) || IsDeployPending(_playerSlots))
                 return;
@@ -1011,7 +508,7 @@ namespace Combat.Integration.Core
             }
 
             _nextDeployTick[(int)CombatSide.Player] = CommandTick + DeployDelayTicks;
-            if (_duel != null && _selectionDeadline == NoDeadline)
+            if (Duel != null && _selectionDeadline == NoDeadline)
                 _selectionDeadline = CommandTick + SelectionLimitTicks;
             var panel = _shipSelectionPanel.Value;
             if (panel)
@@ -1029,15 +526,15 @@ namespace Combat.Integration.Core
 
             // The session thread submits a duel deployment at its own tick, which this thread does not know: the request
             // counts as pending for DuelPendingTicks.
-            if (_duel != null)
+            if (Duel != null)
             {
-                _duel.Thread.Post(SessionCommand.Deploy(ToCore(slot.Id)));
+                Duel.Thread.Post(SessionCommand.Deploy(ToCore(slot.Id)));
                 slot.PendingDeployTick = CommandTick + DuelPendingTicks;
                 return;
             }
 
-            var tick = _runner.Tick;
-            if (_runner.Deploy(ToCore(slot.Id), tick))
+            var tick = Runner.Tick;
+            if (Runner.Deploy(ToCore(slot.Id), tick))
                 slot.PendingDeployTick = tick;
         }
 
@@ -1093,40 +590,11 @@ namespace Combat.Integration.Core
             return false;
         }
 
-        // Legacy CombatManager exits 3 s after the last death; a local battle keeps stepping through them (phase 2b). A duel
-        // freezes at the result, and the last frame and the death fades stay on screen. A surrender exits at once, as
-        // legacy. A ShipLost result already waited the legacy 3 s in the core, so it exits at once too (SS3).
-        private void OnCompleted(BattleResult result)
-        {
-            if (_exitDelay >= 0f)
-                return;
-
-            CheckOutcome(result);
-            // Phase 7, step 6 check: both players log the same result; the sides are core sides.
-            if (_duel != null)
-            {
-                _duel.Result = result;
-                Debug.Log($"CoreCombatAdapter: duel result {result}, local side {_localSide}, tick {_lastTick}");
-            }
-            _exitDelay = _surrendered || result.Reason == BattleEndReason.ShipLost ? 0f : ExitDelaySeconds;
-        }
-
-        // Phase 7, step 8: the session thread stopped before the result. A lost link is a draw on this player (decision 3);
-        // a thread error (linkLoss None) ends without a result. The battle freezes, then exits as after a result.
-        private void EndDuelWithoutResult(SessionLinkLoss linkLoss)
-        {
-            _duelCompleted = true;
-            _duel.LinkLoss = linkLoss;
-            Debug.LogWarning($"CoreCombatAdapter: duel ended without a result ({linkLoss}), local side {_localSide}, tick {_lastTick}");
-            if (_exitDelay < 0f)
-                _exitDelay = ExitDelaySeconds;
-        }
-
         // Migration plan, "Completion order" (RR3): the core result and the campaign victory, which reads the roster,
         // must agree. A mismatch is only logged; neither is rewritten, and the battle exits as usual.
         private void CheckOutcome(BattleResult result)
         {
-            var coreVictory = result.Outcome == BattleOutcome.Victory && result.WinningSide == _localSide;
+            var coreVictory = result.Outcome == BattleOutcome.Victory && result.WinningSide == LocalSide;
             var victory = _combatModel.IsVictory();
             if (coreVictory == victory)
                 return;
@@ -1136,41 +604,6 @@ namespace Combat.Integration.Core
                 report.AppendLine($"  {slot.Side} slot {slot.Id.Value}: {slot.Info.Status}");
 
             Debug.LogError($"CoreCombatAdapter: the core result ({result}) does not match the campaign victory ({victory}).\n{report}");
-        }
-
-        // A local battle counts game time, as legacy CombatManager: a pause stops the battle and the delay together. A duel
-        // counts real time; its session thread does not pause. A delay of 0 (surrender) exits in this frame, paused or not.
-        private void UpdateExit()
-        {
-            if (_exitDelay < 0f || _exited)
-                return;
-
-            _exitDelay -= _duel != null ? Time.unscaledDeltaTime : Time.deltaTime;
-            if (_exitDelay > 0f)
-                return;
-
-            _exited = true;
-            _exitTrigger.Fire();
-        }
-
-        // Legacy PlayerInputSignal: the keyboard driver and the HUD fire it in every frame with player input (step 7f).
-        // The flag holds until the end of the frame's steps.
-        private void OnPlayerInput() => _playerInput = true;
-
-        // ShowMessage (step 7e): called inside the step, while the pilots think. Local only (D6).
-        private void OnBroadcast(CoreEntityId ship, string text, ColorData color) =>
-            _broadcasts.Add(new Broadcast(ship, text, color));
-
-        // Legacy RadioTransmitter: the localized text at the ship, drifting with it. Legacy NodeBuilder localizes at
-        // build time; the text is the same.
-        private void ShowBroadcasts(BattleSnapshot snapshot)
-        {
-            _duel?.TakeBroadcasts(snapshot.Tick, OnBroadcast);
-            foreach (var item in _broadcasts)
-                if (snapshot.TryGetShip(item.Ship, out var state))
-                    _renderer.AddText(_localization.Localize(item.Text), item.Color.ToUnity(), state.Position, state.LinearVelocity);
-
-            _broadcasts.Clear();
         }
 
         private void OnEscapeKeyPressed()
@@ -1214,20 +647,6 @@ namespace Combat.Integration.Core
             }
         }
 
-        private readonly struct Broadcast
-        {
-            public Broadcast(CoreEntityId ship, string text, ColorData color)
-            {
-                Ship = ship;
-                Text = text;
-                Color = color;
-            }
-
-            public readonly CoreEntityId Ship;
-            public readonly string Text;
-            public readonly ColorData Color;
-        }
-
         private sealed class Slot : IRosterSlotView
         {
             public Slot(RosterId id, CombatSide side, IShipInfo info, float maxArmor, CoreCombatAdapter owner)
@@ -1254,7 +673,7 @@ namespace Combat.Integration.Core
                 {
                     if (Status == ShipStatus.Destroyed)
                         return 0f;
-                    if (Status == ShipStatus.Active && _owner._views.TryGetValue(ActiveEntity, out var view))
+                    if (Status == ShipStatus.Active && _owner.TryGetShip(ActiveEntity, out var view))
                         return view.Armor.Fraction;
 
                     return Mathf.Clamp01(1f - ArmorDeficit / _maxArmor);
@@ -1270,10 +689,6 @@ namespace Combat.Integration.Core
             private readonly CoreCombatAdapter _owner;
         }
 
-        private const int PlayerSide = 0;
-        private const int EnemySide = 1;
-        private const int TicksPerSecond = 50;
-        private const int MaxStepsPerFrame = 5;
         private const long DeployDelayTicks = 3 * TicksPerSecond;
         private const long NoPendingDeploy = -1;
         private const long NoDeadline = -1;
@@ -1282,48 +697,17 @@ namespace Combat.Integration.Core
         private const int SelectionAlarmSeconds = 10;
         private const long DuelPendingTicks = TicksPerSecond;
         private const int DuelMaxRetreats = 3;
-        private const float ExitDelaySeconds = 3f;
         // Legacy CombatTimer: the alarm of the draw countdown.
         private const int DrawAlarmSeconds = 15;
-        private const string BulletSpriteName = "ball";
-        // Legacy ShowMessage effect (RadioTransmitter).
-        private const string TextEffectPrefab = "Combat/Effects/MessageText";
-        // Legacy combat Settings component (CombatScene): ShipRetreatSound and ShipWarpSound. Legacy
-        // DroneExplosionActionObsolete of a satellite, a decoy, a repair bot or a tail segment; AsteroidExplosionAction.
-        private const string RetreatSoundName = "flux_02";
-        private const string WarpSoundName = "shot_06";
-        private const string DroneExplosionSoundName = "explosion_10";
-        private const string AsteroidExplosionSoundName = "explosion_08";
-        // The texture of the legacy Laser effect prefab (Textures/Bullets/laser; the same image is Textures/Effects/laser).
-        private const string RepairBeamImage = "laser";
-        private readonly Dictionary<ShieldDefinition, ShieldLook> _shieldLooks = new Dictionary<ShieldDefinition, ShieldLook>();
 
-        private BattleRunner _runner;
-        private CoreDuelBattle _duel;
-        private readonly int _localSide;
-        // The last handled snapshot's tick and timer, in both modes; the duel's result flag and the copy's publish time.
-        private long _lastTick = -1;
+        // The last handled snapshot's timer, in both modes.
         private long _timerElapsedTicks;
-        private bool _duelCompleted;
-        private double _publishedAt;
         // Duel: the tick at which the first ready ship deploys while no ship is selected.
         private long _selectionDeadline = NoDeadline;
         // Duel: the local player's completed retreats.
         private int _retreats;
-        private bool _threadErrorLogged;
-        private readonly BehaviorTreeFactory _trees;
-        private readonly CorePilotProvider _pilots;
-        private readonly List<Broadcast> _broadcasts = new List<Broadcast>();
-        private bool _playerInput;
-        private readonly CoreShipMapper _mapper;
-        // The drawn controlled ship, or its last position: every other entity is drawn at its image nearest to it.
-        private Vector2 _anchor;
-        private float _accumulator;
         private int _deploymentCounter;
         private EntityId _retreatRequested = EntityId.None;
-        // Seconds left until the exit after the result; negative while the battle runs.
-        private float _exitDelay = -1f;
-        private bool _exited;
         private bool _surrendered;
         private readonly long[] _nextDeployTick = new long[2];
         // Active ship limits by CombatSide, as given to the core.
@@ -1334,29 +718,9 @@ namespace Combat.Integration.Core
         private readonly List<Slot> _enemySlots = new List<Slot>();
         private readonly Dictionary<RosterId, Slot> _slotsById = new Dictionary<RosterId, Slot>();
         private readonly Dictionary<CoreUnitId, Slot> _slotsByCore = new Dictionary<CoreUnitId, Slot>();
-        private readonly Dictionary<EntityId, CoreShipView> _views = new Dictionary<EntityId, CoreShipView>();
-        private readonly Dictionary<CoreEntityId, CoreShipView> _viewsByCore = new Dictionary<CoreEntityId, CoreShipView>();
-        private readonly List<CoreEntityId> _removed = new List<CoreEntityId>();
-        private readonly EntityIdMap _ids = new EntityIdMap();
-        private readonly BattleRenderer _renderer;
-        private readonly CoreBulletVisuals _bulletVisuals;
-        private readonly CoreVisualEffects _visualEffects;
-        private readonly CoreDeviceLooks _deviceLooks;
-        private readonly CoreSoundOutput _sounds;
-        private readonly Dictionary<ShipDefinition, ShipLook> _looks = new Dictionary<ShipDefinition, ShipLook>();
-#if UNITY_EDITOR
-        private readonly CoreEffectPreview _effectPreview;
-#endif
-        private readonly CorePlanet _planet;
-        private readonly CoreAsteroids _asteroids;
-        private readonly LegacyViewRect _framing = new LegacyViewRect();
 
         private readonly ICombatModel _combatModel;
-        private readonly IResourceLocator _resourceLocator;
         private readonly LazyInject<CombatMenu> _combatMenu;
         private readonly LazyInject<ShipSelectionPanel> _shipSelectionPanel;
-        private readonly ExitSignal.Trigger _exitTrigger;
-        private readonly ILocalization _localization;
-        private readonly PlayerInputSignal _playerInputSignal;
     }
 }

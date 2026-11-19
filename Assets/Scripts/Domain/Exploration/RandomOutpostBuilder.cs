@@ -24,6 +24,14 @@ namespace Game.Exploration
 
         public Combat.Component.Ship.Ship Build(Combat.Factory.ShipFactory shipFactory, Combat.Factory.SpaceObjectFactory objectFactory, Vector2 position, float rotation)
         {
+            var spec = CreateSpecification();
+            var starbase = shipFactory.CreateTurret(spec, position, rotation, UnitSide.Enemy);
+
+            return starbase;
+        }
+
+        public IShipSpecification CreateSpecification()
+        {
             var random = new System.Random(_seed);
             var componentLevel = Maths.Distance.ComponentLevel(_level);
 
@@ -37,10 +45,7 @@ namespace Game.Exploration
             var builder = ship.CreateBuilder();
             builder.Converter = new EnemyComponentConverter(componentLevel, random);
 
-            var spec = builder.Build(_database.ShipSettings);
-            var starbase = shipFactory.CreateTurret(spec, position, rotation, UnitSide.Enemy);
-
-            return starbase;
+            return builder.Build(_database.ShipSettings);
         }
 
         private IEnumerable<IntegratedComponent> GetComponents(System.Random random)

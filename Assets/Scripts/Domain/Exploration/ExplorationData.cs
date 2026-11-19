@@ -35,6 +35,14 @@ namespace Game.Exploration
             _planet.OnExplorationStarted();
         }
 
+        // The planet's content without a session, for the Editor checks (exploration plan, step 6): the objectives,
+        // the ships and the environment work; the completion state and the loot do not.
+        public ExplorationData(IDatabase database, Planet planet)
+        {
+            _database = database;
+            _planet = planet;
+        }
+
 		public int Seed => _planet.Seed;
 		public int Level => _planet.Level;
 		public Color PlanetColor => _planet.Color;
@@ -190,6 +198,10 @@ namespace Game.Exploration
         {
             return new EnemyShipBuilder(_database.ExplorationSettings.HiveShipBuild.Id, _database, _planet.Level, seed, true);
         }
+
+        // The core's hive guardian (exploration plan, E5): legacy draws it from the scene's shared random, so a guardian
+        // depends on the objectives before it; this one depends on its seed only.
+        public IEnemyShipBuilder GetHiveGuardian(int seed) => GetHiveGuardian(new System.Random(seed));
 
         public IEnemyShipBuilder GetHiveGuardian(System.Random random)
         {

@@ -23,10 +23,15 @@ namespace Game.Exploration
 
         public Combat.Component.Ship.Ship Build(Combat.Factory.ShipFactory shipFactory, Combat.Factory.SpaceObjectFactory objectFactory, Vector2 position, float rotation)
         {
-            var model = CreateShip();
-            var spec = model.CreateBuilder().Build(_database.ShipSettings);
+            var spec = CreateSpecification();
             var ship = shipFactory.CreateEnemyShip(spec, position, rotation, Maths.Distance.AiLevel(_level));
             return ship;
+        }
+
+        public Constructor.IShipSpecification CreateSpecification()
+        {
+            var model = CreateShip();
+            return model.CreateBuilder().Build(_database.ShipSettings);
         }
 
         private IShip CreateShip()
