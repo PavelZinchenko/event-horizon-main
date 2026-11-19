@@ -84,13 +84,8 @@ namespace Combat.Integration.Core
             // Legacy DamageIndicator colours: the shield, then the LegacyDamageModel types.
             _renderer.SetDamageTextColors(new Color(0.5f, 0.5f, 0.5f), new Color(0.5f, 1f, 0.5f), new Color(0f, 1f, 1f),
                 new Color(1f, 1f, 0f), new Color(1f, 0.5f, 1f));
-            foreach (var source in _mapper.SegmentSources)
-                _renderer.AddSegmentLook(source.Key, SegmentLook(source.Value, resourceLocator));
             _visualEffects = new CoreVisualEffects(resourceLocator);
-            foreach (var look in _mapper.RepairBotColors)
-                _renderer.AddRepairBotLook(look.Key, new RepairBotLook(look.Value.ToUnity(),
-                    RepairBeam(_mapper.RepairBotEffects.TryGetValue(look.Key, out var effect) ? effect : null),
-                    _mapper.RepairBotSounds.TryGetValue(look.Key, out var sound) ? sounds.Resolve(sound) : default));
+            RegisterMappedLooks();
             _deviceLooks = new CoreDeviceLooks(_visualEffects, sounds);
             _bulletVisuals = new CoreBulletVisuals(_mapper.BulletSources, _mapper.SpawnTriggers, resourceLocator, _visualEffects,
                 sounds);
@@ -112,6 +107,10 @@ namespace Combat.Integration.Core
         }
 
         #region IShipViews
+
+        // Exploration plan, E2: each new ship view, in the tick's event handling. A view that vanishes and returns is a
+        // new view with a new ID.
+        public event Action<EntityId, CombatSide> ShipAdded;
 
         public bool TryGetShip(EntityId id, out IShipView ship)
         {
@@ -183,6 +182,7 @@ namespace Combat.Integration.Core
             _renderer.Dispose();
             _planet?.Dispose();
             _asteroids?.Dispose();
+            DisposeMode();
             _views.Clear();
             _viewsByCore.Clear();
             _ids.Clear();
@@ -216,6 +216,16 @@ namespace Combat.Integration.Core
 
         // Each tick's snapshot, after its events and the views' update.
         protected virtual void EndSnapshot(BattleSnapshot snapshot) { }
+
+        // An event that the battle mode published (BattleEventKind.Mode), in the tick's event order.
+        protected virtual void OnModeEvent(BattleSnapshot snapshot, in ModeEvent item) { }
+
+        // Once per frame after the renderer, the planet and the asteroids: the mode's own presentation (exploration
+        // objects). Anchor: the drawn controlled ship, or its last position.
+        protected virtual void RenderMode(Vector2 anchor, float deltaTime) { }
+
+        // In Dispose, after the host's views: the mode's own presentation.
+        protected virtual void DisposeMode() { }
 
         // The first completed snapshot, and every one after it while the battle steps.
         protected abstract void OnCompleted(BattleResult result);
@@ -345,6 +355,7 @@ namespace Combat.Integration.Core
             _renderer.Render(alpha, controlled, ref _anchor, Time.deltaTime);
             _planet?.Render(_anchor, Time.deltaTime);
             _asteroids?.Render(alpha, _anchor, Time.deltaTime);
+            RenderMode(_anchor, Time.deltaTime);
 
             foreach (var pair in _viewsByCore)
                 if (_renderer.TryGetShipPose(pair.Key, out var position, out var degrees))
@@ -446,6 +457,9 @@ namespace Combat.Integration.Core
                     case BattleEventKind.SatelliteChange:
                         _renderer.ChangeSatellite(item);
                         break;
+                    case BattleEventKind.Mode:
+                        OnModeEvent(snapshot, item.ModeEvent);
+                        break;
                 }
 
                 _renderer.OnEvent(snapshot, item);
@@ -463,9 +477,33 @@ namespace Combat.Integration.Core
             _views.Add(id, view);
             _viewsByCore.Add(item.EntityId, view);
 
+            RegisterMappedLooks();
             var mapping = _mapper.Mappings[state.Definition];
             _renderer.AddShip(item.EntityId, GetLook(mapping), item.Side);
             AddTurrets(item.EntityId, mapping);
+            ShipAdded?.Invoke(id, side);
+        }
+
+        // The looks of the mapper's worm tails and repair bots. Exploration plan, step 8: the exploration content maps a
+        // ship when it first spawns, so each ship spawn registers the looks that the mapper added since. The mapper's
+        // dictionaries only grow.
+        private void RegisterMappedLooks()
+        {
+            if (_mapper.SegmentSources.Count != _segmentLookCount)
+            {
+                _segmentLookCount = _mapper.SegmentSources.Count;
+                foreach (var source in _mapper.SegmentSources)
+                    _renderer.AddSegmentLook(source.Key, SegmentLook(source.Value, _resourceLocator));
+            }
+
+            if (_mapper.RepairBotColors.Count != _repairBotLookCount)
+            {
+                _repairBotLookCount = _mapper.RepairBotColors.Count;
+                foreach (var look in _mapper.RepairBotColors)
+                    _renderer.AddRepairBotLook(look.Key, new RepairBotLook(look.Value.ToUnity(),
+                        RepairBeam(_mapper.RepairBotEffects.TryGetValue(look.Key, out var effect) ? effect : null),
+                        _mapper.RepairBotSounds.TryGetValue(look.Key, out var sound) ? _sounds.Resolve(sound) : default));
+            }
         }
 
         // The view of every ship of one definition (phase 5b, step 4), built on first use.
@@ -788,6 +826,8 @@ namespace Combat.Integration.Core
 #endif
         private CorePlanet _planet;
         private CoreAsteroids _asteroids;
+        private int _segmentLookCount;
+        private int _repairBotLookCount;
         private readonly LegacyViewRect _framing = new LegacyViewRect();
 
         private readonly IDatabase _database;

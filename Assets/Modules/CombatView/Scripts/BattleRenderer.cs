@@ -334,9 +334,12 @@ namespace CombatView
         // Phase 5b, step 5: an instance of the look's template (the shape prefab of Resources/CombatView/Bullets). It
         // shows from the first snapshot. A null visual draws the generic sprite or a plain beam; it should not happen
         // for a mapped weapon. Step 6: the Created sounds play at once, the Created effects at the first snapshot.
+        // Exploration plan, E8: a damage zone has no bullet view; the game draws it (a gas cloud).
         public void AddBullet(in BattleEvent spawn, BulletVisual visual)
         {
             if (_bullets.ContainsKey(spawn.EntityId))
+                return;
+            if (!spawn.IsBeam && spawn.BulletDefinition != null && spawn.BulletDefinition.IsZone)
                 return;
 
             if (visual == null)

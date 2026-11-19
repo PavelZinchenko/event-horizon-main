@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CombatSimulation.Core;
 using CombatSimulation.Modes;
+using Constructor;
 using Game.Exploration;
 
 namespace Combat.Integration.Core
@@ -31,28 +32,36 @@ namespace Combat.Integration.Core
 
         // Cached by role, key and ordinal (E4): a cache by role and key alone gives every guardian of a group the first
         // guardian's ship.
-        public CoreShipMapping Map(ExplorationShipRole role, long contentKey, int ordinal)
+        public CoreShipMapping Map(ExplorationShipRole role, long contentKey, int ordinal) =>
+            Get(role, contentKey, ordinal).Mapping;
+
+        // The legacy specification of the same ship, for its HUD view (step 8).
+        public IShipSpecification Specification(ExplorationShipRole role, long contentKey, int ordinal) =>
+            Get(role, contentKey, ordinal).Specification;
+
+        private (CoreShipMapping Mapping, IShipSpecification Specification) Get(ExplorationShipRole role, long contentKey,
+            int ordinal)
         {
             var key = (role, contentKey, ordinal);
-            if (!_cache.TryGetValue(key, out var mapping))
-                _cache.Add(key, mapping = Build(role, contentKey, ordinal));
-            return mapping;
+            if (!_cache.TryGetValue(key, out var entry))
+                _cache.Add(key, entry = Build(role, contentKey, ordinal));
+            return entry;
         }
 
-        private CoreShipMapping Build(ExplorationShipRole role, long contentKey, int ordinal)
+        private (CoreShipMapping, IShipSpecification) Build(ExplorationShipRole role, long contentKey, int ordinal)
         {
             switch (role)
             {
                 case ExplorationShipRole.RandomShip:
-                    return _mapper.Map(_randomShips[Index(contentKey, _randomShips.Count)].CreateSpecification(), isDrone: false);
+                    return Mapped(_randomShips[Index(contentKey, _randomShips.Count)].CreateSpecification());
 
                 case ExplorationShipRole.Hostile:
                 {
                     var objective = Objective(contentKey);
                     if (objective.Type == ObjectiveType.Outpost)
-                        return _mapper.MapStationary(_exploration.GetOutpost(objective.Seed).CreateSpecification(), isTurret: true);
+                        return Stationary(_exploration.GetOutpost(objective.Seed).CreateSpecification(), isTurret: true);
                     if (objective.Type == ObjectiveType.Hive)
-                        return _mapper.MapStationary(_exploration.GetHive(objective.Seed).CreateSpecification(), isTurret: false);
+                        return Stationary(_exploration.GetHive(objective.Seed).CreateSpecification(), isTurret: false);
                     break;
                 }
 
@@ -61,15 +70,21 @@ namespace Combat.Integration.Core
                 {
                     var objective = Objective(contentKey);
                     if (objective.Type == ObjectiveType.Outpost)
-                        return _mapper.MapStationary(_exploration.GetTurret(objective.Seed + ordinal).CreateSpecification(), isTurret: true);
+                        return Stationary(_exploration.GetTurret(objective.Seed + ordinal).CreateSpecification(), isTurret: true);
                     if (objective.Type == ObjectiveType.Hive)
-                        return _mapper.Map(_exploration.GetHiveGuardian(objective.Seed + ordinal).CreateSpecification(), isDrone: false);
+                        return Mapped(_exploration.GetHiveGuardian(objective.Seed + ordinal).CreateSpecification());
                     break;
                 }
             }
 
             throw new ArgumentException($"CoreExplorationContent: no {role} ship for the content key {contentKey}.");
         }
+
+        private (CoreShipMapping, IShipSpecification) Mapped(IShipSpecification specification) =>
+            (_mapper.Map(specification, isDrone: false), specification);
+
+        private (CoreShipMapping, IShipSpecification) Stationary(IShipSpecification specification, bool isTurret) =>
+            (_mapper.MapStationary(specification, isTurret), specification);
 
         private ObjectiveInfo Objective(long contentKey)
         {
@@ -87,7 +102,7 @@ namespace Combat.Integration.Core
         private readonly ExplorationData _exploration;
         private readonly CoreShipMapper _mapper;
         private readonly List<IEnemyShipBuilder> _randomShips;
-        private readonly Dictionary<(ExplorationShipRole, long, int), CoreShipMapping> _cache =
-            new Dictionary<(ExplorationShipRole, long, int), CoreShipMapping>();
+        private readonly Dictionary<(ExplorationShipRole, long, int), (CoreShipMapping Mapping, IShipSpecification Specification)>
+            _cache = new Dictionary<(ExplorationShipRole, long, int), (CoreShipMapping, IShipSpecification)>();
     }
 }
