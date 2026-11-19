@@ -25,6 +25,8 @@ namespace GameDatabase.DataModel
             Id = new ItemId<Faction>(id);
             Color = color;
             Name = name;
+            WanderingShipsRange = new Range(int.MinValue, int.MaxValue);
+            HomeStarRange = new Range(int.MinValue, int.MaxValue);
         }
 
         public Range HomeStarRange { get; private set; }
