@@ -18,6 +18,4 @@
 
 `Assets/GoogleMobileAds/Resources/GoogleMobileAdsSettings.asset` is the Google Mobile Ads plugin's settings asset. `Assets/ModulesPrivate/Plugins/StansAssets/Support/Settings/Resources/` holds settings for the iOS native and deployment plugins. These assets belong to their integration packages; game feature code does not use them as general media.
 
-`Assets/ModulesShared/Gui/Plugins/com.unity.uiextensions/Runtime/Resources/Shaders/` contains UI Extensions shaders for soft masks, particles, crop, and blend effects. The plugin's UI materials and components select them when those effects render. Keep them with the plugin because its runtime resource paths and material references can depend on that layout.
-
 `Assets/Plugins/Zenject/OptionalExtras/MemoryPoolMonitor/Editor/Resources/Installers/MpmSettingsInstaller.asset` configures Zenject's optional editor memory pool monitor. It is an editor tool resource, not gameplay content. The Cyotek color picker images under `Assets/Modules/Database/.Editor/.../Resources/` provide its editor cell background, eyedropper cursor, and palette controls. They are editor UI assets and are outside the excluded database catalog resource tree.
