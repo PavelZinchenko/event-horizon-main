@@ -6,6 +6,7 @@
     "AttachedToParent": true,
     "Lifetime": 2.0,
     "Color": "#DCFFCF3C",
+    "BulletPrefab": 36,
     "EnergyCost": 4.0,
     "AiBulletBehavior": 3
   },
@@ -17,12 +18,6 @@
       "Condition": 1,
       "EffectType": 1,
       "AudioClip": "*flux_01"
-    },
-    {
-      "Condition": 1,
-      "EffectType": 1,
-      "VisualEffect": 33,
-      "SyncLifetimeWithBullet": true
     }
   ],
   "ImpactType": 2,
