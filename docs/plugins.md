@@ -13,7 +13,6 @@ Five plugins that the commercial build needs are git-ignored. A fresh clone does
 | [iOS native plugins](#ios-native-plugins) | iOS Native 9.11 | Asset Store; not stated | `Assets/ModulesPrivate/Plugins/`, `Assets/Plugins/iOS/` | submodule; `Plugins/iOS` **no** | `ServicesPrivate` (iOS) |
 | [Steamworks.NET](#steamworksnet) | 20.2.0 (SDK 1.57) | MIT; Valve SDK binaries | `Assets/com.rlabrecque.steamworks.net/` | **no** | `ServicesPrivate` (desktop) |
 | [NativeFilePicker](#nativefilepicker) | 1.3.5 | MIT (upstream) | `Assets/Plugins/NativeFilePicker/` | yes | `ServicesPrivate`, `Assembly-CSharp` |
-| [UniRx](#unirx) | 6.2.2 | MIT | `Assets/Plugins/UniRx/` | yes | services, arena client, combat, state machine |
 | [Zenject (Extenject)](#zenject-extenject) | 9.2.0 | MIT | `Assets/Plugins/Zenject/` | yes | almost every assembly |
 | [BouncyCastle](#bouncycastle) | 2.7.0 | MIT | `Assets/Plugins/BouncyCastle/` | yes | `Security` |
 | [IonicZlib (SimpleZip)](#ioniczlib-simplezip) | 1.0.0.0 | Ms-PL | `Assets/SimpleZip/` | yes | `Database`, `Services`, `Assembly-CSharp` |
@@ -47,7 +46,7 @@ Known issues: [Plugin issues](issues/plugins.md) and [Expression Parser issues](
 
 | Content | Clone without submodules | Clone with submodules | Maintainer machine |
 | --- | --- | --- | --- |
-| UniRx, Zenject, NativeFilePicker, BouncyCastle, IonicZlib, OpenWavParser, collider optimizers | yes | yes | yes |
+| Zenject, NativeFilePicker, BouncyCastle, IonicZlib, OpenWavParser, collider optimizers | yes | yes | yes |
 | Expression Parser, NVorbis | no | yes | yes |
 | Stan's Assets, FSG Keychain | no | only with access to the private submodule | yes |
 | Google Play Games, Steamworks.NET, Android templates, `Plugins/iOS` sources, Google Mobile Ads settings, EDM local repository | no | no | yes |
@@ -170,23 +169,11 @@ On Android, `PickFile` copies the chosen file to one fixed path, `temporaryCache
 
 On desktop players, `PickFile` calls back with `null` at once.
 
-## UniRx
-
-Reactive Extensions for Unity by neuecc.
-
-| | |
-| --- | --- |
-| Version | 6.2.2 ([ReadMe.txt](../Assets/Plugins/UniRx/ReadMe.txt)) |
-| Assemblies | `UniRx` (every platform, `autoReferenced`); `UniRx.Examples` (test assembly, not in players) |
-| Referenced by | `GameServices`, `Services`, `ServicesPrivate`, `Security`, `SecurityStub`, and `Assembly-CSharp` |
-
-The game uses a small part of the library: `Observable.Return`, `Empty`, `Timer`, `Interval`, `EveryUpdate`, `Create`, `Throw`; `Subject<T>`; `Scheduler.MainThreadIgnoreTimeScale`; and `ObservableWWW.Post`, `GetWWW`, and `LoadFromCacheOrDownload`. `ObservableWWW` carries every arena request and the music bundle download ([ModulesPrivate: Server requests](modules_private.md#server-requests)). It is built on `UnityEngine.WWW`, which Unity marks as obsolete ([PL8](issues/plugins.md#pl8-outdated-libraries)).
-
-Zenject has optional UniRx support behind `ZEN_SIGNALS_ADD_UNIRX`. The project does not define it.
-
 ## Zenject (Extenject)
 
 The dependency injection container. [Architecture: Dependency Injection](architecture.md#dependency-injection-zenject) and [Application layer: Composition root](application_layer.md#composition-root) describe how the game uses it.
+
+Zenject has optional UniRx support behind `ZEN_SIGNALS_ADD_UNIRX`. The project does not define it, and UniRx is no longer in the project.
 
 | | |
 | --- | --- |
@@ -253,6 +240,7 @@ These are Package Manager packages, not vendored code. They are listed because t
 
 | Package | Version | Integration |
 | --- | --- | --- |
+| `com.cysharp.unitask` | 2.5.11 (Git URL with a tag) | The only async library. Delays, the arena requests, the music bundle download, account avatars, and the internet time service use it. It replaced UniRx, which is archived. |
 | `com.google.external-dependency-manager` | 1.2.187 (OpenUPM) | Resolves Android libraries for Play Games and Unity Ads. See [Android build templates](#android-build-templates-and-external-dependency-manager). |
 | `com.unity.ads` | 4.17.0 | `UnityAdsManager` on Android and iOS. See [ModulesPrivate: Advertisements](modules_private.md#advertisements). |
 | `com.unity.purchasing` | 5.3.1 | `InAppPurchasing` on Android and iOS. See [ModulesPrivate: In-app purchases](modules_private.md#in-app-purchases). |
@@ -274,7 +262,7 @@ The project is licensed under GPL-3.0 ([LICENSE](../LICENSE)).
 
 | License | Libraries |
 | --- | --- |
-| MIT | Expression Parser, Sprache, Steamworks.NET (wrapper), UniRx, Zenject, BouncyCastle, NVorbis, NativeFilePicker (upstream; no license file in the folder), Unity XcodeAPI copy |
+| MIT | Expression Parser, Sprache, Steamworks.NET (wrapper), Zenject, BouncyCastle, NVorbis, NativeFilePicker (upstream; no license file in the folder), Unity XcodeAPI copy |
 | Apache 2.0 | Google Play Games |
 | Ms-PL | IonicZlib |
 | Proprietary or Asset Store terms | Stan's Assets (private submodule), Gamemaster Audio (git-ignored), Steamworks SDK binaries (git-ignored), Unity packages |

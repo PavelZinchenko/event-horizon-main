@@ -3,7 +3,8 @@
     "rootNamespace": "Services",
     "references": [
         "CommonComponents",
-        "Zenject"
+        "Zenject",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

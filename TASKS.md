@@ -10,6 +10,9 @@
 - [ ] Emit enum `default` values as `Enum.Value`, not a quoted string, in game serializable DTOs
 - [ ] Parse expression `minvalue`/`maxvalue` as floats for `float` results
 
+## Open (plugins — `docs/plugins.md`)
+- [ ] Frontier: avatar errors — Game Center `TrySetResult(null)`, `SettingsAccount` catch; pin UniTask to `#2.5.11` (`TODO/plugin_removal.md`, "Frontier follow-up")
+
 ## Open (quests — `docs/quests.md`)
 - [ ] Investigate: a quest beacon stays after its quest completes and lets the player start the quest again
 

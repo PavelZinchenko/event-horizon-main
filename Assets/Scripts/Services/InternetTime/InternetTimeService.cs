@@ -1,5 +1,6 @@
 ﻿using System;
-using UniRx;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using CommonComponents.Signals;
 using Zenject;
@@ -10,9 +11,13 @@ namespace Services.InternetTime
     public class InternetTimeService : IInitializable, IDisposable
     {
         private const string Url = "https://zipagames.com/time.php";
+        // UnityWebRequest has no timeout by default, so a stalled connection would block the loop.
+        private const int RequestTimeoutSeconds = 10;
+        private static readonly TimeSpan _requestInterval = TimeSpan.FromMinutes(30);
+        private static readonly TimeSpan _retryInterval = TimeSpan.FromMinutes(1);
 
         private readonly ServerTimeReceivedSignal.Trigger _timeReceivedTrigger;
-        private IDisposable _timeSubscription;
+        private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
         private DateTime _dateTime;
 
         public InternetTimeService(ServerTimeReceivedSignal.Trigger timeReceivedTrigger)
@@ -27,18 +32,44 @@ namespace Services.InternetTime
 
         public void Initialize()
         {
-            _timeSubscription = Observable.Interval(TimeSpan.FromMinutes(30))
-                .StartWith(0)
-                .SelectMany(_ => GetNetworkTime())
-                .Subscribe(
-                    OnTimeReceived,
-                    error => GameDiagnostics.Trace.Log($"Error fetching time: {error}")
-                );
+            RequestTimeLoop(_cancellation.Token).Forget();
         }
 
         public void Dispose()
         {
-            _timeSubscription?.Dispose();
+            _cancellation.Cancel();
+            _cancellation.Dispose();
+        }
+
+        // A failed request does not stop the loop; the next attempt comes after the retry interval.
+        private async UniTaskVoid RequestTimeLoop(CancellationToken cancellationToken)
+        {
+            while (true)
+            {
+                var delay = _requestInterval;
+                try
+                {
+                    OnTimeReceived(await GetNetworkTime(cancellationToken));
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+                catch (Exception e)
+                {
+                    GameDiagnostics.Trace.Log($"Error fetching time: {e.Message}");
+                    delay = _retryInterval;
+                }
+
+                try
+                {
+                    await UniTask.Delay(delay, DelayType.Realtime, cancellationToken: cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+            }
         }
 
         private void OnTimeReceived(DateTime time)
@@ -48,32 +79,16 @@ namespace Services.InternetTime
             _timeReceivedTrigger.Fire(_dateTime);
         }
 
-        private IObservable<DateTime> GetNetworkTime()
+        // Throws UnityWebRequestException on connection and HTTP errors.
+        private static async UniTask<DateTime> GetNetworkTime(CancellationToken cancellationToken)
         {
-            return Observable.Create<DateTime>(observer =>
-            {
-                var webRequest = UnityWebRequest.Get(Url);
-                var operation = webRequest.SendWebRequest();
+            using var webRequest = UnityWebRequest.Get(Url);
+            webRequest.timeout = RequestTimeoutSeconds;
+            await webRequest.SendWebRequest().WithCancellation(cancellationToken);
 
-                return Observable.EveryUpdate()
-                    .Where(_ => operation.isDone)
-                    .Take(1)
-                    .Subscribe(_ =>
-                    {
-                        if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
-                        {
-                            observer.OnError(new Exception(webRequest.error));
-                        }
-                        else
-                        {
-                            var jsonResponse = webRequest.downloadHandler.text;
-                            var timeApiResponse = JsonUtility.FromJson<TimeApiResponse>(jsonResponse);
-                            var networkTime = DateTime.Parse(timeApiResponse.datetime);
-                            observer.OnNext(networkTime);
-                            observer.OnCompleted();
-                        }
-                    });
-            });
+            var jsonResponse = webRequest.downloadHandler.text;
+            var timeApiResponse = JsonUtility.FromJson<TimeApiResponse>(jsonResponse);
+            return DateTime.Parse(timeApiResponse.datetime);
         }
 
         [Serializable]

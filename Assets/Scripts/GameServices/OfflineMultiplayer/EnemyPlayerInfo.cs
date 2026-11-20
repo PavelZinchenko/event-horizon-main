@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Constructor.Ships;
+using Cysharp.Threading.Tasks;
 using GameDatabase;
-using UniRx;
 
 namespace GameServices.Multiplayer
 {
@@ -23,15 +23,20 @@ namespace GameServices.Multiplayer
         public IEnumerable<IShip> Fleet { get { return _fleet; } }
         public float PowerMultiplier { get { return 1.0f + UnityEngine.Mathf.Min(5.0f, _rating / 20000f); } }
 
-        public IObservable<bool> LoadFleetObservable()
+        public async UniTask<bool> LoadFleet()
         {
-            return _fleet.Count > 0
-                ? Observable.Return<bool>(true)
-                : Security.RequestFactory.CreateGetFleetRequest(_id).Select(TryLoadEnemyFleet).Catch((WWWErrorException ex) =>
-                {
-                    UnityEngine.Debug.LogError("LoadFleet: " + ex.RawErrorMessage);
-                    return Observable.Return<bool>(false);
-                });
+            if (_fleet.Count > 0) return true;
+
+            try
+            {
+                var text = await Security.RequestFactory.CreateGetFleetRequest(_id);
+                return TryLoadEnemyFleet(text);
+            }
+            catch (UnityWebRequestException ex)
+            {
+                UnityEngine.Debug.LogError("LoadFleet: " + ex.Error);
+                return false;
+            }
         }
 
         private bool TryLoadEnemyFleet(string text)

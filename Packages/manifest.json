@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2.5.11",
     "com.google.external-dependency-manager": "1.2.187",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ads": "4.19.0",

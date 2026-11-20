@@ -6,8 +6,8 @@ using Combat.Domain;
 using Constructor.Ships;
 using GameDatabase;
 using GameServices.Player;
+using Cysharp.Threading.Tasks;
 using Services.Account;
-using UniRx;
 
 namespace GameServices.Multiplayer
 {
@@ -42,59 +42,72 @@ namespace GameServices.Multiplayer
             return Fleet.Any() && Fleet.All(ship => ShipValidator.IsAllowedOnArena(ship, _database.ShipSettings));
         }
 
-        public IObservable<bool> GetInfoObservable()
+        public async UniTask<bool> GetInfo()
         {
-            return Security.RequestFactory.CreateGetPlayerInfoRequest(_account.Id).Select(TryUpdate).Catch((WWWErrorException ex) =>
+            try
             {
-                UnityEngine.Debug.LogError("LoadPlayerInfo: " + ex.RawErrorMessage);
-                return Observable.Return(false);
-            });
+                var text = await Security.RequestFactory.CreateGetPlayerInfoRequest(_account.Id);
+                return TryUpdate(text);
+            }
+            catch (UnityWebRequestException ex)
+            {
+                UnityEngine.Debug.LogError("LoadPlayerInfo: " + ex.Error);
+                return false;
+            }
         }
 
-        public IObservable<IPlayerInfo> FindOpponentObservable()
+        public async UniTask<IPlayerInfo> FindOpponent()
         {
 #if !UNITY_EDITOR
-            if (_timeManager.ShouldUpdatePlayerData)
-                return RegisterPlayerObservable().SelectMany(result => result ? CreateFindOpponentObservable() : Observable.Return<IPlayerInfo>(null));
+            if (_timeManager.ShouldUpdatePlayerData && !await RegisterPlayer())
+                return null;
 #else
             var data = FleetWebSerializer.SerializeFleet(Fleet);
 #endif
-            return CreateFindOpponentObservable();
+            if (!await RequestAvailableBattles())
+                return null;
+
+            try
+            {
+                var text = await Security.RequestFactory.CreateFindOpponentRequest(_account.Id, Rating);
+                return CreateOpponent(text);
+            }
+            catch (UnityWebRequestException ex)
+            {
+                UnityEngine.Debug.LogError("FindOpponent: " + ex.Error);
+                return null;
+            }
         }
 
-        public IObservable<bool> CombatCompletedObservable(IPlayerInfo opponent, ICombatModel combatModel)
+        public async UniTask<bool> CombatCompleted(IPlayerInfo opponent, ICombatModel combatModel)
         {
-            if (opponent.Id <= 0) return Observable.Return(true);
+            if (opponent.Id <= 0) return true;
 
             var value = combatModel.IsVictory() ? 1 : -1;
-            var request = Security.RequestFactory.CreateUpdateStatsRequest(_account.Id, opponent.Id, value);
-            return request.Select(TryUpdateRating).Catch((WWWErrorException ex) =>
+            try
             {
-                UnityEngine.Debug.LogError("UpdateStats: " + ex.RawErrorMessage);
-                return Observable.Return(false);
-            });
+                var text = await Security.RequestFactory.CreateUpdateStatsRequest(_account.Id, opponent.Id, value);
+                return TryUpdateRating(text);
+            }
+            catch (UnityWebRequestException ex)
+            {
+                UnityEngine.Debug.LogError("UpdateStats: " + ex.Error);
+                return false;
+            }
         }
 
-        private IObservable<IPlayerInfo> CreateFindOpponentObservable()
+        private async UniTask<bool> RequestAvailableBattles()
         {
-            var request = Security.RequestFactory.CreateFindOpponentRequest(_account.Id, Rating);
-            var observable = request.Select(CreateOpponent).Catch((WWWErrorException ex) =>
+            try
             {
-                UnityEngine.Debug.LogError("FindOpponent: " + ex.RawErrorMessage);
-                return Observable.Return<IPlayerInfo>(null);
-            });
-
-            return CheckAvailableBattlesObservable().SelectMany(result => result ? observable : Observable.Return<IPlayerInfo>(null));
-        }
-
-        private IObservable<bool> CheckAvailableBattlesObservable()
-        {
-            var request = Security.RequestFactory.CreateGetTimeFromLastFightRequest(_account.Id);
-            return request.Select(CheckAvailableBattles).Catch((WWWErrorException ex) =>
+                var text = await Security.RequestFactory.CreateGetTimeFromLastFightRequest(_account.Id);
+                return CheckAvailableBattles(text);
+            }
+            catch (UnityWebRequestException ex)
             {
-                UnityEngine.Debug.LogError("GetTimeFromLastFight: " + ex.RawErrorMessage);
-                return Observable.Return(false);
-            });
+                UnityEngine.Debug.LogError("GetTimeFromLastFight: " + ex.Error);
+                return false;
+            }
         }
 
         private bool CheckAvailableBattles(string text)
@@ -112,23 +125,27 @@ namespace GameServices.Multiplayer
             }
         }
 
-        private IObservable<bool> RegisterPlayerObservable()
+        private async UniTask<bool> RegisterPlayer()
         {
             var fleet = Fleet.ToArray();
             var fleetPower = RatingCalculator.CalculateFleetPower(fleet);
-            var request = Security.RequestFactory.CreateRegisterPlayerRequest(_account.Id, 
-                _account.DisplayName, Rating, fleetPower, FleetWebSerializer.SerializeFleet(fleet));
 
-            return request.Select(TryUpdate).Catch((WWWErrorException ex) =>
+            try
             {
-                UnityEngine.Debug.LogError("RegisterPlayer: " + ex.RawErrorMessage);
-                return Observable.Return<bool>(false);
-            });
+                var text = await Security.RequestFactory.CreateRegisterPlayerRequest(_account.Id,
+                    _account.DisplayName, Rating, fleetPower, FleetWebSerializer.SerializeFleet(fleet));
+                return TryUpdate(text);
+            }
+            catch (UnityWebRequestException ex)
+            {
+                UnityEngine.Debug.LogError("RegisterPlayer: " + ex.Error);
+                return false;
+            }
         }
 
-        public IObservable<bool> LoadFleetObservable()
+        public UniTask<bool> LoadFleet()
         {
-            return Observable.Return(true);
+            return UniTask.FromResult(true);
         }
 
         private IPlayerInfo CreateOpponent(string text)

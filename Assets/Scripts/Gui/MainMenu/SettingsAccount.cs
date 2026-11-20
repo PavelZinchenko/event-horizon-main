@@ -1,9 +1,9 @@
-﻿using Services.Account;
+﻿using Cysharp.Threading.Tasks;
+using Services.Account;
 using Services.Messenger;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using UniRx;
 
 namespace Gui.MainMenu
 {
@@ -55,7 +55,25 @@ namespace Gui.MainMenu
             if (connected)
                 _accountName.text = _account.DisplayName;
 
-            _account.LoadUserIcon().Subscribe(result => _accountIcon.texture = result).AddTo(this);
+            LoadUserIcon().Forget();
+        }
+
+        private async UniTaskVoid LoadUserIcon()
+        {
+            Texture2D icon;
+            try
+            {
+                icon = await _account.LoadUserIcon();
+            }
+            catch (System.Exception e)
+            {
+                Debug.Log("SettingsAccount: failed to load the user icon - " + e.Message);
+                return;
+            }
+
+            // A destroyed panel compares equal to null.
+            if (icon != null && _accountIcon != null)
+                _accountIcon.texture = icon;
         }
 
         private void OnEnable()

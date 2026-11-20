@@ -5,7 +5,6 @@
         "Zenject",
         "ResourceLocator",
         "CommonComponents",
-        "UniRx",
         "Unity.InputSystem",
         "ServicesFacade"
     ],

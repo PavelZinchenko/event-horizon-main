@@ -11,7 +11,7 @@ using Services.Unity;
 using Session;
 using CommonComponents.Signals;
 using Zenject;
-using UniRx;
+using Cysharp.Threading.Tasks;
 using GameDatabase.DataModel;
 
 namespace GameServices.Multiplayer
@@ -98,7 +98,7 @@ namespace GameServices.Multiplayer
 #endif
 
             Status = Status.Connecting;
-            _player.GetInfoObservable().Subscribe(result => Status = result ? Status.Ready : Status.ConnectionError);
+            GetPlayerInfo().Forget();
         }
 
         public void FindOpponent()
@@ -106,17 +106,7 @@ namespace GameServices.Multiplayer
             if (_account.Status != Services.Account.Status.Connected || Status != Status.Ready) return;
 
             Status = Status.Connecting;
-            _player.FindOpponentObservable().Subscribe(result =>
-            {
-                if (result == null)
-                {
-                    Status = Status.ConnectionError;
-                    return;
-                }
-
-                Status = Status.Ready;
-                _enemyFoundTrigger.Fire(result);
-            });
+            FindOpponentAsync().Forget();
         }
 
         public void PrepareToFight(IPlayerInfo player)
@@ -125,19 +115,7 @@ namespace GameServices.Multiplayer
                 return;
 
             Status = Status.Connecting;
-            player.LoadFleetObservable().Subscribe(result =>
-            {
-                if (result)
-                {
-                    if (player.Id > 0) _timeManager.DecreaseAvailableBattles();
-                    Status = Status.Ready;
-                    _enemyFleetLoadedTrigger.Fire(player);
-                }
-                else
-                {
-                    Status = Status.ConnectionError;
-                }
-            });
+            LoadEnemyFleet(player).Forget();
         }
 
         public void Fight(IPlayerInfo enemy)
@@ -183,16 +161,87 @@ namespace GameServices.Multiplayer
         private void OnCombatCompleted(IPlayerInfo enemy, ICombatModel combatModel)
         {
             Status = Status.Connecting;
-            _player.CombatCompletedObservable(enemy, combatModel).Subscribe(result =>
-            {
-                if (!result)
-                {
-                    Status = Status.ConnectionError;
-                    return;
-                }
+            ReportCombatResult(enemy, combatModel).Forget();
+        }
 
-                Status = Status.Ready;
-            });
+        // Each request method below ends in Ready or ConnectionError, never in Connecting.
+        // PlayerInfo handles web errors; the catch handles any other exception.
+
+        private async UniTaskVoid GetPlayerInfo()
+        {
+            try
+            {
+                Status = await _player.GetInfo() ? Status.Ready : Status.ConnectionError;
+            }
+            catch (System.Exception e)
+            {
+                OnRequestFailed(e);
+            }
+        }
+
+        private async UniTaskVoid FindOpponentAsync()
+        {
+            IPlayerInfo enemy;
+            try
+            {
+                enemy = await _player.FindOpponent();
+            }
+            catch (System.Exception e)
+            {
+                OnRequestFailed(e);
+                return;
+            }
+
+            if (enemy == null)
+            {
+                Status = Status.ConnectionError;
+                return;
+            }
+
+            Status = Status.Ready;
+            _enemyFoundTrigger.Fire(enemy);
+        }
+
+        private async UniTaskVoid LoadEnemyFleet(IPlayerInfo player)
+        {
+            bool loaded;
+            try
+            {
+                loaded = await player.LoadFleet();
+            }
+            catch (System.Exception e)
+            {
+                OnRequestFailed(e);
+                return;
+            }
+
+            if (!loaded)
+            {
+                Status = Status.ConnectionError;
+                return;
+            }
+
+            if (player.Id > 0) _timeManager.DecreaseAvailableBattles();
+            Status = Status.Ready;
+            _enemyFleetLoadedTrigger.Fire(player);
+        }
+
+        private async UniTaskVoid ReportCombatResult(IPlayerInfo enemy, ICombatModel combatModel)
+        {
+            try
+            {
+                Status = await _player.CombatCompleted(enemy, combatModel) ? Status.Ready : Status.ConnectionError;
+            }
+            catch (System.Exception e)
+            {
+                OnRequestFailed(e);
+            }
+        }
+
+        private void OnRequestFailed(System.Exception e)
+        {
+            UnityEngine.Debug.LogWarning("OfflineMultiplayer: " + e.Message);
+            Status = Status.ConnectionError;
         }
 
         private readonly IDatabase _database;

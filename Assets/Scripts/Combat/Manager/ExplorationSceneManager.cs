@@ -18,7 +18,7 @@ using GameDatabase;
 using GameServices.Player;
 using Services.Gui;
 using Services.Resources;
-using UniRx;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Zenject;
@@ -137,7 +137,7 @@ namespace Combat.Manager
 
         private void DelayedExit()
         {
-            Observable.Timer(TimeSpan.FromSeconds(5)).Subscribe(_ => Exit());
+            UniTask.Delay(TimeSpan.FromSeconds(5)).ContinueWith(Exit).Forget();
         }
 
         private void Exit()

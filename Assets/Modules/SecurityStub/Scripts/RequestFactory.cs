@@ -1,39 +1,40 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UniRx;
 
 namespace Security
 {
+    // The open-source build has no arena server. Every arena request fails.
     public static class RequestFactory
     {
-        public static IObservable<string> CreateGetPlayerInfoRequest(string playerId)
+        public static UniTask<string> CreateGetPlayerInfoRequest(string playerId)
         {
-            return Observable.Empty<string>();
+            return NotAvailable();
         }
 
-        public static IObservable<string> CreateGetTimeFromLastFightRequest(string playerId)
+        public static UniTask<string> CreateGetTimeFromLastFightRequest(string playerId)
         {
-            return Observable.Empty<string>();
+            return NotAvailable();
         }
 
-        public static IObservable<string> CreateRegisterPlayerRequest(string playerId, string userName, int rating, int aiRating, string fleet)
+        public static UniTask<string> CreateRegisterPlayerRequest(string playerId, string userName, int rating, int aiRating, string fleet)
         {
-            return Observable.Empty<string>();
+            return NotAvailable();
         }
 
-        public static IObservable<string> CreateFindOpponentRequest(string playerId, int rating)
+        public static UniTask<string> CreateFindOpponentRequest(string playerId, int rating)
         {
-            return Observable.Empty<string>();
+            return NotAvailable();
         }
 
-        public static IObservable<string> CreateGetFleetRequest(int playerId)
+        public static UniTask<string> CreateGetFleetRequest(int playerId)
         {
-            return Observable.Empty<string>();
+            return NotAvailable();
         }
 
-        public static IObservable<string> CreateUpdateStatsRequest(string playerId, int enemyId, int status)
+        public static UniTask<string> CreateUpdateStatsRequest(string playerId, int enemyId, int status)
         {
-            return Observable.Empty<string>();
+            return NotAvailable();
         }
 
         public static WWW CreateGetItemsRequest(string id)
@@ -54,6 +55,11 @@ namespace Security
         public static WWW CreateSetIapDataRequest(string id, string data)
         {
             return new WWW(string.Empty);
+        }
+
+        private static UniTask<string> NotAvailable()
+        {
+            return UniTask.FromException<string>(new NotSupportedException("The arena server is not available in this build"));
         }
     }
 }

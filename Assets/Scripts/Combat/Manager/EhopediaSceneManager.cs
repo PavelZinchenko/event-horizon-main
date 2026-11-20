@@ -24,7 +24,6 @@ using Services.Localization;
 using Services.ObjectPool;
 using Services.Resources;
 using Services.Unity;
-using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Zenject;

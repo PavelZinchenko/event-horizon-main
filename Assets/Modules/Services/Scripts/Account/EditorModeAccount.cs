@@ -1,6 +1,6 @@
-﻿using GameDatabase.Model;
+﻿using Cysharp.Threading.Tasks;
+using GameDatabase.Model;
 using Services.Resources;
-using UniRx;
 using UnityEngine;
 using Zenject;
 
@@ -14,7 +14,7 @@ namespace Services.Account
         public void SignIn()
         {
             Status = Status.Connecting;
-            Observable.Timer(System.TimeSpan.FromSeconds(1)).Subscribe(value => Status = Status.Connected);
+            UniTask.Delay(System.TimeSpan.FromSeconds(1)).ContinueWith(() => Status = Status.Connected).Forget();
         }
 
         public void SignOut()
@@ -41,18 +41,11 @@ namespace Services.Account
         public string DisplayName { get { return "Cheater"; } }
         public string Id { get { return "Cheater"; } }
 
-        public System.IObservable<Texture2D> LoadUserIcon()
+        public async UniTask<Texture2D> LoadUserIcon()
         {
-            var subject = new Subject<Texture2D>();
-
-            Observable.Timer(System.TimeSpan.FromSeconds(1)).Subscribe(value =>
-            {
-                var sprite = _resourceLocator.GetSprite(new SpriteId("M_07", SpriteId.Type.AvatarIcon));
-                subject.OnNext(sprite.texture);
-                subject.OnCompleted();
-            });
-
-            return subject;
+            await UniTask.Delay(System.TimeSpan.FromSeconds(1));
+            var sprite = _resourceLocator.GetSprite(new SpriteId("M_07", SpriteId.Type.AvatarIcon));
+            return sprite.texture;
         }
 
         private Status _status = Status.NotConnected;

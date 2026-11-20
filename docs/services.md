@@ -5,7 +5,7 @@ These three modules form the platform-service layer. `ServicesFacade` declares t
 | | ServicesFacade | Services | SecurityStub |
 | --- | --- | --- | --- |
 | Assembly | [ServicesFacade.asmdef](../Assets/Modules/ServicesFacade/ServicesFacade.asmdef) | [Services.asmdef](../Assets/Modules/Services/Services.asmdef) | [SecurityStub.asmdef](../Assets/Modules/SecurityStub/SecurityStub.asmdef) |
-| References | CommonComponents, Zenject | AppConfiguration, CommonComponents, ServicesFacade, UniRx, Zenject | UniRx |
+| References | CommonComponents, UniTask, Zenject | AppConfiguration, CommonComponents, ServicesFacade, UniTask, Zenject | UniTask |
 | Compiles when | Always | Always | `LICENSE_OPENSOURCE` is defined (`defineConstraints`) |
 | Namespaces | `Services.*`, `GameServices.SceneManager`, global `EventType` | `Services.*`, `GameServices.Settings` | `Security`, `Services.InAppPurchasing`, global `StringExtensions` |
 | Source | [22 files, 660 lines](../Assets/Modules/ServicesFacade/Scripts/) | [17 files, 1,700 lines](../Assets/Modules/Services/Scripts/) | [8 files, 170 lines](../Assets/Modules/SecurityStub/Scripts/) |
@@ -230,7 +230,7 @@ The private `Security` assembly holds save obfuscation, mod decryption, server r
 | [`EncryptedReadStream`](../Assets/Modules/SecurityStub/Crypto/EncryptedStream.cs) | Pass-through read-only stream. | [`FileDatabaseStorage`](../Assets/Modules/Database/Scripts/Storage/FileDatabaseStorage.cs) when it reads legacy packed mods. |
 | [`Encryption`](../Assets/Modules/SecurityStub/Scripts/Encryption.cs) | `Encrypt` does nothing; `TryDecrypt` returns `true`. | Only the private `LocalStorage` (save files). Unused in open-source builds. |
 | [`ModEncryption`](../Assets/Modules/SecurityStub/Crypto/ModEncryption.cs) | Throws `NotSupportedException` ("Authenticated packed mods require the commercial Security module"). Sizes: 384-byte wrapped key, 12-byte nonce, 16-byte tag. | [Database: encrypted mods](database.md). |
-| [`RequestFactory`](../Assets/Modules/SecurityStub/Scripts/RequestFactory.cs) | Arena requests return `Observable.Empty`. Item and IAP requests return `new WWW("")`. | Arena client, cheats, `WebStorage`. |
+| [`RequestFactory`](../Assets/Modules/SecurityStub/Scripts/RequestFactory.cs) | Arena requests return a failed `UniTask` (`NotSupportedException`), so the arena shows a connection error. Item and IAP requests return `new WWW("")`. | Arena client, cheats, `WebStorage`. |
 | [`IapPurchaseProcessor`](../Assets/Modules/SecurityStub/Scripts/IapPurchaseProcessor.cs) | No purchases. `SupporterPack_Id` is empty. | Nothing in open-source builds; the private IAP code has its own class. |
 | [`StringExtensions.Encrypt/Decrypt`](../Assets/Modules/SecurityStub/Scripts/StringEncryptor.cs) | Identity. | Only the editor window [`StringEncryptorWindow`](../Assets/Editor/StringEncryptorWindow.cs). |
 

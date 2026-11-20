@@ -171,7 +171,7 @@ The combat simulation is in the [BattleSimulator module](battle_simulator.md). T
 
 - `DataManager/`: `GameDataManager` (see [Session lifecycle](#session-lifecycle)) and a stub for test scenes.
 - `Gui/`: `GuiHelper` (shortcuts to open common windows) and `NotificationManager` (shows messages for IAP and cloud events).
-- `OfflineMultiplayer/`: the arena client. `OfflineMultiplayer` talks to the game server through `Security.RequestFactory` and UniRx observables. `PlayerInfo` and `EnemyPlayerInfo` hold ratings and fleets. `FleetWebSerializer` encodes fleets as zlib-compressed, URL-safe Base64 (format versions 1–5; the arena writes 4, the online duel writes 5 without Base64). `ArenaTimeManager` limits battles to 10 per recovery window.
+- `OfflineMultiplayer/`: the arena client. `OfflineMultiplayer` talks to the game server through `Security.RequestFactory` and UniTask `async` methods. Each request ends in `Ready` or `ConnectionError`. `PlayerInfo` and `EnemyPlayerInfo` hold ratings and fleets. `FleetWebSerializer` encodes fleets as zlib-compressed, URL-safe Base64 (format versions 1–5; the arena writes 4, the online duel writes 5 without Base64). `ArenaTimeManager` limits battles to 10 per recovery window.
 - `Random/RandomGenerator`: seed-based random numbers for deterministic galaxy content.
 - `HolidayManager`: detects Christmas, Halloween, and Easter from internet time and starts holiday quests.
 - `Audio/DatabaseMusicPlaylist`: chooses music from the database playlists.

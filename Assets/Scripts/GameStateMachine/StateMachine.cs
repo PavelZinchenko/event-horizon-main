@@ -4,7 +4,6 @@ using System.Linq;
 using GameServices.SceneManager;
 using GameStateMachine.States;
 using Scripts.GameStateMachine;
-using UniRx;
 using CommonComponents.Signals;
 using Zenject;
 
@@ -107,8 +106,6 @@ namespace GameStateMachine
         private void LoadRequiredScenes()
         {
             _isLevelLoading = true;
-
-			//Observable.Timer(TimeSpan.FromSeconds(5), Scheduler.MainThreadIgnoreTimeScale).Subscribe(_ => _gameSceneManager.Load(RequiredScenes));
 
 			if (_states.TryPeek(out var state))
 				SceneContext.ExtraBindingsInstallMethod = state.InstallBindings;

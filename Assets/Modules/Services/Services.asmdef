@@ -5,7 +5,7 @@
         "AppConfiguration",
         "CommonComponents",
         "ServicesFacade",
-        "UniRx",
+        "UniTask",
         "Zenject"
     ],
     "includePlatforms": [],

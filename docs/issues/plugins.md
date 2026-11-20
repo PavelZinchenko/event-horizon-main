@@ -95,7 +95,6 @@ Android can also delete the cache folder at any time. The mod then disappears fr
 | `.gitignore` entries `/Assets/Scripts/Steamworks.NET/` and `/Assets/Appodeal*` | No such folders. `ServicesInstaller` still names an `AppodealAdsManager` that does not exist ([ModulesPrivate: Advertisements](../modules_private.md#advertisements)). |
 | `STEAMWORKS_NET` define on Android, Standalone, and WebGL | Added by the Steamworks.NET editor script. No game code reads it. |
 | [GPGSIds.cs](../../Assets/GPGSIds.cs) | Five achievement IDs. No game code reads them. |
-| `Assets/Plugins/UniRx/Examples/` | Sample scripts and two sample scenes. |
 
 **Fix.** Delete the files and the stale `.gitignore` entries. Remove `STEAMWORKS_NET` from the define lists only after you also stop the editor script from adding it again, or it returns on the next script reload.
 
@@ -107,13 +106,11 @@ Android can also delete the cache folder at any time. The mod then disappears fr
 
 | Library | In the project | Concern |
 | --- | --- | --- |
-| UniRx | 6.2.2 | The last upstream release is 7.1.0 from 2019. `ObservableWWW` is built on `UnityEngine.WWW`, which Unity marks as obsolete. All arena requests and the music download use it. |
 | Zenject (Extenject) | 9.2.0, 2020 | No newer release. It works on Unity 6, but it receives no fixes. |
 | Google Play Games | 0.11.01, 2022 | The game calls only `Activate`, `Authenticate`, the user properties, and saved games. Check the upstream release notes for these calls before an upgrade. |
 | Steamworks.NET editor script | 20.2.0 | Calls `GetScriptingDefineSymbolsForGroup`, which Unity 6 marks as obsolete. |
 
-**Fix.** Replace `ObservableWWW` with `UnityWebRequest` in `RequestFactory`, `PlayerInfo`, `EnemyPlayerInfo`, and `AssetLoader`. After that, the game's use of UniRx is small enough to replace with plain C# events and coroutines. Test sign-in and saved games on a device after a Play Games upgrade.
-
+**Fix.** Test sign-in and saved games on a device after a Play Games upgrade.
 ### PL9. Some licenses need a review
 
 **Severity:** Medium. **Status:** Needs review.

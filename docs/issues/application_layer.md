@@ -38,7 +38,7 @@ Each issue has four parts: the problem, the evidence, the effect, and a recommen
 
 ## 3. Two event systems and a bridge between them
 
-**Problem.** Code communicates through two event systems with different rules, plus plain C# events and UniRx streams.
+**Problem.** Code communicates through two event systems with different rules, plus plain C# events.
 
 **Evidence.**
 - Signal classes (`Signal<T>`, `SmartWeakSignal<T>`) are bound one by one with `BindSignal` and `BindTrigger` in `GameInstaller`, `ServicesInstaller`, and `TestSceneInstaller`: 86 registrations in about 175 lines.
@@ -160,15 +160,14 @@ Each issue has four parts: the problem, the evidence, the effect, and a recommen
 
 **Evidence.**
 - **Zenject 9.2 (Extenject):** about 20 state factories derive from `Zenject.Factory<T>`, which this version marks `[Obsolete]` in favor of `PlaceholderFactory<T>`. Zenject itself receives few updates.
-- **UniRx 6.2.2:** the library is no longer developed. The arena client uses `ObservableWWW`, which wraps the deprecated `UnityEngine.WWW` (`ModulesPrivate/Security/RequestFactory.cs`). `InternetTimeService` polls `UnityWebRequest` with `Observable.EveryUpdate`.
-- **Async patterns:** code mixes coroutines (10 files), UniRx streams, and callbacks. It does not use `async`/`await` or Unity's `Awaitable`.
+- **Async patterns:** code mixes coroutines (10 files), callbacks, and UniTask `async` methods (web requests and delays).
 - **Legacy UI text:** `UnityEngine.UI.Text` everywhere (see issue 8).
 - **Ionic.Zlib:** `FleetWebSerializer` uses it, but .NET Standard 2.1 has `System.IO.Compression`.
 - **Old Input API:** only in dead code (see issue 2).
 
 **Effect.** Each Unity upgrade risks removed APIs. New developers must learn three async styles.
 
-**Direction.** Replace `Factory<T>` with `PlaceholderFactory<T>` (a mechanical change). Move HTTP calls to `UnityWebRequest` with `Awaitable` or UniTask. Remove UniRx after that. Decide whether to stay on Extenject or move to a maintained container before larger DI work (issues 4 and 6).
+**Direction.** Replace `Factory<T>` with `PlaceholderFactory<T>` (a mechanical change). Decide whether to stay on Extenject or move to a maintained container before larger DI work (issues 4 and 6).
 
 ## 12. Time comes from several unrelated sources
 

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 using CommonComponents.Signals;
 
@@ -22,7 +22,7 @@ namespace Services.Account
         Status Status { get; }
         string DisplayName { get; }
         string Id { get; }
-        IObservable<Texture2D> LoadUserIcon();
+        UniTask<Texture2D> LoadUserIcon();
     }
 
     public class AccountStatusChangedSignal : SmartWeakSignal<AccountStatusChangedSignal, Status> {}

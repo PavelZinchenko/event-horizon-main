@@ -7,7 +7,7 @@ This page describes the architecture and the integration points only. It does no
 | | Security | ServicesPrivate | iOS plugins |
 | --- | --- | --- | --- |
 | Assembly | [Security.asmdef](../Assets/ModulesPrivate/Security/Security.asmdef) | [ServicesPrivate.asmdef](../Assets/ModulesPrivate/Services/ServicesPrivate.asmdef) | [iOSKeychainPlugin.asmdef](../Assets/ModulesPrivate/Plugins/FSG/iOSKeychainPlugin.asmdef), [StansAssets.asmdef](../Assets/ModulesPrivate/Plugins/StansAssets/StansAssets.asmdef); editor scripts in `StansAssetsEditor/` compile into `Assembly-CSharp-Editor` |
-| References | AppConfiguration, UniRx, BouncyCastle (precompiled) | AppConfiguration, CommonComponents, GameSession, Localization, ResourceLocator, ServicesFacade, Security, SecurityStub, UniRx, Zenject, Unity IAP, Unity Services Core, Unity Ads, Google Play Games, Steamworks.NET, NativeFilePicker, StansAssets, iOSKeychainPlugin, and two missing GUIDs ([MP11](issues/modules_private.md#mp11-two-assembly-references-do-not-resolve)) | none |
+| References | AppConfiguration, UniTask, BouncyCastle (precompiled) | AppConfiguration, CommonComponents, GameSession, Localization, ResourceLocator, ServicesFacade, Security, SecurityStub, UniTask, Zenject, Unity IAP, Unity Services Core, Unity Ads, Google Play Games, Steamworks.NET, NativeFilePicker, StansAssets, iOSKeychainPlugin, and two missing GUIDs ([MP11](issues/modules_private.md#mp11-two-assembly-references-do-not-resolve)) | none |
 | Compiles when | `LICENSE_COMMERCIAL` (`defineConstraints`) | `LICENSE_COMMERCIAL` | Always, on every platform |
 | Namespaces | `Security`; global `StringExtensions`, `EncryptedStrings`, `CertificateChecker`, Java wrappers | `Services.Account`, `Services.Advertisements`, `Services.Assets`, `Services.GooglePlay`, `Services.IapStorage`, `Services.InAppPurchasing`, `Services.Storage`; global `SteamManager`, `UnityEngineThread` | `FSG.iOSKeychain`, `SA.*`, global `ISN_*`, `GK_*`, `GameCenterManager` |
 | Source | [10 files, 780 lines](../Assets/ModulesPrivate/Security/Scripts/) | [22 files, 3,080 lines](../Assets/ModulesPrivate/Services/Scripts/) | FSG: 13 C# files, 3,760 lines. Stan's Assets: 227 C# files, 35,070 lines |
@@ -249,7 +249,7 @@ Both paths load the `Playlist` asset (`MusicPlaylist`) and pass it to `MusicPlay
 
 ## Server requests
 
-[`RequestFactory`](../Assets/ModulesPrivate/Security/Scripts/RequestFactory.cs) builds every request to the game server. The arena requests are UniRx `ObservableWWW.Post` calls with a `WWWForm`. The other requests are `UnityEngine.WWW` GET requests with the data in the query string.
+[`RequestFactory`](../Assets/ModulesPrivate/Security/Scripts/RequestFactory.cs) builds every request to the game server. The arena requests are `UnityWebRequest.Post` calls with a `WWWForm`, awaited with UniTask. They throw `UnityWebRequestException` on connection and HTTP errors. The other requests are `UnityEngine.WWW` GET requests with the data in the query string.
 
 | Method | Purpose | Caller |
 | --- | --- | --- |

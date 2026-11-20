@@ -2,7 +2,7 @@
     "name": "SecurityStub",
     "rootNamespace": "Security",
     "references": [
-        "UniRx"
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

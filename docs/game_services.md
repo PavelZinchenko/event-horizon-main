@@ -6,7 +6,7 @@ The module name is easy to confuse with the `Assets/Scripts/GameServices/` folde
 
 | | |
 | --- | --- |
-| Assembly | `GameServices` ([GameServices.asmdef](../Assets/Modules/GameServices/GameServices.asmdef)). References: Zenject, ResourceLocator, CommonComponents, UniRx, Unity.InputSystem, ServicesFacade. ResourceLocator and UniRx are not used. |
+| Assembly | `GameServices` ([GameServices.asmdef](../Assets/Modules/GameServices/GameServices.asmdef)). References: Zenject, ResourceLocator, CommonComponents, Unity.InputSystem, ServicesFacade. ResourceLocator is not used. |
 | Namespaces | `Services.GameApplication`, `GameServices.SceneManager`, `Services.Input`, global `Timer` |
 | Source | [`Scripts/`](../Assets/Modules/GameServices/Scripts/) (7 files, 1,640 lines; 1,100 of them generated input code) |
 | Input asset | [`Assets/InputActions.inputactions`](../Assets/InputActions.inputactions) |

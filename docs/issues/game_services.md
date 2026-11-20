@@ -66,11 +66,11 @@ This needs two state changes inside one scene load, for example a quick double t
 
 ### GS6. Dead and unused code
 
-**Problem.** `Timer` is never created; only its static `Paused` flag is set. The asmdef references `ResourceLocator` and `UniRx`, which no file uses.
+**Problem.** `Timer` is never created; only its static `Paused` flag is set. The asmdef references `ResourceLocator`, which no file uses.
 
-**Evidence.** No `new Timer(` in the project. No `using UniRx` or `Services.Resources` in the module.
+**Evidence.** No `new Timer(` in the project. No `Services.Resources` in the module.
 
-**Direction.** Delete `Timer` and the `Timer.Paused` assignments. Remove the two references from the asmdef.
+**Direction.** Delete `Timer` and the `Timer.Paused` assignments. Remove the reference from the asmdef.
 
 ### GS7. Each consumer owns its own `InputActions`
 

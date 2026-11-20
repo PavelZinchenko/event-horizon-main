@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Constructor.Ships;
+using Cysharp.Threading.Tasks;
 
 namespace GameServices.Multiplayer
 {
@@ -10,7 +10,7 @@ namespace GameServices.Multiplayer
         string Name { get; }
         int Rating { get; }
 
-        IObservable<bool> LoadFleetObservable();
+        UniTask<bool> LoadFleet();
         IEnumerable<IShip> Fleet { get; }
         float PowerMultiplier { get; }
     }
