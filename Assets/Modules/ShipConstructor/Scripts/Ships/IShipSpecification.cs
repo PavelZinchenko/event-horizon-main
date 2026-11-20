@@ -77,6 +77,8 @@ namespace Constructor
         public StatMultiplier WeightMultiplier;
         public StatMultiplier EffectPowerMultiplier;
         public ColorData? Color;
+        // Frontier: the weapon's bullets also hit allies (the Berserker captain perk). Main never sets it.
+        public bool ForceFriendlyFire;
     }
 
     public interface IWeaponDataObsolete
