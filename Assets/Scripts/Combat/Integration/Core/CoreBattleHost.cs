@@ -532,6 +532,7 @@ namespace Combat.Integration.Core
                 look.Explosion = _visualEffects.Get(source.Explosion);
                 look.ExplosionSound = _sounds.Resolve(source.ExplosionSound);
                 look.LeavesWreck = source.LeavesWreck;
+                look.HasShadow = source.HasShadow;
             }
 
             // Phase 5b, step 7a: the sounds and effects of the weapons, devices and drone bays.

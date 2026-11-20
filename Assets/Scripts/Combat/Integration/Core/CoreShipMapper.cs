@@ -318,14 +318,14 @@ namespace Combat.Integration.Core
             var kind = isClone ? "clone" : isDrone ? "drone" : "ship";
             var mapping = new CoreShipMapping($"{kind} {specification.Info.Id.Value}", definition, infos,
                 stats.ShipModel.ModelImage, modelScale, ai, aiTree, bay?.DroneBay.Range ?? 0f, stats.Autopilot, tint, isClone, turrets,
-                satelliteSources, LookSource(stats, isDrone), views);
+                satelliteSources, LookSource(stats, isDrone, hasShadow: !isStationary), views);
             _mappings[definition] = mapping;
             return mapping;
         }
 
         // Legacy ShipFactory.CreateShip and CreateDestructionEffect (phase 5b, step 4). A clone is a drone here, as legacy
         // gives it a mother ship.
-        private CoreShipLookSource LookSource(IShipStats stats, bool isDrone)
+        private CoreShipLookSource LookSource(IShipStats stats, bool isDrone, bool hasShadow)
         {
             var model = stats.ShipModel;
             var isSmallShip = model.ModelScale < 0.9f;
@@ -340,7 +340,7 @@ namespace Combat.Integration.Core
                 sound = new AudioClipId(isSmallShip ? "explosion_10" : "explosion_01");
 
             return new CoreShipLookSource(stats.ShipColor, stats.TurretColor, model.EngineColor, model.Engines,
-                stats.ShieldPoints > 0, isDrone, explosion, sound, model.VisualEffects.LeaveWreck.IsEnabled(!isSmallShip));
+                stats.ShieldPoints > 0, isDrone, explosion, sound, model.VisualEffects.LeaveWreck.IsEnabled(!isSmallShip), hasShadow);
         }
 
         // The device classes the core runs (DeviceInertReason null); null for the others. The activation cost is legacy

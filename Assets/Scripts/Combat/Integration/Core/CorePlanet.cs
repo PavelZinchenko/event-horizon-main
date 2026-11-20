@@ -18,10 +18,10 @@ namespace Combat.Integration.Core
         // Null without the prefab.
         public static CorePlanet Create(ulong seed, Torus torus, UnityEngine.SceneManagement.Scene scene)
         {
-            var prefab = Resources.Load<GameObject>(PrefabPath);
+            var prefab = CombatViewAssets.LoadPrefab(CombatViewAssets.PlanetPrefab);
             if (!prefab)
             {
-                Debug.LogWarning($"CorePlanet: prefab {PrefabPath} not found; no planet");
+                Debug.LogWarning($"CorePlanet: prefab {CombatViewAssets.PlanetPrefab} not found; no planet");
                 return null;
             }
 
@@ -70,7 +70,6 @@ namespace Combat.Integration.Core
                 Object.Destroy(_root);
         }
 
-        private const string PrefabPath = "CombatView/Objects/Planet";
         private const int Salt = 0x504C4E54;
 
         private readonly GameObject _root;

@@ -44,11 +44,11 @@ namespace Combat.Integration.Core
         // Null without the prefab.
         public static CoreAsteroids Create(Torus torus, UnityEngine.SceneManagement.Scene scene)
         {
-            var prefab = Resources.Load<GameObject>(PrefabPath);
+            var prefab = CombatViewAssets.LoadPrefab(CombatViewAssets.AsteroidPrefab);
             if (prefab)
                 return new CoreAsteroids(prefab, torus, scene);
 
-            Debug.LogWarning($"CoreAsteroids: prefab {PrefabPath} not found; asteroids are not drawn");
+            Debug.LogWarning($"CoreAsteroids: prefab {CombatViewAssets.AsteroidPrefab} not found; asteroids are not drawn");
             return null;
         }
 
@@ -150,7 +150,6 @@ namespace Combat.Integration.Core
             public PoseTrack Pose;
         }
 
-        private const string PrefabPath = "CombatView/Objects/Asteroid";
         private const int Salt = 0x41535452;
         private const float MinSize = 2f;
         private const float MaxSize = 5f;

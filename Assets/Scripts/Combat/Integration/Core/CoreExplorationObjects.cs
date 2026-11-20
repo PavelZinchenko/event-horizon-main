@@ -183,7 +183,7 @@ namespace Combat.Integration.Core
             if (_prefabs.TryGetValue(path, out var prefab))
                 return prefab;
 
-            prefab = Resources.Load<GameObject>(path);
+            prefab = CombatViewAssets.LoadPrefab(path);
             if (!prefab)
                 Debug.LogWarning($"CoreExplorationObjects: prefab {path} not found; its objects are not drawn");
             _prefabs.Add(path, prefab);
@@ -211,7 +211,7 @@ namespace Combat.Integration.Core
             public float AngularVelocity;
         }
 
-        private const string PrefabFolder = "CombatView/Exploration/";
+        private const string PrefabFolder = "Exploration/";
         private const string ContainerPrefab = PrefabFolder + "Container";
         private const string BoxPrefab = PrefabFolder + "Box";
         private const string RockPrefab = PrefabFolder + "Rock";

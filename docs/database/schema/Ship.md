@@ -190,7 +190,7 @@ A shipyard can add a modification slot to a player ship. The required level is t
 3. The body scale is `ModelScale`. The body mass is the ship weight ([line 324](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/ShipFactory.cs#L324)).
 4. Each engine gets a light of size `5 × Engine.Size / ModelScale` and a trail, both in `EngineColor` ([line 277](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/ShipFactory.cs#L277)).
 
-The new combat core does not load prefabs. `CoreHullBuilder` reads `Collider`; when the field has no valid shape, it applies rule 2 to the sprite ([CoreHullBuilder.cs](../../../Assets/Scripts/Combat/Integration/Core/CoreHullBuilder.cs)).
+The new combat core does not load prefabs. `CoreHullBuilder` reads `Collider`; when the field has no valid shape, it applies rule 2 to the sprite ([CoreHullBuilder.cs](../../../Assets/ModulesShared/CombatSimulation/Integration/Scripts/Core/CoreHullBuilder.cs)).
 
 Destruction ([ShipFactory.cs:284](../../../Assets/Modules/BattleSimulator/Scripts/Combat/Factory/ShipFactory.cs#L284)):
 

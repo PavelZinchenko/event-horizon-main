@@ -41,7 +41,7 @@ Assembly boundaries are defined by `.asmdef` files. Check references before movi
 
 - `AppConfiguration` - Generated application configuration plus shared font and UI theme assets. See [AppConfiguration module](app_configuration.md).
 - `BattleSimulator` - Combat simulation, ship behavior, weapons, physics, and combat AI. See [BattleSimulator module](battle_simulator.md).
-- `CombatView` - Sprite views for battles on the new combat core. See [Combat simulator: Views](../Assets/ModulesShared/docs/combat_simulator/unity_integration.md#views).
+- `CombatView` - Event Horizon's prefabs for the shared combat views (`Resources/CombatView/`); the code is in `ModulesShared/CombatView`. See [Combat simulator: Views](../Assets/ModulesShared/docs/combat_simulator/unity_integration.md#views).
 - `CommonComponents` - Shared value types (IDs, money, prices), galaxy layout, signals, and general helpers. See [CommonComponents module](common_components.md) and its [issues](issues/common_components.md).
 - `Database` - Schema-driven game data, runtime access and serialization, migrations, and code-generation tools. See [Database module](database.md).
 - `GalaxyMap` - Prefabs and materials that draw the star map. The scripts are in `Assets/Scripts/Legacy/Map/`. See [GalaxyMap module](galaxy_map.md).
@@ -59,7 +59,8 @@ Assembly boundaries are defined by `.asmdef` files. Check references before movi
 
 `Assets/ModulesShared/` is a Git submodule that Event Horizon shares with Event Horizon: Frontier. A change here can break Frontier, and this repository cannot check that. See [Gui: Shared code constraint](../Assets/ModulesShared/docs/gui.md#shared-code-constraint).
 
-- `CombatSimulation` - New battle simulator, shared with Frontier. In progress: the engine-free physics library, the battle core and its runtime. Quick combat can run on it in a debug scene. See [Combat simulator](../Assets/ModulesShared/docs/combat_simulator/index.md).
+- `CombatSimulation` - New battle simulator, shared with Frontier. In progress: the engine-free physics library, the battle core and its runtime. Quick combat can run on it in a debug scene. `Integration` holds the game-neutral Unity part: the weapon mapper, hull builder, pilots, keyboard driver and the application contracts. See [Combat simulator](../Assets/ModulesShared/docs/combat_simulator/index.md).
+- `CombatView` - Sprite views for battles on the new combat core; each game supplies the prefabs. See [Combat simulator: Views](../Assets/ModulesShared/docs/combat_simulator/unity_integration.md#views).
 - `Diagnostics` - Project logging, assertion, and Unity logger adapters. See [Diagnostics module](../Assets/ModulesShared/docs/diagnostics.md).
 - `Gui` - Shared UI framework, window management, themes, the debug console, and reusable controls. See [Gui module](../Assets/ModulesShared/docs/gui.md).
 - `Localization` - Runtime localization and language-specific XML translation resources. See [Localization module](../Assets/ModulesShared/docs/localization.md).

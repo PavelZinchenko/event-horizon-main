@@ -68,8 +68,8 @@ namespace Combat.Integration.Core
             var pilots = new CorePilotProvider(database.CombatSettings, trees, mapper.Mappings, PlayerSide, _setup.EnemyAiLevel);
             var runner = new BattleRunner(_setup.Setup, pilots);
 
-            // E10: no shadows until phase 4; static wrecks on, as legacy exploration (ShipFactory.Settings).
-            var viewSettings = new CombatViewSettings(damageText: gameSettings.ShowDamage, shadows: false, staticWrecks: true,
+            // E10: shadows and static wrecks on, as legacy exploration (ShipFactory.Settings).
+            var viewSettings = new CombatViewSettings(damageText: gameSettings.ShowDamage, shadows: true, staticWrecks: true,
                 trails: gameSettings.QualityMode >= 0);
             // No asteroids and no combat planet: the scene draws the planet's surface (PlanetBackground).
             Initialize(mapper, pilots, runner, trees, null, seed, torus, null, false, viewSettings);
